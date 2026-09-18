@@ -11,6 +11,9 @@ const autoUpdater = {
   quitAndInstall: () => {}
 };
 
+app.commandLine.appendSwitch('allow-file-access-from-files');
+app.commandLine.appendSwitch('disable-web-security');
+
 const isDev = !app.isPackaged;
 
 let mainWindow: BrowserWindow | null = null;
@@ -148,7 +151,8 @@ function createWindow(): void {
       contextIsolation: true,
       nodeIntegration: false,
       webgl: true,
-      webSecurity: true
+      webSecurity: false,
+      allowRunningInsecureContent: true
     },
     backgroundColor: '#070a14',
     show: false,
@@ -159,9 +163,9 @@ function createWindow(): void {
   else mainWindow.once('ready-to-show', () => mainWindow?.show());
 
   if (isDev) {
-    mainWindow.loadURL('http://localhost:5173/index.html');
+    mainWindow.loadURL('http://localhost:5173/Driving.html');
   } else {
-    mainWindow.loadFile(path.join(__dirname, '..', 'dist', 'index.html'));
+    mainWindow.loadFile(path.join(__dirname, '..', 'dist', 'Driving.html'));
   }
 
   // Persist window state on move/resize (debounced)
@@ -193,7 +197,7 @@ function createMenu(): void {
       label: 'File',
       submenu: [
         { label: 'New Game', accelerator: 'CmdOrCtrl+N', click: () => mainWindow?.webContents.send('menu-action', 'new-game') },
-        { label: 'Restart Level', accelerator: 'CmdOrCtrl+R', click: () => mainWindow?.webContents.send('menu-action', 'restart') },
+        { label: 'Restart Level', accelerator: 'CmdOrCtrl+Shift+R', click: () => mainWindow?.webContents.send('menu-action', 'restart') },
         { type: 'separator' },
         { label: 'Export Save…', accelerator: 'CmdOrCtrl+E', click: async () => {
           const r = await exportSave();
@@ -208,8 +212,46 @@ function createMenu(): void {
       ]
     },
     {
+      label: 'Modes',
+      submenu: [
+        {
+          label: '🏎️ 3D Driving Simulator',
+          accelerator: 'F2',
+          click: () => {
+            if (isDev) mainWindow?.loadURL('http://localhost:5173/Driving.html');
+            else mainWindow?.loadFile(path.join(__dirname, '..', 'dist', 'Driving.html'));
+          }
+        },
+        {
+          label: '📊 Driver Dashboard',
+          accelerator: 'F3',
+          click: () => {
+            if (isDev) mainWindow?.loadURL('http://localhost:5173/TrafficDashboard.html');
+            else mainWindow?.loadFile(path.join(__dirname, '..', 'dist', 'TrafficDashboard.html'));
+          }
+        },
+        {
+          label: '🚶 Pedestrian Academy',
+          accelerator: 'F4',
+          click: () => {
+            if (isDev) mainWindow?.loadURL('http://localhost:5173/Academy.html');
+            else mainWindow?.loadFile(path.join(__dirname, '..', 'dist', 'Academy.html'));
+          }
+        },
+        {
+          label: '🛠️ Vehicle Customizer',
+          accelerator: 'F5',
+          click: () => {
+            if (isDev) mainWindow?.loadURL('http://localhost:5173/TrafficSetup.html');
+            else mainWindow?.loadFile(path.join(__dirname, '..', 'dist', 'TrafficSetup.html'));
+          }
+        }
+      ]
+    },
+    {
       label: 'View',
       submenu: [
+        { label: 'Reload', accelerator: 'CmdOrCtrl+R', role: 'reload' },
         { label: 'Toggle Fullscreen', accelerator: 'F11', click: () => mainWindow?.setFullScreen(!mainWindow?.isFullScreen()) },
         { label: 'Toggle DevTools', accelerator: 'CmdOrCtrl+Shift+I', click: () => mainWindow?.webContents.toggleDevTools() },
         { type: 'separator' },

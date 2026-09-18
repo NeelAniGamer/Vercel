@@ -29,7 +29,7 @@ window.save = async function () {
 window.sfx = Object.assign(window.sfx || {}, {
   _c: null,
   vol: { sfx: 1, ui: 1, env: 1 },
-  _cat: { horn: 'sfx', brake: 'sfx', challan: 'ui', ok: 'ui', error: 'ui', thunder: 'env' },
+  _cat: { horn: 'sfx', brake: 'sfx', ring: 'ui', challan: 'ui', ok: 'ui', error: 'ui', thunder: 'env' },
   init() {
     if (this._c) return
     try {
@@ -39,17 +39,69 @@ window.sfx = Object.assign(window.sfx || {}, {
   setVol(cat, v) { if (this.vol[cat] !== undefined) this.vol[cat] = Math.max(0, Math.min(1, v)); },
   play(t) {
     if (!this._c) return
+    if (t === 'horn') {
+      try {
+        const catVol = this.vol.sfx !== undefined ? this.vol.sfx : 1
+        const now = this._c.currentTime
+        const g = this._c.createGain()
+        g.gain.setValueAtTime(0.001, now)
+        g.gain.linearRampToValueAtTime(0.08 * catVol, now + 0.02)
+        g.gain.exponentialRampToValueAtTime(0.001, now + 0.24)
+
+        const o1 = this._c.createOscillator()
+        o1.type = 'triangle'
+        o1.frequency.setValueAtTime(435, now)
+
+        const o2 = this._c.createOscillator()
+        o2.type = 'triangle'
+        o2.frequency.setValueAtTime(548, now)
+
+        const filt = this._c.createBiquadFilter()
+        filt.type = 'lowpass'
+        filt.frequency.setValueAtTime(1200, now)
+
+        o1.connect(filt); o2.connect(filt); filt.connect(g); g.connect(this._c.destination)
+        o1.start(now); o2.start(now)
+        o1.stop(now + 0.25); o2.stop(now + 0.25)
+        return
+      } catch (e) {}
+    }
+    if (t === 'ring') {
+      try {
+        const catVol = this.vol.ui !== undefined ? this.vol.ui : 1
+        const now = this._c.currentTime
+        // Pleasant modern dual-tone phone chime (853Hz + 960Hz) warbling softly
+        ;[0, 0.12].forEach(offset => {
+          const g = this._c.createGain()
+          g.gain.setValueAtTime(0.001, now + offset)
+          g.gain.linearRampToValueAtTime(0.05 * catVol, now + offset + 0.02)
+          g.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.10)
+
+          const o1 = this._c.createOscillator()
+          o1.type = 'sine'
+          o1.frequency.setValueAtTime(853, now + offset)
+
+          const o2 = this._c.createOscillator()
+          o2.type = 'sine'
+          o2.frequency.setValueAtTime(960, now + offset)
+
+          o1.connect(g); o2.connect(g); g.connect(this._c.destination)
+          o1.start(now + offset); o2.start(now + offset)
+          o1.stop(now + offset + 0.11); o2.stop(now + offset + 0.11)
+        })
+        return
+      } catch (e) {}
+    }
     const p = {
-      horn: { f: 440, ty: 'square', d: 0.18, v: 0.12 },
-      brake: { f: 160, ty: 'sawtooth', d: 0.15, v: 0.08 },
+      brake: { f: 140, ty: 'triangle', d: 0.12, v: 0.06 },
       challan: { f: 880, ty: 'triangle', d: 0.32, v: 0.11 },
       ok: { f: 660, ty: 'sine', d: 0.22, v: 0.09 },
-      error: { f: 110, ty: 'square', d: 0.28, v: 0.1 },
+      error: { f: 110, ty: 'triangle', d: 0.22, v: 0.08 },
       thunder: { f: 55, ty: 'sawtooth', d: 0.6, v: 0.15 },
       door: { f: 220, ty: 'triangle', d: 0.25, v: 0.10 },
       step: { f: 80, ty: 'sine', d: 0.06, v: 0.04 }
     }
-    const pp = p[t] || p.horn
+    const pp = p[t] || p.brake
     const cat = this._cat[t] || 'sfx'
     const catVol = this.vol[cat] !== undefined ? this.vol[cat] : 1
     try {
@@ -61,10 +113,10 @@ window.sfx = Object.assign(window.sfx || {}, {
       o.frequency.setValueAtTime(pp.f, this._c.currentTime)
       g.gain.setValueAtTime(pp.v * catVol, this._c.currentTime)
       g.gain.exponentialRampToValueAtTime(0.001, this._c.currentTime + pp.d)
-       o.start()
-       o.stop(this._c.currentTime + pp.d)
-     } catch (e) {}
-   },
+      o.start()
+      o.stop(this._c.currentTime + pp.d)
+    } catch (e) {}
+  },
    // Ambient sound generators (procedural)
    _ambNodes: null,
    startAmbient(type) {
@@ -155,6 +207,9 @@ var ui = window.ui = Object.assign(window.ui || {}, {
     toast('🔓 Developer Unlock Triggered!', '#00c851')
     this.showLevels()
   },
+  toggleGodMode(force) {
+    return window.toggleGodModeCheat(force)
+  },
   async hardReset() {
     if (confirm('Reset all progress?')) {
       S = { comp: {}, badges: [], total: 0, name: null, wallet: 50000, civicScore: 0 }
@@ -221,6 +276,12 @@ var ui = window.ui = Object.assign(window.ui || {}, {
     const lvParam = urlParams.get('lv')
     if (screenParam === 'levels') {
       this.showLevels()
+      if (lvParam) {
+        const targetLid = parseInt(lvParam, 10) || lvParam
+        setTimeout(() => {
+          if (this.showBriefing) this.showBriefing(targetLid)
+        }, 120)
+      }
     } else if (window.location.pathname.toLowerCase().includes('driving') && lvParam) {
       document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'))
     } else {
@@ -1427,7 +1488,11 @@ if (un) {
       history.replaceState(null, '', `?screen=levels&lv=${lv.id}`)
     }
     document.getElementById('blt').textContent = 'Level ' + lv.id
-    document.getElementById('bvh').textContent = lv.v
+    const bvhEl = document.getElementById('bvh')
+    if (bvhEl) {
+      const vName = lv.veh || lv.v || (lv.modes && lv.modes[0]) || 'car'
+      bvhEl.textContent = vName.charAt(0).toUpperCase() + vName.slice(1)
+    }
     
 
     if (!S.streak) S.streak = { current: 0, best: 0, lastDate: null }
@@ -2085,6 +2150,9 @@ if (un) {
       } else {
         const fourWheelers = [
           { id: 'car', name: 'Sedan', icon: '🚗' },
+          { id: 'supercar_white', name: 'White Supercar', icon: '🏎️' },
+          { id: 'sports_cyan', name: 'Cyan Sports GT', icon: '⚡' },
+          { id: 'bus_green', name: 'City Green Bus', icon: '🚍' },
           { id: 'taxi', name: 'Kaali-Peeli', icon: '🚖' },
           { id: 'auto', name: 'Auto-Rickshaw', icon: '🛺' },
           { id: 'bus', name: 'BEST Bus', icon: '🚌' },
@@ -4470,9 +4538,9 @@ const initGTex = () => {
   }
 }
 
-const _buildVehicle = (type, col) => {
+const _buildVehicle = window._buildVehicle = (type, col) => {
   let baseModel = null
-  let s = 1.0
+  let s = 1.20
   const normalizedType = (type || 'car').toLowerCase()
 
   // 1. Authentic Indian Two-Wheelers (Bikes, Scooters, Cycles)
@@ -4480,11 +4548,12 @@ const _buildVehicle = (type, col) => {
     if (typeof window.IndianVehicles !== 'undefined' && typeof window.IndianVehicles.buildVehicle === 'function') {
       const bikeModel = window.IndianVehicles.buildVehicle(normalizedType === 'bike' ? 'splendor' : normalizedType, col)
       if (bikeModel) {
-        bikeModel.type = normalizedType
-        bikeModel.userData = bikeModel.userData || {}
-        bikeModel.userData.halfW = 0.45
-        bikeModel.userData.halfD = 0.95
-        return bikeModel
+        const g = new THREE.Group()
+        bikeModel.rotation.y = Math.PI
+        g.add(bikeModel)
+        g.type = normalizedType
+        g.userData = { halfW: 0.40, halfD: 0.95, isVehicle: true }
+        return g
       }
     }
   }
@@ -4494,11 +4563,16 @@ const _buildVehicle = (type, col) => {
     if (typeof window.IndianVehicles !== 'undefined' && typeof window.IndianVehicles.buildVehicle === 'function') {
       const autoModel = window.IndianVehicles.buildVehicle('auto', col || 0x2e8b57)
       if (autoModel) {
-        autoModel.type = 'auto'
-        autoModel.userData = autoModel.userData || {}
-        autoModel.userData.halfW = 0.75
-        autoModel.userData.halfD = 1.3
-        return autoModel
+        const g = new THREE.Group()
+        autoModel.rotation.y = Math.PI
+        g.add(autoModel)
+        g.type = 'auto'
+        g.userData = { halfW: 0.70, halfD: 1.35, isVehicle: true }
+        const dpL = new THREE.Group(); dpL.position.set(0.70, 0.9, 0.3)
+        const dpR = new THREE.Group(); dpR.position.set(-0.70, 0.9, 0.3)
+        g.add(dpL, dpR)
+        g.userData.doorPivotL = dpL; g.userData.doorPivotR = dpR
+        return g
       }
     }
   }
@@ -4508,23 +4582,65 @@ const _buildVehicle = (type, col) => {
     if (typeof window.IndianVehicles !== 'undefined' && typeof window.IndianVehicles.buildVehicle === 'function') {
       const busModel = window.IndianVehicles.buildVehicle('bus', col || 0xcc2222)
       if (busModel) {
-        busModel.type = 'bus'
-        busModel.userData = busModel.userData || {}
-        busModel.userData.halfW = 1.35
-        busModel.userData.halfD = 4.75
-        return busModel
+        const g = new THREE.Group()
+        busModel.rotation.y = Math.PI
+        g.add(busModel)
+        g.type = 'bus'
+        g.userData = { halfW: 1.35, halfD: 4.80, isVehicle: true }
+        const dpL = new THREE.Group(); dpL.position.set(1.35, 0.9, 0.3)
+        const dpR = new THREE.Group(); dpR.position.set(-1.35, 0.9, 0.3)
+        g.add(dpL, dpR)
+        g.userData.doorPivotL = dpL; g.userData.doorPivotR = dpR
+        return g
       }
     }
   }
 
-  // 4. Supercar / Lamborghini
-  if (normalizedType === 'lambo') {
+  // 4. Supercars & Custom Rides (White Supercar, Cyan Sports, BMW M4, Nilu 27, Cyberpunk Bike, Lambo, Green Bus)
+  if (['supercar_white', 'car_supercar_white', 'white_supercar', 'supercar'].includes(normalizedType)) {
+    const src = window.PRELOADED_MODELS && (window.PRELOADED_MODELS['car_supercar_white'] || window.PRELOADED_MODELS['supercar_white'] || window.PRELOADED_MODELS['car_supercar_1'] || window.PRELOADED_MODELS['car'])
+    if (src) {
+      baseModel = src.clone ? src.clone(true) : src
+      s = 1.0
+    }
+  } else if (['sports_cyan', 'car_sports_cyan', 'cyan_sports', 'sports_gt'].includes(normalizedType)) {
+    const src = window.PRELOADED_MODELS && (window.PRELOADED_MODELS['car_sports_cyan'] || window.PRELOADED_MODELS['sports_cyan'] || window.PRELOADED_MODELS['car_supercar_2'])
+    if (src) {
+      baseModel = src.clone ? src.clone(true) : src
+      s = 1.0
+    }
+  } else if (['bus_green', 'bus_city_green', 'green_bus', 'bus_green_city'].includes(normalizedType)) {
+    const src = window.PRELOADED_MODELS && (window.PRELOADED_MODELS['bus_green'] || window.PRELOADED_MODELS['bus_green_city'] || window.PRELOADED_MODELS['car_supercar_3'])
+    if (src) {
+      baseModel = src.clone ? src.clone(true) : src
+      s = 1.85
+    }
+  } else if (['bmw_m4', 'bmw', 'm4'].includes(normalizedType)) {
+    if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['bmw_m4']) {
+      const bSrc = window.PRELOADED_MODELS['bmw_m4']
+      baseModel = bSrc.clone ? bSrc.clone(true) : bSrc
+      s = 1.0
+    }
+  } else if (['nilu_27', 'nilu', 'hypercar'].includes(normalizedType)) {
+    if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['nilu_27']) {
+      const nSrc = window.PRELOADED_MODELS['nilu_27']
+      baseModel = nSrc.clone ? nSrc.clone(true) : nSrc
+      s = 1.0
+    }
+  } else if (['cyberpunk_bike', 'cyberbike', 'scifi_bike'].includes(normalizedType)) {
+    if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['cyberpunk_bike']) {
+      const cbSrc = window.PRELOADED_MODELS['cyberpunk_bike']
+      baseModel = cbSrc.clone ? cbSrc.clone(true) : cbSrc
+      s = 1.0
+    }
+  } else if (normalizedType === 'lambo') {
     if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['lambo']) {
-      baseModel = window.PRELOADED_MODELS['lambo'].clone()
-      s = 0.85
+      const lSrc = window.PRELOADED_MODELS['lambo']
+      baseModel = lSrc.clone ? lSrc.clone(true) : lSrc
+      s = 1.45
     } else if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['car_race-future']) {
-      baseModel = window.PRELOADED_MODELS['car_race-future'].clone()
-      s = 0.88
+      baseModel = window.PRELOADED_MODELS['car_race-future'].clone(true)
+      s = 1.45
     }
   }
 
@@ -4549,8 +4665,8 @@ const _buildVehicle = (type, col) => {
       candidateKeys = ['truck', 'truck_flat', 'truck_garbage-truck', 'truck_firetruck', 'delivery', 'van']
     } else if (normalizedType === 'suv' || normalizedType === 'creta') {
       candidateKeys = ['suv', 'suv_luxury', 'car_suv', 'car_suv-luxury']
-    } else if (normalizedType === 'sedan' || normalizedType === 'car') {
-      candidateKeys = ['car', 'sedan_sports', 'hatchback_sports', 'suv', 'race_future', 'car_sedan-sports', 'car_hatchback-sports']
+    } else if (normalizedType === 'sedan' || normalizedType === 'car' || normalizedType === 'player') {
+      candidateKeys = ['car_supercar_white', 'car_sports_cyan', 'supercar_white', 'sports_cyan', 'car_race-future', 'race_future', 'car_sedan-sports', 'sedan_sports', 'car']
     } else {
       candidateKeys = [normalizedType]
     }
@@ -4559,18 +4675,20 @@ const _buildVehicle = (type, col) => {
     const chosenKey = available.length ? available[Math.floor(Math.random() * available.length)] : (window.PRELOADED_MODELS['car'] ? 'car' : null)
 
     if (chosenKey && window.PRELOADED_MODELS[chosenKey]) {
-      baseModel = window.PRELOADED_MODELS[chosenKey].clone()
+      const srcModel = window.PRELOADED_MODELS[chosenKey]
+      baseModel = srcModel.clone ? srcModel.clone(true) : srcModel
       
       // Determine normalized scale based on vehicle type
       if (chosenKey.includes('truck') || chosenKey.includes('firetruck') || chosenKey.includes('garbage')) {
-        s = 0.95
+        s = 1.32
       } else if (chosenKey.includes('suv') || chosenKey.includes('van') || chosenKey.includes('delivery')) {
-        s = 0.90
+        s = 1.25
       } else {
-        s = 0.85
+        s = 1.20
       }
 
-      const paintColor = col || (chosenKey === 'taxi' ? 0xffd54a : (chosenKey === 'police' ? 0x1e3a8a : 0x3b82f6))
+      const paintPool = [0x3b82f6, 0xef4444, 0x10b981, 0xf59e0b, 0x8b5cf6, 0xec4899, 0xffffff, 0x222222, 0x94a3b8]
+      const paintColor = col || (chosenKey === 'taxi' ? 0xffd54a : (chosenKey === 'police' ? 0x1e3a8a : (chosenKey === 'ambulance' ? 0xffffff : paintPool[Math.floor(Math.random() * paintPool.length)])))
       baseModel.traverse((child) => {
         if (child.isMesh) {
           child.castShadow = true
@@ -4590,14 +4708,32 @@ const _buildVehicle = (type, col) => {
   // If GLB model is ready, assemble clean container group with correct extents
   if (baseModel) {
     const g = new THREE.Group()
+    
+    // Universal vehicle grounding & scale calibration
+    baseModel.updateMatrixWorld(true)
+    const vBoxRaw = new THREE.Box3().setFromObject(baseModel)
+    const vSizeRaw = new THREE.Vector3()
+    vBoxRaw.getSize(vSizeRaw)
+
+    // If model is a unit-length GLB (like sample 1/2 with length ~1m), scale to 4.5m automotive length
+    if (vSizeRaw.z < 1.8 && vSizeRaw.x < 1.8 && vSizeRaw.z > 0.4) {
+      s = 4.4
+    }
+
     baseModel.scale.set(s, s, s)
-    baseModel.position.set(0, 0, 0)
+    baseModel.updateMatrixWorld(true)
+    const vBoxScaled = new THREE.Box3().setFromObject(baseModel)
+    
+    // Lift so bottom of tires sits flush on ground at y = 0
+    baseModel.position.y = -vBoxScaled.min.y
+    baseModel.rotation.y = Math.PI
     g.add(baseModel)
 
     const isHeavy = normalizedType.includes('truck') || normalizedType.includes('bus')
-    const hw = isHeavy ? 1.35 : 0.95
-    const hl = isHeavy ? 4.2 : 2.1
-    g.userData = { halfW: hw, halfD: hl }
+    const isLambo = normalizedType === 'lambo'
+    const hw = isHeavy ? 1.35 : (isLambo ? 1.35 : 1.05)
+    const hl = isHeavy ? 4.80 : (isLambo ? 2.95 : 2.25)
+    g.userData = { halfW: hw, halfD: hl, isVehicle: true }
 
     // Clean interactive door anchors for player entry
     const dpL = new THREE.Group()
@@ -4614,7 +4750,14 @@ const _buildVehicle = (type, col) => {
 
   if (typeof window.IndianVehicles !== 'undefined' && typeof window.IndianVehicles.buildVehicle === 'function') {
     const iv = window.IndianVehicles.buildVehicle(type, col);
-    if (iv) return iv;
+    if (iv) {
+      const g = new THREE.Group()
+      iv.rotation.y = Math.PI
+      g.add(iv)
+      g.type = type
+      g.userData = { halfW: 1.05, halfD: 2.25, isVehicle: true }
+      return g
+    }
   }
 
   const g = new THREE.Group()
@@ -4629,53 +4772,77 @@ const _buildVehicle = (type, col) => {
     case 'city':
     case 'car_highway': {
       const isT = type === 'taxi' || type === 'cab'
-      const bodyM = new THREE.MeshToonMaterial({ color: isT ? 0xffd54a : col })
-      const glassM = new THREE.MeshToonMaterial({ color: 0x1a2e4a, transparent: true, opacity: 0.75 })
-      const wheelM = new THREE.MeshToonMaterial({ color: 0x111111 })
-      const rimM = new THREE.MeshToonMaterial({ color: 0xcccccc })
-      const hlM = new THREE.MeshBasicMaterial({ color: 0xffffcc })
-      const tlM = new THREE.MeshBasicMaterial({ color: 0xff0000 })
+      const paintCol = isT ? 0xffd54a : (col || 0x2563eb)
+      const bodyM = new THREE.MeshToonMaterial({ color: paintCol })
+      const carbonM = new THREE.MeshToonMaterial({ color: 0x111827 })
+      const glassM = new THREE.MeshToonMaterial({ color: 0x0f172a, transparent: true, opacity: 0.88 })
+      const wheelM = new THREE.MeshToonMaterial({ color: 0x09090b })
+      const rimM = new THREE.MeshToonMaterial({ color: 0xe2e8f0 })
+      const brakeM = new THREE.MeshToonMaterial({ color: 0xdc2626 })
+      const hlM = new THREE.MeshBasicMaterial({ color: 0xe0f2fe })
+      const tlM = new THREE.MeshBasicMaterial({ color: 0xff1e1e })
 
-      const body = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.5, 3.8), bodyM)
-      body.position.y = 0.42
+      // Main aerodynamic sports chassis
+      const body = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.42, 4.2), bodyM)
+      body.position.y = 0.38
       g.add(body)
 
-      const cab = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.44, 1.9), bodyM)
-      cab.position.set(0, 0.84, 0.08)
+      // Carbon front splitter & side skirts
+      const splitter = new THREE.Mesh(new THREE.BoxGeometry(1.84, 0.08, 0.5), carbonM)
+      splitter.position.set(0, 0.20, 2.0)
+      g.add(splitter)
+
+      // Fastback sports cabin canopy
+      const cab = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.38, 2.1), glassM)
+      cab.position.set(0, 0.74, -0.1)
       g.add(cab)
 
-      const ws = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.4), glassM)
-      ws.position.set(0, 0.84, 1.02)
-      ws.rotation.x = Math.PI / 5
-      g.add(ws)
-      const rs = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.4), glassM)
-      rs.position.set(0, 0.84, -0.85)
-      rs.rotation.x = -Math.PI / 5
-      g.add(rs)
+      // Carbon fiber roof panel
+      const roof = new THREE.Mesh(new THREE.BoxGeometry(1.36, 0.06, 1.4), carbonM)
+      roof.position.set(0, 0.94, -0.15)
+      g.add(roof)
 
-      ;[
-        [0.85, 0, 1.25],
-        [-0.85, 0, 1.25],
-        [0.85, 0, -1.25],
-        [-0.85, 0, -1.25]
-      ].forEach(([x, , z]) => {
-        const wh = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.2, 8), wheelM)
-        wh.rotation.z = Math.PI / 2
-        wh.position.set(x, 0.3, z)
-        g.add(wh)
-        const rim = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.22, 6), rimM)
-        rim.rotation.z = Math.PI / 2
-        rim.position.set(x, 0.3, z)
-        g.add(rim)
+      // Rear aerodynamic ducktail spoiler
+      const wing = new THREE.Mesh(new THREE.BoxGeometry(1.65, 0.06, 0.35), carbonM)
+      wing.position.set(0, 0.68, -2.0)
+      g.add(wing)
+
+      // Dual chrome exhaust tips
+      const exhM = new THREE.MeshToonMaterial({ color: 0xcccccc })
+      ;[-0.45, 0.45].forEach(ex => {
+        const exh = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.25, 8), exhM)
+        exh.rotation.x = Math.PI / 2
+        exh.position.set(ex, 0.22, -2.12)
+        g.add(exh)
       })
 
+      // Sports alloy wheels with red brake calipers
       ;[
-        [0.55, 0.45, 1.92, hlM],
-        [-0.55, 0.45, 1.92, hlM],
-        [0.55, 0.45, -1.92, tlM],
-        [-0.55, 0.45, -1.92, tlM]
-      ].forEach(([x, y, z, m]) => {
-        const l = new THREE.Mesh(new THREE.SphereGeometry(0.1, 6, 4), m)
+        [0.92, 0, 1.3],
+        [-0.92, 0, 1.3],
+        [0.92, 0, -1.3],
+        [-0.92, 0, -1.3]
+      ].forEach(([x, , z]) => {
+        const wh = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.32, 0.24, 12), wheelM)
+        wh.rotation.z = Math.PI / 2
+        wh.position.set(x, 0.32, z)
+        g.add(wh)
+        const rim = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.26, 6), rimM)
+        rim.rotation.z = Math.PI / 2
+        rim.position.set(x, 0.32, z)
+        g.add(rim)
+        const cal = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.12, 0.12), brakeM)
+        cal.position.set(x > 0 ? x - 0.06 : x + 0.06, 0.38, z + 0.08)
+        g.add(cal)
+      })
+
+      // Sleek LED projector headlights & rear lightbar
+      ;[
+        [0.65, 0.42, 2.11, hlM, [0.28, 0.08, 0.04]],
+        [-0.65, 0.42, 2.11, hlM, [0.28, 0.08, 0.04]],
+        [0, 0.46, -2.11, tlM, [1.5, 0.06, 0.04]]
+      ].forEach(([x, y, z, m, dims]) => {
+        const l = new THREE.Mesh(new THREE.BoxGeometry(dims[0], dims[1], dims[2]), m)
         l.position.set(x, y, z)
         g.add(l)
       })
@@ -4919,15 +5086,168 @@ const _buildVehicle = (type, col) => {
  * Character Studio & High-Fidelity Human Model Implementation for UI.js
  */
 
+const SAMPLE_MODELS = [
+  { id: 'player_hero', file: 'Models/character_hero_green.glb', name: 'Adventure Hero', tag: 'Hero', icon: '🏃', desc: 'Full 3D stylized adventure protagonist in green tunic' },
+  { id: 'player_rpg', file: 'Models/character_rpg_hero.glb', name: 'RPG Warrior', tag: 'Warrior', icon: '🛡️', desc: 'Stylized 3D hero with shield and armor' },
+  { id: 'player_animated_runner', file: 'Models/anim_runner_biped.glb', name: 'Sprint Athlete', tag: 'Animated', icon: '⚡', desc: 'Skinned 3D biped with skeletal running animation' },
+  { id: 'player_animated_walker', file: 'Models/anim_walker_biped.glb', name: 'Citizen Walker', tag: 'Animated', icon: '🚶', desc: 'Skinned 3D biped with skeletal walking animation' },
+  { id: 'player_sample', file: 'Models/character_hero_green.glb', name: 'Hero Protagonist', tag: 'Hero', icon: '⚡', desc: 'Default stylized protagonist avatar' }
+]
+window.SAMPLE_MODELS = SAMPLE_MODELS
+
+const _buildSampleGLBPlayer = (isPlayer = true, app = {}) => {
+  const g = new THREE.Group()
+  const PM = window.PRELOADED_MODELS || {}
+  
+  const sampleId = app.sampleModel || (app.charType === 'player_rpg' ? 'player_rpg' : (app.charType === 'player_animated_runner' ? 'player_animated_runner' : (app.charType === 'player_animated_walker' ? 'player_animated_walker' : 'player_hero')))
+  const sampleDef = SAMPLE_MODELS.find(s => s.id === sampleId) || SAMPLE_MODELS[0]
+  const baseModel = PM[sampleId] || PM[sampleDef.id] || PM['player_sample'] || PM['player_hero'] || window['_sampleGLBModel_' + sampleId]
+
+  const container = new THREE.Group()
+  g.add(container)
+  let mixer = null
+
+  function setupScene(scene, anims) {
+    scene.traverse(function(c) {
+      if (c.isMesh) {
+        c.castShadow = true
+        c.receiveShadow = true
+        if (c.material) {
+          c.material.roughness = 0.75
+          c.material.metalness = 0.10
+          if (c.material.map && window.THREE && THREE.sRGBEncoding) {
+            c.material.map.encoding = THREE.sRGBEncoding
+          }
+        }
+      }
+    })
+
+    // Universal Bounding-Box Height & Axis Normalizer
+    scene.updateMatrixWorld(true)
+    let box = new THREE.Box3().setFromObject(scene)
+    let size = new THREE.Vector3()
+    box.getSize(size)
+
+    // Check dominant height axis
+    if (size.z > size.y && size.z > size.x) {
+      // Z-up export (convert to Y-up)
+      scene.rotation.x = -Math.PI / 2
+    } else if (size.x > size.y && size.x > size.z) {
+      // X-up export (convert to Y-up)
+      scene.rotation.z = Math.PI / 2
+    }
+
+    scene.updateMatrixWorld(true)
+    box.setFromObject(scene)
+    box.getSize(size)
+
+    // Scale to standard human height (1.75m for player, ~1.55m for pedestrian)
+    const targetHeight = isPlayer ? 1.75 : 1.55
+    const currentHeight = Math.max(0.1, size.y)
+    const scale = targetHeight / currentHeight
+    scene.scale.multiplyScalar(scale)
+
+    // Recompute box and center horizontally, place feet flush on ground (y = 0)
+    scene.updateMatrixWorld(true)
+    box.setFromObject(scene)
+    const center = new THREE.Vector3()
+    box.getCenter(center)
+    scene.position.x -= center.x
+    scene.position.y -= box.min.y
+    scene.position.z -= center.z
+
+    // Natural forward orientation (+Z)
+    scene.rotation.y = 0
+
+    // Setup Skeletal AnimationMixer if clips exist
+    const availableClips = anims || scene.animations || (baseModel && baseModel.animations)
+    if (availableClips && availableClips.length > 0 && typeof THREE.AnimationMixer !== 'undefined') {
+      mixer = new THREE.AnimationMixer(scene)
+      const action = mixer.clipAction(availableClips[0])
+      action.play()
+    }
+
+    container.add(scene)
+  }
+
+  if (baseModel) {
+    const clone = baseModel.clone ? baseModel.clone(true) : baseModel
+    setupScene(clone, baseModel.animations)
+  } else if (typeof THREE !== 'undefined' && typeof THREE.GLTFLoader !== 'undefined') {
+    const fileToLoad = sampleDef ? sampleDef.file : 'Models/character_hero_green.glb'
+    new THREE.GLTFLoader().load(fileToLoad, function(gltf) {
+      window['_sampleGLBModel_' + sampleId] = gltf.scene
+      if (gltf.animations) gltf.scene.animations = gltf.animations
+      setupScene(gltf.scene, gltf.animations)
+    }, undefined, function(err) {
+      console.warn('[Player] ' + fileToLoad + ' load error:', err)
+    })
+  }
+
+  // Hitbox & Shadow Blob
+  const hb = new THREE.Mesh(new THREE.BoxGeometry(0.6, 1.8, 0.6), new THREE.MeshBasicMaterial({ visible: false }))
+  hb.position.y = 0.9
+  g.add(hb)
+
+  const shadowBlob = new THREE.Mesh(
+    new THREE.CircleGeometry(0.35, 16),
+    new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.28, depthWrite: false })
+  )
+  shadowBlob.rotation.x = -Math.PI / 2
+  shadowBlob.position.y = 0.01
+  g.add(shadowBlob)
+
+  g.userData = {
+    isGLB: true,
+    isPlayer: isPlayer,
+    isSampleGLB: true,
+    shadowBlob: shadowBlob,
+    container: container,
+    t: 0,
+    update: function(dt, speed) {
+      if (mixer) {
+        mixer.update(dt * (Math.abs(speed) > 0.05 ? Math.max(0.6, Math.abs(speed) * 1.5) : 0.8))
+      } else {
+        const t = (this.t || 0) + dt * 9
+        this.t = t
+        const walkW = Math.min(Math.abs(speed || 0) * 3.5, 1)
+        if (walkW > 0.05) {
+          container.position.y = Math.abs(Math.sin(t * 2)) * 0.04 * walkW
+          container.rotation.z = Math.sin(t) * 0.025 * walkW
+          container.rotation.x = Math.sin(t * 2) * 0.015 * walkW
+        } else {
+          container.position.y = Math.sin(t * 0.5) * 0.004
+          container.rotation.z = 0
+          container.rotation.x = 0
+        }
+      }
+    }
+  }
+
+  return g
+}
+window._buildSampleGLBPlayer = _buildSampleGLBPlayer
+
 const _buildHuman = (isPlayer = false, appearance) => {
   const g = new THREE.Group()
   const app = (isPlayer && (() => { try { return JSON.parse(localStorage.getItem('traffic_appearance')) } catch(e){} return null })()) || appearance || {}
-  const variant = app.variant || 'normal' // 'normal'|'elderly'|'child'|'guard'|'volunteer'|'worker'|'commuter'
-  const sk = isPlayer ? 1.0 : (variant === 'child' ? 0.72 : 0.92)
+  const variant = app.variant || 'normal'
+  const sk = isPlayer ? 0.80 : (variant === 'child' ? 0.58 : 0.74)
 
   // ── Minecraft Engine Support ─────────────────────────────────────────────
   if (app.charType === 'minecraft' && typeof window._buildMinecraftHuman === 'function') {
     return window._buildMinecraftHuman(isPlayer, app)
+  }
+
+  // ── Default GLB Player Character Support (sample.glb) ───────────────────
+  if (isPlayer && (app.charType === 'sample' || !app.charType || app.charType === 'default' || app.charType === 'stylized')) {
+    return _buildSampleGLBPlayer(isPlayer, app)
+  }
+
+  // ── NPC Pedestrians using 3D Hero/Citizen mesh ─────────────────────────
+  if (!isPlayer && Math.random() < 0.35) {
+    const npcSample = _buildSampleGLBPlayer(false, { variant })
+    if (npcSample) return npcSample
   }
 
   const PM = window.PRELOADED_MODELS || {}
@@ -4939,7 +5259,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
     if (fbxChar && typeof THREE.AnimationMixer !== 'undefined' && variant === 'normal') {
       try {
         const fbxScene = fbxChar.clone ? fbxChar.clone(true) : fbxChar;
-        fbxScene.scale.setScalar(sk * 0.012);
+        fbxScene.scale.setScalar(sk * 0.0098);
         fbxScene.rotation.y = Math.PI;
         g.add(fbxScene);
 
@@ -4961,7 +5281,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
           runAction.play();
         }
 
-        const hb = new THREE.Mesh(new THREE.BoxGeometry(0.6*sk, 1.8*sk, 0.6*sk), new THREE.MeshBasicMaterial({ visible: false }));
+        const hb = new THREE.Mesh(new THREE.BoxGeometry(0.5*sk, 1.8*sk, 0.5*sk), new THREE.MeshBasicMaterial({ visible: false }));
         hb.position.y = 0.9 * sk;
         g.add(hb);
 
@@ -4998,7 +5318,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
 
     if (charGLB && charGLB.scene) {
       const charScene = charGLB.scene.clone(true)
-      charScene.scale.setScalar(sk * 1.15)
+      charScene.scale.setScalar(sk * 0.90)
       charScene.rotation.y = Math.PI
 
       const variantColors = {
@@ -6139,12 +6459,26 @@ function showConsequenceModal(violationType, severity = 'normal') {
     if (gM) gM.className = 'studio-icon-btn ' + (_current.gender === 'male' ? 'active' : '');
     if (gF) gF.className = 'studio-icon-btn ' + (_current.gender === 'female' ? 'active' : '');
 
+    const smGrid = document.getElementById('sample-models-grid');
+    if (smGrid) {
+      smGrid.innerHTML = SAMPLE_MODELS.map(function(s) {
+        const isCur = (_current.sampleModel || 'player_sample') === s.id;
+        return '<button class="studio-card-btn ' + (isCur ? 'active' : '') + '" onclick="window._pickSampleModel(\'' + s.id + '\')" style="' + (isCur ? 'border-color:#5ed4f5; box-shadow:0 0 12px rgba(94,212,245,0.35);' : '') + '">' +
+          '<span class="studio-card-icon">' + s.icon + '</span>' +
+          '<span class="studio-card-name">' + s.name + '</span>' +
+          '<span class="studio-card-sub" style="color:' + (isCur ? '#5ed4f5' : 'inherit') + ';">' + (isCur ? '🟢 Active Hero' : s.tag + ' • Click to Select') + '</span>' +
+        '</button>';
+      }).join('');
+    }
+
     const pGrid = document.getElementById('outfit-presets-grid');
     if (pGrid) {
       pGrid.innerHTML = OUTFIT_PRESETS.map(function(p) {
-        return '<button class="studio-card-btn" onclick="window._pickOutfitPreset(\'' + p.id + '\')">' +
+        const isCur = _current.outfit === p.outfit && _current.shirt === p.shirt;
+        return '<button class="studio-card-btn ' + (isCur ? 'active' : '') + '" onclick="window._pickOutfitPreset(\'' + p.id + '\')">' +
           '<span class="studio-card-icon">' + p.icon + '</span>' +
           '<span class="studio-card-name">' + p.name + '</span>' +
+          '<span class="studio-card-sub">' + (isCur ? 'Equipped Outfit' : 'Click to Apply') + '</span>' +
         '</button>';
       }).join('');
     }
@@ -6372,10 +6706,32 @@ function showConsequenceModal(violationType, severity = 'normal') {
     _previewRenderer.render(_previewScene, _previewCamera);
   }
 
+  window._toggleAutoRotatePreview = function() {
+    window._autoRotatePreview = !window._autoRotatePreview;
+    const btn = document.getElementById('studio-autorotate-btn');
+    if (btn) btn.classList.toggle('active', !!window._autoRotatePreview);
+  };
+
+  window._resetPreviewRotation = function() {
+    if (_previewChar) _previewChar.rotation.y = 0;
+    window._autoRotatePreview = false;
+    const btn = document.getElementById('studio-autorotate-btn');
+    if (btn) btn.classList.remove('active');
+  };
+
   window._setCharMode = function(mode) {
     _current.charType = mode;
     _renderStudioUI();
     _updatePreviewModel();
+  };
+
+  window._pickSampleModel = function(id) {
+    _current.sampleModel = id;
+    _current.charType = 'sample';
+    _renderStudioUI();
+    _updatePreviewModel();
+    const s = SAMPLE_MODELS.find(function(x) { return x.id === id; });
+    if (s && typeof toast === 'function') toast('✨ Selected: ' + s.name, '#5ed4f5', 2000);
   };
 
   window._switchStudioTab = function(tab) {
@@ -7230,3 +7586,69 @@ function showConsequenceModal(violationType, severity = 'normal') {
       }
     }, 100);
   };
+
+  // ═══════════════════════════════════════════════════════════════
+  // CHEAT CODE & INVULNERABILITY (GOD MODE) SYSTEM
+  // ═══════════════════════════════════════════════════════════════
+  window.toggleGodModeCheat = function(forceState) {
+    var current = (typeof localStorage !== 'undefined' && localStorage.getItem('traffic_god_mode') === 'true');
+    var next = typeof forceState === 'boolean' ? forceState : !current;
+    window._trafficGodMode = next;
+    try {
+      localStorage.setItem('traffic_god_mode', next ? 'true' : 'false');
+    } catch(e) {}
+    
+    var badge = document.getElementById('god-mode-hud-badge');
+    if (!badge) {
+      badge = document.createElement('div');
+      badge.id = 'god-mode-hud-badge';
+      badge.style.cssText = 'position:fixed; top:14px; left:14px; z-index:999999; background:linear-gradient(135deg, rgba(255,215,0,0.25), rgba(255,140,0,0.35)); border:1.5px solid #ffd700; color:#ffd700; font-weight:800; font-size:0.75rem; padding:6px 12px; border-radius:20px; box-shadow:0 0 16px rgba(255,215,0,0.6); backdrop-filter:blur(8px); display:none; pointer-events:auto; cursor:pointer; letter-spacing:0.5px; transition:all 0.3s ease;';
+      badge.title = 'Click to disable Invulnerability Mode';
+      badge.onclick = function() { window.toggleGodModeCheat(false); };
+      document.body.appendChild(badge);
+    }
+    badge.innerHTML = '🛡️ GOD MODE: INVULNERABLE';
+    badge.style.display = next ? 'block' : 'none';
+
+    if (typeof toast === 'function') {
+      if (next) {
+        toast('⚡ CHEAT ACTIVATED: INVULNERABILITY MODE 🛡️', '#ffd700', 4000);
+      } else {
+        toast('🛡️ God Mode (Invulnerability) Disabled', '#aaa', 3000);
+      }
+    }
+    return next;
+  };
+
+  if (typeof localStorage !== 'undefined' && localStorage.getItem('traffic_god_mode') === 'true') {
+    window._trafficGodMode = true;
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function() { window.toggleGodModeCheat(true); });
+    } else {
+      setTimeout(function() { window.toggleGodModeCheat(true); }, 300);
+    }
+  }
+
+  var _devClicks = 0;
+  window.handleDevClick = function() {
+    _devClicks++;
+    if (_devClicks >= 3) {
+      _devClicks = 0;
+      var p = prompt('⚡ CHEAT CODE & DEVELOPER ACCESS:\nType "god" or press OK to toggle Invulnerability Mode on all levels:');
+      if (p !== null) {
+        var code = (p || '').trim().toLowerCase();
+        if (['neel', 'ansh', 'sanjana'].includes(p.trim())) {
+          if (typeof ui !== 'undefined' && ui && ui.adminUnlock) ui.adminUnlock();
+          window.toggleGodModeCheat(true);
+        } else {
+          window.toggleGodModeCheat();
+        }
+      }
+    } else {
+      var rem = 3 - _devClicks;
+      if (typeof toast === 'function') {
+        toast('🛡️ Cheat Menu: Tap ' + rem + ' more time' + (rem > 1 ? 's' : '') + ' to toggle Invulnerability Mode!', '#ffd700', 1200);
+      }
+    }
+  };
+

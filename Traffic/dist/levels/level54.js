@@ -5,8 +5,9 @@ window.LVS.push({
   name: 'Lesson 54 - Suburban Avenue & Residential Safety',
   modes: ['car', 'bike', 'supercar_white', 'sports_cyan', 'bus_green', 'auto', 'pedestrian'],
   col: '#2ecc71',
-  ds: 'Navigate through a vibrant low-poly suburban neighborhood with beautiful homes, driveways, garden hedges, parked cars, and pedestrians crossing.',
+  ds: 'Spawn on foot at your suburban home, walk to your garage, enter your vehicle, and cruise down Suburban Avenue observing residential driving safety.',
   hps: [
+    'Walk across your front yard to the garage and press F to enter your vehicle.',
     'Residential Speed Limit is strictly 30 km/h.',
     'Watch out for vehicles backing out from residential driveways.',
     'Pedestrians, pets, and children have right of way on sidewalks and street crossings.',
@@ -22,27 +23,29 @@ window.LVS.push({
   },
   theory:
     '<h2>Suburban Residential Safety</h2><p>Suburban neighborhoods require defensive driving vigilance. Streets have children playing, pets crossing, and cars reversing from driveways with limited rear visibility.</p><p>Always maintain 30 km/h or below, yield right of way to pedestrians, and never park within 5 meters of fire hydrants or driveway curb cuts.</p>',
-  pract: 'Drive down Suburban Avenue, obey the 30 km/h residential speed limit, and reach the finish destination safely.',
+  pract: 'Walk to your garage, enter your car, drive out onto Suburban Avenue, obey the 30 km/h residential speed limit, and reach the finish destination safely.',
   mode: 'practical',
   themeType: 'suburban_neighborhood',
   isSuburbanNeighborhood: true,
+  hasGarageSpawn: true,
   startOutside: true,
   speedLimit: 30,
-  timeLimit: 120,
+  timeLimit: 150,
   roadLength: 320,
   roads: [
     { type: 'v', x: 0, z1: -160, z2: 160, lanes: 2, width: 14, speedLimit: 30, roadType: 'local' }
   ],
   route: [
-    { x: 3.5, z: -140, desc: 'Start at Suburban Avenue Entrance' },
-    { x: 3.5, z: -60, desc: 'Residential Checkpoint 1 (Near Maple Cottage)' },
-    { x: 3.5, z: 20, desc: 'Residential Checkpoint 2 (Near Villa Gardens)' },
-    { x: 3.5, z: 120, desc: 'Grand Finish Destination' }
+    { x: 3.5, z: -57, desc: 'Exit Home Driveway onto Suburban Avenue' },
+    { x: 3.5, z: -20, desc: 'Residential Checkpoint 1 (Near Timber Cottage)' },
+    { x: 3.5, z: 40, desc: 'Residential Checkpoint 2 (Near Villa Gardens)' },
+    { x: 3.5, z: 120, desc: 'Grand Finish Destination Gate' }
   ],
   tasks: [
+    { id: 'enter_car', text: 'Walk to garage & enter your vehicle', type: 'enter_vehicle', done: false },
     { id: 'drive_suburban', text: 'Cruise down Suburban Avenue under 30 km/h', type: 'speed_limit', limit: 30, done: false },
-    { id: 'reach_cp1', text: 'Reach Maple Cottage Checkpoint', type: 'reach', target: 'checkpoint_1', done: false },
-    { id: 'reach_finish', text: 'Reach the Suburban Avenue Finish Gate', type: 'reach', target: 'finish', done: false }
+    { id: 'reach_cp1', text: 'Reach Timber Cottage Checkpoint', type: 'reach', target: 'checkpoint_1', done: false },
+    { id: 'reach_finish', text: 'Reach Suburban Avenue Finish Gate', type: 'reach', target: 'finish', done: false }
   ],
   assets: ['house_lowpoly_isometric', 'house_mansion_lowpoly', 'suburban', 'street_props', 'cars']
 })

@@ -4,6 +4,10 @@
     {
       "source": "/",
       "destination": "/home"
+    },
+    {
+      "source": "/perceptus",
+      "destination": "/gesture"
     }
   ],
   "redirects": [

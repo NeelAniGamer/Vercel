@@ -25,6 +25,8 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 var import_electron = require("electron");
 var path = __toESM(require("path"));
 var fs = __toESM(require("fs"));
+import_electron.app.commandLine.appendSwitch("allow-file-access-from-files");
+import_electron.app.commandLine.appendSwitch("disable-web-security");
 var isDev = !import_electron.app.isPackaged;
 var mainWindow = null;
 function getStatePath() {
@@ -124,7 +126,8 @@ function createWindow() {
       contextIsolation: true,
       nodeIntegration: false,
       webgl: true,
-      webSecurity: true
+      webSecurity: false,
+      allowRunningInsecureContent: true
     },
     backgroundColor: "#070a14",
     show: false,
@@ -133,9 +136,9 @@ function createWindow() {
   if (state.isMaximized) mainWindow.maximize();
   else mainWindow.once("ready-to-show", () => mainWindow?.show());
   if (isDev) {
-    mainWindow.loadURL("http://localhost:5173/index.html");
+    mainWindow.loadURL("http://localhost:5173/Driving.html");
   } else {
-    mainWindow.loadFile(path.join(__dirname, "..", "dist", "index.html"));
+    mainWindow.loadFile(path.join(__dirname, "..", "dist", "Driving.html"));
   }
   let stateTimer = null;
   const scheduleStateSave = () => {
@@ -161,7 +164,7 @@ function createMenu() {
       label: "File",
       submenu: [
         { label: "New Game", accelerator: "CmdOrCtrl+N", click: () => mainWindow?.webContents.send("menu-action", "new-game") },
-        { label: "Restart Level", accelerator: "CmdOrCtrl+R", click: () => mainWindow?.webContents.send("menu-action", "restart") },
+        { label: "Restart Level", accelerator: "CmdOrCtrl+Shift+R", click: () => mainWindow?.webContents.send("menu-action", "restart") },
         { type: "separator" },
         { label: "Export Save\u2026", accelerator: "CmdOrCtrl+E", click: async () => {
           const r = await exportSave();
@@ -176,8 +179,46 @@ function createMenu() {
       ]
     },
     {
+      label: "Modes",
+      submenu: [
+        {
+          label: "\u{1F3CE}\uFE0F 3D Driving Simulator",
+          accelerator: "F2",
+          click: () => {
+            if (isDev) mainWindow?.loadURL("http://localhost:5173/Driving.html");
+            else mainWindow?.loadFile(path.join(__dirname, "..", "dist", "Driving.html"));
+          }
+        },
+        {
+          label: "\u{1F4CA} Driver Dashboard",
+          accelerator: "F3",
+          click: () => {
+            if (isDev) mainWindow?.loadURL("http://localhost:5173/TrafficDashboard.html");
+            else mainWindow?.loadFile(path.join(__dirname, "..", "dist", "TrafficDashboard.html"));
+          }
+        },
+        {
+          label: "\u{1F6B6} Pedestrian Academy",
+          accelerator: "F4",
+          click: () => {
+            if (isDev) mainWindow?.loadURL("http://localhost:5173/Academy.html");
+            else mainWindow?.loadFile(path.join(__dirname, "..", "dist", "Academy.html"));
+          }
+        },
+        {
+          label: "\u{1F6E0}\uFE0F Vehicle Customizer",
+          accelerator: "F5",
+          click: () => {
+            if (isDev) mainWindow?.loadURL("http://localhost:5173/TrafficSetup.html");
+            else mainWindow?.loadFile(path.join(__dirname, "..", "dist", "TrafficSetup.html"));
+          }
+        }
+      ]
+    },
+    {
       label: "View",
       submenu: [
+        { label: "Reload", accelerator: "CmdOrCtrl+R", role: "reload" },
         { label: "Toggle Fullscreen", accelerator: "F11", click: () => mainWindow?.setFullScreen(!mainWindow?.isFullScreen()) },
         { label: "Toggle DevTools", accelerator: "CmdOrCtrl+Shift+I", click: () => mainWindow?.webContents.toggleDevTools() },
         { type: "separator" },

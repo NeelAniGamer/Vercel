@@ -1,0 +1,10 @@
+{
+  "version": "2.5.0",
+  "versionCode": 250,
+  "releaseDate": "2026-09-13",
+  "downloadUrl": "https://github.com/NeelAniGamer/Vercel/releases/download/Projects/PerceptusFlow.exe",
+  "exeUrl": "https://github.com/NeelAniGamer/Vercel/releases/download/Projects/PerceptusFlow.exe",
+  "changelog": "v2.5.0: Commercial-grade Microsoft Edge WebView2 native runtime; Custom frameless dark-glass titlebar with dual Studio Cockpit and Floating Co-Pilot HUD modes; 60 FPS Win32 Kalman hardware cursor bridge; Real-time camera & microphone routing with animated VU meter; Multi-modal AI voice command center.",
+  "mandatory": false,
+  "minRequiredVersion": "2.0.0"
+}

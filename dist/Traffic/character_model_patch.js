@@ -2,15 +2,161 @@
  * Character Studio & High-Fidelity Human Model Implementation for UI.js
  */
 
+const SAMPLE_MODELS = [
+  { id: 'player_hero', file: 'Models/character_hero_green.glb', name: 'Adventure Hero', tag: 'Hero', icon: '🏃', desc: 'Full 3D stylized adventure protagonist in green tunic' },
+  { id: 'player_rpg', file: 'Models/character_rpg_hero.glb', name: 'RPG Warrior', tag: 'Warrior', icon: '🛡️', desc: 'Stylized 3D hero with shield and armor' },
+  { id: 'player_animated_runner', file: 'Models/anim_runner_biped.glb', name: 'Sprint Athlete', tag: 'Animated', icon: '⚡', desc: 'Skinned 3D biped with skeletal running animation' },
+  { id: 'player_animated_walker', file: 'Models/anim_walker_biped.glb', name: 'Citizen Walker', tag: 'Animated', icon: '🚶', desc: 'Skinned 3D biped with skeletal walking animation' },
+  { id: 'player_sample', file: 'Models/character_hero_green.glb', name: 'Hero Protagonist', tag: 'Hero', icon: '⚡', desc: 'Default stylized protagonist avatar' }
+]
+window.SAMPLE_MODELS = SAMPLE_MODELS
+
+const _buildSampleGLBPlayer = (isPlayer = true, app = {}) => {
+  const g = new THREE.Group()
+  const PM = window.PRELOADED_MODELS || {}
+  
+  const sampleId = app.sampleModel || (app.charType === 'player_rpg' ? 'player_rpg' : (app.charType === 'player_animated_runner' ? 'player_animated_runner' : (app.charType === 'player_animated_walker' ? 'player_animated_walker' : 'player_hero')))
+  const sampleDef = SAMPLE_MODELS.find(s => s.id === sampleId) || SAMPLE_MODELS[0]
+  const baseModel = PM[sampleId] || PM[sampleDef.id] || PM['player_sample'] || PM['player_hero'] || window['_sampleGLBModel_' + sampleId]
+
+  const container = new THREE.Group()
+  g.add(container)
+  let mixer = null
+
+  function setupScene(scene, anims) {
+    scene.traverse(function(c) {
+      if (c.isMesh) {
+        c.castShadow = true
+        c.receiveShadow = true
+        if (c.material) {
+          c.material.roughness = 0.75
+          c.material.metalness = 0.10
+          if (c.material.map && window.THREE && THREE.sRGBEncoding) {
+            c.material.map.encoding = THREE.sRGBEncoding
+          }
+        }
+      }
+    })
+
+    // Universal Bounding-Box Height & Axis Normalizer
+    scene.updateMatrixWorld(true)
+    let box = new THREE.Box3().setFromObject(scene)
+    let size = new THREE.Vector3()
+    box.getSize(size)
+
+    if (size.z > size.y && size.z > size.x) {
+      scene.rotation.x = -Math.PI / 2
+    } else if (size.x > size.y && size.x > size.z) {
+      scene.rotation.z = Math.PI / 2
+    }
+
+    scene.updateMatrixWorld(true)
+    box.setFromObject(scene)
+    box.getSize(size)
+
+    const targetHeight = isPlayer ? 1.75 : 1.55
+    const currentHeight = Math.max(0.1, size.y)
+    const scale = targetHeight / currentHeight
+    scene.scale.multiplyScalar(scale)
+
+    scene.updateMatrixWorld(true)
+    box.setFromObject(scene)
+    const center = new THREE.Vector3()
+    box.getCenter(center)
+    scene.position.x -= center.x
+    scene.position.y -= box.min.y
+    scene.position.z -= center.z
+
+    scene.rotation.y = 0
+
+    // Setup Skeletal AnimationMixer if clips exist
+    const availableClips = anims || scene.animations || (baseModel && baseModel.animations)
+    if (availableClips && availableClips.length > 0 && typeof THREE.AnimationMixer !== 'undefined') {
+      mixer = new THREE.AnimationMixer(scene)
+      const action = mixer.clipAction(availableClips[0])
+      action.play()
+    }
+
+    container.add(scene)
+  }
+
+  if (baseModel) {
+    const clone = baseModel.clone ? baseModel.clone(true) : baseModel
+    setupScene(clone, baseModel.animations)
+  } else if (typeof THREE !== 'undefined' && typeof THREE.GLTFLoader !== 'undefined') {
+    const fileToLoad = sampleDef ? sampleDef.file : 'Models/character_hero_green.glb'
+    new THREE.GLTFLoader().load(fileToLoad, function(gltf) {
+      window['_sampleGLBModel_' + sampleId] = gltf.scene
+      if (gltf.animations) gltf.scene.animations = gltf.animations
+      setupScene(gltf.scene, gltf.animations)
+    }, undefined, function(err) {
+      console.warn('[Player] ' + fileToLoad + ' load error:', err)
+    })
+  }
+
+  const hb = new THREE.Mesh(new THREE.BoxGeometry(0.6, 1.8, 0.6), new THREE.MeshBasicMaterial({ visible: false }))
+  hb.position.y = 0.9
+  g.add(hb)
+
+  const shadowBlob = new THREE.Mesh(
+    new THREE.CircleGeometry(0.35, 16),
+    new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.28, depthWrite: false })
+  )
+  shadowBlob.rotation.x = -Math.PI / 2
+  shadowBlob.position.y = 0.01
+  g.add(shadowBlob)
+
+  g.userData = {
+    isGLB: true,
+    isPlayer: isPlayer,
+    isSampleGLB: true,
+    shadowBlob: shadowBlob,
+    container: container,
+    t: 0,
+    update: function(dt, speed) {
+      if (mixer) {
+        mixer.update(dt * (Math.abs(speed) > 0.05 ? Math.max(0.6, Math.abs(speed) * 1.5) : 0.8))
+      } else {
+        const t = (this.t || 0) + dt * 9
+        this.t = t
+        const walkW = Math.min(Math.abs(speed || 0) * 3.5, 1)
+        if (walkW > 0.05) {
+          container.position.y = Math.abs(Math.sin(t * 2)) * 0.04 * walkW
+          container.rotation.z = Math.sin(t) * 0.025 * walkW
+          container.rotation.x = Math.sin(t * 2) * 0.015 * walkW
+        } else {
+          container.position.y = Math.sin(t * 0.5) * 0.004
+          container.rotation.z = 0
+          container.rotation.x = 0
+        }
+      }
+    }
+  }
+
+  return g
+}
+window._buildSampleGLBPlayer = _buildSampleGLBPlayer
+
 const _buildHuman = (isPlayer = false, appearance) => {
   const g = new THREE.Group()
   const app = (isPlayer && (() => { try { return JSON.parse(localStorage.getItem('traffic_appearance')) } catch(e){} return null })()) || appearance || {}
-  const variant = app.variant || 'normal' // 'normal'|'elderly'|'child'|'guard'|'volunteer'|'worker'|'commuter'
-  const sk = isPlayer ? 1.0 : (variant === 'child' ? 0.72 : 0.92)
+  const variant = app.variant || 'normal'
+  const sk = isPlayer ? 0.80 : (variant === 'child' ? 0.58 : 0.74)
 
   // ── Minecraft Engine Support ─────────────────────────────────────────────
   if (app.charType === 'minecraft' && typeof window._buildMinecraftHuman === 'function') {
     return window._buildMinecraftHuman(isPlayer, app)
+  }
+
+  // ── Default GLB Player Character Support (sample.glb) ───────────────────
+  if (isPlayer && (app.charType === 'sample' || !app.charType || app.charType === 'default' || app.charType === 'stylized')) {
+    return _buildSampleGLBPlayer(isPlayer, app)
+  }
+
+  // ── NPC Pedestrians using 3D Hero/Citizen mesh ─────────────────────────
+  if (!isPlayer && Math.random() < 0.35) {
+    const npcSample = _buildSampleGLBPlayer(false, { variant })
+    if (npcSample) return npcSample
   }
 
   const PM = window.PRELOADED_MODELS || {}
@@ -22,7 +168,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
     if (fbxChar && typeof THREE.AnimationMixer !== 'undefined' && variant === 'normal') {
       try {
         const fbxScene = fbxChar.clone ? fbxChar.clone(true) : fbxChar;
-        fbxScene.scale.setScalar(sk * 0.012);
+        fbxScene.scale.setScalar(sk * 0.0098);
         fbxScene.rotation.y = Math.PI;
         g.add(fbxScene);
 
@@ -44,7 +190,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
           runAction.play();
         }
 
-        const hb = new THREE.Mesh(new THREE.BoxGeometry(0.6*sk, 1.8*sk, 0.6*sk), new THREE.MeshBasicMaterial({ visible: false }));
+        const hb = new THREE.Mesh(new THREE.BoxGeometry(0.5*sk, 1.8*sk, 0.5*sk), new THREE.MeshBasicMaterial({ visible: false }));
         hb.position.y = 0.9 * sk;
         g.add(hb);
 
@@ -81,7 +227,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
 
     if (charGLB && charGLB.scene) {
       const charScene = charGLB.scene.clone(true)
-      charScene.scale.setScalar(sk * 1.15)
+      charScene.scale.setScalar(sk * 0.90)
       charScene.rotation.y = Math.PI
 
       const variantColors = {

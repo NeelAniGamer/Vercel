@@ -329,7 +329,6 @@ class TrafficManager {
     vehicle.routeProgress = 0;
     vehicle.targetNode = spawnPoint.edge ? spawnPoint.edge.getOther(spawnPoint.node) : this._getNextRouteNode(vehicle.currentNode);
     vehicle.active = true;
-    vehicle.health = 100;
     vehicle.mesh.position.copy(vehicle.position);
     vehicle.mesh.rotation.y = vehicle.rotation.y;
     vehicle.mesh.visible = true;
@@ -338,6 +337,9 @@ class TrafficManager {
     vehicle.npcAI.trafficManager = this;
     vehicle.profile = vehicle.npcAI.profile;
     vehicle.isRuleBreaker = isRuleBreaker;
+    if (this.levelConfig && (this.levelConfig.id === 5 || this.levelConfig.isSuburbanNeighborhood)) {
+      vehicle.npcAI.isRandomWanderer = true;
+    }
 
     if (route) {
       const resolvedRoute = this._resolveRouteNodes(route);
@@ -499,26 +501,109 @@ class TrafficManager {
 
     if (!mesh) {
       mesh = new THREE.Group();
-      const bMat = new THREE.MeshToonMaterial({ color: colHex });
-      const gMat = new THREE.MeshToonMaterial({ color: 0x1e293b, transparent: true, opacity: 0.8 });
-      const wMat = new THREE.MeshToonMaterial({ color: 0x111111 });
+      const bMat = new THREE.MeshLambertMaterial({ color: (type === 'taxi') ? 0x111111 : colHex });
+      const gMat = new THREE.MeshLambertMaterial({ color: 0x1e293b });
+      const wMat = new THREE.MeshLambertMaterial({ color: 0x111111 });
+      const chromeMat = new THREE.MeshLambertMaterial({ color: 0xdcdde1 });
 
-      const body = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.55, 3.6), bMat);
-      body.position.y = 0.45;
-      mesh.add(body);
+      if (type === 'innova' || type === 'suv_7seater') {
+        // ── 7-Seater MUV (Innova Crysta Style) ──
+        const body = new THREE.Mesh(new THREE.BoxGeometry(1.75, 0.65, 4.6), bMat);
+        body.position.y = 0.52;
+        mesh.add(body);
 
-      const cabin = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.48, 1.8), gMat);
-      cabin.position.set(0, 0.88, -0.1);
-      mesh.add(cabin);
+        const cabin = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.65, 3.1), gMat);
+        cabin.position.set(0, 1.05, 0.2);
+        mesh.add(cabin);
 
-      ;[-0.82, 0.82].forEach(x => {
-        ;[-1.1, 1.1].forEach(z => {
-          const wh = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.32, 0.22, 10), wMat);
-          wh.rotation.z = Math.PI / 2;
-          wh.position.set(x, 0.32, z);
-          mesh.add(wh);
+        // Roof rails
+        [-0.65, 0.65].forEach(rx => {
+          const rail = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.08, 2.6), chromeMat);
+          rail.position.set(rx, 1.42, 0.2);
+          mesh.add(rail);
         });
-      });
+
+        // Wheels
+        [-0.9, 0.9].forEach(x => {
+          [-1.4, 1.4].forEach(z => {
+            const wh = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.36, 0.24, 12), wMat);
+            wh.rotation.z = Math.PI / 2;
+            wh.position.set(x, 0.36, z);
+            mesh.add(wh);
+          });
+        });
+      } else if (type === 'taxi') {
+        // ── Mumbai Kaali-Peeli Premier Padmini Taxi ──
+        const body = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.55, 3.7), bMat);
+        body.position.y = 0.45;
+        mesh.add(body);
+
+        const yMat = new THREE.MeshLambertMaterial({ color: 0xf1c40f }); // Bright yellow roof
+        const cabin = new THREE.Mesh(new THREE.BoxGeometry(1.35, 0.5, 1.9), gMat);
+        cabin.position.set(0, 0.88, -0.05);
+        mesh.add(cabin);
+
+        const roofTop = new THREE.Mesh(new THREE.BoxGeometry(1.38, 0.08, 1.94), yMat);
+        roofTop.position.set(0, 1.15, -0.05);
+        mesh.add(roofTop);
+
+        // TAXI roof carrier / signboard
+        const taxiSign = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.2, 0.25), yMat);
+        taxiSign.position.set(0, 1.28, -0.05);
+        mesh.add(taxiSign);
+
+        [-0.82, 0.82].forEach(x => {
+          [-1.1, 1.1].forEach(z => {
+            const wh = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.32, 0.22, 10), wMat);
+            wh.rotation.z = Math.PI / 2;
+            wh.position.set(x, 0.32, z);
+            mesh.add(wh);
+          });
+        });
+      } else if (type === 'cycle' || type === 'bicycle') {
+        // ── Bicycle with Spoked Wheels & Frame ──
+        const frameMat = new THREE.MeshLambertMaterial({ color: colHex });
+        // Wheels
+        [-0.7, 0.7].forEach(z => {
+          const rim = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.34, 0.06, 12), wMat);
+          rim.rotation.z = Math.PI / 2;
+          rim.position.set(0, 0.34, z);
+          mesh.add(rim);
+        });
+        // Diamond frame bar
+        const frame = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.38, 1.1), frameMat);
+        frame.position.set(0, 0.52, 0);
+        mesh.add(frame);
+        // Handlebar
+        const bar = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.05, 0.05), chromeMat);
+        bar.position.set(0, 0.78, -0.45);
+        mesh.add(bar);
+        // Rider torso & head
+        const rider = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.22, 0.65, 8), bMat);
+        rider.position.set(0, 0.95, 0.05);
+        mesh.add(rider);
+        const head = new THREE.Mesh(new THREE.SphereGeometry(0.14, 8, 8), chromeMat);
+        head.position.set(0, 1.38, 0.05);
+        mesh.add(head);
+      } else {
+        // Standard 4-seater Sedan / Car
+        const body = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.55, 3.8), bMat);
+        body.position.y = 0.45;
+        mesh.add(body);
+
+        const cabin = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.48, 1.9), gMat);
+        cabin.position.set(0, 0.88, -0.05);
+        mesh.add(cabin);
+
+        [-0.82, 0.82].forEach(x => {
+          [-1.15, 1.15].forEach(z => {
+            const wh = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.32, 0.22, 10), wMat);
+            wh.rotation.z = Math.PI / 2;
+            wh.position.set(x, 0.32, z);
+            mesh.add(wh);
+          });
+        });
+      }
     }
 
     const isHeavy = type === 'bus' || type === 'truck';
@@ -635,6 +720,11 @@ class TrafficManager {
     pos.addScaledVector(right, offset);
     pos.y = 0.5;
 
+    // Reject spawn if position is within 16m of any active vehicle or 22m of player
+    const isOccupied = this.vehicles.some(v => v.active && v.position && v.position.distanceTo(pos) < 16.0);
+    const isNearPlayer = player && Math.hypot(pos.x - player.x, pos.z - player.z) < 22.0;
+    if (isOccupied || isNearPlayer) return null;
+
     return {
       position: pos,
       rotation: Math.atan2(forward.x, forward.z),
@@ -674,7 +764,7 @@ class TrafficManager {
 
   _spawnTOnEdge(edge) {
     const player = this.game && this.game.player && this.game.player.position;
-    if (!player || !edge.length) return 0.1 + Math.random() * 0.8;
+    if (!player || !edge.length) return 0.25 + Math.random() * 0.5;
     const a = edge.nodes[0].position, b = edge.nodes[1].position;
     const abx = b.x - a.x, abz = b.z - a.z;
     const len2 = abx * abx + abz * abz;
@@ -683,7 +773,8 @@ class TrafficManager {
     t = Math.max(0, Math.min(1, t));
     const span = (SPAWN_MIN_GAP + Math.random() * (SPAWN_MAX_GAP - SPAWN_MIN_GAP)) / edge.length;
     t += Math.random() < 0.5 ? -span : span;
-    return Math.max(0.02, Math.min(0.98, t));
+    // Strictly mid-block: [0.18, 0.82] guarantees spawning well clear of intersection boxes
+    return Math.max(0.18, Math.min(0.82, t));
   }
 
   _getNextRouteNode(currentNode) {
@@ -852,10 +943,10 @@ class TrafficManager {
       if (st === 'PARK' || st === 'CRASH' || st === 'COMPLETE') continue;
 
       const spd = v.npcAI.currentSpeed || v.speed || 0;
-      if (spd < 0.15 && (st !== 'WAIT_SIGNAL' || v.npcAI.waitTimer > 8.5)) {
+      if (spd < 0.20 && (st !== 'WAIT_SIGNAL' || v.npcAI.waitTimer > 6.0)) {
         if (!v._stallStartTime) v._stallStartTime = Date.now();
         v._stuckTimer = (v._stuckTimer || 0) + dt;
-        if (v._stuckTimer >= 3.5) {
+        if (v._stuckTimer >= 0.8) {
           this.handleDeadlockResolution(v);
         }
       } else {

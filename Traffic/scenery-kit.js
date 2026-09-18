@@ -249,13 +249,14 @@ class SceneryKit {
           z = road.z;
         }
 
-        const offset = (road.width || 12) / 2 + setback;
-        const side = Math.random() > 0.5 ? 1 : -1;
+        const ry = isV 
+          ? (side > 0 ? -Math.PI / 2 : Math.PI / 2)
+          : (side > 0 ? Math.PI : 0);
 
         instances.push({
-          x: isV ? x + offset * side : x + (Math.random() - 0.5) * 10,
-          z: isV ? z + (Math.random() - 0.5) * 10 : z + offset * side,
-          ry: Math.random() * Math.PI * 2,
+          x: isV ? x + offset * side : x + (Math.random() - 0.5) * 6,
+          z: isV ? z + (Math.random() - 0.5) * 6 : z + offset * side,
+          ry: ry,
           scale: 0.8 + Math.random() * 0.5,
           key: buildingKeys[Math.floor(Math.random() * buildingKeys.length)]
         });
@@ -535,6 +536,39 @@ class SceneryKit {
       });
 
       chunk.group.add(obj);
+
+      // STREETLIGHT TREATMENT: Add ground light pool decal and active light source
+      if (type === 'streetLights') {
+        if (!this._poolMat && typeof document !== 'undefined') {
+          const cv = document.createElement('canvas');
+          cv.width = 128; cv.height = 128;
+          const ctx = cv.getContext('2d');
+          const grad = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+          grad.addColorStop(0, 'rgba(255, 235, 130, 0.85)');
+          grad.addColorStop(0.35, 'rgba(254, 215, 102, 0.5)');
+          grad.addColorStop(0.7, 'rgba(251, 191, 36, 0.15)');
+          grad.addColorStop(1, 'rgba(245, 158, 11, 0)');
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, 128, 128);
+          const tex = new THREE.CanvasTexture(cv);
+          this._poolMat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: 0.85, depthWrite: false });
+        }
+        if (this._poolMat) {
+          const pool = new THREE.Mesh(new THREE.PlaneGeometry(7.5, 7.5), this._poolMat);
+          pool.rotation.x = -Math.PI / 2;
+          pool.position.set(inst.x, 0.03, inst.z);
+          chunk.group.add(pool);
+        }
+
+        // Active dynamic light budget (up to 8 lights across the scene for 60fps)
+        if (!this._lightBudget) this._lightBudget = 0;
+        if (this._lightBudget < 8) {
+          this._lightBudget++;
+          const pl = new THREE.PointLight(0xffea75, 2.6, 24, 1.4);
+          pl.position.set(inst.x, 6.0, inst.z);
+          chunk.group.add(pl);
+        }
+      }
     });
   }
 

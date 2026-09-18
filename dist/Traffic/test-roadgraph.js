@@ -78,12 +78,105 @@ try {
   const far = nodes[nodes.length - 1];
   const p = g.findPath(start, far);
   console.log('Path start->far:', p ? p.length : null);
-  // Test path used by NPC spawn scenario
-  const edgeList = Array.from(g.edges.values());
-  const e0 = edgeList[Math.floor(Math.random()*edgeList.length)];
-  const p2 = g.findPath(e0.nodes[0], e0.nodes[1]);
-  console.log('Path across one edge:', p2 ? p2.length : null);
+  // Test building slot generation, spacing, and rotation
+  console.log('\n--- Building Slot Verification ---');
+  console.log('Total building slots:', g.buildingSlots.length);
+  
+  let overlapCount = 0;
+  let minPairDist = Infinity;
+  const positions = g.buildingSlots.map(s => s.getWorldPosition());
+  
+  for (let i = 0; i < positions.length; i++) {
+    for (let j = i + 1; j < positions.length; j++) {
+      const d = Math.hypot(positions[i].x - positions[j].x, positions[i].z - positions[j].z);
+      if (d < minPairDist) minPairDist = d;
+      if (d < 14.0) {
+        overlapCount++;
+        if (overlapCount <= 5) {
+          const s1 = g.buildingSlots[i];
+          const s2 = g.buildingSlots[j];
+          console.log(`Overlap #${overlapCount}: dist=${d.toFixed(2)}m`);
+          console.log(`  Slot 1: pos=(${positions[i].x.toFixed(1)}, ${positions[i].z.toFixed(1)}) edge=${s1.segment.edge.id} side=${s1.side} zone=${s1.zone} depth=${s1.depth}`);
+          console.log(`  Slot 2: pos=(${positions[j].x.toFixed(1)}, ${positions[j].z.toFixed(1)}) edge=${s2.segment.edge.id} side=${s2.side} zone=${s2.zone} depth=${s2.depth}`);
+        }
+      }
+    }
+  }
+  
+  console.log('Minimum distance between building slots:', minPairDist.toFixed(2), 'm');
+  console.log('Overlapping slot pairs (< 14m):', overlapCount);
+  
+  // Rotation verification: Ensure building faces towards the road
+  let rotationErrors = 0;
+  g.buildingSlots.forEach(slot => {
+    const pos = slot.getWorldPosition();
+    const segT = slot.segment.startT + slot.offset * (slot.segment.endT - slot.segment.startT);
+    const roadPoint = slot.segment.edge.getPointAt(segT);
+    const toRoad = { x: roadPoint.x - pos.x, z: roadPoint.z - pos.z };
+    const expectedAngle = Math.atan2(toRoad.x, toRoad.z);
+    const actualAngle = slot.getRotation();
+    const diff = Math.abs(Math.atan2(Math.sin(expectedAngle - actualAngle), Math.cos(expectedAngle - actualAngle)));
+    if (diff > 0.001) rotationErrors++;
+  });
+  console.log('Rotation alignment errors (must be 0):', rotationErrors);
+  
+  if (overlapCount === 0 && rotationErrors === 0 && minPairDist >= 14.0) {
+    console.log('✅ Standard Level 1 placement verification PASSED!');
+  } else {
+    console.error('❌ VERIFICATION FAILED: Overlaps or rotation mismatches found.');
+    process.exitCode = 1;
+  }
+
+  // Now test level_custom.js
+  console.log('\n========================================');
+  console.log('Testing level_custom.js ("Dense Downtown & Residential Hub")');
+  console.log('========================================');
+  const customSrc = fs.readFileSync(path.join(__dirname, 'levels', 'level_custom.js'), 'utf8');
+  eval(customSrc);
+  const customLevel = window.LVS.find(l => l.id === 'custom');
+  const gCustom = RoadGraph.fromLevelConfig(customLevel);
+  console.log('Custom Level: nodes =', gCustom.nodes.size, 'edges =', gCustom.edges.size);
+  console.log('Custom Level: total building slots =', gCustom.buildingSlots.length);
+  
+  let customOverlapCount = 0;
+  let customMinPairDist = Infinity;
+  const customPos = gCustom.buildingSlots.map(s => s.getWorldPosition());
+  for (let i = 0; i < customPos.length; i++) {
+    for (let j = i + 1; j < customPos.length; j++) {
+      const d = Math.hypot(customPos[i].x - customPos[j].x, customPos[i].z - customPos[j].z);
+      if (d < customMinPairDist) customMinPairDist = d;
+      if (d < 14.0) customOverlapCount++;
+    }
+  }
+  console.log('Custom Level: Min distance between building slots =', customMinPairDist.toFixed(2), 'm');
+  console.log('Custom Level: Overlapping slots (< 14m) =', customOverlapCount);
+
+  let customRotErrors = 0;
+  gCustom.buildingSlots.forEach(slot => {
+    const pos = slot.getWorldPosition();
+    const segT = slot.segment.startT + slot.offset * (slot.segment.endT - slot.segment.startT);
+    const roadPoint = slot.segment.edge.getPointAt(segT);
+    const toRoad = { x: roadPoint.x - pos.x, z: roadPoint.z - pos.z };
+    const expectedAngle = Math.atan2(toRoad.x, toRoad.z);
+    const actualAngle = slot.getRotation();
+    const diff = Math.abs(Math.atan2(Math.sin(expectedAngle - actualAngle), Math.cos(expectedAngle - actualAngle)));
+    if (diff > 0.001) customRotErrors++;
+  });
+  console.log('Custom Level: Rotation alignment errors =', customRotErrors);
+
+  // Check residential house slots count and distribution
+  const resSlots = gCustom.buildingSlots.filter(s => s.zone === 'Residential');
+  const commSlots = gCustom.buildingSlots.filter(s => s.zone === 'Commercial');
+  console.log('Custom Level: Residential slots =', resSlots.length, 'Commercial slots =', commSlots.length);
+
+  if (customOverlapCount === 0 && customRotErrors === 0 && customMinPairDist >= 14.0 && resSlots.length > 50) {
+    console.log('✅ Custom Level placement verification PASSED!');
+  } else {
+    console.error('❌ Custom Level verification FAILED.');
+    process.exitCode = 1;
+  }
 } catch (e) {
   console.error('THREW:', e.message);
   console.error(e.stack.split('\n').slice(0,5).join('\n'));
+  process.exitCode = 1;
 }

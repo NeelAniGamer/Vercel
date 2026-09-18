@@ -802,8 +802,11 @@
       .pc.solar-card::before {
         background: var(--ion);
       }
-      .pc.gesture-card::before {
-        background: var(--teal);
+      .pc.perceptus-card::before {
+        background: var(--plasma);
+      }
+      .pc.col-card::before {
+        background: var(--em);
       }
 
       .pc.ati-card:hover {
@@ -814,9 +817,13 @@
         box-shadow: 0 20px 40px -10px rgba(94, 212, 245, 0.15);
         border-color: rgba(94, 212, 245, 0.3);
       }
-      .pc.gesture-card:hover {
-        box-shadow: 0 20px 40px -10px rgba(0, 240, 204, 0.15);
-        border-color: rgba(0, 240, 204, 0.3);
+      .pc.perceptus-card:hover {
+        box-shadow: 0 20px 40px -10px rgba(184, 155, 255, 0.18);
+        border-color: rgba(184, 155, 255, 0.35);
+      }
+      .pc.col-card:hover {
+        box-shadow: 0 20px 40px -10px rgba(52, 211, 153, 0.18);
+        border-color: rgba(52, 211, 153, 0.35);
       }
 
       .pc h3 {
@@ -948,9 +955,13 @@
         border-color: var(--ion);
         background: rgba(94, 212, 245, 0.05);
       }
-      .gesture-card .card-checkbox-wrapper:not(.accepted):hover {
-        border-color: var(--teal);
-        background: rgba(0, 240, 204, 0.05);
+      .perceptus-card .card-checkbox-wrapper:not(.accepted):hover {
+        border-color: var(--plasma);
+        background: rgba(184, 155, 255, 0.05);
+      }
+      .col-card .card-checkbox-wrapper:not(.accepted):hover {
+        border-color: var(--em);
+        background: rgba(52, 211, 153, 0.05);
       }
 
       .card-checkbox-wrapper.just-accepted {
@@ -1025,10 +1036,16 @@
         border-color: var(--ion);
         color: #000;
       }
-      #check-gesture:checked + label::before {
+      #check-perceptus:checked + label::before {
         content: '✓';
-        background-color: var(--teal);
-        border-color: var(--teal);
+        background-color: var(--plasma);
+        border-color: var(--plasma);
+        color: #000;
+      }
+      #check-col:checked + label::before {
+        content: '✓';
+        background-color: var(--em);
+        border-color: var(--em);
         color: #000;
       }
 
@@ -1054,9 +1071,13 @@
         background: var(--ion);
         color: #001f29;
       }
-      .gesture-btn {
-        background: var(--teal);
-        color: #001f1a;
+      .perceptus-btn {
+        background: var(--plasma);
+        color: #120524;
+      }
+      .col-btn {
+        background: var(--em);
+        color: #022014;
       }
 
       .btn-download:not(.locked):hover {
@@ -1070,8 +1091,11 @@
       .solar-card .btn-download:not(.locked):hover {
         box-shadow: 0 10px 20px -5px rgba(94, 212, 245, 0.4);
       }
-      .gesture-card .btn-download:not(.locked):hover {
-        box-shadow: 0 10px 20px -5px rgba(0, 240, 204, 0.4);
+      .perceptus-card .btn-download:not(.locked):hover {
+        box-shadow: 0 10px 20px -5px rgba(184, 155, 255, 0.4);
+      }
+      .col-card .btn-download:not(.locked):hover {
+        box-shadow: 0 10px 20px -5px rgba(52, 211, 153, 0.4);
       }
 
       .btn-download.locked {
@@ -1231,7 +1255,7 @@
             <div class="dropdown-content-inner">
               <a href="ati">Typing Instructor <span>&#9109;&#65039;</span></a
               ><a href="solar">Solar Engine <span>&#127680;</span></a
-              ><a href="gesture">Gesture Control <span>&#128400;&#65039;</span></a
+              ><a href="gesture">Perceptus Flow <span>✨</span></a
               ><a href="rpg">RPG Game <span>&#9876;&#65039;</span></a
               ><a href="qr">QR Generator <span>📱</span></a>
             </div>
@@ -1281,13 +1305,13 @@
 
       <div class="file-grid">
         <div class="pc ati-card">
-          <h3>Typing Instructor</h3>
-          <p>Logic Engine, Mechanical Keyboard Simulator, and XP Progression.</p>
+          <h3>Typing Instructor <span style="font-size:0.75rem; background:rgba(242,184,75,0.15); color:var(--signal); border:1px solid rgba(242,184,75,0.4); padding:2px 8px; border-radius:12px; margin-left:8px; vertical-align:middle;">v3.2.0</span></h3>
+          <p>Syntax mastery for Python, C++, and JS, Live Multiplayer races, 6 Mechanical switch synthesizers &amp; Auto-Updater.</p>
 
           <details>
             <summary>Setup Instructions</summary>
             <ol class="setup-list">
-              <li>Download the <code>.exe</code> installer below.</li>
+              <li>Download the <code>.exe</code> installer below from GitHub Releases.</li>
               <li>Run the setup wizard and follow the prompts.</li>
               <li>Launch the application directly from your desktop shortcut.</li>
             </ol>
@@ -1295,30 +1319,29 @@
 
           <div class="card-checkbox-wrapper" onclick="handleBoxClick('ati')" id="wrap-ati">
             <input type="checkbox" id="check-ati" class="locked-box" />
-            <label id="label-ati">Click to Read Terms & Unlock</label>
+            <label id="label-ati">Click to Read Terms &amp; Unlock</label>
           </div>
 
           <a id="btn-ati" class="btn-download locked" style="margin-top: auto">Download .EXE</a>
         </div>
 
         <div class="pc solar-card">
-          <h3>Solar Engine V3.3</h3>
-          <p>Standalone deep-space simulation with high-performance rendering.</p>
+          <h3>Solar Engine <span style="font-size:0.75rem; background:rgba(94,212,245,0.15); color:var(--ion); border:1px solid rgba(94,212,245,0.4); padding:2px 8px; border-radius:12px; margin-left:8px; vertical-align:middle;">v3.3</span></h3>
+          <p>Standalone deep-space simulation with real-time planetary telemetry and high-performance 3D rendering.</p>
 
           <details>
             <summary style="color: var(--ion)">Setup Instructions</summary>
             <ol class="setup-list">
-              <li>Download the <code>.exe</code> installer or <code>.7z</code> archive below.</li>
+              <li>Download the <code>.exe</code> installer or <code>.7z</code> archive below from GitHub Releases.</li>
               <li><a href="https://github.com/ip7z/7zip/releases/download/26.01/7z2601-x64.exe" target="_blank" class="ext-link-btn">Download 7ZIP</a></li>
               <li>If using <code>.exe</code>, run the setup wizard. If using <code>.7z</code>, extract the folder.</li>
-              <li>Ensure your GPU drivers are fully up to date.</li>
-              <li>Launch the engine from your desktop or extracted folder.</li>
+              <li>Ensure your GPU drivers are fully up to date and launch the engine.</li>
             </ol>
           </details>
 
           <div class="card-checkbox-wrapper" onclick="handleBoxClick('solar')" id="wrap-solar">
             <input type="checkbox" id="check-solar" class="locked-box" />
-            <label id="label-solar">Click to Read Terms & Unlock</label>
+            <label id="label-solar">Click to Read Terms &amp; Unlock</label>
           </div>
 
           <div style="display: flex; gap: 10px; width: 100%; margin-top: auto">
@@ -1327,31 +1350,50 @@
           </div>
         </div>
 
-        <div class="pc gesture-card">
-          <h3>Hand Gestures</h3>
-          <p>Webcam hand-tracking server, drawing board, and floating keyboard UI.</p>
+        <div class="pc perceptus-card">
+          <h3>Perceptus Flow <span style="font-size:0.75rem; background:rgba(184,155,255,0.15); color:var(--plasma); border:1px solid rgba(184,155,255,0.4); padding:2px 8px; border-radius:12px; margin-left:8px; vertical-align:middle;">v2.5.0</span></h3>
+          <p>Autonomous touchless machine vision, multimodal AI co-pilot &amp; frameless glass cockpit. Control Windows using your standard webcam.</p>
 
           <details>
-            <summary style="color: var(--teal)">Setup Instructions</summary>
+            <summary style="color: var(--plasma)">Setup Instructions</summary>
             <ol class="setup-list">
-              <li>
-                Install Python 3.14. Check the box <b>"Add Python To PATH"</b>.<br />
-                <a href="https://www.python.org/downloads/" target="_blank" class="ext-link-btn">Download Python</a>
-              </li>
-              <li style="margin-top: 10px">Download and extract the <code>.7z</code> archive below.</li>
-              <li>Open Command Prompt in that folder.</li>
-              <li>Install dependencies:<br /><code>pip install websockets pyautogui pywin32</code></li>
-              <li>Start the local server:<br /><code>python mouse_server.py</code></li>
-              <li>Double-click <code>home.html</code> to open the tracking UI.</li>
+              <li>Download <code>PerceptusFlow.exe</code> standalone application or grab the Python source package archive.</li>
+              <li><b>For .EXE (Standalone):</b> Run directly on Windows (native 60 FPS Win32 Kalman hardware cursor bridge).</li>
+              <li><b>For .7Z (Python Package):</b> Install dependencies (<code>pip install websockets pyautogui pywin32</code>) and run <code>python mouse_server.py</code>.</li>
+              <li>Allow webcam access to enable touchless cursor control, pinch clicks, and spatial drawing.</li>
             </ol>
           </details>
 
-          <div class="card-checkbox-wrapper" onclick="handleBoxClick('gesture')" id="wrap-gesture">
-            <input type="checkbox" id="check-gesture" class="locked-box" />
-            <label id="label-gesture">Click to Read Terms & Unlock</label>
+          <div class="card-checkbox-wrapper" onclick="handleBoxClick('perceptus')" id="wrap-perceptus">
+            <input type="checkbox" id="check-perceptus" class="locked-box" />
+            <label id="label-perceptus">Click to Read Terms &amp; Unlock</label>
           </div>
 
-          <a id="btn-gesture" class="btn-download gesture-btn locked" style="margin-top: auto">Download .7Z</a>
+          <div style="display: flex; gap: 10px; width: 100%; margin-top: auto">
+            <a id="btn-perceptus-exe" class="btn-download perceptus-btn locked" style="flex: 1">.EXE (App)</a>
+            <a id="btn-perceptus-zip" class="btn-download perceptus-btn locked" style="flex: 1">.7Z (Source)</a>
+          </div>
+        </div>
+
+        <div class="pc col-card">
+          <h3>Class Of Learners <span style="font-size:0.75rem; background:rgba(52,211,153,0.15); color:var(--em); border:1px solid rgba(52,211,153,0.4); padding:2px 8px; border-radius:12px; margin-left:8px; vertical-align:middle;">Android APK</span></h3>
+          <p>Official Android companion app for Class Of Learners. Enjoy mobile educational modules, games, and tools directly on your device.</p>
+
+          <details>
+            <summary style="color: var(--em)">Setup Instructions</summary>
+            <ol class="setup-list">
+              <li>Download the <code>COL.apk</code> file below from GitHub Releases onto your Android device.</li>
+              <li>Open the downloaded APK and tap "Install" (enable "Install from Unknown Sources" in Android settings if prompted).</li>
+              <li>Launch Class Of Learners directly from your mobile app drawer.</li>
+            </ol>
+          </details>
+
+          <div class="card-checkbox-wrapper" onclick="handleBoxClick('col')" id="wrap-col">
+            <input type="checkbox" id="check-col" class="locked-box" />
+            <label id="label-col">Click to Read Terms &amp; Unlock</label>
+          </div>
+
+          <a id="btn-col" class="btn-download col-btn locked" style="margin-top: auto">Download .APK (Android)</a>
         </div>
       </div>
     </section>
@@ -1412,7 +1454,7 @@
           textColor: '#0A0500',
           acceptedText: 'I Accept The Terms',
           html: '<div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:var(--signal); color:var(--signal);"></span>1. About This Project</div><div class="modal-term-desc">Created by Neel, Ansh, Aarush and Yash Raj as a student learning project focused on syntax mastery.</div></div><div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:var(--signal); color:var(--signal);"></span>2. Free To Use</div><div class="modal-term-desc">Provided completely free of charge without strict copyrights.</div></div>',
-          link: 'https://github.com/NeelAniGamer/Vercel/releases/download/Dowloads/AdvancedTypingInstructor_Setup.exe',
+          link: 'https://github.com/NeelAniGamer/Vercel/releases/download/Projects/AdvancedTypingInstructor_Setup.exe',
           btnId: 'btn-ati'
         },
         solar: {
@@ -1422,20 +1464,32 @@
           textColor: '#001f29',
           acceptedText: 'I Accept The Terms',
           html: '<div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:var(--ion); color:var(--ion);"></span>1. About This Project</div><div class="modal-term-desc">Advanced physics and telemetry showcase.</div></div><div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:var(--ion); color:var(--ion);"></span>2. Standard Disclaimer</div><div class="modal-term-desc">Use "as is". Not responsible for simulated planetary collisions!</div></div>',
-          link: 'https://github.com/NeelAniGamer/Vercel/releases/download/Dowloads/SolarSystemEngine_v3.3_Setup.exe',
+          link: 'https://github.com/NeelAniGamer/Vercel/releases/download/Projects/SolarSystemEngine_v3.3_Setup.exe',
           btnId: 'btn-solar-exe',
-          link2: 'https://github.com/NeelAniGamer/Vercel/releases/download/Dowloads/solar.7z',
+          link2: 'https://github.com/NeelAniGamer/Vercel/releases/download/Projects/solar.7z',
           btnId2: 'btn-solar-zip'
         },
-        gesture: {
-          title: 'Hand Gestures Terms',
-          icon: '🖐️',
-          color: 'var(--teal)',
-          textColor: '#001f1a',
+        perceptus: {
+          title: 'Perceptus Flow Terms',
+          icon: '✨',
+          color: 'var(--plasma)',
+          textColor: '#120524',
           acceptedText: 'I Accept The Terms',
-          html: '<div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:var(--teal); color:var(--teal);"></span>1. Local Privacy</div><div class="modal-term-desc">Runs entirely locally. No data is sent to the cloud.</div></div><div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:var(--teal); color:var(--teal);"></span>2. Disclaimer</div><div class="modal-term-desc">Not responsible for accidental mouse clicks.</div></div>',
-          link: 'https://github.com/NeelAniGamer/Vercel/releases/download/Dowloads/Hand.Gestures.By.ANA.7z',
-          btnId: 'btn-gesture'
+          html: '<div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:var(--plasma); color:var(--plasma);"></span>1. Local Privacy</div><div class="modal-term-desc">Computer vision and gesture processing run 100% locally on your machine. No webcam footage is sent to the cloud.</div></div><div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:var(--plasma); color:var(--plasma);"></span>2. Disclaimer</div><div class="modal-term-desc">Freely distributed for personal and educational use. Not responsible for unintended spatial clicks.</div></div>',
+          link: 'https://github.com/NeelAniGamer/Vercel/releases/download/Projects/PerceptusFlow.exe',
+          btnId: 'btn-perceptus-exe',
+          link2: 'https://github.com/NeelAniGamer/Vercel/releases/download/Projects/Hand.Gestures.By.ANA.7z',
+          btnId2: 'btn-perceptus-zip'
+        },
+        col: {
+          title: 'Class Of Learners Mobile Terms',
+          icon: '📱',
+          color: 'var(--em)',
+          textColor: '#022014',
+          acceptedText: 'I Accept The Terms',
+          html: '<div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:var(--em); color:var(--em);"></span>1. Android Distribution</div><div class="modal-term-desc">Direct APK distribution for Android devices. Verified clean and free of ads or trackers.</div></div><div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:var(--em); color:var(--em);"></span>2. Educational Use</div><div class="modal-term-desc">Provided free of charge for learners worldwide.</div></div>',
+          link: 'https://github.com/NeelAniGamer/Vercel/releases/download/Projects/COL.apk',
+          btnId: 'btn-col'
         }
       }
 

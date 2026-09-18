@@ -20,8 +20,8 @@ class TrafficAudioEngine {
     this._lastShiftTime = 0;
     this._lastPopTime = 0;
 
-    // Distortion curve for throaty supercar growl
-    this._distortionCurve = this._makeDistortionCurve(18);
+    // Distortion curve for warm, smooth acoustic engine growl
+    this._distortionCurve = this._makeDistortionCurve(4);
   }
 
   get isEngineRunning() {
@@ -32,7 +32,7 @@ class TrafficAudioEngine {
     return this._engineRunning;
   }
 
-  _makeDistortionCurve(amount = 20) {
+  _makeDistortionCurve(amount = 4) {
     const k = amount;
     const n_samples = 44100;
     const curve = new Float32Array(n_samples);
@@ -51,7 +51,10 @@ class TrafficAudioEngine {
       if (!AudioCtx) return;
       this.ctx = new AudioCtx();
       this.masterGain = this.ctx.createGain();
-      this.masterGain.gain.value = 0.90;
+
+      const savedVol = typeof localStorage !== 'undefined' ? localStorage.getItem('traffic_volume') : null;
+      const initVol = (savedVol !== null && !isNaN(parseInt(savedVol))) ? Math.max(0, Math.min(1, parseInt(savedVol) / 100)) : 0.70;
+      this.masterGain.gain.value = initVol;
 
       // Master compressor for clean, punchy audio without clipping
       const comp = this.ctx.createDynamicsCompressor();
@@ -66,6 +69,18 @@ class TrafficAudioEngine {
       this.initialized = true;
     } catch (e) {
       // AudioContext creation silently deferred until user gesture
+    }
+  }
+
+  setMasterVolume(volume) {
+    this._ensureUnlocked();
+    const v = Math.max(0, Math.min(1, typeof volume === 'number' ? volume : parseFloat(volume)));
+    if (this.masterGain && this.ctx) {
+      try {
+        this.masterGain.gain.cancelScheduledValues(this.ctx.currentTime);
+        this.masterGain.gain.setValueAtTime(v, this.ctx.currentTime);
+      } catch (e) {}
+      this.masterGain.gain.value = v;
     }
   }
 
@@ -91,56 +106,56 @@ class TrafficAudioEngine {
       // Master engine volume gain
       const engineGain = this.ctx.createGain();
       engineGain.gain.setValueAtTime(0.001, now);
-      engineGain.gain.exponentialRampToValueAtTime(0.48, now + 0.35);
+      engineGain.gain.exponentialRampToValueAtTime(0.28, now + 0.35);
 
-      // ── Layer A: Sub-bass engine pulse (30Hz - 65Hz) ──
+      // ── Layer A: Sub-bass engine pulse (28Hz - 55Hz) ──
       const subOsc = this.ctx.createOscillator();
       subOsc.type = 'triangle';
-      subOsc.frequency.setValueAtTime(36, now);
+      subOsc.frequency.setValueAtTime(32, now);
       const subGain = this.ctx.createGain();
-      subGain.gain.value = 0.45;
+      subGain.gain.value = 0.48;
       subOsc.connect(subGain);
 
-      // ── Layer B: Dual throaty cylinder combustion (Sawtooth + WaveShaper) ──
+      // ── Layer B: Dual smooth cylinder combustion (Sawtooth + Triangle + Soft Saturation) ──
       const saw1 = this.ctx.createOscillator();
       saw1.type = 'sawtooth';
-      saw1.frequency.setValueAtTime(72, now);
+      saw1.frequency.setValueAtTime(64, now);
 
       const saw2 = this.ctx.createOscillator();
-      saw2.type = 'sawtooth';
-      saw2.frequency.setValueAtTime(108, now); // 3rd harmonic growl
+      saw2.type = 'triangle'; // Warm harmonic rather than harsh buzzy saw
+      saw2.frequency.setValueAtTime(96, now);
 
       const shaper = this.ctx.createWaveShaper();
       shaper.curve = this._distortionCurve;
       shaper.oversample = '2x';
 
       const sawMix = this.ctx.createGain();
-      sawMix.gain.value = 0.32;
+      sawMix.gain.value = 0.22;
       saw1.connect(sawMix);
       saw2.connect(sawMix);
       sawMix.connect(shaper);
 
-      // Engine intake resonance filter
+      // Engine intake resonance filter - gentle warm Q without piercing peaks
       const engineFilter = this.ctx.createBiquadFilter();
       engineFilter.type = 'lowpass';
-      engineFilter.frequency.setValueAtTime(450, now);
-      engineFilter.Q.value = 2.8;
+      engineFilter.frequency.setValueAtTime(380, now);
+      engineFilter.Q.value = 0.85;
 
       shaper.connect(engineFilter);
       subGain.connect(engineFilter);
 
-      // ── Layer C: Turbocharger Spool Whine ──
+      // ── Layer C: Subtle Turbocharger Spool Airflow (Subtle background detail, not a whistle) ──
       const turboOsc = this.ctx.createOscillator();
       turboOsc.type = 'sine';
-      turboOsc.frequency.setValueAtTime(1200, now);
+      turboOsc.frequency.setValueAtTime(800, now);
 
       const turboFilter = this.ctx.createBiquadFilter();
-      turboFilter.type = 'bandpass';
-      turboFilter.frequency.setValueAtTime(1800, now);
-      turboFilter.Q.value = 3.5;
+      turboFilter.type = 'lowpass';
+      turboFilter.frequency.setValueAtTime(1200, now);
+      turboFilter.Q.value = 0.7;
 
       const turboGain = this.ctx.createGain();
-      turboGain.gain.value = 0.001; // Silent at idle
+      turboGain.gain.value = 0.0001; // Silent at idle
 
       turboOsc.connect(turboFilter);
       turboFilter.connect(turboGain);
@@ -163,7 +178,7 @@ class TrafficAudioEngine {
         saw2,
         turboOsc,
         turboGain,
-        baseFreq: 36
+        baseFreq: 32
       };
     } catch (e) {}
   }
@@ -189,7 +204,7 @@ class TrafficAudioEngine {
         this._lastShiftTime = now;
         this._gearRpm = 0.35; // RPM drop on upshift
         // Trigger subtle shift pop
-        this._playExhaustPop(0.35);
+        this._playExhaustPop(0.25);
       }
 
       // Calculate RPM within current gear
@@ -198,44 +213,44 @@ class TrafficAudioEngine {
       const gearProgress = Math.max(0, Math.min(1.0, (speedKmh - prevGearThreshold) / Math.max(10, nextGearThreshold - prevGearThreshold)));
 
       let targetRpm = 0.18 + gearProgress * 0.72;
-      if (isThrottle) targetRpm = Math.min(1.0, targetRpm + (isBoosting ? 0.25 : 0.12));
+      if (isThrottle) targetRpm = Math.min(1.0, targetRpm + (isBoosting ? 0.20 : 0.10));
       else targetRpm = Math.max(0.18, targetRpm * 0.85);
 
       // Smooth RPM interpolation
       this._gearRpm += (targetRpm - this._gearRpm) * 0.18;
       const rpm = this._gearRpm;
 
-      // Frequencies for V8 combustion pulses
-      const baseFreq = 34 + rpm * 110 + (isBoosting ? 22 : 0);
+      // Frequencies for smooth combustion pulses (warm rumble)
+      const baseFreq = 30 + rpm * 75 + (isBoosting ? 18 : 0);
       this.engineNode.subOsc.frequency.setTargetAtTime(baseFreq, now, 0.03);
       this.engineNode.saw1.frequency.setTargetAtTime(baseFreq * 2.0, now, 0.03);
       this.engineNode.saw2.frequency.setTargetAtTime(baseFreq * 3.0, now, 0.03);
 
-      // Filter cutoff sweeps upward with RPM & throttle for throaty rasp
-      const filterCutoff = 350 + rpm * 2600 + (isThrottle ? 1400 : 0) + (isBoosting ? 800 : 0);
+      // Filter cutoff sweeps upward with RPM & throttle - capped comfortably at ~1800Hz
+      const filterCutoff = 280 + rpm * 950 + (isThrottle ? 500 : 0) + (isBoosting ? 300 : 0);
       this.engineNode.filter.frequency.setTargetAtTime(filterCutoff, now, 0.04);
 
-      // Turbo spool whistle
-      const turboWhine = 1400 + rpm * 2800 + (isBoosting ? 1200 : 0);
+      // Subtle turbo spool airflow (soft and gentle background)
+      const turboWhine = 600 + rpm * 1100 + (isBoosting ? 400 : 0);
       this.engineNode.turboOsc.frequency.setTargetAtTime(turboWhine, now, 0.05);
-      const turboVol = isThrottle ? (0.04 + rpm * 0.14 + (isBoosting ? 0.10 : 0)) : 0.001;
+      const turboVol = isThrottle ? (0.004 + rpm * 0.012 + (isBoosting ? 0.010 : 0)) : 0.0001;
       this.engineNode.turboGain.gain.setTargetAtTime(turboVol, now, 0.06);
 
-      // Engine master volume
-      const targetGain = 0.32 + (isThrottle ? 0.25 : 0.05) + rpm * 0.22 + (isBoosting ? 0.15 : 0);
+      // Engine master volume - balanced and comfortable
+      const targetGain = 0.22 + (isThrottle ? 0.12 : 0.02) + rpm * 0.14 + (isBoosting ? 0.08 : 0);
       this.engineNode.gain.gain.setTargetAtTime(targetGain, now, 0.04);
 
       // Detect throttle release from high RPM -> Turbo Blow-off valve ('pshh-t-t-t')
       if (this._prevThrottle && !isThrottle && rpm > 0.55) {
         this.playBlowoffValve(rpm);
-        if (Math.random() < 0.65) this._playExhaustPop(0.45);
+        if (Math.random() < 0.40) this._playExhaustPop(0.30);
       }
       this._prevThrottle = isThrottle;
 
       // High RPM overrun pops
-      if (!isThrottle && rpm > 0.60 && now - this._lastPopTime > 0.30) {
-        if (Math.random() < 0.35) {
-          this._playExhaustPop(0.30);
+      if (!isThrottle && rpm > 0.60 && now - this._lastPopTime > 0.35) {
+        if (Math.random() < 0.25) {
+          this._playExhaustPop(0.22);
           this._lastPopTime = now;
         }
       }
@@ -488,30 +503,31 @@ class TrafficAudioEngine {
   }
 
   // ── 5. AUTHENTIC MUMBAI DUAL-TONE BRASS HORN ──
-  playHorn(duration = 0.42) {
+  playHorn(duration = 0.38) {
     this._ensureUnlocked();
     if (!this.ctx) return;
     try {
       const now = this.ctx.currentTime;
       const g = this.ctx.createGain();
       g.gain.setValueAtTime(0.001, now);
-      g.gain.linearRampToValueAtTime(0.48, now + 0.02);
-      g.gain.setValueAtTime(0.48, now + duration - 0.05);
+      g.gain.linearRampToValueAtTime(0.28, now + 0.03);
+      g.gain.setValueAtTime(0.28, now + duration - 0.06);
       g.gain.exponentialRampToValueAtTime(0.001, now + duration);
 
-      // Classic Mumbai electric dual trumpets (A4 + C#5)
+      // Warm acoustic Mumbai electric dual trumpets (A4 435Hz + C#5 548Hz)
       const o1 = this.ctx.createOscillator();
-      o1.type = 'sawtooth';
+      o1.type = 'triangle';
       o1.frequency.setValueAtTime(435, now);
 
       const o2 = this.ctx.createOscillator();
       o2.type = 'sawtooth';
       o2.frequency.setValueAtTime(548, now);
 
+      // Lowpass filter to eliminate harsh buzzy bite
       const f = this.ctx.createBiquadFilter();
-      f.type = 'bandpass';
-      f.frequency.value = 1600;
-      f.Q.value = 1.4;
+      f.type = 'lowpass';
+      f.frequency.value = 1100;
+      f.Q.value = 0.8;
 
       o1.connect(f);
       o2.connect(f);
@@ -525,7 +541,7 @@ class TrafficAudioEngine {
     } catch (e) {}
   }
 
-  playHonk(duration = 0.42) {
+  playHonk(duration = 0.38) {
     return this.playHorn(duration);
   }
 
@@ -533,26 +549,31 @@ class TrafficAudioEngine {
   playScreech(intensity = 0.5) {
     this._ensureUnlocked();
     if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+    // Throttle to prevent screech cacophony during high-frequency frame loops
+    if (now - (this._lastScreechTime || 0) < 0.35) return;
+    this._lastScreechTime = now;
+
     try {
-      const now = this.ctx.currentTime;
-      const duration = 0.28 + intensity * 0.32;
-      const bufferSize = this.ctx.sampleRate * duration;
+      const duration = 0.22 + intensity * 0.20;
+      const bufferSize = Math.floor(this.ctx.sampleRate * duration);
       const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
       const data = buffer.getChannelData(0);
       for (let i = 0; i < bufferSize; i++) {
-        data[i] = (Math.random() * 2 - 1) * 0.85;
+        data[i] = (Math.random() * 2 - 1) * 0.65;
       }
       const noise = this.ctx.createBufferSource();
       noise.buffer = buffer;
 
+      // Gentle bandpass filter without piercing resonant peaks
       const f = this.ctx.createBiquadFilter();
       f.type = 'bandpass';
-      f.frequency.setValueAtTime(1500, now);
-      f.frequency.linearRampToValueAtTime(2100, now + duration);
-      f.Q.value = 4.8;
+      f.frequency.setValueAtTime(900, now);
+      f.frequency.linearRampToValueAtTime(1400, now + duration);
+      f.Q.value = 1.2;
 
       const g = this.ctx.createGain();
-      g.gain.setValueAtTime(0.20 * intensity, now);
+      g.gain.setValueAtTime(0.08 * intensity, now);
       g.gain.linearRampToValueAtTime(0.001, now + duration);
 
       noise.connect(f);

@@ -28,7 +28,7 @@ const VEHICLE_CAM = {
   sports_cyan:     { dist: 8.8,  height: 3.7, lookAhead: 4.8, lookDist: 10.0, baseFov: 68, fovRange: 18, lerpSmoothing: 7.5 },
   bmw_m4:          { dist: 8.8,  height: 3.7, lookAhead: 4.8, lookDist: 10.0, baseFov: 68, fovRange: 18, lerpSmoothing: 7.5 },
   nilu_27:         { dist: 9.0,  height: 3.5, lookAhead: 5.0, lookDist: 10.5, baseFov: 70, fovRange: 20, lerpSmoothing: 7.5 },
-  lambo:           { dist: 8.8,  height: 3.6, lookAhead: 4.8, lookDist: 10.2, baseFov: 70, fovRange: 20, lerpSmoothing: 7.5 },
+  lambo:           { dist: 10.2, height: 3.8, lookAhead: 5.2, lookDist: 11.5, baseFov: 70, fovRange: 20, lerpSmoothing: 7.5 },
   taxi:            { dist: 8.8,  height: 4.0, lookAhead: 4.5, lookDist: 9.5, baseFov: 66, fovRange: 15, lerpSmoothing: 6.5 },
   police:          { dist: 9.0,  height: 4.1, lookAhead: 4.6, lookDist: 9.8, baseFov: 66, fovRange: 16, lerpSmoothing: 6.5 },
   ambulance:       { dist: 10.5, height: 4.8, lookAhead: 5.0, lookDist: 10.5, baseFov: 64, fovRange: 14, lerpSmoothing: 6.0 },
@@ -954,6 +954,8 @@ class Game {
         this.gyroOn = false; this.gyroBaseGamma = 0; this._gyroHandler = null;
         this.camYaw = 0; this.camPitch = 0;
         this.targetCamYaw = 0; this.targetCamPitch = 0;
+        this.firstPersonMode = false;
+        this._lastMouseMoveTime = 0;
         this._isDraggingMobileLook = false; this._mobileLookTouchId = null;
         this._isDraggingLeft = false; this._isDraggingRight = false;
         this._prevMobileLookX = 0; this._prevMobileLookY = 0;
@@ -1060,9 +1062,10 @@ class Game {
     4: [
       'emergency_vehicle_pull_over', 'clear_intersection_for_emergency'
     ],
-    // Level 5: Rush Hour
+    // Level 5: School Zone Crossing
     5: [
-      'lane_discipline_rush', 'no_blocking_intersection', 'patience_in_traffic'
+      'school_zone_20kmh', 'stop_for_school_children', 'school_crossing_guard',
+      'no_honking_school_zone', 'yield_pedestrians'
     ],
     // Level 6: Zebra Yield
     6: [
@@ -1484,7 +1487,11 @@ class Game {
             if (e.key.toLowerCase() === 'q') this.toggleTurnSignal(-1);
             if (e.key.toLowerCase() === 'e') this.toggleTurnSignal(1);
             if (e.key.toLowerCase() === 'm') this.togglePhoneGps();
-             if (e.key === 'Escape') this.togglePause();
+             if (e.key.toLowerCase() === 'v') {
+               this.firstPersonMode = !this.firstPersonMode;
+               if (typeof toast === 'function') toast(this.firstPersonMode ? '🎥 Switched to First Person' : '🎥 Switched to Third Person', '#3498db');
+             }
+              if (e.key === 'Escape') this.togglePause();
              // ── SPEED CONTROLS ──
              if (e.key.toLowerCase() === 'c') this.toggleCruiseControl && this.toggleCruiseControl();
              if (e.key.toLowerCase() === 'l') this.toggleSpeedLimiter && this.toggleSpeedLimiter();
@@ -1516,53 +1523,66 @@ class Game {
 
         // Continuous Mouse Pointer Following (Fullscreen & Pointer Lock & Orbit)
         this._lastPointerUnlock = 0;
+        // Continuous Direct Mouse Pointer Following & Pointer Lock (Hidden & Centered Cursor)
+        this._lastPointerUnlock = 0;
         this.isPointerLocked = false;
+
+        const _bindPointerLockCanvas = () => {
+          const cvs = this.renderCore?.renderer?.domElement || document.querySelector('canvas');
+          if (cvs && !cvs._pointerLockBound) {
+            cvs._pointerLockBound = true;
+            cvs.addEventListener('click', () => {
+              if (!document.pointerLockElement && this.playing && !this.pause) {
+                try { cvs.requestPointerLock(); } catch(err) {}
+              }
+            });
+            cvs.addEventListener('mousedown', (e) => {
+              if (!document.pointerLockElement && this.playing && !this.pause) {
+                try { cvs.requestPointerLock(); } catch(err) {}
+              }
+              if (e.button === 0 && (!e.pointerType || e.pointerType === 'mouse')) {
+                this._isDraggingLeft = true;
+                this._isDraggingCamera = true;
+              }
+              if (e.button === 2) {
+                this._isDraggingRight = true;
+                this._isDraggingCamera = true;
+              }
+            });
+          }
+        };
+        _bindPointerLockCanvas();
+
         document.addEventListener('mousemove', (e) => {
+          const isLocked = !!document.pointerLockElement || this.isPointerLocked;
           const isFullscreen = !!document.fullscreenElement;
-          const shouldFollow = this.isPointerLocked || isFullscreen || this._isDraggingCamera;
+          const shouldFollow = isLocked || isFullscreen || this._isDraggingCamera;
           
           if (shouldFollow && this.playing && !this.pause) {
-            // Unlimited full 360-degree continuous turning around the vertical axis
-            const sens = (this.isPointerLocked || isFullscreen) ? 0.0032 : 0.005;
-            this.targetCamYaw -= (e.movementX || 0) * sens;
+            this._lastMouseMoveTime = Date.now();
+            // Direct 360-degree mouse-look in Third Person Mode without clicking
+            const cSens = this.camSensitivity || 1.0;
+            const sensX = 0.0032 * cSens;
+            const sensY = 0.0024 * cSens;
+            this.targetCamYaw = (this.targetCamYaw || 0) - (e.movementX || 0) * sensX;
             
-            // Movement strictly remains on the same horizontal Y-axis (no up/down pitch tilting)
-            this.targetCamPitch = 0;
-            this.camPitch = 0;
+            // Natural vertical pitch tilting (looking up/down smoothly clamped)
+            this.targetCamPitch = Math.max(-0.45, Math.min(0.65, (this.targetCamPitch || 0) - (e.movementY || 0) * sensY));
 
-            // In pedestrian mode, player character directly tracks mouse heading
-            if (this.isPedestrian && this.player) {
+            // In first person mode only, player character model directly tracks mouse heading
+            if (this.firstPersonMode && this.isPedestrian && this.player) {
               this.player.rotation.y = this.targetCamYaw;
             }
           }
         });
         
-        // Canvas click in fullscreen auto-locks pointer without extra modals
-        if (this.renderCore.renderer && this.renderCore.renderer.domElement) {
-          this.renderCore.renderer.domElement.addEventListener('click', () => {
-            if (document.fullscreenElement && !document.pointerLockElement) {
-              try { this.renderCore.renderer.domElement.requestPointerLock(); } catch(err) {}
-            }
-          });
-          this.renderCore.renderer.domElement.addEventListener('mousedown', (e) => {
-            if (e.button === 0 && this.playing && !this.pause && !this.isPointerLocked && (!e.pointerType || e.pointerType === 'mouse')) {
-              this._isDraggingLeft = true;
-              this._isDraggingCamera = true;
-            }
-            // Right-click also enables camera drag (more intuitive for desktop users)
-            if (e.button === 2 && this.playing && !this.pause && !this.isPointerLocked) {
-              this._isDraggingRight = true;
-              this._isDraggingCamera = true;
-            }
-          });
-          window.addEventListener('mouseup', (e) => {
-            if (e.button === 0 || e.button === 2) {
-              if (e.button === 0) this._isDraggingLeft = false;
-              if (e.button === 2) this._isDraggingRight = false;
-              if (!this._isDraggingLeft && !this._isDraggingRight) this._isDraggingCamera = false;
-            }
-          });
-        }
+        window.addEventListener('mouseup', (e) => {
+          if (e.button === 0 || e.button === 2) {
+            if (e.button === 0) this._isDraggingLeft = false;
+            if (e.button === 2) this._isDraggingRight = false;
+            if (!this._isDraggingLeft && !this._isDraggingRight) this._isDraggingCamera = false;
+          }
+        });
 
         // Mobile Controls Bindings
         const bindTouch = (id, key) => {
@@ -1808,13 +1828,33 @@ class Game {
           el.addEventListener('touchstart', dn, { passive: false }); el.addEventListener('touchend', up, { passive: false });
           el.addEventListener('mousedown', dn); el.addEventListener('mouseup', up); el.addEventListener('mouseleave', up);
         };
-        sb('tl', 'arrowleft'); sb('tr', 'arrowright'); sb('tu', 'arrowup'); sb('abb', 'b'); sb('abh', ' ');
+        sb('tl', 'arrowleft'); sb('tr', 'arrowright'); sb('tu', 'arrowup');
+        sb('abb', 'arrowdown');
+        const abhEl = document.getElementById('abh');
+        if (abhEl) {
+          const triggerHorn = (e) => {
+            e.preventDefault();
+            if (window.TrafficAudio && typeof window.TrafficAudio.playHonk === 'function') {
+              window.TrafficAudio.playHonk();
+            } else if (typeof sfx !== 'undefined' && sfx.play) {
+              sfx.play('horn');
+            }
+          };
+          abhEl.addEventListener('touchstart', triggerHorn, { passive: false });
+          abhEl.addEventListener('mousedown', triggerHorn);
+        }
 
         this._initMobileCameraLook();
         this._initCameraJoystick();
         this._initMobileHudAutohide();
       }
       _initG() {
+        // Initialize steering and camera sensitivity
+        const savedSens = typeof localStorage !== 'undefined' ? localStorage.getItem('traffic_sensitivity') : null;
+        const sensFactor = (savedSens !== null && !isNaN(parseInt(savedSens, 10))) ? (parseInt(savedSens, 10) / 100) : 1.0;
+        this.steerSensitivity = sensFactor;
+        this.camSensitivity = sensFactor;
+
         document.querySelectorAll('.gb').forEach(b => { b.addEventListener('click', () => this.setGear(b.dataset.g)); b.addEventListener('touchstart', e => { e.preventDefault(); this.setGear(b.dataset.g); }, { passive: false }); });
         // ── SPEED CONTROLS INIT ──
         this.cruiseControl = false;
@@ -2102,12 +2142,13 @@ class Game {
               this._prevMobileLookX = e.touches[i].clientX;
               this._prevMobileLookY = e.touches[i].clientY;
 
+              const cSens = this.camSensitivity || 1.0;
               // Unbounded 360 degree yaw rotation in pedestrian mode
-              this.targetCamYaw -= dx * 0.005;
+              this.targetCamYaw -= dx * 0.005 * cSens;
               if (!this.isPedestrian) {
                 this.targetCamYaw = Math.max(-Math.PI, Math.min(Math.PI, this.targetCamYaw));
               }
-              this.targetCamPitch -= dy * 0.005;
+              this.targetCamPitch -= dy * 0.005 * cSens;
               this.targetCamPitch = Math.max(-1.2, Math.min(1.2, this.targetCamPitch));
               break;
             }
@@ -2204,10 +2245,16 @@ class Game {
       }
 
       _decayCameraLook(dt) {
-        if (this.isPedestrian) return; // Keep persistent 360 camera heading in Free Fire/TPS mode
+        if (this.isPedestrian) return; // Keep persistent 360 camera heading in TPS mode
         if (this._isDraggingMobileLook) return;
         if (this._camJoyActive) return;
-        if (this.isPointerLocked || this._isDraggingCamera) return;
+        if (this._isDraggingCamera) return;
+
+        // In vehicle mode with pointer lock, keep camera angle unless idle for 2.0s while actively driving forward
+        const now = Date.now();
+        const mouseIdle = (now - (this._lastMouseMoveTime || 0)) > 2000;
+        const isDriving = Math.abs(this.speed || 0) > 0.5;
+        if (this.isPointerLocked && (!mouseIdle || !isDriving)) return;
         const decayRate = this._camJoyEverUsed ? 0.15 : 0.8;
         const threshold = 0.005;
         if (Math.abs(this.camYaw) > threshold || Math.abs(this.camPitch) > threshold) {
@@ -2537,7 +2584,8 @@ class Game {
         const safeVx = Math.max(0.3, Math.abs(speedMs));
         
         // Steering angle in radians
-        const maxSteer = (this.turn || 0.08) * 4.5;
+        const sSens = this.steerSensitivity || 1.0;
+        const maxSteer = (this.turn || 0.08) * 4.5 * sSens;
         const steerAngle = tAmt * maxSteer * (isRev ? -1 : 1);
         this._steerAngle = steerAngle;
 
@@ -2894,8 +2942,8 @@ class Game {
               }
             });
 
-            if (window.TrafficAudio && Math.random() < 0.2) {
-              window.TrafficAudio.playScreech(Math.min(1.0, lateralSlip * 1.5));
+            if (window.TrafficAudio && lateralSlip > 0.45 && Math.random() < 0.15) {
+              window.TrafficAudio.playScreech(Math.min(1.0, (lateralSlip - 0.3) * 1.6));
             }
           }
 
@@ -3477,9 +3525,7 @@ class Game {
         if (window.safeZoneGridInstance) {
           const SZ = window.safeZoneGridInstance;
           if (document.getElementById('player-hud-card')) SZ.register('player-hud', document.getElementById('player-hud-card'), 'TL', { order: 0, priority: 'high' });
-          if (document.getElementById('objective-overlay')) SZ.register('objective', document.getElementById('objective-overlay'), 'TR', { order: 0, priority: 'high' });
-          if (document.getElementById('task-tracker')) SZ.register('tasks', document.getElementById('task-tracker'), 'TR', { order: 1, priority: 'medium' });
-          if (document.getElementById('civic-controls')) SZ.register('civic', document.getElementById('civic-controls'), 'BR', { order: 2, priority: 'low' });
+          // Top HUD stack (objective & tasks) and civic-controls are managed by explicit layout in Driving.html
           if (this.dom.mmc) {
             SZ.register('minimap', this.dom.mmc, 'BL', { order: 0, priority: 'high' });
             // Tap/click minimap → open fullscreen map
@@ -3564,7 +3610,7 @@ class Game {
           if (this.seatbeltOn) {
               if (wrap) { wrap.classList.remove('off'); wrap.classList.add('on'); }
               if (label) { label.textContent = isBike ? 'Helmet ON' : 'Belt ON'; label.classList.remove('off'); label.classList.add('on'); }
-              toast(isBike ? 'Helmet Secured! +15% Speed' : 'Seatbelt Fastened! +10% Speed, 50% Less Damage', '#27ae60');
+              toast(isBike ? 'Helmet Secured! +15% Speed' : 'Seatbelt Fastened! +10% Speed', '#27ae60');
               if (!this.isPedestrian) {
                   const base = this.mapCfg && this.mapCfg.themeType === 'highway' ? 1.4 : 1.1;
                   this.maxSpd = base * (isBike ? 1.15 : 1.1);
@@ -3573,7 +3619,7 @@ class Game {
           } else {
               if (wrap) { wrap.classList.remove('on'); wrap.classList.add('off'); }
               if (label) { label.textContent = isBike ? 'Helmet OFF' : 'Belt OFF'; label.classList.remove('on'); label.classList.add('off'); }
-              toast(isBike ? 'Helmet Removed! -15% Speed' : 'Seatbelt Unfastened! Full Collision Damage', '#ff3b30');
+              toast(isBike ? 'Helmet Removed! -15% Speed' : 'Seatbelt Unfastened!', '#ff3b30');
               if (!this.isPedestrian) {
                   this.maxSpd = this.mapCfg && this.mapCfg.themeType === 'highway' ? 1.4 : 1.1;
                   this._seatbeltDamageReduction = false;
@@ -3743,12 +3789,11 @@ class Game {
                 document.getElementById('pause-quit')?.addEventListener('click', () => {
                   this.pause = false;
                   this.playing = false;
-                  const o = document.getElementById('pause-overlay');
-                  if (o) {
-                    o.style.animation = 'pausePanelOut 0.2s ease-in both';
-                    setTimeout(() => { o.classList.remove('on'); o.style.animation = ''; }, 200);
-                  }
-                  document.getElementById('game-over')?.classList.add('on');
+                  try {
+                    if (this.stopPlay) this.stopPlay();
+                  } catch (e) {}
+                  const curLid = (window.ui && window.ui.cur && window.ui.cur.id) || (this.cfg && this.cfg.id) || 5;
+                  window.location.href = `Academy.html?screen=levels&lv=${curLid}`;
                 });
               }
             } else {
@@ -3757,6 +3802,13 @@ class Game {
               this._pauseAnimating = true;
               overlay.style.animation = 'pausePanelOut 0.2s ease-in both';
               setTimeout(() => { overlay.style.animation = ''; this._pauseAnimating = false; }, 250);
+              // Cleanly restore input focus to game window and clear stale keys
+              if (this.keys) this.keys = {};
+              window.focus();
+              try {
+                const cv = document.getElementById('c') || this.renderer?.domElement;
+                if (cv && typeof cv.focus === 'function') cv.focus();
+              } catch (e) {}
             }
           }
       }
@@ -3875,7 +3927,7 @@ class Game {
                         toast('⚠️ Mobile use while driving — first warning', '#f2b84b');
                       }
                       if (window.GameplayRecorder) GameplayRecorder.record('MOBILE_USE', { speed: Math.round(Math.abs(this.speed) * 100), score: this.score, fine: this.fine });
-                      this.hp -= 10; this._uh();
+                      // No HP deduction
                   }
               } else {
                   if (btn) btn.style.borderColor = '#e74c3c';
@@ -3917,31 +3969,14 @@ class Game {
           this._breadcrumbLine.visible = this.kidModeActive;
         }
       }
-      _uh() {
-        const isGod = window._trafficGodMode || (typeof localStorage !== 'undefined' && localStorage.getItem('traffic_god_mode') === 'true');
-        if (isGod) this.hp = 100;
-        const p = Math.max(0, this.hp);
-        const f = this.dom['hfill'];
-        if (f) {
-          if (isGod) {
-            f.style.width = '100%';
-            f.style.background = 'linear-gradient(90deg, #ffd700, #ff8c00)';
-            f.style.boxShadow = '0 0 12px rgba(255, 215, 0, 0.8)';
-          } else {
-            f.style.width = p + '%';
-            f.style.background = '';
-            f.style.boxShadow = '';
-          }
-        }
-        if (p <= 0 && !isGod) this._go("Structural Failure");
-      }
+      _uh() {}
       
       _showIRLDeathPopup(cause) {
         const isGod = window._trafficGodMode || (typeof localStorage !== 'undefined' && localStorage.getItem('traffic_god_mode') === 'true');
         if (isGod) {
           this.hp = 100;
           this._uh();
-          toast('🛡️ GOD MODE: Collision Absorbed! (Unlimited Health)', '#ffd700', 1500);
+          toast('🛡️ GOD MODE: Collision Absorbed!', '#ffd700', 1500);
           return;
         }
         this.pause = true; // Pause game immediately
@@ -4048,11 +4083,22 @@ class Game {
           for (const n of this.npcs) {
             if (!n.position) continue;
             const d = this.player ? this.player.position.distanceTo(n.position) : 999;
-            if (d < 6) {
-              if (n.userData && n.userData.npcType === 'guard') this._reachedGuard = true;
+            if (d < 16) {
+              if (n.userData && (n.userData.npcType === 'guard' || n.userData.isGuard)) this._reachedGuard = true;
               if (n.userData && n.userData.npcType === 'volunteer') this._reachedVolunteer = true;
             }
           }
+        }
+        if (this.peds) {
+          for (const p of this.peds) {
+            if (!p.position) continue;
+            const d = this.player ? this.player.position.distanceTo(p.position) : 999;
+            if (d < 16) {
+              if (p.userData && (p.userData.npcType === 'guard' || p.userData.isGuard)) this._reachedGuard = true;
+            }
+          }
+        }
+        if (this.npcs) {
           // Gap: find two NPCs close together with space between
           for (let i = 0; i < this.npcs.length; i++) {
             for (let j = i + 1; j < this.npcs.length; j++) {
@@ -4134,18 +4180,46 @@ class Game {
               else if (t.target === 'away_gate' && Math.abs(this.speed) > 0.01) complete = true;
               else if (t.target === 'visitor_parking' && this._reachedParking) complete = true;
               else if (t.target === 'main_road' && this._reachedMainRoad) complete = true;
-              else if (t.target === 'guard_signal' && this._reachedGuard) complete = true;
+              else if (t.target === 'guard_signal') {
+                if (this._reachedGuard && Math.abs(this.speed) <= 0.22) complete = true;
+              }
               else if (t.target === 'volunteer_signal' && this._reachedVolunteer) complete = true;
               else if (t.target === 'gap_spot' && this._reachedGap) complete = true;
               break;
             case 'avoid':
               if (t.target === 'honk' && !this._honkedThisFrame) complete = true;
-              else if (t.target === 'speed_zone' && Math.abs(this.speed) > 0.22) { /* fail */ }
+              else if (t.target === 'speed_zone') {
+                if (this.player && this.mapCfg && this.mapCfg.hasSchool) {
+                  const px = this.player.position.x;
+                  const pz = this.player.position.z;
+                  if (px <= 15 && px >= -140 && Math.abs(pz) <= 14) {
+                    if (Math.abs(this.speed) > 0.22) {
+                      if (!this._warnedSchoolSpeed) {
+                        toast('⚠️ School Zone Speeding! Stay under 20 km/h', '#ef4444', 2500);
+                        this._warnedSchoolSpeed = true;
+                      }
+                    } else if (px <= -20 && !this._warnedSchoolSpeed) {
+                      complete = true;
+                    }
+                  }
+                }
+              }
               else if (t.target === 'speed_night' && Math.abs(this.speed) > 0.35) { /* fail */ }
               else if (t.target === 'speed_puddle' && Math.abs(this.speed) > 0.25) { /* fail */ }
               else if (t.target === 'speed_hospital' && Math.abs(this.speed) > 0.25) { /* fail */ }
               else if (t.target === 'speed_festival' && Math.abs(this.speed) > 0.15) { /* fail */ }
-              else if (t.target === 'pedestrian' && this._nearbyPedCount === 0) complete = true;
+              else if (t.target === 'pedestrian') {
+                if (this.player && this.mapCfg && this.mapCfg.hasSchool) {
+                  const px = this.player.position.x;
+                  if (px <= -35 && px >= -95) {
+                    if (!this._collidedThisFrame && Math.abs(this.speed) <= 0.22) {
+                      complete = true;
+                    }
+                  }
+                } else if (this._nearbyPedCount === 0) {
+                  complete = true;
+                }
+              }
               else if (t.target === 'collision' && !this._collidedThisFrame) complete = true;
               else if (t.target === 'ambulance' && !this._ambulanceNear) complete = true;
               else if (t.target === 'stop_sudden' && this._maintainedSpeed) complete = true;
@@ -4253,7 +4327,7 @@ class Game {
         if (isGod) {
           this.hp = 100;
           this._uh();
-          toast('🛡️ GOD MODE: Damage Prevented! (Unlimited Health)', '#ffd700', 1500);
+          toast('🛡️ GOD MODE: Collision Prevented!', '#ffd700', 1500);
           return;
         }
         this.stopPlay();
@@ -4291,7 +4365,7 @@ class Game {
         if (!this.playing) return;
         let finalBase = this.score + 500;
         if (this.retries > 0) {
-          if (this.vio > 0 || this.hp < 100) {
+          if (this.vio > 0) {
             finalBase = Math.round(finalBase * 0.5); // 50% penalty if retry and not perfect
           }
         }
@@ -4448,6 +4522,9 @@ class Game {
 
       // 🚦 MAP CONFIGURATIONS FOR ALL MUMBAI LEVELS 🚦
       _getMapConfig(lvId) {
+        if (typeof ui !== 'undefined' && ui.cur && (ui.cur.isAISynthesized || String(lvId).startsWith('ai_'))) {
+          return ui.cur;
+        }
         let lv = null;
         if (window.LVS) {
             lv = window.LVS.find(l => l.id === lvId);
@@ -4494,138 +4571,79 @@ class Game {
           3: { name: 'Bandra Backroads', sky: 0xa8c4d8, fog: 500, ground: 0x3a5a2e, amb: 0.75, veh: 'twowheeler', npcTypes: ['car', 'auto', 'bike', 'cycle', 'auto', 'car', 'taxi', 'bike', 'auto', 'car', 'bike', 'car', 'auto', 'cycle', 'car', 'bike', 'auto', 'car'], roads: [{ type: 'v', x: 0, z1: -140, z2: 1000 }, { type: 'h', z: -120, x1: -20, x2: 140 }, { type: 'v', x: 120, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -20, x2: 140 }, { type: 'h', z: -240, x1: -140, x2: 20 }, { type: 'h', z: -240, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: -380, z2: -220 }, { type: 'h', z: -360, x1: -260, x2: -100 }, { type: 'v', x: -120, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: -620, z2: -460 }, { type: 'v', x: -240, z1: -740, z2: -580 }, { type: 'h', z: -720, x1: -380, x2: -220 }, { type: 'h', z: -720, x1: -500, x2: -340 }, { type: 'h', z: -720, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: -860, z2: -700 }, { type: 'h', z: -840, x1: -620, x2: -460 }, { type: 'v', x: -480, z1: -980, z2: -820 }, { type: 'v', x: -480, z1: -1100, z2: -940 }, { type: 'h', z: -1080, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: -1220, z2: -1060 }, { type: 'h', z: -1200, x1: -380, x2: -220 }, { type: 'v', x: -240, z1: -1220, z2: -1060 }, { type: 'h', z: -1080, x1: -260, x2: -100 }, { type: 'h', z: -1080, x1: -140, x2: 20 }, { type: 'h', z: -1080, x1: -20, x2: 140 }, { type: 'h', z: -1080, x1: 100, x2: 260 }, { type: 'h', z: -1080, x1: 220, x2: 1360 }, { type: 'h', z: -1080, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -2080, z2: -80 }, { type: 'h', z: -240, x1: -880, x2: 1120 }, { type: 'v', x: 120, z1: -1240, z2: 760 }, { type: 'h', z: -1080, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -2080, z2: -80 }, { type: 'h', z: -360, x1: -1240, x2: 760 }, { type: 'v', x: -240, z1: -1360, z2: 640 }, { type: 'h', z: -120, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -1120, z2: 880 }], route: [{ x: 0, z: 0 }, { x: 0, z: -120 }, { x: 120, z: -120 }, { x: 120, z: -240 }, { x: 0, z: -240 }, { x: -120, z: -240 }, { x: -240, z: -240 }, { x: -240, z: -360 }, { x: -120, z: -360 }, { x: -120, z: -480 }, { x: -240, z: -480 }, { x: -240, z: -600 }, { x: -240, z: -720 }, { x: -360, z: -720 }, { x: -480, z: -720 }, { x: -600, z: -720 }, { x: -600, z: -840 }, { x: -480, z: -840 }, { x: -480, z: -960 }, { x: -480, z: -1080 }, { x: -360, z: -1080 }, { x: -360, z: -1200 }, { x: -240, z: -1200 }, { x: -240, z: -1080 }, { x: -120, z: -1080 }, { x: 0, z: -1080 }, { x: 120, z: -1080 }, { x: 240, z: -1080 }, { x: 360, z: -1080 }], ints: [[-240, -240], [-360, -720], [-120, -360], [-480, -960], [0, 0], [-120, -480], [-600, -720], [-240, -480], [120, -240], [120, -1080], [-480, -720], [0, -240], [-480, -1080], [-600, -840], [-240, -1080], [-120, -1080], [240, -1080], [-360, -1080], [-240, -720], [360, -1080], [-360, -1200], [0, -1080], [-240, -1200], [0, -120], [120, -120], [-480, -840], [-240, -360], [-240, -600], [-120, -240]], bldg: [{ x: -22, z1: -120, z2: 0, s: 0.9 }, { x: 22, z1: -120, z2: 0, s: 0.9 }, { x: 98, z1: -240, z2: -120, s: 0.9 }, { x: 142, z1: -240, z2: -120, s: 0.9 }, { x: -262, z1: -360, z2: -240, s: 0.9 }, { x: -218, z1: -360, z2: -240, s: 0.9 }, { x: -142, z1: -480, z2: -360, s: 0.9 }, { x: -98, z1: -480, z2: -360, s: 0.9 }, { x: -262, z1: -600, z2: -480, s: 0.9 }, { x: -218, z1: -600, z2: -480, s: 0.9 }, { x: -262, z1: -720, z2: -600, s: 0.9 }, { x: -218, z1: -720, z2: -600, s: 0.9 }, { x: -622, z1: -840, z2: -720, s: 0.9 }, { x: -578, z1: -840, z2: -720, s: 0.9 }, { x: -502, z1: -960, z2: -840, s: 0.9 }, { x: -458, z1: -960, z2: -840, s: 0.9 }, { x: -502, z1: -1080, z2: -960, s: 0.9 }, { x: -458, z1: -1080, z2: -960, s: 0.9 }, { x: -382, z1: -1200, z2: -1080, s: 0.9 }, { x: -338, z1: -1200, z2: -1080, s: 0.9 }, { x: -262, z1: -1200, z2: -1080, s: 0.9 }, { x: -218, z1: -1200, z2: -1080, s: 0.9 }], timeLimit: 830, hasGarage: true, assets: ['suburban', 'industrial'] },
           4: { name: 'Juhu Boulevard', sky: 0x6fb8e0, fog: 650, ground: 0x2e6b3a, amb: 0.9, veh: 'car', npcTypes: ['car', 'car', 'auto', 'bike', 'car', 'bus', 'taxi', 'car', 'auto', 'bike', 'car', 'car', 'bus', 'auto', 'car', 'bike', 'car', 'auto', 'car', 'taxi'], hasBeach: true, roads: [{ type: 'h', z: 0, x1: -140, x2: 1000 }, { type: 'v', x: -120, z1: -140, z2: 20 }, { type: 'h', z: -120, x1: -260, x2: -100 }, { type: 'h', z: -120, x1: -380, x2: -220 }, { type: 'h', z: -120, x1: -500, x2: -340 }, { type: 'h', z: -120, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -620, x2: -460 }, { type: 'v', x: -480, z1: -380, z2: -220 }, { type: 'h', z: -360, x1: -620, x2: -460 }, { type: 'h', z: -360, x1: -740, x2: -580 }, { type: 'v', x: -720, z1: -380, z2: -220 }, { type: 'h', z: -240, x1: -860, x2: -700 }, { type: 'v', x: -840, z1: -380, z2: -220 }, { type: 'v', x: -840, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: -980, x2: -820 }, { type: 'v', x: -960, z1: -500, z2: -340 }, { type: 'h', z: -360, x1: -1100, x2: -940 }, { type: 'v', x: -1080, z1: -500, z2: -340 }, { type: 'v', x: -1080, z1: -620, z2: -460 }, { type: 'h', z: -600, x1: -1220, x2: -1060 }, { type: 'v', x: -1200, z1: -620, z2: -460 }, { type: 'v', x: -1200, z1: -500, z2: -340 }, { type: 'h', z: -360, x1: -1340, x2: -1180 }, { type: 'h', z: -360, x1: -1460, x2: -1300 }, { type: 'v', x: -1440, z1: -500, z2: -340 }, { type: 'v', x: -1440, z1: -620, z2: -460 }, { type: 'h', z: -600, x1: -1460, x2: -1300 }, { type: 'v', x: -1320, z1: -620, z2: 520 }, { type: 'h', z: -360, x1: -1960, x2: 40 }, { type: 'v', x: -960, z1: -1360, z2: 640 }, { type: 'h', z: -360, x1: -1960, x2: 40 }, { type: 'v', x: -960, z1: -1360, z2: 640 }, { type: 'h', z: -360, x1: -1840, x2: 160 }, { type: 'v', x: -840, z1: -1360, z2: 640 }, { type: 'h', z: -120, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -1120, z2: 880 }, { type: 'h', z: -120, x1: -1360, x2: 640 }, { type: 'v', x: -360, z1: -1120, z2: 880 }], route: [{ x: 0, z: 0 }, { x: -120, z: 0 }, { x: -120, z: -120 }, { x: -240, z: -120 }, { x: -360, z: -120 }, { x: -480, z: -120 }, { x: -600, z: -120 }, { x: -600, z: -240 }, { x: -480, z: -240 }, { x: -480, z: -360 }, { x: -600, z: -360 }, { x: -720, z: -360 }, { x: -720, z: -240 }, { x: -840, z: -240 }, { x: -840, z: -360 }, { x: -840, z: -480 }, { x: -960, z: -480 }, { x: -960, z: -360 }, { x: -1080, z: -360 }, { x: -1080, z: -480 }, { x: -1080, z: -600 }, { x: -1200, z: -600 }, { x: -1200, z: -480 }, { x: -1200, z: -360 }, { x: -1320, z: -360 }, { x: -1440, z: -360 }, { x: -1440, z: -480 }, { x: -1440, z: -600 }, { x: -1320, z: -600 }, { x: -1320, z: -480 }], ints: [[-840, -240], [-1440, -360], [-480, -360], [-960, -360], [-1440, -600], [-1320, -600], [-960, -480], [-240, -120], [-1080, -600], [0, 0], [-1440, -480], [-1200, -480], [-1200, -360], [-720, -360], [-1080, -480], [-600, -360], [-600, -120], [-1320, -360], [-360, -120], [-120, 0], [-840, -360], [-1320, -480], [-1200, -600], [-120, -120], [-480, -240], [-480, -120], [-1080, -360], [-720, -240], [-840, -480], [-600, -240]], bldg: [{ x: -142, z1: -120, z2: 0, s: 0.9 }, { x: -98, z1: -120, z2: 0, s: 0.9 }, { x: -622, z1: -240, z2: -120, s: 0.9 }, { x: -578, z1: -240, z2: -120, s: 0.9 }, { x: -502, z1: -360, z2: -240, s: 0.9 }, { x: -458, z1: -360, z2: -240, s: 0.9 }, { x: -742, z1: -360, z2: -240, s: 0.9 }, { x: -698, z1: -360, z2: -240, s: 0.9 }, { x: -862, z1: -360, z2: -240, s: 0.9 }, { x: -818, z1: -360, z2: -240, s: 0.9 }, { x: -862, z1: -480, z2: -360, s: 0.9 }, { x: -818, z1: -480, z2: -360, s: 0.9 }, { x: -982, z1: -480, z2: -360, s: 0.9 }, { x: -938, z1: -480, z2: -360, s: 0.9 }, { x: -1102, z1: -480, z2: -360, s: 0.9 }, { x: -1058, z1: -480, z2: -360, s: 0.9 }, { x: -1102, z1: -600, z2: -480, s: 0.9 }, { x: -1058, z1: -600, z2: -480, s: 0.9 }, { x: -1222, z1: -600, z2: -480, s: 0.9 }, { x: -1178, z1: -600, z2: -480, s: 0.9 }, { x: -1222, z1: -480, z2: -360, s: 0.9 }, { x: -1178, z1: -480, z2: -360, s: 0.9 }, { x: -1462, z1: -480, z2: -360, s: 0.9 }, { x: -1418, z1: -480, z2: -360, s: 0.9 }, { x: -1462, z1: -600, z2: -480, s: 0.9 }, { x: -1418, z1: -600, z2: -480, s: 0.9 }, { x: -1342, z1: -600, z2: -480, s: 0.9 }, { x: -1298, z1: -600, z2: -480, s: 0.9 }], timeLimit: 940, hasGarage: true, assets: ['suburban', 'industrial'] },
           5: {
-            name: 'Parel School Zone',
+            name: 'Parel School District',
             sky: 0x95c0d4,
             fog: 600,
             ground: 0x447a3e,
             amb: 0.85,
             veh: 'car',
-            npcTypes: ['car', 'auto', 'cycle', 'bike', 'auto', 'car', 'taxi', 'car', 'auto', 'bike', 'car', 'cycle', 'auto', 'car', 'bus', 'car', 'auto', 'car', 'truck', 'bus'],
+            npcTypes: ['car', 'auto', 'cycle', 'bike', 'auto', 'car', 'taxi', 'car', 'auto', 'bike', 'car', 'cycle', 'auto', 'car', 'bus', 'car', 'auto', 'car'],
             hasSchool: true,
-            speedLimit: 25,
+            speedLimit: 20,
             isSilenceZone: true,
             roads: [
-              // Major Long Continuous East-West Avenues (Generous Multi-lane Corridors)
-              { type: 'h', z: 0, x1: -1200, x2: 1200, lanes: 4, width: 28, name: 'St. Xavier School Boulevard' },
-              { type: 'h', z: -120, x1: -1200, x2: 1200, lanes: 4, width: 28, name: 'Parel Commercial Crossway' },
-              { type: 'h', z: -240, x1: -1200, x2: 1200, lanes: 2, width: 18, name: 'Market Central Lane' },
-              { type: 'h', z: -360, x1: -1200, x2: 1200, lanes: 4, width: 28, name: 'Dr. Ambedkar Arterial Marg' },
-              { type: 'h', z: -480, x1: -1200, x2: 1200, lanes: 2, width: 18, name: 'Lalbaug Commercial Lane' },
-              { type: 'h', z: -600, x1: -1200, x2: 1200, lanes: 4, width: 28, name: 'Cotton Green Boulevard' },
-              { type: 'h', z: -720, x1: -1200, x2: 1200, lanes: 4, width: 28, name: 'Sewri Ring Road' },
-              { type: 'h', z: -1080, x1: -1200, x2: 1200, lanes: 4, width: 30, name: 'North Marine Grand Avenue' },
-              // Major Long Continuous North-South Avenues
-              { type: 'v', x: -120, z1: -1200, z2: 300, lanes: 4, width: 28, name: 'Parel West Avenue' },
-              { type: 'v', x: -360, z1: -1200, z2: 300, lanes: 4, width: 28, name: 'Hospital North Corridor' },
-              { type: 'v', x: -600, z1: -1200, z2: 300, lanes: 4, width: 28, name: 'Currey Road Link' },
-              { type: 'v', x: 0, z1: -1200, z2: 300, lanes: 4, width: 28, name: 'Central Tram Avenue' },
-              { type: 'v', x: 240, z1: -1200, z2: 300, lanes: 4, width: 28, name: 'Lower Parel Link' },
-              { type: 'v', x: 360, z1: -1200, z2: 300, lanes: 4, width: 28, name: 'East Commercial Avenue' },
-              { type: 'v', x: 480, z1: -1200, z2: 300, lanes: 4, width: 28, name: 'Harbor Connection' },
-              { type: 'v', x: 600, z1: -1200, z2: 300, lanes: 4, width: 28, name: 'Grand Trunk Expressway' }
+              // ── EAST-WEST ARTERIAL CORRIDORS (Standard Width 14m, 4 Lanes, IRC Compliant) ──
+              { type: 'h', z: 0, x1: -480, x2: 480, lanes: 4, width: 14, name: 'St. Xavier School Boulevard' },
+              { type: 'h', z: -120, x1: -480, x2: 480, lanes: 4, width: 14, name: 'Parel Commercial Crossway' },
+              { type: 'h', z: -240, x1: -480, x2: 480, lanes: 4, width: 14, name: 'North Parel Marg' },
+              { type: 'h', z: 120, x1: -480, x2: 480, lanes: 4, width: 14, name: 'South Parel Avenue' },
+              { type: 'h', z: 240, x1: -480, x2: 480, lanes: 4, width: 14, name: 'Sewri Link Expressway' },
+
+              // ── NORTH-SOUTH CONNECTING AVENUES (Standard Width 14m, 4 Lanes) ──
+              { type: 'v', x: -480, z1: -240, z2: 240, lanes: 4, width: 14, name: 'Currey Road Arterial' },
+              { type: 'v', x: -240, z1: -240, z2: 240, lanes: 4, width: 14, name: 'Parel West Link' },
+              { type: 'v', x: 0, z1: -240, z2: 240, lanes: 4, width: 14, name: 'Central Tram Avenue' },
+              { type: 'v', x: 240, z1: -240, z2: 240, lanes: 4, width: 14, name: 'Lower Parel Link' },
+              { type: 'v', x: 480, z1: -240, z2: 240, lanes: 4, width: 14, name: 'East Commercial Highway' }
             ],
             route: [
-              { x: -35, z: 0 },
-              { x: -65, z: 0 },
-              { x: -120, z: 0 },
-              { x: -120, z: -120 },
-              { x: -240, z: -120 },
-              { x: -360, z: -120 },
-              { x: -360, z: -240 },
-              { x: -360, z: -360 },
-              { x: -480, z: -360 },
-              { x: -600, z: -360 },
-              { x: -600, z: -480 },
-              { x: -600, z: -600 },
-              { x: -600, z: -720 },
-              { x: -480, z: -720 },
-              { x: -360, z: -720 },
-              { x: -360, z: -840 },
-              { x: -360, z: -960 },
-              { x: -360, z: -1080 },
-              { x: -240, z: -1080 },
-              { x: -120, z: -1080 },
-              { x: 0, z: -1080 },
-              { x: 120, z: -1080 },
-              { x: 240, z: -1080 },
-              { x: 360, z: -1080 },
-              { x: 360, z: -960 },
-              { x: 360, z: -840 },
-              { x: 360, z: -720 },
-              { x: 360, z: -600 },
-              { x: 480, z: -600 },
-              { x: 600, z: -600 },
-              { x: 600, z: -480 },
-              { x: 480, z: -480 },
-              { x: 480, z: -360 },
-              { x: 360, z: -360 },
-              { x: 360, z: -480 },
-              { x: 240, z: -480 },
-              { x: 240, z: -600 },
-              { x: 120, z: -600 }
+              { x: 80, z: 0, desc: 'Parel East Approach - Start Driving' },
+              { x: -10, z: 0, desc: 'School Zone Entry - Reduce to 20 km/h' },
+              { x: -60, z: 0, desc: 'St. Xavier School Crossing - Yield to Children & Guard' },
+              { x: -240, z: 0, desc: 'Parel West Junction - Turn Left' },
+              { x: -240, z: 120, desc: 'South Parel Avenue - Turn Right' },
+              { x: -480, z: 120, desc: 'Parel Terminal Destination Gate - Mission Complete' }
             ],
             ints: [
-              [-120, 0], [-360, 0], [-600, 0], [0, 0], [240, 0], [360, 0], [480, 0], [600, 0],
-              [-120, -120], [-360, -120], [-600, -120], [0, -120], [240, -120], [360, -120], [480, -120], [600, -120],
-              [-120, -240], [-360, -240], [-600, -240], [0, -240], [240, -240], [360, -240], [480, -240], [600, -240],
-              [-120, -360], [-360, -360], [-600, -360], [0, -360], [240, -360], [360, -360], [480, -360], [600, -360],
-              [-120, -480], [-360, -480], [-600, -480], [0, -480], [240, -480], [360, -480], [480, -480], [600, -480],
-              [-120, -600], [-360, -600], [-600, -600], [0, -600], [240, -600], [360, -600], [480, -600], [600, -600],
-              [-120, -720], [-360, -720], [-600, -720], [0, -720], [240, -720], [360, -720], [480, -720], [600, -720],
-              [-120, -1080], [-360, -1080], [-600, -1080], [0, -1080], [240, -1080], [360, -1080], [480, -1080], [600, -1080]
+              [-480, -240], [-240, -240], [0, -240], [240, -240], [480, -240],
+              [-480, -120], [-240, -120], [0, -120], [240, -120], [480, -120],
+              [-480, 0],    [-240, 0],    [0, 0],    [240, 0],    [480, 0],
+              [-480, 120],  [-240, 120],  [0, 120],  [240, 120],  [480, 120],
+              [-480, 240],  [-240, 240],  [0, 240],  [240, 240],  [480, 240]
             ],
             bldg: [
-              // Flanking St. Xavier School Boulevard (Z = 0)
-              { x: -22, z1: -120, z2: 0, s: 0.9 }, { x: 22, z1: -120, z2: 0, s: 0.9 },
-              { x: -22, z1: 0, z2: 120, s: 0.9 }, { x: 22, z1: 0, z2: 120, s: 0.9 },
-              { x: -142, z1: 0, z2: 120, s: 0.9 }, { x: -98, z1: 0, z2: 120, s: 0.9 },
-              { x: 218, z1: 0, z2: 120, s: 0.9 }, { x: 262, z1: 0, z2: 120, s: 0.9 },
-              { x: 338, z1: 0, z2: 120, s: 0.9 }, { x: 382, z1: 0, z2: 120, s: 0.9 },
-              { x: 458, z1: 0, z2: 120, s: 0.9 }, { x: 502, z1: 0, z2: 120, s: 0.9 },
-              { x: 578, z1: 0, z2: 120, s: 0.9 }, { x: 622, z1: 0, z2: 120, s: 0.9 },
-              // Flanking Parel West Avenue (X = -120)
-              { x: -142, z1: -120, z2: 0, s: 0.9 }, { x: -98, z1: -120, z2: 0, s: 0.9 },
-              { x: -142, z1: -240, z2: -120, s: 0.9 }, { x: -98, z1: -240, z2: -120, s: 0.9 },
-              { x: -142, z1: -360, z2: -240, s: 0.9 }, { x: -98, z1: -360, z2: -240, s: 0.9 },
-              // Flanking Parel Commercial Crossway (Z = -120)
-              { x: -262, z1: -120, z2: 0, s: 0.9 }, { x: -218, z1: -120, z2: 0, s: 0.9 },
-              { x: -382, z1: -120, z2: 0, s: 0.9 }, { x: -338, z1: -120, z2: 0, s: 0.9 },
-              { x: -502, z1: -120, z2: 0, s: 0.9 }, { x: -458, z1: -120, z2: 0, s: 0.9 },
-              // Flanking Dr. Ambedkar Marg (X = -360)
-              { x: -382, z1: -240, z2: -120, s: 0.9 }, { x: -338, z1: -240, z2: -120, s: 0.9 },
-              { x: -382, z1: -360, z2: -240, s: 0.9 }, { x: -338, z1: -360, z2: -240, s: 0.9 },
-              { x: -382, z1: -480, z2: -360, s: 0.9 }, { x: -338, z1: -480, z2: -360, s: 0.9 },
-              // Flanking Lalbaug Arterial (Z = -360)
-              { x: -502, z1: -360, z2: -240, s: 0.9 }, { x: -458, z1: -360, z2: -240, s: 0.9 },
-              { x: -622, z1: -360, z2: -240, s: 0.9 }, { x: -578, z1: -360, z2: -240, s: 0.9 },
-              // Flanking Currey Road Corridor (X = -600)
-              { x: -622, z1: -480, z2: -360, s: 0.9 }, { x: -578, z1: -480, z2: -360, s: 0.9 },
-              { x: -622, z1: -600, z2: -480, s: 0.9 }, { x: -578, z1: -600, z2: -480, s: 0.9 },
-              { x: -622, z1: -720, z2: -600, s: 0.9 }, { x: -578, z1: -720, z2: -600, s: 0.9 },
-              // Flanking Sewri Ring Road & North Loop (Z = -720 to -1080)
-              { x: -502, z1: -720, z2: -600, s: 0.9 }, { x: -458, z1: -720, z2: -600, s: 0.9 },
-              { x: -382, z1: -840, z2: -720, s: 0.9 }, { x: -338, z1: -840, z2: -720, s: 0.9 },
-              { x: -382, z1: -960, z2: -840, s: 0.9 }, { x: -338, z1: -960, z2: -840, s: 0.9 },
-              { x: -382, z1: -1080, z2: -960, s: 0.9 }, { x: -338, z1: -1080, z2: -960, s: 0.9 },
-              { x: -262, z1: -1080, z2: -960, s: 0.9 }, { x: -218, z1: -1080, z2: -960, s: 0.9 },
-              { x: -142, z1: -1080, z2: -960, s: 0.9 }, { x: -98, z1: -1080, z2: -960, s: 0.9 },
-              { x: -22, z1: -1080, z2: -960, s: 0.9 }, { x: 22, z1: -1080, z2: -960, s: 0.9 },
-              { x: 98, z1: -1080, z2: -960, s: 0.9 }, { x: 142, z1: -1080, z2: -960, s: 0.9 },
-              { x: 218, z1: -1080, z2: -960, s: 0.9 }, { x: 262, z1: -1080, z2: -960, s: 0.9 },
-              { x: 338, z1: -1080, z2: -960, s: 0.9 }, { x: 382, z1: -1080, z2: -960, s: 0.9 },
-              // East Side Avenues (X = 360, 480, 600)
-              { x: 338, z1: -960, z2: -840, s: 0.9 }, { x: 382, z1: -960, z2: -840, s: 0.9 },
-              { x: 338, z1: -840, z2: -720, s: 0.9 }, { x: 382, z1: -840, z2: -720, s: 0.9 },
-              { x: 338, z1: -720, z2: -600, s: 0.9 }, { x: 382, z1: -720, z2: -600, s: 0.9 },
-              { x: 578, z1: -600, z2: -480, s: 0.9 }, { x: 622, z1: -600, z2: -480, s: 0.9 },
-              { x: 458, z1: -480, z2: -360, s: 0.9 }, { x: 502, z1: -480, z2: -360, s: 0.9 },
-              { x: 338, z1: -480, z2: -360, s: 0.9 }, { x: 382, z1: -480, z2: -360, s: 0.9 },
-              { x: 218, z1: -600, z2: -480, s: 0.9 }, { x: 262, z1: -600, z2: -480, s: 0.9 }
+              // North of St. Xavier School Blvd (Z = 0) - Flanking Central Tram Ave (X = 0)
+              { x: 22, z1: -100, z2: -20, s: 0.9 },
+              // Note: X in [-100, -20] at Z = -32 is reserved for St. Xavier School Campus (Zero Building Clipping!)
+              { x: -142, z1: -100, z2: -20, s: 0.9 }, { x: -98, z1: -100, z2: -20, s: 0.9 },
+
+              // South of St. Xavier School Blvd (Z = 0 to 120) - Flanking Central Tram Ave (X = 0)
+              { x: -22, z1: 20, z2: 100, s: 0.9 }, { x: 22, z1: 20, z2: 100, s: 0.9 },
+              // Flanking Parel West Link (X = -240)
+              { x: -262, z1: 20, z2: 100, s: 0.9 }, { x: -218, z1: 20, z2: 100, s: 0.9 },
+              { x: -262, z1: -100, z2: -20, s: 0.9 }, { x: -218, z1: -100, z2: -20, s: 0.9 },
+              { x: -262, z1: -220, z2: -140, s: 0.9 }, { x: -218, z1: -220, z2: -140, s: 0.9 },
+
+              // Flanking Lower Parel Link (X = 240)
+              { x: 218, z1: 20, z2: 100, s: 0.9 }, { x: 262, z1: 20, z2: 100, s: 0.9 },
+              { x: 218, z1: -100, z2: -20, s: 0.9 }, { x: 262, z1: -100, z2: -20, s: 0.9 },
+              { x: 218, z1: -220, z2: -140, s: 0.9 }, { x: 262, z1: -220, z2: -140, s: 0.9 },
+
+              // Flanking Currey Road (X = -480)
+              { x: -458, z1: 20, z2: 100, s: 0.9 },
+              { x: -458, z1: -100, z2: -20, s: 0.9 },
+              { x: -458, z1: -220, z2: -140, s: 0.9 },
+
+              // Flanking East Commercial Highway (X = 480)
+              { x: 458, z1: 20, z2: 100, s: 0.9 },
+              { x: 458, z1: -100, z2: -20, s: 0.9 },
+              { x: 458, z1: -220, z2: -140, s: 0.9 }
             ],
-            timeLimit: 1200,
+            timeLimit: 300,
             hasGarage: true,
             assets: ['suburban', 'industrial']
           },
+
           6: { name: 'Matunga Rail Corridor', sky: 0x7fafc4, fog: 600, ground: 0x3a6130, amb: 0.7, veh: 'car', npcTypes: ['car', 'auto', 'car', 'bike', 'car', 'auto', 'taxi', 'car', 'auto', 'bike', 'car', 'truck', 'auto', 'car', 'car', 'bike', 'car', 'auto'], hasRailway: true, railZ: [0], hasMetro: true, hasMountain: true, roads: [{ type: 'h', z: 0, x1: -1000, x2: 140 }, { type: 'v', x: 120, z1: -140, z2: 20 }, { type: 'h', z: -120, x1: 100, x2: 260 }, { type: 'h', z: -120, x1: 220, x2: 380 }, { type: 'v', x: 360, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: 340, x2: 500 }, { type: 'v', x: 480, z1: -260, z2: -100 }, { type: 'v', x: 480, z1: -140, z2: 20 }, { type: 'v', x: 480, z1: -20, z2: 140 }, { type: 'h', z: 120, x1: 460, x2: 620 }, { type: 'v', x: 600, z1: -20, z2: 140 }, { type: 'h', z: 0, x1: 580, x2: 740 }, { type: 'v', x: 720, z1: -20, z2: 140 }, { type: 'v', x: 720, z1: 100, z2: 260 }, { type: 'h', z: 240, x1: 700, x2: 860 }, { type: 'h', z: 240, x1: 820, x2: 980 }, { type: 'h', z: 240, x1: 940, x2: 1100 }, { type: 'v', x: 1080, z1: 220, z2: 380 }, { type: 'h', z: 360, x1: 940, x2: 1100 }, { type: 'v', x: 960, z1: 340, z2: 500 }, { type: 'h', z: 480, x1: 940, x2: 1100 }, { type: 'h', z: 480, x1: 1060, x2: 1220 }, { type: 'v', x: 1200, z1: 460, z2: 620 }, { type: 'h', z: 600, x1: 1060, x2: 1220 }, { type: 'v', x: 1080, z1: 580, z2: 740 }, { type: 'v', x: 1080, z1: 700, z2: 860 }, { type: 'h', z: 840, x1: 940, x2: 1100 }, { type: 'v', x: 960, z1: 700, z2: 860 }, { type: 'h', z: 720, x1: 820, x2: 980 }, { type: 'v', x: 840, z1: 580, z2: 740 }, { type: 'h', z: 600, x1: 820, x2: 1960 }, { type: 'h', z: 0, x1: -520, x2: 1480 }, { type: 'v', x: 480, z1: -1000, z2: 1000 }, { type: 'h', z: 120, x1: -400, x2: 1600 }, { type: 'v', x: 600, z1: -880, z2: 1120 }, { type: 'h', z: 120, x1: -520, x2: 1480 }, { type: 'v', x: 480, z1: -880, z2: 1120 }, { type: 'h', z: 720, x1: -160, x2: 1840 }, { type: 'v', x: 840, z1: -280, z2: 1720 }, { type: 'h', z: 720, x1: 80, x2: 2080 }, { type: 'v', x: 1080, z1: -280, z2: 1720 }], route: [{ x: 0, z: 0 }, { x: 120, z: 0 }, { x: 120, z: -120 }, { x: 240, z: -120 }, { x: 360, z: -120 }, { x: 360, z: -240 }, { x: 480, z: -240 }, { x: 480, z: -120 }, { x: 480, z: 0 }, { x: 480, z: 120 }, { x: 600, z: 120 }, { x: 600, z: 0 }, { x: 720, z: 0 }, { x: 720, z: 120 }, { x: 720, z: 240 }, { x: 840, z: 240 }, { x: 960, z: 240 }, { x: 1080, z: 240 }, { x: 1080, z: 360 }, { x: 960, z: 360 }, { x: 960, z: 480 }, { x: 1080, z: 480 }, { x: 1200, z: 480 }, { x: 1200, z: 600 }, { x: 1080, z: 600 }, { x: 1080, z: 720 }, { x: 1080, z: 840 }, { x: 960, z: 840 }, { x: 960, z: 720 }, { x: 840, z: 720 }, { x: 840, z: 600 }, { x: 960, z: 600 }], ints: [[600, 0], [360, -120], [480, -120], [720, 120], [960, 720], [960, 480], [480, 120], [0, 0], [480, -240], [720, 0], [840, 720], [960, 840], [240, -120], [360, -240], [960, 360], [1080, 840], [120, 0], [840, 600], [600, 120], [1080, 720], [1080, 360], [1200, 480], [960, 240], [1080, 480], [120, -120], [1080, 240], [1080, 600], [480, 0], [720, 240], [960, 600], [1200, 600], [840, 240]], bldg: [{ x: 98, z1: -120, z2: 0, s: 0.9 }, { x: 142, z1: -120, z2: 0, s: 0.9 }, { x: 338, z1: -240, z2: -120, s: 0.9 }, { x: 382, z1: -240, z2: -120, s: 0.9 }, { x: 458, z1: -240, z2: -120, s: 0.9 }, { x: 502, z1: -240, z2: -120, s: 0.9 }, { x: 458, z1: -120, z2: 0, s: 0.9 }, { x: 502, z1: -120, z2: 0, s: 0.9 }, { x: 458, z1: 0, z2: 120, s: 0.9 }, { x: 502, z1: 0, z2: 120, s: 0.9 }, { x: 578, z1: 0, z2: 120, s: 0.9 }, { x: 622, z1: 0, z2: 120, s: 0.9 }, { x: 698, z1: 0, z2: 120, s: 0.9 }, { x: 742, z1: 0, z2: 120, s: 0.9 }, { x: 698, z1: 120, z2: 240, s: 0.9 }, { x: 742, z1: 120, z2: 240, s: 0.9 }, { x: 1058, z1: 240, z2: 360, s: 0.9 }, { x: 1102, z1: 240, z2: 360, s: 0.9 }, { x: 938, z1: 360, z2: 480, s: 0.9 }, { x: 982, z1: 360, z2: 480, s: 0.9 }, { x: 1178, z1: 480, z2: 600, s: 0.9 }, { x: 1222, z1: 480, z2: 600, s: 0.9 }, { x: 1058, z1: 600, z2: 720, s: 0.9 }, { x: 1102, z1: 600, z2: 720, s: 0.9 }, { x: 1058, z1: 720, z2: 840, s: 0.9 }, { x: 1102, z1: 720, z2: 840, s: 0.9 }, { x: 938, z1: 720, z2: 840, s: 0.9 }, { x: 982, z1: 720, z2: 840, s: 0.9 }, { x: 818, z1: 600, z2: 720, s: 0.9 }, { x: 862, z1: 600, z2: 720, s: 0.9 }], timeLimit: 1160, hasGarage: true, assets: ['suburban', 'industrial', 'trains'] },
           7: { name: 'Marine Drive', sky: 0x4a90d9, fog: 700, ground: 0x1a6b5a, amb: 0.9, veh: 'car', npcTypes: ['car', 'car', 'auto', 'bike', 'car', 'bus', 'taxi', 'car', 'auto', 'car', 'bike', 'car', 'car', 'bus', 'auto', 'taxi', 'car', 'bike', 'car', 'auto'], hasOcean: true, roads: [{ type: 'h', z: 0, x1: -1000, x2: 140 }, { type: 'h', z: 0, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: -20, z2: 140 }, { type: 'h', z: 120, x1: 220, x2: 380 }, { type: 'v', x: 360, z1: 100, z2: 260 }, { type: 'h', z: 240, x1: 340, x2: 500 }, { type: 'h', z: 240, x1: 460, x2: 620 }, { type: 'h', z: 240, x1: 580, x2: 740 }, { type: 'v', x: 720, z1: 100, z2: 260 }, { type: 'v', x: 720, z1: -20, z2: 140 }, { type: 'h', z: 0, x1: 700, x2: 860 }, { type: 'v', x: 840, z1: -20, z2: 140 }, { type: 'v', x: 840, z1: 100, z2: 260 }, { type: 'v', x: 840, z1: 220, z2: 380 }, { type: 'h', z: 360, x1: 700, x2: 860 }, { type: 'h', z: 360, x1: 580, x2: 740 }, { type: 'h', z: 360, x1: 460, x2: 620 }, { type: 'v', x: 480, z1: 340, z2: 500 }, { type: 'v', x: 480, z1: 460, z2: 620 }, { type: 'v', x: 480, z1: 580, z2: 740 }, { type: 'h', z: 720, x1: 340, x2: 500 }, { type: 'v', x: 360, z1: 580, z2: 740 }, { type: 'h', z: 600, x1: 220, x2: 380 }, { type: 'h', z: 600, x1: 100, x2: 260 }, { type: 'v', x: 120, z1: 460, z2: 620 }, { type: 'v', x: 120, z1: 340, z2: 500 }, { type: 'v', x: 120, z1: 220, z2: 380 }, { type: 'h', z: 240, x1: -20, x2: 140 }, { type: 'v', x: 0, z1: 220, z2: 380 }, { type: 'v', x: 0, z1: 340, z2: 500 }, { type: 'h', z: 480, x1: -140, x2: 20 }, { type: 'h', z: 480, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: 460, z2: 620 }, { type: 'v', x: -240, z1: 580, z2: 740 }, { type: 'h', z: 720, x1: -380, x2: -220 }, { type: 'v', x: -360, z1: 700, z2: 860 }, { type: 'h', z: 840, x1: -500, x2: -340 }, { type: 'h', z: 840, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: 820, z2: 980 }, { type: 'v', x: -600, z1: 940, z2: 1100 }, { type: 'h', z: 1080, x1: -620, x2: -460 }, { type: 'v', x: -480, z1: 940, z2: 1100 }, { type: 'h', z: 960, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: 940, z2: 2080 }, { type: 'h', z: 600, x1: -880, x2: 1120 }, { type: 'v', x: 120, z1: -400, z2: 1600 }, { type: 'h', z: 600, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -400, z2: 1600 }, { type: 'h', z: 480, x1: -520, x2: 1480 }, { type: 'v', x: 480, z1: -520, z2: 1480 }, { type: 'h', z: 720, x1: -520, x2: 1480 }, { type: 'v', x: 480, z1: -280, z2: 1720 }, { type: 'h', z: 1080, x1: -1600, x2: 400 }, { type: 'v', x: -600, z1: 80, z2: 2080 }], route: [{ x: 0, z: 0 }, { x: 120, z: 0 }, { x: 240, z: 0 }, { x: 240, z: 120 }, { x: 360, z: 120 }, { x: 360, z: 240 }, { x: 480, z: 240 }, { x: 600, z: 240 }, { x: 720, z: 240 }, { x: 720, z: 120 }, { x: 720, z: 0 }, { x: 840, z: 0 }, { x: 840, z: 120 }, { x: 840, z: 240 }, { x: 840, z: 360 }, { x: 720, z: 360 }, { x: 600, z: 360 }, { x: 480, z: 360 }, { x: 480, z: 480 }, { x: 480, z: 600 }, { x: 480, z: 720 }, { x: 360, z: 720 }, { x: 360, z: 600 }, { x: 240, z: 600 }, { x: 120, z: 600 }, { x: 120, z: 480 }, { x: 120, z: 360 }, { x: 120, z: 240 }, { x: 0, z: 240 }, { x: 0, z: 360 }, { x: 0, z: 480 }, { x: -120, z: 480 }, { x: -240, z: 480 }, { x: -240, z: 600 }, { x: -240, z: 720 }, { x: -360, z: 720 }, { x: -360, z: 840 }, { x: -480, z: 840 }, { x: -600, z: 840 }, { x: -600, z: 960 }, { x: -600, z: 1080 }, { x: -480, z: 1080 }, { x: -480, z: 960 }, { x: -360, z: 960 }, { x: -360, z: 1080 }], ints: [[240, 0], [840, 0], [0, 240], [360, 240], [-600, 960], [-240, 480], [720, 120], [120, 360], [360, 120], [-360, 960], [0, 0], [720, 0], [480, 720], [840, 360], [840, 120], [120, 240], [480, 240], [-600, 840], [-600, 1080], [360, 600], [-240, 720], [-240, 600], [120, 600], [120, 480], [-480, 1080], [-480, 960], [120, 0], [0, 360], [240, 600], [-360, 720], [600, 360], [480, 360], [360, 720], [480, 600], [600, 240], [-120, 480], [720, 240], [240, 120], [480, 480], [-360, 840], [720, 360], [0, 480], [-360, 1080], [-480, 840], [840, 240]], bldg: [{ x: 218, z1: 0, z2: 120, s: 0.9 }, { x: 262, z1: 0, z2: 120, s: 0.9 }, { x: 338, z1: 120, z2: 240, s: 0.9 }, { x: 382, z1: 120, z2: 240, s: 0.9 }, { x: 698, z1: 120, z2: 240, s: 0.9 }, { x: 742, z1: 120, z2: 240, s: 0.9 }, { x: 698, z1: 0, z2: 120, s: 0.9 }, { x: 742, z1: 0, z2: 120, s: 0.9 }, { x: 818, z1: 0, z2: 120, s: 0.9 }, { x: 862, z1: 0, z2: 120, s: 0.9 }, { x: 818, z1: 120, z2: 240, s: 0.9 }, { x: 862, z1: 120, z2: 240, s: 0.9 }, { x: 818, z1: 240, z2: 360, s: 0.9 }, { x: 862, z1: 240, z2: 360, s: 0.9 }, { x: 458, z1: 360, z2: 480, s: 0.9 }, { x: 502, z1: 360, z2: 480, s: 0.9 }, { x: 458, z1: 480, z2: 600, s: 0.9 }, { x: 502, z1: 480, z2: 600, s: 0.9 }, { x: 458, z1: 600, z2: 720, s: 0.9 }, { x: 502, z1: 600, z2: 720, s: 0.9 }, { x: 338, z1: 600, z2: 720, s: 0.9 }, { x: 382, z1: 600, z2: 720, s: 0.9 }, { x: 98, z1: 480, z2: 600, s: 0.9 }, { x: 142, z1: 480, z2: 600, s: 0.9 }, { x: 98, z1: 360, z2: 480, s: 0.9 }, { x: 142, z1: 360, z2: 480, s: 0.9 }, { x: 98, z1: 240, z2: 360, s: 0.9 }, { x: 142, z1: 240, z2: 360, s: 0.9 }, { x: -22, z1: 240, z2: 360, s: 0.9 }, { x: 22, z1: 240, z2: 360, s: 0.9 }, { x: -22, z1: 360, z2: 480, s: 0.9 }, { x: 22, z1: 360, z2: 480, s: 0.9 }, { x: -262, z1: 480, z2: 600, s: 0.9 }, { x: -218, z1: 480, z2: 600, s: 0.9 }, { x: -262, z1: 600, z2: 720, s: 0.9 }, { x: -218, z1: 600, z2: 720, s: 0.9 }, { x: -382, z1: 720, z2: 840, s: 0.9 }, { x: -338, z1: 720, z2: 840, s: 0.9 }, { x: -622, z1: 840, z2: 960, s: 0.9 }, { x: -578, z1: 840, z2: 960, s: 0.9 }, { x: -622, z1: 960, z2: 1080, s: 0.9 }, { x: -578, z1: 960, z2: 1080, s: 0.9 }, { x: -502, z1: 960, z2: 1080, s: 0.9 }, { x: -458, z1: 960, z2: 1080, s: 0.9 }, { x: -382, z1: 960, z2: 1080, s: 0.9 }, { x: -338, z1: 960, z2: 1080, s: 0.9 }], timeLimit: 1270, hasGarage: true, assets: ['suburban', 'industrial'] },
           8: { name: 'Byculla', sky: 0x7a9eb5, fog: 550, ground: 0x345a2a, amb: 0.7, veh: 'car', npcTypes: ['car', 'auto', 'car', 'bike', 'auto', 'car', 'truck', 'car', 'taxi', 'auto', 'bike', 'car', 'car', 'bus', 'auto', 'car', 'car', 'bike', 'auto', 'car', 'taxi', 'car', 'car', 'auto'], hasEmergency: true, roads: [{ type: 'v', x: 0, z1: -1000, z2: 140 }, { type: 'h', z: 120, x1: -140, x2: 20 }, { type: 'h', z: 120, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: -20, z2: 140 }, { type: 'h', z: 0, x1: -260, x2: -100 }, { type: 'v', x: -120, z1: -140, z2: 20 }, { type: 'h', z: -120, x1: -260, x2: -100 }, { type: 'h', z: -120, x1: -380, x2: -220 }, { type: 'v', x: -360, z1: -140, z2: 20 }, { type: 'h', z: 0, x1: -500, x2: -340 }, { type: 'v', x: -480, z1: -20, z2: 140 }, { type: 'h', z: 120, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: 100, z2: 260 }, { type: 'h', z: 240, x1: -380, x2: -220 }, { type: 'v', x: -240, z1: 220, z2: 380 }, { type: 'h', z: 360, x1: -260, x2: -100 }, { type: 'h', z: 360, x1: -140, x2: 20 }, { type: 'v', x: 0, z1: 340, z2: 500 }, { type: 'h', z: 480, x1: -20, x2: 140 }, { type: 'v', x: 120, z1: 460, z2: 620 }, { type: 'h', z: 600, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: 580, z2: 740 }, { type: 'v', x: 240, z1: 700, z2: 860 }, { type: 'v', x: 240, z1: 820, z2: 980 }, { type: 'h', z: 960, x1: 100, x2: 260 }, { type: 'v', x: 120, z1: 820, z2: 980 }, { type: 'h', z: 840, x1: -20, x2: 140 }, { type: 'h', z: 840, x1: -140, x2: 20 }, { type: 'h', z: 840, x1: -260, x2: -100 }, { type: 'h', z: 840, x1: -380, x2: -220 }, { type: 'v', x: -360, z1: 820, z2: 980 }, { type: 'h', z: 960, x1: -500, x2: -340 }, { type: 'h', z: 960, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: 820, z2: 980 }, { type: 'h', z: 840, x1: -620, x2: -460 }, { type: 'v', x: -480, z1: 700, z2: 860 }, { type: 'v', x: -480, z1: 580, z2: 740 }, { type: 'h', z: 600, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: 460, z2: 620 }, { type: 'h', z: 480, x1: -620, x2: -460 }, { type: 'h', z: 480, x1: -500, x2: -340 }, { type: 'h', z: 480, x1: -380, x2: -220 }, { type: 'h', z: 480, x1: -260, x2: -100 }, { type: 'v', x: -120, z1: 460, z2: 620 }, { type: 'h', z: 600, x1: -140, x2: 20 }, { type: 'v', x: 0, z1: 580, z2: 740 }, { type: 'h', z: 720, x1: -20, x2: 1120 }, { type: 'h', z: 120, x1: -1360, x2: 640 }, { type: 'v', x: -360, z1: -880, z2: 1120 }, { type: 'h', z: 720, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -280, z2: 1720 }, { type: 'h', z: 840, x1: -1240, x2: 760 }, { type: 'v', x: -240, z1: -160, z2: 1840 }, { type: 'h', z: 960, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -40, z2: 1960 }, { type: 'h', z: 600, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -400, z2: 1600 }], route: [{ x: 0, z: 0 }, { x: 0, z: 120 }, { x: -120, z: 120 }, { x: -240, z: 120 }, { x: -240, z: 0 }, { x: -120, z: 0 }, { x: -120, z: -120 }, { x: -240, z: -120 }, { x: -360, z: -120 }, { x: -360, z: 0 }, { x: -480, z: 0 }, { x: -480, z: 120 }, { x: -360, z: 120 }, { x: -360, z: 240 }, { x: -240, z: 240 }, { x: -240, z: 360 }, { x: -120, z: 360 }, { x: 0, z: 360 }, { x: 0, z: 480 }, { x: 120, z: 480 }, { x: 120, z: 600 }, { x: 240, z: 600 }, { x: 240, z: 720 }, { x: 240, z: 840 }, { x: 240, z: 960 }, { x: 120, z: 960 }, { x: 120, z: 840 }, { x: 0, z: 840 }, { x: -120, z: 840 }, { x: -240, z: 840 }, { x: -360, z: 840 }, { x: -360, z: 960 }, { x: -480, z: 960 }, { x: -600, z: 960 }, { x: -600, z: 840 }, { x: -480, z: 840 }, { x: -480, z: 720 }, { x: -480, z: 600 }, { x: -600, z: 600 }, { x: -600, z: 480 }, { x: -480, z: 480 }, { x: -360, z: 480 }, { x: -240, z: 480 }, { x: -120, z: 480 }, { x: -120, z: 600 }, { x: 0, z: 600 }, { x: 0, z: 720 }, { x: 120, z: 720 }], ints: [[-120, 360], [-360, 240], [240, 960], [120, 960], [-360, 0], [-600, 960], [-240, 120], [-600, 600], [-240, 480], [-480, 720], [0, 120], [-240, -120], [-480, 120], [-480, 0], [0, 0], [120, 840], [-360, 960], [-480, 480], [-480, 600], [0, 840], [-600, 840], [-360, 480], [-240, 840], [240, 720], [-360, 120], [-240, 360], [0, 600], [120, 600], [120, 480], [-240, 240], [-480, 960], [-360, -120], [-120, 0], [-120, 120], [0, 360], [-120, 600], [-120, -120], [240, 600], [-240, 0], [240, 840], [-120, 840], [0, 720], [-120, 480], [-600, 480], [-360, 840], [0, 480], [120, 720], [-480, 840]], bldg: [{ x: -22, z1: 0, z2: 120, s: 0.9 }, { x: 22, z1: 0, z2: 120, s: 0.9 }, { x: -262, z1: 0, z2: 120, s: 0.9 }, { x: -218, z1: 0, z2: 120, s: 0.9 }, { x: -142, z1: -120, z2: 0, s: 0.9 }, { x: -98, z1: -120, z2: 0, s: 0.9 }, { x: -382, z1: -120, z2: 0, s: 0.9 }, { x: -338, z1: -120, z2: 0, s: 0.9 }, { x: -502, z1: 0, z2: 120, s: 0.9 }, { x: -458, z1: 0, z2: 120, s: 0.9 }, { x: -382, z1: 120, z2: 240, s: 0.9 }, { x: -338, z1: 120, z2: 240, s: 0.9 }, { x: -262, z1: 240, z2: 360, s: 0.9 }, { x: -218, z1: 240, z2: 360, s: 0.9 }, { x: -22, z1: 360, z2: 480, s: 0.9 }, { x: 22, z1: 360, z2: 480, s: 0.9 }, { x: 98, z1: 480, z2: 600, s: 0.9 }, { x: 142, z1: 480, z2: 600, s: 0.9 }, { x: 218, z1: 600, z2: 720, s: 0.9 }, { x: 262, z1: 600, z2: 720, s: 0.9 }, { x: 218, z1: 720, z2: 840, s: 0.9 }, { x: 262, z1: 720, z2: 840, s: 0.9 }, { x: 218, z1: 840, z2: 960, s: 0.9 }, { x: 262, z1: 840, z2: 960, s: 0.9 }, { x: 98, z1: 840, z2: 960, s: 0.9 }, { x: 142, z1: 840, z2: 960, s: 0.9 }, { x: -382, z1: 840, z2: 960, s: 0.9 }, { x: -338, z1: 840, z2: 960, s: 0.9 }, { x: -622, z1: 840, z2: 960, s: 0.9 }, { x: -578, z1: 840, z2: 960, s: 0.9 }, { x: -502, z1: 720, z2: 840, s: 0.9 }, { x: -458, z1: 720, z2: 840, s: 0.9 }, { x: -502, z1: 600, z2: 720, s: 0.9 }, { x: -458, z1: 600, z2: 720, s: 0.9 }, { x: -622, z1: 480, z2: 600, s: 0.9 }, { x: -578, z1: 480, z2: 600, s: 0.9 }, { x: -142, z1: 480, z2: 600, s: 0.9 }, { x: -98, z1: 480, z2: 600, s: 0.9 }, { x: -22, z1: 600, z2: 720, s: 0.9 }, { x: 22, z1: 600, z2: 720, s: 0.9 }], timeLimit: 1380, hasGarage: true, assets: ['suburban', 'industrial', 'emergency'] },
@@ -4719,7 +4737,7 @@ class Game {
         let cfg = Object.assign({}, base);
         if (lv) Object.assign(cfg, lv);
         // Free roam and pedestrian levels start inside the vehicle; others start outside
-        cfg.startOutside = lv && (lv.themeType === 'free_roam' || lv.isPedestrian) ? false : true;
+        cfg.startOutside = (lv && lv.startOutside !== undefined) ? lv.startOutside : false;
         // Auto-generate intersection points from road data if not defined
         if (!cfg.ints && cfg.roads) {
           const vRoads = cfg.roads.filter(r => r.type === 'v');
@@ -4747,7 +4765,18 @@ class Game {
         let pStartX = 0, pStartZ = 0, pRot = 0;
         let vStartX = 0, vStartZ = 0, vRotY = 0;
 
-        if (vt === 'pedestrian' || this.mapCfg?.isPedestrian) {
+        if (this._suburbanSpawn) {
+          // 🏡 Suburban Neighborhood Spawn:
+          // Car is parked inside the garage at the end of the driveway
+          // Player is standing in front of the household on the front walkway/porch steps
+          vStartX = this._suburbanSpawn.car.x;
+          vStartZ = this._suburbanSpawn.car.z;
+          vRotY = this._suburbanSpawn.car.rotY;
+          pStartX = this._suburbanSpawn.player.x;
+          pStartZ = this._suburbanSpawn.player.z;
+          pRot = this._suburbanSpawn.player.rotY;
+          if (this.mapCfg) this.mapCfg.startOutside = true;
+        } else if (vt === 'pedestrian' || this.mapCfg?.isPedestrian) {
           // Pedestrian spawn on sidewalk
           const firstRoad = (this.mapCfg && this.mapCfg.roads && this.mapCfg.roads[0]) || { type: 'v', x: 0, z1: -800, z2: 800, width: 14 };
           const roadW = firstRoad.width || 14;
@@ -4800,11 +4829,53 @@ class Game {
               toast('🚶 Pedestrian Mode Active: Use WASD / Arrow Keys to walk safely!', '#34d399', 6000);
           }, 500);
         } else {
-          // Build the vehicle
-          this.playerVehicle = _buildVehicle(vt, 0xffffff);
+          // Build the vehicle with Academy Garage Custom Paint & Underglow
+          let playerColor = 0xffffff;
+          let customCarConfig = null;
+          try {
+            const rawConfig = localStorage.getItem('traffic_player_car');
+            if (rawConfig) {
+              customCarConfig = JSON.parse(rawConfig);
+              if (customCarConfig && customCarConfig.paint) {
+                playerColor = Number(customCarConfig.paint);
+              }
+            }
+          } catch(e) {
+            console.warn('[game_core] Could not read traffic_player_car:', e);
+          }
+
+          this.playerVehicle = _buildVehicle(vt, playerColor);
           this._spawnPos = { x: vStartX, z: vStartZ };
           this.playerVehicle.position.set(vStartX, 0, vStartZ);
           this.playerVehicle.rotation.y = vRotY;
+
+          // If custom underglow was configured in the 3D Academy Garage, attach neon tubes + point light
+          if (customCarConfig && customCarConfig.underglow) {
+            try {
+              const uColor = Number(customCarConfig.underglow);
+              const uMat = new THREE.MeshBasicMaterial({ color: uColor });
+              const uTubeL = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 2.4, 8), uMat);
+              uTubeL.rotation.x = Math.PI / 2;
+              uTubeL.position.set(-0.85, 0.12, 0);
+              const uTubeR = uTubeL.clone();
+              uTubeR.position.x = 0.85;
+              this.playerVehicle.add(uTubeL, uTubeR);
+
+              const uLight = new THREE.PointLight(uColor, 2.5, 6.0, 1.4);
+              uLight.position.set(0, 0.15, 0);
+              this.playerVehicle.add(uLight);
+
+              setTimeout(() => {
+                const pName = customCarConfig.paintName || 'Custom';
+                const gName = customCarConfig.glowName || 'Neon';
+                if (typeof toast === 'function') {
+                  toast(`🏁 Academy Tuned Supercar Deployed: ${pName} with ${gName} Underglow!`, '#10b981', 6000);
+                }
+              }, 1200);
+            } catch(glowErr) {
+              console.warn('[game_core] Error applying custom underglow:', glowErr);
+            }
+          }
           
           // ── PLAYER HEADLIGHTS & TAILLIGHTS ──
           const isNight = this.mapCfg && this.mapCfg.isNight;
@@ -4847,10 +4918,12 @@ class Game {
             this.playerCharacter.rotation.y = pRot;
             this.scene.add(this.playerCharacter);
             this.player = this.playerCharacter;
+            this.camYaw = pRot;
+            this.targetCamYaw = pRot;
             this.maxSpd = 0.12; this.accel = 0.06; this.turn = 0.05; this.fric = 0.88;
             this._createVehicleBeacon();
             setTimeout(() => {
-                toast('🚶 WASD to walk, F to enter your vehicle!', '#3498db', 6000);
+                toast('🚶 In front of household: Walk to your garage & press F to enter your car!', '#3498db', 6000);
             }, 500);
           } else {
             this.isPedestrian = false;
@@ -4918,13 +4991,72 @@ class Game {
 
       _buildRouteCheckpoints(cfg) {
         this.cps = [];
-        const route = (cfg && cfg.route && cfg.route.length > 1) ? cfg.route : [
+        const isPed = this.isPedestrian || (cfg && cfg.isPedestrian) || (this.vehMode === 'pedestrian');
+        const rawRoute = (cfg && cfg.route && cfg.route.length > 1) ? cfg.route : [
           { x: 0, z: 0, desc: 'Start Position' },
           { x: 0, z: -80, desc: 'Signal Stop Line' },
           { x: 0, z: -200, desc: 'SV Road Crossing' },
           { x: 120, z: -200, desc: 'North Link Corridor' },
           { x: 240, z: -200, desc: 'Destination Finish Gate' }
         ];
+
+        // Intelligent checkpoint lane/sidewalk alignment:
+        // - Vehicles: Middle of the left driving lane (LHT in Mumbai)
+        // - Pedestrians: On the footpath (sidewalk) clear of traffic
+        const roads = (cfg && cfg.roads) || this.roadSegments || [];
+        const route = rawRoute.map((pt, rIdx) => {
+          let cx = pt.x;
+          let cz = pt.z;
+
+          let bestRoad = null;
+          let minD = Infinity;
+          for (let r of roads) {
+            const isV = r.type === 'v';
+            const rx = isV ? r.x : Math.max(Math.min(r.x1, r.x2), Math.min(Math.max(r.x1, r.x2), pt.x));
+            const rz = isV ? Math.max(Math.min(r.z1, r.z2), Math.min(Math.max(r.z1, r.z2), pt.z)) : r.z;
+            const d = Math.hypot(pt.x - rx, pt.z - rz);
+            if (d < minD) {
+              minD = d;
+              bestRoad = r;
+            }
+          }
+
+          if (bestRoad && minD < (bestRoad.width || 14) * 1.5) {
+            const isV = bestRoad.type === 'v';
+            const rw = bestRoad.width || 14;
+            const lanes = bestRoad.lanes || 2;
+            const laneW = rw / lanes;
+
+            if (isPed) {
+              // Pedestrian: Position on the footpath / sidewalk
+              const swDist = rw / 2 + 1.8;
+              if (isV) {
+                const side = pt.x < bestRoad.x ? -1 : 1;
+                cx = bestRoad.x + side * swDist;
+              } else {
+                const side = pt.z < bestRoad.z ? -1 : 1;
+                cz = bestRoad.z + side * swDist;
+              }
+            } else {
+              // Vehicle: Position in middle of left lane (LHT)
+              if (isV) {
+                const nextPt = rawRoute[rIdx + 1] || rawRoute[rIdx - 1] || pt;
+                const dirZ = (nextPt.z >= pt.z) ? 1 : -1;
+                const leftSide = (dirZ > 0) ? -1 : 1;
+                const laneCenterOffset = lanes >= 4 ? rw / 4 : laneW / 2;
+                cx = bestRoad.x + leftSide * laneCenterOffset;
+              } else {
+                const nextPt = rawRoute[rIdx + 1] || rawRoute[rIdx - 1] || pt;
+                const dirX = (nextPt.x >= pt.x) ? 1 : -1;
+                const leftSide = (dirX > 0) ? 1 : -1;
+                const laneCenterOffset = lanes >= 4 ? rw / 4 : laneW / 2;
+                cz = bestRoad.z + leftSide * laneCenterOffset;
+              }
+            }
+          }
+
+          return { x: cx, z: cz, desc: pt.desc };
+        });
 
         const numPts = route.length;
         const indices = [];
@@ -5186,7 +5318,11 @@ class Game {
         const groundColor = (cfg.ground !== undefined && !cfg.isBridge) ? cfg.ground : (cfg.isBridge ? 0x1a5a8a : 0x33691e);
         const groundMat = cfg.isBridge
           ? new THREE.MeshLambertMaterial({ color: 0x1a5a8a, transparent: true, opacity: 0.7 })
-          : new THREE.MeshLambertMaterial({ color: groundColor });
+          : new THREE.MeshLambertMaterial({
+              color: groundColor,
+              map: (typeof window.createGrassCanvasTexture === 'function') ? window.createGrassCanvasTexture() : null,
+              roughness: 0.95
+            });
         const ground = new THREE.Mesh(new THREE.PlaneGeometry(gs, gs), groundMat);
         ground.rotation.x = -Math.PI / 2;
         ground.position.set(0, -0.05, 0);
@@ -5227,17 +5363,44 @@ class Game {
           if (typeof window.createSuburbanNeighborhood === 'function') {
             window.createSuburbanNeighborhood(this, cfg);
             this._buildRoadZones(RW || 14);
+            // ── Build Level Route Checkpoints & Finish Gate ──
+            this._buildRouteCheckpoints(cfg);
+            // Initialize player vehicle & pedestrian at household & garage
+            this._pmesh(mode, this.vehMode || cfg.veh);
+            if (cfg.hasAIDirector && window.TrafficMapAI) {
+              window.TrafficMapAI.initLevelDirector(this, cfg);
+            }
             return;
           }
         }
 
         if (this.roadGraph) {
             this._buildRoadsFromGraph(RW);
-            this._buildBarriers(cfg, RW);
-            this._buildTrafficSignals(cfg, RW);
-            this._buildBuildingsFromGraph();
-            this._buildParksAndTrees();
-            this._buildBusStops();
+            if (!cfg.isAISynthesized) {
+              this._buildBarriers(cfg, RW);
+              this._buildTrafficSignals(cfg, RW);
+              this._buildBuildingsFromGraph();
+              this._buildParksAndTrees();
+              this._buildBusStops();
+            }
+
+            // ── AI Syllabus Demands Resolver: Inject Physical Scenario Elements ──
+            if (window.AISceneGenerator) {
+              if (!this.aiSceneGenerator) {
+                this.aiSceneGenerator = new window.AISceneGenerator(this);
+              }
+              if (cfg.isAISynthesized) {
+                if (typeof this.aiSceneGenerator.synthesizeInfrastructure === 'function') {
+                  this.aiSceneGenerator.synthesizeInfrastructure(cfg);
+                }
+                if (typeof this.aiSceneGenerator.synthesizeParcelsAndBuildings === 'function') {
+                  this.aiSceneGenerator.synthesizeParcelsAndBuildings(cfg);
+                }
+              }
+              if (this.aiSceneGenerator.syllabusResolver) {
+                this.aiSceneGenerator.syllabusResolver.resolveLevelSyllabus(cfg);
+              }
+            }
         } else {
             // ── Kenney GLB Road Tiles + Sidewalks + Props + Buildings ──
             const _roadKey = window.PRELOADED_MODELS?.road_avenue ? 'road_avenue' : 'road_straight';
@@ -5923,9 +6086,9 @@ class Game {
 
         if (cfg.hasSchool) {
           const sGrp = new THREE.Group();
-          const schoolX = -65, schoolZ = -30;
+          const schoolX = -60, schoolZ = -32;
 
-          // 1. Main School Building (2-Story Colonial Brick & Cream Architecture)
+          // 1. Main School Building (Colonial Brick & Cream St. Xavier Architecture)
           const bldgMat = new THREE.MeshLambertMaterial({ color: 0xb91c1c }); // Crimson brick
           const trimMat = new THREE.MeshLambertMaterial({ color: 0xfef08a }); // Cream trim
           const roofMat = new THREE.MeshLambertMaterial({ color: 0x1e293b }); // Slate roof
@@ -5972,64 +6135,83 @@ class Game {
           const schoolSign = new THREE.Mesh(new THREE.BoxGeometry(18, 4.2, 0.4), new THREE.MeshLambertMaterial({ map: schoolSignTex }));
           schoolSign.position.set(0, 11.5, 8.3); sGrp.add(schoolSign);
 
-          // Boundary wall and school gate facing road (Z = 0)
+          // Boundary wall and school gate facing road (Z = -11.5 in world space)
           const wallMat = new THREE.MeshLambertMaterial({ color: 0x94a3b8 });
-          [-18, 18].forEach(wx => {
-            const wall = new THREE.Mesh(new THREE.BoxGeometry(15, 2.4, 0.5), wallMat);
-            wall.position.set(wx, 1.2, 12.5); sGrp.add(wall);
-          });
-          // Gate pillars
-          [-8, 8].forEach(px => {
+          const wallOffsetZ = -schoolZ - 11.5; // in sGrp local space: 32 - 11.5 = 20.5
+          // Left wing wall (X: -100 to -64 -> local X: -40 to -4)
+          const wallL = new THREE.Mesh(new THREE.BoxGeometry(36, 2.4, 0.5), wallMat);
+          wallL.position.set(-22, 1.2, wallOffsetZ); sGrp.add(wallL);
+          // Right wing wall (X: -56 to -20 -> local X: 4 to 40)
+          const wallR = new THREE.Mesh(new THREE.BoxGeometry(36, 2.4, 0.5), wallMat);
+          wallR.position.set(22, 1.2, wallOffsetZ); sGrp.add(wallR);
+          // Gate pillars (X = -64 and X = -56 -> local X = -4 and +4)
+          [-4, 4].forEach(px => {
             const pillar = new THREE.Mesh(new THREE.BoxGeometry(1.4, 3.8, 1.4), trimMat);
-            pillar.position.set(px, 1.9, 12.5); sGrp.add(pillar);
+            pillar.position.set(px, 1.9, wallOffsetZ); sGrp.add(pillar);
           });
 
           // School flag pole
           const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 12, 8), new THREE.MeshLambertMaterial({ color: 0xe2e8f0 }));
-          pole.position.set(-6, 6, 10); sGrp.add(pole);
+          pole.position.set(-6, 6, 12); sGrp.add(pole);
           const flag = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 1.2), new THREE.MeshBasicMaterial({ color: 0xf97316 }));
-          flag.position.set(-5.0, 11, 10); sGrp.add(flag);
+          flag.position.set(-5.0, 11, 12); sGrp.add(flag);
 
           sGrp.position.set(schoolX, 0, schoolZ);
-          sGrp.rotation.y = 0; // Facing south towards road at Z = 0
           this.scene.add(sGrp);
           this.world.push(sGrp);
 
           // School building collision obstacle
           const schoolCol = new THREE.Group();
           schoolCol.position.set(schoolX, 0, schoolZ);
-          schoolCol.userData = { halfW: 24, halfD: 16, isObstacle: true, isBuilding: true };
+          schoolCol.userData = { halfW: 28, halfD: 12, isObstacle: true, isBuilding: true };
           this.obstacles.push(schoolCol);
 
-          // 3. Parked Yellow School Bus outside the school gate along curbside
+          // 3. Parked Yellow School Bus outside school gate along North curb shoulder
           const schoolBus = typeof window.IndianVehicles !== 'undefined' ? window.IndianVehicles.buildVehicle('bus', 0xfacc15) : _buildVehicle('bus', 0xfacc15);
           if (schoolBus) {
-            schoolBus.position.set(schoolX + 18, 0, -6.8);
-            schoolBus.rotation.y = Math.PI / 2; // Parked parallel to road along Z = -6.8
-            schoolBus.userData = { halfW: 4.5, halfD: 1.5, isObstacle: true, isVehicle: true };
+            schoolBus.position.set(-38, 0, -9.2); // North curb shoulder, parallel to road
+            schoolBus.rotation.y = Math.PI / 2; // Facing West
+            schoolBus.userData = { halfW: 4.8, halfD: 1.4, isObstacle: true, isVehicle: true };
             this.scene.add(schoolBus);
             this.obstacles.push(schoolBus);
           }
 
-          // 4. Zebra Crossing Markings across the road right in front of School Gate (X = -65)
+          // 4. Zebra Crossing Markings spanning full road width across Z = 0 from North curb (Z = -7.0) to South curb (Z = +7.0)
           const zMat = new THREE.MeshBasicMaterial({ 
             color: 0xffffff,
             polygonOffset: true,
             polygonOffsetFactor: -1.0,
             polygonOffsetUnits: -1.0
           });
-          for (let s = -5; s <= 5; s++) {
-            const stripe = new THREE.Mesh(new THREE.PlaneGeometry(1.0, 11.0), zMat);
+          const numStripes = 9;
+          const stripeW = 1.0, stripeGap = 0.6;
+          const totalZebraW = numStripes * stripeW + (numStripes - 1) * stripeGap;
+          const zebraStartX = schoolX - totalZebraW / 2 + stripeW / 2;
+          for (let s = 0; s < numStripes; s++) {
+            const stripe = new THREE.Mesh(new THREE.PlaneGeometry(stripeW, 14.0), zMat);
             stripe.rotation.x = -Math.PI / 2;
-            stripe.position.set(schoolX + (s * 1.6), 0.065, 0);
+            stripe.position.set(zebraStartX + s * (stripeW + stripeGap), 0.065, 0);
             this.scene.add(stripe);
           }
 
-          // 5. School Crossing Guard with Stop Sign on the North Sidewalk
+          // Stop Lines on both sides of the Zebra Crossing
+          const stopLineMat = new THREE.MeshBasicMaterial({ color: 0xffffff, polygonOffset: true, polygonOffsetFactor: -1.0, polygonOffsetUnits: -1.0 });
+          // East stop line (for Westbound traffic) at X = -50
+          const stopLineE = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 7.0), stopLineMat);
+          stopLineE.rotation.x = -Math.PI / 2;
+          stopLineE.position.set(schoolX + 10, 0.065, 3.5); // left driving lane (Z in [0, 7])
+          this.scene.add(stopLineE);
+          // West stop line (for Eastbound traffic) at X = -70
+          const stopLineW = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 7.0), stopLineMat);
+          stopLineW.rotation.x = -Math.PI / 2;
+          stopLineW.position.set(schoolX - 10, 0.065, -3.5); // right driving lane (Z in [-7, 0])
+          this.scene.add(stopLineW);
+
+          // 5. School Crossing Guard with Stop Sign on the North Sidewalk Curb
           const guard = _buildHuman(false, { skin: 0xc68642, shirt: 0xf97316, pants: 0x1e293b, hair: 0x111111 });
-          guard.position.set(schoolX - 2, 0, -6.5);
-          guard.rotation.y = Math.PI; // Facing incoming traffic from east
-          // Add Stop Sign in hand
+          guard.position.set(schoolX - 8, 0, -7.6);
+          guard.rotation.y = Math.PI; // Facing incoming traffic from East
+          // Stop Sign in hand
           const stopSign = new THREE.Mesh(new THREE.CylinderGeometry(0.65, 0.65, 0.06, 8), new THREE.MeshBasicMaterial({ color: 0xdc2626 }));
           stopSign.rotation.x = Math.PI / 2;
           stopSign.position.set(0.7, 1.5, 0.4);
@@ -6037,14 +6219,20 @@ class Game {
           const stopPole = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 2.0, 8), new THREE.MeshLambertMaterial({ color: 0x64748b }));
           stopPole.position.set(0.7, 1.0, 0.4);
           guard.add(stopPole);
-          guard.userData = { isGuard: true, isObstacle: true, halfW: 0.6, halfD: 0.6 };
+          guard.userData = { isGuard: true, npcType: 'guard', isObstacle: true, halfW: 0.6, halfD: 0.6 };
           this.scene.add(guard);
           this.peds.push(guard);
+          this.npcs.push(guard); // Also add to npcs for task proximity detection
 
-          // 6. Roadside School Zone Warning Blinkers & Signs (Both directions)
-          [-30, -100].forEach((signX, sIdx) => {
+          // 6. Roadside School Zone Warning Signs & Flashing Amber Beacons
+          // East approach (X = -15, Z = -8.5 on North curb, facing East)
+          // West approach (X = -105, Z = 8.5 on South curb, facing West)
+          [
+            { x: -15, z: -8.5, ry: Math.PI / 2 },
+            { x: -105, z: 8.5, ry: -Math.PI / 2 }
+          ].forEach(sp => {
             const post = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 4.0, 8), steelMat);
-            post.position.set(signX, 2.0, -7.5);
+            post.position.set(sp.x, 2.0, sp.z);
             this.scene.add(post);
 
             const sCanv = document.createElement('canvas');
@@ -6052,20 +6240,20 @@ class Game {
             const cCtx = sCanv.getContext('2d');
             cCtx.fillStyle = '#facc15'; cCtx.fillRect(0, 0, 256, 256);
             cCtx.lineWidth = 10; cCtx.strokeStyle = '#dc2626'; cCtx.strokeRect(6, 6, 244, 244);
-            cCtx.fillStyle = '#dc2626'; cCtx.font = 'bold 70px sans-serif'; cCtx.textAlign = 'center';
-            cCtx.fillText('20', 128, 100);
-            cCtx.fillStyle = '#1e293b'; cCtx.font = 'bold 30px sans-serif';
-            cCtx.fillText('KM/H', 128, 145);
-            cCtx.fillText('SCHOOL', 128, 190);
-            cCtx.fillText('ZONE', 128, 230);
+            cCtx.fillStyle = '#dc2626'; cCtx.font = 'bold 68px sans-serif'; cCtx.textAlign = 'center';
+            cCtx.fillText('20', 128, 95);
+            cCtx.fillStyle = '#1e293b'; cCtx.font = 'bold 28px sans-serif';
+            cCtx.fillText('KM/H', 128, 140);
+            cCtx.fillText('SCHOOL', 128, 185);
+            cCtx.fillText('ZONE', 128, 225);
             const signPlate = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.6, 0.1), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(sCanv) }));
-            signPlate.position.set(signX, 3.2, -7.5);
-            signPlate.rotation.y = sIdx === 0 ? Math.PI / 2 : -Math.PI / 2;
+            signPlate.position.set(sp.x, 3.2, sp.z);
+            signPlate.rotation.y = sp.ry;
             this.scene.add(signPlate);
 
             // Flashing amber caution beacon
             const beacon = new THREE.Mesh(new THREE.SphereGeometry(0.2, 8, 8), new THREE.MeshBasicMaterial({ color: 0xf59e0b }));
-            beacon.position.set(signX, 4.2, -7.5);
+            beacon.position.set(sp.x, 4.2, sp.z);
             this.scene.add(beacon);
           });
 
@@ -6075,11 +6263,11 @@ class Game {
           stallBody.position.set(0, 1.4, 0); stallGrp.add(stallBody);
           const canopy = new THREE.Mesh(new THREE.BoxGeometry(5.2, 0.2, 3.6), new THREE.MeshLambertMaterial({ color: 0xfacc15 }));
           canopy.position.set(0, 2.9, 0.2); stallGrp.add(canopy);
-          stallGrp.position.set(schoolX - 22, 0, -11.5);
+          stallGrp.position.set(-18, 0, -12.5); // Set back on North sidewalk
           this.scene.add(stallGrp);
           this.world.push(stallGrp);
 
-          // 8. 14+ School Children in Uniforms with Backpacks
+          // 8. 14 School Children in Uniforms with Backpacks
           const uniformShirts = [0xf8fafc, 0xe0f2fe]; // White / sky-blue shirts
           const uniformPants = [0x1e3a8a, 0x1e293b];  // Navy blue shorts / skirts
           for (let i = 0; i < 14; i++) {
@@ -6098,16 +6286,16 @@ class Game {
             child.add(bag);
 
             let startX, startZ, targetX, targetZ;
-            if (i < 8) {
-              // Active zebra crossing students (crossing North <-> South across Z = 0)
-              startX = schoolX - 4.5 + (i * 1.3);
-              startZ = (i % 2 === 0) ? -7.0 : 7.0;
+            if (i < 6) {
+              // Active zebra crossing students (crossing North <-> South across Z = 0 between Z = -7.8 and Z = 7.8)
+              startX = schoolX - 4.0 + (i * 1.6);
+              startZ = (i % 2 === 0) ? -7.8 : 7.8;
               targetX = startX;
-              targetZ = (i % 2 === 0) ? 7.5 : -7.5;
+              targetZ = (i % 2 === 0) ? 7.8 : -7.8;
               child.position.set(startX, 0, startZ);
               child.rotation.y = (i % 2 === 0) ? 0 : Math.PI;
               child.userData = {
-                spd: 0.024 + Math.random() * 0.016,
+                spd: 0.024 + Math.random() * 0.012,
                 state: 'crossing',
                 startX, startZ, targetX, targetZ,
                 crossingZ: startZ,
@@ -6115,17 +6303,17 @@ class Game {
                 isObstacle: true,
                 halfW: 0.35, halfD: 0.35
               };
-            } else if (i < 11) {
-              // Students walking along the sidewalk towards the school bus
-              startX = schoolX + 5 + (i - 8) * 3.5;
-              startZ = -7.2;
+            } else if (i < 10) {
+              // Students walking along North sidewalk toward the school bus
+              startX = -48 + (i - 6) * 3.2;
+              startZ = -9.2;
               child.position.set(startX, 0, startZ);
               child.rotation.y = Math.PI / 2;
               child.userData = { spd: 0.02, state: 'sidewalk', isChild: true, halfW: 0.35, halfD: 0.35 };
             } else {
-              // Students standing by school gate chatting
-              startX = schoolX - 3.5 + (i - 11) * 2.5;
-              startZ = -14.0;
+              // Students standing by the school courtyard chatting
+              startX = schoolX - 4 + (i - 10) * 2.8;
+              startZ = -18.0;
               child.position.set(startX, 0, startZ);
               child.rotation.y = (i % 2 === 0) ? Math.PI / 4 : -Math.PI / 4;
               child.userData = { spd: 0, state: 'idle', isChild: true, halfW: 0.35, halfD: 0.35 };
@@ -6143,6 +6331,7 @@ class Game {
             }
           }
         }
+
         if (cfg.hasOcean) {
           const ocean = new THREE.Mesh(new THREE.PlaneGeometry(600, 1200), mats.water);
           ocean.rotation.x = -Math.PI / 2; ocean.position.set(350, .01, -150); this.scene.add(ocean);
@@ -6408,6 +6597,17 @@ class Game {
 
       // Initialize player vehicle/pedestrian first so traffic spawns around player
       this._pmesh(mode, this.vehMode || cfg.veh);
+
+      // Initialize In-Car AI Driving Co-Pilot
+      if (window.TrafficAICoPilot) {
+        if (!this.aiCoPilot) {
+          this.aiCoPilot = new window.TrafficAICoPilot(this);
+        } else {
+          this.aiCoPilot.safetyScore = 100;
+          this.aiCoPilot.hazardStatus = 'clear';
+          this.aiCoPilot.hazardMessage = 'Scanning roadway...';
+        }
+      }
 
       // Initialize TrafficManager for lively Mumbai-style traffic
       if (!cfg.isPedestrian && window.TrafficManager) {
@@ -6736,9 +6936,9 @@ class Game {
         });
       }
 
-      separateRoadAndBuilding(pos, graph) {
+      separateRoadAndBuilding(pos, graph, buildingRadius = 10.0) {
         if (!pos) return false;
-        if (this._spawnPos && Math.hypot(pos.x - this._spawnPos.x, pos.z - this._spawnPos.z) < 14) {
+        if (this._spawnPos && Math.hypot(pos.x - this._spawnPos.x, pos.z - this._spawnPos.z) < 18) {
           return true;
         }
         if (!graph || !graph.edges) return false;
@@ -6751,8 +6951,8 @@ class Game {
           t = Math.max(0, Math.min(1, t));
           const dist = Math.hypot(a.x + abx * t - pos.x, a.z + abz * t - pos.z);
           const width = edge.width || 12;
-          // Reject only if building is within road asphalt or curb corridor
-          if (dist < width / 2 + 1.5) {
+          // Mathematically reject if building footprint touches asphalt or sidewalk buffer
+          if (dist < (width / 2 + 4.0 + buildingRadius * 0.75)) {
             return true;
           }
         }
@@ -8947,8 +9147,10 @@ class Game {
         const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.3, 8, 8), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.15 }));
         beam.position.y = 4;
         group.add(beam);
-        group.position.set(x, 0.8, z);
-        group.userData = { pathT: 0, ring, glow, center, beam, baseY: 0.8 };
+        const isPed = this.isPedestrian || (this.mapCfg && this.mapCfg.isPedestrian) || (this.vehMode === 'pedestrian');
+        const targetY = isPed ? 0.22 : 0.12;
+        group.position.set(x, targetY, z);
+        group.userData = { pathT: 0, ring, glow, center, beam, baseY: targetY };
         this.scene.add(group);
         this.cps.push(group);
         return group;
@@ -9402,7 +9604,7 @@ class Game {
             if (this.playerVehicle && this.playerCharacter) {
               if (this.isPedestrian) {
                 const dist = this.player.position.distanceTo(this.playerVehicle.position);
-                if (dist < 6.0) { if (window.TrafficAudio) window.TrafficAudio.playDoorOpen();
+                if (dist < 8.5) { if (window.TrafficAudio) window.TrafficAudio.playDoorOpen();
                   this._enterDir = 1;
                   this._enterTimer = 0;
                   this._enterState = 'WALKING_TO_DOOR';
@@ -9443,7 +9645,7 @@ class Game {
         const inTransition = this._enterState !== 'IDLE';
         let at = window.analogThrottle || 0;
         const up = !inTransition && (this.keys['arrowup'] || this.keys['w'] || at > 0.1);
-        const dn = !inTransition && (this.keys['arrowdown'] || this.keys['s'] || at < -0.1);
+        const dn = !inTransition && (this.keys['arrowdown'] || this.keys['s'] || this.keys['b'] || at < -0.1);
         const lt = !inTransition && (this.keys['arrowleft'] || this.keys['a']);
         const rt = !inTransition && (this.keys['arrowright'] || this.keys['d']);
         
@@ -9468,12 +9670,12 @@ class Game {
           if (Math.abs(at) > 0.08) inpForward = at;
           if (Math.abs(as) > 0.08) inpRight = as;
 
-          // Camera-Relative Movement: Forward is screen forward, Right is screen right
+          // Camera-Relative Movement: Forward is screen forward (away from camera), Right is screen right
           const camHeading = (this.camYaw || 0);
-          const fwdX = -Math.sin(camHeading);
-          const fwdZ = -Math.cos(camHeading);
-          const rgtX = Math.cos(camHeading);
-          const rgtZ = -Math.sin(camHeading);
+          const fwdX = Math.sin(camHeading);
+          const fwdZ = Math.cos(camHeading);
+          const rgtX = -Math.cos(camHeading);
+          const rgtZ = Math.sin(camHeading);
 
           const moveX = fwdX * inpForward + rgtX * inpRight;
           const moveZ = fwdZ * inpForward + rgtZ * inpRight;
@@ -9591,17 +9793,17 @@ class Game {
 
         if (!overrideMove) {
           let tAmt = 0;
-          if (lt) tAmt = -1;
-          else if (rt) tAmt = 1;
-          else if (this.gyroOn) tAmt = window.gyroSteering;
-          else if (window.analogSteering) tAmt = window.analogSteering;
+          if (lt) tAmt = 1;
+          else if (rt) tAmt = -1;
+          else if (this.gyroOn) tAmt = -window.gyroSteering;
+          else if (window.analogSteering) tAmt = -window.analogSteering;
 
           // ── Dual-Track Dynamic Physics & Pacejka Yaw Calculations ──
           if (!this.isPedestrian) {
             this._computeVehicleDynamics(dt, tAmt, dn, up, isRev);
           } else if (Math.abs(this.speed) > .005) {
             // Pedestrian rotational turning
-            const effTurn = (this.turn || 0.08);
+            const effTurn = (this.turn || 0.08) * (this.steerSensitivity || 1.0);
             if (tAmt !== 0) this.player.rotation.y += tAmt * effTurn * dt * 60;
             while (this.player.rotation.y > Math.PI) this.player.rotation.y -= Math.PI * 2;
             while (this.player.rotation.y < -Math.PI) this.player.rotation.y += Math.PI * 2;
@@ -9609,13 +9811,13 @@ class Game {
 
           if (this.gyroOn) this._checkGyroAutoRecal(tAmt);
           // Camera tilt: smooth follow of lateral input, scaled by speed
-          const tiltTarget = tAmt * Math.min(Math.abs(this.speed) * 0.06, 0.04);
+          const tiltTarget = -tAmt * Math.min(Math.abs(this.speed) * 0.06, 0.04) * (this.steerSensitivity || 1.0);
           this._camTilt += (tiltTarget - this._camTilt) * Math.min(1, dt * 8);
 
           // ── Indicator non-use fine (F) ──
           // Track sustained turning; fine if turning > 1.5s without indicator
           if (!this.isPedestrian && tAmt !== 0 && Math.abs(this.speed) > 0.05) {
-            const turnDir = tAmt < 0 ? -1 : 1; // left=-1, right=1 (maps to turnSignal convention)
+            const turnDir = tAmt > 0 ? -1 : 1; // left=-1 (tAmt>0), right=1 (tAmt<0) (maps to turnSignal convention)
             if (this._turnAccumDir === turnDir) {
               this._turnAccum += dt;
             } else {
@@ -9683,8 +9885,7 @@ class Game {
               owEl.classList.add('on');
             }
             this.speed *= 0.85;
-            this.hp = Math.max(0, this.hp - 0.15);
-            this._uh();
+            // No ped HP drain
           } else {
             if (owEl) owEl.classList.remove('on');
           }
@@ -9696,26 +9897,15 @@ class Game {
               owEl.classList.add('on');
             }
             this.speed *= 0.7;
-            this.hp = Math.max(0, this.hp - (this.seatbeltOn ? 0.25 : 0.4));
-
-            if (!this.player.userData.fpCooldown) this.player.userData.fpCooldown = 0;
-            this.player.userData.fpCooldown -= dt;
-            if (this.player.userData.fpCooldown <= 0 && window.ui && window.ui.issueChallan) {
-              if (this._triggerPoliceStrobe) this._triggerPoliceStrobe();
-              ui.issueChallan('Driving on Footpath', 'Sec 177 MV Act', '₹500', 'Reckless Driving');
-              this.player.userData.fpCooldown = 3.5;
-            }
-
-            if (this.hp <= 0) this._go("Wrecked on sidewalk"); else this._uh();
+            // Safe on sidewalk without HP penalty
           } else if (surfaceStatus.offRoad && !(this.mapCfg && (this.mapCfg.useLowPolyCity || this.mapCfg.is50km || this.mapCfg.themeType === 'free_roam'))) {
             if (owEl) {
               owEl.textContent = "⚠️ OFF ROAD — Return vehicle to road!";
               owEl.classList.add('on');
             }
             this.speed *= 0.52;
-            this.hp = Math.max(0, this.hp - (this.seatbeltOn ? 0.36 : 0.45));
-            if (this.hp <= 0) this._go("Drove off-road"); else this._uh();
-            if (window.GameplayRecorder) GameplayRecorder.record('OFF_ROAD', { hp: Math.round(this.hp), score: this.score });
+            // No off-road HP drain
+            if (window.GameplayRecorder) GameplayRecorder.record('OFF_ROAD', { score: this.score });
           } else {
             if (owEl) owEl.classList.remove('on');
           }
@@ -9730,19 +9920,37 @@ class Game {
                 }
             }
             
-            // Check Wrong-side driving
+            // Check Wrong-side driving (Left-Hand Traffic / LHT for India)
             if (currentRoad && !this.isPedestrian && Math.abs(this.speed) > 0.15 && (!this._spawnInvulnerable || this._spawnInvulnerable <= 0)) {
                 let wrongWay = false;
                 let nearInt = false;
-                (this.mapCfg.ints || []).forEach(([ix, iz]) => {
-                    if (Math.abs(this.player.position.x - ix) < 30 && Math.abs(this.player.position.z - iz) < 30) nearInt = true;
+                const checkInts = (this.mapCfg.ints || []).concat(this.mapCfg.intersections || []);
+                checkInts.forEach(intPt => {
+                    const ix = Array.isArray(intPt) ? intPt[0] : intPt.x;
+                    const iz = Array.isArray(intPt) ? intPt[1] : intPt.z;
+                    if (ix !== undefined && iz !== undefined && Math.hypot(this.player.position.x - ix, this.player.position.z - iz) < 38) nearInt = true;
                 });
-                const nearGarage = this._garageX !== undefined && Math.hypot(this.player.position.x - this._garageX, this.player.position.z - this._garageZ) < 40;
+                (this.cps || []).forEach(cp => {
+                    if (cp.x !== undefined && cp.z !== undefined && Math.hypot(this.player.position.x - cp.x, this.player.position.z - cp.z) < 25) nearInt = true;
+                });
+                const nearGarage = this._garageX !== undefined && Math.hypot(this.player.position.x - this._garageX, this.player.position.z - this._garageZ) < 45;
                 if (!nearInt && !nearGarage) {
                     if (currentRoad.type === 'v') {
-                        if (Math.sign(this.player.position.x - currentRoad.x) === Math.sign(this.vz) && Math.abs(this.vz) > 0.05) wrongWay = true;
+                        // Southbound (+Z, vz > 0): Correct side is East (+X). Signs match.
+                        // Northbound (-Z, vz < 0): Correct side is West (-X). Signs match.
+                        // Wrong-way if signs differ:
+                        const dx = this.player.position.x - currentRoad.x;
+                        if (Math.abs(dx) > 1.2 && Math.abs(this.vz) > 0.05) {
+                            if (Math.sign(dx) !== Math.sign(this.vz)) wrongWay = true;
+                        }
                     } else {
-                        if (Math.sign(this.player.position.z - currentRoad.z) === Math.sign(this.vx) && Math.abs(this.vx) > 0.05) wrongWay = true;
+                        // Eastbound (+X, vx > 0): Correct side is North (-Z). Signs differ.
+                        // Westbound (-X, vx < 0): Correct side is South (+Z). Signs differ.
+                        // Wrong-way if signs match:
+                        const dz = this.player.position.z - currentRoad.z;
+                        if (Math.abs(dz) > 1.2 && Math.abs(this.vx) > 0.05) {
+                            if (Math.sign(dz) === Math.sign(this.vx)) wrongWay = true;
+                        }
                     }
                 }
                 if (wrongWay) {
@@ -9835,8 +10043,8 @@ class Game {
                 this._phoneRinging = true;
                 this._phoneRingTimer = 25 + Math.random() * 15;
                 this._phoneRingingStart = this.timer;
-                // Play ring SFX
-                if (typeof sfx !== 'undefined' && sfx.play) sfx.play('horn');
+                // Play gentle telephone ring SFX
+                if (typeof sfx !== 'undefined' && sfx.play) sfx.play('ring');
                 let ringEl = document.getElementById('phone-ring-overlay');
                 if (!ringEl) {
                   ringEl = document.createElement('div');
@@ -10293,6 +10501,14 @@ class Game {
         // Delegate to TrafficManager for Mumbai-style traffic simulation
         if (this.trafficManager) {
           this.trafficManager.update(dt, this.player, this.sigs || []);
+        // Update In-Car AI Driving Co-Pilot & Syllabus Evaluator
+        if (this.aiCoPilot) {
+          this.aiCoPilot.update(dt);
+        }
+        // Update Urban AI Level Director
+        if (window.TrafficMapAI) {
+          window.TrafficMapAI.update(dt);
+        }
           // ── Real-time Traffic NPC to Player Physical Collision Pass ──
           if (this.player && this.trafficManager.vehicles) {
             const px = this.player.position.x, pz = this.player.position.z;
@@ -10343,10 +10559,6 @@ class Game {
                     this.player.position.z += Math.cos(pushAngle) * (Math.min(overlapX, overlapZ) + 0.15);
                     if (window.TrafficAudio && Math.random() < 0.3) window.TrafficAudio.playHonk(1.0);
                   } else {
-                    const dmg = isPed ? 35 : (this.seatbeltOn ? 8 : 15);
-                    this.hp = Math.max(0, this.hp - dmg);
-                    if (this.hp <= 0) this._go('Vehicle Crash');
-                    else this._uh();
                     this.speed *= -0.25;
                     this._camShakeAmt = Math.max(this._camShakeAmt, 0.4);
 
@@ -10356,9 +10568,9 @@ class Game {
                     this.player.position.z += Math.cos(pushAngle) * pushDist;
 
                     if (window.TrafficAudio) window.TrafficAudio.playCrash(1.2);
-                    toast('💥 Contact with traffic! HP -' + dmg, '#ef4444', 2500);
+                    toast('💥 Contact with traffic!', '#ef4444', 2000);
                     this.violationsLog.push('TRAFFIC_COLLISION');
-                    if (window.GameplayRecorder) GameplayRecorder.record('TRAFFIC_HIT', { hp: Math.round(this.hp) });
+                    if (window.GameplayRecorder) GameplayRecorder.record('TRAFFIC_HIT', { score: this.score });
                   }
                 }
               }
@@ -10421,8 +10633,10 @@ class Game {
             }
             n.userData._lastPos.copy(n.position);
             if (n.userData._stuckTimer > 5) {
-              // Instead of teleporting magically, just honk horn and wait
-              if (Math.random() < 0.05 && window.sfx && window.sfx.play) {
+              // Instead of spamming horn every frame, honk once with a strict 14s cooldown
+              const nowSec = this.timer || 0;
+              if (nowSec - (n.userData._lastHonkTime || 0) > 14 && window.sfx && window.sfx.play) {
+                n.userData._lastHonkTime = nowSec;
                 window.sfx.play('horn');
               }
               // Genuinely stuck (not just briefly waiting at a light) for 7+ seconds —
@@ -11086,17 +11300,14 @@ class Game {
               // Vehicle collision — enhanced crash impact system
               const impactSpeed = Math.abs(this.speed);
               const seatbeltReduction = this.seatbeltOn ? 0.6 : 1.0;
-              const speedDamage = Math.min(impactSpeed * 30, 25) * seatbeltReduction;
-              this.hp -= 5 + speedDamage;
-              if (this.hp <= 0) this._go('Collided with ' + (n.userData.npcType || 'Vehicle'));
-              else this._uh();
+              // Bumper reaction
               // Directional bounce + sparks + debris + hitstop
               this._applyCrashImpact(n.position, impactSpeed);
               if(window.sfx) window.sfx.play('error');
               if (this.player) this._spawnSkidMark(this.player.position.x, this.player.position.z, this.player.rotation.y, impactSpeed * 3);
               toast('💥 Collision! ' + (impactSpeed > 0.6 ? 'SEVERE' : 'Minor') + ' Impact', '#ff3b30');
               this._collidedThisFrame = true;
-              if (window.GameplayRecorder) GameplayRecorder.record('COLLISION', { speed: Math.round(impactSpeed * 100), npcType: n.userData.npcType, score: this.score, hp: Math.round(this.hp), impactIntensity: Math.round(impactSpeed * 100) });
+              if (window.GameplayRecorder) GameplayRecorder.record('COLLISION', { speed: Math.round(impactSpeed * 100), npcType: n.userData.npcType, score: this.score, impactIntensity: Math.round(impactSpeed * 100) });
 
               // ── J. Road-rage NPC reaction ──
               if (!this._roadRageCD || this._roadRageCD <= 0) {
@@ -11223,16 +11434,30 @@ class Game {
           const spawnMax = isFestCrowd ? 160 : 95;
           if (distToPlayer > spawnMin && distToPlayer < spawnMax) {
             // Phase 7: Reuse freed pedestrian or create new
+            // Generate varied authentic clothing & appearance
+            const shirtCols = [0x2980b9, 0xc0392b, 0x27ae60, 0xf39c12, 0x8e44ad, 0x16a085, 0xd35400, 0xecf0f1, 0x2c3e50, 0xf1c40f];
+            const pantCols = [0x2c3e50, 0x7f8c8d, 0x1e272e, 0x34495e, 0x16a085];
+            const skinCols = [0x8d5524, 0xc68642, 0xe0ac69, 0xf1c27d, 0xffdbac];
+            const hairCols = [0x111111, 0x222222, 0x3d2314];
+            const rApp = {
+              shirt: shirtCols[Math.floor(Math.random() * shirtCols.length)],
+              pants: pantCols[Math.floor(Math.random() * pantCols.length)],
+              skin: skinCols[Math.floor(Math.random() * skinCols.length)],
+              hair: hairCols[Math.floor(Math.random() * hairCols.length)]
+            };
+
             let ped;
             if (this._pedFree && this._pedFree.length > 0) {
               ped = this._pedFree.pop();
               ped.visible = true;
             } else {
-              ped = _buildHuman();
+              ped = _buildHuman(false, rApp);
             }
             const side = Math.random() > 0.5 ? 1 : -1;
-            const lDist = 18 / 2 + 1.25; // Sidewalk distance
-            const bDist = lDist + 6.0;   // Building distance
+            const rW = r.width || 14;
+            const lateralJitter = (Math.random() - 0.5) * 2.2; // Natural scatter across sidewalk
+            const lDist = rW / 2 + 1.8 + lateralJitter; // True sidewalk distance based on road width
+            const bDist = rW / 2 + 1.8 + 6.0;           // Building distance
             
             const exiting = Math.random() > 0.5; // Randomly start exiting a building
             const px = isV ? rx + side * (exiting ? bDist : lDist) : rx;
@@ -11255,7 +11480,10 @@ class Game {
               rLeg: ped.children.find(c => c.name === 'rLeg') || new THREE.Group(),
               state: exiting ? 'exiting' : 'sidewalk',
               side: side,
-              targetDist: lDist,
+              targetDist: rW / 2 + 1.8,
+              lateralOffset: lateralJitter,
+              speedFactor: 0.85 + Math.random() * 0.45,
+              wanderPhase: Math.random() * Math.PI * 2,
               destDist: 15 + Math.random() * 25,
               distTraveled: 0
             };
@@ -11410,13 +11638,7 @@ class Game {
 
           if (overlapX > 0 && overlapZ > 0) {
               this._collidedThisFrame = true;
-              const dmg = this.seatbeltOn ? 10 : 18;
-              this.hp = Math.max(0, this.hp - dmg);
-              if (this.hp <= 0) {
-                this._go(ud.isVehicle ? 'Vehicle Collision' : 'Collided with Structure');
-              } else {
-                this._uh();
-              }
+              // Elastic collision response
               // Elastic bounce response
               this.speed *= -0.35;
               this._camShakeAmt = Math.max(this._camShakeAmt, 0.45);
@@ -11444,11 +11666,11 @@ class Game {
 
               if (window.TrafficAudio) window.TrafficAudio.playCrash(1.2);
               if (ud.isVehicle) {
-                toast('💥 CRASH! Vehicle Collision! HP -' + dmg, '#ef4444', 3000);
+                toast('💥 Vehicle Collision!', '#ef4444', 2500);
               } else {
-                toast('🚧 CRASH! Structure Collision! HP -' + dmg, '#ef4444', 3000);
+                toast('🚧 Structure Collision!', '#ef4444', 2500);
               }
-              if (window.GameplayRecorder) GameplayRecorder.record('COLLISION_HIT', { hp: Math.round(this.hp), score: this.score });
+              if (window.GameplayRecorder) GameplayRecorder.record('COLLISION_HIT', { score: this.score });
           }
         });
 
@@ -11478,13 +11700,7 @@ class Game {
                     sb.userData.cd = 2.0;
                     if (Math.abs(this.speed) > 0.4) {
                         this.speed *= 0.6;
-                        this.hp -= this.seatbeltOn ? 4 : 5;
-                        this._uh();
-                        this._camShakeAmt = Math.max(this._camShakeAmt, 0.15);
-                        this.playerVehicle.position.y = 0.6;
-                        this._sbBounce = true;
-                        setTimeout(() => { if(this.playerVehicle) { this.playerVehicle.position.y = 0; this._sbBounce = false; } }, 150);
-                        toast('⚠️ High Speed on Breaker! Damage taken!', '#ff9500');
+                        toast('⚠️ Slow down on speed breakers!', '#ff9500');
                         sfx.play('error');
                     } else {
                         this.playerVehicle.position.y = 0.2;
@@ -12056,8 +12272,8 @@ class Game {
           this._camShakeAmt *= Math.pow(0.04, dt);
         }
 
-        if (this.isPointerLocked) {
-          // First Person Mode
+        if (this.firstPersonMode) {
+          // First Person Mode (optional toggle via 'V' key)
           const headHeight = this.isPedestrian ? 1.6 : 1.2;
           // For vehicles, offset slightly forward so we don't clip into the driver seat mesh
           const forwardOffset = this.isPedestrian ? 0 : 0.5;
@@ -12089,8 +12305,16 @@ class Game {
 
           // Dynamic speed pullback (widen distance as speed builds)
           const speedPullback = this.isPedestrian ? 0 : Math.min(Math.abs(this.speed) / (this.maxSpd || 80), 1) * 2.2;
-          const camDist = (this.isPedestrian ? 3.8 : _vcam.dist) + speedPullback;
-          const camHeight = (this.isPedestrian ? 2.0 : _vcam.height) + (isReverse ? 1.2 : 0);
+          let camDist = (this.isPedestrian ? 3.8 : _vcam.dist) + speedPullback;
+          let camHeight = (this.isPedestrian ? 2.0 : _vcam.height) + (isReverse ? 1.2 : 0);
+          if (!this.isPedestrian && this._garageX !== undefined && this._garageZ !== undefined) {
+            const dGarage = Math.hypot(this.player.position.x - this._garageX, this.player.position.z - this._garageZ);
+            if (dGarage < 22) {
+              const f = Math.max(0, (22 - dGarage) / 22);
+              camDist = THREE.MathUtils.lerp(camDist, 4.2, f);
+              camHeight = THREE.MathUtils.lerp(camHeight, 2.2, f);
+            }
+          }
           
           const rotY = this.isPedestrian ? (this.camYaw || 0) : this.player.rotation.y + (this.camYaw || 0);
           const pitchOffset = (this.camPitch || 0) * 1.4;
@@ -12284,18 +12508,18 @@ class Game {
           }
         }
 
-        // ── Ambient light ──
-        if (this._ambient) this._ambient.intensity = cfg.isNight ? (cfg.amb || 0.15) : this._dnLerp(0.08, cfg.amb || 0.35, sunElev);
+        // ── Ambient light (ensures good visibility on roads at night) ──
+        if (this._ambient) this._ambient.intensity = cfg.isNight ? (cfg.amb || 0.25) : this._dnLerp(0.18, cfg.amb || 0.38, sunElev);
 
         // ── Hemisphere light ──
-        if (this._hemi) this._hemi.intensity = cfg.isNight ? 0.10 : this._dnLerp(0.08, 0.45, sunElev);
+        if (this._hemi) this._hemi.intensity = cfg.isNight ? 0.20 : this._dnLerp(0.15, 0.45, sunElev);
 
         // ── Sun intensity ──
         if (this._sun) this._sun.intensity = cfg.isNight ? 0.05 : this._dnLerp(0.05, 1.2, sunElev);
 
         // ── Moon (opposite to sun) ──
         if (this._moon && this.player) {
-          this._moon.intensity = cfg.isNight ? 0.6 : this._dnLerp(0.4, 0, sunElev);
+          this._moon.intensity = cfg.isNight ? 0.8 : this._dnLerp(0.5, 0, sunElev);
           const moonAngle = sunAngle + Math.PI;
           const mx = Math.cos(moonAngle) * 50;
           const my = Math.abs(Math.sin(moonAngle)) * 40 + 5;
@@ -12304,12 +12528,22 @@ class Game {
 
         // ── Tone mapping exposure ──
         if (this.renderCore && this.renderCore.renderer) {
-          this.renderCore.renderer.toneMappingExposure = cfg.isNight ? 0.55 : this._dnLerp(0.42, 0.62, sunElev);
+          this.renderCore.renderer.toneMappingExposure = cfg.isNight ? 0.65 : this._dnLerp(0.45, 0.65, sunElev);
         }
 
-        // ── Street lights ──
-        const slIntensity = cfg.isNight ? 1.0 : (sunElev < 0.3 ? this._dnLerp(0.8, 0, sunElev / 0.3) : 0);
+        // ── Street lights & Road Illumination ──
+        const isDark = cfg.isNight || sunElev < 0.32;
+        const slIntensity = cfg.isNight ? 1.0 : (sunElev < 0.32 ? this._dnLerp(0.9, 0, sunElev / 0.32) : 0);
         for (let i = 0; i < this._streetLights.length; i++) this._streetLights[i].intensity = slIntensity;
+
+        // Mumbai Street Lamp Lenses & Ground Light Pools
+        if (window._mumbaiStreetLampLens) {
+          window._mumbaiStreetLampLens.emissiveIntensity = isDark ? (0.4 + slIntensity * 1.0) : 0.05;
+          window._mumbaiStreetLampLens.needsUpdate = true;
+        }
+        if (window._mumbaiLightPoolMat) {
+          window._mumbaiLightPoolMat.opacity = isDark ? (0.12 + slIntensity * 0.28) : 0.0;
+        }
 
         // ── Building window glow ──
         const wlIntensity = cfg.isNight ? 0.8 : (sunElev < 0.4 ? this._dnLerp(0.6, 0, sunElev / 0.4) : 0);
@@ -12416,7 +12650,7 @@ class Game {
             } else if (this.isPedestrian && this.playerVehicle) {
               const dist = this.player.position.distanceTo(this.playerVehicle.position);
               const mcEnter = document.getElementById('mc-enter');
-              if (dist < 5) {
+              if (dist < 8.5) {
                 this.warnEl.innerHTML = `
                   <div style="background:linear-gradient(135deg, rgba(13, 19, 31, 0.95), rgba(21, 29, 45, 0.95)); border:2px solid #f59e0b; border-radius:30px; padding:10px 22px; color:#ffffff; font-weight:800; font-size:0.98rem; letter-spacing:0.4px; box-shadow:0 12px 32px rgba(0, 0, 0, 0.8), 0 0 20px rgba(245, 158, 11, 0.35); display:flex; align-items:center; gap:10px;">
                     <span style="font-size:1.3rem;">🚗</span>
@@ -12424,6 +12658,12 @@ class Game {
                   </div>
                 `;
                 this.warnEl.style.display = 'block';
+                this.warnEl.style.cursor = 'pointer';
+                this.warnEl.onclick = (ev) => {
+                  ev.preventDefault();
+                  this.keys['f'] = true;
+                  setTimeout(() => { this.keys['f'] = false; }, 120);
+                };
                 if (mcEnter) mcEnter.style.display = 'flex';
               } else {
                 this.warnEl.style.display = 'none';

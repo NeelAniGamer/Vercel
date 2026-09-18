@@ -22,14 +22,18 @@ function copyDirSafe(src, dest) {
   try {
     if (fs.existsSync(src)) {
       if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
-      const entries = fs.readdirSync(src, { withFileTypes: true });
-      for (const entry of entries) {
-        const srcPath = path.join(src, entry.name);
-        const destPath = path.join(dest, entry.name);
-        if (entry.isDirectory()) {
-          copyDirSafe(srcPath, destPath);
-        } else {
-          fs.copyFileSync(srcPath, destPath);
+      if (typeof fs.cpSync === 'function') {
+        fs.cpSync(src, dest, { recursive: true, force: true });
+      } else {
+        const entries = fs.readdirSync(src, { withFileTypes: true });
+        for (const entry of entries) {
+          const srcPath = path.join(src, entry.name);
+          const destPath = path.join(dest, entry.name);
+          if (entry.isDirectory()) {
+            copyDirSafe(srcPath, destPath);
+          } else {
+            fs.copyFileSync(srcPath, destPath);
+          }
         }
       }
     }
@@ -42,8 +46,8 @@ async function copyAssets() {
   const distDir = path.join(__dirname, 'dist');
   if (!fs.existsSync(distDir)) fs.mkdirSync(distDir, { recursive: true });
 
-  // 1. Copy All Screens: Driving, Dashboard, Academy, Setup
-  const screens = ['Driving.html', 'TrafficDashboard.html', 'Academy.html', 'TrafficSetup.html'];
+  // 1. Copy All Screens: Driving, Dashboard, Academy, Setup, index
+  const screens = ['Driving.html', 'TrafficDashboard.html', 'Academy.html', 'TrafficSetup.html', 'index.html'];
   screens.forEach(s => copyFileSafe(path.join(__dirname, s), path.join(distDir, s)));
 
   // 2. Copy Game Engine Scripts & Assets
@@ -59,9 +63,13 @@ async function copyAssets() {
     }
   });
 
-  // 3. Copy Levels, Models, Textures
+  // 3. Copy Levels, Models, Textures, Skins & Cyberpunk
+  console.log('[electron-build] Syncing 3D Models and asset packs to dist/ ...');
   copyDirSafe(path.join(__dirname, 'levels'), path.join(distDir, 'levels'));
   copyDirSafe(path.join(__dirname, 'textures'), path.join(distDir, 'textures'));
+  copyDirSafe(path.join(__dirname, 'skins'), path.join(distDir, 'skins'));
+  copyDirSafe(path.join(__dirname, 'Models'), path.join(distDir, 'Models'));
+  copyDirSafe(path.join(__dirname, '..', 'Cyberpunk'), path.join(distDir, 'Cyberpunk'));
 
   // 4. Copy Parent Shared Web Modules so ../ references work
   const parentFiles = ['col-router.js', 'col-ui.js', 'col-auth.js', 'col-ui.css', 'Icon.png', 'config.json'];
@@ -71,7 +79,7 @@ async function copyAssets() {
     copyFileSafe(path.join(__dirname, '..', pf), path.join(__dirname, pf));
   });
 
-  console.log('[electron-build] Screens (Driving, Dashboard, Academy, Setup) and assets synced to dist/');
+  console.log('[electron-build] Screens (Driving, Dashboard, Academy, Setup) and all 3D models synced to dist/');
 }
 
 async function main() {

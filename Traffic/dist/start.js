@@ -614,7 +614,7 @@ preloadModels(() => {
   }
 
   const urlParams = new URLSearchParams(window.location.search)
-  let lvId = urlParams.get('lv') || localStorage.getItem('traffic_lv') || '1'
+  let lvId = urlParams.get('level') || urlParams.get('lv') || localStorage.getItem('traffic_lv') || '1'
   let mode = urlParams.get('mode') || localStorage.getItem('traffic_mode') || 'car'
   let veh = urlParams.get('veh') || localStorage.getItem('traffic_veh') || (mode === 'pedestrian' ? 'pedestrian' : (S.vehicle?.toLowerCase() || 'car'))
 

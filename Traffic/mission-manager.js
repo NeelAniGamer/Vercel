@@ -1522,8 +1522,9 @@ class CampaignManager {
   }
 
   getAvailableCampaigns() {
-    if (!window.CAMPAIGNS) return [];
-    return window.CAMPAIGNS.filter(c => {
+    const campaigns = window.CAMPAIGNS || (window.COURSE && window.COURSE.CAMPAIGNS) || [];
+    if (!campaigns.length) return [];
+    return campaigns.filter(c => {
       if (!c.prerequisite) return true;
       const prereq = this.campaignProgress[c.prerequisite];
       return prereq?.completed === true;
@@ -1531,13 +1532,15 @@ class CampaignManager {
   }
 
   getCampaignProgress(campaignId) {
-    if (!window.getCampaignProgress) return null;
+    const fn = window.getCampaignProgress || (window.COURSE && window.COURSE.getCampaignProgress);
+    if (!fn) return null;
     const userData = { campaignProgress: this.campaignProgress };
-    return window.getCampaignProgress(userData, campaignId);
+    return fn(userData, campaignId);
   }
 
   startCampaign(campaignId) {
-    const campaign = window.getCampaign?.(campaignId);
+    const getCamp = window.getCampaign || (window.COURSE && window.COURSE.getCampaign);
+    const campaign = getCamp ? getCamp(campaignId) : null;
     if (!campaign) return false;
 
     const progress = this.getCampaignProgress(campaignId);

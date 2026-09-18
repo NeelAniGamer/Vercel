@@ -127,7 +127,8 @@ code {
     inset: 0 !important;
     width: 100vw !important;
     height: 100dvh !important;
-    background: var(--panel, #070a14) !important;
+    background: #070a14 !important;
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.9) !important;
     flex-direction: column !important;
     justify-content: flex-start !important;
     align-items: stretch !important;
@@ -145,7 +146,10 @@ code {
     flex-wrap: nowrap !important;
     border: none !important;
     border-radius: 0 !important;
-    box-shadow: none !important;
+  }
+  body.lm .nav-links {
+    background: #f3f2eb !important;
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.15) !important;
   }
   .nav-links.active {
     opacity: 1;
@@ -280,6 +284,12 @@ code {
     -webkit-backdrop-filter: blur(18px) saturate(1.2);
     align-items: center;
     justify-content: space-between;
+    transition: transform var(--dur-med, 280ms) var(--ease-out, ease), opacity var(--dur-fast, 160ms) var(--ease-out, ease);
+  }
+  .col-bottom-bar.hidden {
+    transform: translateX(-50%) translateY(calc(100% + 24px)) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
   }
   .col-bottom-bar a {
     flex: 1;
@@ -288,7 +298,7 @@ code {
     align-items: center;
     justify-content: center;
     gap: 3px;
-    min-height: 46px;
+    min-height: 48px;
     padding: 4px;
     border-radius: var(--r-pill);
     color: var(--dim, #8891aa);
@@ -318,7 +328,7 @@ code {
 
   /* Safe padding so bottom bar does not obscure page content */
   body {
-    padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
   }
   body.nav-lock .col-bottom-bar {
     opacity: 0;
@@ -328,14 +338,46 @@ code {
 }
 
 /* ─────────────────────────────────────────────────────────────────
+   Android App Scoped Rules (.is-android-app)
+   ───────────────────────────────────────────────────────────────── */
+.is-android-app .mobile-dl,
+.is-android-app a[href*="COL.apk"],
+.is-android-app a[href$=".apk"],
+.is-android-app #apkUpdateBtn {
+  display: none !important;
+}
+.is-android-app .top-nav {
+  top: max(12px, env(safe-area-inset-top, 12px)) !important;
+}
+.is-android-app .col-bottom-bar {
+  bottom: max(12px, env(safe-area-inset-bottom, 12px)) !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────
    4. RESPONSIVE HERO & SECTION TUNING
    ───────────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  .hero,
+  .hero {
+    min-height: auto;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    align-items: stretch !important;
+    padding-top: calc(env(safe-area-inset-top, 0px) + 72px);
+    padding-bottom: 36px;
+  }
   .about-hero {
     min-height: auto;
     padding-top: calc(env(safe-area-inset-top, 0px) + 72px);
     padding-bottom: 36px;
+  }
+  .orrery-dock {
+    position: relative !important;
+    margin: 16px 20px 24px !important;
+    bottom: auto !important;
+    left: auto !important;
+    transform: none !important;
+    width: calc(100% - 40px) !important;
+    z-index: 5 !important;
   }
   .hero h1,
   .about-hero h1 {
@@ -349,19 +391,42 @@ code {
   }
   .hcta,
   .hero-cta {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    width: 100%;
-    margin-top: 24px;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+    width: 100% !important;
+    margin-top: 18px !important;
   }
-  .btn-p,
-  .btn-g,
+  .hcta .btn-p {
+    grid-column: 1 !important;
+    width: 100% !important;
+    min-height: 46px !important;
+    padding: 10px 14px !important;
+    font-size: 0.9rem !important;
+    border-radius: 24px !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+  }
+  .hcta .btn-g:not(.mobile-dl) {
+    grid-column: 2 !important;
+    width: 100% !important;
+    min-height: 46px !important;
+    padding: 10px 14px !important;
+    font-size: 0.9rem !important;
+    border-radius: 24px !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+  }
+  .hcta .mobile-dl,
   .btn-download,
   .btn-demo {
-    width: 100%;
-    min-height: 48px;
-    justify-content: center;
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    min-height: 44px !important;
+    padding: 10px 16px !important;
+    font-size: 0.88rem !important;
+    border-radius: 24px !important;
+    justify-content: center !important;
   }
   .sci,
   .scl,

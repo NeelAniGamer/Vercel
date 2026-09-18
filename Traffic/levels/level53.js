@@ -21,10 +21,9 @@ window.LVS.push({
     '<h2>Free Roam City Sandbox</h2><p>Experience the low poly city models in an open sandbox. Drive anywhere, test the vehicles, and enjoy the scenery.</p>',
   pract: 'Drive around the city and explore.',
   mode: 'practical',
-  themeType: 'free_roam',
-  startOutside: true,
-  useLowPolyCity: true,
+  themeType: 'urban_grid',
+  noTimer: true,
+  noScore: true,
   tasks: [{ type: 'free_roam', text: 'Drive around and explore' }],
-  npcs: [],
-  assets: ['lowpoly_city']
+  assets: ['cars', 'suburban', 'industrial']
 })

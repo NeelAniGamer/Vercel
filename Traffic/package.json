@@ -58,6 +58,10 @@
       {
         "from": "levels",
         "to": "levels"
+      },
+      {
+        "from": "skins",
+        "to": "skins"
       }
     ],
     "win": {

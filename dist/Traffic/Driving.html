@@ -589,6 +589,18 @@
       height: 100dvh;
     }
 
+    html, body {
+      overflow: hidden !important;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      position: fixed;
+      inset: 0;
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
     body {
       background: var(--bg);
       color: var(--text);
@@ -2674,13 +2686,37 @@
       flex-shrink: 0;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 950px), (orientation: landscape) and (max-height: 500px) {
       #mmc {
-        left: calc(env(safe-area-inset-left, 0px) + 12px) !important;
-        top: calc(env(safe-area-inset-top, 0px) + 64px) !important;
+        left: calc(env(safe-area-inset-left, 0px) + 14px) !important;
+        top: 124px !important;
         bottom: auto !important;
-        width: 110px !important;
-        height: 110px !important;
+        width: 80px !important;
+        height: 80px !important;
+        border-width: 2px !important;
+        z-index: 60 !important;
+      }
+      #player-hud-card {
+        transform: scale(0.82) !important;
+        transform-origin: top left !important;
+        top: calc(env(safe-area-inset-top, 0px) + 4px) !important;
+        left: calc(env(safe-area-inset-left, 0px) + 8px) !important;
+      }
+      #top-right-hud-stack {
+        width: 220px !important;
+        max-width: 32vw !important;
+        top: calc(env(safe-area-inset-top, 0px) + 6px) !important;
+        right: calc(env(safe-area-inset-right, 0px) + 8px) !important;
+      }
+      #hud-rd-btn {
+        right: calc(env(safe-area-inset-right, 0px) + 64px) !important;
+        top: calc(env(safe-area-inset-top, 0px) + 6px) !important;
+        transform: scale(0.85);
+      }
+      #mobile-pause-btn {
+        right: calc(env(safe-area-inset-right, 0px) + 12px) !important;
+        top: calc(env(safe-area-inset-top, 0px) + 6px) !important;
+        transform: scale(0.85);
       }
     }
 
@@ -2839,24 +2875,26 @@
 
     /* Speed Control Cluster */
     #speed-ctrl {
-      position: fixed !important;
-      bottom: calc(env(safe-area-inset-bottom, 0px) + 72px) !important;
-      right: calc(env(safe-area-inset-right, 0px) + 120px) !important;
-      left: auto !important;
+      position: static !important;
       top: auto !important;
+      bottom: auto !important;
+      left: auto !important;
+      right: auto !important;
       transform: none !important;
       z-index: 45 !important;
-      display: none;
+      display: flex !important;
       flex-direction: column !important;
       gap: 4px !important;
-      background: #0d131f !important;
-      padding: 6px 8px !important;
-      border-radius: 8px !important;
-      border: 1.5px solid #26354a !important;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7) !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+      background: transparent !important;
+      padding: 0 !important;
+      border: none !important;
+      box-shadow: none !important;
       backdrop-filter: none !important;
     }
-    #speed-ctrl.on { display: flex; }
+    #speed-ctrl.on { display: flex !important; }
     .sc-row { display: flex; gap: 6px; align-items: center; }
     .sc-btn {
       padding: 5px 10px;
@@ -6120,25 +6158,7 @@
       text-align: left !important;
     }
 
-    /* TOP-RIGHT CIVIC & CONTROLS BAR (SOLID) */
-    #civic-controls {
-      position: fixed !important;
-      bottom: calc(env(safe-area-inset-bottom, 0px) + 94px) !important;
-      right: calc(env(safe-area-inset-right, 0px) + 16px) !important;
-      top: auto !important;
-      left: auto !important;
-      z-index: 55 !important;
-      display: flex !important;
-      align-items: center !important;
-      gap: 5px !important;
-      background: #0d131f !important;
-      border: 1.5px solid #26354a !important;
-      border-radius: 10px !important;
-      padding: 5px 8px !important;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.7) !important;
-      margin: 0 !important;
-      transform: none !important;
-    }
+
     .civic-btn {
       background: var(--hud-bg-solid) !important;
       border: 1px solid var(--hud-border-solid) !important;
@@ -6270,7 +6290,7 @@
     /* TOP-RIGHT SMARTPHONE INCOMING CALL NOTIFICATION (NON-BLOCKING) */
     #phone-ring-overlay {
       position: fixed !important;
-      top: calc(env(safe-area-inset-top, 0px) + 140px) !important;
+      top: calc(env(safe-area-inset-top, 0px) + 225px) !important;
       right: calc(env(safe-area-inset-right, 0px) + 16px) !important;
       left: auto !important;
       bottom: auto !important;
@@ -6544,9 +6564,12 @@
     /* ═══════════════════════════════════════════════════════════════ */
     /* 1. TOP-RIGHT UNIFIED HUD STACK (Auto-flowing flex column)       */
     /* ═══════════════════════════════════════════════════════════════ */
+    .safe-zone[data-zone="TR"] {
+      top: calc(var(--safe-top, 0px) + 52px) !important;
+    }
     #top-right-hud-stack {
       position: fixed !important;
-      top: calc(env(safe-area-inset-top, 0px) + 16px) !important;
+      top: calc(env(safe-area-inset-top, 0px) + 52px) !important;
       right: calc(env(safe-area-inset-right, 0px) + 16px) !important;
       left: auto !important;
       bottom: auto !important;
@@ -6562,7 +6585,7 @@
     }
 
     #objective-overlay {
-      position: relative !important;
+      position: static !important;
       top: auto !important;
       right: auto !important;
       left: auto !important;
@@ -6584,7 +6607,7 @@
     }
 
     #task-tracker {
-      position: relative !important;
+      position: static !important;
       top: auto !important;
       right: auto !important;
       left: auto !important;
@@ -6667,7 +6690,7 @@
     /* ═══════════════════════════════════════════════════════════════ */
     #cockpit-drive-cluster {
       position: fixed !important;
-      bottom: calc(env(safe-area-inset-bottom, 0px) + 64px) !important;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 14px) !important;
       right: calc(env(safe-area-inset-right, 0px) + 16px) !important;
       left: auto !important;
       top: auto !important;
@@ -6733,6 +6756,12 @@
 
     /* P R N D Gear Selector Row */
     #gp {
+      position: static !important;
+      top: auto !important;
+      bottom: auto !important;
+      left: auto !important;
+      right: auto !important;
+      transform: none !important;
       display: flex !important;
       flex-direction: row !important;
       justify-content: space-between !important;
@@ -6774,27 +6803,29 @@
     /* ═══════════════════════════════════════════════════════════════ */
     #civic-controls {
       position: fixed !important;
-      bottom: calc(env(safe-area-inset-bottom, 0px) + 16px) !important;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 146px) !important;
       right: calc(env(safe-area-inset-right, 0px) + 16px) !important;
       top: auto !important;
       left: auto !important;
       z-index: 55 !important;
       width: 290px !important;
-      max-width: calc(100vw - 32px) !important;
+      max-width: 290px !important;
       box-sizing: border-box !important;
       display: none;
+      flex-wrap: wrap !important;
       justify-content: space-between !important;
       align-items: center !important;
       gap: 4px !important;
       background: #0d131f !important;
       border: 1.5px solid #26354a !important;
-      border-radius: 10px !important;
-      padding: 4px 6px !important;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.75) !important;
+      border-radius: 12px !important;
+      padding: 6px 8px !important;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.8) !important;
       backdrop-filter: none !important;
       -webkit-backdrop-filter: none !important;
       margin: 0 !important;
       transform: none !important;
+      pointer-events: auto !important;
     }
     #gc.on ~ #civic-controls,
     #civic-controls.on {
@@ -6807,7 +6838,7 @@
       color: #e2e8f0 !important;
       border-radius: 6px !important;
       padding: 5px 6px !important;
-      font-size: 0.72rem !important;
+      font-size: 0.70rem !important;
       font-weight: 700 !important;
       cursor: pointer !important;
       transition: all 0.15s ease !important;
@@ -6816,7 +6847,13 @@
       justify-content: center !important;
       gap: 3px !important;
       white-space: nowrap !important;
-      flex: 1 !important;
+      flex: 1 1 auto !important;
+      min-height: 28px !important;
+    }
+    #civic-controls .civic-ind {
+      flex: 0 0 28px !important;
+      min-width: 28px !important;
+      padding: 4px !important;
     }
     #civic-controls .civic-btn:hover {
       border-color: #38bdf8 !important;
@@ -6961,6 +6998,261 @@
       letter-spacing: 0.4px !important;
     }
 
+
+    /* ═══════════════════════════════════════════════════════════════ */
+    /* AI SCENE SYNTHESIZER & SPATIAL ARCHITECT MODAL                  */
+    /* ═══════════════════════════════════════════════════════════════ */
+    #ai-scene-synth-modal {
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 100010 !important;
+      background: rgba(4, 7, 15, 0.86) !important;
+      backdrop-filter: blur(12px) !important;
+      -webkit-backdrop-filter: blur(12px) !important;
+      display: none;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 16px !important;
+      box-sizing: border-box !important;
+    }
+    #ai-scene-synth-modal.on {
+      display: flex !important;
+    }
+    .aism-dialog {
+      background: #0b111e !important;
+      border: 1.5px solid rgba(52, 211, 153, 0.6) !important;
+      border-radius: 20px !important;
+      width: 100% !important;
+      max-width: 680px !important;
+      max-height: 90vh !important;
+      display: flex !important;
+      flex-direction: column !important;
+      overflow: hidden !important;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 35px rgba(52, 211, 153, 0.25) !important;
+      animation: modalPop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
+    }
+    .aism-header {
+      background: linear-gradient(135deg, #064e3b, #0f766e) !important;
+      color: #ffffff !important;
+      padding: 16px 20px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+    }
+    .aism-header-left {
+      display: flex !important;
+      align-items: center !important;
+      gap: 12px !important;
+    }
+    .aism-title {
+      font-size: 1.15rem !important;
+      font-weight: 800 !important;
+      letter-spacing: 0.5px !important;
+    }
+    .aism-subtitle {
+      font-size: 0.75rem !important;
+      color: rgba(255, 255, 255, 0.82) !important;
+    }
+    .aism-close-btn {
+      background: rgba(255, 255, 255, 0.15) !important;
+      border: none !important;
+      color: #ffffff !important;
+      width: 32px !important;
+      height: 32px !important;
+      border-radius: 50% !important;
+      cursor: pointer !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      font-size: 1.1rem !important;
+      font-weight: bold !important;
+      transition: background 0.2s ease !important;
+    }
+    .aism-close-btn:hover {
+      background: rgba(239, 68, 68, 0.8) !important;
+    }
+    .aism-body {
+      padding: 18px 20px !important;
+      overflow-y: auto !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 16px !important;
+      background: #070d18 !important;
+      color: #e2e8f0 !important;
+    }
+    .aism-section-title {
+      font-size: 0.82rem !important;
+      font-weight: 700 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 1px !important;
+      color: #34d399 !important;
+      margin-bottom: 8px !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+    }
+    .aism-archetypes-grid {
+      display: grid !important;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+      gap: 10px !important;
+    }
+    .aism-card {
+      background: #0f172a !important;
+      border: 1.5px solid #1e293b !important;
+      border-radius: 12px !important;
+      padding: 12px !important;
+      cursor: pointer !important;
+      transition: all 0.2s ease !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 6px !important;
+    }
+    .aism-card:hover {
+      border-color: #34d399 !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 4px 14px rgba(52, 211, 153, 0.2) !important;
+    }
+    .aism-card.selected {
+      border-color: #34d399 !important;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(15, 23, 42, 0.9)) !important;
+      box-shadow: 0 0 16px rgba(52, 211, 153, 0.35) !important;
+    }
+    .aism-card-head {
+      display: flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+    }
+    .aism-card-icon {
+      font-size: 1.4rem !important;
+    }
+    .aism-card-name {
+      font-size: 0.88rem !important;
+      font-weight: 700 !important;
+      color: #f8fafc !important;
+    }
+    .aism-card-desc {
+      font-size: 0.72rem !important;
+      color: #94a3b8 !important;
+      line-height: 1.35 !important;
+    }
+    .aism-pills {
+      display: flex !important;
+      flex-wrap: wrap !important;
+      gap: 8px !important;
+    }
+    .aism-pill {
+      background: #0f172a !important;
+      border: 1px solid #334155 !important;
+      border-radius: 20px !important;
+      padding: 6px 14px !important;
+      font-size: 0.8rem !important;
+      font-weight: 600 !important;
+      color: #cbd5e1 !important;
+      cursor: pointer !important;
+      transition: all 0.15s ease !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+    }
+    .aism-pill:hover {
+      border-color: #34d399 !important;
+      color: #ffffff !important;
+    }
+    .aism-pill.selected {
+      background: #10b981 !important;
+      border-color: #34d399 !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.4) !important;
+    }
+    .aism-toggles {
+      display: grid !important;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+      gap: 8px !important;
+    }
+    .aism-toggle-item {
+      background: #0f172a !important;
+      border: 1px solid #1e293b !important;
+      border-radius: 8px !important;
+      padding: 8px 12px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      cursor: pointer !important;
+      user-select: none !important;
+    }
+    .aism-toggle-item:hover {
+      border-color: #334155 !important;
+    }
+    .aism-toggle-label {
+      font-size: 0.78rem !important;
+      font-weight: 600 !important;
+      color: #cbd5e1 !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+    }
+    .aism-toggle-switch {
+      width: 32px !important;
+      height: 18px !important;
+      background: #334155 !important;
+      border-radius: 10px !important;
+      position: relative !important;
+      transition: background 0.2s ease !important;
+    }
+    .aism-toggle-switch::after {
+      content: '' !important;
+      position: absolute !important;
+      top: 2px !important;
+      left: 2px !important;
+      width: 14px !important;
+      height: 14px !important;
+      background: #ffffff !important;
+      border-radius: 50% !important;
+      transition: transform 0.2s ease !important;
+    }
+    .aism-toggle-item.active .aism-toggle-switch {
+      background: #10b981 !important;
+    }
+    .aism-toggle-item.active .aism-toggle-switch::after {
+      transform: translateX(14px) !important;
+    }
+    .aism-footer {
+      background: #0b111e !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+      padding: 14px 20px !important;
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      gap: 12px !important;
+    }
+    .aism-badge {
+      font-size: 0.72rem !important;
+      color: #94a3b8 !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+    }
+    .aism-launch-btn {
+      background: linear-gradient(135deg, #10b981, #059669) !important;
+      border: none !important;
+      color: #ffffff !important;
+      padding: 10px 22px !important;
+      border-radius: 10px !important;
+      font-weight: 800 !important;
+      font-size: 0.9rem !important;
+      cursor: pointer !important;
+      letter-spacing: 0.4px !important;
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4) !important;
+      transition: all 0.2s ease !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+    }
+    .aism-launch-btn:hover {
+      transform: scale(1.02) !important;
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6) !important;
+    }
 </style>
 </head>
 
@@ -7008,31 +7300,7 @@
   </div>
 
   
-  <div id="virtual-joystick" style="
-        position: fixed;
-        bottom: clamp(40px, 12vh, 100px);
-        left: clamp(20px, 6vw, 40px);
-        width: clamp(120px, 18vw, 160px);
-        height: clamp(120px, 18vw, 160px);
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.15);
-        border: 3px solid rgba(255, 255, 255, 0.35);
-        display: none;
-        justify-content: center;
-        align-items: center;
-        touch-action: none;
-        z-index: 10000;
-        backdrop-filter: blur(4px);
-      ">
-    <div id="joystick-knob" style="
-          width: 55px;
-          height: 55px;
-          border-radius: 50%;
-          background: linear-gradient(145deg, #ffd54a, #ffb300);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.4);
-          transition: transform 0.05s ease-out;
-        "></div>
-  </div>
+
 
   
   <div id="camera-joystick" style="
@@ -7076,7 +7344,7 @@
     </div>
     <!-- Right: Pedals + Actions -->
     <div style="display:flex;gap:12px;pointer-events:auto;align-items:flex-end;">
-      <div id="mc-enter" class="mc-btn" style="width:52px;height:52px;background:rgba(241,196,15,0.5);border:2px solid rgba(241,196,15,0.7);border-radius:50%;display:none;align-items:center;justify-content:center;user-select:none;-webkit-user-select:none;">
+      <div id="mc-enter" class="mc-btn" onclick="window.game && window.game.toggleVehicleEntry()" style="width:52px;height:52px;background:rgba(241,196,15,0.5);border:2px solid rgba(241,196,15,0.7);border-radius:50%;display:none;align-items:center;justify-content:center;cursor:pointer;user-select:none;-webkit-user-select:none;">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
       </div>
       <div id="mc-boost" class="mc-btn" style="width:52px;height:52px;background:rgba(94,212,245,0.5);border:2px solid rgba(94,212,245,0.7);border-radius:50%;display:flex;align-items:center;justify-content:center;user-select:none;-webkit-user-select:none;">
@@ -7091,7 +7359,13 @@
     </div>
   </div>
 
-  <!-- Mobile Pause Button -->
+  <!-- AI Synthesizer, Mobile Pause & Render Distance HUD Buttons -->
+  <div id="hud-ai-synth-btn" onclick="openAISceneSynthesizerModal()" style="position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);right:calc(env(safe-area-inset-right,0px) + 195px);z-index:10000;padding:6px 14px;background:linear-gradient(135deg,rgba(16,185,129,0.25),rgba(59,130,246,0.25));border:1.5px solid rgba(52,211,153,0.55);border-radius:20px;display:flex;align-items:center;justify-content:center;color:#34d399;font-family:'Inter',sans-serif;font-size:0.75rem;font-weight:700;pointer-events:auto;cursor:pointer;backdrop-filter:blur(8px);user-select:none;-webkit-user-select:none;box-shadow:0 4px 14px rgba(16,185,129,0.3);transition:all 0.2s ease;">
+    ✨ <span style="margin-left:5px;">AI City</span>
+  </div>
+  <div id="hud-rd-btn" onclick="cycleGlobalRenderDistance()" style="position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);right:calc(env(safe-area-inset-right,0px) + 112px);z-index:10000;padding:6px 12px;background:rgba(13,19,31,0.75);border:1.5px solid rgba(94,212,245,0.4);border-radius:20px;display:flex;align-items:center;justify-content:center;color:#5ed4f5;font-family:'Inter',sans-serif;font-size:0.75rem;font-weight:700;pointer-events:auto;cursor:pointer;backdrop-filter:blur(6px);user-select:none;-webkit-user-select:none;box-shadow:0 4px 12px rgba(0,0,0,0.5);">
+    🔭 <span id="hud-rd-text" style="margin-left:4px;">150m</span>
+  </div>
   <div id="mobile-pause-btn" style="position:fixed;top:calc(env(safe-area-inset-top,0px) + 8px);right:calc(env(safe-area-inset-right,0px) + 60px);z-index:10000;width:44px;height:44px;background:rgba(0,0,0,0.4);border:2px solid rgba(255,255,255,0.2);border-radius:50%;display:none;align-items:center;justify-content:center;pointer-events:auto;cursor:pointer;backdrop-filter:blur(4px);">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
   </div>
@@ -7216,32 +7490,17 @@
       </div>
     </div>
 
-    <div class="hud-dash-health">
-      <div class="hud-health-row">
-        <div class="hud-health-left">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          <span class="hud-health-title">Vehicle Health</span>
-        </div>
-        <span class="hud-health-score" id="hfin">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
-          ECO 100%
-        </span>
-      </div>
-      <div class="hud-bar-track">
-        <div class="hud-bar-fill" id="hfill" style="width: 100%;"></div>
-      </div>
-    </div>
   </div>
 
   <!-- Top-Right Unified Auto-Flowing HUD Stack (Zero Overlaps) -->
   <div id="top-right-hud-stack">
-    <div id="objective-overlay">
-      <div id="objective-title">Current Objective</div>
-      <div id="objective-desc">Loading...</div>
-    </div>
     <div id="task-tracker">
       <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--yellow, #f59e0b); font-weight: 800; margin-bottom: 8px">📋 Tasks</div>
       <div id="task-list" style="display: flex; flex-direction: column; gap: 6px"></div>
+    </div>
+    <div id="objective-overlay">
+      <div id="objective-title">Current Objective</div>
+      <div id="objective-desc">Loading...</div>
     </div>
     <div id="challan-summary-box" onclick="window.ui && window.ui.openChallanHistoryModal && window.ui.openChallanHistoryModal()">
       <div class="csb-left">
@@ -7284,7 +7543,7 @@
         style="font-family:'Inter',sans-serif; font-size:1.1rem; font-weight:600; padding:12px 36px; border:none; border-radius:12px; background:rgba(52,152,219,0.85); color:#fff; cursor:pointer; transition:all 0.2s; min-height:48px;">Resume (Esc)</button>
       <button id="pause-restart"
         style="font-family:'Inter',sans-serif; font-size:1rem; font-weight:500; padding:10px 32px; border:none; border-radius:12px; background:rgba(255,149,0,0.8); color:#fff; cursor:pointer; min-height:48px;">Restart Level</button>
-      <button id="pause-quit"
+      <button id="pause-quit" onclick="quitGameToMenu()"
         style="font-family:'Inter',sans-serif; font-size:1rem; font-weight:500; padding:10px 32px; border:none; border-radius:12px; background:rgba(231,76,60,0.8); color:#fff; cursor:pointer; min-height:48px;">Quit to Menu</button>
     </div>
     
@@ -7298,12 +7557,28 @@
         </div>
       </div>
       <div style="display:flex; flex-direction:column; gap:8px;">
+        <label style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.8);">🎯 Controls & Camera Sensitivity</label>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <input type="range" id="pause-sensitivity" min="20" max="200" step="5" value="100" oninput="pauseSetSensitivity(this.value)" style="flex:1; height:6px; border-radius:3px; background:rgba(255,255,255,0.2); outline:none; -webkit-appearance:none; cursor:pointer;">
+          <span id="pause-sensitivity-val" style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:700; color:#fff; min-width:36px; text-align:right;">100%</span>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
         <label style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.8);">🖥️ Graphics Quality</label>
         <div id="pause-quality-btns" style="display:flex; gap:4px; background:rgba(255,255,255,0.1); border-radius:8px; padding:4px;">
           <button class="qbtn" data-q="LOW" onclick="pauseSetQuality('LOW')" style="flex:1; font-family:'Inter',sans-serif; font-size:0.75rem; font-weight:600; padding:8px 4px; border:none; border-radius:6px; background:transparent; color:rgba(255,255,255,0.6); cursor:pointer; transition:all 0.2s;">Low</button>
           <button class="qbtn" data-q="MED" onclick="pauseSetQuality('MED')" style="flex:1; font-family:'Inter',sans-serif; font-size:0.75rem; font-weight:600; padding:8px 4px; border:none; border-radius:6px; background:transparent; color:rgba(255,255,255,0.6); cursor:pointer; transition:all 0.2s;">Med</button>
           <button class="qbtn" data-q="HIGH" onclick="pauseSetQuality('HIGH')" style="flex:1; font-family:'Inter',sans-serif; font-size:0.75rem; font-weight:600; padding:8px 4px; border:none; border-radius:6px; background:transparent; color:rgba(255,255,255,0.6); cursor:pointer; transition:all 0.2s;">High</button>
           <button class="qbtn" data-q="ULTRA" onclick="pauseSetQuality('ULTRA')" style="flex:1; font-family:'Inter',sans-serif; font-size:0.75rem; font-weight:600; padding:8px 4px; border:none; border-radius:6px; background:transparent; color:rgba(255,255,255,0.6); cursor:pointer; transition:all 0.2s;">Ultra</button>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <label style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.8);">🔭 Render Distance (Active Scene De-load)</label>
+        <div id="pause-render-dist-btns" style="display:flex; gap:4px; background:rgba(255,255,255,0.1); border-radius:8px; padding:4px;">
+          <button class="rdbtn" data-rd="80" onclick="pauseSetRenderDistance(80)" style="flex:1; font-family:'Inter',sans-serif; font-size:0.72rem; font-weight:600; padding:8px 2px; border:none; border-radius:6px; background:transparent; color:rgba(255,255,255,0.6); cursor:pointer; transition:all 0.2s;">80m</button>
+          <button class="rdbtn" data-rd="150" onclick="pauseSetRenderDistance(150)" style="flex:1; font-family:'Inter',sans-serif; font-size:0.72rem; font-weight:600; padding:8px 2px; border:none; border-radius:6px; background:transparent; color:rgba(255,255,255,0.6); cursor:pointer; transition:all 0.2s;">150m</button>
+          <button class="rdbtn" data-rd="250" onclick="pauseSetRenderDistance(250)" style="flex:1; font-family:'Inter',sans-serif; font-size:0.72rem; font-weight:600; padding:8px 2px; border:none; border-radius:6px; background:transparent; color:rgba(255,255,255,0.6); cursor:pointer; transition:all 0.2s;">250m</button>
+          <button class="rdbtn" data-rd="400" onclick="pauseSetRenderDistance(400)" style="flex:1; font-family:'Inter',sans-serif; font-size:0.72rem; font-weight:600; padding:8px 2px; border:none; border-radius:6px; background:transparent; color:rgba(255,255,255,0.6); cursor:pointer; transition:all 0.2s;">400m</button>
         </div>
       </div>
       <div style="display:flex; flex-direction:column; gap:8px;">
@@ -7326,6 +7601,15 @@
           <span id="pause-amb-volume-val" style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:700; color:#fff; min-width:36px; text-align:right;">70%</span>
         </div>
       </div>
+      <div style="display:flex; flex-direction:column; gap:8px; margin-top:6px;">
+        <label style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.8);">🎭 Character & Skins</label>
+        <button onclick="if(window.openCustomize){ pauseToggle(); window.openCustomize(); }" style="display:flex; align-items:center; justify-content:center; gap:8px; background:linear-gradient(135deg, rgba(242,184,75,0.2) 0%, rgba(94,212,245,0.15) 100%); border:1px solid rgba(242,184,75,0.45); color:#f2b84b; font-family:'Inter',sans-serif; font-size:0.88rem; font-weight:700; padding:12px 16px; border-radius:12px; cursor:pointer; box-shadow:0 4px 14px rgba(242,184,75,0.2); transition:all 0.2s;">
+          ✨ Open Character Studio
+        </button>
+      </div>
+      <button onclick="pauseTab('main')" style="margin-top:10px; font-family:'Inter',sans-serif; font-size:0.92rem; font-weight:600; padding:10px 20px; border:1px solid rgba(255,255,255,0.25); border-radius:10px; background:rgba(255,255,255,0.1); color:#fff; cursor:pointer; min-height:42px; transition:all 0.2s; width:100%; display:flex; align-items:center; justify-content:center; gap:8px;">
+        ← Back to Pause Menu
+      </button>
     </div>
     
     
@@ -7353,6 +7637,9 @@
         <span style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">👆</span><span style="color:rgba(255,255,255,0.8);">Screen Drag — Camera look</span>
         <span style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">📱</span><span style="color:rgba(255,255,255,0.8);">Shake — Gyro steering</span>
       </div>
+      <button onclick="pauseTab('main')" style="margin-top:14px; font-family:'Inter',sans-serif; font-size:0.92rem; font-weight:600; padding:10px 20px; border:1px solid rgba(255,255,255,0.25); border-radius:10px; background:rgba(255,255,255,0.1); color:#fff; cursor:pointer; min-height:42px; transition:all 0.2s; width:100%; display:flex; align-items:center; justify-content:center; gap:8px;">
+        ← Back to Pause Menu
+      </button>
     </div>
   </div>
 
@@ -7971,6 +8258,52 @@
           " id="btn-weather">
         ☀️ Clear
       </button>
+      <button class="nav-login-btn" id="btn-rd-start" onclick="cycleGlobalRenderDistance()" style="
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding: 8px 16px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          ">
+        🔭 Render: 150m
+      </button>
+
+      <button class="nav-login-btn" id="btn-char-start" onclick="window.openCustomize && window.openCustomize()" style="
+            background: linear-gradient(135deg, rgba(242,184,75,0.15), rgba(94,212,245,0.15));
+            border: 1px solid rgba(242,184,75,0.4);
+            color: var(--text);
+            border-radius: 30px;
+            padding: 8px 18px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+          ">
+        🎭 Character
+      </button>
+
+      <button class="nav-login-btn" id="btn-garage-start" onclick="window.location.href='hub.html'" style="
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(245, 158, 11, 0.2));
+            border: 1px solid rgba(6, 182, 212, 0.5);
+            color: var(--text);
+            border-radius: 30px;
+            padding: 8px 18px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+          ">
+        🔧 3D Garage
+      </button>
 
       <div class="nav-user-profile" id="navUserProfile" data-preserve-click="true" onclick="ui.showProfile()" style="
             display: none;
@@ -8071,6 +8404,10 @@
         Back
       </button>
       <div style="display: flex; gap: 12px; align-items: center">
+        <button class="btn btn-g" onclick="openAISceneSynthesizerModal()"
+          style="padding: 8px 18px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px; background: linear-gradient(135deg, rgba(16,185,129,0.25), rgba(59,130,246,0.25)); border: 1.5px solid rgba(52,211,153,0.55); color: #34d399; font-weight: 700;">
+          ✨ AI City Synthesizer
+        </button>
         <button class="btn btn-g" onclick="ui.showProfile()"
           style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap">
           👤 Profile
@@ -8314,7 +8651,9 @@
   <script src="levels/level51.js"></script>
   <script src="levels/level52.js"></script>
   <script src="levels/level53.js"></script>
+  <script src="levels/level54.js"></script>
   <script src="levels/level_custom.js"></script>
+  <script src="suburban_scenery.js?v=20260917_v11"></script>
 
   <script>
 
@@ -8345,27 +8684,31 @@
       }, 500);
     })();
   </script>
-  <script src="pools.js?v=20260825_5"></script>
-  <script src="road-graph.js?v=20260825_5"></script>
-  <script src="render_core.js?v=20260825_5"></script>
-  <script src="safezone-ui.js?v=20260825_5"></script>
-  <script src="world-streamer.js?v=20260825_5"></script>
-  <script src="mission-manager.js?v=20260825_5"></script>
-  <script src="scenery-kit.js?v=20260825_5"></script>
-  <script src="collectible-system.js?v=20260825_5"></script>
-  <script src="checkpoint-system.js?v=20260825_5"></script>
-  <script src="gameplay-recorder.js?v=20260825_5"></script>
-  <script src="task-manager.js?v=20260825_5"></script>
-  <script src="scenario2d.js?v=20260825_5"></script>
-  <script src="course.js?v=20260825_5"></script>
-  <script src="traffic-audio.js?v=20260825_5"></script>
-  <script src="game_core.js?v=20260825_5"></script>
-  <script src="npc-ai.js?v=20260825_5"></script>
-  <script src="traffic-manager.js?v=20260825_5"></script>
-  <script src="rule-breaker-profiles.js?v=20260825_5"></script>
+  <script src="pools.js?v=20260831_v9"></script>
+  <script src="road-graph.js?v=20260831_v9"></script>
+  <script src="render_core.js?v=20260831_v9"></script>
+  <script src="safezone-ui.js?v=20260831_v9"></script>
+  <script src="world-streamer.js?v=20260831_v9"></script>
+  <script src="mission-manager.js?v=20260831_v9"></script>
+  <script src="scenery-kit.js?v=20260831_v9"></script>
+  <script src="collectible-system.js?v=20260831_v9"></script>
+  <script src="checkpoint-system.js?v=20260831_v9"></script>
+  <script src="gameplay-recorder.js?v=20260831_v9"></script>
+  <script src="task-manager.js?v=20260831_v9"></script>
+  <script src="scenario2d.js?v=20260831_v9"></script>
+  <script src="course.js?v=20260831_v9"></script>
+  <script src="traffic-audio.js?v=20260917_v10"></script>
+  <script src="game_core.js?v=20260917_v10"></script>
+  <script src="npc-ai.js?v=20260831_v9"></script>
+  <script src="traffic-manager.js?v=20260831_v9"></script>
+  <script src="rule-breaker-profiles.js?v=20260831_v9"></script>
   <script src="minecraft_character.js"></script>
-  <script src="ui.js?v=20260825_5"></script>
-  <script src="start.js?v=20260825_5"></script>
+  <script src="ai-scene-generator.js"></script>
+  <script src="room-architect.js"></script>
+  <script src="traffic-ai-copilot.js"></script>
+  <script src="ai-map-llm.js"></script>
+  <script src="ui.js?v=20260917_v10"></script>
+  <script src="start.js?v=20260831_v9"></script>
 
   
   <div id="kid-steer"></div>
@@ -9115,41 +9458,153 @@
       const panel = document.getElementById('pause-tab-' + tab);
       if (panel) panel.style.display = 'flex';
 
-      if (tab === 'main') document.getElementById('pause-resume')?.focus();
+      if (tab === 'main') {
+        document.getElementById('pause-resume')?.focus();
+      } else if (tab === 'settings') {
+        // Sync live settings to UI
+        // 1. Volume
+        const curVol = localStorage.getItem('traffic_volume') || '70';
+        const volEl = document.getElementById('pause-volume');
+        const volVal = document.getElementById('pause-volume-val');
+        if (volEl) volEl.value = curVol;
+        if (volVal) volVal.textContent = curVol + '%';
+
+        // 2. Graphics Quality
+        const curQ = (window.game && window.game.renderCore && window.game.renderCore.getQuality && window.game.renderCore.getQuality()) ||
+                     localStorage.getItem('traffic_quality') || 'HIGH';
+        document.querySelectorAll('.qbtn').forEach(b => {
+          const isActive = b.dataset.q.toUpperCase() === curQ.toUpperCase();
+          b.classList.toggle('active', isActive);
+          b.style.background = isActive ? 'rgba(52,152,219,0.5)' : 'transparent';
+          b.style.color = isActive ? '#fff' : 'rgba(255,255,255,0.6)';
+        });
+
+        // 3. Render Distance
+        const curRD = (window.game && window.game.renderDistance) ||
+                      parseInt(localStorage.getItem('traffic_render_distance') || '150', 10);
+        document.querySelectorAll('.rdbtn').forEach(b => {
+          const isActive = parseInt(b.dataset.rd, 10) === curRD;
+          b.style.background = isActive ? 'rgba(94,212,245,0.35)' : 'transparent';
+          b.style.color = isActive ? '#5ed4f5' : 'rgba(255,255,255,0.6)';
+          b.style.fontWeight = isActive ? '700' : '600';
+        });
+
+        // 4. Night Mode
+        const isNight = (window.game && (window.game.isNight || window.game.timeOfDay === 'night')) || _pauseNightOn;
+        _pauseNightOn = !!isNight;
+        const nightBtn = document.getElementById('pause-night-toggle');
+        if (nightBtn) {
+          nightBtn.textContent = _pauseNightOn ? 'On' : 'Off';
+          nightBtn.style.background = _pauseNightOn ? 'rgba(52,152,219,0.6)' : 'rgba(255,255,255,0.1)';
+          nightBtn.style.color = _pauseNightOn ? '#fff' : 'rgba(255,255,255,0.7)';
+        }
+
+        // 5. Gyroscope
+        const isGyro = (window.game && window.game._gyroEnabled) || localStorage.getItem('traffic_gyro') === '1';
+        _pauseGyroOn = !!isGyro;
+        const gyroBtn = document.getElementById('pause-gyro-toggle');
+        if (gyroBtn) {
+          gyroBtn.textContent = _pauseGyroOn ? 'On' : 'Off';
+          gyroBtn.style.background = _pauseGyroOn ? 'rgba(52,211,153,0.6)' : 'rgba(255,255,255,0.1)';
+          gyroBtn.style.color = _pauseGyroOn ? '#fff' : 'rgba(255,255,255,0.7)';
+        }
+
+        // 6. Ambient Volume
+        const curAmb = localStorage.getItem('traffic_amb_volume') || '70';
+        const ambEl = document.getElementById('pause-amb-volume');
+        const ambVal = document.getElementById('pause-amb-volume-val');
+        if (ambEl) ambEl.value = curAmb;
+        if (ambVal) ambVal.textContent = curAmb + '%';
+
+        // 7. Sensitivity
+        const curSens = localStorage.getItem('traffic_sensitivity') || '100';
+        const sensEl = document.getElementById('pause-sensitivity');
+        const sensVal = document.getElementById('pause-sensitivity-val');
+        if (sensEl) sensEl.value = curSens;
+        if (sensVal) sensVal.textContent = curSens + '%';
+      }
     }
 
 
     function pauseSetVolume(val) {
       const v = parseInt(val);
-      document.getElementById('pause-volume-val').textContent = v + '%';
+      const valEl = document.getElementById('pause-volume-val');
+      if (valEl) valEl.textContent = v + '%';
 
-      const normalised = v / 100;
+      const normalised = Math.max(0, Math.min(1, v / 100));
       try {
+        if (window.TrafficAudio && typeof window.TrafficAudio.setMasterVolume === 'function') {
+          window.TrafficAudio.setMasterVolume(normalised);
+        }
         if (window.sfx) {
-
           if (typeof window.sfx.setVolume === 'function') { window.sfx.setVolume(normalised); }
-
           const gain = window.sfx._masterGain || window.sfx._g;
           if (gain && gain.gain) gain.gain.value = normalised;
 
-          if (window.sfx._c && window.sfx._c.destination) {
+          if (window.sfx._c) {
+            if (window.sfx._c.state === 'suspended') {
+              window.sfx._c.resume().catch(() => {});
+            }
             const dest = window.sfx._c.destination;
-            if (dest.gain) dest.gain.value = normalised;
+            if (dest && dest.gain) dest.gain.value = normalised;
           }
         }
       } catch(e) {}
       localStorage.setItem('traffic_volume', v);
     }
 
+    function pauseSetSensitivity(val) {
+      const v = parseInt(val, 10) || 100;
+      const valEl = document.getElementById('pause-sensitivity-val');
+      if (valEl) valEl.textContent = v + '%';
+
+      const factor = v / 100;
+      if (window.game) {
+        window.game.steerSensitivity = factor;
+        window.game.camSensitivity = factor;
+      }
+      localStorage.setItem('traffic_sensitivity', v);
+    }
+
 
     function pauseSetQuality(preset) {
-      document.querySelectorAll('.qbtn').forEach(b => b.classList.toggle('active', b.dataset.q === preset));
+      document.querySelectorAll('.qbtn').forEach(b => {
+        const isActive = b.dataset.q === preset;
+        b.classList.toggle('active', isActive);
+        b.style.background = isActive ? 'rgba(52,152,219,0.5)' : 'transparent';
+        b.style.color = isActive ? '#fff' : 'rgba(255,255,255,0.6)';
+      });
       if (window.game && window.game.renderCore) {
         window.game.renderCore.setQuality(preset);
         window.game.renderCore.setAutoQuality(false);
       }
       localStorage.setItem('traffic_quality', preset);
     }
+
+    function pauseSetRenderDistance(dist) {
+      const d = parseInt(dist, 10) || 150;
+      document.querySelectorAll('.rdbtn').forEach(b => {
+        const isActive = parseInt(b.dataset.rd, 10) === d;
+        b.style.background = isActive ? 'rgba(94,212,245,0.35)' : 'transparent';
+        b.style.color = isActive ? '#5ed4f5' : 'rgba(255,255,255,0.6)';
+        b.style.fontWeight = isActive ? '700' : '600';
+      });
+      const startBtn = document.getElementById('btn-rd-start');
+      if (startBtn) startBtn.innerHTML = '🔭 Render: ' + d + 'm';
+      const hudText = document.getElementById('hud-rd-text');
+      if (hudText) hudText.textContent = d + 'm';
+      if (window.game && window.game.setRenderDistance) {
+        window.game.setRenderDistance(d);
+      }
+      localStorage.setItem('traffic_render_distance', d);
+    }
+
+    window.cycleGlobalRenderDistance = function() {
+      const distances = [80, 150, 250, 400];
+      const current = parseInt(localStorage.getItem('traffic_render_distance') || '150', 10);
+      const nextIdx = (distances.indexOf(current) + 1) % distances.length;
+      pauseSetRenderDistance(distances[nextIdx]);
+    };
 
 
     let _pauseNightOn = false;
@@ -9162,17 +9617,24 @@
         btn.style.color = _pauseNightOn ? '#fff' : 'rgba(255,255,255,0.7)';
       }
 
-      if (window.game && window.game.scene) {
-        const fog = window.game.scene.fog;
-        const amb = window.game.scene.children.find(c => c.isAmbientLight);
-        if (_pauseNightOn) {
-          if (fog) { fog.color.set(0x0a0a1a); fog.near = 5; fog.far = 120; }
-          if (amb) { amb.intensity = 0.15; }
-          window.game.scene.background = new THREE.Color(0x0a0a1a);
-        } else {
-          if (fog) { fog.color.set(0xc8d6e5); fog.near = 50; fog.far = 350; }
-          if (amb) { amb.intensity = 0.6; }
-          window.game.scene.background = new THREE.Color(0xc8d6e5);
+      if (window.game) {
+        window.game.isNight = _pauseNightOn;
+        window.game.timeOfDay = _pauseNightOn ? 'night' : 'day';
+        if (typeof window.game._updateDayNight === 'function') {
+          try { window.game._updateDayNight(0); } catch(e) {}
+        }
+        if (window.game.scene) {
+          const fog = window.game.scene.fog;
+          const amb = window.game.scene.children.find(c => c.isAmbientLight);
+          if (_pauseNightOn) {
+            if (fog) { fog.color.set(0x0a0a1a); fog.near = 5; fog.far = 120; }
+            if (amb) { amb.intensity = 0.15; }
+            window.game.scene.background = new THREE.Color(0x0a0a1a);
+          } else {
+            if (fog) { fog.color.set(0xc8d6e5); fog.near = 50; fog.far = 350; }
+            if (amb) { amb.intensity = 0.6; }
+            window.game.scene.background = new THREE.Color(0xc8d6e5);
+          }
         }
       }
     }
@@ -9210,6 +9672,18 @@
       localStorage.setItem('traffic_amb_volume', val);
     }
 
+    // Quit cleanly to level select menu (specifically targeting current level)
+    function quitGameToMenu() {
+      if (window.game && typeof window.game.stopPlay === 'function') {
+        try { window.game.stopPlay(); } catch(e) {}
+      }
+      const curLid = (window.game && window.game.currentLevelConfig && window.game.currentLevelConfig.id) ||
+                     (window.ui && window.ui.cur ? window.ui.cur.id : null) ||
+                     new URLSearchParams(window.location.search).get('level') ||
+                     5;
+      window.location.href = 'Academy.html?screen=levels&lv=' + curLid;
+    }
+
 
     (function() {
       const savedVol = localStorage.getItem('traffic_volume');
@@ -9218,8 +9692,17 @@
         const el = document.getElementById('pause-volume');
         if (el) el.value = savedVol;
       }
+      const savedSens = localStorage.getItem('traffic_sensitivity');
+      if (savedSens !== null) {
+        pauseSetSensitivity(savedSens);
+        const el = document.getElementById('pause-sensitivity');
+        if (el) el.value = savedSens;
+      }
       const savedQ = localStorage.getItem('traffic_quality') || 'HIGH';
       pauseSetQuality(savedQ);
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      const savedRD = localStorage.getItem('traffic_render_distance') || (isMobile ? '120' : '150');
+      pauseSetRenderDistance(savedRD);
       // Restore gyro setting
       const savedGyro = localStorage.getItem('traffic_gyro');
       if (savedGyro === '1') pauseToggleGyro();
@@ -9263,6 +9746,10 @@
         <div class="studio-viewport-card">
           <div class="studio-canvas-wrap">
             <canvas id="customize-preview" width="340" height="460"></canvas>
+            <div style="position:absolute; top:10px; right:10px; display:flex; gap:6px; z-index:10;">
+              <button id="studio-autorotate-btn" class="studio-icon-btn" onclick="window._toggleAutoRotatePreview()" style="background:rgba(0,0,0,0.65); backdrop-filter:blur(6px); border-radius:10px; padding:4px 8px; font-size:0.72rem; color:#fff; border:1px solid rgba(255,255,255,0.15);" title="Toggle 360° Auto Rotation">🔄 Spin</button>
+              <button class="studio-icon-btn" onclick="window._resetPreviewRotation()" style="background:rgba(0,0,0,0.65); backdrop-filter:blur(6px); border-radius:10px; padding:4px 8px; font-size:0.72rem; color:#fff; border:1px solid rgba(255,255,255,0.15);" title="Reset to Front Angle">🎯 Front</button>
+            </div>
             <div class="studio-hint-pill">Drag to Rotate 360°</div>
           </div>
 
@@ -9317,6 +9804,11 @@
           <div id="stylized-panels-container">
             <!-- Identity Tab -->
             <div id="panel-identity" class="studio-panel active">
+              <div class="studio-section">
+                <div class="studio-section-title">🌟 3D Character Models (Sample Avatars)</div>
+                <div id="sample-models-grid" class="studio-grid-2"></div>
+              </div>
+
               <div class="studio-section">
                 <div class="studio-section-title">Gender & Frame</div>
                 <div style="display:flex; gap:10px;">
@@ -9488,7 +9980,7 @@
       // Parse URL parameters
       const urlParams = new URLSearchParams(window.location.search);
       const syllabusMode = urlParams.get('syllabus') === 'true';
-      const levelId = parseInt(urlParams.get('lv')) || 1;
+      const levelId = parseInt(urlParams.get('level') || urlParams.get('lv')) || 1;
       const mode = urlParams.get('mode') || 'exam';
       
       console.log('[Driving] Params:', { syllabusMode, levelId, mode });
@@ -9721,25 +10213,8 @@
         }
       }, { passive: true });
 
-      // Dynamic stacking: position #task-tracker directly below #objective-overlay
-      function stackTaskBelowObjective() {
-        const oo = document.getElementById('objective-overlay');
-        const tt = document.getElementById('task-tracker');
-        if (!oo || !tt) return;
-        const ooRect = oo.getBoundingClientRect();
-        if (ooRect.height > 0 && oo.style.display !== 'none' && !oo.classList.contains('hidden')) {
-          tt.style.setProperty('top', (ooRect.bottom + 8) + 'px', 'important');
-        } else {
-          tt.style.setProperty('top', (16 + (parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sai-top') || '0'))) + 'px', 'important');
-        }
-      }
-
-      // Observe objective-overlay for size changes
-      if (window.ResizeObserver) {
-        const ro = new ResizeObserver(stackTaskBelowObjective);
-        const oo = document.getElementById('objective-overlay');
-        if (oo) ro.observe(oo);
-      }
+      // Dynamic stacking: flex layout inside #top-right-hud-stack handles natural order
+      function stackTaskBelowObjective() {}
     });
   </script>
 
@@ -9767,7 +10242,264 @@
       </div>
     </div>
   </div>
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- AI SCENE SYNTHESIZER & SPATIAL ARCHITECT MODAL                  -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div id="ai-scene-synth-modal">
+    <div class="aism-dialog">
+      <div class="aism-header">
+        <div class="aism-header-left">
+          <span style="font-size:1.4rem;">✨</span>
+          <div>
+            <div class="aism-title">AI Scene Synthesizer & Spatial Architect</div>
+            <div class="aism-subtitle">Autonomous 3D spatial placement & curriculum syllabus solver</div>
+          </div>
+        </div>
+        <button class="aism-close-btn" onclick="closeAISceneSynthesizerModal()">✕</button>
+      </div>
+      <div class="aism-body">
+        
+        <!-- 1. Archetype Grid -->
+        <div>
+          <div class="aism-section-title">🏙️ 1. Select City Archetype</div>
+          <div class="aism-archetypes-grid" id="aism-archetypes-list">
+            <div class="aism-card selected" data-archetype="downtown" onclick="selectAIArchetype('downtown')">
+              <div class="aism-card-head">
+                <span class="aism-card-icon">🏙️</span>
+                <span class="aism-card-name">Downtown Core</span>
+              </div>
+              <div class="aism-card-desc">High-density skyline, 4-lane boulevards, cantilever traffic signals, and bus transit.</div>
+            </div>
+
+            <div class="aism-card" data-archetype="coastal" onclick="selectAIArchetype('coastal')">
+              <div class="aism-card-head">
+                <span class="aism-card-icon">🌊</span>
+                <span class="aism-card-name">Marine Drive</span>
+              </div>
+              <div class="aism-card-desc">6-lane coastal expressway, sea breeze lighting, high-speed cruise, Sea Link toll finish.</div>
+            </div>
+
+            <div class="aism-card" data-archetype="suburban" onclick="selectAIArchetype('suburban')">
+              <div class="aism-card-head">
+                <span class="aism-card-icon">🏫</span>
+                <span class="aism-card-name">Bandra Suburban</span>
+              </div>
+              <div class="aism-card-desc">Calm residential streets, St. Xavier school zone, 25 km/h strict speed governor.</div>
+            </div>
+
+            <div class="aism-card" data-archetype="monsoon" onclick="selectAIArchetype('monsoon')">
+              <div class="aism-card-head">
+                <span class="aism-card-icon">🌧️</span>
+                <span class="aism-card-name">Monsoon Night</span>
+              </div>
+              <div class="aism-card-desc">Wet asphalt puddles, reduced tire grip, night fog, and high-beam discipline.</div>
+            </div>
+
+            <div class="aism-card" data-archetype="bazaar" onclick="selectAIArchetype('bazaar')">
+              <div class="aism-card-head">
+                <span class="aism-card-icon">🛍️</span>
+                <span class="aism-card-name">Old Town Bazaar</span>
+              </div>
+              <div class="aism-card-desc">Narrow heritage alleys, pedestrian density, stray cattle, and horn avoidance.</div>
+            </div>
+
+            <div class="aism-card" data-archetype="infinite" onclick="selectAIArchetype('infinite')">
+              <div class="aism-card-head">
+                <span class="aism-card-icon">🎲</span>
+                <span class="aism-card-name">Infinite Seeded</span>
+              </div>
+              <div class="aism-card-desc">Algorithmic procedural seed combining multi-grid intersections and dynamic curriculum demands.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Vehicle Selection -->
+        <div>
+          <div class="aism-section-title">🚗 2. Vehicle Selection</div>
+          <div class="aism-pills" id="aism-vehicle-pills">
+            <div class="aism-pill selected" data-veh="car" onclick="selectAIVehicle('car')">🚗 Car</div>
+            <div class="aism-pill" data-veh="bike" onclick="selectAIVehicle('bike')">🏍️ Motorcycle</div>
+            <div class="aism-pill" data-veh="auto" onclick="selectAIVehicle('auto')">🛺 Auto Rickshaw</div>
+            <div class="aism-pill" data-veh="bus" onclick="selectAIVehicle('bus')">🚌 City Bus</div>
+            <div class="aism-pill" data-veh="lambo" onclick="selectAIVehicle('lambo')">🏎️ Supercar</div>
+            <div class="aism-pill" data-veh="taxi" onclick="selectAIVehicle('taxi')">🚕 Kaali Peeli</div>
+          </div>
+        </div>
+
+        <!-- 3. Syllabus & Environment Demands -->
+        <div>
+          <div class="aism-section-title">🎯 3. Dynamic Syllabus Demands & Climate</div>
+          <div class="aism-toggles">
+            <div class="aism-toggle-item" id="toggle-rain" onclick="toggleAIOption('rain')">
+              <span class="aism-toggle-label">🌧️ Rain / Wet Asphalt</span>
+              <div class="aism-toggle-switch"></div>
+            </div>
+            <div class="aism-toggle-item" id="toggle-night" onclick="toggleAIOption('night')">
+              <span class="aism-toggle-label">🌙 Night Time</span>
+              <div class="aism-toggle-switch"></div>
+            </div>
+            <div class="aism-toggle-item active" id="toggle-school" onclick="toggleAIOption('school')">
+              <span class="aism-toggle-label">🏫 School Zone (25 km/h)</span>
+              <div class="aism-toggle-switch"></div>
+            </div>
+            <div class="aism-toggle-item active" id="toggle-ambulance" onclick="toggleAIOption('ambulance')">
+              <span class="aism-toggle-label">🚑 Emergency Priority</span>
+              <div class="aism-toggle-switch"></div>
+            </div>
+            <div class="aism-toggle-item active" id="toggle-animals" onclick="toggleAIOption('animals')">
+              <span class="aism-toggle-label">🐄 Cattle Obstacles</span>
+              <div class="aism-toggle-switch"></div>
+            </div>
+            <div class="aism-toggle-item active" id="toggle-copilot" onclick="toggleAIOption('copilot')">
+              <span class="aism-toggle-label">🎙️ AI Audio Co-Pilot</span>
+              <div class="aism-toggle-switch"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="aism-footer">
+        <div class="aism-badge">
+          <span>⚡</span>
+          <span>Zero-Collision Spatial Setbacks • Live Syllabus Evaluator</span>
+        </div>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <button class="chm-dismiss-btn" style="background:#334155;" onclick="closeAISceneSynthesizerModal()">Cancel</button>
+          <button class="aism-launch-btn" onclick="launchSynthesizedScene()">
+            <span>🚀 Synthesize & Drive</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ═══════════════════════════════════════════════════════════════
+    // AI SCENE SYNTHESIZER CONTROLLER
+    // ═══════════════════════════════════════════════════════════════
+    window.aiSynthState = {
+      archetype: 'downtown',
+      vehicle: 'car',
+      options: {
+        rain: false,
+        night: false,
+        school: true,
+        ambulance: true,
+        animals: true,
+        copilot: true
+      }
+    };
+
+    function openAISceneSynthesizerModal() {
+      const modal = document.getElementById('ai-scene-synth-modal');
+      if (modal) modal.classList.add('on');
+    }
+
+    function closeAISceneSynthesizerModal() {
+      const modal = document.getElementById('ai-scene-synth-modal');
+      if (modal) modal.classList.remove('on');
+    }
+
+    function selectAIArchetype(key) {
+      window.aiSynthState.archetype = key;
+      document.querySelectorAll('#aism-archetypes-list .aism-card').forEach(card => {
+        card.classList.toggle('selected', card.getAttribute('data-archetype') === key);
+      });
+      // Auto-tune defaults based on archetype
+      if (key === 'monsoon') {
+        setAIOption('rain', true);
+        setAIOption('night', true);
+      } else if (key === 'bazaar') {
+        setAIOption('animals', true);
+        setAIOption('school', false);
+      } else if (key === 'suburban') {
+        setAIOption('school', true);
+        setAIOption('rain', false);
+      }
+    }
+
+    function selectAIVehicle(veh) {
+      window.aiSynthState.vehicle = veh;
+      document.querySelectorAll('#aism-vehicle-pills .aism-pill').forEach(pill => {
+        pill.classList.toggle('selected', pill.getAttribute('data-veh') === veh);
+      });
+    }
+
+    function toggleAIOption(key) {
+      setAIOption(key, !window.aiSynthState.options[key]);
+    }
+
+    function setAIOption(key, val) {
+      window.aiSynthState.options[key] = !!val;
+      const el = document.getElementById('toggle-' + key);
+      if (el) el.classList.toggle('active', !!val);
+    }
+
+    function launchSynthesizedScene() {
+      closeAISceneSynthesizerModal();
+      const state = window.aiSynthState;
+      const archetypeKey = state.archetype || 'downtown';
+      
+      const customOptions = {
+        veh: state.vehicle || 'car',
+        hasRain: state.options.rain,
+        isNight: state.options.night,
+        hasSchool: state.options.school,
+        hasHospital: state.archetype === 'bazaar',
+        hasAmbulance: state.options.ambulance,
+        hasAnimals: state.options.animals,
+        enableCoPilot: state.options.copilot
+      };
+
+      if (archetypeKey === 'infinite') {
+        customOptions.seed = Date.now();
+      }
+
+      console.log('[AISceneSynthesizer] Launching scene:', archetypeKey, customOptions);
+
+      if (window.game && window.AISceneGenerator) {
+        if (!window.game.aiSceneGenerator) {
+          window.game.aiSceneGenerator = new window.AISceneGenerator(window.game);
+        }
+        window.game.aiSceneGenerator.launchArchetype(archetypeKey, customOptions);
+      } else {
+        // If game not initialized yet, store in session and start
+        sessionStorage.setItem('pending_ai_scene', JSON.stringify({ archetype: archetypeKey, options: customOptions }));
+        if (window.ui && typeof window.ui.showGame === 'function') {
+          window.ui.showGame();
+        }
+      }
+    }
+
+    // Expose helpers globally
+    window.openAISceneSynthesizerModal = openAISceneSynthesizerModal;
+    window.closeAISceneSynthesizerModal = closeAISceneSynthesizerModal;
+    window.selectAIArchetype = selectAIArchetype;
+    window.selectAIVehicle = selectAIVehicle;
+    window.toggleAIOption = toggleAIOption;
+    window.launchSynthesizedScene = launchSynthesizedScene;
+
+    // Check URL parameters for direct synthesizer trigger
+    (function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const synthParam = urlParams.get('synth');
+      const aiSceneParam = urlParams.get('ai_scene');
+
+      if (synthParam === 'modal' || synthParam === 'true') {
+        setTimeout(openAISceneSynthesizerModal, 1200);
+      } else if (aiSceneParam) {
+        window.addEventListener('load', () => {
+          setTimeout(() => {
+            selectAIArchetype(aiSceneParam);
+            launchSynthesizedScene();
+          }, 1500);
+        });
+      }
+    })();
+  </script>
+
+  <!-- Clickable Version Badge (Dev Access) -->
+  <div id="version-badge" style="position: fixed; bottom: 6px; right: 12px; font-size: 0.72rem; color: var(--muted2, #aaa); opacity: 0.45; cursor: pointer; z-index: 99999; font-weight: 700; user-select: none; transition: all 0.2s ease;" onclick="window.handleDevClick && window.handleDevClick()" onmouseover="this.style.opacity='1'; this.style.color='#ffd700';" onmouseout="this.style.opacity='0.45'; this.style.color='var(--muted2, #aaa)';" title="Class Of Learners Simulator v2.4.1">v2.4.1</div>
 
 </body>
 </html>
-

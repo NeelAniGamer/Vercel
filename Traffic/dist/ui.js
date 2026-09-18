@@ -29,7 +29,7 @@ window.save = async function () {
 window.sfx = Object.assign(window.sfx || {}, {
   _c: null,
   vol: { sfx: 1, ui: 1, env: 1 },
-  _cat: { horn: 'sfx', brake: 'sfx', challan: 'ui', ok: 'ui', error: 'ui', thunder: 'env' },
+  _cat: { horn: 'sfx', brake: 'sfx', ring: 'ui', challan: 'ui', ok: 'ui', error: 'ui', thunder: 'env' },
   init() {
     if (this._c) return
     try {
@@ -39,17 +39,69 @@ window.sfx = Object.assign(window.sfx || {}, {
   setVol(cat, v) { if (this.vol[cat] !== undefined) this.vol[cat] = Math.max(0, Math.min(1, v)); },
   play(t) {
     if (!this._c) return
+    if (t === 'horn') {
+      try {
+        const catVol = this.vol.sfx !== undefined ? this.vol.sfx : 1
+        const now = this._c.currentTime
+        const g = this._c.createGain()
+        g.gain.setValueAtTime(0.001, now)
+        g.gain.linearRampToValueAtTime(0.08 * catVol, now + 0.02)
+        g.gain.exponentialRampToValueAtTime(0.001, now + 0.24)
+
+        const o1 = this._c.createOscillator()
+        o1.type = 'triangle'
+        o1.frequency.setValueAtTime(435, now)
+
+        const o2 = this._c.createOscillator()
+        o2.type = 'triangle'
+        o2.frequency.setValueAtTime(548, now)
+
+        const filt = this._c.createBiquadFilter()
+        filt.type = 'lowpass'
+        filt.frequency.setValueAtTime(1200, now)
+
+        o1.connect(filt); o2.connect(filt); filt.connect(g); g.connect(this._c.destination)
+        o1.start(now); o2.start(now)
+        o1.stop(now + 0.25); o2.stop(now + 0.25)
+        return
+      } catch (e) {}
+    }
+    if (t === 'ring') {
+      try {
+        const catVol = this.vol.ui !== undefined ? this.vol.ui : 1
+        const now = this._c.currentTime
+        // Pleasant modern dual-tone phone chime (853Hz + 960Hz) warbling softly
+        ;[0, 0.12].forEach(offset => {
+          const g = this._c.createGain()
+          g.gain.setValueAtTime(0.001, now + offset)
+          g.gain.linearRampToValueAtTime(0.05 * catVol, now + offset + 0.02)
+          g.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.10)
+
+          const o1 = this._c.createOscillator()
+          o1.type = 'sine'
+          o1.frequency.setValueAtTime(853, now + offset)
+
+          const o2 = this._c.createOscillator()
+          o2.type = 'sine'
+          o2.frequency.setValueAtTime(960, now + offset)
+
+          o1.connect(g); o2.connect(g); g.connect(this._c.destination)
+          o1.start(now + offset); o2.start(now + offset)
+          o1.stop(now + offset + 0.11); o2.stop(now + offset + 0.11)
+        })
+        return
+      } catch (e) {}
+    }
     const p = {
-      horn: { f: 440, ty: 'square', d: 0.18, v: 0.12 },
-      brake: { f: 160, ty: 'sawtooth', d: 0.15, v: 0.08 },
+      brake: { f: 140, ty: 'triangle', d: 0.12, v: 0.06 },
       challan: { f: 880, ty: 'triangle', d: 0.32, v: 0.11 },
       ok: { f: 660, ty: 'sine', d: 0.22, v: 0.09 },
-      error: { f: 110, ty: 'square', d: 0.28, v: 0.1 },
+      error: { f: 110, ty: 'triangle', d: 0.22, v: 0.08 },
       thunder: { f: 55, ty: 'sawtooth', d: 0.6, v: 0.15 },
       door: { f: 220, ty: 'triangle', d: 0.25, v: 0.10 },
       step: { f: 80, ty: 'sine', d: 0.06, v: 0.04 }
     }
-    const pp = p[t] || p.horn
+    const pp = p[t] || p.brake
     const cat = this._cat[t] || 'sfx'
     const catVol = this.vol[cat] !== undefined ? this.vol[cat] : 1
     try {
@@ -61,10 +113,10 @@ window.sfx = Object.assign(window.sfx || {}, {
       o.frequency.setValueAtTime(pp.f, this._c.currentTime)
       g.gain.setValueAtTime(pp.v * catVol, this._c.currentTime)
       g.gain.exponentialRampToValueAtTime(0.001, this._c.currentTime + pp.d)
-       o.start()
-       o.stop(this._c.currentTime + pp.d)
-     } catch (e) {}
-   },
+      o.start()
+      o.stop(this._c.currentTime + pp.d)
+    } catch (e) {}
+  },
    // Ambient sound generators (procedural)
    _ambNodes: null,
    startAmbient(type) {
@@ -224,6 +276,12 @@ var ui = window.ui = Object.assign(window.ui || {}, {
     const lvParam = urlParams.get('lv')
     if (screenParam === 'levels') {
       this.showLevels()
+      if (lvParam) {
+        const targetLid = parseInt(lvParam, 10) || lvParam
+        setTimeout(() => {
+          if (this.showBriefing) this.showBriefing(targetLid)
+        }, 120)
+      }
     } else if (window.location.pathname.toLowerCase().includes('driving') && lvParam) {
       document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'))
     } else {
@@ -4476,7 +4534,7 @@ const initGTex = () => {
   }
 }
 
-const _buildVehicle = (type, col) => {
+const _buildVehicle = window._buildVehicle = (type, col) => {
   let baseModel = null
   let s = 1.20
   const normalizedType = (type || 'car').toLowerCase()
@@ -4486,11 +4544,12 @@ const _buildVehicle = (type, col) => {
     if (typeof window.IndianVehicles !== 'undefined' && typeof window.IndianVehicles.buildVehicle === 'function') {
       const bikeModel = window.IndianVehicles.buildVehicle(normalizedType === 'bike' ? 'splendor' : normalizedType, col)
       if (bikeModel) {
-        bikeModel.type = normalizedType
-        bikeModel.userData = bikeModel.userData || {}
-        bikeModel.userData.halfW = 0.40
-        bikeModel.userData.halfD = 0.95
-        return bikeModel
+        const g = new THREE.Group()
+        bikeModel.rotation.y = Math.PI
+        g.add(bikeModel)
+        g.type = normalizedType
+        g.userData = { halfW: 0.40, halfD: 0.95, isVehicle: true }
+        return g
       }
     }
   }
@@ -4500,11 +4559,16 @@ const _buildVehicle = (type, col) => {
     if (typeof window.IndianVehicles !== 'undefined' && typeof window.IndianVehicles.buildVehicle === 'function') {
       const autoModel = window.IndianVehicles.buildVehicle('auto', col || 0x2e8b57)
       if (autoModel) {
-        autoModel.type = 'auto'
-        autoModel.userData = autoModel.userData || {}
-        autoModel.userData.halfW = 0.70
-        autoModel.userData.halfD = 1.35
-        return autoModel
+        const g = new THREE.Group()
+        autoModel.rotation.y = Math.PI
+        g.add(autoModel)
+        g.type = 'auto'
+        g.userData = { halfW: 0.70, halfD: 1.35, isVehicle: true }
+        const dpL = new THREE.Group(); dpL.position.set(0.70, 0.9, 0.3)
+        const dpR = new THREE.Group(); dpR.position.set(-0.70, 0.9, 0.3)
+        g.add(dpL, dpR)
+        g.userData.doorPivotL = dpL; g.userData.doorPivotR = dpR
+        return g
       }
     }
   }
@@ -4514,11 +4578,16 @@ const _buildVehicle = (type, col) => {
     if (typeof window.IndianVehicles !== 'undefined' && typeof window.IndianVehicles.buildVehicle === 'function') {
       const busModel = window.IndianVehicles.buildVehicle('bus', col || 0xcc2222)
       if (busModel) {
-        busModel.type = 'bus'
-        busModel.userData = busModel.userData || {}
-        busModel.userData.halfW = 1.35
-        busModel.userData.halfD = 4.80
-        return busModel
+        const g = new THREE.Group()
+        busModel.rotation.y = Math.PI
+        g.add(busModel)
+        g.type = 'bus'
+        g.userData = { halfW: 1.35, halfD: 4.80, isVehicle: true }
+        const dpL = new THREE.Group(); dpL.position.set(1.35, 0.9, 0.3)
+        const dpR = new THREE.Group(); dpR.position.set(-1.35, 0.9, 0.3)
+        g.add(dpL, dpR)
+        g.userData.doorPivotL = dpL; g.userData.doorPivotR = dpR
+        return g
       }
     }
   }
@@ -4564,10 +4633,10 @@ const _buildVehicle = (type, col) => {
     if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['lambo']) {
       const lSrc = window.PRELOADED_MODELS['lambo']
       baseModel = lSrc.clone ? lSrc.clone(true) : lSrc
-      s = 1.0
+      s = 1.45
     } else if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['car_race-future']) {
       baseModel = window.PRELOADED_MODELS['car_race-future'].clone(true)
-      s = 1.0
+      s = 1.45
     }
   }
 
@@ -4653,11 +4722,13 @@ const _buildVehicle = (type, col) => {
     
     // Lift so bottom of tires sits flush on ground at y = 0
     baseModel.position.y = -vBoxScaled.min.y
+    baseModel.rotation.y = Math.PI
     g.add(baseModel)
 
     const isHeavy = normalizedType.includes('truck') || normalizedType.includes('bus')
-    const hw = isHeavy ? 1.35 : 1.05
-    const hl = isHeavy ? 4.80 : 2.25
+    const isLambo = normalizedType === 'lambo'
+    const hw = isHeavy ? 1.35 : (isLambo ? 1.35 : 1.05)
+    const hl = isHeavy ? 4.80 : (isLambo ? 2.95 : 2.25)
     g.userData = { halfW: hw, halfD: hl, isVehicle: true }
 
     // Clean interactive door anchors for player entry
@@ -4675,7 +4746,14 @@ const _buildVehicle = (type, col) => {
 
   if (typeof window.IndianVehicles !== 'undefined' && typeof window.IndianVehicles.buildVehicle === 'function') {
     const iv = window.IndianVehicles.buildVehicle(type, col);
-    if (iv) return iv;
+    if (iv) {
+      const g = new THREE.Group()
+      iv.rotation.y = Math.PI
+      g.add(iv)
+      g.type = type
+      g.userData = { halfW: 1.05, halfD: 2.25, isVehicle: true }
+      return g
+    }
   }
 
   const g = new THREE.Group()
@@ -7506,7 +7584,7 @@ function showConsequenceModal(violationType, severity = 'normal') {
   };
 
   // ═══════════════════════════════════════════════════════════════
-  // CHEAT CODE & UNLIMITED HEALTH (GOD MODE) SYSTEM
+  // CHEAT CODE & INVULNERABILITY (GOD MODE) SYSTEM
   // ═══════════════════════════════════════════════════════════════
   window.toggleGodModeCheat = function(forceState) {
     var current = (typeof localStorage !== 'undefined' && localStorage.getItem('traffic_god_mode') === 'true');
@@ -7516,28 +7594,23 @@ function showConsequenceModal(violationType, severity = 'normal') {
       localStorage.setItem('traffic_god_mode', next ? 'true' : 'false');
     } catch(e) {}
     
-    if (typeof game !== 'undefined' && game) {
-      game.hp = 100;
-      if (typeof game._uh === 'function') game._uh();
-    }
-    
     var badge = document.getElementById('god-mode-hud-badge');
     if (!badge) {
       badge = document.createElement('div');
       badge.id = 'god-mode-hud-badge';
       badge.style.cssText = 'position:fixed; top:14px; left:14px; z-index:999999; background:linear-gradient(135deg, rgba(255,215,0,0.25), rgba(255,140,0,0.35)); border:1.5px solid #ffd700; color:#ffd700; font-weight:800; font-size:0.75rem; padding:6px 12px; border-radius:20px; box-shadow:0 0 16px rgba(255,215,0,0.6); backdrop-filter:blur(8px); display:none; pointer-events:auto; cursor:pointer; letter-spacing:0.5px; transition:all 0.3s ease;';
-      badge.title = 'Click to disable Unlimited Health';
+      badge.title = 'Click to disable Invulnerability Mode';
       badge.onclick = function() { window.toggleGodModeCheat(false); };
       document.body.appendChild(badge);
     }
-    badge.innerHTML = '🛡️ GOD MODE: UNLIMITED HP ACTIVE';
+    badge.innerHTML = '🛡️ GOD MODE: INVULNERABLE';
     badge.style.display = next ? 'block' : 'none';
 
     if (typeof toast === 'function') {
       if (next) {
-        toast('⚡ CHEAT ACTIVATED: UNLIMITED HEALTH (ALL LEVELS) 🛡️', '#ffd700', 4000);
+        toast('⚡ CHEAT ACTIVATED: INVULNERABILITY MODE 🛡️', '#ffd700', 4000);
       } else {
-        toast('🛡️ God Mode (Unlimited Health) Disabled', '#aaa', 3000);
+        toast('🛡️ God Mode (Invulnerability) Disabled', '#aaa', 3000);
       }
     }
     return next;
@@ -7557,7 +7630,7 @@ function showConsequenceModal(violationType, severity = 'normal') {
     _devClicks++;
     if (_devClicks >= 3) {
       _devClicks = 0;
-      var p = prompt('⚡ CHEAT CODE & DEVELOPER ACCESS:\nType "god" / "health" or press OK to toggle Unlimited Health on all levels:');
+      var p = prompt('⚡ CHEAT CODE & DEVELOPER ACCESS:\nType "god" or press OK to toggle Invulnerability Mode on all levels:');
       if (p !== null) {
         var code = (p || '').trim().toLowerCase();
         if (['neel', 'ansh', 'sanjana'].includes(p.trim())) {
@@ -7570,7 +7643,7 @@ function showConsequenceModal(violationType, severity = 'normal') {
     } else {
       var rem = 3 - _devClicks;
       if (typeof toast === 'function') {
-        toast('🛡️ Cheat Menu: Tap ' + rem + ' more time' + (rem > 1 ? 's' : '') + ' to toggle Unlimited Health!', '#ffd700', 1200);
+        toast('🛡️ Cheat Menu: Tap ' + rem + ' more time' + (rem > 1 ? 's' : '') + ' to toggle Invulnerability Mode!', '#ffd700', 1200);
       }
     }
   };

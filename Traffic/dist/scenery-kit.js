@@ -249,13 +249,14 @@ class SceneryKit {
           z = road.z;
         }
 
-        const offset = (road.width || 12) / 2 + setback;
-        const side = Math.random() > 0.5 ? 1 : -1;
+        const ry = isV 
+          ? (side > 0 ? -Math.PI / 2 : Math.PI / 2)
+          : (side > 0 ? Math.PI : 0);
 
         instances.push({
-          x: isV ? x + offset * side : x + (Math.random() - 0.5) * 10,
-          z: isV ? z + (Math.random() - 0.5) * 10 : z + offset * side,
-          ry: Math.random() * Math.PI * 2,
+          x: isV ? x + offset * side : x + (Math.random() - 0.5) * 6,
+          z: isV ? z + (Math.random() - 0.5) * 6 : z + offset * side,
+          ry: ry,
           scale: 0.8 + Math.random() * 0.5,
           key: buildingKeys[Math.floor(Math.random() * buildingKeys.length)]
         });

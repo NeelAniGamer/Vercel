@@ -188,11 +188,11 @@ function evaluatePedestrianFleeing(options) {
  * 2-Phase Anti-Deadlock Arbitration
  */
 function arbitrateDeadlock(stalledVehicles, stuckDurationSec) {
-  if (stuckDurationSec < 3.5) {
+  if (stuckDurationSec < 0.8) {
     return { resolved: false, phase: 0, reason: 'BELOW_WATCHDOG_THRESHOLD' };
   }
 
-  if (stuckDurationSec >= 3.5 && stuckDurationSec < 8.0) {
+  if (stuckDurationSec >= 0.8 && stuckDurationSec < 8.0) {
     // Phase 1: Soft Token Arbitration
     const scored = (stalledVehicles || []).map(v => {
       const typeWeight = v.type === 'bus' ? 30 : (v.type === 'truck' ? 25 : (v.type === 'car' ? 20 : 15));
@@ -779,7 +779,8 @@ class NPCAI {
   }
 
   _pickNextTarget() {
-    if (this.route && this.route.length > 0 && this.routeIndex < this.route.length) {
+    // If vehicle has an explicit mission escort or fixed path, follow it; otherwise allow random grid navigation
+    if (!this.isRandomWanderer && this.route && this.route.length > 0 && this.routeIndex < this.route.length) {
       this.targetNode = this.route[this.routeIndex];
       let edge = null;
       if (this.vehicle.currentNode && this.roadGraph) {
@@ -793,12 +794,47 @@ class NPCAI {
       }
     }
 
-    // Connect to adjacent node if available
+    // ── Multi-Branch Weighted Random Turn Navigation (Straight 40%, Left 30%, Right 30%) ──
     if (this.vehicle.currentNode && this.vehicle.currentNode.neighbors && this.vehicle.currentNode.neighbors.length > 0) {
       const neighbors = this.vehicle.currentNode.neighbors;
-      const nb = neighbors[Math.floor(Math.random() * neighbors.length)];
+      const prev = this._prevNode;
+      // Exclude immediate 180° reverse U-turn unless dead-end (only 1 neighbor)
+      const forwardNeighbors = (neighbors.length > 1 && prev) ? neighbors.filter(n => n !== prev) : neighbors;
+
+      const curPos = this.vehicle.currentNode.position;
+      const inForward = prev ? new THREE.Vector3().subVectors(curPos, prev.position).normalize() : new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
+      const inRight = new THREE.Vector3().crossVectors(new THREE.Vector3(0, 1, 0), inForward).normalize();
+
+      const candidates = forwardNeighbors.map(nb => {
+        const outDir = new THREE.Vector3().subVectors(nb.position, curPos).normalize();
+        const sideDot = inRight.dot(outDir);  // > 0.3 = right turn, < -0.3 = left turn
+        let turnType = 'straight';
+        let weight = 0.40;
+        if (sideDot > 0.35) {
+          turnType = 'right';
+          weight = 0.30;
+        } else if (sideDot < -0.35) {
+          turnType = 'left';
+          weight = 0.30;
+        }
+        return { node: nb, turnType, weight };
+      });
+
+      const totalWeight = candidates.reduce((sum, c) => sum + c.weight, 0);
+      let rand = Math.random() * totalWeight;
+      let chosen = candidates[0];
+      for (const c of candidates) {
+        if (rand < c.weight) {
+          chosen = c;
+          break;
+        }
+        rand -= c.weight;
+      }
+
+      const nb = chosen ? chosen.node : forwardNeighbors[Math.floor(Math.random() * forwardNeighbors.length)];
       const edge = this.roadGraph ? this.roadGraph.getEdgeTo(this.vehicle.currentNode, nb) : null;
       if (edge) {
+        this._prevNode = this.vehicle.currentNode;
         this.targetNode = nb;
         this.currentEdge = edge;
         this.currentLane = this._pickInitialLane(edge);
@@ -858,26 +894,10 @@ class NPCAI {
         closestDist = dist;
         closestVeh = v;
       }
-      // 2. Cross-traffic / merging vehicle at intersection (headingDot <= 0.35)
-      else if (forwardDot > 0.20 && dist < 12.0) {
+      // 2. Cross-traffic at intersection: only react if directly in front within narrow path (< 4.5m, lateral < 1.1m) and not clearing
+      else if (forwardDot > 0.50 && dist < 4.5 && lateral < 1.1 && !this._clearingIntersection) {
         const vSpeed = Math.abs(v.speed !== undefined ? v.speed : (v.npcAI?.currentSpeed || 0));
-        const vState = v.npcAI?.state;
-
-        // If cross vehicle is stationary or stopped at red light / stop line:
-        // NEVER brake for it unless its body is directly overlapping our narrow driving line (lateral < 0.95m and dist < 4.5m)
-        if (vSpeed < 0.6 || vState === 'WAIT_SIGNAL' || vState === 'PARK') {
-          if (lateral > 0.95 || dist > 4.5) {
-            continue;
-          }
-        }
-
-        // If our vehicle is clearing the intersection, we have committed right-of-way
-        if ((this._committedToIntersection || this._clearingIntersection) && lateral > 1.2 && dist > 3.8) {
-          continue;
-        }
-
-        // Only track moving cross vehicle if it is within our collision corridor
-        if (lateral < 1.7 && dist < 8.0) {
+        if (vSpeed > 0.8) {
           closestDist = dist;
           closestVeh = v;
         }
@@ -1060,12 +1080,12 @@ class NPCAI {
 
     if (!isExempt && !isWaitingValidSignal && this.vehicle && this.vehicle.position) {
       this._stuckCheckTimer += dt;
-      if (this._stuckCheckTimer >= 1.5) {
+      if (this._stuckCheckTimer >= 1.0) {
         this._stuckCheckTimer = 0;
         const vx = this.vehicle.position.x, vz = this.vehicle.position.z;
         const moved = Math.hypot(vx - (this._stuckLastX || vx), vz - (this._stuckLastZ || vz));
-        if (moved < 0.8) {
-          this._stuckTimer = (this._stuckTimer || 0) + 1.5;
+        if (moved < 0.6) {
+          this._stuckTimer = (this._stuckTimer || 0) + 1.0;
         } else {
           this._stuckTimer = 0;
         }
@@ -1075,36 +1095,37 @@ class NPCAI {
         const playerPos = this.trafficManager?.game?.player?.position;
         const distToPlayer = playerPos ? Math.hypot(vx - playerPos.x, vz - playerPos.z) : 100;
         const aheadVeh = (typeof this._getVehicleAhead === 'function') ? this._getVehicleAhead() : null;
-        const frontBlocked = aheadVeh && aheadVeh.position && (this.vehicle.position.distanceTo(aheadVeh.position) < 6.5);
+        const frontBlocked = aheadVeh && aheadVeh.position && (this.vehicle.position.distanceTo(aheadVeh.position) < 5.0);
 
-        // Phase 1: Smooth un-stuck recovery (at 3.5s) — only accelerate if path in front is clear
-        if (this._stuckTimer >= 3.5 && this._stuckTimer < 8.0) {
-          if (!frontBlocked) {
+        // Phase 1: Rapid un-stuck recovery (at 2.0s) — advance forward if path in front is clear
+        if (this._stuckTimer >= 2.0 && this._stuckTimer < 5.0) {
+          if (!frontBlocked && this.state !== NPC_STATE.WAIT_SIGNAL) {
             this.state = NPC_STATE.FOLLOW_LANE;
             this.waitTimer = 0;
             this.signalViolation = false;
             this._committedToIntersection = true;
-            if (this.route && this.route.length > 0 && this.routeIndex < this.route.length - 1) {
+            this._clearingIntersection = true;
+            if (this.route && this.route.length > 0 && this.routeIndex < this.route.length - 1 && this.vehicle.routeProgress >= 0.9) {
               this.routeIndex++;
               this._pickNextTarget();
             }
-            this.desiredSpeed = Math.max(4.0, this._getTargetSpeed ? this._getTargetSpeed() : 6.0);
-            this.currentSpeed = Math.max(this.currentSpeed, 2.5);
-          } else {
-            this.desiredSpeed = 0;
-            this.currentAcceleration = -(this.idmParams.b || 2.2);
+            this.desiredSpeed = Math.max(5.0, this._getTargetSpeed ? this._getTargetSpeed() : 7.0);
+            this.currentSpeed = Math.max(this.currentSpeed, 3.0);
+            this.currentAcceleration = (this.idmParams.aMax || 2.0) * 0.9;
           }
-        } else if (this._stuckTimer >= 8.0) {
-          // Phase 2: If far away from player, quietly recycle. If near player and clear, advance smoothly.
-          if (distToPlayer > 80) {
+        } else if (this._stuckTimer >= 5.0) {
+          // Phase 2: If stuck beyond 5s and far from player, quietly recycle. If near player and clear, force clear.
+          if (distToPlayer > 60) {
             this._stuckTimer = 0;
             this._respawn();
           } else if (!frontBlocked) {
             this._stuckTimer = 0;
             this.state = NPC_STATE.FOLLOW_LANE;
             this._committedToIntersection = true;
-            this.desiredSpeed = 5.0;
-            this.currentSpeed = 3.0;
+            this._clearingIntersection = true;
+            this.desiredSpeed = 6.0;
+            this.currentSpeed = Math.max(this.currentSpeed, 3.5);
+            this.currentAcceleration = (this.idmParams.aMax || 2.0);
           }
         }
       }
@@ -1245,6 +1266,13 @@ class NPCAI {
     // Apply cascading horn reaction defensive deceleration
     if (this._hornAlertTimer > 0) {
       rawAccel += (this._hornAlertDecel || -0.5) * (this._hornAlertTimer / 1.5);
+    }
+
+    // Never stop inside active intersection box: keep positive clearing momentum unless immediate lead vehicle ahead
+    if (this._clearingIntersection || this._committedToIntersection) {
+      if (!aheadVehicle || distToLead > 3.8) {
+        rawAccel = Math.max(0.6, rawAccel);
+      }
     }
 
     this.currentAcceleration = Math.max(-(this.idmParams.bMax || 8.0), Math.min(this.idmParams.aMax, rawAccel));
@@ -2120,7 +2148,6 @@ class NPCAI {
   }
 
   _respawn() {
-    this.vehicle.health = 100;
     this.vehicle.velocity.set(0, 0, 0);
     this.currentSpeed = 0;
     this.state = NPC_STATE.IDLE;
@@ -2468,16 +2495,33 @@ class PedestrianAI {
     const targetDist = ud.targetDist || (18 / 2 + 1.25);
     const sidewalkCenter = roadC + side * targetDist;
     const dir = ud.dir || 1;
-    const speed = (this.profile?.speed || 1.2) * 1.8;
+
+    // Introduce natural randomness: each pedestrian has an individual lateral offset across sidewalk width
+    if (ud.lateralOffset === undefined) {
+      ud.lateralOffset = (Math.random() - 0.5) * 2.2; // -1.1m to +1.1m across sidewalk width
+    }
+    if (ud.speedFactor === undefined) {
+      ud.speedFactor = 0.85 + Math.random() * 0.45; // 0.85x to 1.30x speed diversity
+    }
+    if (ud.wanderPhase === undefined) {
+      ud.wanderPhase = Math.random() * Math.PI * 2;
+    }
+
+    const baseSpeed = (this.profile?.speed || 1.2) * 1.8;
+    const speed = baseSpeed * ud.speedFactor;
     const moveAmt = speed * dt;
 
-    // Strictly align to sidewalk centerline and enforce upright orientation
+    // Gentle natural sway across sidewalk
+    const wander = 0.15 * Math.sin(ud.wanderPhase + (ud.distTraveled || 0) * 0.3);
+    const targetLateral = sidewalkCenter + ud.lateralOffset + wander;
+
+    // Track personal lateral line smoothly rather than snapping to exact centerline
     if (isV) {
-      this.ped.position.x += (sidewalkCenter - this.ped.position.x) * Math.min(1.0, dt * 8.0);
+      this.ped.position.x += (targetLateral - this.ped.position.x) * Math.min(1.0, dt * 3.5);
       this.ped.position.z += dir * moveAmt;
       this.facing = dir > 0 ? 0 : Math.PI;
     } else {
-      this.ped.position.z += (sidewalkCenter - this.ped.position.z) * Math.min(1.0, dt * 8.0);
+      this.ped.position.z += (targetLateral - this.ped.position.z) * Math.min(1.0, dt * 3.5);
       this.ped.position.x += dir * moveAmt;
       this.facing = dir > 0 ? Math.PI / 2 : -Math.PI / 2;
     }

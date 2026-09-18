@@ -6075,6 +6075,11 @@
         </div>
 
         <div class="start-controls">
+          <button class="top-btn" onclick="window.location.href='hub.html'" title="3D Academy Theory Classroom & Tuning HQ" style="background:rgba(6, 182, 212, 0.14); border-color:rgba(6, 182, 212, 0.4); color:#06b6d4;">
+            <span style="font-size:1.15rem;">🏛️</span>
+            <span class="btn-lbl">3D HQ</span>
+          </button>
+
           <button class="top-btn guide-top-btn" onclick="openAcademyTutorial()" title="Interactive Academy Guide & Tutorial" style="background:rgba(242, 184, 75, 0.14); border-color:rgba(242, 184, 75, 0.4); color:#f2b84b;">
             <span style="font-size:1.15rem;">📖</span>
             <span class="btn-lbl">Guide</span>
@@ -6134,6 +6139,9 @@
           </div>
           <div class="pls" style="justify-content: center; margin-top: 40px; flex-wrap: wrap; gap: 12px;">
             <button class="btn btn-p pulse-btn" onclick="showOnboardingFromStart()" style="font-size: 1.25rem; padding: 16px 48px; min-width: 200px;" id="enter-academy-btn">Get Started</button>
+            <a href="hub.html" class="btn btn-g" style="font-size: 1.15rem; padding: 14px 32px; text-decoration: none; border-color: var(--cyan, #06b6d4); color: var(--cyan, #06b6d4); background: rgba(6, 182, 212, 0.1); border-radius: 14px; display: inline-flex; align-items: center; gap: 8px;">
+              🏛️ 3D Theory Classroom
+            </a>
             <button class="btn btn-g" id="download-app-btn" style="display: none; border-color: var(--signal); color: var(--signal); font-size: 1rem; padding: 12px 24px" onclick="window.location.href = '../COL.apk'">
               📱 Download App
             </button>
@@ -6700,6 +6708,7 @@
     <script src="levels/level54.js"></script>
   <script src="levels/level_custom.js"></script>
   <script src="suburban_scenery.js"></script>
+  <script src="room-architect.js"></script>
 
     <script>
 
@@ -6718,7 +6727,7 @@
       
       function filterLevels() {
         const q = document.getElementById('level-search').value.toLowerCase();
-        const items = document.querySelectorAll('.syl-item');
+        const items = document.querySelectorAll('.level-grid-card, .syl-item');
         items.forEach(item => {
           const text = item.innerText.toLowerCase();
           item.style.display = text.includes(q) ? 'flex' : 'none';

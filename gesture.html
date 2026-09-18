@@ -2,39 +2,62 @@
 <html lang="en">
   <head>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995" crossorigin="anonymous"></script>
-    <meta name="description" content="Perceptus — the AI brain that understands your voice, your screen, and your intent. Talk or type, and it answers, writes, and acts. Hosted or local brain." />
+    <meta name="description" content="Introducing Perceptus Flow - Autonomous Touchless Machine Vision & Multimodal AI Co-Pilot using your webcam. Control Windows, pinch-click, execute voice tasks, and air-draw in mid-air." />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Perceptus Brain | Voice &amp; Screen Understanding</title>
+    <title>Introducing Perceptus Flow | Class Of Learners</title>
+    
+    <!-- Open Graph / Social Meta -->
+    <meta property="og:title" content="Introducing Perceptus Flow | Class Of Learners" />
+    <meta property="og:description" content="Introducing Perceptus Flow: Autonomous touchless spatial machine vision & multimodal AI co-pilot using your webcam. Control cursor, pinch-click, scroll, and air-draw in mid-air." />
+    <meta property="og:url" content="https://advancedlogiclabs.dpdns.org/gesture" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Introducing Perceptus Flow | Class Of Learners" />
+    <meta name="twitter:description" content="Introducing Perceptus Flow: Touchless spatial machine vision engine using your webcam. Zero extra hardware required." />
+    <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
+    <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/gesture" />
+    <link rel="icon" type="image/png" href="Icon.png" />
+    <link rel="manifest" href="manifest.json" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 
+    <!-- MediaPipe Vision SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+
+    <!-- Shared Class Of Learners System Scripts -->
     <script defer src="col-router.js"></script>
     <link rel="stylesheet" href="col-ui.css?v=1782446126.5715783" />
     <script defer src="col-ui.js"></script>
     <script defer src="col-auth.js"></script>
-    <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
-    <link rel="manifest" href="manifest.json" />
-    <link rel="icon" type="image/png" href="Icon.png" />
 
     <style>
-      :root {
-        --bg-void: #05070c;
-        --bg-panel: rgba(11, 15, 25, 0.75);
-        --bg-card: rgba(16, 22, 38, 0.6);
-        --border-subtle: rgba(0, 240, 255, 0.12);
-        --border-active: rgba(0, 240, 255, 0.4);
-        --cyan: #00f0ff;
-        --cyan-glow: rgba(0, 240, 255, 0.25);
-        --amber: #ffb703;
-        --emerald: #00e676;
-        --rose: #ff3366;
-        --text-primary: #f8fafc;
-        --text-secondary: #94a3b8;
-        --text-dim: #475569;
-        --font-mono: 'JetBrains Mono', monospace;
-        --font-display: 'Space Grotesk', -apple-system, sans-serif;
+      /* ──── CYBER EMERALD / TEAL THEME VARIABLES ──── */
+      :root,
+      body {
+        --bg-1: #030a08;
+        --bg-2: #020405;
+        --primary: #00ffcc;
+        --primary-glow: rgba(0, 255, 204, 0.4);
+        --primary-dim: rgba(0, 255, 204, 0.12);
+        --card-bg: #071412;
+        --text-main: #f8fafc;
+        --nav-bg: rgba(2, 6, 5, 0.95);
+        --border-light: #0f2c26;
+        --text-muted: #cbd5e1;
+        --accent-gold: #f0c060;
+        --accent-gold-glow: rgba(240, 192, 96, 0.35);
+        --accent-violet: #c084fc;
+        --accent-cyan: #38bdf8;
+        --accent-emerald: #4ade80;
+        --accent-rose: #f87171;
+        --accent-orange: #fb923c;
       }
 
       * {
@@ -42,707 +65,2136 @@
         margin: 0;
         padding: 0;
       }
-
       body {
-        background: var(--bg-void);
-        color: var(--text-primary);
-        font-family: 'Inter', -apple-system, sans-serif;
-        min-height: 100vh;
-        overflow-x: hidden;
-        position: relative;
-      }
-
-      body::before {
-        content: '';
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        z-index: -1;
-        background-image:
-          linear-gradient(to right, rgba(0, 240, 255, 0.02) 1px, transparent 1px),
-          linear-gradient(to bottom, rgba(0, 240, 255, 0.02) 1px, transparent 1px);
-        background-size: 40px 40px;
-      }
-
-      .perceptus-hero {
-        padding: 60px 24px 40px;
-        max-width: 1200px;
-        margin: 0 auto;
+        background-color: var(--bg-2);
+        color: var(--text-main);
         display: flex;
         flex-direction: column;
         align-items: center;
-        text-align: center;
-        gap: 16px;
+        min-height: 100vh;
+        overflow-x: hidden;
+        background-image: radial-gradient(circle at top center, var(--bg-1) 0%, var(--bg-2) 100%);
+        font-family: 'Inter', sans-serif;
+      }
+      code,
+      pre,
+      .tech-tag,
+      kbd,
+      .brand,
+      [style*='monospace'],
+      .term-dot {
+        text-transform: none;
       }
 
-      .badge-pill {
-        display: inline-flex;
+      /* ──── SCROLLBAR ──── */
+      ::-webkit-scrollbar {
+        width: 12px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--bg-1);
+        border-left: 1px solid var(--border-light);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(0, 255, 204, 0.2);
+        border-radius: 10px;
+        border: 3px solid var(--bg-1);
+        transition: 0.3s;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--primary);
+      }
+
+      /* ──── GLOBAL NAVBAR ──── */
+      .top-nav {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 50px;
+        background: var(--nav-bg);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--border-light);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        flex-wrap: wrap;
+        gap: 15px;
+        transition: 0.3s;
+      }
+      .nav-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 800;
+        font-size: 1.2rem;
+        text-decoration: none;
+        color: var(--text-main);
+        font-family: 'Inter', sans-serif;
+      }
+      .brand-logo {
+        height: 40px;
+        width: auto;
+        object-fit: contain;
+        filter: drop-shadow(0 0 8px var(--primary-glow));
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .nav-link {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: 0.2s;
+      }
+      .nav-link:hover {
+        color: var(--primary);
+      }
+
+      .dropdown {
+        position: relative;
+        display: inline-block;
+      }
+      .dropdown-btn {
+        color: var(--text-muted);
+        background: none;
+        border: none;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-family: 'Inter', sans-serif;
+        transition: 0.2s ease;
+        padding: 0;
+      }
+      .dropdown-btn:hover,
+      .dropdown.active .dropdown-btn,
+      .dropdown-btn.act {
+        color: var(--primary);
+      }
+      .dropdown-btn span {
+        font-size: 0.7rem;
+        transition: transform 0.3s ease;
+      }
+      .dropdown.active .dropdown-btn span {
+        transform: rotate(180deg);
+      }
+      .dropdown-content {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%) translateY(10px);
+        background: transparent;
+        min-width: 220px;
+        z-index: 1001;
+        padding-top: 15px;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition:
+          opacity 0.3s ease,
+          transform 0.3s ease,
+          visibility 0s linear 0.5s;
+      }
+      .dropdown-content-inner {
+        background: var(--card-bg);
+        border-radius: 12px;
+        border: 1px solid var(--border-light);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        padding: 10px 0;
+      }
+      .dropdown.active .dropdown-content {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transform: translateX(-50%) translateY(0);
+        transition-delay: 0s;
+      }
+      .dropdown.active:not(:hover) .dropdown-content {
+        opacity: 0;
+        visibility: hidden;
+        transform: translateX(-50%) translateY(10px);
+        transition-delay: 0.5s;
+      }
+
+      .dropdown-content a {
+        color: var(--text-muted);
+        padding: 12px 20px;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .dropdown-content a:hover,
+      .dropdown-content a.active {
+        background: rgba(0, 255, 204, 0.08);
+        color: var(--primary);
+        padding-left: 25px;
+      }
+
+      .nav-dl-btn {
+        background: var(--primary);
+        color: #000;
+        padding: 10px 24px;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: 800;
+        transition: 0.2s;
+        box-shadow: 0 0 15px var(--primary-glow);
+        font-size: 0.9rem;
+      }
+      .nav-dl-btn:hover {
+        background: #fff;
+        box-shadow: 0 0 25px var(--primary);
+      }
+      .mobile-menu-btn {
+        display: none;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--text-main);
+      }
+      .mobile-dl {
+        display: none;
+      }
+
+      .nav-login-btn {
+        background: rgba(0, 255, 204, 0.1);
+        color: var(--primary);
+        border: 1px solid var(--primary);
+        padding: 8px 20px;
+        border-radius: 30px;
+        font-weight: 800;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: 0.3s;
+        display: flex;
         align-items: center;
         gap: 8px;
-        background: rgba(0, 240, 255, 0.08);
-        border: 1px solid var(--border-active);
-        padding: 6px 18px;
-        border-radius: 100px;
-        font-family: var(--font-mono);
-        font-size: 0.82rem;
-        color: var(--cyan);
-        letter-spacing: 1px;
+        text-decoration: none;
+      }
+      .nav-login-btn:hover {
+        background: var(--primary);
+        color: #000;
+        box-shadow: 0 0 20px var(--primary-glow);
+      }
+      .nav-user-profile {
+        display: none;
+        align-items: center;
+        gap: 10px;
+        padding: 5px 15px 5px 5px;
+        background: transparent;
+        border: 1px solid var(--border-light);
+        border-radius: 30px;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+      .nav-user-profile:hover {
+        border-color: var(--primary);
+      }
+      .nav-user-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--primary);
+        color: #000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: 800;
+        overflow: hidden;
+      }
+
+      /* Theme Switch */
+      .tw {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-left: 5px;
+      }
+      .tl {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--text-muted);
         text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .tsb {
+        position: relative;
+        display: inline-block;
+        width: 44px;
+        height: 24px;
+      }
+      .tsb input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .tst {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-light);
+        transition: 0.3s;
+        border-radius: 24px;
+      }
+      .tsth {
+        position: absolute;
+        content: '';
+        height: 16px;
+        width: 16px;
+        left: 3px;
+        bottom: 3px;
+        background-color: var(--primary);
+        transition: 0.3s;
+        border-radius: 50%;
+        box-shadow: 0 0 8px var(--primary-glow);
+      }
+      input:checked + .tst .tsth {
+        transform: translateX(20px);
       }
 
-      .hero-title {
-        font-family: var(--font-display);
-        font-size: clamp(2.4rem, 5vw, 4.2rem);
-        font-weight: 900;
-        letter-spacing: -0.03em;
-        line-height: 1.1;
-        background: linear-gradient(135deg, #ffffff 40%, #a5f3fc 80%, var(--cyan) 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+      /* ──── HERO SECTION ──── */
+      .game-hero {
+        width: 100%;
+        padding: 140px 20px 60px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border-bottom: 1px solid var(--border-light);
+        position: relative;
+        overflow: hidden;
       }
-
-      .hero-subtitle {
-        color: var(--text-secondary);
-        font-size: clamp(1rem, 1.8vw, 1.25rem);
-        max-width: 760px;
+      #cyberCanvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        opacity: 0.5;
+        pointer-events: none;
+      }
+      .hero-badge {
+        display: inline-block;
+        padding: 6px 16px;
+        border-radius: 20px;
+        background: rgba(0, 255, 204, 0.1);
+        border: 1px solid rgba(0, 255, 204, 0.35);
+        color: var(--primary);
+        font-weight: 800;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-bottom: 20px;
+        box-shadow: 0 0 20px rgba(0, 255, 204, 0.2);
+      }
+      .game-hero h1 {
+        font-size: clamp(2.4rem, 5.5vw, 4.5rem);
+        font-weight: 800;
+        color: var(--text-main);
+        margin-bottom: 20px;
+        letter-spacing: -2px;
+        font-family: 'Space Mono', monospace;
+        text-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
+      }
+      .cursor-blink {
+        animation: blink 1s step-end infinite;
+        color: var(--primary);
+      }
+      @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0; }
+      }
+      .hero-reveal {
+        opacity: 0;
+        transform: translateY(15px);
+        transition: 0.8s ease;
+      }
+      .hero-reveal.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .game-hero p {
+        font-size: 1.2rem;
+        color: var(--text-muted);
+        max-width: 820px;
         line-height: 1.6;
+        margin-bottom: 35px;
+      }
+      .hero-cta {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .btn-download {
+        background: var(--primary);
+        color: #000;
+        padding: 16px 32px;
+        border-radius: 12px;
+        font-weight: 800;
+        font-size: 1.1rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: 0.3s;
+        box-shadow: 0 10px 30px var(--primary-glow);
+        border: none;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+      }
+      .btn-download:hover {
+        background: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 15px 40px var(--primary-glow);
+      }
+      .btn-demo {
+        background: rgba(0, 255, 204, 0.05);
+        color: var(--primary);
+        border: 2px solid var(--primary);
+        padding: 16px 32px;
+        border-radius: 12px;
+        font-weight: 800;
+        font-size: 1.1rem;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: 0.3s;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        backdrop-filter: blur(5px);
+        cursor: pointer;
+      }
+      .btn-demo:hover {
+        background: var(--primary);
+        color: #000;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px var(--primary-glow);
       }
 
-      .engine-layout {
-        max-width: 1400px;
-        margin: 0 auto 60px;
-        padding: 0 24px;
-        display: grid;
-        grid-template-columns: 1.3fr 1fr;
+      /* ──── MACHINE VISION LIVE ENGINE CONTAINER ──── */
+      .engine-wrapper {
+        width: 92%;
+        max-width: 1240px;
+        margin: 50px auto 70px;
+        display: flex;
+        flex-direction: column;
         gap: 24px;
       }
 
-      @media (max-width: 1024px) {
-        .engine-layout {
-          grid-template-columns: 1fr;
-        }
+      .engine-container {
+        width: 100%;
+        background: #020504;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid rgba(0, 255, 204, 0.25);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow:
+          0 30px 70px rgba(0, 0, 0, 0.9),
+          0 0 40px rgba(0, 255, 204, 0.08);
       }
 
-      .panel {
-        background: var(--bg-panel);
-        border: 1px solid var(--border-subtle);
-        border-radius: 20px;
+      .engine-hud-header {
+        padding: 14px 22px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: 'Space Mono', monospace;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        background: linear-gradient(90deg, rgba(7, 20, 18, 0.95) 0%, rgba(3, 10, 8, 0.98) 100%);
+        border-bottom: 1px solid rgba(0, 255, 204, 0.2);
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .hud-title {
+        color: var(--text-main);
+        font-weight: 700;
+        letter-spacing: 1px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .hud-chips {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .hud-badge {
+        padding: 5px 12px;
+        border-radius: 6px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .badge-offline {
+        background: rgba(248, 113, 113, 0.12);
+        color: var(--accent-rose);
+        border: 1px solid rgba(248, 113, 113, 0.35);
+      }
+      .badge-live {
+        background: rgba(74, 222, 128, 0.12);
+        color: var(--accent-emerald);
+        border: 1px solid rgba(74, 222, 128, 0.35);
+        animation: pulseLive 2s infinite;
+      }
+      @keyframes pulseLive {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.4); }
+        50% { box-shadow: 0 0 10px 2px rgba(74, 222, 128, 0.3); }
+      }
+      .badge-hw {
+        background: rgba(240, 192, 96, 0.12);
+        color: var(--accent-gold);
+        border: 1px solid rgba(240, 192, 96, 0.35);
+      }
+
+      /* Camera Viewport & Overlay */
+      .viewport-container {
+        position: relative;
+        width: 100%;
+        height: 540px;
+        background: #000;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #output_canvas {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transform: scaleX(-1);
+      }
+      #webcam_video {
+        display: none;
+      }
+
+      /* Cyber overlay when camera is paused */
+      .engine-overlay {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at center, rgba(3, 12, 10, 0.88) 0%, rgba(1, 4, 3, 0.98) 100%);
+        backdrop-filter: blur(10px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+        cursor: pointer;
+        transition: opacity 0.5s ease;
+      }
+      .engine-overlay.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .scan-line {
+        position: absolute;
+        width: 100%;
+        height: 3px;
+        background: rgba(0, 255, 204, 0.3);
+        box-shadow: 0 0 20px var(--primary);
+        top: 0;
+        left: 0;
+        animation: scanAnim 3.5s linear infinite;
+        opacity: 0.6;
+        pointer-events: none;
+      }
+      @keyframes scanAnim {
+        0% { top: -5%; }
+        100% { top: 105%; }
+      }
+
+      .cyber-play-btn {
+        position: relative;
+        width: 96px;
+        height: 96px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 24px;
+        border-radius: 50%;
+        background: rgba(0, 255, 204, 0.08);
+        border: 1px solid rgba(0, 255, 204, 0.4);
+        box-shadow: 0 0 35px rgba(0, 255, 204, 0.2);
+        transition: all 0.3s ease;
+      }
+      .cyber-play-btn svg {
+        width: 40px;
+        height: 40px;
+        color: var(--primary);
+        filter: drop-shadow(0 0 8px var(--primary));
+      }
+      .engine-overlay:hover .cyber-play-btn {
+        transform: scale(1.1);
+        background: rgba(0, 255, 204, 0.2);
+        box-shadow: 0 0 50px var(--primary-glow);
+      }
+      .ring {
+        position: absolute;
+        border-radius: 50%;
+        border: 1.5px solid var(--primary);
+        opacity: 0;
+      }
+      .ring-1 {
+        width: 100%;
+        height: 100%;
+        animation: radarPulse 2.2s infinite ease-out;
+      }
+      .ring-2 {
+        width: 100%;
+        height: 100%;
+        animation: radarPulse 2.2s infinite ease-out 1.1s;
+      }
+      @keyframes radarPulse {
+        0% { transform: scale(1); opacity: 0.8; }
+        100% { transform: scale(1.9); opacity: 0; }
+      }
+
+      .overlay-title {
+        font-family: 'Space Mono', monospace;
+        font-size: 1.8rem;
+        font-weight: 700;
+        letter-spacing: 2px;
+        color: var(--text-main);
+        margin-bottom: 8px;
+        text-shadow: 0 0 20px rgba(0, 255, 204, 0.3);
+      }
+      .overlay-sub {
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        margin-bottom: 30px;
+        text-align: center;
+        max-width: 480px;
+      }
+
+      /* Quick gesture preview tags in overlay */
+      .quick-tags {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .q-tag {
+        background: rgba(0, 255, 204, 0.06);
+        border: 1px solid rgba(0, 255, 204, 0.2);
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-size: 0.85rem;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      /* ──── TELEMETRY HUD STRIP ──── */
+      .hud-telemetry-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 16px;
+        padding: 20px;
+        background: rgba(3, 10, 8, 0.9);
+        border-top: 1px solid rgba(0, 255, 204, 0.15);
+      }
+      .tele-box {
+        background: rgba(7, 20, 18, 0.6);
+        border: 1px solid var(--border-light);
+        border-radius: 10px;
+        padding: 12px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .tele-label {
+        font-size: 0.7rem;
+        font-family: 'Space Mono', monospace;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+      }
+      .tele-val {
+        font-size: 1.15rem;
+        font-weight: 700;
+        font-family: 'Space Mono', monospace;
+        color: var(--primary);
+      }
+
+      /* 5-Finger Indicators */
+      .finger-indicators {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        margin-top: 4px;
+      }
+      .f-dot {
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.65rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        font-family: 'Space Mono', monospace;
+        transition: 0.15s;
+      }
+      .f-dot.active {
+        background: var(--primary);
+        color: #000;
+        border-color: var(--primary);
+        box-shadow: 0 0 10px var(--primary-glow);
+      }
+
+      /* Pinch progress bar */
+      .pinch-bar-wrap {
+        width: 100%;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 3px;
+        overflow: hidden;
+        margin-top: 6px;
+      }
+      .pinch-bar-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--accent-emerald), var(--primary), var(--accent-rose));
+        border-radius: 3px;
+        transition: width 0.05s linear;
+      }
+
+      /* Camera controls bar & Hardware Dock */
+      .engine-controls-bar {
+        padding: 14px 20px;
+        background: rgba(4, 9, 18, 0.95);
+        border-top: 1px solid var(--border-light);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+      .routing-device-group {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+      .device-select-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .device-lbl {
+        font-size: 0.78rem;
+        color: var(--primary);
+        font-family: 'Space Mono', monospace;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+      }
+      .routing-actions-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .control-chip-btn {
+        background: rgba(15, 23, 42, 0.8);
+        border: 1px solid var(--border-light);
+        color: var(--text-muted);
+        padding: 7px 14px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: 'Space Mono', monospace;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .control-chip-btn:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+        background: rgba(0, 255, 204, 0.1);
+      }
+      .control-chip-btn.active {
+        border-color: var(--primary);
+        color: #000;
+        background: var(--primary);
+        box-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
+      }
+      .control-select {
+        background: rgba(7, 20, 18, 0.85);
+        border: 1px solid var(--border-light);
+        color: var(--text-main);
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        outline: none;
+        cursor: pointer;
+        font-family: 'Inter', sans-serif;
+        max-width: 220px;
+        transition: border-color 0.2s;
+      }
+      .control-select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
+      }
+      .control-btn {
+        background: rgba(0, 255, 204, 0.12);
+        border: 1px solid var(--primary);
+        color: var(--primary);
+        padding: 8px 18px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.2s;
+        font-family: 'Space Mono', monospace;
+      }
+      .control-btn:hover {
+        background: var(--primary);
+        color: #000;
+        box-shadow: 0 0 15px var(--primary-glow);
+      }
+      .control-btn.btn-secondary {
+        border-color: var(--border-light);
+        color: var(--text-muted);
+        background: transparent;
+      }
+      .control-btn.btn-secondary:hover {
+        border-color: var(--accent-blue);
+        color: var(--accent-blue);
+        background: rgba(56, 189, 248, 0.1);
+      }
+
+      /* ──── INTERACTIVE TEST PLAYGROUND ──── */
+      .playground-box {
+        background: var(--card-bg);
+        border: 1px solid var(--border-light);
+        border-radius: 16px;
         padding: 24px;
-        backdrop-filter: blur(20px);
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
         display: flex;
         flex-direction: column;
         gap: 20px;
       }
+      .playground-title {
+        font-family: 'Space Mono', monospace;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        letter-spacing: 0.5px;
+      }
+      .playground-desc {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        line-height: 1.6;
+      }
+      .playground-grid {
+        display: grid;
+        grid-template-columns: 1fr 1.2fr;
+        gap: 20px;
+      }
+      @media (max-width: 900px) {
+        .playground-grid {
+          grid-template-columns: 1fr;
+        }
+      }
 
-      .panel-header {
+      /* Click Targets Area */
+      .targets-panel {
+        background: rgba(2, 6, 5, 0.6);
+        border: 1px solid var(--border-light);
+        border-radius: 12px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+      .target-btn {
+        padding: 16px 20px;
+        border-radius: 10px;
+        border: 1px solid rgba(0, 255, 204, 0.25);
+        background: rgba(0, 255, 204, 0.05);
+        color: var(--text-main);
+        font-family: 'Space Mono', monospace;
+        font-size: 0.95rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding-bottom: 16px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .target-btn:hover {
+        background: rgba(0, 255, 204, 0.15);
+        border-color: var(--primary);
+        transform: scale(1.02);
+      }
+      .target-btn:active,
+      .target-btn.clicked {
+        background: var(--primary);
+        color: #000;
+        box-shadow: 0 0 25px var(--primary-glow);
+        transform: scale(0.98);
       }
 
-      .panel-title {
-        font-family: var(--font-display);
-        font-size: 1.25rem;
+      /* Air-Drawing Canvas Area */
+      .drawing-panel {
+        background: rgba(2, 6, 5, 0.6);
+        border: 1px solid var(--border-light);
+        border-radius: 12px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        position: relative;
+      }
+      .drawing-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: 'Space Mono', monospace;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+      #air_canvas {
+        width: 100%;
+        height: 220px;
+        background: #010403;
+        border: 1px dashed rgba(0, 255, 204, 0.3);
+        border-radius: 8px;
+        cursor: crosshair;
+      }
+      .drawing-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .btn-clear {
+        padding: 6px 14px;
+        border-radius: 6px;
+        border: 1px solid rgba(248, 113, 113, 0.4);
+        background: rgba(248, 113, 113, 0.1);
+        color: var(--accent-rose);
+        font-size: 0.75rem;
+        cursor: pointer;
+        font-family: 'Space Mono', monospace;
+        transition: 0.2s;
+      }
+      .btn-clear:hover {
+        background: var(--accent-rose);
+        color: #000;
+      }
+
+      /* ──── VIRTUAL GESTURE CURSOR (IN-PAGE SIMULATION) ──── */
+      #virtual-cursor {
+        position: fixed;
+        width: 22px;
+        height: 22px;
+        background-color: var(--primary);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 999999;
+        display: none;
+        box-shadow: 0 0 20px var(--primary);
+        transform: translate(-50%, -50%);
+        transition: width 0.1s, height 0.1s, background-color 0.15s, transform 0.05s linear;
+      }
+      #virtual-cursor::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 6px;
+        height: 6px;
+        background: #fff;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+      }
+      .cursor-ripple {
+        position: fixed;
+        border-radius: 50%;
+        border: 2px solid var(--primary);
+        pointer-events: none;
+        z-index: 999998;
+        transform: translate(-50%, -50%) scale(0);
+        animation: rip 0.5s ease-out forwards;
+      }
+      @keyframes rip {
+        to {
+          transform: translate(-50%, -50%) scale(2.5);
+          opacity: 0;
+        }
+      }
+
+      /* ──── AUTONOMOUS AI MULTIMODAL CONSOLE ──── */
+      .ai-agent-console {
+        background: linear-gradient(180deg, rgba(7, 24, 20, 0.85) 0%, rgba(3, 12, 10, 0.95) 100%);
+        border: 1px solid rgba(0, 255, 204, 0.35);
+        border-radius: 16px;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 255, 204, 0.08);
+        position: relative;
+        overflow: hidden;
+      }
+      .ai-agent-console::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--primary), var(--accent-cyan), transparent);
+        animation: cyberScanline 3s infinite linear;
+      }
+      @keyframes cyberScanline {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+      }
+      .ai-agent-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .ai-badge-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .ai-pulse-dot {
+        width: 10px;
+        height: 10px;
+        background: var(--primary);
+        border-radius: 50%;
+        box-shadow: 0 0 10px var(--primary);
+        animation: radarPulse 1.8s infinite ease-out;
+      }
+      .ai-title {
+        font-family: 'Space Mono', monospace;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--primary);
+        letter-spacing: 1px;
+      }
+      .ai-chip {
+        padding: 4px 10px;
+        background: rgba(0, 255, 204, 0.1);
+        border: 1px solid rgba(0, 255, 204, 0.25);
+        border-radius: 6px;
+        font-family: 'Space Mono', monospace;
+        font-size: 0.72rem;
+        color: var(--text-main);
+      }
+      .ai-status-tag {
+        font-family: 'Space Mono', monospace;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 5px 12px;
+        border-radius: 6px;
+        background: rgba(240, 192, 96, 0.12);
+        color: var(--accent-gold);
+        border: 1px solid rgba(240, 192, 96, 0.35);
+      }
+      .ai-status-tag.active {
+        background: rgba(74, 222, 128, 0.15);
+        color: var(--accent-emerald);
+        border-color: rgba(74, 222, 128, 0.4);
+        box-shadow: 0 0 12px rgba(74, 222, 128, 0.3);
+      }
+      .ai-status-tag.listening {
+        background: rgba(248, 113, 113, 0.18);
+        color: var(--accent-rose);
+        border-color: rgba(248, 113, 113, 0.5);
+        animation: pulseLive 1.2s infinite;
+      }
+      .ai-desc {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+      }
+      .ai-command-row {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .ai-mic-btn {
+        background: rgba(0, 255, 204, 0.12);
+        border: 1.5px solid var(--primary);
+        color: var(--primary);
+        padding: 12px 20px;
+        border-radius: 10px;
+        font-family: 'Space Mono', monospace;
+        font-size: 0.85rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.25s ease;
+        position: relative;
+        flex-shrink: 0;
+      }
+      .ai-mic-btn:hover {
+        background: var(--primary);
+        color: #000;
+        box-shadow: 0 0 25px var(--primary-glow);
+      }
+      .ai-mic-btn.active {
+        background: rgba(248, 113, 113, 0.2);
+        border-color: var(--accent-rose);
+        color: var(--accent-rose);
+        box-shadow: 0 0 30px rgba(248, 113, 113, 0.4);
+      }
+      .mic-icon {
+        width: 18px;
+        height: 18px;
+      }
+      .mic-wave {
+        display: none;
+        align-items: center;
+        gap: 3px;
+        height: 16px;
+      }
+      .ai-mic-btn.active .mic-wave {
+        display: flex;
+      }
+      .mic-wave span {
+        width: 3px;
+        height: 100%;
+        background: currentColor;
+        border-radius: 2px;
+        animation: wavePulse 0.8s infinite ease-in-out alternate;
+      }
+      .mic-wave span:nth-child(2) { animation-delay: 0.15s; }
+      .mic-wave span:nth-child(3) { animation-delay: 0.3s; }
+      .mic-wave span:nth-child(4) { animation-delay: 0.45s; }
+      .mic-wave span:nth-child(5) { animation-delay: 0.6s; }
+      @keyframes wavePulse {
+        0% { height: 4px; }
+        100% { height: 16px; }
+      }
+      .ai-input-wrap {
+        display: flex;
+        flex: 1;
+        min-width: 280px;
+        background: rgba(2, 6, 5, 0.8);
+        border: 1px solid var(--border-light);
+        border-radius: 10px;
+        overflow: hidden;
+        transition: 0.2s;
+      }
+      .ai-input-wrap:focus-within {
+        border-color: var(--primary);
+        box-shadow: 0 0 20px rgba(0, 255, 204, 0.2);
+      }
+      .ai-input {
+        flex: 1;
+        background: none;
+        border: none;
+        color: var(--text-main);
+        padding: 12px 16px;
+        font-size: 0.9rem;
+        outline: none;
+        font-family: 'Inter', sans-serif;
+      }
+      .ai-input::placeholder {
+        color: rgba(255, 255, 255, 0.35);
+      }
+      .ai-run-btn {
+        background: rgba(0, 255, 204, 0.15);
+        border: none;
+        border-left: 1px solid var(--border-light);
+        color: var(--primary);
+        padding: 0 20px;
+        cursor: pointer;
+        font-family: 'Space Mono', monospace;
+        font-size: 0.82rem;
         font-weight: 700;
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
+        transition: 0.2s;
       }
-
-      .status-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 4px 12px;
-        border-radius: 50px;
-        font-family: var(--font-mono);
-        font-size: 0.75rem;
-        font-weight: 600;
+      .ai-run-btn:hover {
+        background: var(--primary);
+        color: #000;
       }
-      .status-offline { background: rgba(255, 51, 102, 0.15); color: var(--rose); border: 1px solid rgba(255, 51, 102, 0.3); }
-      .status-live { background: rgba(0, 230, 118, 0.15); color: var(--emerald); border: 1px solid rgba(0, 230, 118, 0.3); }
-      .status-push { background: rgba(0, 240, 255, 0.15); color: var(--cyan); border: 1px solid rgba(0, 240, 255, 0.3); }
-
-      /* Conversation viewport */
-      .chat-viewport {
-        position: relative;
-        width: 100%;
-        height: 480px;
-        border-radius: 14px;
-        overflow: hidden;
-        background: #020306;
-        border: 1px solid rgba(0, 240, 255, 0.2);
-        display: flex;
-        flex-direction: column;
-      }
-
-      .chat-messages {
-        flex: 1;
-        overflow-y: auto;
-        padding: 18px;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-      }
-
-      .msg {
-        max-width: 82%;
-        padding: 10px 14px;
-        border-radius: 12px;
-        font-size: 0.92rem;
-        line-height: 1.5;
-        animation: msgin 0.25s ease;
-      }
-      @keyframes msgin { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-      .msg-you {
-        align-self: flex-end;
-        background: rgba(0, 240, 255, 0.12);
-        border: 1px solid var(--border-active);
-        color: var(--text-primary);
-        border-bottom-right-radius: 4px;
-      }
-      .msg-brain {
-        align-self: flex-start;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        color: var(--text-primary);
-        border-bottom-left-radius: 4px;
-      }
-      .msg-brain .msg-say { color: var(--cyan); font-weight: 600; display: block; margin-bottom: 4px; }
-      .msg-meta {
-        font-family: var(--font-mono);
-        font-size: 0.68rem;
-        color: var(--text-dim);
-        margin-top: 6px;
-      }
-
-      .chat-input-row {
-        display: flex;
-        gap: 10px;
-        padding: 12px;
-        border-top: 1px solid rgba(0, 240, 255, 0.15);
-        background: rgba(5, 8, 15, 0.85);
-      }
-
-      .chat-input-row input {
-        flex: 1;
-        background: rgba(4, 7, 14, 0.9);
-        border: 1px solid var(--border-subtle);
-        color: var(--text-primary);
-        font-family: 'Inter', sans-serif;
-        font-size: 0.95rem;
-        padding: 12px 16px;
-        border-radius: 12px;
-        outline: none;
-        transition: border-color 0.2s, box-shadow 0.2s;
-      }
-      .chat-input-row input:focus {
-        border-color: var(--cyan);
-        box-shadow: 0 0 12px var(--cyan-glow);
-      }
-
-      .mic-btn {
-        width: 48px;
-        height: 48px;
-        border-radius: 12px;
-        border: 1px solid var(--border-active);
-        background: rgba(0, 240, 255, 0.1);
-        color: var(--cyan);
-        font-size: 1.2rem;
+      .ai-screen-btn {
+        background: rgba(56, 189, 248, 0.1);
+        border: 1px solid rgba(56, 189, 248, 0.4);
+        color: var(--accent-cyan);
+        padding: 12px 18px;
+        border-radius: 10px;
+        font-family: 'Space Mono', monospace;
+        font-size: 0.82rem;
         cursor: pointer;
-        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: 0.2s;
         flex-shrink: 0;
       }
-      .mic-btn:hover { background: rgba(0, 240, 255, 0.25); }
-      .mic-btn.listening {
-        background: var(--rose);
-        border-color: var(--rose);
-        color: #fff;
-        animation: pulse 1.1s infinite;
+      .ai-screen-btn:hover,
+      .ai-screen-btn.active {
+        background: var(--accent-cyan);
+        color: #000;
+        box-shadow: 0 0 25px rgba(56, 189, 248, 0.4);
       }
-      @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(255, 51, 102, 0.5); } 50% { box-shadow: 0 0 0 12px rgba(255, 51, 102, 0); } }
-
-      .config-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-      }
-      @media (max-width: 600px) {
-        .config-grid { grid-template-columns: 1fr; }
-      }
-
-      .form-group {
+      .ai-quick-chips {
         display: flex;
-        flex-direction: column;
-        gap: 6px;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
       }
-
-      .form-label {
-        font-size: 0.8rem;
-        font-family: var(--font-mono);
-        color: var(--text-secondary);
-        text-transform: uppercase;
+      .chip-label {
+        font-family: 'Space Mono', monospace;
+        font-size: 0.72rem;
+        color: var(--text-muted);
         letter-spacing: 0.5px;
       }
-
-      .form-input, .form-select {
-        background: rgba(4, 7, 14, 0.9);
-        border: 1px solid var(--border-subtle);
-        color: var(--text-primary);
-        font-family: var(--font-mono);
-        font-size: 0.9rem;
-        padding: 10px 14px;
+      .ai-chip-btn {
+        background: rgba(0, 255, 204, 0.05);
+        border: 1px solid rgba(0, 255, 204, 0.2);
+        color: var(--text-main);
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      .ai-chip-btn:hover {
+        background: rgba(0, 255, 204, 0.15);
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+      .ai-neural-stream {
+        background: #010403;
+        border: 1px solid rgba(0, 255, 204, 0.2);
         border-radius: 10px;
-        outline: none;
-        transition: border-color 0.2s, box-shadow 0.2s;
-      }
-      .form-input:focus, .form-select:focus {
-        border-color: var(--cyan);
-        box-shadow: 0 0 12px var(--cyan-glow);
-      }
-
-      .toggle-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
         padding: 12px 16px;
-        background: var(--bg-card);
-        border-radius: 10px;
-        border: 1px solid rgba(255, 255, 255, 0.05);
-      }
-
-      .toggle-switch {
-        position: relative;
-        width: 44px;
-        height: 24px;
-      }
-      .toggle-switch input { opacity: 0; width: 0; height: 0; }
-      .slider {
-        position: absolute;
-        inset: 0;
-        background-color: #1e293b;
-        border-radius: 34px;
-        cursor: pointer;
-        transition: 0.3s;
-      }
-      .slider:before {
-        position: absolute;
-        content: "";
-        height: 18px;
-        width: 18px;
-        left: 3px;
-        bottom: 3px;
-        background-color: white;
-        border-radius: 50%;
-        transition: 0.3s;
-      }
-      input:checked + .slider { background-color: var(--cyan); }
-      input:checked + .slider:before { transform: translateX(20px); }
-
-      .btn-primary {
-        background: linear-gradient(135deg, var(--cyan), #00b4d8);
-        color: #000;
-        font-weight: 800;
-        font-size: 0.95rem;
-        border: none;
-        padding: 14px 24px;
-        border-radius: 12px;
-        cursor: pointer;
-        transition: transform 0.2s, box-shadow 0.2s;
         display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 10px;
-        box-shadow: 0 6px 20px var(--cyan-glow);
-      }
-      .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 30px rgba(0, 240, 255, 0.4);
-      }
-
-      .btn-secondary {
-        background: rgba(255, 255, 255, 0.06);
-        color: var(--text-primary);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        font-weight: 600;
-        padding: 12px 20px;
-        border-radius: 12px;
-        cursor: pointer;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        flex-direction: column;
         gap: 8px;
       }
-      .btn-secondary:hover {
-        background: rgba(255, 255, 255, 0.12);
-        border-color: var(--cyan);
-        color: var(--cyan);
+      .stream-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: 'Space Mono', monospace;
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        border-bottom: 1px solid rgba(0, 255, 204, 0.1);
+        padding-bottom: 6px;
       }
-
-      .terminal-window {
-        background: #030408;
-        border: 1px solid rgba(0, 240, 255, 0.2);
-        border-radius: 12px;
-        padding: 14px;
-        font-family: var(--font-mono);
-        font-size: 0.8rem;
-        height: 200px;
+      .stream-title {
+        color: var(--primary);
+        font-weight: 700;
+        letter-spacing: 0.5px;
+      }
+      .stream-target {
+        color: var(--accent-cyan);
+        font-weight: 700;
+      }
+      .stream-log {
+        max-height: 120px;
         overflow-y: auto;
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 4px;
+        font-family: 'Space Mono', monospace;
+        font-size: 0.78rem;
+        scrollbar-width: thin;
+        scrollbar-color: var(--primary) transparent;
       }
-      .log-entry { display: flex; gap: 8px; line-height: 1.4; }
-      .log-ts { color: var(--text-dim); }
-      .log-event { color: var(--cyan); font-weight: 600; }
-      .log-frame { color: var(--amber); }
-      .log-success { color: var(--emerald); }
-      .log-error { color: var(--rose); }
+      .log-line {
+        line-height: 1.4;
+        color: rgba(255, 255, 255, 0.75);
+      }
+      .log-line.info { color: var(--primary); }
+      .log-line.voice { color: var(--accent-gold); }
+      .log-line.vision { color: var(--accent-cyan); }
+      .log-line.action { color: var(--accent-emerald); font-weight: 700; }
+      .log-line.warn { color: var(--accent-orange); }
 
-      .telemetry-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 12px;
+      /* Target Snapping & Lock Indicator */
+      .magnetic-locked {
+        outline: 2px solid var(--primary) !important;
+        box-shadow: 0 0 25px var(--primary-glow) !important;
+        position: relative;
       }
-      .telemetry-card {
-        background: var(--bg-card);
-        border: 1px solid rgba(255, 255, 255, 0.05);
+      .magnetic-locked::after {
+        content: '🎯 TARGET LOCKED';
+        position: absolute;
+        top: -24px;
+        right: 10px;
+        font-family: 'Space Mono', monospace;
+        font-size: 0.68rem;
+        font-weight: 700;
+        background: var(--primary);
+        color: #000;
+        padding: 2px 8px;
+        border-radius: 4px;
+        pointer-events: none;
+        animation: pulseLive 1s infinite;
+      }
+
+      /* ──── FEATURES GRID (MATCHING ATI / SOLAR) ──── */
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        width: 90%;
+        max-width: 1200px;
+        margin: 60px auto 80px;
+        z-index: 10;
+        position: relative;
+      }
+      .feature-card {
+        background: linear-gradient(110deg, rgba(7, 20, 18, 0.75) 0%, rgba(7, 20, 18, 0.75) 40%, rgba(0, 255, 204, 0.12) 50%, rgba(7, 20, 18, 0.75) 60%, rgba(7, 20, 18, 0.75) 100%);
+        background-size: 250% 100%;
+        background-position: 100% 0;
+        border: 1px solid rgba(0, 255, 204, 0.2);
+        border-radius: 16px;
+        padding: 40px 30px;
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+        box-shadow:
+          inset 0 0 20px rgba(0, 0, 0, 0.5),
+          0 15px 30px rgba(0, 0, 0, 0.6);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        transition:
+          transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+          box-shadow 0.4s ease,
+          border-color 0.4s ease,
+          background-position 0.6s ease;
+      }
+      .feature-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        border-color: var(--primary);
+        box-shadow:
+          inset 0 0 25px rgba(0, 255, 204, 0.15),
+          0 25px 50px rgba(0, 255, 204, 0.2);
+        background-position: 0 0;
+      }
+      .icon-wrapper {
+        width: 70px;
+        height: 70px;
+        border-radius: 14px;
+        background: rgba(0, 255, 204, 0.08);
+        border: 1px solid rgba(0, 255, 204, 0.35);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 2rem;
+        margin-bottom: 25px;
+        transition: 0.3s;
+        box-shadow: 0 0 20px rgba(0, 255, 204, 0.2);
+        position: relative;
+      }
+      .icon-wrapper::before {
+        content: '';
+        position: absolute;
+        top: -3px;
+        left: -3px;
+        width: 12px;
+        height: 12px;
+        border-top: 2px solid var(--primary);
+        border-left: 2px solid var(--primary);
+        border-top-left-radius: 4px;
+      }
+      .icon-wrapper::after {
+        content: '';
+        position: absolute;
+        bottom: -3px;
+        right: -3px;
+        width: 12px;
+        height: 12px;
+        border-bottom: 2px solid var(--primary);
+        border-right: 2px solid var(--primary);
+        border-bottom-right-radius: 4px;
+      }
+      .feature-card:hover .icon-wrapper {
+        background: rgba(0, 255, 204, 0.18);
+        box-shadow: 0 0 40px var(--primary-glow);
+        transform: scale(1.1);
+      }
+      .feature-card h3 {
+        font-size: 1.4rem;
+        font-weight: 800;
+        margin-bottom: 12px;
+        color: var(--text-main);
+        letter-spacing: -0.5px;
+      }
+      .feature-card p {
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        line-height: 1.7;
+        margin-bottom: 25px;
+      }
+      .tech-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+        margin-top: auto;
+      }
+      .tech-tag {
+        font-family: 'Consolas', monospace;
+        font-size: 0.7rem;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: 0.2s;
+      }
+      .tag-teal {
+        background: rgba(0, 255, 204, 0.05);
+        color: var(--primary);
+        border: 1px solid rgba(0, 255, 204, 0.3);
+      }
+      .tag-gold {
+        background: rgba(240, 192, 96, 0.05);
+        color: var(--accent-gold);
+        border: 1px solid rgba(240, 192, 96, 0.3);
+      }
+      .tag-cyan {
+        background: rgba(56, 189, 248, 0.05);
+        color: var(--accent-cyan);
+        border: 1px solid rgba(56, 189, 248, 0.3);
+      }
+
+      /* ──── SHOWCASE GALLERY ──── */
+      .gallery-title {
+        text-align: center;
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--text-main);
+        margin: 60px 0 30px;
+        letter-spacing: -1px;
+      }
+      .cyber-showcase-container {
+        width: 95%;
+        max-width: 1000px;
+        margin: 0 auto 80px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        align-items: center;
+        position: relative;
+      }
+      .main-display {
+        width: 100%;
+        border: 1px solid var(--primary);
         border-radius: 12px;
-        padding: 12px 14px;
+        padding: 10px;
+        background: rgba(3, 10, 8, 0.8);
+        position: relative;
+        box-shadow: 0 0 30px rgba(0, 255, 204, 0.15);
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+      }
+      .main-display img {
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
+        display: block;
+        object-fit: cover;
+        transition: opacity 0.3s ease-in-out;
+      }
+      .display-corner {
+        position: absolute;
+        width: 25px;
+        height: 25px;
+        border: 3px solid var(--primary);
+        z-index: 2;
+      }
+      .display-corner.tl { top: 0; left: 0; border-right: none; border-bottom: none; border-top-left-radius: 12px; }
+      .display-corner.tr { top: 0; right: 0; border-left: none; border-bottom: none; border-top-right-radius: 12px; }
+      .display-corner.bl { bottom: 0; left: 0; border-right: none; border-top: none; border-bottom-left-radius: 12px; }
+      .display-corner.br { bottom: 0; right: 0; border-left: none; border-top: none; border-bottom-right-radius: 12px; }
+
+      .scanline {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: rgba(0, 255, 204, 0.6);
+        box-shadow: 0 0 15px var(--primary);
+        animation: scanlineAnim 4s linear infinite;
+        z-index: 3;
+        pointer-events: none;
+      }
+      @keyframes scanlineAnim {
+        0% { top: 0; opacity: 0; }
+        10% { opacity: 0.7; }
+        90% { opacity: 0.7; }
+        100% { top: 100%; opacity: 0; }
+      }
+
+      .thumbnail-track {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        flex-wrap: wrap;
+        width: 100%;
+      }
+      .thumb-card {
+        width: 180px;
+        cursor: pointer;
+        border: 2px solid var(--border-light);
+        border-radius: 8px;
+        overflow: hidden;
+        background: var(--card-bg);
+        transition: 0.3s;
+        opacity: 0.6;
+      }
+      .thumb-card.active,
+      .thumb-card:hover {
+        border-color: var(--primary);
+        opacity: 1;
+        box-shadow: 0 0 15px var(--primary-glow);
+        transform: translateY(-4px);
+      }
+      .thumb-card img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      /* ──── GESTURE COMMAND CHEAT SHEET ──── */
+      .gesture-cheat-sheet {
+        width: 90%;
+        max-width: 1200px;
+        margin: 0 auto 90px;
+      }
+      .cheat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 20px;
+        margin-top: 25px;
+      }
+      .cheat-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-light);
+        border-radius: 12px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        transition: 0.3s;
+      }
+      .cheat-card:hover {
+        border-color: var(--primary);
+        transform: translateY(-4px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      }
+      .c-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+        background: rgba(0, 255, 204, 0.08);
+        border: 1px solid rgba(0, 255, 204, 0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+        flex-shrink: 0;
+      }
+      .c-meta {
         display: flex;
         flex-direction: column;
         gap: 4px;
       }
-      .tele-title { font-size: 0.72rem; color: var(--text-dim); font-family: var(--font-mono); text-transform: uppercase; }
-      .tele-val { font-size: 1.1rem; font-weight: 800; font-family: var(--font-mono); color: var(--cyan); }
+      .c-title {
+        font-weight: 700;
+        font-size: 1rem;
+        color: var(--text-main);
+        font-family: 'Space Mono', monospace;
+      }
+      .c-desc {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        line-height: 1.4;
+      }
+
+      /* ──── SHARED CLASS OF LEARNERS FOOTER ──── */
+      .sf {
+        width: 100%;
+        padding: 50px 20px 40px;
+        border-top: 1px solid var(--border-light);
+        background: var(--bg-1);
+        display: flex;
+        justify-content: center;
+      }
+      .fi {
+        max-width: 1200px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+        text-align: center;
+      }
+      .fb {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--text-main);
+      }
+      .fb span {
+        color: var(--primary);
+      }
+      .fl {
+        display: flex;
+        gap: 24px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .fl a {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: 0.2s;
+      }
+      .fl a:hover {
+        color: var(--primary);
+      }
+      .fc {
+        font-size: 0.8rem;
+        color: #64748b;
+        margin-top: 6px;
+      }
+
+      /* Mobile Navigation */
+      .mmb {
+        display: none;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--text-main);
+        width: 32px;
+        height: 32px;
+      }
+      @media (max-width: 968px) {
+        .top-nav {
+          padding: 15px 20px;
+        }
+        .mmb {
+          display: block;
+        }
+        .nav-links {
+          display: none;
+          position: absolute;
+          top: 100%;
+          left: 0;
+          width: 100%;
+          background: var(--nav-bg);
+          backdrop-filter: blur(20px);
+          border-bottom: 1px solid var(--border-light);
+          flex-direction: column;
+          align-items: flex-start;
+          padding: 24px 30px;
+          gap: 18px;
+        }
+        .nav-links.active {
+          display: flex;
+        }
+        .desktop-dl {
+          display: none;
+        }
+        .mobile-dl {
+          display: block;
+        }
+      }
     </style>
   </head>
   <body>
-    <!-- Top Navigation -->
+    <!-- Cursor elements -->
+    <div class="cd" id="cDot"></div>
+    <div class="cr" id="cRing"></div>
+    <div id="virtual-cursor"></div>
+
+    <!-- ──── GLOBAL NAVBAR ──── -->
     <nav class="top-nav">
       <a href="/" class="nav-brand">
-        <img src="Class.png" alt="Class Of Learners Logo" class="brand-logo" width="48" height="48" />
+        <img src="Class.png" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" />
         <span class="brand-name">Class Of Learners</span>
       </a>
+      <button class="mmb" id="mmb" aria-label="Toggle Navigation">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
       <div class="nav-links" id="navLinks">
         <a href="/" class="nav-link">Home</a>
         <a href="about" class="nav-link">About</a>
-        <a href="ati" class="nav-link">Typing ⌨️</a>
-        <a href="solar" class="nav-link">Solar 🌌</a>
-        <a href="gesture" class="nav-link active" style="color: var(--cyan);">Perceptus 🧠</a>
-        <a href="Career" class="nav-link">Career 🧭</a>
-        <a href="Database_Logic" class="nav-link">Database ⨜</a>
-        <a href="qr" class="nav-link">QR Studio ⬛</a>
-      </div>
-    </nav>
-
-    <!-- Hero Header -->
-    <header class="perceptus-hero">
-      <div class="badge-pill">🧠 Perceptus AI Brain</div>
-      <h1 class="hero-title">PERCEPTUS BRAIN</h1>
-      <p class="hero-subtitle">
-        Talk or type — Perceptus understands your voice, your screen, and what you actually mean.
-        It answers, writes text for you, and can control your whole Windows PC through the desktop app.
-        Connect to the hosted brain or run it locally.
-      </p>
-    </header>
-
-    <!-- Main App Grid -->
-    <main class="engine-layout">
-      <!-- Left Column: Conversation -->
-      <section class="panel">
-        <div class="panel-header">
-          <div class="panel-title">
-            <span>💬</span> Talk to the Brain
-          </div>
-          <div id="engine-badge" class="status-pill status-offline">◌ NOT CONNECTED</div>
-        </div>
-
-        <div class="chat-viewport">
-          <div class="chat-messages" id="chat-messages">
-            <div class="msg msg-brain">
-              <span class="msg-say">Perceptus</span>
-              Hi — I'm listening. Type below or press the mic and speak. Try: "summarize this page", "write an email to my teacher", or "what should I do next?"
+        <a href="school" class="nav-link">School</a>
+        <a href="sneh-asha" class="nav-link">Sneh Asha</a>
+        <div class="dropdown" onclick="this.classList.toggle('active')">
+          <button class="dropdown-btn act">Projects <span class="darr">▼</span></button>
+          <div class="dropdown-content">
+            <div class="dropdown-content-inner">
+              <a href="ati">Typing Instructor <span>⌨️</span></a>
+              <a href="solar">Solar Engine <span>🌍</span></a>
+              <a href="gesture" class="active" style="color: var(--primary);">Perceptus Flow <span>✨</span></a>
+              <a href="rpg">RPG Game <span>⚔️</span></a>
+              <a href="qr">QR Generator <span>⬛</span></a>
             </div>
           </div>
-          <div class="chat-input-row">
-            <input type="text" id="chat-input" placeholder="Say or type what you want…" autocomplete="off" />
-            <button id="btn-mic" class="mic-btn" title="Hold a thought — click and speak" onclick="toggleMic()">🎙️</button>
-          </div>
         </div>
-
-        <!-- Telemetry Summary Cards -->
-        <div class="telemetry-grid">
-          <div class="telemetry-card">
-            <span class="tele-title">Brain Status</span>
-            <span class="tele-val" id="tele-status">Idle</span>
-          </div>
-          <div class="telemetry-card">
-            <span class="tele-title">Last Latency</span>
-            <span class="tele-val" id="tele-latency">— ms</span>
-          </div>
-          <div class="telemetry-card">
-            <span class="tele-title">Turns</span>
-            <span class="tele-val" id="tele-turns">0</span>
-          </div>
+        <div class="tw">
+          <span class="tl" id="tLabel">Light</span>
+          <label class="tsb">
+            <input type="checkbox" id="tsck" onchange="window.toggleTheme(this)" />
+            <div class="tst"><div class="tsth"></div></div>
+          </label>
         </div>
-
-        <button id="btn-send" class="btn-primary" onclick="sendUtterance()">
-          <span>⚡</span> Send to Perceptus
+        <button class="nav-login-btn" id="navLoginBtn" onclick="if (window.openGlobalLogin) window.openGlobalLogin()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          Sign In
         </button>
-      </section>
-
-      <!-- Right Column: Brain Connection & Log -->
-      <section class="panel">
-        <div class="panel-header">
-          <div class="panel-title">
-            <span>🔌</span> Brain Connection
-          </div>
-          <div class="status-pill status-push">CLOUD + LOCAL</div>
+        <div class="nav-user-profile" id="navUserProfile" onclick="if (window.openGlobalLogin) window.openGlobalLogin()">
+          <div class="nav-user-avatar" id="navUserAv">?</div>
+          <span class="nun" id="navUserName">User</span>
         </div>
+        <a href="download" class="nav-dl-btn mobile-dl">Download Hub</a>
+      </div>
+      <a href="download" class="nav-dl-btn desktop-dl">Download Hub</a>
+    </nav>
 
-        <div class="config-grid">
-          <div class="form-group">
-            <label class="form-label">Brain</label>
-            <select id="cfg-mode" class="form-select" onchange="updateEndpointPreset()">
-              <option value="cloud">Hosted brain (recommended)</option>
-              <option value="local">This computer (local dev)</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Thinking</label>
-            <select id="cfg-speed" class="form-select">
-              <option value="fast">Fast — quick answers</option>
-              <option value="deep">Deep — careful thinking</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Brain URL</label>
-          <input type="text" id="cfg-endpoint" class="form-input" value="https://window-mind-whisper.lovable.app/api/public/brain" />
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Access Key (optional)</label>
-          <input type="password" id="cfg-key" class="form-input" placeholder="X-API-Key if your brain asks for one" />
-        </div>
-
-        <div class="toggle-row">
-          <div>
-            <div style="font-weight: 600; font-size: 0.9rem;">Read replies out loud</div>
-            <div style="font-size: 0.75rem; color: var(--text-dim);">The brain speaks its answers</div>
-          </div>
-          <label class="toggle-switch">
-            <input type="checkbox" id="cfg-speak" checked />
-            <span class="slider"></span>
-          </label>
-        </div>
-
-        <div class="toggle-row">
-          <div>
-            <div style="font-weight: 600; font-size: 0.9rem;">Share page context</div>
-            <div style="font-size: 0.75rem; color: var(--text-dim);">Sends page title &amp; URL so the brain knows where you are</div>
-          </div>
-          <label class="toggle-switch">
-            <input type="checkbox" id="cfg-context" checked />
-            <span class="slider"></span>
-          </label>
-        </div>
-
-        <!-- Live Log -->
-        <div class="form-label" style="margin-top: 4px;">Brain Activity Log</div>
-        <div class="terminal-window" id="terminal-feed">
-          <div class="log-entry">
-            <span class="log-ts">[00:00:00]</span>
-            <span class="log-success">Perceptus Brain ready. Hosted brain pre-selected — just talk.</span>
-          </div>
-        </div>
-
-        <div style="display: flex; gap: 12px;">
-          <button class="btn-secondary" style="flex: 1;" onclick="testBrain()">⚡ Test Brain Ping</button>
-          <a href="https://github.com/NeelAniGamer/perceptus-flow" target="_blank" rel="noopener" class="btn-secondary" style="flex: 1; text-decoration: none;">🖥️ Get the Windows App</a>
-        </div>
-      </section>
-    </main>
-
-    <!-- Perceptus Brain Client Script -->
+    <!-- Theme Initializer -->
     <script>
-      let turnCount = 0;
-      let sessionId = 'web_' + Math.random().toString(36).substring(2, 10);
-      let history = [];
-      let listening = false;
-      let recognizer = null;
-
-      const chatMessages = document.getElementById('chat-messages');
-      const chatInput = document.getElementById('chat-input');
-      const termFeed = document.getElementById('terminal-feed');
-      const micBtn = document.getElementById('btn-mic');
-
-      function logTerminal(type, msg) {
-        const timeStr = new Date().toTimeString().split(' ')[0];
-        const entry = document.createElement('div');
-        entry.className = 'log-entry';
-        entry.innerHTML = `<span class="log-ts">[${timeStr}]</span> <span class="log-${type}">${msg}</span>`;
-        termFeed.appendChild(entry);
-        termFeed.scrollTop = termFeed.scrollHeight;
-      }
-
-      function updateEndpointPreset() {
-        const mode = document.getElementById('cfg-mode').value;
-        const ep = document.getElementById('cfg-endpoint');
-        ep.value = mode === 'cloud'
-          ? 'https://window-mind-whisper.lovable.app/api/public/brain'
-          : 'http://localhost:8080/api/public/brain';
-      }
-
-      function addMessage(role, text, say, meta) {
-        const div = document.createElement('div');
-        div.className = role === 'you' ? 'msg msg-you' : 'msg msg-brain';
-        let html = '';
-        if (role !== 'you' && say) html += `<span class="msg-say">Perceptus</span>`;
-        html += escapeHtml(text || say || '');
-        if (meta) html += `<div class="msg-meta">${meta}</div>`;
-        div.innerHTML = html;
-        chatMessages.appendChild(div);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-      }
-
-      function escapeHtml(s) {
-        return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-      }
-
-      function speak(text) {
-        if (!document.getElementById('cfg-speak').checked || !text || !('speechSynthesis' in window)) return;
-        const u = new SpeechSynthesisUtterance(text);
-        u.rate = 1.05;
-        speechSynthesis.speak(u);
-      }
-
-      async function sendUtterance() {
-        const utterance = chatInput.value.trim();
-        if (!utterance) return;
-        chatInput.value = '';
-        addMessage('you', utterance);
-
-        const endpoint = document.getElementById('cfg-endpoint').value;
-        const apiKey = document.getElementById('cfg-key').value;
-        const speed = document.getElementById('cfg-speed').value;
-        const shareCtx = document.getElementById('cfg-context').checked;
-        const badge = document.getElementById('engine-badge');
-
-        document.getElementById('tele-status').textContent = 'Thinking…';
-        badge.className = 'status-pill status-push';
-        badge.textContent = '◈ THINKING';
-        logTerminal('event', `→ "${utterance.substring(0, 60)}"`);
-
-        const payload = {
-          session: sessionId,
-          mode: speed,
-          utterance: utterance,
-          history: history.slice(-10),
-          os_context: shareCtx ? {
-            os: 'web',
-            app: 'Perceptus Brain Web',
-            window_title: document.title,
-            activity: location.href
-          } : { os: 'web', app: 'Perceptus Brain Web' }
-        };
-
-        const t0 = performance.now();
+      ;(function () {
         try {
-          const headers = { 'Content-Type': 'application/json' };
-          if (apiKey) headers['X-API-Key'] = apiKey;
-          const res = await fetch(endpoint, {
-            method: 'POST',
-            headers,
-            body: JSON.stringify(payload)
-          });
-          const ms = Math.round(performance.now() - t0);
-          if (!res.ok) throw new Error(`brain ${res.status}: ${(await res.text()).substring(0, 120)}`);
-          const data = await res.json();
-
-          const say = data.say || '';
-          const text = data.text || (data.plan && data.plan.text) || '';
-          const intent = (data.intent && data.intent.label) || '';
-          const actions = (data.plan && data.plan.actions) || [];
-
-          addMessage('brain', text || say, say,
-            `${intent ? 'intent: ' + intent + ' · ' : ''}${actions.length} action${actions.length === 1 ? '' : 's'} · ${ms} ms`);
-          speak(say || text);
-
-          history.push({ role: 'user', content: utterance });
-          history.push({ role: 'assistant', content: say || text });
-
-          turnCount++;
-          document.getElementById('tele-turns').textContent = turnCount;
-          document.getElementById('tele-latency').textContent = ms + ' ms';
-          document.getElementById('tele-status').textContent = 'Ready';
-          badge.className = 'status-pill status-live';
-          badge.textContent = '◈ CONNECTED';
-          logTerminal('success', `← reply in ${ms} ms${intent ? ' · intent ' + intent : ''}`);
-        } catch (e) {
-          document.getElementById('tele-status').textContent = 'Error';
-          badge.className = 'status-pill status-offline';
-          badge.textContent = '◌ UNREACHABLE';
-          addMessage('brain', 'I could not reach the brain: ' + e.message, null, 'error');
-          logTerminal('error', 'POST failed: ' + e.message);
-        }
-      }
-
-      async function testBrain() {
-        logTerminal('event', 'Sending test ping to brain…');
-        chatInput.value = 'ping — just reply that you are alive';
-        await sendUtterance();
-      }
-
-      function toggleMic() {
-        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SR) {
-          logTerminal('error', 'Speech recognition not supported in this browser — type instead.');
-          return;
-        }
-        if (listening) {
-          recognizer && recognizer.stop();
-          return;
-        }
-        recognizer = new SR();
-        recognizer.lang = 'en-US';
-        recognizer.interimResults = false;
-        recognizer.maxAlternatives = 1;
-        recognizer.onstart = () => {
-          listening = true;
-          micBtn.classList.add('listening');
-          document.getElementById('tele-status').textContent = 'Listening…';
-          logTerminal('event', 'Listening — speak now.');
-        };
-        recognizer.onresult = (e) => {
-          const said = e.results[0][0].transcript;
-          chatInput.value = said;
-          logTerminal('success', `Heard: "${said.substring(0, 60)}"`);
-          sendUtterance();
-        };
-        recognizer.onerror = (e) => {
-          logTerminal('error', 'Mic error: ' + e.error);
-        };
-        recognizer.onend = () => {
-          listening = false;
-          micBtn.classList.remove('listening');
-          if (document.getElementById('tele-status').textContent === 'Listening…') {
-            document.getElementById('tele-status').textContent = 'Ready';
+          if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode')
           }
-        };
-        recognizer.start();
-      }
-
-      chatInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') sendUtterance();
-      });
+        } catch (e) {}
+      })()
     </script>
+
+    <!-- ──── HERO SECTION ──── -->
+    <header class="game-hero">
+      <canvas id="cyberCanvas"></canvas>
+      <div class="hero-badge">✨ INTRODUCING PERCEPTUS FLOW &bull; Autonomous AI Vision &amp; Spatial Co-Pilot</div>
+      <h1><span id="typewriter-text"></span><span class="cursor-blink">_</span></h1>
+      <div class="hero-reveal" id="heroReveal">
+        <p>Introducing Perceptus Flow: Touchless computing redefined. Control Windows, navigate pages, and air-draw in mid-air using live AI spatial machine vision. Zero extra hardware required — your standard webcam turns into an intelligent spatial gesture sensor.</p>
+        <div class="hero-cta">
+          <a href="download" class="btn-download">Download Perceptus</a>
+          <button class="btn-demo" onclick="startCameraEngine()">▶ Launch Vision Engine</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ──── MACHINE VISION LIVE ENGINE ──── -->
+    <div class="engine-wrapper">
+      <div class="engine-container" id="vision-engine">
+        <div class="engine-hud-header">
+          <div class="hud-title">
+            <span>📷</span>
+            <span>PERCEPTUS // MULTIMODAL AI &amp; SPATIAL VISION ENGINE</span>
+          </div>
+          <div class="hud-chips">
+            <div id="hwBadge" class="hud-badge badge-offline">● DESKTOP LINK: CHECKING...</div>
+            <div id="camStatusBadge" class="hud-badge badge-offline">◌ STANDBY</div>
+            <div id="fpsBadge" class="hud-badge badge-hw" style="font-family: 'Space Mono', monospace;">0 FPS</div>
+          </div>
+        </div>
+
+        <div class="viewport-container">
+          <!-- Cyber Overlay before launch -->
+          <div class="engine-overlay" id="engineOverlay" onclick="startCameraEngine()">
+            <div class="scan-line"></div>
+            <div class="cyber-play-btn">
+              <div class="ring ring-1"></div>
+              <div class="ring ring-2"></div>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+            </div>
+            <div class="overlay-title">INITIALIZE VISION ENGINE</div>
+            <div class="overlay-sub">Click anywhere to enable webcam access and start 60 FPS hand tracking</div>
+            <div class="quick-tags">
+              <div class="q-tag">☝️ Index: Point & Move</div>
+              <div class="q-tag">🤌 Pinch: Click & Select</div>
+              <div class="q-tag">✌️ 2-Fingers: Zoom & Scroll</div>
+              <div class="q-tag">✍️ Air-Draw on Canvas</div>
+            </div>
+          </div>
+
+          <canvas id="output_canvas" width="1280" height="720"></canvas>
+          <video id="webcam_video" playsinline></video>
+        </div>
+
+        <!-- Telemetry HUD Strip -->
+        <div class="hud-telemetry-grid">
+          <div class="tele-box">
+            <span class="tele-label">Detected Gesture</span>
+            <span class="tele-val" id="teleGesture">IDLE</span>
+          </div>
+
+          <div class="tele-box">
+            <span class="tele-label">Fingers State (T I M R P)</span>
+            <div class="finger-indicators">
+              <div class="f-dot" id="f0">T</div>
+              <div class="f-dot" id="f1">I</div>
+              <div class="f-dot" id="f2">M</div>
+              <div class="f-dot" id="f3">R</div>
+              <div class="f-dot" id="f4">P</div>
+            </div>
+          </div>
+
+          <div class="tele-box">
+            <span class="tele-label">Cursor Position (X, Y)</span>
+            <span class="tele-val" id="teleCoords">0, 0</span>
+          </div>
+
+          <div class="tele-box">
+            <span class="tele-label">Pinch Distance</span>
+            <div class="pinch-bar-wrap">
+              <div class="pinch-bar-fill" id="pinchBarFill"></div>
+            </div>
+          </div>
+
+          <div class="tele-box">
+            <span class="tele-label">Total Clicks</span>
+            <span class="tele-val" id="teleClicks">0</span>
+          </div>
+        </div>
+
+        <!-- Hardware & Routing Dock -->
+        <div class="engine-controls-bar">
+          <div class="routing-device-group">
+            <div class="device-select-item">
+              <label for="cameraSelect" class="device-lbl">📷 CAM:</label>
+              <select id="cameraSelect" class="control-select" onchange="changeCamera()">
+                <option value="">Default Camera</option>
+              </select>
+            </div>
+
+            <div class="device-select-item">
+              <label for="audioSelect" class="device-lbl">🎙️ MIC:</label>
+              <select id="audioSelect" class="control-select" onchange="changeAudioInput()">
+                <option value="">Default Microphone</option>
+              </select>
+            </div>
+
+            <div class="device-select-item">
+              <label for="ttsVoiceSelect" class="device-lbl">🔊 VOICE:</label>
+              <select id="ttsVoiceSelect" class="control-select" onchange="changeTTSVoice()">
+                <option value="">Default Voice</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="routing-actions-group">
+            <button class="control-chip-btn active" id="btnMirrorCam" onclick="toggleCamMirror()" title="Flip camera horizontally">
+              <span>↔️ Mirror</span>
+            </button>
+            <button class="control-chip-btn active" id="btnSoundFX" onclick="toggleSoundFX()" title="Toggle audio sound effects">
+              <span>🔊 SFX: ON</span>
+            </button>
+            <button class="control-btn" id="btnToggleTracking" onclick="toggleTracking()">Start Engine</button>
+            <button class="control-btn btn-secondary" onclick="reconnectDesktopLink()">Probe Desktop ws://</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ──── AUTONOMOUS MULTIMODAL AI AGENT ──── -->
+      <div class="ai-agent-console">
+        <div class="ai-agent-header">
+          <div class="ai-badge-group">
+            <span class="ai-pulse-dot"></span>
+            <span class="ai-title">AUTONOMOUS MULTIMODAL AI AGENT</span>
+            <span class="ai-chip" id="aiModelBadge">GEMINI 2.0 FLASH / COGNITIVE VISION</span>
+          </div>
+          <div class="ai-status-tag" id="aiVoiceStatus">● MIC STANDBY</div>
+        </div>
+
+        <p class="ai-desc">
+          Speak or type any command in natural language. The AI perceives your screen and hand movements, grounds visual UI targets, and autonomously completes the action across your browser and desktop.
+        </p>
+
+        <!-- Voice & Command Input Row -->
+        <div class="ai-command-row">
+          <button class="ai-mic-btn" id="btnVoiceMic" onclick="toggleVoiceListening()" title="Click or hold Space to talk">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mic-icon">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+              <line x1="12" y1="19" x2="12" y2="23"/>
+              <line x1="8" y1="23" x2="16" y2="23"/>
+            </svg>
+            <span id="micBtnLabel">Hold Space to Talk</span>
+            <div class="mic-wave" id="micWave">
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+          </button>
+
+          <div class="ai-input-wrap">
+            <input type="text" id="aiPromptInput" class="ai-input" placeholder='E.g. "Click Quantum Pulse", "Draw a star", "Clear canvas", "Scroll to features", "Open Notepad"' onkeydown="if(event.key==='Enter') runAITask();" />
+            <button class="ai-run-btn" id="btnRunTask" onclick="runAITask()">
+              <span>Run Task</span>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+          </div>
+
+          <button class="ai-screen-btn" id="btnShareScreen" onclick="toggleScreenShare()" title="Share display screen for real-time visual grounding">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            <span id="screenShareLabel">Share Screen Vision</span>
+          </button>
+        </div>
+
+        <!-- Quick Command Chips -->
+        <div class="ai-quick-chips">
+          <span class="chip-label">QUICK TASKS:</span>
+          <button class="ai-chip-btn" onclick="executeQuickTask('Click Quantum Pulse target')">⚡ "Click Quantum Pulse"</button>
+          <button class="ai-chip-btn" onclick="executeQuickTask('Click Hyperdrive Matrix target')">🚀 "Click Hyperdrive Matrix"</button>
+          <button class="ai-chip-btn" onclick="executeQuickTask('Draw a glowing cyber star on the canvas')">⭐ "Draw a Star"</button>
+          <button class="ai-chip-btn" onclick="executeQuickTask('Clear the drawing canvas')">🧹 "Clear Canvas"</button>
+          <button class="ai-chip-btn" onclick="executeQuickTask('Scroll down to features')">📜 "Scroll to Features"</button>
+          <button class="ai-chip-btn" onclick="executeQuickTask('Open Notepad')">💻 "Open Notepad (OS)"</button>
+        </div>
+
+        <!-- Real-time Cognitive Activity Stream -->
+        <div class="ai-neural-stream">
+          <div class="stream-header">
+            <span class="stream-title">⚡ REAL-TIME COGNITIVE ACTIVITY STREAM</span>
+            <span class="stream-target" id="streamGroundedTarget">GROUNDED TARGET: NONE</span>
+          </div>
+          <div class="stream-log" id="aiStreamLog">
+            <div class="log-line info">[INIT] Multimodal AI Agent ready. Spatial vision grounding &amp; voice listener active.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ──── INTERACTIVE TEST PLAYGROUND ──── -->
+      <div class="playground-box">
+        <div class="playground-title">
+          <span>🎮 INTERACTIVE TEST PLAYGROUND</span>
+          <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 400;">POINT WITH FINGER & PINCH TO INTERACT</span>
+        </div>
+        <p class="playground-desc">
+          Test your hand gestures on live UI elements below. Point your index finger to position the glowing cursor over any target, then bring your thumb and index fingertip together to pinch-click!
+        </p>
+
+        <div class="playground-grid">
+          <!-- Click Targets Panel -->
+          <div class="targets-panel">
+            <div style="font-family: 'Space Mono', monospace; font-size: 0.8rem; color: var(--primary); font-weight: 700;">AIR-CLICK TARGETS</div>
+            <button class="target-btn" id="tBtn1" onclick="handleTargetClick(this, 'Quantum Pulse')">
+              <span>⚡ Quantum Pulse</span>
+              <span class="target-counter" id="tc1">0 clicks</span>
+            </button>
+            <button class="target-btn" id="tBtn2" onclick="handleTargetClick(this, 'Hyperdrive Matrix')">
+              <span>🚀 Hyperdrive Matrix</span>
+              <span class="target-counter" id="tc2">0 clicks</span>
+            </button>
+            <button class="target-btn" id="tBtn3" onclick="handleTargetClick(this, 'Neural Uplink')">
+              <span>🧠 Neural Uplink</span>
+              <span class="target-counter" id="tc3">0 clicks</span>
+            </button>
+          </div>
+
+          <!-- Air-Drawing Studio -->
+          <div class="drawing-panel">
+            <div class="drawing-header">
+              <span>✍️ AIR-DRAWING PAD (PINCH TO DRAW)</span>
+              <div class="drawing-actions">
+                <button class="btn-clear" onclick="clearAirCanvas()">Clear Canvas</button>
+              </div>
+            </div>
+            <canvas id="air_canvas" width="600" height="220"></canvas>
+            <div style="font-size: 0.75rem; color: var(--text-muted); font-family: 'Space Mono', monospace;">
+              Move index finger while pinching to paint glowing cyber strokes in mid-air.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ──── FEATURES GRID (MATCHING ATI / SOLAR) ──── -->
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="icon-wrapper">⚡</div>
+        <h3>Sub-Millisecond Tracking</h3>
+        <p>Embedded 2D Kalman filter & exponential moving average algorithms suppress human fingertip micro-jitter for buttery 60 FPS accuracy.</p>
+        <div class="tech-tags">
+          <span class="tech-tag tag-teal">MediaPipe</span>
+          <span class="tech-tag tag-gold">Kalman Filter</span>
+          <span class="tech-tag tag-cyan">60 FPS</span>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <div class="icon-wrapper">👁️</div>
+        <h3>Zero Extra Hardware</h3>
+        <p>No Leap Motion or expensive depth sensors needed. Operates seamlessly on standard 720p or 1080p webcams with real-time 3D hand topology.</p>
+        <div class="tech-tags">
+          <span class="tech-tag tag-teal">WebRTC</span>
+          <span class="tech-tag tag-gold">HTML5 Canvas</span>
+          <span class="tech-tag tag-cyan">Browser Native</span>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <div class="icon-wrapper">🖥️</div>
+        <h3>Real Windows Hardware Link</h3>
+        <p>Connects directly via local WebSocket to <code>PerceptusFlow.exe</code> and <code>mouse_server.py</code> to control the native OS mouse across all desktop apps.</p>
+        <div class="tech-tags">
+          <span class="tech-tag tag-teal">Win32 API</span>
+          <span class="tech-tag tag-gold">WebSockets</span>
+          <span class="tech-tag tag-cyan">PyAutoGUI</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ──── GESTURE COMMAND REFERENCE ──── -->
+    <div class="gesture-cheat-sheet">
+      <div class="gallery-title" style="margin: 20px 0 10px;">Gesture Command Reference</div>
+      <p style="text-align: center; color: var(--text-muted); font-size: 0.95rem; margin-bottom: 25px;">
+        Standard spatial heuristics recognized by the machine vision model.
+      </p>
+      <div class="cheat-grid">
+        <div class="cheat-card">
+          <div class="c-icon" style="color: var(--accent-gold);">☝️</div>
+          <div class="c-meta">
+            <span class="c-title" style="color: var(--accent-gold);">Index Point</span>
+            <span class="c-desc">Move cursor anywhere on screen with smooth Kalman stabilization.</span>
+          </div>
+        </div>
+
+        <div class="cheat-card">
+          <div class="c-icon" style="color: var(--primary);">🤌</div>
+          <div class="c-meta">
+            <span class="c-title" style="color: var(--primary);">Pinch (Index+Thumb)</span>
+            <span class="c-desc">Left click on any interactive target or trigger on-screen items.</span>
+          </div>
+        </div>
+
+        <div class="cheat-card">
+          <div class="c-icon" style="color: var(--accent-orange);">✊</div>
+          <div class="c-meta">
+            <span class="c-title" style="color: var(--accent-orange);">Pinch & Hold</span>
+            <span class="c-desc">Grab and drag windows, scrollbars, or draw continuous lines on canvas.</span>
+          </div>
+        </div>
+
+        <div class="cheat-card">
+          <div class="c-icon" style="color: var(--accent-emerald);">✌️</div>
+          <div class="c-meta">
+            <span class="c-title" style="color: var(--accent-emerald);">Two Fingers Up</span>
+            <span class="c-desc">Vertical page navigation and smooth scrolling up and down.</span>
+          </div>
+        </div>
+
+        <div class="cheat-card">
+          <div class="c-icon" style="color: var(--accent-cyan);">⋮⋮</div>
+          <div class="c-meta">
+            <span class="c-title" style="color: var(--accent-cyan);">4 Fingers Up</span>
+            <span class="c-desc">Fast scrolling through long documents, logs, and web pages.</span>
+          </div>
+        </div>
+
+        <div class="cheat-card">
+          <div class="c-icon" style="color: var(--accent-violet);">👍</div>
+          <div class="c-meta">
+            <span class="c-title" style="color: var(--accent-violet);">Thumb Up</span>
+            <span class="c-desc">Right click context menu trigger at the active cursor position.</span>
+          </div>
+        </div>
+
+        <div class="cheat-card">
+          <div class="c-icon" style="color: var(--text-muted);">✋</div>
+          <div class="c-meta">
+            <span class="c-title">Open Palm</span>
+            <span class="c-desc">Pause / standby mode. Releases mouse focus and resets tracking.</span>
+          </div>
+        </div>
+
+        <div class="cheat-card">
+          <div class="c-icon" style="color: var(--accent-rose);">✊</div>
+          <div class="c-meta">
+            <span class="c-title" style="color: var(--accent-rose);">Closed Fist</span>
+            <span class="c-desc">Full idle mode. Suppresses unintended clicks and motions.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ──── SYSTEM INTERFACES SHOWCASE GALLERY ──── -->
+    <div class="gallery-title">System Interfaces</div>
+    <div class="cyber-showcase-container">
+      <div class="main-display">
+        <div class="display-corner tl"></div>
+        <div class="display-corner tr"></div>
+        <div class="display-corner bl"></div>
+        <div class="display-corner br"></div>
+        <img id="mainShowcaseImg" src="gesture.png" alt="Perceptus Flow Main Display" width="800" height="438" loading="lazy" decoding="async" />
+        <div class="scanline"></div>
+      </div>
+      <div class="thumbnail-track">
+        <div class="thumb-card active" onclick="updateShowcase(this, 'gesture.png')">
+          <img src="gesture.png" alt="Perceptus Flow Interface" width="800" height="438" loading="lazy" decoding="async" />
+        </div>
+      </div>
+    </div>
+
+    <!-- ──── SHARED CLASS OF LEARNERS FOOTER ──── -->
     <footer class="sf">
       <div class="fi">
         <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
@@ -752,9 +2204,1065 @@
           <a href="feedback">Feedback</a>
           <a href="download">Downloads</a>
         </div>
-        <div class="fc">&copy; 2026 Neel, Ansh, Aarush &amp; Yash Raj.</div>
+        <div class="fc">&copy; 2026 Neel, Ansh, Aarush &amp; Yash Raj. All rights reserved.</div>
       </div>
     </footer>
+
+    <!-- Three.js 3D Procedural Background -->
     <script defer src="col-3d.js"></script>
+
+    <!-- ──── ENGINE JAVASCRIPT LOGIC ──── -->
+    <script>
+      'use strict';
+
+      // 1. TYPEWRITER HERO ANIMATION
+      const textToType = '> INTRODUCING PERCEPTUS_ /'
+      const typeTarget = document.getElementById('typewriter-text')
+      const revealTarget = document.getElementById('heroReveal')
+      let typeIndex = 0
+      function typeWriter() {
+        if (typeIndex < textToType.length) {
+          typeTarget.innerHTML += textToType.charAt(typeIndex)
+          typeIndex++
+          setTimeout(typeWriter, 55)
+        } else {
+          setTimeout(() => {
+            if (revealTarget) revealTarget.classList.add('visible')
+          }, 300)
+        }
+      }
+
+      // 2. CYBER CANVAS PARTICLES (NEON SPATIAL THEME)
+      const cCanvas = document.getElementById('cyberCanvas')
+      const cCtx = cCanvas.getContext('2d')
+      let cParticles = []
+      const spatialGlyphs = ['[+]', '⟁', '⊡', '⟨•⟩', '⚡', '01', '◈', '🖐️', '⌥', 'λ']
+
+      function resizeCyberCanvas() {
+        cCanvas.width = window.innerWidth
+        cCanvas.height = document.querySelector('.game-hero').offsetHeight
+      }
+
+      class SpatialParticle {
+        constructor() {
+          this.x = Math.random() * cCanvas.width
+          this.y = cCanvas.height + Math.random() * 80
+          this.speed = Math.random() * 0.45 + 0.2
+          this.text = spatialGlyphs[Math.floor(Math.random() * spatialGlyphs.length)]
+          this.opacity = Math.random() * 0.25 + 0.1
+          this.size = Math.random() * 9 + 11
+        }
+        update() {
+          this.y -= this.speed
+          if (this.y < -20) {
+            this.y = cCanvas.height + 20
+            this.x = Math.random() * cCanvas.width
+          }
+        }
+        draw() {
+          cCtx.fillStyle = `rgba(0, 255, 204, ${this.opacity})`
+          cCtx.font = `${this.size}px 'Space Mono', monospace`
+          cCtx.fillText(this.text, this.x, this.y)
+        }
+      }
+
+      function initCyberParticles() {
+        cParticles = []
+        for (let i = 0; i < 35; i++) cParticles.push(new SpatialParticle())
+      }
+
+      function animateCyberParticles() {
+        cCtx.clearRect(0, 0, cCanvas.width, cCanvas.height)
+        cParticles.forEach((p) => {
+          p.update()
+          p.draw()
+        })
+        requestAnimationFrame(animateCyberParticles)
+      }
+      window.addEventListener('resize', resizeCyberCanvas)
+
+      // 3. SHOWCASE SWITCHER
+      function updateShowcase(element, imgSrc) {
+        document.querySelectorAll('.thumb-card').forEach((t) => t.classList.remove('active'))
+        element.classList.add('active')
+        const mainImg = document.getElementById('mainShowcaseImg')
+        mainImg.style.opacity = 0
+        setTimeout(() => {
+          mainImg.src = imgSrc
+          mainImg.style.opacity = 1
+        }, 200)
+      }
+
+      // Close dropdown on outside click
+      window.addEventListener('click', (e) => {
+        if (!e.target.matches('.dropdown-btn') && !e.target.closest('.dropdown-btn')) {
+          document.querySelectorAll('.dropdown').forEach((d) => d.classList.remove('active'))
+        }
+      })
+
+      // 4. WEBSOCKET DESKTOP BRIDGE (PORTS 8765 & 9999)
+      let wsDesktop = null
+      let isDesktopConnected = false
+      const hwBadge = document.getElementById('hwBadge')
+
+      function connectDesktopWs() {
+        const ports = [8765, 9999]
+        let currentPortIdx = 0
+
+        function tryConnect() {
+          if (isDesktopConnected) return
+          const port = ports[currentPortIdx]
+          hwBadge.textContent = `● CHECKING WS://${port}...`
+          hwBadge.className = 'hud-badge badge-hw'
+
+          try {
+            const socket = new WebSocket(`ws://127.0.0.1:${port}`)
+            socket.onopen = () => {
+              wsDesktop = socket
+              isDesktopConnected = true
+              hwBadge.textContent = `● DESKTOP LINK ACTIVE (${port})`
+              hwBadge.className = 'hud-badge badge-live'
+              logAI(`[BRIDGE] Connected to local desktop agent on ws://127.0.0.1:${port}`, 'info')
+            }
+            socket.onmessage = (event) => {
+              try {
+                const msg = JSON.parse(event.data)
+                if (msg.type === 'ai_task_result' || msg.status === 'success') {
+                  const replyText = msg.say || msg.result || 'Task executed on desktop OS.'
+                  logAI(`[DESKTOP OS] ${replyText}`, 'action')
+                  speakAI(replyText)
+                }
+              } catch (e) {}
+            }
+            socket.onerror = () => {
+              socket.close()
+            }
+            socket.onclose = () => {
+              if (wsDesktop === socket) {
+                wsDesktop = null
+                isDesktopConnected = false
+                hwBadge.textContent = '○ BROWSER MODE (NO WS)'
+                hwBadge.className = 'hud-badge badge-offline'
+              }
+              currentPortIdx = (currentPortIdx + 1) % ports.length
+            }
+          } catch (e) {
+            hwBadge.textContent = '○ BROWSER MODE'
+            hwBadge.className = 'hud-badge badge-offline'
+          }
+        }
+
+        tryConnect()
+      }
+
+      function reconnectDesktopLink() {
+        isDesktopConnected = false
+        if (wsDesktop) {
+          try { wsDesktop.close(); } catch (e) {}
+          wsDesktop = null
+        }
+        connectDesktopWs()
+      }
+
+      // 5. MEDIAPIPE MACHINE VISION & SKELETON TRACKING
+      const videoEl = document.getElementById('webcam_video')
+      const outCanvas = document.getElementById('output_canvas')
+      const outCtx = outCanvas.getContext('2d')
+      const vCursor = document.getElementById('virtual-cursor')
+      const overlay = document.getElementById('engineOverlay')
+      const camStatusBadge = document.getElementById('camStatusBadge')
+      const fpsBadge = document.getElementById('fpsBadge')
+      const teleGesture = document.getElementById('teleGesture')
+      const teleCoords = document.getElementById('teleCoords')
+      const pinchBarFill = document.getElementById('pinchBarFill')
+      const teleClicks = document.getElementById('teleClicks')
+      const btnToggle = document.getElementById('btnToggleTracking')
+      const cameraSelect = document.getElementById('cameraSelect')
+      const audioSelect = document.getElementById('audioSelect')
+      const ttsVoiceSelect = document.getElementById('ttsVoiceSelect')
+      const btnMirrorCam = document.getElementById('btnMirrorCam')
+      const btnSoundFX = document.getElementById('btnSoundFX')
+
+      let handsDetector = null
+      let cameraMediaStream = null
+      let isTrackingActive = false
+      let animFrameId = null
+
+      // Tracking state & smoothing
+      let curX = window.innerWidth / 2
+      let curY = window.innerHeight / 2
+      let isPinching = false
+      let clickCount = 0
+      let lastScrollY = null
+      let frameCount = 0
+      let lastFpsTime = performance.now()
+
+      // Air-Drawing Pad
+      const airCanvas = document.getElementById('air_canvas')
+      const airCtx = airCanvas.getContext('2d')
+      let lastAirX = null
+      let lastAirY = null
+
+      function clearAirCanvas() {
+        airCtx.clearRect(0, 0, airCanvas.width, airCanvas.height)
+      }
+
+      // Audio Click Feedback
+      let audioCtx = null
+      let isSoundFXEnabled = true
+      function playClickSound() {
+        if (!isSoundFXEnabled) return
+        try {
+          if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+          const osc = audioCtx.createOscillator()
+          const gain = audioCtx.createGain()
+          osc.type = 'sine'
+          osc.frequency.setValueAtTime(880, audioCtx.currentTime)
+          osc.frequency.exponentialRampToValueAtTime(320, audioCtx.currentTime + 0.05)
+          gain.gain.setValueAtTime(0.2, audioCtx.currentTime)
+          gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.05)
+          osc.connect(gain)
+          gain.connect(audioCtx.destination)
+          osc.start()
+          osc.stop(audioCtx.currentTime + 0.05)
+        } catch (e) {}
+      }
+
+      function toggleSoundFX() {
+        isSoundFXEnabled = !isSoundFXEnabled
+        if (btnSoundFX) {
+          btnSoundFX.innerHTML = isSoundFXEnabled ? '<span>🔊 SFX: ON</span>' : '<span>🔇 SFX: OFF</span>'
+          btnSoundFX.classList.toggle('active', isSoundFXEnabled)
+        }
+        logAI(`[AUDIO] Sound effects ${isSoundFXEnabled ? 'activated' : 'muted'}.`, 'system')
+      }
+
+      let isCamMirrored = true
+      function toggleCamMirror() {
+        isCamMirrored = !isCamMirrored
+        if (videoEl) {
+          videoEl.style.transform = isCamMirrored ? 'scaleX(-1)' : 'none'
+        }
+        if (btnMirrorCam) {
+          btnMirrorCam.classList.toggle('active', isCamMirrored)
+        }
+        logAI(`[CAMERA] Mirror horizontal flip set to ${isCamMirrored ? 'Enabled' : 'Disabled'}.`, 'vision')
+      }
+
+      // Skeletal connections for drawing
+      const HAND_BONES = [
+        [0, 1], [1, 2], [2, 3], [3, 4],       // Thumb
+        [0, 5], [5, 6], [6, 7], [7, 8],       // Index
+        [5, 9], [9, 10], [10, 11], [11, 12],  // Middle
+        [9, 13], [13, 14], [14, 15], [15, 16],// Ring
+        [13, 17], [17, 18], [18, 19], [19, 20],// Pinky
+        [0, 17]                               // Palm Base
+      ]
+
+      const FINGER_COLORS = {
+        4: '#fb923c',  // Thumb (Orange)
+        8: '#00ffcc',  // Index (Teal)
+        12: '#4ade80', // Middle (Green)
+        16: '#38bdf8', // Ring (Cyan)
+        20: '#c084fc'  // Pinky (Purple)
+      }
+
+      // Initialize MediaPipe Hands
+      function initMediaPipe() {
+        if (typeof Hands === 'undefined') {
+          console.warn('MediaPipe Hands not yet loaded, retrying...')
+          setTimeout(initMediaPipe, 300)
+          return
+        }
+
+        handsDetector = new Hands({
+          locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+        })
+
+        handsDetector.setOptions({
+          maxNumHands: 1,
+          modelComplexity: 1,
+          minDetectionConfidence: 0.65,
+          minTrackingConfidence: 0.65
+        })
+
+        handsDetector.onResults(onHandResults)
+      }
+
+      // Populate available hardware devices (Cameras, Microphones, TTS Voices)
+      async function populateDevices() {
+        try {
+          const devices = await navigator.mediaDevices.enumerateDevices()
+
+          // 1. Video Cameras
+          if (cameraSelect) {
+            const videoDevices = devices.filter((d) => d.kind === 'videoinput')
+            const curCam = cameraSelect.value
+            cameraSelect.innerHTML = ''
+            videoDevices.forEach((device, index) => {
+              const opt = document.createElement('option')
+              opt.value = device.deviceId
+              opt.textContent = device.label || `Camera ${index + 1}`
+              cameraSelect.appendChild(opt)
+            })
+            if (curCam && videoDevices.some((d) => d.deviceId === curCam)) cameraSelect.value = curCam
+          }
+
+          // 2. Audio Microphones
+          if (audioSelect) {
+            const audioDevices = devices.filter((d) => d.kind === 'audioinput')
+            const curAudio = audioSelect.value
+            audioSelect.innerHTML = ''
+            audioDevices.forEach((device, index) => {
+              const opt = document.createElement('option')
+              opt.value = device.deviceId
+              opt.textContent = device.label || `Microphone ${index + 1}`
+              audioSelect.appendChild(opt)
+            })
+            if (curAudio && audioDevices.some((d) => d.deviceId === curAudio)) audioSelect.value = curAudio
+          }
+
+          // 3. TTS Voices
+          populateTTSVoices()
+        } catch (e) {
+          console.warn('Device enumeration notice:', e)
+        }
+      }
+      const populateCameras = populateDevices
+
+      function populateTTSVoices() {
+        if (!('speechSynthesis' in window) || !ttsVoiceSelect) return
+        const voices = window.speechSynthesis.getVoices()
+        if (voices.length === 0) return
+        const curVoice = ttsVoiceSelect.value
+        ttsVoiceSelect.innerHTML = ''
+        voices.forEach((v) => {
+          const opt = document.createElement('option')
+          opt.value = v.name
+          const langTag = v.lang ? ` [${v.lang}]` : ''
+          opt.textContent = `${v.name}${langTag}`
+          ttsVoiceSelect.appendChild(opt)
+        })
+        if (curVoice && voices.some((v) => v.name === curVoice)) ttsVoiceSelect.value = curVoice
+      }
+
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.onvoiceschanged = populateTTSVoices
+      }
+
+      function changeAudioInput() {
+        if (audioSelect && audioSelect.value) {
+          const label = audioSelect.options[audioSelect.selectedIndex]?.text || 'Microphone'
+          logAI(`[DEVICE] Active microphone routed to: ${label}`, 'voice')
+        }
+      }
+
+      function changeTTSVoice() {
+        if (ttsVoiceSelect && ttsVoiceSelect.value) {
+          logAI(`[DEVICE] Speech synthesis voice set to: ${ttsVoiceSelect.value}`, 'voice')
+          speakAI('Voice synthesis profile active.')
+        }
+      }
+
+      async function startCameraEngine() {
+        if (overlay) overlay.classList.add('hidden')
+        if (isTrackingActive) return
+
+        try {
+          camStatusBadge.textContent = '● INITIALIZING...'
+          camStatusBadge.className = 'hud-badge badge-live'
+
+          const constraints = {
+            video: {
+              deviceId: cameraSelect.value ? { exact: cameraSelect.value } : undefined,
+              width: { ideal: 1280 },
+              height: { ideal: 720 },
+              frameRate: { ideal: 60, min: 30 }
+            }
+          }
+
+          cameraMediaStream = await navigator.mediaDevices.getUserMedia(constraints)
+          videoEl.srcObject = cameraMediaStream
+          await videoEl.play()
+
+          isTrackingActive = true
+          vCursor.style.display = 'block'
+          camStatusBadge.textContent = '● CAMERA LIVE'
+          camStatusBadge.className = 'hud-badge badge-live'
+          btnToggle.textContent = 'Stop Engine'
+
+          await populateCameras()
+          connectDesktopWs()
+          requestVideoFrame()
+        } catch (err) {
+          console.error('Camera error:', err)
+          camStatusBadge.textContent = '✕ PERMISSION DENIED'
+          camStatusBadge.className = 'hud-badge badge-offline'
+          if (overlay) overlay.classList.remove('hidden')
+          alert('Could not access camera. Please allow webcam permission in your browser address bar.')
+        }
+      }
+
+      function stopCameraEngine() {
+        isTrackingActive = false
+        if (animFrameId) cancelAnimationFrame(animFrameId)
+        if (cameraMediaStream) {
+          cameraMediaStream.getTracks().forEach((t) => t.stop())
+          cameraMediaStream = null
+        }
+        if (overlay) overlay.classList.remove('hidden')
+        vCursor.style.display = 'none'
+        camStatusBadge.textContent = '◌ STANDBY'
+        camStatusBadge.className = 'hud-badge badge-offline'
+        btnToggle.textContent = 'Start Engine'
+      }
+
+      function toggleTracking() {
+        if (isTrackingActive) stopCameraEngine()
+        else startCameraEngine()
+      }
+
+      async function changeCamera() {
+        if (isTrackingActive) {
+          stopCameraEngine()
+          await startCameraEngine()
+        }
+      }
+
+      // Frame Processing Loop
+      async function requestVideoFrame() {
+        if (!isTrackingActive) return
+
+        if (videoEl.readyState >= 2 && handsDetector) {
+          try {
+            await handsDetector.send({ image: videoEl })
+          } catch (e) {}
+        }
+
+        // FPS Calculation
+        frameCount++
+        const now = performance.now()
+        if (now - lastFpsTime >= 1000) {
+          const fps = Math.round((frameCount * 1000) / (now - lastFpsTime))
+          fpsBadge.textContent = `${fps} FPS`
+          frameCount = 0
+          lastFpsTime = now
+        }
+
+        animFrameId = requestAnimationFrame(requestVideoFrame)
+      }
+
+      // Hand Results Handler
+      function onHandResults(results) {
+        outCtx.save()
+        outCtx.clearRect(0, 0, outCanvas.width, outCanvas.height)
+
+        // Draw camera image
+        if (results.image) {
+          outCtx.drawImage(results.image, 0, 0, outCanvas.width, outCanvas.height)
+        }
+
+        if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+          const lm = results.multiHandLandmarks[0]
+
+          // 1. Draw Skeleton Bones
+          outCtx.strokeStyle = 'rgba(0, 255, 204, 0.7)'
+          outCtx.lineWidth = 4
+          outCtx.shadowColor = '#00ffcc'
+          outCtx.shadowBlur = 12
+
+          HAND_BONES.forEach(([i, j]) => {
+            outCtx.beginPath()
+            outCtx.moveTo(lm[i].x * outCanvas.width, lm[i].y * outCanvas.height)
+            outCtx.lineTo(lm[j].x * outCanvas.width, lm[j].y * outCanvas.height)
+            outCtx.stroke()
+          })
+
+          // 2. Draw Joints & Rings
+          outCtx.shadowBlur = 0
+          lm.forEach((pt, idx) => {
+            const x = pt.x * outCanvas.width
+            const y = pt.y * outCanvas.height
+
+            outCtx.beginPath()
+            outCtx.arc(x, y, FINGER_COLORS[idx] ? 7 : 4, 0, 2 * Math.PI)
+            outCtx.fillStyle = FINGER_COLORS[idx] || '#ffffff'
+            outCtx.fill()
+            outCtx.strokeStyle = '#000'
+            outCtx.lineWidth = 2
+            outCtx.stroke()
+          })
+
+          // 3. Normalized Hand Metrics
+          const indexTip = lm[8]
+          const thumbTip = lm[4]
+          const middleTip = lm[12]
+          const ringTip = lm[16]
+          const pinkyTip = lm[20]
+
+          // Finger Extension Heuristics
+          const isThumbUp = thumbTip.y < lm[3].y
+          const isIndexUp = indexTip.y < lm[6].y
+          const isMiddleUp = middleTip.y < lm[10].y
+          const isRingUp = ringTip.y < lm[14].y
+          const isPinkyUp = pinkyTip.y < lm[18].y
+
+          // Update Finger Indicator UI
+          document.getElementById('f0').className = isThumbUp ? 'f-dot active' : 'f-dot'
+          document.getElementById('f1').className = isIndexUp ? 'f-dot active' : 'f-dot'
+          document.getElementById('f2').className = isMiddleUp ? 'f-dot active' : 'f-dot'
+          document.getElementById('f3').className = isRingUp ? 'f-dot active' : 'f-dot'
+          document.getElementById('f4').className = isPinkyUp ? 'f-dot active' : 'f-dot'
+
+          // Pinch Distance (Thumb to Index)
+          const pinchDist = Math.hypot(thumbTip.x - indexTip.x, thumbTip.y - indexTip.y)
+          const pinchNorm = Math.min(1.0, Math.max(0.0, (0.12 - pinchDist) / 0.08))
+          pinchBarFill.style.width = `${Math.round(pinchNorm * 100)}%`
+
+          // 4. Cursor Movement with Kalman/EMA Smoothing
+          const targetX = (1 - indexTip.x) * window.innerWidth
+          const targetY = indexTip.y * window.innerHeight
+          const emaAlpha = 0.35
+
+          curX += (targetX - curX) * emaAlpha
+          curY += (targetY - curY) * emaAlpha
+
+          // Magnetic Target Snapping (Spatial UI Grounding)
+          let candidateTarget = null
+          const snapEls = document.querySelectorAll(
+            '.target-btn, .control-btn, .btn-clear, .ai-chip-btn, .ai-run-btn, .ai-mic-btn, #cameraSelect, #btnShareScreen, .thumb-card'
+          )
+          let minDist = 50
+          snapEls.forEach((el) => {
+            const rect = el.getBoundingClientRect()
+            const cx = rect.left + rect.width / 2
+            const cy = rect.top + rect.height / 2
+            const d = Math.hypot(curX - cx, curY - cy)
+            if (d < minDist) {
+              minDist = d
+              candidateTarget = el
+            }
+          })
+
+          if (candidateTarget) {
+            const rect = candidateTarget.getBoundingClientRect()
+            const cx = rect.left + rect.width / 2
+            const cy = rect.top + rect.height / 2
+            curX += (cx - curX) * 0.45
+            curY += (cy - curY) * 0.45
+            if (activeLockedElement && activeLockedElement !== candidateTarget) {
+              activeLockedElement.classList.remove('magnetic-locked')
+            }
+            candidateTarget.classList.add('magnetic-locked')
+            activeLockedElement = candidateTarget
+            const tName = (candidateTarget.innerText || candidateTarget.getAttribute('aria-label') || 'ELEMENT').trim().replace(/\n/g, ' ')
+            const groundBadge = document.getElementById('streamGroundedTarget')
+            if (groundBadge) groundBadge.textContent = `GROUNDED: ${tName.slice(0, 18).toUpperCase()}`
+          } else if (activeLockedElement) {
+            activeLockedElement.classList.remove('magnetic-locked')
+            activeLockedElement = null
+            const groundBadge = document.getElementById('streamGroundedTarget')
+            if (groundBadge) groundBadge.textContent = 'GROUNDED: NONE'
+          }
+
+          vCursor.style.left = `${curX}px`
+          vCursor.style.top = `${curY}px`
+          teleCoords.textContent = `${Math.round(curX)}, ${Math.round(curY)}`
+
+          // 5. Gesture Heuristics Evaluation
+          let currentGesture = 'POINT'
+
+          // PINCH CLICK (Thumb & Index close)
+          if (pinchDist < 0.055) {
+            currentGesture = 'PINCH CLICK'
+            if (!isPinching) {
+              isPinching = true
+              clickCount++
+              teleClicks.textContent = clickCount
+              triggerAirClick(curX, curY)
+            }
+          } else {
+            isPinching = false
+          }
+
+          // VERTICAL SCROLL (2 Fingers Up or 4 Fingers Up)
+          if ((isIndexUp && isMiddleUp && !isRingUp && !isPinkyUp) || (isIndexUp && isMiddleUp && isRingUp && isPinkyUp)) {
+            currentGesture = 'SCROLL'
+            const scrollCenterY = (indexTip.y + middleTip.y) / 2
+            if (lastScrollY !== null) {
+              const deltaY = (scrollCenterY - lastScrollY) * window.innerHeight
+              window.scrollBy({ top: deltaY * 2.2, behavior: 'auto' })
+            }
+            lastScrollY = scrollCenterY
+          } else {
+            lastScrollY = null
+          }
+
+          // THUMB UP (Right Click)
+          if (isThumbUp && !isIndexUp && !isMiddleUp && !isRingUp && !isPinkyUp) {
+            currentGesture = 'THUMB UP (RIGHT CLICK)'
+          }
+
+          // OPEN PALM / FIST
+          if (isThumbUp && isIndexUp && isMiddleUp && isRingUp && isPinkyUp) {
+            currentGesture = 'OPEN PALM'
+          } else if (!isThumbUp && !isIndexUp && !isMiddleUp && !isRingUp && !isPinkyUp) {
+            currentGesture = 'FIST (IDLE)'
+          }
+
+          teleGesture.textContent = currentGesture
+
+          // 6. Air-Drawing Canvas Interaction
+          handleAirDrawing(curX, curY, isPinching)
+
+          // 7. Dispatch to Real Desktop WebSocket Bridge
+          if (wsDesktop && wsDesktop.readyState === WebSocket.OPEN) {
+            wsDesktop.send(
+              JSON.stringify({
+                op: 'pointer',
+                x: 1 - indexTip.x,
+                y: indexTip.y,
+                pinching: isPinching,
+                gesture: currentGesture
+              })
+            )
+          }
+        } else {
+          lastScrollY = null
+          teleGesture.textContent = 'IDLE (NO HAND)'
+          document.querySelectorAll('.f-dot').forEach((d) => (d.className = 'f-dot'))
+          pinchBarFill.style.width = '0%'
+        }
+
+        outCtx.restore()
+      }
+
+      // Air-Click Trigger: clicks DOM element under cursor + produces ripple
+      function triggerAirClick(x, y) {
+        playClickSound()
+
+        // Create cyber ripple
+        const rip = document.createElement('div')
+        rip.className = 'cursor-ripple'
+        rip.style.left = `${x}px`
+        rip.style.top = `${y}px`
+        document.body.appendChild(rip)
+        setTimeout(() => rip.remove(), 500)
+
+        // Dispatch real DOM click
+        const elem = document.elementFromPoint(x, y)
+        if (elem) {
+          elem.click()
+        }
+      }
+
+      // Air-Drawing Pad logic
+      function handleAirDrawing(screenX, screenY, pinching) {
+        const rect = airCanvas.getBoundingClientRect()
+        const localX = screenX - rect.left
+        const localY = screenY - rect.top
+
+        if (localX >= 0 && localX <= rect.width && localY >= 0 && localY <= rect.height) {
+          if (pinching) {
+            const scaleX = airCanvas.width / rect.width
+            const scaleY = airCanvas.height / rect.height
+            const drawX = localX * scaleX
+            const drawY = localY * scaleY
+
+            if (lastAirX !== null && lastAirY !== null) {
+              airCtx.strokeStyle = '#00ffcc'
+              airCtx.lineWidth = 4
+              airCtx.lineCap = 'round'
+              airCtx.shadowColor = '#00ffcc'
+              airCtx.shadowBlur = 8
+              airCtx.beginPath()
+              airCtx.moveTo(lastAirX, lastAirY)
+              airCtx.lineTo(drawX, drawY)
+              airCtx.stroke()
+            }
+            lastAirX = drawX
+            lastAirY = drawY
+          } else {
+            lastAirX = null
+            lastAirY = null
+          }
+        } else {
+          lastAirX = null
+          lastAirY = null
+        }
+      }
+
+      // Playground Target Clicks
+      const targetScores = { tBtn1: 0, tBtn2: 0, tBtn3: 0 }
+      function handleTargetClick(btn, name) {
+        targetScores[btn.id]++
+        btn.classList.add('clicked')
+        const counterEl = btn.querySelector('.target-counter')
+        if (counterEl) counterEl.textContent = `${targetScores[btn.id]} clicks`
+        setTimeout(() => btn.classList.remove('clicked'), 250)
+      }
+
+      // ═════════════════════════════════════════════════════════════════
+      // 6. AUTONOMOUS MULTIMODAL AI AGENT (VISION, VOICE & TASK ENGINE)
+      // ═════════════════════════════════════════════════════════════════
+      let activeLockedElement = null
+      let speechRecognition = null
+      let isVoiceListening = false
+      let screenCaptureStream = null
+      const aiStreamLog = document.getElementById('aiStreamLog')
+      const aiVoiceStatus = document.getElementById('aiVoiceStatus')
+      const btnVoiceMic = document.getElementById('btnVoiceMic')
+      const micBtnLabel = document.getElementById('micBtnLabel')
+      const aiPromptInput = document.getElementById('aiPromptInput')
+      const btnShareScreen = document.getElementById('btnShareScreen')
+      const screenShareLabel = document.getElementById('screenShareLabel')
+
+      // Terminal Activity Stream Logger
+      function logAI(text, type = 'info') {
+        if (!aiStreamLog) return
+        const line = document.createElement('div')
+        line.className = `log-line ${type}`
+        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+        line.textContent = `[${time}] ${text}`
+        aiStreamLog.appendChild(line)
+        while (aiStreamLog.children.length > 60) {
+          aiStreamLog.removeChild(aiStreamLog.firstChild)
+        }
+        aiStreamLog.scrollTop = aiStreamLog.scrollHeight
+      }
+
+      // Spoken Feedback using Web Speech Synthesis
+      function speakAI(text) {
+        if (!window.speechSynthesis || !isSoundFXEnabled) return
+        try {
+          window.speechSynthesis.cancel()
+          const cleanText = text.replace(/\[.*?\]/g, '').replace(/https?:\/\/\S+/g, '')
+          const utter = new SpeechSynthesisUtterance(cleanText)
+          utter.rate = 1.05
+          utter.pitch = 1.0
+          if (ttsVoiceSelect && ttsVoiceSelect.value) {
+            const voices = window.speechSynthesis.getVoices()
+            const matched = voices.find((v) => v.name === ttsVoiceSelect.value)
+            if (matched) utter.voice = matched
+          }
+          window.speechSynthesis.speak(utter)
+        } catch (e) {}
+      }
+
+      // Initialize Web Speech Recognition
+      function initSpeechRecognition() {
+        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition
+        if (!SpeechRec) {
+          if (aiVoiceStatus) aiVoiceStatus.textContent = '○ MIC NOT SUPPORTED'
+          logAI('[VOICE] Web Speech API not supported in this browser. You can type instructions into the prompt bar.', 'warn')
+          return
+        }
+
+        speechRecognition = new SpeechRec()
+        speechRecognition.continuous = false
+        speechRecognition.interimResults = false
+        speechRecognition.lang = 'en-US'
+
+        speechRecognition.onstart = () => {
+          isVoiceListening = true
+          if (aiVoiceStatus) {
+            aiVoiceStatus.textContent = '● LISTENING...'
+            aiVoiceStatus.className = 'ai-status-tag listening'
+          }
+          if (btnVoiceMic) btnVoiceMic.classList.add('active')
+          if (micBtnLabel) micBtnLabel.textContent = 'Listening (Speak Now)...'
+          logAI('[VOICE] Microphone active. Awaiting spoken instruction...', 'voice')
+        }
+
+        speechRecognition.onresult = (event) => {
+          const transcript = event.results[0][0].transcript
+          const confidence = Math.round(event.results[0][0].confidence * 100)
+          logAI(`[VOICE HEARD] "${transcript}" (Confidence: ${confidence}%)`, 'voice')
+          if (aiPromptInput) aiPromptInput.value = transcript
+          runAITask(transcript)
+        }
+
+        speechRecognition.onerror = (event) => {
+          isVoiceListening = false
+          if (aiVoiceStatus) {
+            aiVoiceStatus.textContent = '● MIC STANDBY'
+            aiVoiceStatus.className = 'ai-status-tag'
+          }
+          if (btnVoiceMic) btnVoiceMic.classList.remove('active')
+          if (micBtnLabel) micBtnLabel.textContent = 'Hold Space to Talk'
+          if (event.error !== 'no-speech') {
+            logAI(`[VOICE ERROR] ${event.error}`, 'warn')
+          }
+        }
+
+        speechRecognition.onend = () => {
+          isVoiceListening = false
+          if (aiVoiceStatus) {
+            aiVoiceStatus.textContent = '● MIC STANDBY'
+            aiVoiceStatus.className = 'ai-status-tag'
+          }
+          if (btnVoiceMic) btnVoiceMic.classList.remove('active')
+          if (micBtnLabel) micBtnLabel.textContent = 'Hold Space to Talk'
+        }
+      }
+
+      function toggleVoiceListening() {
+        if (!speechRecognition) {
+          initSpeechRecognition()
+        }
+        if (!speechRecognition) return
+
+        if (isVoiceListening) {
+          try { speechRecognition.stop() } catch (e) {}
+        } else {
+          try { speechRecognition.start() } catch (e) {}
+        }
+      }
+
+      // Push-to-Talk via Space key
+      let isSpaceDown = false
+      window.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' && !isSpaceDown && document.activeElement !== aiPromptInput && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+          isSpaceDown = true
+          if (!isVoiceListening) {
+            toggleVoiceListening()
+          }
+        }
+      })
+      window.addEventListener('keyup', (e) => {
+        if (e.code === 'Space' && isSpaceDown) {
+          isSpaceDown = false
+          if (isVoiceListening && speechRecognition) {
+            try { speechRecognition.stop() } catch (e) {}
+          }
+        }
+      })
+
+      // Screen Vision WebRTC Capture
+      async function toggleScreenShare() {
+        if (screenCaptureStream) {
+          screenCaptureStream.getTracks().forEach((t) => t.stop())
+          screenCaptureStream = null
+          if (btnShareScreen) btnShareScreen.classList.remove('active')
+          if (screenShareLabel) screenShareLabel.textContent = 'Share Screen Vision'
+          logAI('[SCREEN VISION] Screen sharing stopped.', 'info')
+          return
+        }
+
+        try {
+          screenCaptureStream = await navigator.mediaDevices.getDisplayMedia({
+            video: { cursor: 'always' },
+            audio: false
+          })
+          if (btnShareScreen) btnShareScreen.classList.add('active')
+          if (screenShareLabel) screenShareLabel.textContent = '● Screen Vision Active'
+          logAI('[SCREEN VISION] Screen feed grounded. AI agent can now visually ground UI targets.', 'vision')
+
+          screenCaptureStream.getVideoTracks()[0].onended = () => {
+            screenCaptureStream = null
+            if (btnShareScreen) btnShareScreen.classList.remove('active')
+            if (screenShareLabel) screenShareLabel.textContent = 'Share Screen Vision'
+            logAI('[SCREEN VISION] Screen feed disconnected.', 'info')
+          }
+        } catch (err) {
+          logAI(`[SCREEN VISION] Permission dismissed or unavailable: ${err.message}`, 'warn')
+        }
+      }
+
+      // Smooth Virtual Cursor Glider for Autonomous Execution
+      function glideCursorTo(targetX, targetY, callback) {
+        vCursor.style.display = 'block'
+        const startX = curX
+        const startY = curY
+        const startTime = performance.now()
+        const duration = 420
+
+        function step(now) {
+          const elapsed = now - startTime
+          const progress = Math.min(1.0, elapsed / duration)
+          // Smooth easeOutCubic
+          const ease = 1 - Math.pow(1 - progress, 3)
+          curX = startX + (targetX - startX) * ease
+          curY = startY + (targetY - startY) * ease
+          vCursor.style.left = `${curX}px`
+          vCursor.style.top = `${curY}px`
+          teleCoords.textContent = `${Math.round(curX)}, ${Math.round(curY)}`
+
+          if (progress < 1.0) {
+            requestAnimationFrame(step)
+          } else {
+            if (callback) callback()
+          }
+        }
+        requestAnimationFrame(step)
+      }
+
+      // Mid-Air Cyber Drawing Helper
+      function drawCyberShape(shape) {
+        airCtx.strokeStyle = '#00ffcc'
+        airCtx.lineWidth = 4
+        airCtx.shadowColor = '#00ffcc'
+        airCtx.shadowBlur = 10
+        const cx = airCanvas.width / 2
+        const cy = airCanvas.height / 2
+
+        if (shape === 'star') {
+          airCtx.beginPath()
+          const spikes = 5, outerRadius = 50, innerRadius = 25
+          let rot = (Math.PI / 2) * 3
+          let step = Math.PI / spikes
+          airCtx.moveTo(cx, cy - outerRadius)
+          for (let i = 0; i < spikes; i++) {
+            let x = cx + Math.cos(rot) * outerRadius
+            let y = cy + Math.sin(rot) * outerRadius
+            airCtx.lineTo(x, y)
+            rot += step
+            x = cx + Math.cos(rot) * innerRadius
+            y = cy + Math.sin(rot) * innerRadius
+            airCtx.lineTo(x, y)
+            rot += step
+          }
+          airCtx.lineTo(cx, cy - outerRadius)
+          airCtx.closePath()
+          airCtx.stroke()
+        } else if (shape === 'heart') {
+          airCtx.beginPath()
+          const d = 40
+          airCtx.moveTo(cx, cy - d / 4)
+          airCtx.bezierCurveTo(cx, cy - d, cx - d, cy - d, cx - d, cy - d / 4)
+          airCtx.bezierCurveTo(cx - d, cy + d / 4, cx, cy + d, cx, cy + d * 1.2)
+          airCtx.bezierCurveTo(cx, cy + d, cx + d, cy + d / 4, cx + d, cy - d / 4)
+          airCtx.bezierCurveTo(cx + d, cy - d, cx, cy - d, cx, cy - d / 4)
+          airCtx.stroke()
+        } else {
+          // Circle
+          airCtx.beginPath()
+          airCtx.arc(cx, cy, 45, 0, Math.PI * 2)
+          airCtx.stroke()
+        }
+      }
+
+      // Universal Cognitive Task Runner
+      function runAITask(customPrompt) {
+        const prompt = (customPrompt || aiPromptInput.value || '').trim()
+        if (!prompt) return
+
+        if (aiPromptInput) aiPromptInput.value = prompt
+        logAI(`[COGNITIVE REASONING] Planning task: "${prompt}"`, 'info')
+
+        const p = prompt.toLowerCase()
+        let handledInBrowser = false
+
+        // 1. In-Browser Target Matchers
+        if (p.includes('quantum') || p.includes('pulse') || p.includes('first target') || p.includes('target 1')) {
+          handledInBrowser = true
+          const btn = document.getElementById('tBtn1')
+          const rect = btn.getBoundingClientRect()
+          logAI('[VISION GROUNDING] Grounded target: Quantum Pulse Button', 'vision')
+          speakAI('Clicking Quantum Pulse target.')
+          glideCursorTo(rect.left + rect.width / 2, rect.top + rect.height / 2, () => {
+            triggerAirClick(curX, curY)
+            handleTargetClick(btn, 'Quantum Pulse')
+            logAI('[ACTION] Executed click on Quantum Pulse.', 'action')
+          })
+        } else if (p.includes('hyperdrive') || p.includes('matrix') || p.includes('second target') || p.includes('target 2')) {
+          handledInBrowser = true
+          const btn = document.getElementById('tBtn2')
+          const rect = btn.getBoundingClientRect()
+          logAI('[VISION GROUNDING] Grounded target: Hyperdrive Matrix Button', 'vision')
+          speakAI('Clicking Hyperdrive Matrix target.')
+          glideCursorTo(rect.left + rect.width / 2, rect.top + rect.height / 2, () => {
+            triggerAirClick(curX, curY)
+            handleTargetClick(btn, 'Hyperdrive Matrix')
+            logAI('[ACTION] Executed click on Hyperdrive Matrix.', 'action')
+          })
+        } else if (p.includes('neural') || p.includes('uplink') || p.includes('third target') || p.includes('target 3')) {
+          handledInBrowser = true
+          const btn = document.getElementById('tBtn3')
+          const rect = btn.getBoundingClientRect()
+          logAI('[VISION GROUNDING] Grounded target: Neural Uplink Button', 'vision')
+          speakAI('Clicking Neural Uplink target.')
+          glideCursorTo(rect.left + rect.width / 2, rect.top + rect.height / 2, () => {
+            triggerAirClick(curX, curY)
+            handleTargetClick(btn, 'Neural Uplink')
+            logAI('[ACTION] Executed click on Neural Uplink.', 'action')
+          })
+        } else if (p.includes('clear') || p.includes('erase') || p.includes('clean')) {
+          handledInBrowser = true
+          clearAirCanvas()
+          logAI('[ACTION] Air-drawing canvas cleared.', 'action')
+          speakAI('Drawing pad cleared.')
+        } else if (p.includes('star')) {
+          handledInBrowser = true
+          drawCyberShape('star')
+          logAI('[ACTION] Painted mid-air cyber star on canvas.', 'action')
+          speakAI('Painted a glowing star on the drawing canvas.')
+        } else if (p.includes('heart')) {
+          handledInBrowser = true
+          drawCyberShape('heart')
+          logAI('[ACTION] Painted mid-air cyber heart on canvas.', 'action')
+          speakAI('Painted a heart on the drawing canvas.')
+        } else if (p.includes('circle')) {
+          handledInBrowser = true
+          drawCyberShape('circle')
+          logAI('[ACTION] Painted mid-air cyber circle on canvas.', 'action')
+          speakAI('Painted a circle on the drawing canvas.')
+        } else if (p.includes('feature') || p.includes('scroll down') || p.includes('go down')) {
+          handledInBrowser = true
+          document.querySelector('.features-grid').scrollIntoView({ behavior: 'smooth' })
+          logAI('[ACTION] Scrolled page to Features grid.', 'action')
+          speakAI('Scrolling down to features.')
+        } else if (p.includes('top') || p.includes('scroll up') || p.includes('go up')) {
+          handledInBrowser = true
+          window.scrollTo({ top: 0, behavior: 'smooth' })
+          logAI('[ACTION] Scrolled to top of page.', 'action')
+          speakAI('Scrolling to top.')
+        } else if (p.includes('dark mode') || p.includes('light mode') || p.includes('theme')) {
+          handledInBrowser = true
+          const tsck = document.getElementById('tsck')
+          if (tsck) tsck.click()
+          logAI('[ACTION] Toggled UI theme mode.', 'action')
+          speakAI('Toggled theme.')
+        } else if (p.includes('engine') || p.includes('camera') || p.includes('start tracking')) {
+          handledInBrowser = true
+          toggleTracking()
+          logAI('[ACTION] Toggled vision camera engine.', 'action')
+          speakAI(isTrackingActive ? 'Stopping camera engine.' : 'Starting camera engine.')
+        }
+
+        // 2. Desktop OS Task Dispatch (via WebSocket)
+        if (wsDesktop && wsDesktop.readyState === WebSocket.OPEN) {
+          logAI(`[DISPATCH] Forwarding "${prompt}" to Windows Desktop OS Bridge...`, 'info')
+          wsDesktop.send(
+            JSON.stringify({
+              op: 'ai_task',
+              utterance: prompt
+            })
+          )
+        } else if (!handledInBrowser) {
+          // Fallback announcement if desktop bridge is offline
+          const msg = `Received command "${prompt}". Connecting to Windows Desktop OS Bridge to execute...`
+          logAI(`[NOTICE] ${msg}`, 'warn')
+          speakAI(msg)
+        }
+      }
+
+      function executeQuickTask(taskText) {
+        if (aiPromptInput) aiPromptInput.value = taskText
+        runAITask(taskText)
+      }
+
+      // 7. ONLOAD BOOTSTRAP
+      window.addEventListener('load', () => {
+        resizeCyberCanvas()
+        initCyberParticles()
+        animateCyberParticles()
+        setTimeout(typeWriter, 350)
+        initMediaPipe()
+        populateCameras()
+        connectDesktopWs()
+        initSpeechRecognition()
+      })
+    </script>
   </body>
 </html>

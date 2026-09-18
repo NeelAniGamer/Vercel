@@ -92,6 +92,26 @@
         }
       })
 
+      // Close on #mobileClose button click
+      var closeBtn = document.getElementById('mobileClose')
+      if (closeBtn) {
+        closeBtn.addEventListener('click', function (e) {
+          e.preventDefault()
+          e.stopPropagation()
+          if (isNavOpen()) {
+            nl.classList.remove('active')
+            mmb.classList.remove('active')
+            unlockNav()
+          }
+        })
+      }
+
+      // Android Native App detection
+      if (/ClassOfLearnersApp/i.test(navigator.userAgent)) {
+        document.documentElement.classList.add('is-android-app')
+        document.body.classList.add('is-android-app')
+      }
+
       // Close on Escape
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && isNavOpen()) {
@@ -147,9 +167,10 @@
         }
       })
 
-      // Inject bottom thumb bar for mobile (auto)
+      // Inject bottom thumb bar for mobile (auto, with smart scroll-hide)
       try {
-        if (!document.querySelector('.col-bottom-bar') && window.innerWidth <= 900) {
+        var isGamePage = /Driving|Academy|solar|gesture|rpg/i.test(location.pathname)
+        if (!document.querySelector('.col-bottom-bar') && window.innerWidth <= 900 && !isGamePage) {
           var bar = document.createElement('nav')
           bar.className = 'col-bottom-bar'
           bar.setAttribute('aria-label', 'Primary')
@@ -171,6 +192,25 @@
             act('download') +
             '><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Download</span></a>'
           document.body.appendChild(bar)
+
+          // Auto-hide bottom bar on scroll down, reveal on scroll up
+          var _lastY = window.scrollY
+          window.addEventListener(
+            'scroll',
+            function () {
+              var currY = window.scrollY
+              var diff = currY - _lastY
+              if (Math.abs(diff) > 12) {
+                if (diff > 0 && currY > 100) {
+                  bar.classList.add('hidden')
+                } else {
+                  bar.classList.remove('hidden')
+                }
+                _lastY = currY
+              }
+            },
+            { passive: true }
+          )
         }
       } catch (e) {}
 

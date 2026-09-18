@@ -738,24 +738,26 @@
 
       .thumbnail-track {
         display: flex;
-        gap: 20px;
+        gap: 12px;
         justify-content: center;
         flex-wrap: wrap;
         width: 100%;
+        max-width: 1000px;
       }
       .thumb-card {
-        width: 180px;
+        width: 130px;
         cursor: pointer;
         border: 2px solid var(--border-light);
         border-radius: 8px;
         overflow: hidden;
         transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        opacity: 0.5;
+        opacity: 0.6;
         background: var(--card-bg);
       }
       .thumb-card img {
         width: 100%;
-        height: auto;
+        height: 76px;
+        object-fit: cover;
         display: block;
         border-radius: 4px;
       }
@@ -768,7 +770,7 @@
         opacity: 1;
         border-color: var(--primary);
         box-shadow: 0 10px 20px rgba(56, 189, 248, 0.3);
-        transform: translateY(-8px);
+        transform: translateY(-6px);
       }
 
       /* ──── ANIMATION TRIGGERS ──── */
@@ -1164,7 +1166,7 @@
             <div class="dropdown-content-inner">
               <a href="ati">Typing Instructor <span>⌨️</span></a>
               <a href="solar">Solar Engine <span>🌍</span></a>
-              <a href="gesture">Gesture Control <span>🖐️</span></a>
+              <a href="gesture">Perceptus Flow <span>🖐️</span></a>
               <a href="rpg">RPG Game <span>⚔️</span></a>
               <a href="qr">QR Generator <span>⬛</span></a>
             </div>
@@ -1253,18 +1255,48 @@
         <div class="display-corner tr"></div>
         <div class="display-corner bl"></div>
         <div class="display-corner br"></div>
-        <img id="mainShowcaseImg" src="ati.webp" alt="ATI Main Interface View" width="800" height="438" loading="lazy" decoding="async" />
+        <img id="mainShowcaseImg" src="ATI 1.png" alt="ATI Main Interface View" width="1705" height="1066" loading="lazy" decoding="async" />
         <div class="scanline"></div>
       </div>
       <div class="thumbnail-track">
-        <div class="thumb-card active" onclick="updateShowcase(this, 'ati.png')">
-          <img src="ati.webp" alt="Thumb 1" width="800" height="438" loading="lazy" decoding="async" />
+        <div class="thumb-card active" onclick="updateShowcase(this, 'ATI 1.png')">
+          <img src="ATI 1.png" alt="ATI Interface 1" loading="lazy" decoding="async" />
         </div>
-        <div class="thumb-card" onclick="updateShowcase(this, 'ati 2.png')">
-          <img src="ati 2.webp" alt="Thumb 2" width="2437" height="993" loading="lazy" />
+        <div class="thumb-card" onclick="updateShowcase(this, 'ATI 2.png')">
+          <img src="ATI 2.png" alt="ATI Interface 2" loading="lazy" decoding="async" />
         </div>
-        <div class="thumb-card" onclick="updateShowcase(this, 'ati 3.png')">
-          <img src="ati 3.webp" alt="Thumb 3" width="3839" height="2096" loading="lazy" />
+        <div class="thumb-card" onclick="updateShowcase(this, 'ATI 3.png')">
+          <img src="ATI 3.png" alt="ATI Interface 3" loading="lazy" decoding="async" />
+        </div>
+        <div class="thumb-card" onclick="updateShowcase(this, 'ATI 4.png')">
+          <img src="ATI 4.png" alt="ATI Interface 4" loading="lazy" decoding="async" />
+        </div>
+        <div class="thumb-card" onclick="updateShowcase(this, 'ATI 5.png')">
+          <img src="ATI 5.png" alt="ATI Interface 5" loading="lazy" decoding="async" />
+        </div>
+        <div class="thumb-card" onclick="updateShowcase(this, 'ATI 6.png')">
+          <img src="ATI 6.png" alt="ATI Interface 6" loading="lazy" decoding="async" />
+        </div>
+        <div class="thumb-card" onclick="updateShowcase(this, 'ATI 7.png')">
+          <img src="ATI 7.png" alt="ATI Interface 7" loading="lazy" decoding="async" />
+        </div>
+        <div class="thumb-card" onclick="updateShowcase(this, 'ATI 8.png')">
+          <img src="ATI 8.png" alt="ATI Interface 8" loading="lazy" decoding="async" />
+        </div>
+        <div class="thumb-card" onclick="updateShowcase(this, 'ATI 9.png')">
+          <img src="ATI 9.png" alt="ATI Interface 9" loading="lazy" decoding="async" />
+        </div>
+        <div class="thumb-card" onclick="updateShowcase(this, 'ATI 10.png')">
+          <img src="ATI 10.png" alt="ATI Interface 10" loading="lazy" decoding="async" />
+        </div>
+        <div class="thumb-card" onclick="updateShowcase(this, 'ATI 11.png')">
+          <img src="ATI 11.png" alt="ATI Interface 11" loading="lazy" decoding="async" />
+        </div>
+        <div class="thumb-card" onclick="updateShowcase(this, 'ATI 12.png')">
+          <img src="ATI 12.png" alt="ATI Interface 12" loading="lazy" decoding="async" />
+        </div>
+        <div class="thumb-card" onclick="updateShowcase(this, 'ATI 13.png')">
+          <img src="ATI 13.png" alt="ATI Interface 13" loading="lazy" decoding="async" />
         </div>
       </div>
     </div>

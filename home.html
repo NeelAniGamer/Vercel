@@ -966,16 +966,26 @@
       }
       @media (max-width: 640px) {
         .orrery-hud {
-          top: 76px;
+          top: calc(env(safe-area-inset-top, 0px) + 72px);
           right: 12px;
           left: 12px;
-          justify-content: flex-end;
+          justify-content: center;
+          gap: 6px;
+        }
+        .hud-group {
+          overflow-x: auto;
+          max-width: calc(100vw - 72px);
+          -webkit-overflow-scrolling: touch;
+          scrollbar-width: none;
+        }
+        .hud-group::-webkit-scrollbar {
+          display: none;
         }
         .hud-mode-label {
           display: none;
         }
         .orrery-dock {
-          bottom: 24px;
+          bottom: 84px;
           padding: 4px 6px;
         }
         .dock-label {
@@ -1992,7 +2002,7 @@
       }
       @media (max-width: 768px) {
         .hc {
-          padding: 90px 20px 40px;
+          padding: calc(env(safe-area-inset-top, 0px) + 130px) 20px 40px;
         }
         .hst {
           display: none;
@@ -2258,6 +2268,7 @@
           <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
         </svg>
       </button>
+      <a href="home-zoom" class="nav-dl-btn desktop-dl" style="background: transparent; border: 1px solid var(--ion); color: var(--ion); margin-right: 8px;">🚀 3D Zoom View</a>
       <a href="download" class="nav-dl-btn desktop-dl">Downloads Hub</a>
     </nav>
 
@@ -2294,6 +2305,7 @@
             >View Projects
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7" /></svg
           ></a>
+          <a href="home-zoom" class="btn-g" style="border-color: var(--ion); color: var(--ion);">🚀 3D Zoom Experience &#8594;</a>
           <a href="about" class="btn-g">Our Story &#8594;</a>
           <a href="COL.apk" class="btn-g mobile-dl" download style="border-color: var(--signal); color: var(--signal)">Download Android App</a>
         </div>
@@ -2432,7 +2444,7 @@
         ></a>
         <a href="ati" class="pc cs feat" data-delay="80"
           ><div class="badge bflag">Co-Flagship</div>
-          <div class="pv"><img src="ati.webp" alt="Advanced Typing Instructor" width="900" height="500" loading="eager" decoding="async" /></div>
+          <div class="pv"><img src="ATI 1.png" alt="Advanced Typing Instructor" width="900" height="500" loading="eager" decoding="async" /></div>
           <div class="pb">
             <div class="pn">02 &mdash; Learning Platform</div>
             <h3 class="pname">Advanced Typing Instructor</h3>
@@ -3419,9 +3431,6 @@
         },
         { passive: true }
       )
-      document.getElementById('mmb').addEventListener('click', function () {
-        document.getElementById('navLinks').classList.toggle('open')
-      })
       window.addEventListener('click', function (e) {
         if (!e.target.closest('.dropdown'))
           document.querySelectorAll('.dropdown').forEach(function (d) {

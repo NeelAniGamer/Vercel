@@ -898,9 +898,10 @@ body.lm .nav-login-btn:hover {
     max-width: 100vw;
     height: 100vh;
     height: 100dvh;
-    background: rgba(7, 10, 20, 0.95) !important;
+    background: #070a14 !important;
     backdrop-filter: blur(28px) saturate(1.8) !important;
     -webkit-backdrop-filter: blur(28px) saturate(1.8) !important;
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.9) !important;
     flex-direction: column;
     justify-content: flex-start;
     align-items: stretch;
@@ -919,7 +920,40 @@ body.lm .nav-login-btn:hover {
     flex-wrap: nowrap;
   }
   body.lm .nav-links {
-    background: rgba(248, 249, 250, 0.96) !important;
+    background: #f3f2eb !important;
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  .mobile-close {
+    display: flex !important;
+    position: absolute;
+    top: calc(env(safe-area-inset-top, 0px) + 16px);
+    right: 20px;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--lineb, rgba(255, 255, 255, 0.16));
+    border-radius: 50%;
+    color: var(--ink, #e8e3d8);
+    cursor: pointer;
+    z-index: 1005;
+    transition: transform var(--dur-fast, 160ms) var(--ease-out, ease), background var(--dur-fast, 160ms) var(--ease-out, ease);
+  }
+  .mobile-close:active {
+    transform: scale(0.92);
+    background: rgba(255, 255, 255, 0.16);
+  }
+  body.lm .mobile-close {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.12);
+    color: #111827;
+  }
+  .mobile-close svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
   }
 
   .nav-links.active {

@@ -104,7 +104,8 @@
       this.lastDepartureCheck = false
       this.laneComplianceFrames = 0
       this.speedComplianceFrames = 0
-      this.drawerOpen = true
+      const isMobile = typeof window !== 'undefined' && (window.innerWidth <= 950 || window.innerHeight <= 500 || ('ontouchstart' in window) || (navigator.maxTouchPoints > 0))
+      this.drawerOpen = !isMobile
       this.containerEl = null
       this._initialized = false
     }
@@ -119,6 +120,8 @@
       this.laneComplianceFrames = 0
       this.speedComplianceFrames = 0
       this.lastDepartureCheck = false
+      const isMobile = typeof window !== 'undefined' && (window.innerWidth <= 950 || window.innerHeight <= 500 || ('ontouchstart' in window) || (navigator.maxTouchPoints > 0))
+      this.drawerOpen = !isMobile
       this._injectStyles()
       this._renderHUDDrawer()
       this._initialized = true
@@ -138,11 +141,12 @@
         xp: 25,
         completed: false,
         verify: (g) => {
-          if (!g.car) return false
-          const p = g.car.position
+          const veh = g.playerVehicle || g.player || g.car
+          if (!veh) return false
+          const p = veh.position
           // Left the garage spawn box and reached road surface
           const distFromStart = Math.hypot(p.x - (g._startX || 0), p.z - (g._startZ || 0))
-          return distFromStart > 12 && (typeof g.isOnRoad === 'function' ? g.isOnRoad() : true)
+          return distFromStart > 8 && (typeof g.isOnRoad === 'function' ? g.isOnRoad() : true)
         }
       })
 
@@ -156,7 +160,9 @@
           xp: 50,
           completed: false,
           verify: (g) => {
-            return (g.spd || 0) < 0.5 && !g.violationsLog?.includes('RED_LIGHT_VIOLATION')
+            const spd = typeof g.speed === 'number' ? g.speed : (g.spd || 0)
+            const isNearSignal = g.nearIntersection || g._nearSignal || (g.distToSignal !== undefined && g.distToSignal < 30) || (g._approachingRedLight === true)
+            return isNearSignal && spd < 0.5 && !g.violationsLog?.includes('RED_LIGHT_VIOLATION')
           }
         })
       } else if (theme.includes('ambulance') || theme.includes('emergency')) {
@@ -168,7 +174,9 @@
           xp: 50,
           completed: false,
           verify: (g) => {
-            return g.ambulanceYielded === true || ((g.curSpeed || 0) < 15 && Math.abs(g.car?.position.x || 0) > 4)
+            const veh = g.playerVehicle || g.player || g.car
+            const spdKmh = (typeof g.speed === 'number' ? g.speed * 3.6 : (g.curSpeed || (g.spd || 0) * 3.6))
+            return g.ambulanceYielded === true || (spdKmh < 15 && Math.abs(veh?.position?.x || 0) > 3.5)
           }
         })
       } else if (theme.includes('silence') || theme.includes('hospital')) {
@@ -192,7 +200,9 @@
           xp: 50,
           completed: false,
           verify: (g) => {
-            return g.parkedCorrectly === true || ((g.spd || 0) < 0.2 && Math.abs(g.car?.position.x || 0) > 5)
+            const veh = g.playerVehicle || g.player || g.car
+            const spd = typeof g.speed === 'number' ? g.speed : (g.spd || 0)
+            return g.parkedCorrectly === true || (spd < 0.2 && Math.abs(veh?.position?.x || 0) > 3.5)
           }
         })
       } else {
@@ -204,7 +214,8 @@
           xp: 50,
           completed: false,
           verify: (g) => {
-            if ((g.spd || 0) > 2) {
+            const spd = typeof g.speed === 'number' ? g.speed : (g.spd || 0)
+            if (spd > 2) {
               this.laneComplianceFrames++
               return this.laneComplianceFrames > 90
             }
@@ -222,7 +233,7 @@
         xp: 35,
         completed: false,
         verify: (g) => {
-          const spdKmh = (g.spd || 0) * 3.6
+          const spdKmh = (typeof g.speed === 'number' ? g.speed * 3.6 : (g.spd || 0) * 3.6)
           if (spdKmh > 5 && spdKmh <= 55) {
             this.speedComplianceFrames++
             return this.speedComplianceFrames > 90
@@ -240,7 +251,8 @@
         xp: 75,
         completed: false,
         verify: (g) => {
-          return g.reachedGoal === true && (g.vio === 0 || (!g.violationsLog || g.violationsLog.length === 0))
+          const finished = g.reachedGoal === true || g.levelCompleted === true || (g.cps && g.cps.length > 0 && g.cps.every(c => c.done))
+          return finished && (g.vio === 0 || (!g.violationsLog || g.violationsLog.length === 0))
         }
       })
 

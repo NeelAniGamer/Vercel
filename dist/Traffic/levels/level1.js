@@ -3,7 +3,9 @@ window.LVS.push({
   id: 1,
   icon: '🚥',
   name: 'Lesson 1 - Red Light Patience',
-  modes: ['pedestrian', 'car', 'bike'],
+  modes: ['car', 'bike', 'pedestrian'],
+  veh: 'car',
+  isPedestrian: false,
   col: '#e74c3c',
   ds: 'You are stuck at a busy junction. NPC cars honk aggressively behind you. A family of four is crossing the road — wait for them to reach the other side before you move.',
   hps: [
@@ -24,7 +26,7 @@ window.LVS.push({
   pract: 'Wait at the red light. Let all pedestrians cross. Do not move until the light turns green.',
   mode: 'practical',
   themeType: 'signal_jump',
-  startOutside: true,
+  startOutside: false,
   tasks: [
     { id: 'wait_red', text: 'Wait at the red light', type: 'stop', target: 'red_light', done: false },
     { id: 'let_cross', text: 'Let all pedestrians cross', type: 'avoid', target: 'pedestrian', done: false },

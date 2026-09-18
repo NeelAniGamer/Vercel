@@ -9,6 +9,9 @@ class SceneryKit {
     this.game = game;
     this.placedObjects = [];
     this.instancedMeshes = [];
+    this.chunks = new Map(); // "cx,cz" -> { group, x, z, visible }
+    this.chunkSize = 60; // 60m spatial grid
+    this._lastUpdatePos = { x: 999999, z: 999999 };
   }
 
   /**
@@ -16,6 +19,7 @@ class SceneryKit {
    */
   decorateLevel(cfg) {
     if (!cfg.roads || cfg.roads.length === 0) return;
+    this.clear();
 
     const roads = cfg.roads;
     const theme = cfg.themeType || 'urban_grid';
@@ -28,7 +32,12 @@ class SceneryKit {
     this.placeBuildingsBehindRoads(roads, theme);
     this.placeThemeSpecific(roads, theme);
 
-    console.log(`[SceneryKit] Placed ${this.placedObjects.length} objects for theme "${theme}"`);
+    // Initial visibility pass
+    const pPos = (this.game && this.game.player && this.game.player.position) || { x: 0, z: 0 };
+    const rDist = (this.game && this.game.renderDistance) || 150;
+    this.updateVisibility(pPos, rDist, true);
+
+    console.log(`[SceneryKit] Placed ${this.placedObjects.length} object groups in ${this.chunks.size} chunks for theme "${theme}"`);
   }
 
   /**
@@ -216,8 +225,8 @@ class SceneryKit {
     const buildingKeys = this._getThemeBuildings(theme);
     if (buildingKeys.length === 0) return;
 
-    const spacing = 25; // meters between buildings
-    const setback = 15; // meters behind road edge
+    const spacing = 16; // meters between buildings
+    const setback = 14; // meters behind road edge
 
     const instances = [];
 
@@ -227,7 +236,7 @@ class SceneryKit {
       const numBuildings = Math.floor(len / spacing);
 
       for (let i = 0; i < numBuildings; i++) {
-        if (Math.random() > 0.6) continue;
+        if (Math.random() > 0.85) continue;
 
         const t = (i + 0.5) / numBuildings;
         let x, z;
@@ -240,13 +249,14 @@ class SceneryKit {
           z = road.z;
         }
 
-        const offset = (road.width || 12) / 2 + setback;
-        const side = Math.random() > 0.5 ? 1 : -1;
+        const ry = isV 
+          ? (side > 0 ? -Math.PI / 2 : Math.PI / 2)
+          : (side > 0 ? Math.PI : 0);
 
         instances.push({
-          x: isV ? x + offset * side : x + (Math.random() - 0.5) * 10,
-          z: isV ? z + (Math.random() - 0.5) * 10 : z + offset * side,
-          ry: Math.random() * Math.PI * 2,
+          x: isV ? x + offset * side : x + (Math.random() - 0.5) * 6,
+          z: isV ? z + (Math.random() - 0.5) * 6 : z + offset * side,
+          ry: ry,
           scale: 0.8 + Math.random() * 0.5,
           key: buildingKeys[Math.floor(Math.random() * buildingKeys.length)]
         });
@@ -457,8 +467,10 @@ class SceneryKit {
       suburb: ['suburban_a', 'suburban_f', 'suburban_g', 'suburban_h', 'suburban_i'],
       residential: ['suburban_j', 'suburban_k', 'suburban_l', 'suburban_m'],
       industrial: ['industrial_a', 'industrial_b', 'industrial_c', 'industrial_d', 'industrial_e'],
-      commercial: ['mbuilding_sample-house-a', 'mbuilding_sample-tower-a', 'mbuilding_sample-tower-b'],
-      downtown: ['mbuilding_sample-tower-a', 'mbuilding_sample-tower-b', 'mbuilding_sample-tower-c', 'mbuilding_sample-tower-d'],
+      commercial: ['building_high_school', 'mbuilding_sample-house-a', 'mbuilding_sample-tower-a', 'mbuilding_sample-tower-b'],
+      downtown: ['building_high_school', 'mbuilding_sample-tower-a', 'mbuilding_sample-tower-b', 'mbuilding_sample-tower-c', 'mbuilding_sample-tower-d'],
+      school_zone: ['building_high_school', 'mbuilding_sample-house-a', 'suburban_a'],
+      silence_zone: ['building_high_school', 'mbuilding_sample-house-b', 'suburban_b'],
       rural: ['suburban_n', 'suburban_o', 'suburban_p'],
       mountain: ['suburban_q', 'suburban_r'],
       highway_merge: ['industrial_f', 'industrial_g'],
@@ -467,13 +479,13 @@ class SceneryKit {
       festival: ['suburban_a', 'suburban_b', 'industrial_a'],
       night_driving: ['suburban_a', 'suburban_b', 'mbuilding_sample-tower-a'],
       rain_driving: ['suburban_c', 'suburban_d', 'industrial_b'],
-      default: ['suburban_a', 'suburban_b', 'industrial_a']
+      default: ['building_high_school', 'suburban_a', 'suburban_b', 'industrial_a']
     };
     return themes[theme] || themes.default;
   }
 
   /**
-   * Place instances using individual clones (for variety)
+   * Place instances partitioned by spatial grid chunks
    */
   _placeInstances(instances, groupName) {
     if (instances.length === 0) return;
@@ -482,14 +494,31 @@ class SceneryKit {
     const scene = this.game.scene;
     if (!scene) return;
 
-    const group = new THREE.Group();
-    group.name = `scenery_${groupName}`;
-
-    let placed = 0;
+    const cSize = this.chunkSize;
 
     instances.forEach(inst => {
       const model = window.PRELOADED_MODELS[inst.key];
       if (!model) return;
+
+      const cx = Math.floor(inst.x / cSize);
+      const cz = Math.floor(inst.z / cSize);
+      const chunkKey = `${cx},${cz}`;
+
+      let chunk = this.chunks.get(chunkKey);
+      if (!chunk) {
+        const chunkGroup = new THREE.Group();
+        chunkGroup.name = `scenery_chunk_${chunkKey}`;
+        scene.add(chunkGroup);
+        this.placedObjects.push(chunkGroup);
+        chunk = {
+          group: chunkGroup,
+          cx, cz,
+          x: (cx + 0.5) * cSize,
+          z: (cz + 0.5) * cSize,
+          visible: true
+        };
+        this.chunks.set(chunkKey, chunk);
+      }
 
       const obj = model.clone();
       obj.position.set(inst.x, 0, inst.z);
@@ -499,20 +528,77 @@ class SceneryKit {
 
       obj.traverse(c => {
         if (c.isMesh) {
-          c.castShadow = s > 0.5;
+          // PERFORMANCE: Scenery never casts shadows to save 90%+ shadow draw calls on mobile
+          c.castShadow = false;
           c.receiveShadow = true;
           c.frustumCulled = true;
         }
       });
 
-      group.add(obj);
-      placed++;
-    });
+      chunk.group.add(obj);
 
-    if (placed > 0) {
-      scene.add(group);
-      this.placedObjects.push(group);
-    }
+      // STREETLIGHT TREATMENT: Add ground light pool decal and active light source
+      if (type === 'streetLights') {
+        if (!this._poolMat && typeof document !== 'undefined') {
+          const cv = document.createElement('canvas');
+          cv.width = 128; cv.height = 128;
+          const ctx = cv.getContext('2d');
+          const grad = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+          grad.addColorStop(0, 'rgba(255, 235, 130, 0.85)');
+          grad.addColorStop(0.35, 'rgba(254, 215, 102, 0.5)');
+          grad.addColorStop(0.7, 'rgba(251, 191, 36, 0.15)');
+          grad.addColorStop(1, 'rgba(245, 158, 11, 0)');
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, 128, 128);
+          const tex = new THREE.CanvasTexture(cv);
+          this._poolMat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: 0.85, depthWrite: false });
+        }
+        if (this._poolMat) {
+          const pool = new THREE.Mesh(new THREE.PlaneGeometry(7.5, 7.5), this._poolMat);
+          pool.rotation.x = -Math.PI / 2;
+          pool.position.set(inst.x, 0.03, inst.z);
+          chunk.group.add(pool);
+        }
+
+        // Active dynamic light budget (up to 8 lights across the scene for 60fps)
+        if (!this._lightBudget) this._lightBudget = 0;
+        if (this._lightBudget < 8) {
+          this._lightBudget++;
+          const pl = new THREE.PointLight(0xffea75, 2.6, 24, 1.4);
+          pl.position.set(inst.x, 6.0, inst.z);
+          chunk.group.add(pl);
+        }
+      }
+    });
+  }
+
+  /**
+   * Dynamically loads/deloads scenery chunks based on player distance
+   */
+  updateVisibility(playerPos, renderDistance, force = false) {
+    if (!playerPos) return;
+    const rDist = renderDistance || 150;
+    const rDistSq = (rDist + this.chunkSize * 0.7) * (rDist + this.chunkSize * 0.7);
+
+    // Only update if player moved more than 8m or forced
+    const dx = playerPos.x - this._lastUpdatePos.x;
+    const dz = playerPos.z - this._lastUpdatePos.z;
+    if (!force && (dx * dx + dz * dz < 64)) return;
+
+    this._lastUpdatePos.x = playerPos.x;
+    this._lastUpdatePos.z = playerPos.z;
+
+    this.chunks.forEach(chunk => {
+      const cdx = chunk.x - playerPos.x;
+      const cdz = chunk.z - playerPos.z;
+      const distSq = cdx * cdx + cdz * cdz;
+      const shouldBeVisible = distSq <= rDistSq;
+
+      if (chunk.group.visible !== shouldBeVisible) {
+        chunk.group.visible = shouldBeVisible;
+        chunk.visible = shouldBeVisible;
+      }
+    });
   }
 
   /**
@@ -533,6 +619,8 @@ class SceneryKit {
       });
     });
     this.placedObjects = [];
+    this.chunks.clear();
+    this._lastUpdatePos = { x: 999999, z: 999999 };
   }
 }
 

@@ -1,7 +1,18 @@
 import { app, BrowserWindow, Menu, ipcMain, dialog, shell } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
-import { autoUpdater } from 'electron-updater';
+
+// Standalone auto-updater stub (zero external dependencies)
+const autoUpdater = {
+  autoDownload: false,
+  autoInstallOnAppQuit: false,
+  on: (_event: string, _callback: Function) => {},
+  checkForUpdates: async () => ({ updateInfo: { version: app.getVersion() } }),
+  quitAndInstall: () => {}
+};
+
+app.commandLine.appendSwitch('allow-file-access-from-files');
+app.commandLine.appendSwitch('disable-web-security');
 
 const isDev = !app.isPackaged;
 
@@ -119,28 +130,7 @@ async function importSave(): Promise<{ ok: boolean; keys?: number; cancelled?: b
 // ===== Auto-updater =====
 
 function setupAutoUpdater(): void {
-  if (isDev) return;
-
-  autoUpdater.autoDownload = true;
-  autoUpdater.autoInstallOnAppQuit = true;
-
-  autoUpdater.on('update-available', () => {
-    mainWindow?.webContents.send('updater-status', { event: 'update-available' });
-  });
-
-  autoUpdater.on('update-downloaded', () => {
-    mainWindow?.webContents.send('updater-status', { event: 'update-downloaded' });
-  });
-
-  autoUpdater.on('error', (err) => {
-    console.warn('[updater]', err.message);
-  });
-
-  // Check after a delay so it doesn't slow boot
-  setTimeout(() => autoUpdater.checkForUpdates().catch(() => {}), 10000);
-
-  // Then check every hour
-  setInterval(() => autoUpdater.checkForUpdates().catch(() => {}), 60 * 60 * 1000);
+  // Offline & standalone execution — no remote updater loop required
 }
 
 // ===== Window =====
@@ -161,7 +151,8 @@ function createWindow(): void {
       contextIsolation: true,
       nodeIntegration: false,
       webgl: true,
-      webSecurity: true
+      webSecurity: false,
+      allowRunningInsecureContent: true
     },
     backgroundColor: '#070a14',
     show: false,
@@ -172,9 +163,9 @@ function createWindow(): void {
   else mainWindow.once('ready-to-show', () => mainWindow?.show());
 
   if (isDev) {
-    mainWindow.loadURL('http://localhost:5173/index.html');
+    mainWindow.loadURL('http://localhost:5173/Driving.html');
   } else {
-    mainWindow.loadFile(path.join(__dirname, '..', 'dist', 'index.html'));
+    mainWindow.loadFile(path.join(__dirname, '..', 'dist', 'Driving.html'));
   }
 
   // Persist window state on move/resize (debounced)
@@ -206,7 +197,7 @@ function createMenu(): void {
       label: 'File',
       submenu: [
         { label: 'New Game', accelerator: 'CmdOrCtrl+N', click: () => mainWindow?.webContents.send('menu-action', 'new-game') },
-        { label: 'Restart Level', accelerator: 'CmdOrCtrl+R', click: () => mainWindow?.webContents.send('menu-action', 'restart') },
+        { label: 'Restart Level', accelerator: 'CmdOrCtrl+Shift+R', click: () => mainWindow?.webContents.send('menu-action', 'restart') },
         { type: 'separator' },
         { label: 'Export Save…', accelerator: 'CmdOrCtrl+E', click: async () => {
           const r = await exportSave();
@@ -221,8 +212,46 @@ function createMenu(): void {
       ]
     },
     {
+      label: 'Modes',
+      submenu: [
+        {
+          label: '🏎️ 3D Driving Simulator',
+          accelerator: 'F2',
+          click: () => {
+            if (isDev) mainWindow?.loadURL('http://localhost:5173/Driving.html');
+            else mainWindow?.loadFile(path.join(__dirname, '..', 'dist', 'Driving.html'));
+          }
+        },
+        {
+          label: '📊 Driver Dashboard',
+          accelerator: 'F3',
+          click: () => {
+            if (isDev) mainWindow?.loadURL('http://localhost:5173/TrafficDashboard.html');
+            else mainWindow?.loadFile(path.join(__dirname, '..', 'dist', 'TrafficDashboard.html'));
+          }
+        },
+        {
+          label: '🚶 Pedestrian Academy',
+          accelerator: 'F4',
+          click: () => {
+            if (isDev) mainWindow?.loadURL('http://localhost:5173/Academy.html');
+            else mainWindow?.loadFile(path.join(__dirname, '..', 'dist', 'Academy.html'));
+          }
+        },
+        {
+          label: '🛠️ Vehicle Customizer',
+          accelerator: 'F5',
+          click: () => {
+            if (isDev) mainWindow?.loadURL('http://localhost:5173/TrafficSetup.html');
+            else mainWindow?.loadFile(path.join(__dirname, '..', 'dist', 'TrafficSetup.html'));
+          }
+        }
+      ]
+    },
+    {
       label: 'View',
       submenu: [
+        { label: 'Reload', accelerator: 'CmdOrCtrl+R', role: 'reload' },
         { label: 'Toggle Fullscreen', accelerator: 'F11', click: () => mainWindow?.setFullScreen(!mainWindow?.isFullScreen()) },
         { label: 'Toggle DevTools', accelerator: 'CmdOrCtrl+Shift+I', click: () => mainWindow?.webContents.toggleDevTools() },
         { type: 'separator' },
@@ -240,7 +269,13 @@ function createMenu(): void {
             detail: 'A 3D driving & pedestrian safety simulator.\nClass Of Learners — Traffic Academy'
           });
         }},
-        { label: 'Check for Updates', click: () => autoUpdater.checkForUpdates().catch(() => {}) },
+        { label: 'Check for Updates', click: () => {
+          dialog.showMessageBox(mainWindow!, {
+            type: 'info',
+            title: 'Updates',
+            message: `Mumbai Traffic Hero is up to date (v${app.getVersion()})`
+          });
+        }},
         { type: 'separator' },
         { label: 'Report Bug', click: () => shell.openExternal('https://github.com/anomalyco/opencode/issues') }
       ]
@@ -281,6 +316,6 @@ ipcMain.handle('get-app-version', () => app.getVersion());
 ipcMain.handle('get-save-path', () => app.getPath('userData'));
 ipcMain.handle('export-save', () => exportSave());
 ipcMain.handle('import-save', () => importSave());
-ipcMain.handle('check-updates', () => isDev ? Promise.resolve({ dev: true }) : autoUpdater.checkForUpdates());
-ipcMain.handle('install-update', () => { autoUpdater.quitAndInstall(); });
+ipcMain.handle('check-updates', () => Promise.resolve({ upToDate: true, version: app.getVersion() }));
+ipcMain.handle('install-update', () => Promise.resolve({ ok: true }));
 ipcMain.handle('is-dev', () => isDev);

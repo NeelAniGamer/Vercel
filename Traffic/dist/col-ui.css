@@ -819,42 +819,69 @@ body.lm .nav-login-btn:hover {
     stroke-width: 2.5;
   }
 
-  /* ── Hamburger moved inside the pill layout via fixed pos ── */
+  /* ── Improvised Mobile Menu Button (Frosted Badge + Smooth Morph) ── */
   .mmb {
     display: flex !important;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 5px;
     z-index: 1005 !important;
     position: fixed !important;
-    top: 23px !important;
-    right: 30px !important;
-    width: 34px !important;
-    height: 34px !important;
-    background: transparent !important;
-    border: none !important;
+    top: 20px !important;
+    right: 24px !important;
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    background: rgba(17, 24, 39, 0.7) !important;
+    border: 1px solid var(--lineb, rgba(255, 255, 255, 0.16)) !important;
     padding: 0 !important;
     margin: 0 !important;
-    border-radius: 0 !important;
+    border-radius: 50% !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+    backdrop-filter: blur(14px) !important;
+    -webkit-backdrop-filter: blur(14px) !important;
+    cursor: pointer;
+    transition: transform 0.25s var(--ease), border-color 0.25s var(--ease), background-color 0.25s !important;
+  }
+  body.lm .mmb {
+    background: rgba(255, 255, 255, 0.8) !important;
+    border-color: rgba(0, 0, 0, 0.12) !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1) !important;
+  }
+  .mmb:hover, .mmb:focus-visible {
+    border-color: var(--signal) !important;
+    transform: scale(1.06);
+  }
+  .mmb:active {
+    transform: scale(0.95);
   }
   .m-line {
-    width: 22px !important;
+    width: 20px !important;
     height: 2px !important;
     background: var(--ink) !important;
     border-radius: 2px !important;
     transition:
-      transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-      opacity 0.3s !important;
+      transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.25s,
+      background-color 0.3s !important;
+  }
+  .mmb.active {
+    background: rgba(242, 184, 75, 0.15) !important;
+    border-color: var(--signal) !important;
   }
   .mmb.active .m-line:nth-child(1) {
-    transform: translateY(6px) rotate(45deg) !important;
+    transform: translateY(7px) rotate(45deg) !important;
+    background: var(--signal) !important;
   }
   .mmb.active .m-line:nth-child(2) {
     opacity: 0 !important;
+    transform: scaleX(0) !important;
   }
   .mmb.active .m-line:nth-child(3) {
-    transform: translateY(-6px) rotate(-45deg) !important;
+    transform: translateY(-7px) rotate(-45deg) !important;
+    background: var(--signal) !important;
   }
 
   /* Hide the old bottom bar visually since mmb is fixed at top */
@@ -868,28 +895,31 @@ body.lm .nav-login-btn:hover {
     top: 0;
     right: 0;
     width: 100vw;
+    max-width: 100vw;
     height: 100vh;
     height: 100dvh;
-    background: var(--panel) !important;
+    background: rgba(7, 10, 20, 0.95) !important;
+    backdrop-filter: blur(28px) saturate(1.8) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(1.8) !important;
     flex-direction: column;
     justify-content: flex-start;
     align-items: stretch;
-    padding: calc(env(safe-area-inset-top, 0px) + 90px) 28px calc(env(safe-area-inset-bottom, 0px) + 20px);
-    gap: 0;
+    padding: calc(env(safe-area-inset-top, 0px) + 85px) 24px calc(env(safe-area-inset-bottom, 0px) + 85px);
+    gap: 4px;
     opacity: 0;
     visibility: hidden;
     transform: translateX(100%);
     transition:
-      transform 0.5s var(--spring),
-      opacity 0.4s,
-      visibility 0.4s;
+      transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.35s,
+      visibility 0.35s;
     z-index: 1001;
     overflow-y: auto;
     overflow-x: hidden;
     flex-wrap: nowrap;
   }
   body.lm .nav-links {
-    background: var(--void) !important;
+    background: rgba(248, 249, 250, 0.96) !important;
   }
 
   .nav-links.active {
@@ -1181,6 +1211,13 @@ body.lm .nav-login-btn:hover {
   .fi {
     flex-direction: column;
     gap: 16px;
+  }
+  .fl a, .sf a, footer a, .footer-link {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    box-sizing: border-box;
   }
 }
 

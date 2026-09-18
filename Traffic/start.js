@@ -174,7 +174,7 @@ window.ASSET_MANIFEST = {}
   M.construction_light = glb(roadKit + 'construction-light.glb')
   M.sign_highway = glb(roadKit + 'sign-highway.glb')
   M.sign_highway_detailed = glb(roadKit + 'sign-highway-detailed.glb')
-  M.bollard = glb(roadKit + 'bollard.glb')
+  M.bollard = glb(roadKit + 'construction-cone.glb')
 
   M.lowpoly_billboard_2x1_03 = glb(sepKit + 'Billboard_2x1_03.glb')
   M.lowpoly_billboard_2x1_05 = glb(sepKit + 'Billboard_2x1_05.glb')
@@ -614,7 +614,7 @@ preloadModels(() => {
   }
 
   const urlParams = new URLSearchParams(window.location.search)
-  let lvId = urlParams.get('lv') || localStorage.getItem('traffic_lv') || '1'
+  let lvId = urlParams.get('level') || urlParams.get('lv') || localStorage.getItem('traffic_lv') || '1'
   let mode = urlParams.get('mode') || localStorage.getItem('traffic_mode') || 'car'
   let veh = urlParams.get('veh') || localStorage.getItem('traffic_veh') || (mode === 'pedestrian' ? 'pedestrian' : (S.vehicle?.toLowerCase() || 'car'))
 

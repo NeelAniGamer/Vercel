@@ -1,28 +1,41 @@
 // ── Per-vehicle handling profiles ──
 const VEHICLE_STATS = {
-  bike:        { maxSpd: 1.35, accel: 0.058, fric: 0.935, turn: 0.088, grip: 0.48 },
-  car:         { maxSpd: 1.10, accel: 0.045, fric: 0.945, turn: 0.080, grip: 0.62 },
-  car_highway: { maxSpd: 1.25, accel: 0.052, fric: 0.948, turn: 0.080, grip: 0.65 },
-  bus:         { maxSpd: 0.80, accel: 0.028, fric: 0.965, turn: 0.045, grip: 0.44 },
-  truck:       { maxSpd: 0.90, accel: 0.033, fric: 0.960, turn: 0.050, grip: 0.50 },
-  auto:        { maxSpd: 1.00, accel: 0.048, fric: 0.942, turn: 0.082, grip: 0.40 },
+  bike:            { maxSpd: 1.35, accel: 0.058, fric: 0.935, turn: 0.088, grip: 0.48 },
+  cyberpunk_bike:  { maxSpd: 1.60, accel: 0.075, fric: 0.940, turn: 0.092, grip: 0.65 },
+  car:             { maxSpd: 1.10, accel: 0.045, fric: 0.945, turn: 0.080, grip: 0.62 },
+  car_highway:     { maxSpd: 1.25, accel: 0.052, fric: 0.948, turn: 0.080, grip: 0.65 },
+  supercar_white:  { maxSpd: 1.75, accel: 0.082, fric: 0.955, turn: 0.088, grip: 0.84 },
+  sports_cyan:     { maxSpd: 1.62, accel: 0.072, fric: 0.952, turn: 0.086, grip: 0.80 },
+  bmw_m4:          { maxSpd: 1.55, accel: 0.068, fric: 0.952, turn: 0.085, grip: 0.78 },
+  nilu_27:         { maxSpd: 1.70, accel: 0.078, fric: 0.955, turn: 0.088, grip: 0.82 },
+  lambo:           { maxSpd: 1.65, accel: 0.072, fric: 0.950, turn: 0.086, grip: 0.80 },
+  taxi:            { maxSpd: 1.15, accel: 0.048, fric: 0.945, turn: 0.082, grip: 0.60 },
+  police:          { maxSpd: 1.40, accel: 0.062, fric: 0.948, turn: 0.084, grip: 0.72 },
+  ambulance:       { maxSpd: 1.20, accel: 0.050, fric: 0.950, turn: 0.068, grip: 0.58 },
+  bus:             { maxSpd: 0.80, accel: 0.028, fric: 0.965, turn: 0.045, grip: 0.44 },
+  bus_green:       { maxSpd: 0.85, accel: 0.030, fric: 0.965, turn: 0.048, grip: 0.46 },
+  truck:           { maxSpd: 0.90, accel: 0.033, fric: 0.960, turn: 0.050, grip: 0.50 },
+  auto:            { maxSpd: 1.00, accel: 0.048, fric: 0.942, turn: 0.082, grip: 0.40 },
 };
 window.VEHICLE_STATS = VEHICLE_STATS;
 
-// ── Per-vehicle chase camera profiles ──
-// dist:     distance behind the vehicle
-// height:   camera height above ground
-// lookAhead:how far ahead the camera looks (speed-proportional cap)
-// lookDist: fixed look-at distance ahead of vehicle
-// baseFov:  base field of view (expands with speed)
-// fovRange: max additional FOV from speed
-// lerpSmoothing: camera lerp factor (higher = snappier)
+// ── Per-vehicle chase camera profiles (Lower-Third Cinematic Framing) ──
 const VEHICLE_CAM = {
-  bike:  { dist: 7.2,  height: 3.8, lookAhead: 2.5, lookDist: 5.0, baseFov: 66, fovRange: 18, lerpSmoothing: 7 },
-  car:   { dist: 9.5,  height: 4.8, lookAhead: 3.5, lookDist: 6.5, baseFov: 62, fovRange: 15, lerpSmoothing: 6 },
-  bus:   { dist: 16.5, height: 7.5, lookAhead: 5.0, lookDist: 9.0, baseFov: 56, fovRange: 10, lerpSmoothing: 5 },
-  truck: { dist: 15.0, height: 7.0, lookAhead: 4.5, lookDist: 8.5, baseFov: 58, fovRange: 12, lerpSmoothing: 5 },
-  auto:  { dist: 8.2,  height: 4.2, lookAhead: 3.0, lookDist: 5.2, baseFov: 65, fovRange: 16, lerpSmoothing: 7 },
+  bike:            { dist: 6.8,  height: 3.4, lookAhead: 3.2, lookDist: 7.5, baseFov: 70, fovRange: 16, lerpSmoothing: 7.5 },
+  cyberpunk_bike:  { dist: 7.0,  height: 3.2, lookAhead: 3.5, lookDist: 8.0, baseFov: 72, fovRange: 18, lerpSmoothing: 8.0 },
+  car:             { dist: 8.8,  height: 4.0, lookAhead: 4.5, lookDist: 9.5, baseFov: 66, fovRange: 15, lerpSmoothing: 6.5 },
+  supercar_white:  { dist: 9.0,  height: 3.6, lookAhead: 5.0, lookDist: 10.5, baseFov: 70, fovRange: 20, lerpSmoothing: 8.0 },
+  sports_cyan:     { dist: 8.8,  height: 3.7, lookAhead: 4.8, lookDist: 10.0, baseFov: 68, fovRange: 18, lerpSmoothing: 7.5 },
+  bmw_m4:          { dist: 8.8,  height: 3.7, lookAhead: 4.8, lookDist: 10.0, baseFov: 68, fovRange: 18, lerpSmoothing: 7.5 },
+  nilu_27:         { dist: 9.0,  height: 3.5, lookAhead: 5.0, lookDist: 10.5, baseFov: 70, fovRange: 20, lerpSmoothing: 7.5 },
+  lambo:           { dist: 10.2, height: 3.8, lookAhead: 5.2, lookDist: 11.5, baseFov: 70, fovRange: 20, lerpSmoothing: 7.5 },
+  taxi:            { dist: 8.8,  height: 4.0, lookAhead: 4.5, lookDist: 9.5, baseFov: 66, fovRange: 15, lerpSmoothing: 6.5 },
+  police:          { dist: 9.0,  height: 4.1, lookAhead: 4.6, lookDist: 9.8, baseFov: 66, fovRange: 16, lerpSmoothing: 6.5 },
+  ambulance:       { dist: 10.5, height: 4.8, lookAhead: 5.0, lookDist: 10.5, baseFov: 64, fovRange: 14, lerpSmoothing: 6.0 },
+  bus:             { dist: 14.5, height: 6.5, lookAhead: 6.0, lookDist: 13.0, baseFov: 58, fovRange: 10, lerpSmoothing: 5.5 },
+  bus_green:       { dist: 14.0, height: 6.4, lookAhead: 6.0, lookDist: 13.0, baseFov: 58, fovRange: 10, lerpSmoothing: 5.5 },
+  truck:           { dist: 13.5, height: 6.2, lookAhead: 5.5, lookDist: 12.0, baseFov: 60, fovRange: 12, lerpSmoothing: 5.5 },
+  auto:            { dist: 7.5,  height: 3.6, lookAhead: 3.5, lookDist: 8.0, baseFov: 68, fovRange: 16, lerpSmoothing: 7.0 },
 };
 const VEHICLE_CAM_DEFAULT = VEHICLE_CAM.car;
 
@@ -934,13 +947,15 @@ class Game {
         this._wheelSpin = 0; this._exhaustSmoke = [];
         this._lateralAccel = 0; this._downforceCoeff = 0; this._brakeFadeFactor = 1.0;
         this.playing = false; this.pause = false; this.lightningTimer = 0; this.thunderSfx = null; this.score = 0; this.hp = 100; this.fine = 0; this.vio = 0; this.timer = 0;
-        this.world = []; this.npcs = []; this.sigs = []; this.cps = []; this.spc = []; this.obstacles = []; this.roadSegments = []; this.driveRoute = []; this.peds = []; this.pedestrianAIs = []; this.routeIdx = 0; this.retries = 0; this.hits = 0;
+        this.world = []; this.npcs = []; this.sigs = []; this.cps = []; this.spc = []; this.obstacles = []; this.roadSegments = []; this.driveRoute = []; this.peds = []; this.pedestrianAIs = []; this.trains = []; this.routeIdx = 0; this.retries = 0; this.hits = 0;
         this._initViolationsLog();
         this.kidModeActive = false;
         this.lodChunks = [];
         this.gyroOn = false; this.gyroBaseGamma = 0; this._gyroHandler = null;
         this.camYaw = 0; this.camPitch = 0;
         this.targetCamYaw = 0; this.targetCamPitch = 0;
+        this.firstPersonMode = false;
+        this._lastMouseMoveTime = 0;
         this._isDraggingMobileLook = false; this._mobileLookTouchId = null;
         this._isDraggingLeft = false; this._isDraggingRight = false;
         this._prevMobileLookX = 0; this._prevMobileLookY = 0;
@@ -996,7 +1011,18 @@ class Game {
         
         this._initR(); this._initIn(); this._initG(); this._initVirtualJoystick(); this._loop();
         window.addEventListener('resize', () => this._rsz());
-        document.addEventListener('fullscreenchange', () => this._rsz());
+        document.addEventListener('fullscreenchange', () => {
+          this._rsz();
+          if (document.fullscreenElement && this.playing && !this.pause) {
+            const canvas = this.renderCore?.renderer?.domElement || document.querySelector('canvas');
+            if (canvas && typeof canvas.requestPointerLock === 'function') {
+              try { canvas.requestPointerLock(); } catch(err) {}
+            }
+          }
+        });
+        document.addEventListener('pointerlockchange', () => {
+          this.isPointerLocked = !!document.pointerLockElement;
+        });
       }
 
       _initViolationsLog() {
@@ -1036,9 +1062,10 @@ class Game {
     4: [
       'emergency_vehicle_pull_over', 'clear_intersection_for_emergency'
     ],
-    // Level 5: Rush Hour
+    // Level 5: School Zone Crossing
     5: [
-      'lane_discipline_rush', 'no_blocking_intersection', 'patience_in_traffic'
+      'school_zone_20kmh', 'stop_for_school_children', 'school_crossing_guard',
+      'no_honking_school_zone', 'yield_pedestrians'
     ],
     // Level 6: Zebra Yield
     6: [
@@ -1387,7 +1414,9 @@ class Game {
         this.renderCore.init(this.rendererDom);
         // Setup post-processing (bloom, etc.) based on quality preset
         this.renderCore.setupPostProcessing(innerWidth, innerHeight, isMobile);
-        this.scene = new THREE.Scene(); this.camera = new THREE.PerspectiveCamera(65, w / h, .1, 350);
+        this.renderDistance = parseInt(localStorage.getItem('traffic_render_distance') || (isMobile ? '240' : '500'), 10);
+        this.scene = new THREE.Scene();
+        this.camera = new THREE.PerspectiveCamera(65, w / h, .1, Math.max(1400, this.renderDistance * 2.5));
 
         // Post-processing (bloom) handled entirely by RenderCore.
         // No separate EffectComposer needed here.
@@ -1401,7 +1430,7 @@ class Game {
         // resizes on the first window resize event, causing a corner render.
         this._rsz();
       }
-      _rsz() { if (!this.renderCore.renderer) return; const maxW = 1920, maxH = 1080; const isMobile = this._isMobile; let w = innerWidth, h = innerHeight; let dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.0 : 2); if (w * dpr > maxW) dpr = maxW / w; if (h * dpr > maxH) dpr = maxH / h; this._dpr = dpr; this.renderCore.renderer.setSize(w * dpr, h * dpr, false); if (this.renderCore.renderer.domElement && this.renderCore.renderer.domElement.style) { this.renderCore.renderer.domElement.style.width = w + 'px'; this.renderCore.renderer.domElement.style.height = h + 'px'; } if (this.composer) { this.composer.setSize(w * dpr, h * dpr); } this.renderCore.resizePostProcessing(w, h); if (this.camera) { this.camera.aspect = w / h; this.camera.updateProjectionMatrix(); } this._checkOrientation(); }
+      _rsz() { if (!this.renderCore.renderer) return; const maxW = 1920, maxH = 1080; const isMobile = this._isMobile; let w = innerWidth, h = innerHeight; let dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.0 : 2); if (w * dpr > maxW) dpr = maxW / w; if (h * dpr > maxH) dpr = maxH / h; this._dpr = dpr; this.renderCore.renderer.setSize(w * dpr, h * dpr, false); if (this.renderCore.renderer.domElement && this.renderCore.renderer.domElement.style) { this.renderCore.renderer.domElement.style.width = w + 'px'; this.renderCore.renderer.domElement.style.height = h + 'px'; } if (this.composer) { this.composer.setSize(w * dpr, h * dpr); } this.renderCore.resizePostProcessing(w, h); if (this.camera) { this.camera.aspect = w / h; this.camera.far = Math.max(1400, (this.renderDistance || 500) * 2.5); this.camera.updateProjectionMatrix(); } this._checkOrientation(); }
 
       _checkOrientation() {
         if (!this._isMobile) return;
@@ -1416,6 +1445,30 @@ class Game {
           if (overlay) overlay.classList.remove('on');
         }
       }
+
+      setRenderDistance(dist) {
+        this.renderDistance = parseInt(dist, 10) || (this._isMobile ? 240 : 500);
+        localStorage.setItem('traffic_render_distance', this.renderDistance);
+        if (this.camera) {
+          this.camera.far = Math.max(1400, this.renderDistance * 2.5);
+          this.camera.updateProjectionMatrix();
+        }
+        if (this.scene) {
+          if (!this.scene.fog) {
+            this.scene.fog = new THREE.Fog(0x0a101d, this.renderDistance * 0.75, this.renderDistance * 1.6);
+          } else {
+            this.scene.fog.near = this.renderDistance * 0.75;
+            this.scene.fog.far = this.renderDistance * 1.6;
+          }
+        }
+        if (this.sceneryKit && this.player && this.player.position) {
+          this.sceneryKit.updateVisibility(this.player.position, this.renderDistance, true);
+        }
+        if (typeof this._updateDynamicLOD === 'function') {
+          this._updateDynamicLOD(1, true);
+        }
+      }
+
       _initIn() {
         // ── GYRO CONTROLS ──
         this._gyroSensing = false;
@@ -1434,7 +1487,11 @@ class Game {
             if (e.key.toLowerCase() === 'q') this.toggleTurnSignal(-1);
             if (e.key.toLowerCase() === 'e') this.toggleTurnSignal(1);
             if (e.key.toLowerCase() === 'm') this.togglePhoneGps();
-             if (e.key === 'Escape') this.togglePause();
+             if (e.key.toLowerCase() === 'v') {
+               this.firstPersonMode = !this.firstPersonMode;
+               if (typeof toast === 'function') toast(this.firstPersonMode ? '🎥 Switched to First Person' : '🎥 Switched to Third Person', '#3498db');
+             }
+              if (e.key === 'Escape') this.togglePause();
              // ── SPEED CONTROLS ──
              if (e.key.toLowerCase() === 'c') this.toggleCruiseControl && this.toggleCruiseControl();
              if (e.key.toLowerCase() === 'l') this.toggleSpeedLimiter && this.toggleSpeedLimiter();
@@ -1464,47 +1521,68 @@ class Game {
             }
           }
 
-        // Camera always stays in third-person chase mode.
-        // Left/right look is handled by click-drag orbit handlers below.
+        // Continuous Mouse Pointer Following (Fullscreen & Pointer Lock & Orbit)
+        this._lastPointerUnlock = 0;
+        // Continuous Direct Mouse Pointer Following & Pointer Lock (Hidden & Centered Cursor)
         this._lastPointerUnlock = 0;
         this.isPointerLocked = false;
-         document.addEventListener('mousemove', (e) => {
-           if (this.isPointerLocked) {
-             if (this.isPedestrian) {
-               if (this.player) this.player.rotation.y -= e.movementX * 0.003;
-             } else {
-               this.targetCamYaw -= e.movementX * 0.003;
-               this.targetCamYaw = Math.max(-2.5, Math.min(2.5, this.targetCamYaw));
-             }
-             this.targetCamPitch = Math.max(-1.5, Math.min(1.5, this.targetCamPitch));
-           } else if (this._isDraggingCamera) {
-             this.targetCamYaw -= e.movementX * 0.005;
-             this.targetCamYaw = Math.max(-2.5, Math.min(2.5, this.targetCamYaw));
-             this.targetCamPitch -= e.movementY * 0.005;
-             this.targetCamPitch = Math.max(-1.5, Math.min(1.5, this.targetCamPitch));
-           }
-         });
-        // Left-click drag for third-person camera orbit (desktop only)
-        if (this.renderCore.renderer && this.renderCore.renderer.domElement) {
-          this.renderCore.renderer.domElement.addEventListener('mousedown', (e) => {
-            if (e.button === 0 && this.playing && !this.pause && !this.isPointerLocked && (!e.pointerType || e.pointerType === 'mouse') && !('ontouchstart' in window || navigator.maxTouchPoints > 0)) {
-              this._isDraggingLeft = true;
-              this._isDraggingCamera = true;
+
+        const _bindPointerLockCanvas = () => {
+          const cvs = this.renderCore?.renderer?.domElement || document.querySelector('canvas');
+          if (cvs && !cvs._pointerLockBound) {
+            cvs._pointerLockBound = true;
+            cvs.addEventListener('click', () => {
+              if (!document.pointerLockElement && this.playing && !this.pause) {
+                try { cvs.requestPointerLock(); } catch(err) {}
+              }
+            });
+            cvs.addEventListener('mousedown', (e) => {
+              if (!document.pointerLockElement && this.playing && !this.pause) {
+                try { cvs.requestPointerLock(); } catch(err) {}
+              }
+              if (e.button === 0 && (!e.pointerType || e.pointerType === 'mouse')) {
+                this._isDraggingLeft = true;
+                this._isDraggingCamera = true;
+              }
+              if (e.button === 2) {
+                this._isDraggingRight = true;
+                this._isDraggingCamera = true;
+              }
+            });
+          }
+        };
+        _bindPointerLockCanvas();
+
+        document.addEventListener('mousemove', (e) => {
+          const isLocked = !!document.pointerLockElement || this.isPointerLocked;
+          const isFullscreen = !!document.fullscreenElement;
+          const shouldFollow = isLocked || isFullscreen || this._isDraggingCamera;
+          
+          if (shouldFollow && this.playing && !this.pause) {
+            this._lastMouseMoveTime = Date.now();
+            // Direct 360-degree mouse-look in Third Person Mode without clicking
+            const cSens = this.camSensitivity || 1.0;
+            const sensX = 0.0032 * cSens;
+            const sensY = 0.0024 * cSens;
+            this.targetCamYaw = (this.targetCamYaw || 0) - (e.movementX || 0) * sensX;
+            
+            // Natural vertical pitch tilting (looking up/down smoothly clamped)
+            this.targetCamPitch = Math.max(-0.45, Math.min(0.65, (this.targetCamPitch || 0) - (e.movementY || 0) * sensY));
+
+            // In first person mode only, player character model directly tracks mouse heading
+            if (this.firstPersonMode && this.isPedestrian && this.player) {
+              this.player.rotation.y = this.targetCamYaw;
             }
-            // Right-click also enables camera drag (more intuitive for desktop users)
-            if (e.button === 2 && this.playing && !this.pause && !this.isPointerLocked) {
-              this._isDraggingRight = true;
-              this._isDraggingCamera = true;
-            }
-          });
-          window.addEventListener('mouseup', (e) => {
-            if (e.button === 0 || e.button === 2) {
-              if (e.button === 0) this._isDraggingLeft = false;
-              if (e.button === 2) this._isDraggingRight = false;
-              if (!this._isDraggingLeft && !this._isDraggingRight) this._isDraggingCamera = false;
-            }
-          });
-        }
+          }
+        });
+        
+        window.addEventListener('mouseup', (e) => {
+          if (e.button === 0 || e.button === 2) {
+            if (e.button === 0) this._isDraggingLeft = false;
+            if (e.button === 2) this._isDraggingRight = false;
+            if (!this._isDraggingLeft && !this._isDraggingRight) this._isDraggingCamera = false;
+          }
+        });
 
         // Mobile Controls Bindings
         const bindTouch = (id, key) => {
@@ -1750,22 +1828,33 @@ class Game {
           el.addEventListener('touchstart', dn, { passive: false }); el.addEventListener('touchend', up, { passive: false });
           el.addEventListener('mousedown', dn); el.addEventListener('mouseup', up); el.addEventListener('mouseleave', up);
         };
-        sb('tl', 'arrowleft'); sb('tr', 'arrowright'); sb('tu', 'arrowup'); sb('abb', 'b'); sb('abh', ' ');
-
+        sb('tl', 'arrowleft'); sb('tr', 'arrowright'); sb('tu', 'arrowup');
+        sb('abb', 'arrowdown');
+        const abhEl = document.getElementById('abh');
+        if (abhEl) {
+          const triggerHorn = (e) => {
+            e.preventDefault();
+            if (window.TrafficAudio && typeof window.TrafficAudio.playHonk === 'function') {
+              window.TrafficAudio.playHonk();
+            } else if (typeof sfx !== 'undefined' && sfx.play) {
+              sfx.play('horn');
+            }
+          };
+          abhEl.addEventListener('touchstart', triggerHorn, { passive: false });
+          abhEl.addEventListener('mousedown', triggerHorn);
+        }
 
         this._initMobileCameraLook();
         this._initCameraJoystick();
-        this._initSwipeTurn();
-        // _initMouseSteer() disabled: it bound its own mousedown/mousemove on the same
-        // canvas as the camera-drag-orbit handler above, fighting it for every click —
-        // one system orbited the camera (relative drag), the other directly rotated the
-        // player using absolute cursor position. Same click, two systems, is why mouse
-        // look/steer felt broken. Re-enable only if you specifically want click-to-face
-        // steering for stationary/pedestrian mode, and give it its own input mode first.
-        // this._initMouseSteer();
         this._initMobileHudAutohide();
       }
       _initG() {
+        // Initialize steering and camera sensitivity
+        const savedSens = typeof localStorage !== 'undefined' ? localStorage.getItem('traffic_sensitivity') : null;
+        const sensFactor = (savedSens !== null && !isNaN(parseInt(savedSens, 10))) ? (parseInt(savedSens, 10) / 100) : 1.0;
+        this.steerSensitivity = sensFactor;
+        this.camSensitivity = sensFactor;
+
         document.querySelectorAll('.gb').forEach(b => { b.addEventListener('click', () => this.setGear(b.dataset.g)); b.addEventListener('touchstart', e => { e.preventDefault(); this.setGear(b.dataset.g); }, { passive: false }); });
         // ── SPEED CONTROLS INIT ──
         this.cruiseControl = false;
@@ -1786,33 +1875,30 @@ class Game {
       }
 
 
-      // Touch-capable is not the same as touch-driven: a Windows laptop with a
-      // touchscreen reports maxTouchPoints > 0 while still being a mouse+keyboard
-      // machine, which used to paste both on-screen joysticks over the desktop HUD.
-      // Require a coarse primary pointer with no hover (or a phone/tablet UA).
+      // Reliable touch device detection for mobile gameplay HUD
       _useTouchControls() {
         if (this._isMobile) return true;
-        if (!('ontouchstart' in window || navigator.maxTouchPoints > 0)) return false;
-        if (window.matchMedia) {
-          return window.matchMedia('(pointer: coarse)').matches && window.matchMedia('(hover: none)').matches;
-        }
+        if ('ontouchstart' in window || navigator.maxTouchPoints > 0) return true;
+        if (window.matchMedia && (window.matchMedia('(pointer: coarse)').matches || window.matchMedia('(hover: none)').matches)) return true;
         return false;
       }
 
       // ── VIRTUAL JOYSTICK FOR MOBILE ──
       _initVirtualJoystick() {
-        if (!this._useTouchControls()) return;
-
+        const isTouch = this._useTouchControls();
         const joystickZone = document.getElementById('joystick-zone');
         const knob = document.getElementById('joystick-knob');
         if (!joystickZone || !knob) return;
 
-        // Show joystick on mobile
-        joystickZone.style.display = 'block';
+        if (isTouch) {
+          joystickZone.style.display = 'block';
+          const mc = document.getElementById('mobile-controls');
+          if (mc) mc.style.display = 'flex';
+        }
 
         let isDragging = false;
         let touchId = null;
-        const maxDist = 38; // Max distance knob can move from center
+        const maxDist = 42; // Max distance knob can move from center
 
         const handleJoystickMove = (clientX, clientY) => {
           const rect = joystickZone.getBoundingClientRect();
@@ -1845,19 +1931,33 @@ class Game {
           window.analogThrottle = 0;
         };
 
-        // Touch events for joystick
+        // Touch events for joystick zone
         joystickZone.addEventListener('touchstart', (e) => {
           e.preventDefault();
           e.stopPropagation();
           isDragging = true;
-          touchId = e.touches[0].identifier;
-          handleJoystickMove(e.touches[0].clientX, e.touches[0].clientY);
+          touchId = e.changedTouches[0].identifier;
+          handleJoystickMove(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
         }, { passive: false });
 
-        joystickZone.addEventListener('touchmove', (e) => {
-          if (!isDragging) return;
-          e.preventDefault();
-          // Find our touch
+        // Also allow dynamic touch start anywhere on bottom-left screen
+        document.addEventListener('touchstart', (e) => {
+          if (!this.playing || this.pause || isDragging) return;
+          for (let i = 0; i < e.changedTouches.length; i++) {
+            const t = e.changedTouches[i];
+            if (t.clientX < window.innerWidth * 0.42 && t.clientY > window.innerHeight * 0.35) {
+              const el = t.target;
+              if (el.closest && (el.closest('#mobile-pause-btn') || el.closest('#top-bar-container') || el.closest('#hud'))) continue;
+              isDragging = true;
+              touchId = t.identifier;
+              handleJoystickMove(t.clientX, t.clientY);
+              break;
+            }
+          }
+        }, { passive: true });
+
+        document.addEventListener('touchmove', (e) => {
+          if (!isDragging || touchId === null) return;
           for (let i = 0; i < e.touches.length; i++) {
             if (e.touches[i].identifier === touchId) {
               handleJoystickMove(e.touches[i].clientX, e.touches[i].clientY);
@@ -1866,18 +1966,20 @@ class Game {
           }
         }, { passive: false });
 
-        joystickZone.addEventListener('touchend', (e) => {
-          // Check if our touch ended
-          let found = false;
-          for (let i = 0; i < e.touches.length; i++) {
-            if (e.touches[i].identifier === touchId) { found = true; break; }
+        const endTouchHandler = (e) => {
+          if (!isDragging) return;
+          for (let i = 0; i < e.changedTouches.length; i++) {
+            if (e.changedTouches[i].identifier === touchId) {
+              resetJoystick();
+              break;
+            }
           }
-          if (!found) resetJoystick();
-        });
+        };
 
-        joystickZone.addEventListener('touchcancel', resetJoystick);
+        document.addEventListener('touchend', endTouchHandler, { passive: true });
+        document.addEventListener('touchcancel', endTouchHandler, { passive: true });
 
-        // Also support mouse for testing
+        // Mouse fallback for desktop testing
         joystickZone.addEventListener('mousedown', (e) => {
           isDragging = true;
           touchId = 'mouse';
@@ -1900,17 +2002,15 @@ class Game {
 
       // ── CAMERA JOYSTICK FOR MOBILE LOOK-AROUND ──
       _initCameraJoystick() {
-        if (!this._useTouchControls()) return;
-
         const camJoy = document.getElementById('camera-joystick');
         const camKnob = document.getElementById('camera-joystick-knob');
         if (!camJoy || !camKnob) return;
 
-        camJoy.style.display = 'flex';
-
         let isDragging = false;
         const maxDist = 35;
         this._camJoyActive = false;
+        this._camJoyDx = 0;
+        this._camJoyDy = 0;
 
         const handleCamMove = (clientX, clientY) => {
           const rect = camJoy.getBoundingClientRect();
@@ -1924,17 +2024,17 @@ class Game {
             dy = (dy / dist) * maxDist;
           }
           camKnob.style.transform = `translate(${dx}px, ${dy}px)`;
-           // Map joystick displacement to camYaw/camPitch changes
-           const sensitivity = 0.12; // Increased sensitivity significantly
-           this.targetCamYaw -= dx * sensitivity;
-           this.targetCamYaw = Math.max(-2.5, Math.min(2.5, this.targetCamYaw));
-           this.targetCamPitch -= dy * sensitivity;
-           this.targetCamPitch = Math.max(-1.5, Math.min(1.5, this.targetCamPitch));
+          // Store normalized deflection as angular velocity (rad/sec at full tilt)
+          const angularSpeed = 3.5;
+          this._camJoyDx = (dx / maxDist) * angularSpeed;
+          this._camJoyDy = (dy / maxDist) * angularSpeed;
         };
 
         const resetCamJoy = () => {
           isDragging = false;
           this._camJoyActive = false;
+          this._camJoyDx = 0;
+          this._camJoyDy = 0;
           camKnob.style.transform = 'translate(0px, 0px)';
         };
 
@@ -1955,18 +2055,6 @@ class Game {
 
         camJoy.addEventListener('touchend', resetCamJoy);
         camJoy.addEventListener('touchcancel', resetCamJoy);
-
-        // Mouse fallback for testing
-        camJoy.addEventListener('mousedown', (e) => {
-          isDragging = true;
-          this._camJoyActive = true;
-          handleCamMove(e.clientX, e.clientY);
-        });
-        window.addEventListener('mousemove', (e) => {
-          if (!isDragging) return;
-          handleCamMove(e.clientX, e.clientY);
-        });
-        window.addEventListener('mouseup', resetCamJoy);
       }
 
       // ── HUD AUTO-HIDE ON MOBILE ──
@@ -1980,8 +2068,8 @@ class Game {
         if (!panels.length) return;
 
         let fadeTimer = null;
-        const FADE_DELAY = 3000;
-        const FADE_OPACITY = '0.25';
+        const FADE_DELAY = 4000;
+        const FADE_OPACITY = '0.35';
         const NORMAL_OPACITY = '1';
 
         const doFade = () => {
@@ -2002,183 +2090,84 @@ class Game {
           fadeTimer = setTimeout(doFade, FADE_DELAY);
         };
 
-        // Start fade after level loads
         fadeTimer = setTimeout(doFade, FADE_DELAY);
 
-        // Tap anywhere on canvas (not on controls) to reveal
         document.addEventListener('touchstart', (e) => {
           const t = e.target;
-          if (t.closest('#mobile-controls') || t.closest('#hud') || t.closest('#hudbar') ||
+          if (t.closest && (t.closest('#mobile-controls') || t.closest('#hud') || t.closest('#hudbar') ||
               t.closest('#hwrap') || t.closest('#civic-controls') || t.closest('#camera-joystick') ||
-              t.closest('#virtual-joystick') || t.closest('#gp') || t.closest('#phone-gps')) return;
+              t.closest('#joystick-zone') || t.closest('#gp') || t.closest('#phone-gps'))) return;
           restartTimer();
         }, { passive: true });
 
-        // Also reveal briefly on score/objective change
         this._hudShowBrief = () => restartTimer();
       }
 
+      // ── FREE FIRE STYLE DUAL-ZONE TOUCH CAMERA SWIPE ──
       _initMobileCameraLook() {
-        if (!('ontouchstart' in window || navigator.maxTouchPoints > 0)) return;
         const isControl = (el) => {
           if (!el) return false;
-          const ctrlIds = ['steer-wheel-container','steer-wheel','mc-brake','mc-gas','mc-boost','mc-enter','phone-gps-btn','phone-gps','tl','tr','tu','abb','abh','btn-seatbelt','btn-mobile', 'virtual-joystick', 'joystick-knob', 'camera-joystick', 'camera-joystick-knob'];
+          const ctrlIds = ['steer-wheel-container','steer-wheel','mc-brake','mc-gas','mc-boost','mc-enter','phone-gps-btn','phone-gps','tl','tr','tu','abb','abh','btn-seatbelt','btn-mobile', 'joystick-zone', 'joystick-knob', 'camera-joystick', 'camera-joystick-knob', 'mobile-pause-btn', 'phone-gps-close'];
           for (const id of ctrlIds) {
             const c = document.getElementById(id);
             if (c && (el === c || c.contains(el))) return true;
           }
-          if (el.closest && el.closest('#mobile-controls')) return true;
-          if (el.closest && el.closest('#hud')) return true;
-          if (el.closest && el.closest('#hudbar')) return true;
-          if (el.closest && el.closest('#civic-controls')) return true;
+          if (el.closest && (el.closest('#mobile-controls') || el.closest('#hud') || el.closest('#hudbar') || el.closest('#civic-controls') || el.closest('#top-bar-container') || el.closest('#pause-overlay'))) return true;
           return false;
         };
-        const lookThreshold = 10;
+
         let lookCandidateX = 0, lookCandidateY = 0;
-        document.addEventListener('touchstart', (e) => {
-          if (!this.playing || this.pause) return;
-          const t = e.changedTouches[0];
-          if (isControl(t.target)) return;
-          lookCandidateX = t.clientX;
-          lookCandidateY = t.clientY;
-        }, { passive: true });
-        document.addEventListener('touchmove', (e) => {
-          if (!this.playing || this.pause) return;
-          if (this._isDraggingMobileLook) {
-            for (let i = 0; i < e.touches.length; i++) {
-              if (e.touches[i].identifier === this._mobileLookTouchId) {
-                 const dx = e.touches[i].clientX - this._prevMobileLookX;
-                 const dy = e.touches[i].clientY - this._prevMobileLookY;
-                 this._prevMobileLookX = e.touches[i].clientX;
-                 this._prevMobileLookY = e.touches[i].clientY;
-                 this.targetCamYaw -= dx * 0.005;
-                 this.targetCamYaw = Math.max(-2.5, Math.min(2.5, this.targetCamYaw));
-                 this.targetCamPitch -= dy * 0.005;
-                 this.targetCamPitch = Math.max(-1.2, Math.min(1.2, this.targetCamPitch));
-                e.preventDefault();
-                return;
-              }
-            }
-          } else {
-            for (let i = 0; i < e.touches.length; i++) {
-              if (Math.abs(e.touches[i].clientX - lookCandidateX) > lookThreshold || Math.abs(e.touches[i].clientY - lookCandidateY) > lookThreshold) {
-                if (!isControl(e.touches[i].target)) {
-                  this._isDraggingMobileLook = true;
-                  this._mobileLookTouchId = e.touches[i].identifier;
-                  this._prevMobileLookX = e.touches[i].clientX;
-                  this._prevMobileLookY = e.touches[i].clientY;
-                  e.preventDefault();
-                  return;
-                }
-              }
-            }
-          }
-        }, { passive: false });
-        document.addEventListener('touchend', (e) => {
-          if (!this._isDraggingMobileLook) return;
-          for (let i = 0; i < e.changedTouches.length; i++) {
-            if (e.changedTouches[i].identifier === this._mobileLookTouchId) {
-              this._isDraggingMobileLook = false;
-              this._mobileLookTouchId = null;
-              return;
-            }
-          }
-        }, { passive: true });
-        document.addEventListener('touchcancel', () => {
-          this._isDraggingMobileLook = false;
-          this._mobileLookTouchId = null;
-        }, { passive: true });
-      }
-
-      // ── SWIPE TO TURN: Touch swipe turns player character toward swipe direction ──
-      _initSwipeTurn() {
-        if (!('ontouchstart' in window || navigator.maxTouchPoints > 0)) return;
-
-        const isControl = (el) => {
-          if (!el) return false;
-          const ctrlIds = ['steer-wheel-container','steer-wheel','mc-brake','mc-gas','mc-boost','mc-enter','phone-gps-btn','phone-gps','tl','tr','tu','abb','abh','btn-seatbelt','btn-mobile', 'virtual-joystick', 'joystick-knob', 'camera-joystick', 'camera-joystick-knob'];
-          for (const id of ctrlIds) {
-            const c = document.getElementById(id);
-            if (c && (el === c || c.contains(el))) return true;
-          }
-          if (el.closest && el.closest('#mobile-controls')) return true;
-          if (el.closest && el.closest('#hud')) return true;
-          if (el.closest && el.closest('#hudbar')) return true;
-          if (el.closest && el.closest('#civic-controls')) return true;
-          return false;
-        };
-
-        const SWIPE_THRESHOLD = 20;
-        let touchStartX = 0, touchStartY = 0;
-        let swipeTouchId = null;
 
         document.addEventListener('touchstart', (e) => {
           if (!this.playing || this.pause) return;
-          // Only enable swipe turn in pedestrian mode OR when stationary
-          if (!this.isPedestrian && Math.abs(this.speed) > 0.1) return;
-
           for (let i = 0; i < e.changedTouches.length; i++) {
             const t = e.changedTouches[i];
-            if (isControl(t.target)) continue;
-            if (swipeTouchId !== null) continue; // Already tracking
-
-            touchStartX = t.clientX;
-            touchStartY = t.clientY;
-            swipeTouchId = t.identifier;
-            break;
-          }
-        }, { passive: true });
-
-        document.addEventListener('touchmove', (e) => {
-          if (swipeTouchId === null) return;
-          if (!this.playing || this.pause) return;
-
-          for (let i = 0; i < e.changedTouches.length; i++) {
-            const t = e.changedTouches[i];
-            if (t.identifier !== swipeTouchId) continue;
-
-            const dx = t.clientX - touchStartX;
-            const dy = t.clientY - touchStartY;
-
-            if (Math.abs(dx) > SWIPE_THRESHOLD || Math.abs(dy) > SWIPE_THRESHOLD) {
-              // Calculate angle from swipe direction
-              // Swipe UP = turn forward (0), SWIPE DOWN = turn backward (PI)
-              // Swipe LEFT = turn left, SWIPE RIGHT = turn right
-              const angle = Math.atan2(dx, -dy); // Negate dy because screen Y is inverted
-
-              // Smoothly rotate player toward swipe direction
-              const targetRot = angle;
-              if (!this.player) return
-              const currentRot = this.player.rotation.y;
-
-              // Shortest rotation path
-              let diff = targetRot - currentRot;
-              while (diff > Math.PI) diff -= Math.PI * 2;
-              while (diff < -Math.PI) diff += Math.PI * 2;
-
-              // Apply rotation (smooth interpolation)
-              this.player.rotation.y += diff * 0.15;
-
-              // Reset start for continuous tracking
-              touchStartX = t.clientX;
-              touchStartY = t.clientY;
-            }
-            break;
-          }
-        }, { passive: true });
-
-        document.addEventListener('touchend', (e) => {
-          for (let i = 0; i < e.changedTouches.length; i++) {
-            if (e.changedTouches[i].identifier === swipeTouchId) {
-              swipeTouchId = null;
+            // Right-side screen area dedicated to Free Fire style camera swipe & look
+            if (t.clientX >= window.innerWidth * 0.45 && !isControl(t.target)) {
+              this._isDraggingMobileLook = true;
+              this._mobileLookTouchId = t.identifier;
+              this._prevMobileLookX = t.clientX;
+              this._prevMobileLookY = t.clientY;
               break;
             }
           }
         }, { passive: true });
 
-        document.addEventListener('touchcancel', () => {
-          swipeTouchId = null;
+        document.addEventListener('touchmove', (e) => {
+          if (!this.playing || this.pause || !this._isDraggingMobileLook) return;
+          for (let i = 0; i < e.touches.length; i++) {
+            if (e.touches[i].identifier === this._mobileLookTouchId) {
+              const dx = e.touches[i].clientX - this._prevMobileLookX;
+              const dy = e.touches[i].clientY - this._prevMobileLookY;
+              this._prevMobileLookX = e.touches[i].clientX;
+              this._prevMobileLookY = e.touches[i].clientY;
+
+              const cSens = this.camSensitivity || 1.0;
+              // Unbounded 360 degree yaw rotation in pedestrian mode
+              this.targetCamYaw -= dx * 0.005 * cSens;
+              if (!this.isPedestrian) {
+                this.targetCamYaw = Math.max(-Math.PI, Math.min(Math.PI, this.targetCamYaw));
+              }
+              this.targetCamPitch -= dy * 0.005 * cSens;
+              this.targetCamPitch = Math.max(-1.2, Math.min(1.2, this.targetCamPitch));
+              break;
+            }
+          }
         }, { passive: true });
+
+        const endLook = (e) => {
+          if (!this._isDraggingMobileLook) return;
+          for (let i = 0; i < e.changedTouches.length; i++) {
+            if (e.changedTouches[i].identifier === this._mobileLookTouchId) {
+              this._isDraggingMobileLook = false;
+              this._mobileLookTouchId = null;
+              break;
+            }
+          }
+        };
+
+        document.addEventListener('touchend', endLook, { passive: true });
+        document.addEventListener('touchcancel', endLook, { passive: true });
       }
 
       // ── MOUSE STEER: Mouse position controls direction when not in pointer lock ──
@@ -2229,23 +2218,58 @@ class Game {
         });
       }
 
+      _pollGamepad(dt) {
+        const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+        for (let i = 0; i < gamepads.length; i++) {
+          const gp = gamepads[i];
+          if (!gp) continue;
+          // Right stick: axes[2] = X, axes[3] = Y (standard gamepad mapping)
+          const rx = Math.abs(gp.axes[2]) > 0.15 ? gp.axes[2] : 0;
+          const ry = Math.abs(gp.axes[3]) > 0.15 ? gp.axes[3] : 0;
+          if (rx || ry) {
+            const gpSens = 2.5; // rad/sec at full deflection
+            this.targetCamYaw -= rx * gpSens * dt;
+            this.targetCamPitch -= ry * gpSens * dt;
+            if (!this.isPedestrian) {
+              this.targetCamYaw = Math.max(-Math.PI, Math.min(Math.PI, this.targetCamYaw));
+            }
+            this.targetCamPitch = Math.max(-1.2, Math.min(1.2, this.targetCamPitch));
+          }
+          // Left stick → movement (axes[0] = steering, axes[1] = throttle/brake)
+          if (Math.abs(gp.axes[0]) > 0.1) window.analogSteering = gp.axes[0];
+          else window.analogSteering = 0;
+          if (Math.abs(gp.axes[1]) > 0.1) window.analogThrottle = -gp.axes[1];
+          else window.analogThrottle = 0;
+          break; // Use first connected gamepad
+        }
+      }
+
       _decayCameraLook(dt) {
+        if (this.isPedestrian) return; // Keep persistent 360 camera heading in TPS mode
         if (this._isDraggingMobileLook) return;
         if (this._camJoyActive) return;
-        if (this.isPointerLocked || this._isDraggingCamera) return;
-        // After camera joystick use, use very slow decay so angle is preserved
-        // Reduced from 4 to 0.8 so camera angles persist longer before resetting
+        if (this._isDraggingCamera) return;
+
+        // In vehicle mode with pointer lock, keep camera angle unless idle for 2.0s while actively driving forward
+        const now = Date.now();
+        const mouseIdle = (now - (this._lastMouseMoveTime || 0)) > 2000;
+        const isDriving = Math.abs(this.speed || 0) > 0.5;
+        if (this.isPointerLocked && (!mouseIdle || !isDriving)) return;
         const decayRate = this._camJoyEverUsed ? 0.15 : 0.8;
         const threshold = 0.005;
         if (Math.abs(this.camYaw) > threshold || Math.abs(this.camPitch) > threshold) {
           const factor = Math.max(0, 1 - decayRate * dt);
           this.camYaw *= factor;
           this.camPitch *= factor;
-          if (Math.abs(this.camYaw) < threshold) this.camYaw = 0;
-          if (Math.abs(this.camPitch) < threshold) this.camPitch = 0;
+          this.targetCamYaw *= factor;
+          this.targetCamPitch *= factor;
+          if (Math.abs(this.camYaw) < threshold) { this.camYaw = 0; this.targetCamYaw = 0; }
+          if (Math.abs(this.camPitch) < threshold) { this.camPitch = 0; this.targetCamPitch = 0; }
         } else {
           this.camYaw = 0;
           this.camPitch = 0;
+          this.targetCamYaw = 0;
+          this.targetCamPitch = 0;
         }
       }
 
@@ -2560,7 +2584,8 @@ class Game {
         const safeVx = Math.max(0.3, Math.abs(speedMs));
         
         // Steering angle in radians
-        const maxSteer = (this.turn || 0.08) * 4.5;
+        const sSens = this.steerSensitivity || 1.0;
+        const maxSteer = (this.turn || 0.08) * 4.5 * sSens;
         const steerAngle = tAmt * maxSteer * (isRev ? -1 : 1);
         this._steerAngle = steerAngle;
 
@@ -2917,8 +2942,8 @@ class Game {
               }
             });
 
-            if (window.TrafficAudio && Math.random() < 0.2) {
-              window.TrafficAudio.playScreech(Math.min(1.0, lateralSlip * 1.5));
+            if (window.TrafficAudio && lateralSlip > 0.45 && Math.random() < 0.15) {
+              window.TrafficAudio.playScreech(Math.min(1.0, (lateralSlip - 0.3) * 1.6));
             }
           }
 
@@ -3327,9 +3352,14 @@ class Game {
         // Show loading screen with level name
         this._showLoading(lv.name || 'Level ' + lv.id);
         this._updateLoading(5, 'Resetting game state...');
-        this.mode = lv.mode || ui.curMode || 'car';
-        this.vehMode = lv.vehMode || (ui.curMode === 'pedestrian' ? 'pedestrian' : (ui.curMode || 'car'));
-        this.isPedestrian = (this.vehMode === 'pedestrian' || this.mode === 'pedestrian');
+        const validVehicles = ['car', 'bike', 'bus', 'truck', 'auto', 'pedestrian', 'twowheeler', 'lambo', 'sedan', 'suv'];
+        let reqVeh = lv.vehMode || lv.veh;
+        if (!reqVeh || !validVehicles.includes(reqVeh)) {
+          reqVeh = (ui.curMode === 'pedestrian' || lv.mode === 'pedestrian' || lv.isPedestrian) ? 'pedestrian' : 'car';
+        }
+        this.vehMode = reqVeh;
+        this.mode = lv.mode || this.vehMode;
+        this.isPedestrian = (this.vehMode === 'pedestrian');
         this.lvId = lv.id; this.score = 0; this.hp = 100; this.fine = 0; this.vio = 0; this.timer = 0; this.speed = 0; this.routeIdx = 0; this.retries = 0; this.vx = 0; this.vz = 0;
         // Start gameplay recording
         if (window.GameplayRecorder) GameplayRecorder.start(lv.id, lv.name || '');
@@ -3418,6 +3448,7 @@ class Game {
         this._updateLoading(100, 'Ready!');
         await new Promise(r => setTimeout(r, 300)); // brief pause so player sees 100%
         this._hideLoading();
+        const po = document.getElementById('play-overlay'); if (po) po.remove();
         this.playing = true; this.pause = false; ui.show(null);
         this._initViolationsLog();
         if (window.TaskManager) {
@@ -3494,9 +3525,7 @@ class Game {
         if (window.safeZoneGridInstance) {
           const SZ = window.safeZoneGridInstance;
           if (document.getElementById('player-hud-card')) SZ.register('player-hud', document.getElementById('player-hud-card'), 'TL', { order: 0, priority: 'high' });
-          if (document.getElementById('objective-overlay')) SZ.register('objective', document.getElementById('objective-overlay'), 'TR', { order: 0, priority: 'high' });
-          if (document.getElementById('task-tracker')) SZ.register('tasks', document.getElementById('task-tracker'), 'TR', { order: 1, priority: 'medium' });
-          if (document.getElementById('civic-controls')) SZ.register('civic', document.getElementById('civic-controls'), 'BR', { order: 2, priority: 'low' });
+          // Top HUD stack (objective & tasks) and civic-controls are managed by explicit layout in Driving.html
           if (this.dom.mmc) {
             SZ.register('minimap', this.dom.mmc, 'BL', { order: 0, priority: 'high' });
             // Tap/click minimap → open fullscreen map
@@ -3581,7 +3610,7 @@ class Game {
           if (this.seatbeltOn) {
               if (wrap) { wrap.classList.remove('off'); wrap.classList.add('on'); }
               if (label) { label.textContent = isBike ? 'Helmet ON' : 'Belt ON'; label.classList.remove('off'); label.classList.add('on'); }
-              toast(isBike ? 'Helmet Secured! +15% Speed' : 'Seatbelt Fastened! +10% Speed, 50% Less Damage', '#27ae60');
+              toast(isBike ? 'Helmet Secured! +15% Speed' : 'Seatbelt Fastened! +10% Speed', '#27ae60');
               if (!this.isPedestrian) {
                   const base = this.mapCfg && this.mapCfg.themeType === 'highway' ? 1.4 : 1.1;
                   this.maxSpd = base * (isBike ? 1.15 : 1.1);
@@ -3590,7 +3619,7 @@ class Game {
           } else {
               if (wrap) { wrap.classList.remove('on'); wrap.classList.add('off'); }
               if (label) { label.textContent = isBike ? 'Helmet OFF' : 'Belt OFF'; label.classList.remove('on'); label.classList.add('off'); }
-              toast(isBike ? 'Helmet Removed! -15% Speed' : 'Seatbelt Unfastened! Full Collision Damage', '#ff3b30');
+              toast(isBike ? 'Helmet Removed! -15% Speed' : 'Seatbelt Unfastened!', '#ff3b30');
               if (!this.isPedestrian) {
                   this.maxSpd = this.mapCfg && this.mapCfg.themeType === 'highway' ? 1.4 : 1.1;
                   this._seatbeltDamageReduction = false;
@@ -3760,12 +3789,11 @@ class Game {
                 document.getElementById('pause-quit')?.addEventListener('click', () => {
                   this.pause = false;
                   this.playing = false;
-                  const o = document.getElementById('pause-overlay');
-                  if (o) {
-                    o.style.animation = 'pausePanelOut 0.2s ease-in both';
-                    setTimeout(() => { o.classList.remove('on'); o.style.animation = ''; }, 200);
-                  }
-                  document.getElementById('game-over')?.classList.add('on');
+                  try {
+                    if (this.stopPlay) this.stopPlay();
+                  } catch (e) {}
+                  const curLid = (window.ui && window.ui.cur && window.ui.cur.id) || (this.cfg && this.cfg.id) || 5;
+                  window.location.href = `Academy.html?screen=levels&lv=${curLid}`;
                 });
               }
             } else {
@@ -3774,6 +3802,13 @@ class Game {
               this._pauseAnimating = true;
               overlay.style.animation = 'pausePanelOut 0.2s ease-in both';
               setTimeout(() => { overlay.style.animation = ''; this._pauseAnimating = false; }, 250);
+              // Cleanly restore input focus to game window and clear stale keys
+              if (this.keys) this.keys = {};
+              window.focus();
+              try {
+                const cv = document.getElementById('c') || this.renderer?.domElement;
+                if (cv && typeof cv.focus === 'function') cv.focus();
+              } catch (e) {}
             }
           }
       }
@@ -3892,7 +3927,7 @@ class Game {
                         toast('⚠️ Mobile use while driving — first warning', '#f2b84b');
                       }
                       if (window.GameplayRecorder) GameplayRecorder.record('MOBILE_USE', { speed: Math.round(Math.abs(this.speed) * 100), score: this.score, fine: this.fine });
-                      this.hp -= 10; this._uh();
+                      // No HP deduction
                   }
               } else {
                   if (btn) btn.style.borderColor = '#e74c3c';
@@ -3934,9 +3969,16 @@ class Game {
           this._breadcrumbLine.visible = this.kidModeActive;
         }
       }
-      _uh() { const p = Math.max(0, this.hp); const f = this.dom['hfill']; if (f) f.style.width = p + '%'; if (p <= 0) this._go("Structural Failure"); }
+      _uh() {}
       
       _showIRLDeathPopup(cause) {
+        const isGod = window._trafficGodMode || (typeof localStorage !== 'undefined' && localStorage.getItem('traffic_god_mode') === 'true');
+        if (isGod) {
+          this.hp = 100;
+          this._uh();
+          toast('🛡️ GOD MODE: Collision Absorbed!', '#ffd700', 1500);
+          return;
+        }
         this.pause = true; // Pause game immediately
         
         // Hide kid HUD elements so they don't overlap with the popup
@@ -4041,11 +4083,22 @@ class Game {
           for (const n of this.npcs) {
             if (!n.position) continue;
             const d = this.player ? this.player.position.distanceTo(n.position) : 999;
-            if (d < 6) {
-              if (n.userData && n.userData.npcType === 'guard') this._reachedGuard = true;
+            if (d < 16) {
+              if (n.userData && (n.userData.npcType === 'guard' || n.userData.isGuard)) this._reachedGuard = true;
               if (n.userData && n.userData.npcType === 'volunteer') this._reachedVolunteer = true;
             }
           }
+        }
+        if (this.peds) {
+          for (const p of this.peds) {
+            if (!p.position) continue;
+            const d = this.player ? this.player.position.distanceTo(p.position) : 999;
+            if (d < 16) {
+              if (p.userData && (p.userData.npcType === 'guard' || p.userData.isGuard)) this._reachedGuard = true;
+            }
+          }
+        }
+        if (this.npcs) {
           // Gap: find two NPCs close together with space between
           for (let i = 0; i < this.npcs.length; i++) {
             for (let j = i + 1; j < this.npcs.length; j++) {
@@ -4127,18 +4180,46 @@ class Game {
               else if (t.target === 'away_gate' && Math.abs(this.speed) > 0.01) complete = true;
               else if (t.target === 'visitor_parking' && this._reachedParking) complete = true;
               else if (t.target === 'main_road' && this._reachedMainRoad) complete = true;
-              else if (t.target === 'guard_signal' && this._reachedGuard) complete = true;
+              else if (t.target === 'guard_signal') {
+                if (this._reachedGuard && Math.abs(this.speed) <= 0.22) complete = true;
+              }
               else if (t.target === 'volunteer_signal' && this._reachedVolunteer) complete = true;
               else if (t.target === 'gap_spot' && this._reachedGap) complete = true;
               break;
             case 'avoid':
               if (t.target === 'honk' && !this._honkedThisFrame) complete = true;
-              else if (t.target === 'speed_zone' && Math.abs(this.speed) > 0.22) { /* fail */ }
+              else if (t.target === 'speed_zone') {
+                if (this.player && this.mapCfg && this.mapCfg.hasSchool) {
+                  const px = this.player.position.x;
+                  const pz = this.player.position.z;
+                  if (px <= 15 && px >= -140 && Math.abs(pz) <= 14) {
+                    if (Math.abs(this.speed) > 0.22) {
+                      if (!this._warnedSchoolSpeed) {
+                        toast('⚠️ School Zone Speeding! Stay under 20 km/h', '#ef4444', 2500);
+                        this._warnedSchoolSpeed = true;
+                      }
+                    } else if (px <= -20 && !this._warnedSchoolSpeed) {
+                      complete = true;
+                    }
+                  }
+                }
+              }
               else if (t.target === 'speed_night' && Math.abs(this.speed) > 0.35) { /* fail */ }
               else if (t.target === 'speed_puddle' && Math.abs(this.speed) > 0.25) { /* fail */ }
               else if (t.target === 'speed_hospital' && Math.abs(this.speed) > 0.25) { /* fail */ }
               else if (t.target === 'speed_festival' && Math.abs(this.speed) > 0.15) { /* fail */ }
-              else if (t.target === 'pedestrian' && this._nearbyPedCount === 0) complete = true;
+              else if (t.target === 'pedestrian') {
+                if (this.player && this.mapCfg && this.mapCfg.hasSchool) {
+                  const px = this.player.position.x;
+                  if (px <= -35 && px >= -95) {
+                    if (!this._collidedThisFrame && Math.abs(this.speed) <= 0.22) {
+                      complete = true;
+                    }
+                  }
+                } else if (this._nearbyPedCount === 0) {
+                  complete = true;
+                }
+              }
               else if (t.target === 'collision' && !this._collidedThisFrame) complete = true;
               else if (t.target === 'ambulance' && !this._ambulanceNear) complete = true;
               else if (t.target === 'stop_sudden' && this._maintainedSpeed) complete = true;
@@ -4242,6 +4323,13 @@ class Game {
       }
       
       _go(reason) {
+        const isGod = window._trafficGodMode || (typeof localStorage !== 'undefined' && localStorage.getItem('traffic_god_mode') === 'true');
+        if (isGod) {
+          this.hp = 100;
+          this._uh();
+          toast('🛡️ GOD MODE: Collision Prevented!', '#ffd700', 1500);
+          return;
+        }
         this.stopPlay();
         toast('💥 ' + (reason || 'Structural Failure!'), '#ff3b30');
         setTimeout(() => {
@@ -4275,9 +4363,11 @@ class Game {
       }
       completeLevel() {
         if (!this.playing) return;
+        this.reachedGoal = true;
+        this.levelCompleted = true;
         let finalBase = this.score + 500;
         if (this.retries > 0) {
-          if (this.vio > 0 || this.hp < 100) {
+          if (this.vio > 0) {
             finalBase = Math.round(finalBase * 0.5); // 50% penalty if retry and not perfect
           }
         }
@@ -4434,6 +4524,9 @@ class Game {
 
       // 🚦 MAP CONFIGURATIONS FOR ALL MUMBAI LEVELS 🚦
       _getMapConfig(lvId) {
+        if (typeof ui !== 'undefined' && ui.cur && (ui.cur.isAISynthesized || String(lvId).startsWith('ai_'))) {
+          return ui.cur;
+        }
         let lv = null;
         if (window.LVS) {
             lv = window.LVS.find(l => l.id === lvId);
@@ -4459,11 +4552,14 @@ class Game {
               { type: 'h', z: 400, x1: -800, x2: 800, lanes: 2, width: 14, name: 'Harbor Way' }
             ],
             route: [
-              { x: 0, z: 0, desc: 'Start Position' },
+              { x: 0, z: 0, desc: 'Start Line' },
               { x: 0, z: -80, desc: 'Signal Stop Line' },
-              { x: 0, z: -200, desc: 'SV Road Crossing' },
-              { x: 120, z: -200, desc: 'North Link Corridor' },
-              { x: 240, z: -200, desc: 'Destination Finish Gate' }
+              { x: 0, z: -200, desc: 'SV Junction (Turn Right)' },
+              { x: 120, z: -200, desc: 'Grand Avenue Straight' },
+              { x: 240, z: -200, desc: 'Link Road Junction (Turn Left)' },
+              { x: 240, z: -400, desc: 'North Express Approach (Turn Left)' },
+              { x: 120, z: -400, desc: 'Airport Corridor' },
+              { x: 0, z: -400, desc: 'Grand Terminal Destination' }
             ],
             ints: [
               [0, 0], [240, 0], [-240, 0], [-480, 0], [480, 0],
@@ -4477,138 +4573,79 @@ class Game {
           3: { name: 'Bandra Backroads', sky: 0xa8c4d8, fog: 500, ground: 0x3a5a2e, amb: 0.75, veh: 'twowheeler', npcTypes: ['car', 'auto', 'bike', 'cycle', 'auto', 'car', 'taxi', 'bike', 'auto', 'car', 'bike', 'car', 'auto', 'cycle', 'car', 'bike', 'auto', 'car'], roads: [{ type: 'v', x: 0, z1: -140, z2: 1000 }, { type: 'h', z: -120, x1: -20, x2: 140 }, { type: 'v', x: 120, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -20, x2: 140 }, { type: 'h', z: -240, x1: -140, x2: 20 }, { type: 'h', z: -240, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: -380, z2: -220 }, { type: 'h', z: -360, x1: -260, x2: -100 }, { type: 'v', x: -120, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: -620, z2: -460 }, { type: 'v', x: -240, z1: -740, z2: -580 }, { type: 'h', z: -720, x1: -380, x2: -220 }, { type: 'h', z: -720, x1: -500, x2: -340 }, { type: 'h', z: -720, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: -860, z2: -700 }, { type: 'h', z: -840, x1: -620, x2: -460 }, { type: 'v', x: -480, z1: -980, z2: -820 }, { type: 'v', x: -480, z1: -1100, z2: -940 }, { type: 'h', z: -1080, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: -1220, z2: -1060 }, { type: 'h', z: -1200, x1: -380, x2: -220 }, { type: 'v', x: -240, z1: -1220, z2: -1060 }, { type: 'h', z: -1080, x1: -260, x2: -100 }, { type: 'h', z: -1080, x1: -140, x2: 20 }, { type: 'h', z: -1080, x1: -20, x2: 140 }, { type: 'h', z: -1080, x1: 100, x2: 260 }, { type: 'h', z: -1080, x1: 220, x2: 1360 }, { type: 'h', z: -1080, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -2080, z2: -80 }, { type: 'h', z: -240, x1: -880, x2: 1120 }, { type: 'v', x: 120, z1: -1240, z2: 760 }, { type: 'h', z: -1080, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -2080, z2: -80 }, { type: 'h', z: -360, x1: -1240, x2: 760 }, { type: 'v', x: -240, z1: -1360, z2: 640 }, { type: 'h', z: -120, x1: -1000, x2: 1000 }, { type: 'v', x: 0, z1: -1120, z2: 880 }], route: [{ x: 0, z: 0 }, { x: 0, z: -120 }, { x: 120, z: -120 }, { x: 120, z: -240 }, { x: 0, z: -240 }, { x: -120, z: -240 }, { x: -240, z: -240 }, { x: -240, z: -360 }, { x: -120, z: -360 }, { x: -120, z: -480 }, { x: -240, z: -480 }, { x: -240, z: -600 }, { x: -240, z: -720 }, { x: -360, z: -720 }, { x: -480, z: -720 }, { x: -600, z: -720 }, { x: -600, z: -840 }, { x: -480, z: -840 }, { x: -480, z: -960 }, { x: -480, z: -1080 }, { x: -360, z: -1080 }, { x: -360, z: -1200 }, { x: -240, z: -1200 }, { x: -240, z: -1080 }, { x: -120, z: -1080 }, { x: 0, z: -1080 }, { x: 120, z: -1080 }, { x: 240, z: -1080 }, { x: 360, z: -1080 }], ints: [[-240, -240], [-360, -720], [-120, -360], [-480, -960], [0, 0], [-120, -480], [-600, -720], [-240, -480], [120, -240], [120, -1080], [-480, -720], [0, -240], [-480, -1080], [-600, -840], [-240, -1080], [-120, -1080], [240, -1080], [-360, -1080], [-240, -720], [360, -1080], [-360, -1200], [0, -1080], [-240, -1200], [0, -120], [120, -120], [-480, -840], [-240, -360], [-240, -600], [-120, -240]], bldg: [{ x: -22, z1: -120, z2: 0, s: 0.9 }, { x: 22, z1: -120, z2: 0, s: 0.9 }, { x: 98, z1: -240, z2: -120, s: 0.9 }, { x: 142, z1: -240, z2: -120, s: 0.9 }, { x: -262, z1: -360, z2: -240, s: 0.9 }, { x: -218, z1: -360, z2: -240, s: 0.9 }, { x: -142, z1: -480, z2: -360, s: 0.9 }, { x: -98, z1: -480, z2: -360, s: 0.9 }, { x: -262, z1: -600, z2: -480, s: 0.9 }, { x: -218, z1: -600, z2: -480, s: 0.9 }, { x: -262, z1: -720, z2: -600, s: 0.9 }, { x: -218, z1: -720, z2: -600, s: 0.9 }, { x: -622, z1: -840, z2: -720, s: 0.9 }, { x: -578, z1: -840, z2: -720, s: 0.9 }, { x: -502, z1: -960, z2: -840, s: 0.9 }, { x: -458, z1: -960, z2: -840, s: 0.9 }, { x: -502, z1: -1080, z2: -960, s: 0.9 }, { x: -458, z1: -1080, z2: -960, s: 0.9 }, { x: -382, z1: -1200, z2: -1080, s: 0.9 }, { x: -338, z1: -1200, z2: -1080, s: 0.9 }, { x: -262, z1: -1200, z2: -1080, s: 0.9 }, { x: -218, z1: -1200, z2: -1080, s: 0.9 }], timeLimit: 830, hasGarage: true, assets: ['suburban', 'industrial'] },
           4: { name: 'Juhu Boulevard', sky: 0x6fb8e0, fog: 650, ground: 0x2e6b3a, amb: 0.9, veh: 'car', npcTypes: ['car', 'car', 'auto', 'bike', 'car', 'bus', 'taxi', 'car', 'auto', 'bike', 'car', 'car', 'bus', 'auto', 'car', 'bike', 'car', 'auto', 'car', 'taxi'], hasBeach: true, roads: [{ type: 'h', z: 0, x1: -140, x2: 1000 }, { type: 'v', x: -120, z1: -140, z2: 20 }, { type: 'h', z: -120, x1: -260, x2: -100 }, { type: 'h', z: -120, x1: -380, x2: -220 }, { type: 'h', z: -120, x1: -500, x2: -340 }, { type: 'h', z: -120, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: -620, x2: -460 }, { type: 'v', x: -480, z1: -380, z2: -220 }, { type: 'h', z: -360, x1: -620, x2: -460 }, { type: 'h', z: -360, x1: -740, x2: -580 }, { type: 'v', x: -720, z1: -380, z2: -220 }, { type: 'h', z: -240, x1: -860, x2: -700 }, { type: 'v', x: -840, z1: -380, z2: -220 }, { type: 'v', x: -840, z1: -500, z2: -340 }, { type: 'h', z: -480, x1: -980, x2: -820 }, { type: 'v', x: -960, z1: -500, z2: -340 }, { type: 'h', z: -360, x1: -1100, x2: -940 }, { type: 'v', x: -1080, z1: -500, z2: -340 }, { type: 'v', x: -1080, z1: -620, z2: -460 }, { type: 'h', z: -600, x1: -1220, x2: -1060 }, { type: 'v', x: -1200, z1: -620, z2: -460 }, { type: 'v', x: -1200, z1: -500, z2: -340 }, { type: 'h', z: -360, x1: -1340, x2: -1180 }, { type: 'h', z: -360, x1: -1460, x2: -1300 }, { type: 'v', x: -1440, z1: -500, z2: -340 }, { type: 'v', x: -1440, z1: -620, z2: -460 }, { type: 'h', z: -600, x1: -1460, x2: -1300 }, { type: 'v', x: -1320, z1: -620, z2: 520 }, { type: 'h', z: -360, x1: -1960, x2: 40 }, { type: 'v', x: -960, z1: -1360, z2: 640 }, { type: 'h', z: -360, x1: -1960, x2: 40 }, { type: 'v', x: -960, z1: -1360, z2: 640 }, { type: 'h', z: -360, x1: -1840, x2: 160 }, { type: 'v', x: -840, z1: -1360, z2: 640 }, { type: 'h', z: -120, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -1120, z2: 880 }, { type: 'h', z: -120, x1: -1360, x2: 640 }, { type: 'v', x: -360, z1: -1120, z2: 880 }], route: [{ x: 0, z: 0 }, { x: -120, z: 0 }, { x: -120, z: -120 }, { x: -240, z: -120 }, { x: -360, z: -120 }, { x: -480, z: -120 }, { x: -600, z: -120 }, { x: -600, z: -240 }, { x: -480, z: -240 }, { x: -480, z: -360 }, { x: -600, z: -360 }, { x: -720, z: -360 }, { x: -720, z: -240 }, { x: -840, z: -240 }, { x: -840, z: -360 }, { x: -840, z: -480 }, { x: -960, z: -480 }, { x: -960, z: -360 }, { x: -1080, z: -360 }, { x: -1080, z: -480 }, { x: -1080, z: -600 }, { x: -1200, z: -600 }, { x: -1200, z: -480 }, { x: -1200, z: -360 }, { x: -1320, z: -360 }, { x: -1440, z: -360 }, { x: -1440, z: -480 }, { x: -1440, z: -600 }, { x: -1320, z: -600 }, { x: -1320, z: -480 }], ints: [[-840, -240], [-1440, -360], [-480, -360], [-960, -360], [-1440, -600], [-1320, -600], [-960, -480], [-240, -120], [-1080, -600], [0, 0], [-1440, -480], [-1200, -480], [-1200, -360], [-720, -360], [-1080, -480], [-600, -360], [-600, -120], [-1320, -360], [-360, -120], [-120, 0], [-840, -360], [-1320, -480], [-1200, -600], [-120, -120], [-480, -240], [-480, -120], [-1080, -360], [-720, -240], [-840, -480], [-600, -240]], bldg: [{ x: -142, z1: -120, z2: 0, s: 0.9 }, { x: -98, z1: -120, z2: 0, s: 0.9 }, { x: -622, z1: -240, z2: -120, s: 0.9 }, { x: -578, z1: -240, z2: -120, s: 0.9 }, { x: -502, z1: -360, z2: -240, s: 0.9 }, { x: -458, z1: -360, z2: -240, s: 0.9 }, { x: -742, z1: -360, z2: -240, s: 0.9 }, { x: -698, z1: -360, z2: -240, s: 0.9 }, { x: -862, z1: -360, z2: -240, s: 0.9 }, { x: -818, z1: -360, z2: -240, s: 0.9 }, { x: -862, z1: -480, z2: -360, s: 0.9 }, { x: -818, z1: -480, z2: -360, s: 0.9 }, { x: -982, z1: -480, z2: -360, s: 0.9 }, { x: -938, z1: -480, z2: -360, s: 0.9 }, { x: -1102, z1: -480, z2: -360, s: 0.9 }, { x: -1058, z1: -480, z2: -360, s: 0.9 }, { x: -1102, z1: -600, z2: -480, s: 0.9 }, { x: -1058, z1: -600, z2: -480, s: 0.9 }, { x: -1222, z1: -600, z2: -480, s: 0.9 }, { x: -1178, z1: -600, z2: -480, s: 0.9 }, { x: -1222, z1: -480, z2: -360, s: 0.9 }, { x: -1178, z1: -480, z2: -360, s: 0.9 }, { x: -1462, z1: -480, z2: -360, s: 0.9 }, { x: -1418, z1: -480, z2: -360, s: 0.9 }, { x: -1462, z1: -600, z2: -480, s: 0.9 }, { x: -1418, z1: -600, z2: -480, s: 0.9 }, { x: -1342, z1: -600, z2: -480, s: 0.9 }, { x: -1298, z1: -600, z2: -480, s: 0.9 }], timeLimit: 940, hasGarage: true, assets: ['suburban', 'industrial'] },
           5: {
-            name: 'Parel School Zone',
+            name: 'Parel School District',
             sky: 0x95c0d4,
             fog: 600,
             ground: 0x447a3e,
             amb: 0.85,
             veh: 'car',
-            npcTypes: ['car', 'auto', 'cycle', 'bike', 'auto', 'car', 'taxi', 'car', 'auto', 'bike', 'car', 'cycle', 'auto', 'car', 'bus', 'car', 'auto', 'car', 'truck', 'bus'],
+            npcTypes: ['car', 'auto', 'cycle', 'bike', 'auto', 'car', 'taxi', 'car', 'auto', 'bike', 'car', 'cycle', 'auto', 'car', 'bus', 'car', 'auto', 'car'],
             hasSchool: true,
-            speedLimit: 25,
+            speedLimit: 20,
             isSilenceZone: true,
             roads: [
-              // Major Long Continuous East-West Avenues (Generous Multi-lane Corridors)
-              { type: 'h', z: 0, x1: -1200, x2: 1200, lanes: 4, width: 28, name: 'St. Xavier School Boulevard' },
-              { type: 'h', z: -120, x1: -1200, x2: 1200, lanes: 4, width: 28, name: 'Parel Commercial Crossway' },
-              { type: 'h', z: -240, x1: -1200, x2: 1200, lanes: 2, width: 18, name: 'Market Central Lane' },
-              { type: 'h', z: -360, x1: -1200, x2: 1200, lanes: 4, width: 28, name: 'Dr. Ambedkar Arterial Marg' },
-              { type: 'h', z: -480, x1: -1200, x2: 1200, lanes: 2, width: 18, name: 'Lalbaug Commercial Lane' },
-              { type: 'h', z: -600, x1: -1200, x2: 1200, lanes: 4, width: 28, name: 'Cotton Green Boulevard' },
-              { type: 'h', z: -720, x1: -1200, x2: 1200, lanes: 4, width: 28, name: 'Sewri Ring Road' },
-              { type: 'h', z: -1080, x1: -1200, x2: 1200, lanes: 4, width: 30, name: 'North Marine Grand Avenue' },
-              // Major Long Continuous North-South Avenues
-              { type: 'v', x: -120, z1: -1200, z2: 300, lanes: 4, width: 28, name: 'Parel West Avenue' },
-              { type: 'v', x: -360, z1: -1200, z2: 300, lanes: 4, width: 28, name: 'Hospital North Corridor' },
-              { type: 'v', x: -600, z1: -1200, z2: 300, lanes: 4, width: 28, name: 'Currey Road Link' },
-              { type: 'v', x: 0, z1: -1200, z2: 300, lanes: 4, width: 28, name: 'Central Tram Avenue' },
-              { type: 'v', x: 240, z1: -1200, z2: 300, lanes: 4, width: 28, name: 'Lower Parel Link' },
-              { type: 'v', x: 360, z1: -1200, z2: 300, lanes: 4, width: 28, name: 'East Commercial Avenue' },
-              { type: 'v', x: 480, z1: -1200, z2: 300, lanes: 4, width: 28, name: 'Harbor Connection' },
-              { type: 'v', x: 600, z1: -1200, z2: 300, lanes: 4, width: 28, name: 'Grand Trunk Expressway' }
+              // ── EAST-WEST ARTERIAL CORRIDORS (Standard Width 14m, 4 Lanes, IRC Compliant) ──
+              { type: 'h', z: 0, x1: -480, x2: 480, lanes: 4, width: 14, name: 'St. Xavier School Boulevard' },
+              { type: 'h', z: -120, x1: -480, x2: 480, lanes: 4, width: 14, name: 'Parel Commercial Crossway' },
+              { type: 'h', z: -240, x1: -480, x2: 480, lanes: 4, width: 14, name: 'North Parel Marg' },
+              { type: 'h', z: 120, x1: -480, x2: 480, lanes: 4, width: 14, name: 'South Parel Avenue' },
+              { type: 'h', z: 240, x1: -480, x2: 480, lanes: 4, width: 14, name: 'Sewri Link Expressway' },
+
+              // ── NORTH-SOUTH CONNECTING AVENUES (Standard Width 14m, 4 Lanes) ──
+              { type: 'v', x: -480, z1: -240, z2: 240, lanes: 4, width: 14, name: 'Currey Road Arterial' },
+              { type: 'v', x: -240, z1: -240, z2: 240, lanes: 4, width: 14, name: 'Parel West Link' },
+              { type: 'v', x: 0, z1: -240, z2: 240, lanes: 4, width: 14, name: 'Central Tram Avenue' },
+              { type: 'v', x: 240, z1: -240, z2: 240, lanes: 4, width: 14, name: 'Lower Parel Link' },
+              { type: 'v', x: 480, z1: -240, z2: 240, lanes: 4, width: 14, name: 'East Commercial Highway' }
             ],
             route: [
-              { x: -35, z: 0 },
-              { x: -65, z: 0 },
-              { x: -120, z: 0 },
-              { x: -120, z: -120 },
-              { x: -240, z: -120 },
-              { x: -360, z: -120 },
-              { x: -360, z: -240 },
-              { x: -360, z: -360 },
-              { x: -480, z: -360 },
-              { x: -600, z: -360 },
-              { x: -600, z: -480 },
-              { x: -600, z: -600 },
-              { x: -600, z: -720 },
-              { x: -480, z: -720 },
-              { x: -360, z: -720 },
-              { x: -360, z: -840 },
-              { x: -360, z: -960 },
-              { x: -360, z: -1080 },
-              { x: -240, z: -1080 },
-              { x: -120, z: -1080 },
-              { x: 0, z: -1080 },
-              { x: 120, z: -1080 },
-              { x: 240, z: -1080 },
-              { x: 360, z: -1080 },
-              { x: 360, z: -960 },
-              { x: 360, z: -840 },
-              { x: 360, z: -720 },
-              { x: 360, z: -600 },
-              { x: 480, z: -600 },
-              { x: 600, z: -600 },
-              { x: 600, z: -480 },
-              { x: 480, z: -480 },
-              { x: 480, z: -360 },
-              { x: 360, z: -360 },
-              { x: 360, z: -480 },
-              { x: 240, z: -480 },
-              { x: 240, z: -600 },
-              { x: 120, z: -600 }
+              { x: 80, z: 0, desc: 'Parel East Approach - Start Driving' },
+              { x: -10, z: 0, desc: 'School Zone Entry - Reduce to 20 km/h' },
+              { x: -60, z: 0, desc: 'St. Xavier School Crossing - Yield to Children & Guard' },
+              { x: -240, z: 0, desc: 'Parel West Junction - Turn Left' },
+              { x: -240, z: 120, desc: 'South Parel Avenue - Turn Right' },
+              { x: -480, z: 120, desc: 'Parel Terminal Destination Gate - Mission Complete' }
             ],
             ints: [
-              [-120, 0], [-360, 0], [-600, 0], [0, 0], [240, 0], [360, 0], [480, 0], [600, 0],
-              [-120, -120], [-360, -120], [-600, -120], [0, -120], [240, -120], [360, -120], [480, -120], [600, -120],
-              [-120, -240], [-360, -240], [-600, -240], [0, -240], [240, -240], [360, -240], [480, -240], [600, -240],
-              [-120, -360], [-360, -360], [-600, -360], [0, -360], [240, -360], [360, -360], [480, -360], [600, -360],
-              [-120, -480], [-360, -480], [-600, -480], [0, -480], [240, -480], [360, -480], [480, -480], [600, -480],
-              [-120, -600], [-360, -600], [-600, -600], [0, -600], [240, -600], [360, -600], [480, -600], [600, -600],
-              [-120, -720], [-360, -720], [-600, -720], [0, -720], [240, -720], [360, -720], [480, -720], [600, -720],
-              [-120, -1080], [-360, -1080], [-600, -1080], [0, -1080], [240, -1080], [360, -1080], [480, -1080], [600, -1080]
+              [-480, -240], [-240, -240], [0, -240], [240, -240], [480, -240],
+              [-480, -120], [-240, -120], [0, -120], [240, -120], [480, -120],
+              [-480, 0],    [-240, 0],    [0, 0],    [240, 0],    [480, 0],
+              [-480, 120],  [-240, 120],  [0, 120],  [240, 120],  [480, 120],
+              [-480, 240],  [-240, 240],  [0, 240],  [240, 240],  [480, 240]
             ],
             bldg: [
-              // Flanking St. Xavier School Boulevard (Z = 0)
-              { x: -22, z1: -120, z2: 0, s: 0.9 }, { x: 22, z1: -120, z2: 0, s: 0.9 },
-              { x: -22, z1: 0, z2: 120, s: 0.9 }, { x: 22, z1: 0, z2: 120, s: 0.9 },
-              { x: -142, z1: 0, z2: 120, s: 0.9 }, { x: -98, z1: 0, z2: 120, s: 0.9 },
-              { x: 218, z1: 0, z2: 120, s: 0.9 }, { x: 262, z1: 0, z2: 120, s: 0.9 },
-              { x: 338, z1: 0, z2: 120, s: 0.9 }, { x: 382, z1: 0, z2: 120, s: 0.9 },
-              { x: 458, z1: 0, z2: 120, s: 0.9 }, { x: 502, z1: 0, z2: 120, s: 0.9 },
-              { x: 578, z1: 0, z2: 120, s: 0.9 }, { x: 622, z1: 0, z2: 120, s: 0.9 },
-              // Flanking Parel West Avenue (X = -120)
-              { x: -142, z1: -120, z2: 0, s: 0.9 }, { x: -98, z1: -120, z2: 0, s: 0.9 },
-              { x: -142, z1: -240, z2: -120, s: 0.9 }, { x: -98, z1: -240, z2: -120, s: 0.9 },
-              { x: -142, z1: -360, z2: -240, s: 0.9 }, { x: -98, z1: -360, z2: -240, s: 0.9 },
-              // Flanking Parel Commercial Crossway (Z = -120)
-              { x: -262, z1: -120, z2: 0, s: 0.9 }, { x: -218, z1: -120, z2: 0, s: 0.9 },
-              { x: -382, z1: -120, z2: 0, s: 0.9 }, { x: -338, z1: -120, z2: 0, s: 0.9 },
-              { x: -502, z1: -120, z2: 0, s: 0.9 }, { x: -458, z1: -120, z2: 0, s: 0.9 },
-              // Flanking Dr. Ambedkar Marg (X = -360)
-              { x: -382, z1: -240, z2: -120, s: 0.9 }, { x: -338, z1: -240, z2: -120, s: 0.9 },
-              { x: -382, z1: -360, z2: -240, s: 0.9 }, { x: -338, z1: -360, z2: -240, s: 0.9 },
-              { x: -382, z1: -480, z2: -360, s: 0.9 }, { x: -338, z1: -480, z2: -360, s: 0.9 },
-              // Flanking Lalbaug Arterial (Z = -360)
-              { x: -502, z1: -360, z2: -240, s: 0.9 }, { x: -458, z1: -360, z2: -240, s: 0.9 },
-              { x: -622, z1: -360, z2: -240, s: 0.9 }, { x: -578, z1: -360, z2: -240, s: 0.9 },
-              // Flanking Currey Road Corridor (X = -600)
-              { x: -622, z1: -480, z2: -360, s: 0.9 }, { x: -578, z1: -480, z2: -360, s: 0.9 },
-              { x: -622, z1: -600, z2: -480, s: 0.9 }, { x: -578, z1: -600, z2: -480, s: 0.9 },
-              { x: -622, z1: -720, z2: -600, s: 0.9 }, { x: -578, z1: -720, z2: -600, s: 0.9 },
-              // Flanking Sewri Ring Road & North Loop (Z = -720 to -1080)
-              { x: -502, z1: -720, z2: -600, s: 0.9 }, { x: -458, z1: -720, z2: -600, s: 0.9 },
-              { x: -382, z1: -840, z2: -720, s: 0.9 }, { x: -338, z1: -840, z2: -720, s: 0.9 },
-              { x: -382, z1: -960, z2: -840, s: 0.9 }, { x: -338, z1: -960, z2: -840, s: 0.9 },
-              { x: -382, z1: -1080, z2: -960, s: 0.9 }, { x: -338, z1: -1080, z2: -960, s: 0.9 },
-              { x: -262, z1: -1080, z2: -960, s: 0.9 }, { x: -218, z1: -1080, z2: -960, s: 0.9 },
-              { x: -142, z1: -1080, z2: -960, s: 0.9 }, { x: -98, z1: -1080, z2: -960, s: 0.9 },
-              { x: -22, z1: -1080, z2: -960, s: 0.9 }, { x: 22, z1: -1080, z2: -960, s: 0.9 },
-              { x: 98, z1: -1080, z2: -960, s: 0.9 }, { x: 142, z1: -1080, z2: -960, s: 0.9 },
-              { x: 218, z1: -1080, z2: -960, s: 0.9 }, { x: 262, z1: -1080, z2: -960, s: 0.9 },
-              { x: 338, z1: -1080, z2: -960, s: 0.9 }, { x: 382, z1: -1080, z2: -960, s: 0.9 },
-              // East Side Avenues (X = 360, 480, 600)
-              { x: 338, z1: -960, z2: -840, s: 0.9 }, { x: 382, z1: -960, z2: -840, s: 0.9 },
-              { x: 338, z1: -840, z2: -720, s: 0.9 }, { x: 382, z1: -840, z2: -720, s: 0.9 },
-              { x: 338, z1: -720, z2: -600, s: 0.9 }, { x: 382, z1: -720, z2: -600, s: 0.9 },
-              { x: 578, z1: -600, z2: -480, s: 0.9 }, { x: 622, z1: -600, z2: -480, s: 0.9 },
-              { x: 458, z1: -480, z2: -360, s: 0.9 }, { x: 502, z1: -480, z2: -360, s: 0.9 },
-              { x: 338, z1: -480, z2: -360, s: 0.9 }, { x: 382, z1: -480, z2: -360, s: 0.9 },
-              { x: 218, z1: -600, z2: -480, s: 0.9 }, { x: 262, z1: -600, z2: -480, s: 0.9 }
+              // North of St. Xavier School Blvd (Z = 0) - Flanking Central Tram Ave (X = 0)
+              { x: 22, z1: -100, z2: -20, s: 0.9 },
+              // Note: X in [-100, -20] at Z = -32 is reserved for St. Xavier School Campus (Zero Building Clipping!)
+              { x: -142, z1: -100, z2: -20, s: 0.9 }, { x: -98, z1: -100, z2: -20, s: 0.9 },
+
+              // South of St. Xavier School Blvd (Z = 0 to 120) - Flanking Central Tram Ave (X = 0)
+              { x: -22, z1: 20, z2: 100, s: 0.9 }, { x: 22, z1: 20, z2: 100, s: 0.9 },
+              // Flanking Parel West Link (X = -240)
+              { x: -262, z1: 20, z2: 100, s: 0.9 }, { x: -218, z1: 20, z2: 100, s: 0.9 },
+              { x: -262, z1: -100, z2: -20, s: 0.9 }, { x: -218, z1: -100, z2: -20, s: 0.9 },
+              { x: -262, z1: -220, z2: -140, s: 0.9 }, { x: -218, z1: -220, z2: -140, s: 0.9 },
+
+              // Flanking Lower Parel Link (X = 240)
+              { x: 218, z1: 20, z2: 100, s: 0.9 }, { x: 262, z1: 20, z2: 100, s: 0.9 },
+              { x: 218, z1: -100, z2: -20, s: 0.9 }, { x: 262, z1: -100, z2: -20, s: 0.9 },
+              { x: 218, z1: -220, z2: -140, s: 0.9 }, { x: 262, z1: -220, z2: -140, s: 0.9 },
+
+              // Flanking Currey Road (X = -480)
+              { x: -458, z1: 20, z2: 100, s: 0.9 },
+              { x: -458, z1: -100, z2: -20, s: 0.9 },
+              { x: -458, z1: -220, z2: -140, s: 0.9 },
+
+              // Flanking East Commercial Highway (X = 480)
+              { x: 458, z1: 20, z2: 100, s: 0.9 },
+              { x: 458, z1: -100, z2: -20, s: 0.9 },
+              { x: 458, z1: -220, z2: -140, s: 0.9 }
             ],
-            timeLimit: 1200,
+            timeLimit: 300,
             hasGarage: true,
             assets: ['suburban', 'industrial']
           },
+
           6: { name: 'Matunga Rail Corridor', sky: 0x7fafc4, fog: 600, ground: 0x3a6130, amb: 0.7, veh: 'car', npcTypes: ['car', 'auto', 'car', 'bike', 'car', 'auto', 'taxi', 'car', 'auto', 'bike', 'car', 'truck', 'auto', 'car', 'car', 'bike', 'car', 'auto'], hasRailway: true, railZ: [0], hasMetro: true, hasMountain: true, roads: [{ type: 'h', z: 0, x1: -1000, x2: 140 }, { type: 'v', x: 120, z1: -140, z2: 20 }, { type: 'h', z: -120, x1: 100, x2: 260 }, { type: 'h', z: -120, x1: 220, x2: 380 }, { type: 'v', x: 360, z1: -260, z2: -100 }, { type: 'h', z: -240, x1: 340, x2: 500 }, { type: 'v', x: 480, z1: -260, z2: -100 }, { type: 'v', x: 480, z1: -140, z2: 20 }, { type: 'v', x: 480, z1: -20, z2: 140 }, { type: 'h', z: 120, x1: 460, x2: 620 }, { type: 'v', x: 600, z1: -20, z2: 140 }, { type: 'h', z: 0, x1: 580, x2: 740 }, { type: 'v', x: 720, z1: -20, z2: 140 }, { type: 'v', x: 720, z1: 100, z2: 260 }, { type: 'h', z: 240, x1: 700, x2: 860 }, { type: 'h', z: 240, x1: 820, x2: 980 }, { type: 'h', z: 240, x1: 940, x2: 1100 }, { type: 'v', x: 1080, z1: 220, z2: 380 }, { type: 'h', z: 360, x1: 940, x2: 1100 }, { type: 'v', x: 960, z1: 340, z2: 500 }, { type: 'h', z: 480, x1: 940, x2: 1100 }, { type: 'h', z: 480, x1: 1060, x2: 1220 }, { type: 'v', x: 1200, z1: 460, z2: 620 }, { type: 'h', z: 600, x1: 1060, x2: 1220 }, { type: 'v', x: 1080, z1: 580, z2: 740 }, { type: 'v', x: 1080, z1: 700, z2: 860 }, { type: 'h', z: 840, x1: 940, x2: 1100 }, { type: 'v', x: 960, z1: 700, z2: 860 }, { type: 'h', z: 720, x1: 820, x2: 980 }, { type: 'v', x: 840, z1: 580, z2: 740 }, { type: 'h', z: 600, x1: 820, x2: 1960 }, { type: 'h', z: 0, x1: -520, x2: 1480 }, { type: 'v', x: 480, z1: -1000, z2: 1000 }, { type: 'h', z: 120, x1: -400, x2: 1600 }, { type: 'v', x: 600, z1: -880, z2: 1120 }, { type: 'h', z: 120, x1: -520, x2: 1480 }, { type: 'v', x: 480, z1: -880, z2: 1120 }, { type: 'h', z: 720, x1: -160, x2: 1840 }, { type: 'v', x: 840, z1: -280, z2: 1720 }, { type: 'h', z: 720, x1: 80, x2: 2080 }, { type: 'v', x: 1080, z1: -280, z2: 1720 }], route: [{ x: 0, z: 0 }, { x: 120, z: 0 }, { x: 120, z: -120 }, { x: 240, z: -120 }, { x: 360, z: -120 }, { x: 360, z: -240 }, { x: 480, z: -240 }, { x: 480, z: -120 }, { x: 480, z: 0 }, { x: 480, z: 120 }, { x: 600, z: 120 }, { x: 600, z: 0 }, { x: 720, z: 0 }, { x: 720, z: 120 }, { x: 720, z: 240 }, { x: 840, z: 240 }, { x: 960, z: 240 }, { x: 1080, z: 240 }, { x: 1080, z: 360 }, { x: 960, z: 360 }, { x: 960, z: 480 }, { x: 1080, z: 480 }, { x: 1200, z: 480 }, { x: 1200, z: 600 }, { x: 1080, z: 600 }, { x: 1080, z: 720 }, { x: 1080, z: 840 }, { x: 960, z: 840 }, { x: 960, z: 720 }, { x: 840, z: 720 }, { x: 840, z: 600 }, { x: 960, z: 600 }], ints: [[600, 0], [360, -120], [480, -120], [720, 120], [960, 720], [960, 480], [480, 120], [0, 0], [480, -240], [720, 0], [840, 720], [960, 840], [240, -120], [360, -240], [960, 360], [1080, 840], [120, 0], [840, 600], [600, 120], [1080, 720], [1080, 360], [1200, 480], [960, 240], [1080, 480], [120, -120], [1080, 240], [1080, 600], [480, 0], [720, 240], [960, 600], [1200, 600], [840, 240]], bldg: [{ x: 98, z1: -120, z2: 0, s: 0.9 }, { x: 142, z1: -120, z2: 0, s: 0.9 }, { x: 338, z1: -240, z2: -120, s: 0.9 }, { x: 382, z1: -240, z2: -120, s: 0.9 }, { x: 458, z1: -240, z2: -120, s: 0.9 }, { x: 502, z1: -240, z2: -120, s: 0.9 }, { x: 458, z1: -120, z2: 0, s: 0.9 }, { x: 502, z1: -120, z2: 0, s: 0.9 }, { x: 458, z1: 0, z2: 120, s: 0.9 }, { x: 502, z1: 0, z2: 120, s: 0.9 }, { x: 578, z1: 0, z2: 120, s: 0.9 }, { x: 622, z1: 0, z2: 120, s: 0.9 }, { x: 698, z1: 0, z2: 120, s: 0.9 }, { x: 742, z1: 0, z2: 120, s: 0.9 }, { x: 698, z1: 120, z2: 240, s: 0.9 }, { x: 742, z1: 120, z2: 240, s: 0.9 }, { x: 1058, z1: 240, z2: 360, s: 0.9 }, { x: 1102, z1: 240, z2: 360, s: 0.9 }, { x: 938, z1: 360, z2: 480, s: 0.9 }, { x: 982, z1: 360, z2: 480, s: 0.9 }, { x: 1178, z1: 480, z2: 600, s: 0.9 }, { x: 1222, z1: 480, z2: 600, s: 0.9 }, { x: 1058, z1: 600, z2: 720, s: 0.9 }, { x: 1102, z1: 600, z2: 720, s: 0.9 }, { x: 1058, z1: 720, z2: 840, s: 0.9 }, { x: 1102, z1: 720, z2: 840, s: 0.9 }, { x: 938, z1: 720, z2: 840, s: 0.9 }, { x: 982, z1: 720, z2: 840, s: 0.9 }, { x: 818, z1: 600, z2: 720, s: 0.9 }, { x: 862, z1: 600, z2: 720, s: 0.9 }], timeLimit: 1160, hasGarage: true, assets: ['suburban', 'industrial', 'trains'] },
           7: { name: 'Marine Drive', sky: 0x4a90d9, fog: 700, ground: 0x1a6b5a, amb: 0.9, veh: 'car', npcTypes: ['car', 'car', 'auto', 'bike', 'car', 'bus', 'taxi', 'car', 'auto', 'car', 'bike', 'car', 'car', 'bus', 'auto', 'taxi', 'car', 'bike', 'car', 'auto'], hasOcean: true, roads: [{ type: 'h', z: 0, x1: -1000, x2: 140 }, { type: 'h', z: 0, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: -20, z2: 140 }, { type: 'h', z: 120, x1: 220, x2: 380 }, { type: 'v', x: 360, z1: 100, z2: 260 }, { type: 'h', z: 240, x1: 340, x2: 500 }, { type: 'h', z: 240, x1: 460, x2: 620 }, { type: 'h', z: 240, x1: 580, x2: 740 }, { type: 'v', x: 720, z1: 100, z2: 260 }, { type: 'v', x: 720, z1: -20, z2: 140 }, { type: 'h', z: 0, x1: 700, x2: 860 }, { type: 'v', x: 840, z1: -20, z2: 140 }, { type: 'v', x: 840, z1: 100, z2: 260 }, { type: 'v', x: 840, z1: 220, z2: 380 }, { type: 'h', z: 360, x1: 700, x2: 860 }, { type: 'h', z: 360, x1: 580, x2: 740 }, { type: 'h', z: 360, x1: 460, x2: 620 }, { type: 'v', x: 480, z1: 340, z2: 500 }, { type: 'v', x: 480, z1: 460, z2: 620 }, { type: 'v', x: 480, z1: 580, z2: 740 }, { type: 'h', z: 720, x1: 340, x2: 500 }, { type: 'v', x: 360, z1: 580, z2: 740 }, { type: 'h', z: 600, x1: 220, x2: 380 }, { type: 'h', z: 600, x1: 100, x2: 260 }, { type: 'v', x: 120, z1: 460, z2: 620 }, { type: 'v', x: 120, z1: 340, z2: 500 }, { type: 'v', x: 120, z1: 220, z2: 380 }, { type: 'h', z: 240, x1: -20, x2: 140 }, { type: 'v', x: 0, z1: 220, z2: 380 }, { type: 'v', x: 0, z1: 340, z2: 500 }, { type: 'h', z: 480, x1: -140, x2: 20 }, { type: 'h', z: 480, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: 460, z2: 620 }, { type: 'v', x: -240, z1: 580, z2: 740 }, { type: 'h', z: 720, x1: -380, x2: -220 }, { type: 'v', x: -360, z1: 700, z2: 860 }, { type: 'h', z: 840, x1: -500, x2: -340 }, { type: 'h', z: 840, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: 820, z2: 980 }, { type: 'v', x: -600, z1: 940, z2: 1100 }, { type: 'h', z: 1080, x1: -620, x2: -460 }, { type: 'v', x: -480, z1: 940, z2: 1100 }, { type: 'h', z: 960, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: 940, z2: 2080 }, { type: 'h', z: 600, x1: -880, x2: 1120 }, { type: 'v', x: 120, z1: -400, z2: 1600 }, { type: 'h', z: 600, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -400, z2: 1600 }, { type: 'h', z: 480, x1: -520, x2: 1480 }, { type: 'v', x: 480, z1: -520, z2: 1480 }, { type: 'h', z: 720, x1: -520, x2: 1480 }, { type: 'v', x: 480, z1: -280, z2: 1720 }, { type: 'h', z: 1080, x1: -1600, x2: 400 }, { type: 'v', x: -600, z1: 80, z2: 2080 }], route: [{ x: 0, z: 0 }, { x: 120, z: 0 }, { x: 240, z: 0 }, { x: 240, z: 120 }, { x: 360, z: 120 }, { x: 360, z: 240 }, { x: 480, z: 240 }, { x: 600, z: 240 }, { x: 720, z: 240 }, { x: 720, z: 120 }, { x: 720, z: 0 }, { x: 840, z: 0 }, { x: 840, z: 120 }, { x: 840, z: 240 }, { x: 840, z: 360 }, { x: 720, z: 360 }, { x: 600, z: 360 }, { x: 480, z: 360 }, { x: 480, z: 480 }, { x: 480, z: 600 }, { x: 480, z: 720 }, { x: 360, z: 720 }, { x: 360, z: 600 }, { x: 240, z: 600 }, { x: 120, z: 600 }, { x: 120, z: 480 }, { x: 120, z: 360 }, { x: 120, z: 240 }, { x: 0, z: 240 }, { x: 0, z: 360 }, { x: 0, z: 480 }, { x: -120, z: 480 }, { x: -240, z: 480 }, { x: -240, z: 600 }, { x: -240, z: 720 }, { x: -360, z: 720 }, { x: -360, z: 840 }, { x: -480, z: 840 }, { x: -600, z: 840 }, { x: -600, z: 960 }, { x: -600, z: 1080 }, { x: -480, z: 1080 }, { x: -480, z: 960 }, { x: -360, z: 960 }, { x: -360, z: 1080 }], ints: [[240, 0], [840, 0], [0, 240], [360, 240], [-600, 960], [-240, 480], [720, 120], [120, 360], [360, 120], [-360, 960], [0, 0], [720, 0], [480, 720], [840, 360], [840, 120], [120, 240], [480, 240], [-600, 840], [-600, 1080], [360, 600], [-240, 720], [-240, 600], [120, 600], [120, 480], [-480, 1080], [-480, 960], [120, 0], [0, 360], [240, 600], [-360, 720], [600, 360], [480, 360], [360, 720], [480, 600], [600, 240], [-120, 480], [720, 240], [240, 120], [480, 480], [-360, 840], [720, 360], [0, 480], [-360, 1080], [-480, 840], [840, 240]], bldg: [{ x: 218, z1: 0, z2: 120, s: 0.9 }, { x: 262, z1: 0, z2: 120, s: 0.9 }, { x: 338, z1: 120, z2: 240, s: 0.9 }, { x: 382, z1: 120, z2: 240, s: 0.9 }, { x: 698, z1: 120, z2: 240, s: 0.9 }, { x: 742, z1: 120, z2: 240, s: 0.9 }, { x: 698, z1: 0, z2: 120, s: 0.9 }, { x: 742, z1: 0, z2: 120, s: 0.9 }, { x: 818, z1: 0, z2: 120, s: 0.9 }, { x: 862, z1: 0, z2: 120, s: 0.9 }, { x: 818, z1: 120, z2: 240, s: 0.9 }, { x: 862, z1: 120, z2: 240, s: 0.9 }, { x: 818, z1: 240, z2: 360, s: 0.9 }, { x: 862, z1: 240, z2: 360, s: 0.9 }, { x: 458, z1: 360, z2: 480, s: 0.9 }, { x: 502, z1: 360, z2: 480, s: 0.9 }, { x: 458, z1: 480, z2: 600, s: 0.9 }, { x: 502, z1: 480, z2: 600, s: 0.9 }, { x: 458, z1: 600, z2: 720, s: 0.9 }, { x: 502, z1: 600, z2: 720, s: 0.9 }, { x: 338, z1: 600, z2: 720, s: 0.9 }, { x: 382, z1: 600, z2: 720, s: 0.9 }, { x: 98, z1: 480, z2: 600, s: 0.9 }, { x: 142, z1: 480, z2: 600, s: 0.9 }, { x: 98, z1: 360, z2: 480, s: 0.9 }, { x: 142, z1: 360, z2: 480, s: 0.9 }, { x: 98, z1: 240, z2: 360, s: 0.9 }, { x: 142, z1: 240, z2: 360, s: 0.9 }, { x: -22, z1: 240, z2: 360, s: 0.9 }, { x: 22, z1: 240, z2: 360, s: 0.9 }, { x: -22, z1: 360, z2: 480, s: 0.9 }, { x: 22, z1: 360, z2: 480, s: 0.9 }, { x: -262, z1: 480, z2: 600, s: 0.9 }, { x: -218, z1: 480, z2: 600, s: 0.9 }, { x: -262, z1: 600, z2: 720, s: 0.9 }, { x: -218, z1: 600, z2: 720, s: 0.9 }, { x: -382, z1: 720, z2: 840, s: 0.9 }, { x: -338, z1: 720, z2: 840, s: 0.9 }, { x: -622, z1: 840, z2: 960, s: 0.9 }, { x: -578, z1: 840, z2: 960, s: 0.9 }, { x: -622, z1: 960, z2: 1080, s: 0.9 }, { x: -578, z1: 960, z2: 1080, s: 0.9 }, { x: -502, z1: 960, z2: 1080, s: 0.9 }, { x: -458, z1: 960, z2: 1080, s: 0.9 }, { x: -382, z1: 960, z2: 1080, s: 0.9 }, { x: -338, z1: 960, z2: 1080, s: 0.9 }], timeLimit: 1270, hasGarage: true, assets: ['suburban', 'industrial'] },
           8: { name: 'Byculla', sky: 0x7a9eb5, fog: 550, ground: 0x345a2a, amb: 0.7, veh: 'car', npcTypes: ['car', 'auto', 'car', 'bike', 'auto', 'car', 'truck', 'car', 'taxi', 'auto', 'bike', 'car', 'car', 'bus', 'auto', 'car', 'car', 'bike', 'auto', 'car', 'taxi', 'car', 'car', 'auto'], hasEmergency: true, roads: [{ type: 'v', x: 0, z1: -1000, z2: 140 }, { type: 'h', z: 120, x1: -140, x2: 20 }, { type: 'h', z: 120, x1: -260, x2: -100 }, { type: 'v', x: -240, z1: -20, z2: 140 }, { type: 'h', z: 0, x1: -260, x2: -100 }, { type: 'v', x: -120, z1: -140, z2: 20 }, { type: 'h', z: -120, x1: -260, x2: -100 }, { type: 'h', z: -120, x1: -380, x2: -220 }, { type: 'v', x: -360, z1: -140, z2: 20 }, { type: 'h', z: 0, x1: -500, x2: -340 }, { type: 'v', x: -480, z1: -20, z2: 140 }, { type: 'h', z: 120, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: 100, z2: 260 }, { type: 'h', z: 240, x1: -380, x2: -220 }, { type: 'v', x: -240, z1: 220, z2: 380 }, { type: 'h', z: 360, x1: -260, x2: -100 }, { type: 'h', z: 360, x1: -140, x2: 20 }, { type: 'v', x: 0, z1: 340, z2: 500 }, { type: 'h', z: 480, x1: -20, x2: 140 }, { type: 'v', x: 120, z1: 460, z2: 620 }, { type: 'h', z: 600, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: 580, z2: 740 }, { type: 'v', x: 240, z1: 700, z2: 860 }, { type: 'v', x: 240, z1: 820, z2: 980 }, { type: 'h', z: 960, x1: 100, x2: 260 }, { type: 'v', x: 120, z1: 820, z2: 980 }, { type: 'h', z: 840, x1: -20, x2: 140 }, { type: 'h', z: 840, x1: -140, x2: 20 }, { type: 'h', z: 840, x1: -260, x2: -100 }, { type: 'h', z: 840, x1: -380, x2: -220 }, { type: 'v', x: -360, z1: 820, z2: 980 }, { type: 'h', z: 960, x1: -500, x2: -340 }, { type: 'h', z: 960, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: 820, z2: 980 }, { type: 'h', z: 840, x1: -620, x2: -460 }, { type: 'v', x: -480, z1: 700, z2: 860 }, { type: 'v', x: -480, z1: 580, z2: 740 }, { type: 'h', z: 600, x1: -620, x2: -460 }, { type: 'v', x: -600, z1: 460, z2: 620 }, { type: 'h', z: 480, x1: -620, x2: -460 }, { type: 'h', z: 480, x1: -500, x2: -340 }, { type: 'h', z: 480, x1: -380, x2: -220 }, { type: 'h', z: 480, x1: -260, x2: -100 }, { type: 'v', x: -120, z1: 460, z2: 620 }, { type: 'h', z: 600, x1: -140, x2: 20 }, { type: 'v', x: 0, z1: 580, z2: 740 }, { type: 'h', z: 720, x1: -20, x2: 1120 }, { type: 'h', z: 120, x1: -1360, x2: 640 }, { type: 'v', x: -360, z1: -880, z2: 1120 }, { type: 'h', z: 720, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -280, z2: 1720 }, { type: 'h', z: 840, x1: -1240, x2: 760 }, { type: 'v', x: -240, z1: -160, z2: 1840 }, { type: 'h', z: 960, x1: -760, x2: 1240 }, { type: 'v', x: 240, z1: -40, z2: 1960 }, { type: 'h', z: 600, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -400, z2: 1600 }], route: [{ x: 0, z: 0 }, { x: 0, z: 120 }, { x: -120, z: 120 }, { x: -240, z: 120 }, { x: -240, z: 0 }, { x: -120, z: 0 }, { x: -120, z: -120 }, { x: -240, z: -120 }, { x: -360, z: -120 }, { x: -360, z: 0 }, { x: -480, z: 0 }, { x: -480, z: 120 }, { x: -360, z: 120 }, { x: -360, z: 240 }, { x: -240, z: 240 }, { x: -240, z: 360 }, { x: -120, z: 360 }, { x: 0, z: 360 }, { x: 0, z: 480 }, { x: 120, z: 480 }, { x: 120, z: 600 }, { x: 240, z: 600 }, { x: 240, z: 720 }, { x: 240, z: 840 }, { x: 240, z: 960 }, { x: 120, z: 960 }, { x: 120, z: 840 }, { x: 0, z: 840 }, { x: -120, z: 840 }, { x: -240, z: 840 }, { x: -360, z: 840 }, { x: -360, z: 960 }, { x: -480, z: 960 }, { x: -600, z: 960 }, { x: -600, z: 840 }, { x: -480, z: 840 }, { x: -480, z: 720 }, { x: -480, z: 600 }, { x: -600, z: 600 }, { x: -600, z: 480 }, { x: -480, z: 480 }, { x: -360, z: 480 }, { x: -240, z: 480 }, { x: -120, z: 480 }, { x: -120, z: 600 }, { x: 0, z: 600 }, { x: 0, z: 720 }, { x: 120, z: 720 }], ints: [[-120, 360], [-360, 240], [240, 960], [120, 960], [-360, 0], [-600, 960], [-240, 120], [-600, 600], [-240, 480], [-480, 720], [0, 120], [-240, -120], [-480, 120], [-480, 0], [0, 0], [120, 840], [-360, 960], [-480, 480], [-480, 600], [0, 840], [-600, 840], [-360, 480], [-240, 840], [240, 720], [-360, 120], [-240, 360], [0, 600], [120, 600], [120, 480], [-240, 240], [-480, 960], [-360, -120], [-120, 0], [-120, 120], [0, 360], [-120, 600], [-120, -120], [240, 600], [-240, 0], [240, 840], [-120, 840], [0, 720], [-120, 480], [-600, 480], [-360, 840], [0, 480], [120, 720], [-480, 840]], bldg: [{ x: -22, z1: 0, z2: 120, s: 0.9 }, { x: 22, z1: 0, z2: 120, s: 0.9 }, { x: -262, z1: 0, z2: 120, s: 0.9 }, { x: -218, z1: 0, z2: 120, s: 0.9 }, { x: -142, z1: -120, z2: 0, s: 0.9 }, { x: -98, z1: -120, z2: 0, s: 0.9 }, { x: -382, z1: -120, z2: 0, s: 0.9 }, { x: -338, z1: -120, z2: 0, s: 0.9 }, { x: -502, z1: 0, z2: 120, s: 0.9 }, { x: -458, z1: 0, z2: 120, s: 0.9 }, { x: -382, z1: 120, z2: 240, s: 0.9 }, { x: -338, z1: 120, z2: 240, s: 0.9 }, { x: -262, z1: 240, z2: 360, s: 0.9 }, { x: -218, z1: 240, z2: 360, s: 0.9 }, { x: -22, z1: 360, z2: 480, s: 0.9 }, { x: 22, z1: 360, z2: 480, s: 0.9 }, { x: 98, z1: 480, z2: 600, s: 0.9 }, { x: 142, z1: 480, z2: 600, s: 0.9 }, { x: 218, z1: 600, z2: 720, s: 0.9 }, { x: 262, z1: 600, z2: 720, s: 0.9 }, { x: 218, z1: 720, z2: 840, s: 0.9 }, { x: 262, z1: 720, z2: 840, s: 0.9 }, { x: 218, z1: 840, z2: 960, s: 0.9 }, { x: 262, z1: 840, z2: 960, s: 0.9 }, { x: 98, z1: 840, z2: 960, s: 0.9 }, { x: 142, z1: 840, z2: 960, s: 0.9 }, { x: -382, z1: 840, z2: 960, s: 0.9 }, { x: -338, z1: 840, z2: 960, s: 0.9 }, { x: -622, z1: 840, z2: 960, s: 0.9 }, { x: -578, z1: 840, z2: 960, s: 0.9 }, { x: -502, z1: 720, z2: 840, s: 0.9 }, { x: -458, z1: 720, z2: 840, s: 0.9 }, { x: -502, z1: 600, z2: 720, s: 0.9 }, { x: -458, z1: 600, z2: 720, s: 0.9 }, { x: -622, z1: 480, z2: 600, s: 0.9 }, { x: -578, z1: 480, z2: 600, s: 0.9 }, { x: -142, z1: 480, z2: 600, s: 0.9 }, { x: -98, z1: 480, z2: 600, s: 0.9 }, { x: -22, z1: 600, z2: 720, s: 0.9 }, { x: 22, z1: 600, z2: 720, s: 0.9 }], timeLimit: 1380, hasGarage: true, assets: ['suburban', 'industrial', 'emergency'] },
@@ -4670,7 +4707,7 @@ class Game {
           15: { name: 'South Mumbai Circuit', sky: 0x7ab5d0, fog: 700, ground: 0x2e6b32, amb: 0.8, veh: 'car', npcTypes: ['car', 'bus', 'auto', 'bike', 'truck', 'car', 'cycle', 'auto', 'car', 'bus', 'bike', 'car', 'taxi', 'auto', 'car', 'bus', 'bike', 'car', 'auto', 'taxi', 'car', 'bus', 'auto', 'bike', 'car', 'truck', 'car', 'auto', 'car', 'bus'], roads: [{ type: 'h', z: 0, x1: -140, x2: 1000 }, { type: 'v', x: -120, z1: -20, z2: 140 }, { type: 'h', z: 120, x1: -140, x2: 20 }, { type: 'h', z: 120, x1: -20, x2: 140 }, { type: 'h', z: 120, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: 100, z2: 260 }, { type: 'v', x: 240, z1: 220, z2: 380 }, { type: 'h', z: 360, x1: 100, x2: 260 }, { type: 'v', x: 120, z1: 220, z2: 380 }, { type: 'h', z: 240, x1: -20, x2: 140 }, { type: 'v', x: 0, z1: 220, z2: 380 }, { type: 'h', z: 360, x1: -140, x2: 20 }, { type: 'v', x: -120, z1: 340, z2: 500 }, { type: 'v', x: -120, z1: 460, z2: 620 }, { type: 'h', z: 600, x1: -140, x2: 20 }, { type: 'v', x: 0, z1: 460, z2: 620 }, { type: 'h', z: 480, x1: -20, x2: 140 }, { type: 'h', z: 480, x1: 100, x2: 260 }, { type: 'h', z: 480, x1: 220, x2: 380 }, { type: 'h', z: 480, x1: 340, x2: 500 }, { type: 'h', z: 480, x1: 460, x2: 620 }, { type: 'v', x: 600, z1: 460, z2: 620 }, { type: 'h', z: 600, x1: 580, x2: 740 }, { type: 'v', x: 720, z1: 580, z2: 740 }, { type: 'v', x: 720, z1: 700, z2: 860 }, { type: 'h', z: 840, x1: 580, x2: 740 }, { type: 'h', z: 840, x1: 460, x2: 620 }, { type: 'v', x: 480, z1: 700, z2: 860 }, { type: 'v', x: 480, z1: 580, z2: 740 }, { type: 'h', z: 600, x1: 340, x2: 500 }, { type: 'h', z: 600, x1: 220, x2: 380 }, { type: 'h', z: 600, x1: 100, x2: 260 }, { type: 'v', x: 120, z1: 580, z2: 740 }, { type: 'v', x: 120, z1: 700, z2: 860 }, { type: 'h', z: 840, x1: -20, x2: 140 }, { type: 'v', x: 0, z1: 820, z2: 980 }, { type: 'h', z: 960, x1: -140, x2: 20 }, { type: 'v', x: -120, z1: 820, z2: 980 }, { type: 'h', z: 840, x1: -260, x2: -100 }, { type: 'h', z: 840, x1: -380, x2: -220 }, { type: 'h', z: 840, x1: -500, x2: -340 }, { type: 'v', x: -480, z1: 820, z2: 980 }, { type: 'h', z: 960, x1: -500, x2: -340 }, { type: 'v', x: -360, z1: 940, z2: 1100 }, { type: 'v', x: -360, z1: 1060, z2: 1220 }, { type: 'v', x: -360, z1: 1180, z2: 1340 }, { type: 'v', x: -360, z1: 1300, z2: 1460 }, { type: 'v', x: -360, z1: 1420, z2: 1580 }, { type: 'h', z: 1560, x1: -380, x2: -220 }, { type: 'h', z: 1560, x1: -260, x2: -100 }, { type: 'v', x: -120, z1: 1420, z2: 1580 }, { type: 'h', z: 1440, x1: -140, x2: 20 }, { type: 'v', x: 0, z1: 1420, z2: 1580 }, { type: 'h', z: 1560, x1: -20, x2: 140 }, { type: 'h', z: 1560, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: 1420, z2: 1580 }, { type: 'h', z: 1440, x1: 100, x2: 260 }, { type: 'v', x: 120, z1: 1300, z2: 1460 }, { type: 'v', x: 120, z1: 1180, z2: 1340 }, { type: 'h', z: 1200, x1: 100, x2: 260 }, { type: 'v', x: 240, z1: 1180, z2: 1340 }, { type: 'h', z: 1320, x1: 220, x2: 380 }, { type: 'h', z: 1320, x1: 340, x2: 500 }, { type: 'h', z: 1320, x1: 460, x2: 620 }, { type: 'v', x: 600, z1: 1300, z2: 1460 }, { type: 'h', z: 1440, x1: 580, x2: 740 }, { type: 'v', x: 720, z1: 1420, z2: 1580 }, { type: 'h', z: 1560, x1: 580, x2: 740 }, { type: 'v', x: 600, z1: 1540, z2: 1700 }, { type: 'v', x: 600, z1: 1660, z2: 1820 }, { type: 'v', x: 600, z1: 1780, z2: 1940 }, { type: 'v', x: 600, z1: 1900, z2: 2060 }, { type: 'v', x: 600, z1: 2020, z2: 2180 }, { type: 'h', z: 2160, x1: 580, x2: 740 }, { type: 'h', z: 2160, x1: 700, x2: 860 }, { type: 'v', x: 840, z1: 2140, z2: 2300 }, { type: 'v', x: 840, z1: 2260, z2: 2420 }, { type: 'h', z: 2400, x1: 700, x2: 860 }, { type: 'v', x: 720, z1: 2380, z2: 2540 }, { type: 'v', x: 720, z1: 2500, z2: 3640 }, { type: 'h', z: 840, x1: -1240, x2: 760 }, { type: 'v', x: -240, z1: -160, z2: 1840 }, { type: 'h', z: 1560, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: 560, z2: 2560 }, { type: 'h', z: 120, x1: -1120, x2: 880 }, { type: 'v', x: -120, z1: -880, z2: 1120 }, { type: 'h', z: 720, x1: -880, x2: 1120 }, { type: 'v', x: 120, z1: -280, z2: 1720 }, { type: 'h', z: 480, x1: -520, x2: 1480 }, { type: 'v', x: 480, z1: -520, z2: 1480 }], route: [{ x: 0, z: 0 }, { x: -120, z: 0 }, { x: -120, z: 120 }, { x: 0, z: 120 }, { x: 120, z: 120 }, { x: 240, z: 120 }, { x: 240, z: 240 }, { x: 240, z: 360 }, { x: 120, z: 360 }, { x: 120, z: 240 }, { x: 0, z: 240 }, { x: 0, z: 360 }, { x: -120, z: 360 }, { x: -120, z: 480 }, { x: -120, z: 600 }, { x: 0, z: 600 }, { x: 0, z: 480 }, { x: 120, z: 480 }, { x: 240, z: 480 }, { x: 360, z: 480 }, { x: 480, z: 480 }, { x: 600, z: 480 }, { x: 600, z: 600 }, { x: 720, z: 600 }, { x: 720, z: 720 }, { x: 720, z: 840 }, { x: 600, z: 840 }, { x: 480, z: 840 }, { x: 480, z: 720 }, { x: 480, z: 600 }, { x: 360, z: 600 }, { x: 240, z: 600 }, { x: 120, z: 600 }, { x: 120, z: 720 }, { x: 120, z: 840 }, { x: 0, z: 840 }, { x: 0, z: 960 }, { x: -120, z: 960 }, { x: -120, z: 840 }, { x: -240, z: 840 }, { x: -360, z: 840 }, { x: -480, z: 840 }, { x: -480, z: 960 }, { x: -360, z: 960 }, { x: -360, z: 1080 }, { x: -360, z: 1200 }, { x: -360, z: 1320 }, { x: -360, z: 1440 }, { x: -360, z: 1560 }, { x: -240, z: 1560 }, { x: -120, z: 1560 }, { x: -120, z: 1440 }, { x: 0, z: 1440 }, { x: 0, z: 1560 }, { x: 120, z: 1560 }, { x: 240, z: 1560 }, { x: 240, z: 1440 }, { x: 120, z: 1440 }, { x: 120, z: 1320 }, { x: 120, z: 1200 }, { x: 240, z: 1200 }, { x: 240, z: 1320 }, { x: 360, z: 1320 }, { x: 480, z: 1320 }, { x: 600, z: 1320 }, { x: 600, z: 1440 }, { x: 720, z: 1440 }, { x: 720, z: 1560 }, { x: 600, z: 1560 }, { x: 600, z: 1680 }, { x: 600, z: 1800 }, { x: 600, z: 1920 }, { x: 600, z: 2040 }, { x: 600, z: 2160 }, { x: 720, z: 2160 }, { x: 840, z: 2160 }, { x: 840, z: 2280 }, { x: 840, z: 2400 }, { x: 720, z: 2400 }, { x: 720, z: 2520 }, { x: 720, z: 2640 }], ints: [[-120, 960], [480, 840], [-360, 960], [840, 2160], [120, 1200], [360, 600], [840, 2280], [120, 600], [600, 1320], [-360, 1080], [0, 1560], [0, 480], [600, 1920], [0, 240], [240, 1200], [720, 1560], [-120, 360], [720, 720], [120, 360], [120, 1440], [480, 720], [720, 2160], [120, 240], [360, 480], [120, 1560], [-240, 840], [240, 1560], [120, 480], [240, 1440], [600, 840], [-480, 960], [480, 1320], [240, 240], [720, 840], [0, 360], [0, 1440], [240, 480], [240, 600], [120, 1320], [600, 1440], [240, 120], [-360, 840], [-360, 1560], [600, 1800], [360, 1320], [600, 2160], [-360, 1200], [0, 120], [600, 1560], [-360, 1320], [720, 2640], [600, 2040], [720, 600], [-120, 120], [120, 120], [-120, 600], [-120, 840], [240, 1320], [240, 360], [-240, 1560], [480, 480], [600, 600], [120, 840], [0, 0], [0, 840], [-120, 1560], [600, 1680], [600, 480], [0, 960], [720, 2520], [720, 1440], [0, 600], [-120, 0], [720, 2400], [-120, 1440], [-360, 1440], [480, 600], [-120, 480], [120, 720], [-480, 840], [840, 2400]], bldg: [{ x: -142, z1: 0, z2: 120, s: 0.9 }, { x: -98, z1: 0, z2: 120, s: 0.9 }, { x: 218, z1: 120, z2: 240, s: 0.9 }, { x: 262, z1: 120, z2: 240, s: 0.9 }, { x: 218, z1: 240, z2: 360, s: 0.9 }, { x: 262, z1: 240, z2: 360, s: 0.9 }, { x: 98, z1: 240, z2: 360, s: 0.9 }, { x: 142, z1: 240, z2: 360, s: 0.9 }, { x: -22, z1: 240, z2: 360, s: 0.9 }, { x: 22, z1: 240, z2: 360, s: 0.9 }, { x: -142, z1: 360, z2: 480, s: 0.9 }, { x: -98, z1: 360, z2: 480, s: 0.9 }, { x: -142, z1: 480, z2: 600, s: 0.9 }, { x: -98, z1: 480, z2: 600, s: 0.9 }, { x: -22, z1: 480, z2: 600, s: 0.9 }, { x: 22, z1: 480, z2: 600, s: 0.9 }, { x: 578, z1: 480, z2: 600, s: 0.9 }, { x: 622, z1: 480, z2: 600, s: 0.9 }, { x: 698, z1: 600, z2: 720, s: 0.9 }, { x: 742, z1: 600, z2: 720, s: 0.9 }, { x: 698, z1: 720, z2: 840, s: 0.9 }, { x: 742, z1: 720, z2: 840, s: 0.9 }, { x: 458, z1: 720, z2: 840, s: 0.9 }, { x: 502, z1: 720, z2: 840, s: 0.9 }, { x: 458, z1: 600, z2: 720, s: 0.9 }, { x: 502, z1: 600, z2: 720, s: 0.9 }, { x: 98, z1: 600, z2: 720, s: 0.9 }, { x: 142, z1: 600, z2: 720, s: 0.9 }, { x: 98, z1: 720, z2: 840, s: 0.9 }, { x: 142, z1: 720, z2: 840, s: 0.9 }, { x: -22, z1: 840, z2: 960, s: 0.9 }, { x: 22, z1: 840, z2: 960, s: 0.9 }, { x: -142, z1: 840, z2: 960, s: 0.9 }, { x: -98, z1: 840, z2: 960, s: 0.9 }, { x: -502, z1: 840, z2: 960, s: 0.9 }, { x: -458, z1: 840, z2: 960, s: 0.9 }, { x: -382, z1: 960, z2: 1080, s: 0.9 }, { x: -338, z1: 960, z2: 1080, s: 0.9 }, { x: -382, z1: 1080, z2: 1200, s: 0.9 }, { x: -338, z1: 1080, z2: 1200, s: 0.9 }, { x: -382, z1: 1200, z2: 1320, s: 0.9 }, { x: -338, z1: 1200, z2: 1320, s: 0.9 }, { x: -382, z1: 1320, z2: 1440, s: 0.9 }, { x: -338, z1: 1320, z2: 1440, s: 0.9 }, { x: -382, z1: 1440, z2: 1560, s: 0.9 }, { x: -338, z1: 1440, z2: 1560, s: 0.9 }, { x: -142, z1: 1440, z2: 1560, s: 0.9 }, { x: -98, z1: 1440, z2: 1560, s: 0.9 }, { x: -22, z1: 1440, z2: 1560, s: 0.9 }, { x: 22, z1: 1440, z2: 1560, s: 0.9 }, { x: 218, z1: 1440, z2: 1560, s: 0.9 }, { x: 262, z1: 1440, z2: 1560, s: 0.9 }, { x: 98, z1: 1320, z2: 1440, s: 0.9 }, { x: 142, z1: 1320, z2: 1440, s: 0.9 }, { x: 98, z1: 1200, z2: 1320, s: 0.9 }, { x: 142, z1: 1200, z2: 1320, s: 0.9 }, { x: 218, z1: 1200, z2: 1320, s: 0.9 }, { x: 262, z1: 1200, z2: 1320, s: 0.9 }, { x: 578, z1: 1320, z2: 1440, s: 0.9 }, { x: 622, z1: 1320, z2: 1440, s: 0.9 }, { x: 698, z1: 1440, z2: 1560, s: 0.9 }, { x: 742, z1: 1440, z2: 1560, s: 0.9 }, { x: 578, z1: 1560, z2: 1680, s: 0.9 }, { x: 622, z1: 1560, z2: 1680, s: 0.9 }, { x: 578, z1: 1680, z2: 1800, s: 0.9 }, { x: 622, z1: 1680, z2: 1800, s: 0.9 }, { x: 578, z1: 1800, z2: 1920, s: 0.9 }, { x: 622, z1: 1800, z2: 1920, s: 0.9 }, { x: 578, z1: 1920, z2: 2040, s: 0.9 }, { x: 622, z1: 1920, z2: 2040, s: 0.9 }, { x: 578, z1: 2040, z2: 2160, s: 0.9 }, { x: 622, z1: 2040, z2: 2160, s: 0.9 }, { x: 818, z1: 2160, z2: 2280, s: 0.9 }, { x: 862, z1: 2160, z2: 2280, s: 0.9 }, { x: 818, z1: 2280, z2: 2400, s: 0.9 }, { x: 862, z1: 2280, z2: 2400, s: 0.9 }, { x: 698, z1: 2400, z2: 2520, s: 0.9 }, { x: 742, z1: 2400, z2: 2520, s: 0.9 }, { x: 698, z1: 2520, z2: 2640, s: 0.9 }, { x: 742, z1: 2520, z2: 2640, s: 0.9 }], timeLimit: 2300, hasGarage: true, assets: ['suburban', 'industrial'] }
         };
         
-        if (lvId === 15) {
+        if (lvId === '50km') {
           const rds = [];
           const ints = [];
           // 50km grid (-25000 to 25000)
@@ -4702,7 +4739,7 @@ class Game {
         let cfg = Object.assign({}, base);
         if (lv) Object.assign(cfg, lv);
         // Free roam and pedestrian levels start inside the vehicle; others start outside
-        cfg.startOutside = lv && (lv.themeType === 'free_roam' || lv.isPedestrian) ? false : true;
+        cfg.startOutside = (lv && lv.startOutside !== undefined) ? lv.startOutside : false;
         // Auto-generate intersection points from road data if not defined
         if (!cfg.ints && cfg.roads) {
           const vRoads = cfg.roads.filter(r => r.type === 'v');
@@ -4730,60 +4767,55 @@ class Game {
         let pStartX = 0, pStartZ = 0, pRot = 0;
         let vStartX = 0, vStartZ = 0, vRotY = 0;
 
-        // ── Roadside Garage Starting Spawn Position ──
-        const firstRoad = (this.mapCfg && this.mapCfg.roads && this.mapCfg.roads[0]) || { type: 'v', x: 0, z1: -800, z2: 800, width: 14 };
-        const roadW = firstRoad.width || 14;
-        const swW = (this.mapCfg && this.mapCfg.sidewalkWidth) || (this.mapCfg?.isPedestrian ? 5.5 : 4.0);
-        const roadsideOffset = roadW / 2 + swW + 7.5;
-
-        // Position garage along the first road segment away from the intersection center
-        let garageX = 0, garageZ = 0, garageRotY = 0;
-        if (firstRoad.type === 'v') {
-          garageX = firstRoad.x + roadsideOffset;
-          const zMin = Math.min(firstRoad.z1, firstRoad.z2);
-          const zMax = Math.max(firstRoad.z1, firstRoad.z2);
-          garageZ = Math.max(zMin + 45, Math.min(zMax - 45, -35));
-          garageRotY = -Math.PI / 2; // Facing west towards the road
+        if (this._suburbanSpawn) {
+          // 🏡 Suburban Neighborhood Spawn:
+          // Car is parked inside the garage at the end of the driveway
+          // Player is standing in front of the household on the front walkway/porch steps
+          vStartX = this._suburbanSpawn.car.x;
+          vStartZ = this._suburbanSpawn.car.z;
+          vRotY = this._suburbanSpawn.car.rotY;
+          pStartX = this._suburbanSpawn.player.x;
+          pStartZ = this._suburbanSpawn.player.z;
+          pRot = this._suburbanSpawn.player.rotY;
+          if (this.mapCfg) this.mapCfg.startOutside = true;
+        } else if (vt === 'pedestrian' || this.mapCfg?.isPedestrian) {
+          // Pedestrian spawn on sidewalk
+          const firstRoad = (this.mapCfg && this.mapCfg.roads && this.mapCfg.roads[0]) || { type: 'v', x: 0, z1: -800, z2: 800, width: 14 };
+          const roadW = firstRoad.width || 14;
+          const swW = (this.mapCfg && this.mapCfg.sidewalkWidth) || 4.0;
+          if (this.mapCfg && this.mapCfg.route && this.mapCfg.route.length > 0) {
+            pStartX = this.mapCfg.route[0].x;
+            pStartZ = this.mapCfg.route[0].z;
+            pRot = 0;
+          } else {
+            pStartX = (firstRoad.type === 'v' ? firstRoad.x + roadW / 2 + swW / 2 : 0);
+            pStartZ = (firstRoad.type === 'v' ? 0 : firstRoad.z + roadW / 2 + swW / 2);
+            pRot = 0;
+          }
         } else {
-          const xMin = Math.min(firstRoad.x1, firstRoad.x2);
-          const xMax = Math.max(firstRoad.x1, firstRoad.x2);
-          garageX = Math.max(xMin + 45, Math.min(xMax - 45, -35));
-          garageZ = firstRoad.z + roadsideOffset;
-          garageRotY = Math.PI; // Facing north towards the road
+          // Vehicle Mode: Spawn directly on road in driving lane, facing route
+          if (this.mapCfg && this.mapCfg.route && this.mapCfg.route.length >= 2) {
+            const p1 = this.mapCfg.route[0];
+            const p2 = this.mapCfg.route[1];
+            const dx = p2.x - p1.x;
+            const dz = p2.z - p1.z;
+            const dist = Math.hypot(dx, dz);
+            const nx = dist > 0 ? dx / dist : 0;
+            const nz = dist > 0 ? dz / dist : -1;
+            // Lane offset (standard Mumbai left-side driving lane offset)
+            const laneOffset = 2.4;
+            vStartX = p1.x - nz * laneOffset;
+            vStartZ = p1.z + nx * laneOffset;
+            vRotY = Math.atan2(nx, nz);
+          } else {
+            vStartX = 2.4;
+            vStartZ = 0;
+            vRotY = 0;
+          }
+          pStartX = vStartX;
+          pStartZ = vStartZ;
+          pRot = vRotY;
         }
-
-        this._garageX = garageX;
-        this._garageZ = garageZ;
-        this._garageRotY = garageRotY;
-        this._garageActive = !this.mapCfg?.is50km && !this.mapCfg?.useLowPolyCity;
-
-        // Build 3D roadside garage and workshop
-        if (!this.mapCfg?.is50km && !this.mapCfg?.useLowPolyCity) {
-          this._buildGarage(garageX, garageZ, garageRotY, roadW, swW);
-          vStartX = garageX;
-          vStartZ = garageZ;
-          vRotY = garageRotY;
-        } else if (this.mapCfg && this.mapCfg.route && this.mapCfg.route.length >= 2) {
-          const p1 = this.mapCfg.route[0];
-          const p2 = this.mapCfg.route[1];
-          const dx = p2.x - p1.x;
-          const dz = p2.z - p1.z;
-          const dist = Math.hypot(dx, dz);
-          const nx = dist > 0 ? dx / dist : 0;
-          const nz = dist > 0 ? dz / dist : 1;
-          vStartX = p1.x - nz * 2.5;
-          vStartZ = p1.z + nx * 2.5;
-          vRotY = Math.atan2(nx, nz);
-        } else {
-          vStartX = 0;
-          vStartZ = -35;
-          vRotY = 0;
-        }
-
-        // Always position human right beside the vehicle door inside the garage bay
-        pStartX = vStartX - Math.cos(vRotY) * 2.2;
-        pStartZ = vStartZ + Math.sin(vRotY) * 2.2;
-        pRot = vRotY;
 
         if (vt === 'pedestrian') {
           this.isPedestrian = true;
@@ -4799,11 +4831,53 @@ class Game {
               toast('🚶 Pedestrian Mode Active: Use WASD / Arrow Keys to walk safely!', '#34d399', 6000);
           }, 500);
         } else {
-          // Build the vehicle
-          this.playerVehicle = _buildVehicle(vt, 0xffffff);
+          // Build the vehicle with Academy Garage Custom Paint & Underglow
+          let playerColor = 0xffffff;
+          let customCarConfig = null;
+          try {
+            const rawConfig = localStorage.getItem('traffic_player_car');
+            if (rawConfig) {
+              customCarConfig = JSON.parse(rawConfig);
+              if (customCarConfig && customCarConfig.paint) {
+                playerColor = Number(customCarConfig.paint);
+              }
+            }
+          } catch(e) {
+            console.warn('[game_core] Could not read traffic_player_car:', e);
+          }
+
+          this.playerVehicle = _buildVehicle(vt, playerColor);
           this._spawnPos = { x: vStartX, z: vStartZ };
           this.playerVehicle.position.set(vStartX, 0, vStartZ);
           this.playerVehicle.rotation.y = vRotY;
+
+          // If custom underglow was configured in the 3D Academy Garage, attach neon tubes + point light
+          if (customCarConfig && customCarConfig.underglow) {
+            try {
+              const uColor = Number(customCarConfig.underglow);
+              const uMat = new THREE.MeshBasicMaterial({ color: uColor });
+              const uTubeL = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 2.4, 8), uMat);
+              uTubeL.rotation.x = Math.PI / 2;
+              uTubeL.position.set(-0.85, 0.12, 0);
+              const uTubeR = uTubeL.clone();
+              uTubeR.position.x = 0.85;
+              this.playerVehicle.add(uTubeL, uTubeR);
+
+              const uLight = new THREE.PointLight(uColor, 2.5, 6.0, 1.4);
+              uLight.position.set(0, 0.15, 0);
+              this.playerVehicle.add(uLight);
+
+              setTimeout(() => {
+                const pName = customCarConfig.paintName || 'Custom';
+                const gName = customCarConfig.glowName || 'Neon';
+                if (typeof toast === 'function') {
+                  toast(`🏁 Academy Tuned Supercar Deployed: ${pName} with ${gName} Underglow!`, '#10b981', 6000);
+                }
+              }, 1200);
+            } catch(glowErr) {
+              console.warn('[game_core] Error applying custom underglow:', glowErr);
+            }
+          }
           
           // ── PLAYER HEADLIGHTS & TAILLIGHTS ──
           const isNight = this.mapCfg && this.mapCfg.isNight;
@@ -4839,22 +4913,30 @@ class Game {
 
           this.scene.add(this.playerVehicle);
 
-          // Always start outside the vehicle as a human first
-          this.isPedestrian = true;
-          this.playerCharacter = _buildHuman(true);
-          this.playerCharacter.position.set(pStartX, 0, pStartZ);
-          this.playerCharacter.rotation.y = pRot;
-          this.scene.add(this.playerCharacter);
-          
-          this.player = this.playerCharacter; // Start as pedestrian
-          this.maxSpd = 0.12; this.accel = 0.06; this.turn = 0.05; this.fric = 0.88;
-
-          // ── VEHICLE BEACON — floating arrow pillar above the car ──
-          this._createVehicleBeacon();
-
-          setTimeout(() => {
-              toast('🚶 WASD to walk, F to enter your vehicle!', '#3498db', 6000);
-          }, 500);
+          if (this.mapCfg && this.mapCfg.startOutside) {
+            this.isPedestrian = true;
+            this.playerCharacter = _buildHuman(true);
+            this.playerCharacter.position.set(pStartX, 0, pStartZ);
+            this.playerCharacter.rotation.y = pRot;
+            this.scene.add(this.playerCharacter);
+            this.player = this.playerCharacter;
+            this.camYaw = pRot;
+            this.targetCamYaw = pRot;
+            this.maxSpd = 0.12; this.accel = 0.06; this.turn = 0.05; this.fric = 0.88;
+            this._createVehicleBeacon();
+            setTimeout(() => {
+                toast('🚶 In front of household: Walk to your garage & press F to enter your car!', '#3498db', 6000);
+            }, 500);
+          } else {
+            this.isPedestrian = false;
+            this.player = this.playerVehicle;
+            const vs = VEHICLE_STATS[vt] || VEHICLE_STATS.car;
+            this.maxSpd = vs.maxSpd;
+            this.accel = vs.accel;
+            this.turn = vs.turn;
+            this.fric = vs.fric;
+            if (this.warnEl) this.warnEl.style.display = 'none';
+          }
         }
       }
 
@@ -4911,13 +4993,72 @@ class Game {
 
       _buildRouteCheckpoints(cfg) {
         this.cps = [];
-        const route = (cfg && cfg.route && cfg.route.length > 1) ? cfg.route : [
+        const isPed = this.isPedestrian || (cfg && cfg.isPedestrian) || (this.vehMode === 'pedestrian');
+        const rawRoute = (cfg && cfg.route && cfg.route.length > 1) ? cfg.route : [
           { x: 0, z: 0, desc: 'Start Position' },
           { x: 0, z: -80, desc: 'Signal Stop Line' },
           { x: 0, z: -200, desc: 'SV Road Crossing' },
           { x: 120, z: -200, desc: 'North Link Corridor' },
           { x: 240, z: -200, desc: 'Destination Finish Gate' }
         ];
+
+        // Intelligent checkpoint lane/sidewalk alignment:
+        // - Vehicles: Middle of the left driving lane (LHT in Mumbai)
+        // - Pedestrians: On the footpath (sidewalk) clear of traffic
+        const roads = (cfg && cfg.roads) || this.roadSegments || [];
+        const route = rawRoute.map((pt, rIdx) => {
+          let cx = pt.x;
+          let cz = pt.z;
+
+          let bestRoad = null;
+          let minD = Infinity;
+          for (let r of roads) {
+            const isV = r.type === 'v';
+            const rx = isV ? r.x : Math.max(Math.min(r.x1, r.x2), Math.min(Math.max(r.x1, r.x2), pt.x));
+            const rz = isV ? Math.max(Math.min(r.z1, r.z2), Math.min(Math.max(r.z1, r.z2), pt.z)) : r.z;
+            const d = Math.hypot(pt.x - rx, pt.z - rz);
+            if (d < minD) {
+              minD = d;
+              bestRoad = r;
+            }
+          }
+
+          if (bestRoad && minD < (bestRoad.width || 14) * 1.5) {
+            const isV = bestRoad.type === 'v';
+            const rw = bestRoad.width || 14;
+            const lanes = bestRoad.lanes || 2;
+            const laneW = rw / lanes;
+
+            if (isPed) {
+              // Pedestrian: Position on the footpath / sidewalk
+              const swDist = rw / 2 + 1.8;
+              if (isV) {
+                const side = pt.x < bestRoad.x ? -1 : 1;
+                cx = bestRoad.x + side * swDist;
+              } else {
+                const side = pt.z < bestRoad.z ? -1 : 1;
+                cz = bestRoad.z + side * swDist;
+              }
+            } else {
+              // Vehicle: Position in middle of left lane (LHT)
+              if (isV) {
+                const nextPt = rawRoute[rIdx + 1] || rawRoute[rIdx - 1] || pt;
+                const dirZ = (nextPt.z >= pt.z) ? 1 : -1;
+                const leftSide = (dirZ > 0) ? -1 : 1;
+                const laneCenterOffset = lanes >= 4 ? rw / 4 : laneW / 2;
+                cx = bestRoad.x + leftSide * laneCenterOffset;
+              } else {
+                const nextPt = rawRoute[rIdx + 1] || rawRoute[rIdx - 1] || pt;
+                const dirX = (nextPt.x >= pt.x) ? 1 : -1;
+                const leftSide = (dirX > 0) ? 1 : -1;
+                const laneCenterOffset = lanes >= 4 ? rw / 4 : laneW / 2;
+                cz = bestRoad.z + leftSide * laneCenterOffset;
+              }
+            }
+          }
+
+          return { x: cx, z: cz, desc: pt.desc };
+        });
 
         const numPts = route.length;
         const indices = [];
@@ -4994,7 +5135,7 @@ class Game {
       _buildScene(mode) {
         if (typeof initGTex === 'function') initGTex();
         while (this.scene && this.scene.children.length) this.scene.remove(this.scene.children[0]);
-        this.world = []; this.npcs = []; this.sigs = []; this.cps = []; this.spc = []; this.obstacles = []; this.roadSegments = []; this.driveRoute = []; this.peds = []; this.pedestrianAIs = []; this.speedBreakers = [];
+        this.world = []; this.npcs = []; this.sigs = []; this.cps = []; this.spc = []; this.obstacles = []; this.roadSegments = []; this.driveRoute = []; this.peds = []; this.pedestrianAIs = []; this.speedBreakers = []; this.trains = [];
         // Phase 7: Recycle existing NPC groups into free pool before clearing scene
         if (!this._npcFree) this._npcFree = [];
         if (!this._pedFree) this._pedFree = [];
@@ -5179,7 +5320,11 @@ class Game {
         const groundColor = (cfg.ground !== undefined && !cfg.isBridge) ? cfg.ground : (cfg.isBridge ? 0x1a5a8a : 0x33691e);
         const groundMat = cfg.isBridge
           ? new THREE.MeshLambertMaterial({ color: 0x1a5a8a, transparent: true, opacity: 0.7 })
-          : new THREE.MeshLambertMaterial({ color: groundColor });
+          : new THREE.MeshLambertMaterial({
+              color: groundColor,
+              map: (typeof window.createGrassCanvasTexture === 'function') ? window.createGrassCanvasTexture() : null,
+              roughness: 0.95
+            });
         const ground = new THREE.Mesh(new THREE.PlaneGeometry(gs, gs), groundMat);
         ground.rotation.x = -Math.PI / 2;
         ground.position.set(0, -0.05, 0);
@@ -5215,13 +5360,49 @@ class Game {
           this.missionManager.generateMissions(cfg);
         }
 
+        // ── Low-Poly Suburban Residential Avenue Generator ──
+        if (cfg.isSuburbanNeighborhood || cfg.themeType === 'suburban_neighborhood') {
+          if (typeof window.createSuburbanNeighborhood === 'function') {
+            window.createSuburbanNeighborhood(this, cfg);
+            this._buildRoadZones(RW || 14);
+            // ── Build Level Route Checkpoints & Finish Gate ──
+            this._buildRouteCheckpoints(cfg);
+            // Initialize player vehicle & pedestrian at household & garage
+            this._pmesh(mode, this.vehMode || cfg.veh);
+            if (cfg.hasAIDirector && window.TrafficMapAI) {
+              window.TrafficMapAI.initLevelDirector(this, cfg);
+            }
+            return;
+          }
+        }
+
         if (this.roadGraph) {
             this._buildRoadsFromGraph(RW);
-            this._buildBarriers(cfg, RW);
-            this._buildTrafficSignals(cfg, RW);
-            this._buildBuildingsFromGraph();
-            this._buildParksAndTrees();
-            this._buildBusStops();
+            if (!cfg.isAISynthesized) {
+              this._buildBarriers(cfg, RW);
+              this._buildTrafficSignals(cfg, RW);
+              this._buildBuildingsFromGraph();
+              this._buildParksAndTrees();
+              this._buildBusStops();
+            }
+
+            // ── AI Syllabus Demands Resolver: Inject Physical Scenario Elements ──
+            if (window.AISceneGenerator) {
+              if (!this.aiSceneGenerator) {
+                this.aiSceneGenerator = new window.AISceneGenerator(this);
+              }
+              if (cfg.isAISynthesized) {
+                if (typeof this.aiSceneGenerator.synthesizeInfrastructure === 'function') {
+                  this.aiSceneGenerator.synthesizeInfrastructure(cfg);
+                }
+                if (typeof this.aiSceneGenerator.synthesizeParcelsAndBuildings === 'function') {
+                  this.aiSceneGenerator.synthesizeParcelsAndBuildings(cfg);
+                }
+              }
+              if (this.aiSceneGenerator.syllabusResolver) {
+                this.aiSceneGenerator.syllabusResolver.resolveLevelSyllabus(cfg);
+              }
+            }
         } else {
             // ── Kenney GLB Road Tiles + Sidewalks + Props + Buildings ──
             const _roadKey = window.PRELOADED_MODELS?.road_avenue ? 'road_avenue' : 'road_straight';
@@ -5240,13 +5421,14 @@ class Game {
               const cx = isV ? r.x : (r.x1 + r.x2) / 2;
               const cz = isV ? (r.z1 + r.z2) / 2 : r.z;
 
-              // Logical road bed (collision)
+              // Solid Charcoal Asphalt Road Surface (visible & collision)
               const roadHb = new THREE.Mesh(
                 new THREE.PlaneGeometry(RW, len),
-                new THREE.MeshBasicMaterial({ visible: false })
+                _roadMat
               );
               roadHb.rotation.set(-Math.PI / 2, 0, isV ? 0 : -Math.PI / 2);
-              roadHb.position.set(cx, 0.01, cz);
+              roadHb.position.set(cx, 0.05, cz);
+              roadHb.receiveShadow = true;
               this.scene.add(roadHb);
               this.world.push(roadHb);
 
@@ -5290,6 +5472,21 @@ class Game {
                 pb.receiveShadow = true;
                 this.scene.add(pb);
                 this.world.push(pb);
+
+                // Lush green grass lawns along outer sidewalk edge
+                const lawnW = 20;
+                const lawn = new THREE.Mesh(
+                  isV ? new THREE.PlaneGeometry(lawnW, len) : new THREE.PlaneGeometry(len, lawnW),
+                  new THREE.MeshLambertMaterial({ color: 0x44bd32 })
+                );
+                lawn.rotation.x = -Math.PI / 2;
+                lawn.position.set(
+                  isV ? cx + side * (RW / 2 + _swW + lawnW / 2) : cx,
+                  0.02,
+                  isV ? cz : cz + side * (RW / 2 + _swW + lawnW / 2)
+                );
+                lawn.receiveShadow = true;
+                this.scene.add(lawn);
               });
 
               // ── Road Lane Markings (White dashed center line & solid edge lines) ──
@@ -5393,21 +5590,41 @@ class Game {
             // Crosswalk decoration at every km of an open highway grid isn't meaningful content
             // anyway - regular city levels (which have a few dozen intersections, not thousands)
             // are unaffected by this and still get full intersection/crosswalk detail below.
-            if (_intModel && cfg.ints && !cfg.is50km) {
+            if (cfg.ints && !cfg.is50km) {
               const _intScale = RW / 1000;
               cfg.ints.forEach(([ix, iz]) => {
-                const intTile = _intModel.clone();
-                intTile.scale.set(_intScale, _intScale, _intScale);
-                intTile.frustumCulled = true;
-                intTile.traverse(c => {
-                  if (c.isMesh) { c.castShadow = false; c.receiveShadow = false; c.material = _roadMat; }
-                });
-                intTile.position.set(ix, 0.08, iz);
-                this.scene.add(intTile);
+                // Continuous Asphalt Patch across intersection junction
+                const intPatch = new THREE.Mesh(
+                  new THREE.PlaneGeometry(RW + 0.5, RW + 0.5),
+                  _roadMat
+                );
+                intPatch.rotation.x = -Math.PI / 2;
+                intPatch.position.set(ix, 0.052, iz);
+                intPatch.receiveShadow = true;
+                this.scene.add(intPatch);
+                this.world.push(intPatch);
 
-                // Crosswalk markings: white striped plates across the intersection
+                if (_intModel) {
+                  const intTile = _intModel.clone();
+                  intTile.scale.set(_intScale, _intScale, _intScale);
+                  intTile.frustumCulled = true;
+                  intTile.traverse(c => {
+                    if (c.isMesh) { c.castShadow = false; c.receiveShadow = false; c.material = _roadMat; }
+                  });
+                  intTile.position.set(ix, 0.08, iz);
+                  this.scene.add(intTile);
+                }
+
+                // Crosswalk markings: white striped plates across the intersection with polygonOffset
                 const _cwLen = RW * 0.4;
-                const _cwMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.92 });
+                const _cwMat = new THREE.MeshBasicMaterial({ 
+                  color: 0xffffff, 
+                  transparent: true, 
+                  opacity: 0.95,
+                  polygonOffset: true,
+                  polygonOffsetFactor: -1.0,
+                  polygonOffsetUnits: -1.0
+                });
                 // Clean road-surface stripes across intersection
                 [-1, 0, 1].forEach(off => {
                   // Horizontal stripe
@@ -5527,13 +5744,15 @@ class Game {
           }
 
       if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['metro']) {
-          const metro = window.PRELOADED_MODELS['metro'].clone();
+          const m = window.PRELOADED_MODELS['metro'];
+          const metro = (m.scene || m).clone();
           metro.scale.set(6, 6, 6);
-            metro.position.set(100, 15, 0); // elevated
-            metro.rotation.y = -Math.PI / 2;
-            this.scene.add(metro);
-            this.trains.push({ mesh: metro, vx: -0.6 });
-        }
+          metro.position.set(100, 15, 0); // elevated
+          metro.rotation.y = -Math.PI / 2;
+          this.scene.add(metro);
+          if (!this.trains) this.trains = [];
+          this.trains.push({ mesh: metro, vx: -0.6 });
+      }
         
         // Bus Stop Logic
         if (cfg.id === 7) {
@@ -5583,7 +5802,7 @@ class Game {
                 this.scene.add(logoMesh);
             });
             
-            // Gateway of India (Detailed representation for Mumbai)
+            // Gateway of India (Detailed representation for Mumbai Waterfront Promenade)
             const gwGroup = new THREE.Group();
             const stoneMat = new THREE.MeshToonMaterial({ color: 0xdfd3c3 }); // Basalt color
             
@@ -5604,11 +5823,14 @@ class Game {
             const t3 = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 3, 8), stoneMat); t3.position.set(-17, 13.5, 0); gwGroup.add(t3);
             const t4 = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 3, 8), stoneMat); t4.position.set(17, 13.5, 0); gwGroup.add(t4);
             
-            gwGroup.position.set(0, 0, -80);
+            gwGroup.position.set(-55, 0, -80);
             this.scene.add(gwGroup);
-            this.obstacles.push(p1, p2, sp1, sp2);
+            const gwObs = new THREE.Object3D();
+            gwObs.position.set(-55, 0, -80);
+            gwObs.userData = { halfW: 22, halfD: 6 };
+            this.obstacles.push(gwObs);
             if (!this._landmarks) this._landmarks = [];
-            this._landmarks.push({ name: 'Gateway of India', x: 0, z: -80, discovered: false });
+            this._landmarks.push({ name: 'Gateway of India', x: -55, z: -80, discovered: false });
         }
         
         // Gully / Narrow Road Elements
@@ -5868,9 +6090,9 @@ class Game {
 
         if (cfg.hasSchool) {
           const sGrp = new THREE.Group();
-          const schoolX = -65, schoolZ = -30;
+          const schoolX = -60, schoolZ = -32;
 
-          // 1. Main School Building (2-Story Colonial Brick & Cream Architecture)
+          // 1. Main School Building (Colonial Brick & Cream St. Xavier Architecture)
           const bldgMat = new THREE.MeshLambertMaterial({ color: 0xb91c1c }); // Crimson brick
           const trimMat = new THREE.MeshLambertMaterial({ color: 0xfef08a }); // Cream trim
           const roofMat = new THREE.MeshLambertMaterial({ color: 0x1e293b }); // Slate roof
@@ -5917,59 +6139,83 @@ class Game {
           const schoolSign = new THREE.Mesh(new THREE.BoxGeometry(18, 4.2, 0.4), new THREE.MeshLambertMaterial({ map: schoolSignTex }));
           schoolSign.position.set(0, 11.5, 8.3); sGrp.add(schoolSign);
 
-          // Boundary wall and school gate facing road (Z = 0)
+          // Boundary wall and school gate facing road (Z = -11.5 in world space)
           const wallMat = new THREE.MeshLambertMaterial({ color: 0x94a3b8 });
-          [-18, 18].forEach(wx => {
-            const wall = new THREE.Mesh(new THREE.BoxGeometry(15, 2.4, 0.5), wallMat);
-            wall.position.set(wx, 1.2, 12.5); sGrp.add(wall);
-          });
-          // Gate pillars
-          [-8, 8].forEach(px => {
+          const wallOffsetZ = -schoolZ - 11.5; // in sGrp local space: 32 - 11.5 = 20.5
+          // Left wing wall (X: -100 to -64 -> local X: -40 to -4)
+          const wallL = new THREE.Mesh(new THREE.BoxGeometry(36, 2.4, 0.5), wallMat);
+          wallL.position.set(-22, 1.2, wallOffsetZ); sGrp.add(wallL);
+          // Right wing wall (X: -56 to -20 -> local X: 4 to 40)
+          const wallR = new THREE.Mesh(new THREE.BoxGeometry(36, 2.4, 0.5), wallMat);
+          wallR.position.set(22, 1.2, wallOffsetZ); sGrp.add(wallR);
+          // Gate pillars (X = -64 and X = -56 -> local X = -4 and +4)
+          [-4, 4].forEach(px => {
             const pillar = new THREE.Mesh(new THREE.BoxGeometry(1.4, 3.8, 1.4), trimMat);
-            pillar.position.set(px, 1.9, 12.5); sGrp.add(pillar);
+            pillar.position.set(px, 1.9, wallOffsetZ); sGrp.add(pillar);
           });
 
           // School flag pole
           const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 12, 8), new THREE.MeshLambertMaterial({ color: 0xe2e8f0 }));
-          pole.position.set(-6, 6, 10); sGrp.add(pole);
+          pole.position.set(-6, 6, 12); sGrp.add(pole);
           const flag = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 1.2), new THREE.MeshBasicMaterial({ color: 0xf97316 }));
-          flag.position.set(-5.0, 11, 10); sGrp.add(flag);
+          flag.position.set(-5.0, 11, 12); sGrp.add(flag);
 
           sGrp.position.set(schoolX, 0, schoolZ);
-          sGrp.rotation.y = 0; // Facing south towards road at Z = 0
           this.scene.add(sGrp);
           this.world.push(sGrp);
 
           // School building collision obstacle
           const schoolCol = new THREE.Group();
           schoolCol.position.set(schoolX, 0, schoolZ);
-          schoolCol.userData = { halfW: 24, halfD: 16, isObstacle: true, isBuilding: true };
+          schoolCol.userData = { halfW: 28, halfD: 12, isObstacle: true, isBuilding: true };
           this.obstacles.push(schoolCol);
 
-          // 3. Parked Yellow School Bus outside the school gate along curbside
+          // 3. Parked Yellow School Bus outside school gate along North curb shoulder
           const schoolBus = typeof window.IndianVehicles !== 'undefined' ? window.IndianVehicles.buildVehicle('bus', 0xfacc15) : _buildVehicle('bus', 0xfacc15);
           if (schoolBus) {
-            schoolBus.position.set(schoolX + 18, 0, -6.8);
-            schoolBus.rotation.y = Math.PI / 2; // Parked parallel to road along Z = -6.8
-            schoolBus.userData = { halfW: 4.5, halfD: 1.5, isObstacle: true, isVehicle: true };
+            schoolBus.position.set(-38, 0, -9.2); // North curb shoulder, parallel to road
+            schoolBus.rotation.y = Math.PI / 2; // Facing West
+            schoolBus.userData = { halfW: 4.8, halfD: 1.4, isObstacle: true, isVehicle: true };
             this.scene.add(schoolBus);
             this.obstacles.push(schoolBus);
           }
 
-          // 4. Zebra Crossing Markings across the road right in front of School Gate (X = -65)
-          const zMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-          for (let s = -5; s <= 5; s++) {
-            const stripe = new THREE.Mesh(new THREE.PlaneGeometry(1.0, 11.0), zMat);
+          // 4. Zebra Crossing Markings spanning full road width across Z = 0 from North curb (Z = -7.0) to South curb (Z = +7.0)
+          const zMat = new THREE.MeshBasicMaterial({ 
+            color: 0xffffff,
+            polygonOffset: true,
+            polygonOffsetFactor: -1.0,
+            polygonOffsetUnits: -1.0
+          });
+          const numStripes = 9;
+          const stripeW = 1.0, stripeGap = 0.6;
+          const totalZebraW = numStripes * stripeW + (numStripes - 1) * stripeGap;
+          const zebraStartX = schoolX - totalZebraW / 2 + stripeW / 2;
+          for (let s = 0; s < numStripes; s++) {
+            const stripe = new THREE.Mesh(new THREE.PlaneGeometry(stripeW, 14.0), zMat);
             stripe.rotation.x = -Math.PI / 2;
-            stripe.position.set(schoolX + (s * 1.6), 0.03, 0);
+            stripe.position.set(zebraStartX + s * (stripeW + stripeGap), 0.065, 0);
             this.scene.add(stripe);
           }
 
-          // 5. School Crossing Guard with Stop Sign on the North Sidewalk
+          // Stop Lines on both sides of the Zebra Crossing
+          const stopLineMat = new THREE.MeshBasicMaterial({ color: 0xffffff, polygonOffset: true, polygonOffsetFactor: -1.0, polygonOffsetUnits: -1.0 });
+          // East stop line (for Westbound traffic) at X = -50
+          const stopLineE = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 7.0), stopLineMat);
+          stopLineE.rotation.x = -Math.PI / 2;
+          stopLineE.position.set(schoolX + 10, 0.065, 3.5); // left driving lane (Z in [0, 7])
+          this.scene.add(stopLineE);
+          // West stop line (for Eastbound traffic) at X = -70
+          const stopLineW = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 7.0), stopLineMat);
+          stopLineW.rotation.x = -Math.PI / 2;
+          stopLineW.position.set(schoolX - 10, 0.065, -3.5); // right driving lane (Z in [-7, 0])
+          this.scene.add(stopLineW);
+
+          // 5. School Crossing Guard with Stop Sign on the North Sidewalk Curb
           const guard = _buildHuman(false, { skin: 0xc68642, shirt: 0xf97316, pants: 0x1e293b, hair: 0x111111 });
-          guard.position.set(schoolX - 2, 0, -6.5);
-          guard.rotation.y = Math.PI; // Facing incoming traffic from east
-          // Add Stop Sign in hand
+          guard.position.set(schoolX - 8, 0, -7.6);
+          guard.rotation.y = Math.PI; // Facing incoming traffic from East
+          // Stop Sign in hand
           const stopSign = new THREE.Mesh(new THREE.CylinderGeometry(0.65, 0.65, 0.06, 8), new THREE.MeshBasicMaterial({ color: 0xdc2626 }));
           stopSign.rotation.x = Math.PI / 2;
           stopSign.position.set(0.7, 1.5, 0.4);
@@ -5977,14 +6223,20 @@ class Game {
           const stopPole = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 2.0, 8), new THREE.MeshLambertMaterial({ color: 0x64748b }));
           stopPole.position.set(0.7, 1.0, 0.4);
           guard.add(stopPole);
-          guard.userData = { isGuard: true, isObstacle: true, halfW: 0.6, halfD: 0.6 };
+          guard.userData = { isGuard: true, npcType: 'guard', isObstacle: true, halfW: 0.6, halfD: 0.6 };
           this.scene.add(guard);
           this.peds.push(guard);
+          this.npcs.push(guard); // Also add to npcs for task proximity detection
 
-          // 6. Roadside School Zone Warning Blinkers & Signs (Both directions)
-          [-30, -100].forEach((signX, sIdx) => {
+          // 6. Roadside School Zone Warning Signs & Flashing Amber Beacons
+          // East approach (X = -15, Z = -8.5 on North curb, facing East)
+          // West approach (X = -105, Z = 8.5 on South curb, facing West)
+          [
+            { x: -15, z: -8.5, ry: Math.PI / 2 },
+            { x: -105, z: 8.5, ry: -Math.PI / 2 }
+          ].forEach(sp => {
             const post = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 4.0, 8), steelMat);
-            post.position.set(signX, 2.0, -7.5);
+            post.position.set(sp.x, 2.0, sp.z);
             this.scene.add(post);
 
             const sCanv = document.createElement('canvas');
@@ -5992,20 +6244,20 @@ class Game {
             const cCtx = sCanv.getContext('2d');
             cCtx.fillStyle = '#facc15'; cCtx.fillRect(0, 0, 256, 256);
             cCtx.lineWidth = 10; cCtx.strokeStyle = '#dc2626'; cCtx.strokeRect(6, 6, 244, 244);
-            cCtx.fillStyle = '#dc2626'; cCtx.font = 'bold 70px sans-serif'; cCtx.textAlign = 'center';
-            cCtx.fillText('20', 128, 100);
-            cCtx.fillStyle = '#1e293b'; cCtx.font = 'bold 30px sans-serif';
-            cCtx.fillText('KM/H', 128, 145);
-            cCtx.fillText('SCHOOL', 128, 190);
-            cCtx.fillText('ZONE', 128, 230);
+            cCtx.fillStyle = '#dc2626'; cCtx.font = 'bold 68px sans-serif'; cCtx.textAlign = 'center';
+            cCtx.fillText('20', 128, 95);
+            cCtx.fillStyle = '#1e293b'; cCtx.font = 'bold 28px sans-serif';
+            cCtx.fillText('KM/H', 128, 140);
+            cCtx.fillText('SCHOOL', 128, 185);
+            cCtx.fillText('ZONE', 128, 225);
             const signPlate = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.6, 0.1), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(sCanv) }));
-            signPlate.position.set(signX, 3.2, -7.5);
-            signPlate.rotation.y = sIdx === 0 ? Math.PI / 2 : -Math.PI / 2;
+            signPlate.position.set(sp.x, 3.2, sp.z);
+            signPlate.rotation.y = sp.ry;
             this.scene.add(signPlate);
 
             // Flashing amber caution beacon
             const beacon = new THREE.Mesh(new THREE.SphereGeometry(0.2, 8, 8), new THREE.MeshBasicMaterial({ color: 0xf59e0b }));
-            beacon.position.set(signX, 4.2, -7.5);
+            beacon.position.set(sp.x, 4.2, sp.z);
             this.scene.add(beacon);
           });
 
@@ -6015,11 +6267,11 @@ class Game {
           stallBody.position.set(0, 1.4, 0); stallGrp.add(stallBody);
           const canopy = new THREE.Mesh(new THREE.BoxGeometry(5.2, 0.2, 3.6), new THREE.MeshLambertMaterial({ color: 0xfacc15 }));
           canopy.position.set(0, 2.9, 0.2); stallGrp.add(canopy);
-          stallGrp.position.set(schoolX - 22, 0, -11.5);
+          stallGrp.position.set(-18, 0, -12.5); // Set back on North sidewalk
           this.scene.add(stallGrp);
           this.world.push(stallGrp);
 
-          // 8. 14+ School Children in Uniforms with Backpacks
+          // 8. 14 School Children in Uniforms with Backpacks
           const uniformShirts = [0xf8fafc, 0xe0f2fe]; // White / sky-blue shirts
           const uniformPants = [0x1e3a8a, 0x1e293b];  // Navy blue shorts / skirts
           for (let i = 0; i < 14; i++) {
@@ -6038,16 +6290,16 @@ class Game {
             child.add(bag);
 
             let startX, startZ, targetX, targetZ;
-            if (i < 8) {
-              // Active zebra crossing students (crossing North <-> South across Z = 0)
-              startX = schoolX - 4.5 + (i * 1.3);
-              startZ = (i % 2 === 0) ? -7.0 : 7.0;
+            if (i < 6) {
+              // Active zebra crossing students (crossing North <-> South across Z = 0 between Z = -7.8 and Z = 7.8)
+              startX = schoolX - 4.0 + (i * 1.6);
+              startZ = (i % 2 === 0) ? -7.8 : 7.8;
               targetX = startX;
-              targetZ = (i % 2 === 0) ? 7.5 : -7.5;
+              targetZ = (i % 2 === 0) ? 7.8 : -7.8;
               child.position.set(startX, 0, startZ);
               child.rotation.y = (i % 2 === 0) ? 0 : Math.PI;
               child.userData = {
-                spd: 0.024 + Math.random() * 0.016,
+                spd: 0.024 + Math.random() * 0.012,
                 state: 'crossing',
                 startX, startZ, targetX, targetZ,
                 crossingZ: startZ,
@@ -6055,17 +6307,17 @@ class Game {
                 isObstacle: true,
                 halfW: 0.35, halfD: 0.35
               };
-            } else if (i < 11) {
-              // Students walking along the sidewalk towards the school bus
-              startX = schoolX + 5 + (i - 8) * 3.5;
-              startZ = -7.2;
+            } else if (i < 10) {
+              // Students walking along North sidewalk toward the school bus
+              startX = -48 + (i - 6) * 3.2;
+              startZ = -9.2;
               child.position.set(startX, 0, startZ);
               child.rotation.y = Math.PI / 2;
               child.userData = { spd: 0.02, state: 'sidewalk', isChild: true, halfW: 0.35, halfD: 0.35 };
             } else {
-              // Students standing by school gate chatting
-              startX = schoolX - 3.5 + (i - 11) * 2.5;
-              startZ = -14.0;
+              // Students standing by the school courtyard chatting
+              startX = schoolX - 4 + (i - 10) * 2.8;
+              startZ = -18.0;
               child.position.set(startX, 0, startZ);
               child.rotation.y = (i % 2 === 0) ? Math.PI / 4 : -Math.PI / 4;
               child.userData = { spd: 0, state: 'idle', isChild: true, halfW: 0.35, halfD: 0.35 };
@@ -6083,14 +6335,16 @@ class Game {
             }
           }
         }
+
+        const _waterMaterial = this._waterMat || new THREE.MeshBasicMaterial({ color: 0xbae6fd, transparent: true, opacity: 0.7, depthWrite: false });
         if (cfg.hasOcean) {
-          const ocean = new THREE.Mesh(new THREE.PlaneGeometry(600, 1200), mats.water);
+          const ocean = new THREE.Mesh(new THREE.PlaneGeometry(600, 1200), _waterMaterial);
           ocean.rotation.x = -Math.PI / 2; ocean.position.set(350, .01, -150); this.scene.add(ocean);
         }
         if (cfg.hasBeach) {
           const sand = new THREE.Mesh(new THREE.PlaneGeometry(200, 600), new THREE.MeshToonMaterial({ color: 0xc2b280 }));
           sand.rotation.x = -Math.PI / 2; sand.position.set(80, .005, -100); this.scene.add(sand);
-          const ocean = new THREE.Mesh(new THREE.PlaneGeometry(400, 800), mats.water);
+          const ocean = new THREE.Mesh(new THREE.PlaneGeometry(400, 800), _waterMaterial);
           ocean.rotation.x = -Math.PI / 2; ocean.position.set(250, .01, -100); this.scene.add(ocean);
         }
         if (cfg.hasSilentZone) {
@@ -6244,8 +6498,8 @@ class Game {
           const wheel1 = new THREE.Mesh(new THREE.TorusGeometry(0.35, 0.08, 8, 16), new THREE.MeshToonMaterial({ color: 0x111111 }));
           wheel1.position.set(0, 0.35, 0.6); wheel1.rotation.y = Math.PI/2; cycle.add(wheel1);
           const wheel2 = wheel1.clone(); wheel2.position.z = -0.6; cycle.add(wheel2);
-          cycle.position.set(-3, 0, 25);
-          cycle.userData = { spd: 0.4, dir: -1 };
+          cycle.position.set(-4.5, 0, 15);
+          cycle.userData = { spd: 0.15, dir: 1 };
           this.scene.add(cycle);
           this.npcs.push(cycle);
         }
@@ -6305,11 +6559,16 @@ class Game {
         // Remove any non-building obstacles within 18 units of ANY route waypoint or finish gate
         const allRoutePts = (cfg.route && cfg.route.length > 0) ? cfg.route : [{ x: 0, z: 0 }];
         this.obstacles = this.obstacles.filter(ob => {
-          if (ob.userData && ob.userData.isBuilding) return true; // keep buildings
-          const obX = ob.position.x, obZ = ob.position.z;
+          if (!ob) return false;
+          if (ob.isBuilding || (ob.userData && ob.userData.isBuilding)) return true; // keep buildings
+          if (ob.isCow) return true; // keep cattle obstacle
+          const meshObj = ob.mesh || ob;
+          const pos = meshObj.position;
+          if (!pos) return true;
+          const obX = pos.x, obZ = pos.z;
           const isBlockingRoute = allRoutePts.some(rp => Math.hypot(obX - rp.x, obZ - rp.z) < 18);
           if (isBlockingRoute) {
-            this.scene.remove(ob);
+            this.scene.remove(meshObj);
             return false;
           }
           return true;
@@ -6349,16 +6608,106 @@ class Game {
       // Initialize player vehicle/pedestrian first so traffic spawns around player
       this._pmesh(mode, this.vehMode || cfg.veh);
 
+      // Initialize In-Car AI Driving Co-Pilot
+      if (window.TrafficAICoPilot) {
+        if (!this.aiCoPilot) {
+          this.aiCoPilot = new window.TrafficAICoPilot(this);
+        } else {
+          this.aiCoPilot.safetyScore = 100;
+          this.aiCoPilot.hazardStatus = 'clear';
+          this.aiCoPilot.hazardMessage = 'Scanning roadway...';
+        }
+      }
+
       // Initialize TrafficManager for lively Mumbai-style traffic
       if (!cfg.isPedestrian && window.TrafficManager) {
         if (!this.trafficManager) {
           this.trafficManager = new window.TrafficManager(this);
         }
         if (this.roadGraph) {
-          const initCount = window.isMobile && window.isMobile() ? 40 : 75;
+          const initCount = this._isMobile ? 22 : 65;
           this.trafficManager.spawnInitialTraffic(this.roadGraph, cfg.route, initCount, cfg);
         }
       }
+      // Initialize starting sidewalk pedestrians
+      if (this.mapCfg && this.mapCfg.roads && this.mapCfg.roads.length > 0) {
+        if (!this.peds) this.peds = [];
+        if (!this.pedestrianAIs) this.pedestrianAIs = [];
+        const initPedCount = this._isMobile ? 12 : 24;
+        const pStartX = this.player ? this.player.position.x : 0;
+        const pStartZ = this.player ? this.player.position.z : -35;
+
+        for (let i = 0; i < initPedCount; i++) {
+          const r = this.mapCfg.roads[i % this.mapCfg.roads.length];
+          const isV = r.type === 'v';
+          const side = (i % 2 === 0) ? 1 : -1;
+          const swDist = 18 / 2 + 1.25;
+          // Spawn along sidewalks in 15m - 65m active radius from player
+          const distOffset = (i % 2 === 0 ? 1 : -1) * (15 + (i * 3.5));
+
+          const px = isV ? (r.x + side * swDist) : (pStartX + distOffset);
+          const pz = isV ? (pStartZ + distOffset) : (r.z + side * swDist);
+
+          const ped = _buildHuman();
+          ped.position.set(px, 0, pz);
+          ped.userData = {
+            t: Math.random() * 10,
+            spd: 0.3 + Math.random() * 0.35,
+            isV: isV,
+            dir: Math.random() > 0.5 ? 1 : -1,
+            startZ: isV ? pz : px,
+            roadC: isV ? r.x : r.z,
+            side: side,
+            targetDist: swDist,
+            destDist: 20 + Math.random() * 30,
+            distTraveled: 0
+          };
+          ped.rotation.y = isV ? (ped.userData.dir > 0 ? 0 : Math.PI) : (ped.userData.dir > 0 ? Math.PI / 2 : -Math.PI / 2);
+          ped.frustumCulled = true;
+          this.scene.add(ped);
+          this.peds.push(ped);
+
+          if (typeof PedestrianAI !== 'undefined') {
+            const pedAI = new PedestrianAI(ped, this.trafficManager);
+            this.pedestrianAIs.push(pedAI);
+            ped._pedAI = pedAI;
+          }
+        }
+      }
+
+      this._initBlobShadow();
+      this._updateDynamicLOD(1, true);
+    }
+
+      _initBlobShadow() {
+        if (this._blobShadow) {
+          this.scene.remove(this._blobShadow);
+          this._blobShadow = null;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = 64;
+        canvas.height = 64;
+        const ctx = canvas.getContext('2d');
+        const grad = ctx.createRadialGradient(32, 32, 4, 32, 32, 30);
+        grad.addColorStop(0, 'rgba(0, 0, 0, 0.7)');
+        grad.addColorStop(0.5, 'rgba(0, 0, 0, 0.35)');
+        grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 64, 64);
+        const texture = new THREE.CanvasTexture(canvas);
+        const isPed = !!this.isPedestrian;
+        const geo = new THREE.PlaneGeometry(isPed ? 1.8 : 3.8, isPed ? 1.8 : 5.8);
+        const mat = new THREE.MeshBasicMaterial({
+          map: texture,
+          transparent: true,
+          opacity: 0.65,
+          depthWrite: false
+        });
+        this._blobShadow = new THREE.Mesh(geo, mat);
+        this._blobShadow.rotation.x = -Math.PI / 2;
+        this._blobShadow.position.y = 0.05;
+        this._blobShadow.renderOrder = 1;
+        this.scene.add(this._blobShadow);
       }
       _buildRoadsFromGraph(roadWidth) {
         const graph = this.roadGraph;
@@ -6391,13 +6740,14 @@ class Game {
           const cx = isV ? n0.position.x : (n0.position.x + n1.position.x) / 2;
           const cz = isV ? (n0.position.z + n1.position.z) / 2 : n0.position.z;
 
-          // Logical road bed (collision)
+          // Solid Charcoal Asphalt Road Surface (visible & collision)
           const roadHb = new THREE.Mesh(
             new THREE.PlaneGeometry(roadWidth, len),
-            new THREE.MeshBasicMaterial({ visible: false })
+            roadMat
           );
           roadHb.rotation.set(-Math.PI / 2, 0, isV ? 0 : -Math.PI / 2);
-          roadHb.position.set(cx, 0.01, cz);
+          roadHb.position.set(cx, 0.05, cz);
+          roadHb.receiveShadow = true;
           this.scene.add(roadHb);
           this.world.push(roadHb);
 
@@ -6442,8 +6792,24 @@ class Game {
               0.07,
               isV ? cz : cz + side * (roadWidth / 2 + swW / 2)
             );
+            pb.receiveShadow = true;
             this.scene.add(pb);
             this.world.push(pb);
+
+            // Lush green grass lawns outside sidewalks
+            const lawnW = 20;
+            const lawn = new THREE.Mesh(
+              isV ? new THREE.PlaneGeometry(lawnW, len) : new THREE.PlaneGeometry(len, lawnW),
+              new THREE.MeshLambertMaterial({ color: 0x44bd32 })
+            );
+            lawn.rotation.x = -Math.PI / 2;
+            lawn.position.set(
+              isV ? cx + side * (roadWidth / 2 + swW + lawnW / 2) : cx,
+              0.02,
+              isV ? cz : cz + side * (roadWidth / 2 + swW + lawnW / 2)
+            );
+            lawn.receiveShadow = true;
+            this.scene.add(lawn);
           });
 
           // ── Road Lane Markings (White dashed center line & solid edge lines) ──
@@ -6563,11 +6929,26 @@ class Game {
             }
           });
         });
+
+        // Continuous Asphalt Patches on all intersection junction nodes
+        graph.nodes.forEach(node => {
+          if (node.edges && node.edges.length >= 2) {
+            const intPatch = new THREE.Mesh(
+              new THREE.PlaneGeometry(roadWidth + 0.5, roadWidth + 0.5),
+              roadMat
+            );
+            intPatch.rotation.x = -Math.PI / 2;
+            intPatch.position.set(node.position.x, 0.052, node.position.z);
+            intPatch.receiveShadow = true;
+            this.scene.add(intPatch);
+            this.world.push(intPatch);
+          }
+        });
       }
 
-      separateRoadAndBuilding(pos, graph) {
+      separateRoadAndBuilding(pos, graph, buildingRadius = 10.0) {
         if (!pos) return false;
-        if (this._spawnPos && Math.hypot(pos.x - this._spawnPos.x, pos.z - this._spawnPos.z) < 24) {
+        if (this._spawnPos && Math.hypot(pos.x - this._spawnPos.x, pos.z - this._spawnPos.z) < 18) {
           return true;
         }
         if (!graph || !graph.edges) return false;
@@ -6580,8 +6961,8 @@ class Game {
           t = Math.max(0, Math.min(1, t));
           const dist = Math.hypot(a.x + abx * t - pos.x, a.z + abz * t - pos.z);
           const width = edge.width || 12;
-          // Must stay outside road half-width + full sidewalk (6m) + building half-width (11m) + buffer (1m)
-          if (dist < width / 2 + 18.0) {
+          // Mathematically reject if building footprint touches asphalt or sidewalk buffer
+          if (dist < (width / 2 + 4.0 + buildingRadius * 0.75)) {
             return true;
           }
         }
@@ -6780,8 +7161,12 @@ class Game {
             ped.traverse(ch => {
               if (ch.isMesh && ch.material) {
                 ch.material = ch.material.clone();
-                ch.material.color = new THREE.Color(pedCol);
-                if (isReflective) ch.material.emissive = new THREE.Color(0x333311);
+                if (ch.material.type !== 'MeshBasicMaterial') {
+                  ch.material.color = new THREE.Color(pedCol);
+                  if (isReflective && 'emissive' in ch.material) {
+                    ch.material.emissive = new THREE.Color(0x333311);
+                  }
+                }
               }
             });
 
@@ -6934,7 +7319,8 @@ class Game {
         
         // Try to use preloaded cow GLB
         if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['animal_cow']) {
-          const cow = window.PRELOADED_MODELS['animal_cow'].scene.clone();
+          const cowModel = window.PRELOADED_MODELS['animal_cow'];
+          const cow = (cowModel.scene || cowModel).clone();
           cow.scale.setScalar(1.2);
           cow.position.set(cx + 2, 0, cz);
           cow.rotation.y = Math.PI * 0.3;
@@ -6972,7 +7358,8 @@ class Game {
         
         // Dog (if flag set)
         if (cfg.hasDog && window.PRELOADED_MODELS && window.PRELOADED_MODELS['animal_dog']) {
-          const dog = window.PRELOADED_MODELS['animal_dog'].scene.clone();
+          const dogModel = window.PRELOADED_MODELS['animal_dog'];
+          const dog = (dogModel.scene || dogModel).clone();
           dog.scale.setScalar(0.8);
           dog.position.set(cx - 4, 0, cz + 5);
           dog.rotation.y = Math.PI * 0.7;
@@ -7023,7 +7410,8 @@ class Game {
         
         // Ambulance parked at entrance (use GLB if available)
         if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['ambulance']) {
-          const amb = window.PRELOADED_MODELS['ambulance'].scene.clone();
+          const ambModel = window.PRELOADED_MODELS['ambulance'];
+          const amb = (ambModel.scene || ambModel).clone();
           amb.scale.setScalar(1.0);
           amb.position.set(hx + 8, 0, hz - 2);
           amb.rotation.y = Math.PI / 2;
@@ -7109,7 +7497,8 @@ class Game {
         
         // Music vehicle (decorated truck)
         if (cfg.hasMusicVehicle && window.PRELOADED_MODELS && window.PRELOADED_MODELS['truck']) {
-          const truck = window.PRELOADED_MODELS['truck'].scene.clone();
+          const truckModel = window.PRELOADED_MODELS['truck'];
+          const truck = (truckModel.scene || truckModel).clone();
           truck.scale.setScalar(0.9);
           truck.position.set(fx - 15, 0, fz + 5);
           truck.rotation.y = Math.PI / 2;
@@ -7335,7 +7724,8 @@ class Game {
           const side = i % 2 === 0 ? -4 : 4;
           const vType = parkedTypes[i % 2];
           if (window.PRELOADED_MODELS && window.PRELOADED_MODELS[vType]) {
-            const v = window.PRELOADED_MODELS[vType].scene.clone();
+            const vModel = window.PRELOADED_MODELS[vType];
+            const v = (vModel.scene || vModel).clone();
             v.scale.setScalar(0.85);
             v.position.set(gx + side, 0, gz + zOff);
             v.rotation.y = side > 0 ? Math.PI : 0;
@@ -7423,7 +7813,8 @@ class Game {
         
         let ambMesh;
         if (window.PRELOADED_MODELS && window.PRELOADED_MODELS['ambulance']) {
-          ambMesh = window.PRELOADED_MODELS['ambulance'].scene.clone();
+          const ambModel = window.PRELOADED_MODELS['ambulance'];
+          ambMesh = (ambModel.scene || ambModel).clone();
           ambMesh.scale.setScalar(1.0);
           ambGroup.add(ambMesh);
         } else if (window.IndianVehicles && window.IndianVehicles.ambulance) {
@@ -8053,70 +8444,31 @@ class Game {
           new THREE.MeshToonMaterial({ color: 0x8a8878, gradientMap: window._toonGrad }),
           new THREE.MeshToonMaterial({ color: 0x7a7868, gradientMap: window._toonGrad })
         ];
-        const roofColors = [0x8B4513, 0x2d5016, 0x1a3a5c, 0x6b3a2a, 0x4a4a4a, 0xb8860b, 0x3a6b3a, 0x8b1a1a];
-        const winMat = new THREE.MeshBasicMaterial({ color: 0x304050 });
+        const roofColors = [0x8B4513, 0x2d5016, 0x1a3a5c, 0x6b3a2a, 0xd97706, 0x059669, 0x2563eb, 0xdc2626];
+        const lawnMat = new THREE.MeshToonMaterial({ color: 0x4ade80, gradientMap: window._toonGrad });
+        const driveMat = new THREE.MeshToonMaterial({ color: 0xe2e8f0, gradientMap: window._toonGrad });
+        const fenceMat = new THREE.MeshToonMaterial({ color: 0xa16207, gradientMap: window._toonGrad });
+        const hedgeMat = new THREE.MeshToonMaterial({ color: 0x15803d, gradientMap: window._toonGrad });
+        const flowerMat1 = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+        const flowerMat2 = new THREE.MeshBasicMaterial({ color: 0xfacc15 });
+        const ironMat = new THREE.MeshBasicMaterial({ color: 0x1e293b });
+        const curbMat = new THREE.MeshToonMaterial({ color: 0xcfd8dc });
+        const mailboxMat = new THREE.MeshToonMaterial({ color: 0x78350f });
 
-
-        const instancedData = {};
         const modelKeys = window.PRELOADED_MODELS 
           ? Object.keys(window.PRELOADED_MODELS).filter(k => 
-              k.startsWith('suburban_') || k.startsWith('industrial_') || k.startsWith('mbuilding_')
+              k.startsWith('suburban_') || k.startsWith('industrial_') || k.startsWith('mbuilding_') || 
+              k.includes('house_') || k.includes('school')
             )
           : [];
 
-        // Building type selection based on zone
-        const getBldgType = (zone, distFromCenter) => {
-          const rnd = Math.random();
-          if (zone === 'Commercial') {
-            if (distFromCenter < 200 && rnd > 0.8) return 'skyscraper';
-            if (distFromCenter < 400 && rnd > 0.6) return 'tower';
-            if (rnd > 0.7) return 'skyscraper';
-            if (rnd > 0.45) return 'shop';
-            if (rnd > 0.25) return 'bank';
-            return 'hospital';
-          } else if (zone === 'Industrial') {
-            if (rnd > 0.8) return 'warehouse';
-            if (rnd > 0.5) return 'factory';
-            return 'industrial';
-          } else if (zone === 'Residential') {
-            if (distFromCenter < 300 && rnd > 0.7) return 'apartment';
-            if (rnd > 0.7) return 'apartment';
-            if (rnd > 0.5) return 'house';
-            return 'chawl';
-          } else if (zone === 'Slums') {
-            return rnd > 0.2 ? 'chawl' : 'shack';
-          } else if (zone === 'Civic') {
-            if (rnd > 0.7) return 'school';
-            if (rnd > 0.4) return 'hospital';
-            return 'police';
-          }
-          return 'house';
-        };
-
-        const typeMap = {
-          'skyscraper': ['mbuilding_sample-tower', 'industrial_q', 'industrial_r', 'industrial_t'],
-          'tower': ['mbuilding_sample-tower', 'industrial_l', 'industrial_m', 'industrial_n'],
-          'apartment': ['mbuilding_sample-house', 'suburban_l', 'suburban_m', 'suburban_n', 'suburban_o', 'suburban_p'],
-          'shop': ['suburban_d', 'suburban_e', 'suburban_f', 'suburban_g', 'suburban_h'],
-          'bank': ['mbuilding_sample-house-a', 'mbuilding_sample-house-b', 'suburban_i', 'suburban_j'],
-          'hospital': ['mbuilding_sample-house-c', 'suburban_k', 'suburban_l'],
-          'school': ['mbuilding_sample-house-a', 'suburban_m', 'suburban_n'],
-          'police': ['suburban_p', 'suburban_q', 'suburban_r'],
-          'warehouse': ['industrial_a', 'industrial_b', 'industrial_c', 'industrial_d', 'industrial_l'],
-          'factory': ['industrial_e', 'industrial_f', 'industrial_g', 'industrial_h', 'industrial_i', 'industrial_j'],
-          'industrial': ['industrial_a', 'industrial_b', 'industrial_c', 'industrial_d', 'industrial_e'],
-          'house': ['suburban_a', 'suburban_b', 'suburban_c', 'suburban_d', 'suburban_e'],
-          'chawl': ['suburban_f', 'suburban_g', 'suburban_h', 'suburban_i', 'suburban_j'],
-          'shack': ['suburban_a', 'suburban_b']
-        };
-
         const pickModel = (prefixes) => {
           if (!modelKeys.length) return null;
-          const candidates = modelKeys.filter(k => prefixes.some(p => k.startsWith(p)));
+          const candidates = modelKeys.filter(k => prefixes.some(p => k.startsWith(p) || k.includes(p)));
           return candidates.length ? candidates[Math.floor(Math.random() * candidates.length)] : null;
         };
 
-        graph.buildingSlots.forEach(slot => {
+        graph.buildingSlots.forEach((slot, slotIdx) => {
           if (slot.occupied) return;
           
           const zone = slot.getZone();
@@ -8128,129 +8480,161 @@ class Game {
           }
 
           const rot = slot.getRotation();
-          const distFromCenter = Math.hypot(pos.x, pos.z);
-          const type = getBldgType(zone, distFromCenter);
-          const prefixes = typeMap[type] || typeMap['house'];
-          const key = pickModel(prefixes);
+          const key = pickModel(['suburban_', 'house_lowpoly', 'house_mansion']);
 
-          if (key && modelKeys.length > 0) {
-            if (!instancedData[key]) instancedData[key] = [];
-            const bScale = (type === 'house' || type === 'shop') ? 3.8 : ((type === 'tower' || type === 'skyscraper') ? 6.0 : 4.5);
-            instancedData[key].push({ x: pos.x, z: pos.z, r: rot, s: bScale });
-            slot.occupied = true;
-            return;
+          // Container for the entire suburban property (House + Front Yard + Driveway + Props)
+          const propGroup = new THREE.Group();
+          propGroup.position.set(pos.x, 0, pos.z);
+          propGroup.rotation.y = rot;
+
+          // 1. Manicured Green Front Lawn
+          const lawnW = 22, lawnD = 18;
+          const lawn = new THREE.Mesh(new THREE.BoxGeometry(lawnW, 0.12, lawnD), lawnMat);
+          lawn.position.set(0, 0.06, 0);
+          lawn.receiveShadow = true;
+          lawn.userData = { isGround: true, noLod: true };
+          propGroup.add(lawn);
+
+          // 2. Stone/Paved Driveway leading to Road
+          const driveW = 4.2, driveD = 11.5;
+          const driveX = (slotIdx % 2 === 0 ? 5.5 : -5.5);
+          const drive = new THREE.Mesh(new THREE.BoxGeometry(driveW, 0.14, driveD), driveMat);
+          drive.position.set(driveX, 0.07, -lawnD / 2 + driveD / 2);
+          drive.receiveShadow = true;
+          propGroup.add(drive);
+
+          // 3. Stepping Stone Walkway to Front Porch
+          const pathSteps = 5;
+          for (let st = 0; st < pathSteps; st++) {
+            const stepMesh = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.16, 0.9), driveMat);
+            stepMesh.position.set(0, 0.08, -lawnD / 2 + 1.2 + st * 1.6);
+            stepMesh.userData = { isSmallProp: true };
+            propGroup.add(stepMesh);
           }
 
-          // Fallback: procedural box building with variety
-          const g = new THREE.Group();
-          const mat = bMats[Math.floor(Math.random() * bMats.length)];
-          const roofColor = roofColors[Math.floor(Math.random() * roofColors.length)];
+          // 4. Low Wooden Perimeter Fence & Hedgerows
+          const fenceL = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.85, lawnD - 2), fenceMat);
+          fenceL.position.set(-lawnW / 2 + 0.2, 0.45, 0);
+          const fenceR = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.85, lawnD - 2), fenceMat);
+          fenceR.position.set(lawnW / 2 - 0.2, 0.45, 0);
+          propGroup.add(fenceL, fenceR);
 
-          // Varied heights: low households (5-8m), medium flats/chawls (10-16m), commercial (18-28m)
-          const heightClass = Math.random();
-          const bh = heightClass < 0.4 ? 5 + Math.random() * 4
-                   : heightClass < 0.8 ? 10 + Math.random() * 6
-                   : 18 + Math.random() * 12;
-          const bw = 7 + Math.random() * 4;
-          const bd = 8 + Math.random() * 4;
+          const hedge = new THREE.Mesh(new THREE.BoxGeometry(lawnW - 7, 0.9, 0.6), hedgeMat);
+          hedge.position.set(-driveX * 0.4, 0.48, -lawnD / 2 + 1.2);
+          hedge.castShadow = true;
+          propGroup.add(hedge);
 
-          const bMesh = new THREE.Mesh(new THREE.BoxGeometry(bw, bh, bd), mat);
-          bMesh.position.y = bh / 2;
-          bMesh.castShadow = true;
-          bMesh.receiveShadow = true;
-          g.add(bMesh);
-
-          // Flat roof slab with colour variation
-          const roofMat = new THREE.MeshToonMaterial({ color: roofColor, gradientMap: window._toonGrad });
-          const roofMesh = new THREE.Mesh(new THREE.BoxGeometry(bw + 0.3, 0.5, bd + 0.3), roofMat);
-          roofMesh.position.y = bh + 0.25;
-          g.add(roofMesh);
-
-          // Daytime window grid (small dark panels)
-          if (!cfg.is50km) {
-            const winDayMat = new THREE.MeshBasicMaterial({ color: cfg.isNight ? 0xffdd88 : 0x3a5a78 });
-            const winRows = Math.max(1, Math.floor(bh / 4));
-            const winCols = Math.max(1, Math.floor(bw / 3.5));
-            for (let wr = 0; wr < winRows; wr++) {
-              for (let wc = 0; wc < winCols; wc++) {
-                if (cfg.isNight ? Math.random() > 0.55 : Math.random() > 0.25) continue;
-                const wMesh = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 1.8), winDayMat);
-                wMesh.position.set(-bw / 2 + 2 + wc * 3.5, 3 + wr * 4, bd / 2 + 0.02);
-                g.add(wMesh);
-                const wMesh2 = wMesh.clone();
-                wMesh2.position.z = -(bd / 2 + 0.02);
-                wMesh2.rotation.y = Math.PI;
-                g.add(wMesh2);
-              }
+          // 5. Parked Low-Poly Car in Driveway
+          if (Math.random() > 0.15) {
+            const carColors = [0x2563eb, 0xdc2626, 0x059669, 0xf59e0b, 0x7c3aed, 0xffffff];
+            const pCarCol = carColors[Math.floor(Math.random() * carColors.length)];
+            const parkedCar = _buildVehicle('car', pCarCol);
+            if (parkedCar) {
+              parkedCar.scale.set(0.88, 0.88, 0.88);
+              parkedCar.position.set(driveX, 0.08, -lawnD / 2 + 4.5);
+              parkedCar.userData = { isParkedCar: true };
+              propGroup.add(parkedCar);
             }
           }
 
-          // Commercial awning for short buildings
-          if (type === 'shop' || (heightClass < 0.4 && Math.random() > 0.4)) {
-            const awningColors = [0xcc2222, 0x1a6633, 0x224488, 0xcc8800, 0x662266];
-            const awMat = new THREE.MeshToonMaterial({ color: awningColors[Math.floor(Math.random() * awningColors.length)], gradientMap: window._toonGrad });
-            const awMesh = new THREE.Mesh(new THREE.BoxGeometry(bw + 1, 0.3, 2.5), awMat);
-            awMesh.position.set(0, Math.min(bh * 0.35, 4), bd / 2 + 1.2);
-            awMesh.rotation.x = -0.12;
-            g.add(awMesh);
+          // 6. Low-Poly Faceted Tree & Flowerbeds
+          const treeTrunkMat = new THREE.MeshToonMaterial({ color: 0x78350f, gradientMap: window._toonGrad });
+          const treeFoliageMat = new THREE.MeshToonMaterial({ color: 0x16a34a, gradientMap: window._toonGrad });
+          const treeX = -driveX * 0.75;
+          const treeTrunk = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.38, 2.5, 6), treeTrunkMat);
+          treeTrunk.position.set(treeX, 1.25, -lawnD / 2 + 3.8);
+          treeTrunk.castShadow = true;
+          const treeTop = new THREE.Mesh(new THREE.DodecahedronGeometry(1.8, 1), treeFoliageMat);
+          treeTop.position.set(treeX, 3.2, -lawnD / 2 + 3.8);
+          treeTop.castShadow = true;
+          propGroup.add(treeTrunk, treeTop);
+
+          // Flowerbeds
+          for (let fl = 0; fl < 6; fl++) {
+            const fMesh = new THREE.Mesh(new THREE.SphereGeometry(0.18, 5, 4), fl % 2 === 0 ? flowerMat1 : flowerMat2);
+            fMesh.position.set(treeX + (fl % 3) * 0.5 - 0.5, 0.22, -lawnD / 2 + 2.4 + Math.floor(fl / 3) * 0.5);
+            fMesh.userData = { isSmallProp: true };
+            propGroup.add(fMesh);
           }
 
-          g.position.set(pos.x, 0, pos.z);
-          g.rotation.y = rot;
-          g.userData = { isBuilding: true, halfW: bw / 2, halfD: bd / 2 };
-          this.scene.add(g);
-          this.obstacles.push(g);
+          // 7. Mailbox on Wooden Post at Curb
+          const mbPost = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 1.1, 6), mailboxMat);
+          mbPost.position.set(driveX > 0 ? driveX + 2.4 : driveX - 2.4, 0.55, -lawnD / 2 + 0.6);
+          const mbBox = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.35, 0.5), new THREE.MeshToonMaterial({ color: 0xe2e8f0 }));
+          mbBox.position.set(driveX > 0 ? driveX + 2.4 : driveX - 2.4, 1.15, -lawnD / 2 + 0.6);
+          mbPost.userData = { isSmallProp: true };
+          mbBox.userData = { isSmallProp: true };
+          propGroup.add(mbPost, mbBox);
+
+          // 8. The Suburban House (GLB or Procedural Gabled Villa)
+          if (key && window.PRELOADED_MODELS && window.PRELOADED_MODELS[key]) {
+            const baseModel = window.PRELOADED_MODELS[key];
+            const bCloned = baseModel.clone ? baseModel.clone(true) : baseModel;
+            const bScale = key.includes('mansion') ? 0.0009 : (key.includes('isometric') ? 0.55 : 3.8);
+            bCloned.scale.set(bScale, bScale, bScale);
+            bCloned.position.set(0, 0, 3.5);
+            bCloned.traverse(c => {
+              if (c.isMesh) {
+                c.castShadow = true;
+                c.receiveShadow = true;
+              }
+            });
+            propGroup.add(bCloned);
+          } else {
+            // Procedural Gabled Suburban House with Porch & Steps
+            const houseW = 10, houseH = 5.2, houseD = 9;
+            const wallMat = new THREE.MeshToonMaterial({ color: bMats[slotIdx % bMats.length].color, gradientMap: window._toonGrad });
+            const houseBody = new THREE.Mesh(new THREE.BoxGeometry(houseW, houseH, houseD), wallMat);
+            houseBody.position.set(0, houseH / 2, 3.5);
+            houseBody.castShadow = true;
+            houseBody.receiveShadow = true;
+            propGroup.add(houseBody);
+
+            // Gabled Pitched Roof
+            const pRoofMat = new THREE.MeshToonMaterial({ color: roofColors[slotIdx % roofColors.length], gradientMap: window._toonGrad });
+            const roofApex = new THREE.Mesh(new THREE.ConeGeometry(houseW * 0.72, 3.2, 4), pRoofMat);
+            roofApex.position.set(0, houseH + 1.6, 3.5);
+            roofApex.rotation.y = Math.PI / 4;
+            roofApex.castShadow = true;
+            propGroup.add(roofApex);
+
+            // Front Porch & Steps
+            const porch = new THREE.Mesh(new THREE.BoxGeometry(4.5, 0.4, 2.2), driveMat);
+            porch.position.set(0, 0.2, -houseD / 2 + 3.5 - 1.1);
+            propGroup.add(porch);
+            const bench = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.6, 0.5), new THREE.MeshToonMaterial({ color: 0xffffff }));
+            bench.position.set(1.4, 0.6, -houseD / 2 + 3.5 - 0.8);
+            bench.userData = { isSmallProp: true };
+            propGroup.add(bench);
+
+            // Bay Windows with Frames
+            const winGlow = new THREE.MeshBasicMaterial({ color: 0x93c5fd });
+            ;[-2.8, 2.8].forEach(wx => {
+              const win = new THREE.Mesh(new THREE.BoxGeometry(1.8, 1.6, 0.4), winGlow);
+              win.position.set(wx, 2.6, -houseD / 2 + 3.5);
+              propGroup.add(win);
+            });
+          }
+
+          // 9. Road Manhole & Storm Drain Grate at Curb
+          const manhole = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 0.04, 16), ironMat);
+          manhole.position.set(-driveX * 0.5, 0.04, -lawnD / 2 - 3.5);
+          manhole.userData = { isGround: true, noLod: true };
+          propGroup.add(manhole);
+
+          const grate = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.04, 0.42), ironMat);
+          grate.position.set(driveX * 0.8, 0.04, -lawnD / 2 - 0.4);
+          grate.userData = { isGround: true, noLod: true };
+          propGroup.add(grate);
+
+          this.scene.add(propGroup);
+
+          const obs = new THREE.Object3D();
+          obs.position.set(pos.x, 0, pos.z);
+          obs.userData = { isBuilding: true, halfW: 6.5, halfD: 6.5 };
+          this.obstacles.push(obs);
           slot.occupied = true;
         });
-
-        // Build InstancedMeshes for GLB models
-        if (window.PRELOADED_MODELS) {
-          Object.entries(instancedData).forEach(([key, instances]) => {
-            if (instances.length === 0) return;
-            
-            const baseModel = window.PRELOADED_MODELS[key];
-            if (!baseModel) return;
-            
-            baseModel.position.set(0, 0, 0);
-            baseModel.rotation.set(0, 0, 0);
-            baseModel.scale.set(1, 1, 1);
-            baseModel.updateMatrixWorld(true);
-            
-            const meshes = [];
-            baseModel.traverse(c => { if (c.isMesh) meshes.push(c); });
-            
-            meshes.forEach(mesh => {
-              const im = new THREE.InstancedMesh(mesh.geometry, mesh.material, instances.length);
-              im.castShadow = false;
-              im.receiveShadow = true;
-              im.frustumCulled = false;
-              im.userData = { noLod: true };
-              
-              const dummy = new THREE.Object3D();
-              const finalMatrix = new THREE.Matrix4();
-              
-              instances.forEach((inst, i) => {
-                dummy.position.set(inst.x, 0, inst.z);
-                dummy.rotation.y = inst.r;
-                dummy.scale.set(inst.s, inst.s, inst.s);
-                dummy.updateMatrix();
-                finalMatrix.multiplyMatrices(dummy.matrix, mesh.matrixWorld);
-                im.setMatrixAt(i, finalMatrix);
-              });
-              
-              im.instanceMatrix.needsUpdate = true;
-              this.scene.add(im);
-            });
-            
-            // Add obstacle proxies for collision
-            instances.forEach(inst => {
-              const obs = new THREE.Object3D();
-              obs.position.set(inst.x, 0, inst.z);
-              obs.userData = { isBuilding: true, halfW: inst.s * 0.6, halfD: inst.s * 0.6 };
-              this.obstacles.push(obs);
-            });
-          });
-        }
       }
 
       _buildParksAndTrees() {
@@ -8783,8 +9167,10 @@ class Game {
         const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.3, 8, 8), new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.15 }));
         beam.position.y = 4;
         group.add(beam);
-        group.position.set(x, 0.8, z);
-        group.userData = { pathT: 0, ring, glow, center, beam, baseY: 0.8 };
+        const isPed = this.isPedestrian || (this.mapCfg && this.mapCfg.isPedestrian) || (this.vehMode === 'pedestrian');
+        const targetY = isPed ? 0.22 : 0.12;
+        group.position.set(x, targetY, z);
+        group.userData = { pathT: 0, ring, glow, center, beam, baseY: targetY };
         this.scene.add(group);
         this.cps.push(group);
         return group;
@@ -8792,7 +9178,8 @@ class Game {
 
       _buildTrafficSignals(cfg, RW) {
         if (!this.sigs) this.sigs = [];
-        const rwHalf = (RW || 12) / 2;
+        const roadWidth = RW || 12;
+        const rwHalf = roadWidth / 2;
         const spawnedAt = new Set();
 
         const addSigAt = (ix, iz) => {
@@ -8803,13 +9190,13 @@ class Game {
           // Signal 1: Mast arm extending over incoming vertical lane (Phase 0: North-South)
           const sig1 = this._sig(ix + rwHalf + 1.2, iz + rwHalf + 1.2);
           sig1.rotation.y = -Math.PI / 2;
-          sig1.userData = { axis: 'v', phaseOffset: 0, st: 'green', t: 0, rd: 7.5, gd: 6.0, yd: 1.5 };
+          sig1.userData = { axis: 'v', phaseOffset: 0, st: 'green', t: 0, rd: 7.5, gd: 6.0, yd: 1.5, junctionX: ix, junctionZ: iz, roadWidth };
           sig1.state = 'green';
 
           // Signal 2: Mast arm extending over opposing horizontal lane (Phase 1: East-West, shifted by 7.5s)
           const sig2 = this._sig(ix - rwHalf - 1.2, iz - rwHalf - 1.2);
           sig2.rotation.y = Math.PI / 2;
-          sig2.userData = { axis: 'h', phaseOffset: 7.5, st: 'red', t: 0, rd: 7.5, gd: 6.0, yd: 1.5 };
+          sig2.userData = { axis: 'h', phaseOffset: 7.5, st: 'red', t: 0, rd: 7.5, gd: 6.0, yd: 1.5, junctionX: ix, junctionZ: iz, roadWidth };
           sig2.state = 'red';
         };
 
@@ -8818,6 +9205,11 @@ class Game {
           cfg.signals.forEach(s => {
             const sig = this._sig(s.x, s.z);
             if (s.rotY !== undefined) sig.rotation.y = s.rotY;
+            sig.userData = sig.userData || {};
+            sig.userData.junctionX = s.x;
+            sig.userData.junctionZ = s.z;
+            sig.userData.roadWidth = roadWidth;
+            if (s.axis) sig.userData.axis = s.axis;
           });
         }
 
@@ -8829,7 +9221,7 @@ class Game {
         }
 
         // 3. Auto-detected road crossings
-        if (cfg && cfg.roads && Array.isArray(cfg.roads)) {
+        if (cfg && cfg.roads && Array.isArray(cfg.roads) && !cfg.is50km) {
           const vRoads = cfg.roads.filter(r => r.type === 'v');
           const hRoads = cfg.roads.filter(r => r.type === 'h');
           for (const vr of vRoads) {
@@ -9070,7 +9462,24 @@ class Game {
           this._camOverride = false;
           this._enterState = 'IDLE'; if (window.TrafficAudio) window.TrafficAudio.playDoorClose();
         }
-        this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._updateVehicleBeacon(dt); this._ugps(); this._checkBrakeZones(dt); this._uobs(dt); this._umode(dt); this._updateLights(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); if (this.taskManager) this.taskManager.update(dt); this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain); this._updateDynamicLOD(lodMult); this._updateBreadcrumbPath(dt);
+        // Camera joystick: apply stored angular velocity (Fix 1 — no runaway)
+        if (this._camJoyActive && (this._camJoyDx || this._camJoyDy)) {
+          this.targetCamYaw -= this._camJoyDx * dt;
+          if (!this.isPedestrian) {
+            this.targetCamYaw = Math.max(-Math.PI, Math.min(Math.PI, this.targetCamYaw));
+          }
+          this.targetCamPitch -= this._camJoyDy * dt;
+          this.targetCamPitch = Math.max(-1.2, Math.min(1.2, this.targetCamPitch));
+        }
+        // Gamepad polling (Fix 5)
+        this._pollGamepad(dt);
+        this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._updateVehicleBeacon(dt); this._ugps(); this._checkBrakeZones(dt); this._uobs(dt); this._umode(dt); this._updateLights(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); if (this.taskManager) this.taskManager.update(dt); this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain); this._updateDynamicLOD(lodMult); this._updateBreadcrumbPath(dt); if (this.sceneryKit && this.player && this.player.position) this.sceneryKit.updateVisibility(this.player.position, this.renderDistance);
+        if (this._blobShadow && this.player && this.player.position) {
+          this._blobShadow.position.x = this.player.position.x;
+          this._blobShadow.position.z = this.player.position.z;
+          this._blobShadow.position.y = 0.05;
+          if (this.player.rotation) this._blobShadow.rotation.z = -this.player.rotation.y;
+        }
         if (this._cattle) {
           this._cattle.forEach(c => {
             c.waitTimer -= dt;
@@ -9215,7 +9624,7 @@ class Game {
             if (this.playerVehicle && this.playerCharacter) {
               if (this.isPedestrian) {
                 const dist = this.player.position.distanceTo(this.playerVehicle.position);
-                if (dist < 6.0) { if (window.TrafficAudio) window.TrafficAudio.playDoorOpen();
+                if (dist < 8.5) { if (window.TrafficAudio) window.TrafficAudio.playDoorOpen();
                   this._enterDir = 1;
                   this._enterTimer = 0;
                   this._enterState = 'WALKING_TO_DOOR';
@@ -9256,7 +9665,7 @@ class Game {
         const inTransition = this._enterState !== 'IDLE';
         let at = window.analogThrottle || 0;
         const up = !inTransition && (this.keys['arrowup'] || this.keys['w'] || at > 0.1);
-        const dn = !inTransition && (this.keys['arrowdown'] || this.keys['s'] || at < -0.1);
+        const dn = !inTransition && (this.keys['arrowdown'] || this.keys['s'] || this.keys['b'] || at < -0.1);
         const lt = !inTransition && (this.keys['arrowleft'] || this.keys['a']);
         const rt = !inTransition && (this.keys['arrowright'] || this.keys['d']);
         
@@ -9268,39 +9677,50 @@ class Game {
         let overrideMove = false;
         
         if (this.isPedestrian) {
-          const shift = this.keys['shift'] ? 2.2 : 1.0;
-          let dx = 0, dz = 0;
-          
-          if (this.isPointerLocked) {
-            if (up) dz = 1; if (dn) dz = -1;
-            if (lt) dx = 1; if (rt) dx = -1;
-            if (dx !== 0 || dz !== 0) {
-              const yaw = this.player.rotation.y;
-              const moveX = Math.sin(yaw) * dz + Math.sin(yaw + Math.PI/2) * dx;
-              const moveZ = Math.cos(yaw) * dz + Math.cos(yaw + Math.PI/2) * dx;
-              const len = Math.hypot(moveX, moveZ);
-              
-              this.vx += ((moveX / len) * this.maxSpd * shift - this.vx) * 0.6;
-              this.vz += ((moveZ / len) * this.maxSpd * shift - this.vz) * 0.6;
-              this.speed = Math.hypot(this.vx, this.vz);
-            } else {
-              this.vx *= 0.6; this.vz *= 0.6;
-              this.speed = 0;
-            }
-            overrideMove = true;
+          const shift = (this.keys['shift'] || this.boosting) ? 2.2 : 1.0;
+          let inpForward = 0, inpRight = 0;
+          let at = window.analogThrottle || 0;
+          let as = window.analogSteering || 0;
+
+          if (this.keys['w'] || this.keys['arrowup']) inpForward += 1;
+          if (this.keys['s'] || this.keys['arrowdown']) inpForward -= 1;
+          if (this.keys['d'] || this.keys['arrowright']) inpRight += 1;
+          if (this.keys['a'] || this.keys['arrowleft']) inpRight -= 1;
+
+          if (Math.abs(at) > 0.08) inpForward = at;
+          if (Math.abs(as) > 0.08) inpRight = as;
+
+          // Camera-Relative Movement: Forward is screen forward (away from camera), Right is screen right
+          const camHeading = (this.camYaw || 0);
+          const fwdX = Math.sin(camHeading);
+          const fwdZ = Math.cos(camHeading);
+          const rgtX = -Math.cos(camHeading);
+          const rgtZ = Math.sin(camHeading);
+
+          const moveX = fwdX * inpForward + rgtX * inpRight;
+          const moveZ = fwdZ * inpForward + rgtZ * inpRight;
+          const inputMag = Math.min(1, Math.hypot(moveX, moveZ));
+
+          if (inputMag > 0.05) {
+            this.speed = (this.maxSpd || 0.4) * shift * inputMag;
+            // Smoothly rotate character model to face movement direction
+            const targetAngle = Math.atan2(moveX, moveZ);
+            let diff = targetAngle - this.player.rotation.y;
+            while (diff > Math.PI) diff -= Math.PI * 2;
+            while (diff < -Math.PI) diff += Math.PI * 2;
+            this.player.rotation.y += diff * Math.min(1, dt * 15);
+
+            const pYaw = this.player.rotation.y;
+            this.vx = Math.sin(pYaw) * this.speed;
+            this.vz = Math.cos(pYaw) * this.speed;
+            this.player.position.x += this.vx;
+            this.player.position.z += this.vz;
           } else {
-            // Mouse steering for pedestrian without clicking
-            if (!this.isPointerLocked && this._mouseX !== undefined) {
-              const dx = this._mouseX - window.innerWidth / 2;
-              if (dx < -60) this.player.rotation.y += 0.035;
-              if (dx > 60) this.player.rotation.y -= 0.035;
-            }
-            if (lt) this.player.rotation.y += 0.05;
-            if (rt) this.player.rotation.y -= 0.05;
-            if (up) this.speed = this.maxSpd * shift;
-            else if (dn) this.speed = -this.maxSpd * shift * 0.5;
-            else this.speed = 0;
+            this.speed = 0;
+            this.vx = 0;
+            this.vz = 0;
           }
+          overrideMove = true;
         } else {
           // ── Frame-rate independent acceleration ──
           if (up && this.gear !== 'P' && this.gear !== 'N') {
@@ -9403,7 +9823,7 @@ class Game {
             this._computeVehicleDynamics(dt, tAmt, dn, up, isRev);
           } else if (Math.abs(this.speed) > .005) {
             // Pedestrian rotational turning
-            const effTurn = (this.turn || 0.08);
+            const effTurn = (this.turn || 0.08) * (this.steerSensitivity || 1.0);
             if (tAmt !== 0) this.player.rotation.y += tAmt * effTurn * dt * 60;
             while (this.player.rotation.y > Math.PI) this.player.rotation.y -= Math.PI * 2;
             while (this.player.rotation.y < -Math.PI) this.player.rotation.y += Math.PI * 2;
@@ -9411,13 +9831,13 @@ class Game {
 
           if (this.gyroOn) this._checkGyroAutoRecal(tAmt);
           // Camera tilt: smooth follow of lateral input, scaled by speed
-          const tiltTarget = -tAmt * Math.min(Math.abs(this.speed) * 0.06, 0.04);
+          const tiltTarget = -tAmt * Math.min(Math.abs(this.speed) * 0.06, 0.04) * (this.steerSensitivity || 1.0);
           this._camTilt += (tiltTarget - this._camTilt) * Math.min(1, dt * 8);
 
           // ── Indicator non-use fine (F) ──
           // Track sustained turning; fine if turning > 1.5s without indicator
           if (!this.isPedestrian && tAmt !== 0 && Math.abs(this.speed) > 0.05) {
-            const turnDir = tAmt > 0 ? -1 : 1; // left=1, right=-1 (maps to turnSignal convention)
+            const turnDir = tAmt > 0 ? -1 : 1; // left=-1 (tAmt>0), right=1 (tAmt<0) (maps to turnSignal convention)
             if (this._turnAccumDir === turnDir) {
               this._turnAccum += dt;
             } else {
@@ -9485,8 +9905,7 @@ class Game {
               owEl.classList.add('on');
             }
             this.speed *= 0.85;
-            this.hp = Math.max(0, this.hp - 0.15);
-            this._uh();
+            // No ped HP drain
           } else {
             if (owEl) owEl.classList.remove('on');
           }
@@ -9498,26 +9917,15 @@ class Game {
               owEl.classList.add('on');
             }
             this.speed *= 0.7;
-            this.hp = Math.max(0, this.hp - (this.seatbeltOn ? 0.25 : 0.4));
-
-            if (!this.player.userData.fpCooldown) this.player.userData.fpCooldown = 0;
-            this.player.userData.fpCooldown -= dt;
-            if (this.player.userData.fpCooldown <= 0 && window.ui && window.ui.issueChallan) {
-              if (this._triggerPoliceStrobe) this._triggerPoliceStrobe();
-              ui.issueChallan('Driving on Footpath', 'Sec 177 MV Act', '₹500', 'Reckless Driving');
-              this.player.userData.fpCooldown = 3.5;
-            }
-
-            if (this.hp <= 0) this._go("Wrecked on sidewalk"); else this._uh();
+            // Safe on sidewalk without HP penalty
           } else if (surfaceStatus.offRoad && !(this.mapCfg && (this.mapCfg.useLowPolyCity || this.mapCfg.is50km || this.mapCfg.themeType === 'free_roam'))) {
             if (owEl) {
               owEl.textContent = "⚠️ OFF ROAD — Return vehicle to road!";
               owEl.classList.add('on');
             }
             this.speed *= 0.52;
-            this.hp = Math.max(0, this.hp - (this.seatbeltOn ? 0.36 : 0.45));
-            if (this.hp <= 0) this._go("Drove off-road"); else this._uh();
-            if (window.GameplayRecorder) GameplayRecorder.record('OFF_ROAD', { hp: Math.round(this.hp), score: this.score });
+            // No off-road HP drain
+            if (window.GameplayRecorder) GameplayRecorder.record('OFF_ROAD', { score: this.score });
           } else {
             if (owEl) owEl.classList.remove('on');
           }
@@ -9532,19 +9940,37 @@ class Game {
                 }
             }
             
-            // Check Wrong-side driving
+            // Check Wrong-side driving (Left-Hand Traffic / LHT for India)
             if (currentRoad && !this.isPedestrian && Math.abs(this.speed) > 0.15 && (!this._spawnInvulnerable || this._spawnInvulnerable <= 0)) {
                 let wrongWay = false;
                 let nearInt = false;
-                (this.mapCfg.ints || []).forEach(([ix, iz]) => {
-                    if (Math.abs(this.player.position.x - ix) < 30 && Math.abs(this.player.position.z - iz) < 30) nearInt = true;
+                const checkInts = (this.mapCfg.ints || []).concat(this.mapCfg.intersections || []);
+                checkInts.forEach(intPt => {
+                    const ix = Array.isArray(intPt) ? intPt[0] : intPt.x;
+                    const iz = Array.isArray(intPt) ? intPt[1] : intPt.z;
+                    if (ix !== undefined && iz !== undefined && Math.hypot(this.player.position.x - ix, this.player.position.z - iz) < 38) nearInt = true;
                 });
-                const nearGarage = this._garageX !== undefined && Math.hypot(this.player.position.x - this._garageX, this.player.position.z - this._garageZ) < 40;
+                (this.cps || []).forEach(cp => {
+                    if (cp.x !== undefined && cp.z !== undefined && Math.hypot(this.player.position.x - cp.x, this.player.position.z - cp.z) < 25) nearInt = true;
+                });
+                const nearGarage = this._garageX !== undefined && Math.hypot(this.player.position.x - this._garageX, this.player.position.z - this._garageZ) < 45;
                 if (!nearInt && !nearGarage) {
                     if (currentRoad.type === 'v') {
-                        if (Math.sign(this.player.position.x - currentRoad.x) === Math.sign(this.vz) && Math.abs(this.vz) > 0.05) wrongWay = true;
+                        // Southbound (+Z, vz > 0): Correct side is East (+X). Signs match.
+                        // Northbound (-Z, vz < 0): Correct side is West (-X). Signs match.
+                        // Wrong-way if signs differ:
+                        const dx = this.player.position.x - currentRoad.x;
+                        if (Math.abs(dx) > 1.2 && Math.abs(this.vz) > 0.05) {
+                            if (Math.sign(dx) !== Math.sign(this.vz)) wrongWay = true;
+                        }
                     } else {
-                        if (Math.sign(this.player.position.z - currentRoad.z) === Math.sign(this.vx) && Math.abs(this.vx) > 0.05) wrongWay = true;
+                        // Eastbound (+X, vx > 0): Correct side is North (-Z). Signs differ.
+                        // Westbound (-X, vx < 0): Correct side is South (+Z). Signs differ.
+                        // Wrong-way if signs match:
+                        const dz = this.player.position.z - currentRoad.z;
+                        if (Math.abs(dz) > 1.2 && Math.abs(this.vx) > 0.05) {
+                            if (Math.sign(dz) === Math.sign(this.vx)) wrongWay = true;
+                        }
                     }
                 }
                 if (wrongWay) {
@@ -9637,8 +10063,8 @@ class Game {
                 this._phoneRinging = true;
                 this._phoneRingTimer = 25 + Math.random() * 15;
                 this._phoneRingingStart = this.timer;
-                // Play ring SFX
-                if (typeof sfx !== 'undefined' && sfx.play) sfx.play('horn');
+                // Play gentle telephone ring SFX
+                if (typeof sfx !== 'undefined' && sfx.play) sfx.play('ring');
                 let ringEl = document.getElementById('phone-ring-overlay');
                 if (!ringEl) {
                   ringEl = document.createElement('div');
@@ -9991,24 +10417,75 @@ class Game {
       // scene.remove()) so buildings correctly reappear if the player drives back toward
       // them, and only re-scans a slice of the scene every few frames rather than the whole
       // thing every frame.
-      _updateDynamicLOD(lodMult = 1) {
-        if (!this.player) return;
+      _updateDynamicLOD(lodMult = 1, force = false) {
+        if (!this.player || !this.player.position || !this.scene) return;
         this._lodFrame = (this._lodFrame || 0) + 1;
-        if (this._lodFrame % 30 !== 0) return; // ~2x/sec at 60fps
+        if (!force && this._lodFrame % 10 !== 0) return; // ~6x/sec for smooth responsive LOD updates
         const px = this.player.position.x, pz = this.player.position.z;
-        if (!this._lodChildren || this._lodFrame % 300 === 0) {
-          this._lodChildren = this.scene.children.filter(c => c.isMesh || c.isInstancedMesh);
+        if (!this._lodChildren || force || this._lodFrame % 120 === 0) {
+          this._lodChildren = [];
+          this.scene.children.forEach(c => {
+            if (c.userData?.isGround || c.userData?.noLod || c === this.player) return;
+            if (c.isMesh || c.isInstancedMesh || c.isGroup) {
+              this._lodChildren.push(c);
+            }
+          });
         }
-        const baseDist = this._isMobile ? 350 : 500;
-        const visDistSq = (baseDist * lodMult) * (baseDist * lodMult);
+        const effectiveDist = (this.renderDistance || (this._isMobile ? 240 : 500)) * lodMult;
+        const visDistSq = effectiveDist * effectiveDist;
+        const nearDistSq = 35 * 35;
+        const midDistSq = 85 * 85;
+        const farDistSq = 180 * 180;
+        
         const len = this._lodChildren.length;
         for (let i = 0; i < len; i++) {
           const child = this._lodChildren[i];
-          if (!child || !child.position || child.userData?.noLod || child.userData?.isGround) continue;
+          if (!child || !child.position) continue;
           const dx = child.position.x - px, dz = child.position.z - pz;
           const dSq = dx * dx + dz * dz;
-          const shouldShow = dSq < visDistSq;
-          if (child.visible !== shouldShow) child.visible = shouldShow;
+          
+          if (dSq > visDistSq || dSq > farDistSq) {
+            if (child.visible) child.visible = false;
+            continue;
+          }
+          if (!child.visible) child.visible = true;
+
+          // Tier 1: Near Distance (< 35m) -> Full High Quality, Realtime Shadows & Fine Props
+          if (dSq < nearDistSq) {
+            if (child.castShadow !== undefined) child.castShadow = true;
+            if (child.traverse) {
+              child.traverse(node => {
+                if (node.isMesh) {
+                  if (node.userData?.isSmallProp) node.visible = true;
+                  node.castShadow = true;
+                }
+              });
+            }
+          }
+          // Tier 2: Mid Distance (35m - 85m) -> Medium Quality, Disable Shadow Passes on Small Props
+          else if (dSq < midDistSq) {
+            if (child.castShadow !== undefined && !child.userData?.isHero) child.castShadow = false;
+            if (child.traverse) {
+              child.traverse(node => {
+                if (node.isMesh) {
+                  if (node.userData?.isSmallProp) node.visible = false; // Cull micro-props (flowers, benches)
+                  if (!node.userData?.isMainHull) node.castShadow = false;
+                }
+              });
+            }
+          }
+          // Tier 3: Far Distance (85m - 180m) -> Simplified Low Poly Silhouette & Atmospheric Fog Blending
+          else {
+            if (child.castShadow !== undefined) child.castShadow = false;
+            if (child.traverse) {
+              child.traverse(node => {
+                if (node.isMesh) {
+                  if (node.userData?.isSmallProp || node.userData?.isParkedCar) node.visible = false;
+                  node.castShadow = false;
+                }
+              });
+            }
+          }
         }
       }
 
@@ -10044,36 +10521,77 @@ class Game {
         // Delegate to TrafficManager for Mumbai-style traffic simulation
         if (this.trafficManager) {
           this.trafficManager.update(dt, this.player, this.sigs || []);
+        // Update In-Car AI Driving Co-Pilot & Syllabus Evaluator
+        if (this.aiCoPilot) {
+          this.aiCoPilot.update(dt);
+        }
+        // Update Urban AI Level Director
+        if (window.TrafficMapAI) {
+          window.TrafficMapAI.update(dt);
+        }
           // ── Real-time Traffic NPC to Player Physical Collision Pass ──
           if (this.player && this.trafficManager.vehicles) {
             const px = this.player.position.x, pz = this.player.position.z;
-            const pR = 1.6;
+            const isPed = !!this.isPedestrian;
+            const pHalfW = isPed ? 0.35 : (this.vehMode === 'bike' ? 0.40 : (this.vehMode === 'auto' ? 0.70 : (this.vehMode === 'bus' || this.vehMode === 'truck' ? 1.35 : 0.95)));
+            const pHalfD = isPed ? 0.35 : (this.vehMode === 'bike' ? 0.95 : (this.vehMode === 'auto' ? 1.35 : (this.vehMode === 'bus' || this.vehMode === 'truck' ? 4.80 : 2.25)));
+            const pRot = this.player.rotation ? this.player.rotation.y : 0;
+
             this.trafficManager.vehicles.forEach(v => {
               if (!v.active || !v.mesh) return;
               if (this._spawnInvulnerable > 0) return;
               const vx = v.position.x, vz = v.position.z;
               const dx = px - vx, dz = pz - vz;
-              if (dx * dx + dz * dz < 18) {
-                const overlapX = pR + 1.2 - Math.abs(dx);
-                const overlapZ = pR + 2.0 - Math.abs(dz);
+              const distSq = dx * dx + dz * dz;
+
+              const vHalfW = v.mesh?.userData?.halfW || v.userData?.halfW || (v.type === 'bike' ? 0.40 : (v.type === 'auto' ? 0.70 : (v.type === 'bus' || v.type === 'truck' ? 1.35 : 0.95)));
+              const vHalfD = v.mesh?.userData?.halfD || v.userData?.halfD || (v.type === 'bike' ? 0.95 : (v.type === 'auto' ? 1.35 : (v.type === 'bus' || v.type === 'truck' ? 4.80 : 2.25)));
+              const maxRad = Math.max(pHalfD, pHalfW) + Math.max(vHalfD, vHalfW);
+
+              if (distSq < (maxRad + 0.5) * (maxRad + 0.5)) {
+                // Check oriented relative coordinates in vehicle local space
+                const vRot = v.rotation ? v.rotation.y : (v.mesh ? v.mesh.rotation.y : 0);
+                const cosV = Math.cos(-vRot), sinV = Math.sin(-vRot);
+                const vLocX = cosV * dx - sinV * dz;
+                const vLocZ = sinV * dx + cosV * dz;
+
+                // Check oriented projection of player bounds onto vehicle axes
+                const angleDiff = pRot - vRot;
+                const cosDiff = Math.abs(Math.cos(angleDiff)), sinDiff = Math.abs(Math.sin(angleDiff));
+                const pProjW = pHalfW * cosDiff + pHalfD * sinDiff;
+                const pProjD = pHalfW * sinDiff + pHalfD * cosDiff;
+
+                const overlapX = (vHalfW + pProjW) - Math.abs(vLocX);
+                const overlapZ = (vHalfD + pProjD) - Math.abs(vLocZ);
+
                 if (overlapX > 0 && overlapZ > 0 && !v._justHit) {
                   v._justHit = true;
-                  setTimeout(() => { v._justHit = false; }, 1200);
-                  const dmg = this.seatbeltOn ? 10 : 20;
-                  this.hp = Math.max(0, this.hp - dmg);
-                  if (this.hp <= 0) this._go('Vehicle Crash');
-                  else this._uh();
-                  this.speed *= -0.3;
-                  this._camShakeAmt = Math.max(this._camShakeAmt, 0.5);
-                  if (overlapX < overlapZ) {
-                    this.player.position.x += (dx > 0 ? overlapX + 0.2 : -(overlapX + 0.2));
+                  setTimeout(() => { v._justHit = false; }, 1000);
+
+                  const relSpeed = Math.abs((v.npcAI?.currentSpeed || 0) - (this.speed || 0));
+                  // Soft touch check: low speed bumper contact gently pushes without catastrophic failure
+                  const isGentleTouch = relSpeed < 2.5 && !isPed;
+
+                  if (isGentleTouch) {
+                    // Soft bumper nudge
+                    const pushAngle = Math.atan2(dx, dz);
+                    this.player.position.x += Math.sin(pushAngle) * (Math.min(overlapX, overlapZ) + 0.15);
+                    this.player.position.z += Math.cos(pushAngle) * (Math.min(overlapX, overlapZ) + 0.15);
+                    if (window.TrafficAudio && Math.random() < 0.3) window.TrafficAudio.playHonk(1.0);
                   } else {
-                    this.player.position.z += (dz > 0 ? overlapZ + 0.2 : -(overlapZ + 0.2));
+                    this.speed *= -0.25;
+                    this._camShakeAmt = Math.max(this._camShakeAmt, 0.4);
+
+                    const pushAngle = Math.atan2(dx, dz);
+                    const pushDist = Math.min(overlapX, overlapZ) + 0.2;
+                    this.player.position.x += Math.sin(pushAngle) * pushDist;
+                    this.player.position.z += Math.cos(pushAngle) * pushDist;
+
+                    if (window.TrafficAudio) window.TrafficAudio.playCrash(1.2);
+                    toast('💥 Contact with traffic!', '#ef4444', 2000);
+                    this.violationsLog.push('TRAFFIC_COLLISION');
+                    if (window.GameplayRecorder) GameplayRecorder.record('TRAFFIC_HIT', { score: this.score });
                   }
-                  if (window.TrafficAudio) window.TrafficAudio.playCrash(1.4);
-                  toast('💥 CRASH! Hit Traffic Vehicle! HP -' + dmg, '#ef4444', 3000);
-                  this.violationsLog.push('TRAFFIC_COLLISION');
-                  if (window.GameplayRecorder) GameplayRecorder.record('TRAFFIC_HIT', { hp: Math.round(this.hp) });
                 }
               }
             });
@@ -10135,8 +10653,10 @@ class Game {
             }
             n.userData._lastPos.copy(n.position);
             if (n.userData._stuckTimer > 5) {
-              // Instead of teleporting magically, just honk horn and wait
-              if (Math.random() < 0.05 && window.sfx && window.sfx.play) {
+              // Instead of spamming horn every frame, honk once with a strict 14s cooldown
+              const nowSec = this.timer || 0;
+              if (nowSec - (n.userData._lastHonkTime || 0) > 14 && window.sfx && window.sfx.play) {
+                n.userData._lastHonkTime = nowSec;
                 window.sfx.play('horn');
               }
               // Genuinely stuck (not just briefly waiting at a light) for 7+ seconds —
@@ -10325,7 +10845,60 @@ class Game {
                 }
               } // end else (vertical NPC checks)
 
-                // 4. Ambulance Priority Yielding
+              // 3.5 Cross-Traffic Intersection Right-of-Way Check (Prevents Intersection Gridlock)
+              const intsToCheck = (this.mapCfg && this.mapCfg.ints) ? this.mapCfg.ints.slice() : [];
+              if (this.roadGraph && this.roadGraph.nodes) {
+                this.roadGraph.nodes.forEach(nd => {
+                  if (nd.edges && nd.edges.length >= 3) intsToCheck.push([nd.position.x, nd.position.z]);
+                });
+              }
+              if (intsToCheck.length > 0) {
+                for (let i = 0; i < intsToCheck.length; i++) {
+                  const ix = intsToCheck[i][0];
+                  const iz = intsToCheck[i][1];
+                  const myDistToInt = Math.hypot(n.position.x - ix, n.position.z - iz);
+                  
+                  // Anti-gridlock stall watchdog
+                  if (myDistToInt < 22 && Math.abs(n.userData.speed || 0) < 0.05) {
+                    n.userData._stallTimer = (n.userData._stallTimer || 0) + dt;
+                    if (n.userData._stallTimer > 2.5) {
+                      n.userData._hasDeadlockToken = true;
+                    }
+                  } else {
+                    if (myDistToInt > 25) {
+                      n.userData._stallTimer = 0;
+                      n.userData._hasDeadlockToken = false;
+                    }
+                  }
+
+                  // If committed or holding deadlock token, proceed through junction
+                  const isCommitted = fsm._committedToIntersection || fsm._clearingIntersection || n.userData._hasDeadlockToken;
+
+                  if (myDistToInt < 24 && !isCommitted) {
+                    // Check if other cross vehicles (or player) are occupying or entering the intersection
+                    nearbyNpcs(n.position).forEach(other => {
+                      if (other !== n && other.userData && other.userData.moveAxis !== n.userData.moveAxis) {
+                        const otherDistToInt = Math.hypot(other.position.x - ix, other.position.z - iz);
+                        if (otherDistToInt < 16 && (otherDistToInt < myDistToInt || otherDistToInt < 9)) {
+                          fsm.approachingObstacle = true;
+                          fsm.obstacleDist = Math.min(fsm.obstacleDist, Math.max(1.0, myDistToInt - 5.5));
+                          fsm.obstacleSpeed = 0;
+                        }
+                      }
+                    });
+                    if (this.player && this.player.position) {
+                      const pDistToInt = Math.hypot(this.player.position.x - ix, this.player.position.z - iz);
+                      if (pDistToInt < 16) {
+                        fsm.approachingObstacle = true;
+                        fsm.obstacleDist = Math.min(fsm.obstacleDist, Math.max(1.0, myDistToInt - 5.5));
+                        fsm.obstacleSpeed = 0;
+                      }
+                    }
+                  }
+                }
+              }
+
+              // 4. Ambulance Priority Yielding
                 let yieldingToAmbulance = false;
                 if (this.ms && this.ms.amb && this.ms.amb !== n) {
                   const ambDist = this.player ? this.player.position.distanceTo(this.ms.amb.position) : 999;
@@ -10747,17 +11320,14 @@ class Game {
               // Vehicle collision — enhanced crash impact system
               const impactSpeed = Math.abs(this.speed);
               const seatbeltReduction = this.seatbeltOn ? 0.6 : 1.0;
-              const speedDamage = Math.min(impactSpeed * 30, 25) * seatbeltReduction;
-              this.hp -= 5 + speedDamage;
-              if (this.hp <= 0) this._go('Collided with ' + (n.userData.npcType || 'Vehicle'));
-              else this._uh();
+              // Bumper reaction
               // Directional bounce + sparks + debris + hitstop
               this._applyCrashImpact(n.position, impactSpeed);
               if(window.sfx) window.sfx.play('error');
               if (this.player) this._spawnSkidMark(this.player.position.x, this.player.position.z, this.player.rotation.y, impactSpeed * 3);
               toast('💥 Collision! ' + (impactSpeed > 0.6 ? 'SEVERE' : 'Minor') + ' Impact', '#ff3b30');
               this._collidedThisFrame = true;
-              if (window.GameplayRecorder) GameplayRecorder.record('COLLISION', { speed: Math.round(impactSpeed * 100), npcType: n.userData.npcType, score: this.score, hp: Math.round(this.hp), impactIntensity: Math.round(impactSpeed * 100) });
+              if (window.GameplayRecorder) GameplayRecorder.record('COLLISION', { speed: Math.round(impactSpeed * 100), npcType: n.userData.npcType, score: this.score, impactIntensity: Math.round(impactSpeed * 100) });
 
               // ── J. Road-rage NPC reaction ──
               if (!this._roadRageCD || this._roadRageCD <= 0) {
@@ -10884,16 +11454,30 @@ class Game {
           const spawnMax = isFestCrowd ? 160 : 95;
           if (distToPlayer > spawnMin && distToPlayer < spawnMax) {
             // Phase 7: Reuse freed pedestrian or create new
+            // Generate varied authentic clothing & appearance
+            const shirtCols = [0x2980b9, 0xc0392b, 0x27ae60, 0xf39c12, 0x8e44ad, 0x16a085, 0xd35400, 0xecf0f1, 0x2c3e50, 0xf1c40f];
+            const pantCols = [0x2c3e50, 0x7f8c8d, 0x1e272e, 0x34495e, 0x16a085];
+            const skinCols = [0x8d5524, 0xc68642, 0xe0ac69, 0xf1c27d, 0xffdbac];
+            const hairCols = [0x111111, 0x222222, 0x3d2314];
+            const rApp = {
+              shirt: shirtCols[Math.floor(Math.random() * shirtCols.length)],
+              pants: pantCols[Math.floor(Math.random() * pantCols.length)],
+              skin: skinCols[Math.floor(Math.random() * skinCols.length)],
+              hair: hairCols[Math.floor(Math.random() * hairCols.length)]
+            };
+
             let ped;
             if (this._pedFree && this._pedFree.length > 0) {
               ped = this._pedFree.pop();
               ped.visible = true;
             } else {
-              ped = _buildHuman();
+              ped = _buildHuman(false, rApp);
             }
             const side = Math.random() > 0.5 ? 1 : -1;
-            const lDist = 18 / 2 + 1.25; // Sidewalk distance
-            const bDist = lDist + 6.0;   // Building distance
+            const rW = r.width || 14;
+            const lateralJitter = (Math.random() - 0.5) * 2.2; // Natural scatter across sidewalk
+            const lDist = rW / 2 + 1.8 + lateralJitter; // True sidewalk distance based on road width
+            const bDist = rW / 2 + 1.8 + 6.0;           // Building distance
             
             const exiting = Math.random() > 0.5; // Randomly start exiting a building
             const px = isV ? rx + side * (exiting ? bDist : lDist) : rx;
@@ -10916,7 +11500,10 @@ class Game {
               rLeg: ped.children.find(c => c.name === 'rLeg') || new THREE.Group(),
               state: exiting ? 'exiting' : 'sidewalk',
               side: side,
-              targetDist: lDist,
+              targetDist: rW / 2 + 1.8,
+              lateralOffset: lateralJitter,
+              speedFactor: 0.85 + Math.random() * 0.45,
+              wanderPhase: Math.random() * Math.PI * 2,
               destDist: 15 + Math.random() * 25,
               distTraveled: 0
             };
@@ -10950,495 +11537,57 @@ class Game {
           }
         }
 
-        // ═══════════════════════════════════════════════════════════════
-        // COMPREHENSIVE PEDESTRIAN AI SYSTEM
-        // State Machine: IDLE → WALKING → WAITING → CROSSING → FLEEING → ENTERING
-        // ═══════════════════════════════════════════════════════════════
+        // ── Inter-pedestrian soft repulsion & Player contact pass ──────────────
+        const pLen = this.peds.length;
+        const px = this.player.position.x;
+        const pz = this.player.position.z;
+        const pSpd = Math.abs(this.speed || 0);
 
-        // ── DYNAMIC MUMBAI JAYWALKER HAZARD IN PLAYER'S TRAVEL DIRECTION ──
-        if (!this._jaywalkerCooldown) this._jaywalkerCooldown = 8;
-        this._jaywalkerCooldown -= dt;
-        if (this._jaywalkerCooldown <= 0 && this.player && !this.isPedestrian && Math.abs(this.speed || 0) > 2) {
-          const pFwdX = -Math.sin(this.player.rotation.y);
-          const pFwdZ = -Math.cos(this.player.rotation.y);
-          
-          // Find an eligible pedestrian ahead of player (20m - 45m in forward driving direction)
-          const eligible = this.peds.filter(p => {
-            if (!p || !p.userData || p.userData.aiState === 'crossing' || p.userData.aiState === 'fleeing') return false;
-            const dx = p.position.x - this.player.position.x;
-            const dz = p.position.z - this.player.position.z;
-            const fwdDist = dx * pFwdX + dz * pFwdZ;
-            const latDist = Math.abs(-dx * pFwdZ + dz * pFwdX);
-            return fwdDist > 20 && fwdDist < 45 && latDist < 18;
-          });
+        for (let i = 0; i < pLen; i++) {
+          const p = this.peds[i];
+          if (!p || !p.position || !p.visible) continue;
 
-          if (eligible.length > 0) {
-            const jay = eligible[Math.floor(Math.random() * eligible.length)];
-            const jud = jay.userData;
-            const otherSide = -jud.side;
-            const crossOffset = otherSide * (jud.targetDist || (18 / 2 + 1.25));
-            jud.aiState = 'crossing';
-            jud.state = 'crossing';
-            jud.spd = 0.55; // Brisk walk across traffic
-            jud.crossTarget = {
-              x: jud.isV ? jud.roadC + crossOffset : jay.position.x,
-              z: jud.isV ? jay.position.z : jud.roadC + crossOffset
-            };
-            jud.crossRoadCenter = jud.roadC;
-            jud.crossTargetDist = Math.abs(crossOffset);
-            this._jaywalkerCooldown = 18 + Math.random() * 12; // 18-30s between jaywalkers
+          // Maintain soft spacing between pedestrians (prevent clumping & stacking)
+          for (let j = i + 1; j < pLen; j++) {
+            const o = this.peds[j];
+            if (!o || !o.position || !o.visible) continue;
+            const dx = p.position.x - o.position.x;
+            const dz = p.position.z - o.position.z;
+            const dSq = dx * dx + dz * dz;
+            if (dSq < 1.44 && dSq > 0.0001) {
+              const d = Math.sqrt(dSq);
+              const push = (1.2 - d) * 0.5 * Math.min(1.0, dt * 6);
+              const nx = dx / d;
+              const nz = dz / d;
+              p.position.x += nx * push;
+              p.position.z += nz * push;
+              o.position.x -= nx * push;
+              o.position.z -= nz * push;
+            }
+          }
+
+          // Player to Pedestrian physical contact
+          const pdx = p.position.x - px;
+          const pdz = p.position.z - pz;
+          const pDistSq = pdx * pdx + pdz * pdz;
+
+          if (pDistSq < 4.0) {
+            if (!this.isPedestrian && pSpd > 1.2 && (!this._spawnInvulnerable || this._spawnInvulnerable <= 0)) {
+              this.speed = 0;
+              this.hp = 0;
+              toast('💥 HIT PEDESTRIAN! INSTANT FAILURE!', '#ff3b30');
+              this._uh();
+              this._go('Hit Pedestrian');
+              break;
+            } else if (pDistSq < 1.69) {
+              const pDist = Math.sqrt(pDistSq);
+              if (pDist > 0.01) {
+                p.position.x += (pdx / pDist) * 0.15;
+                p.position.z += (pdz / pDist) * 0.15;
+              }
+            }
           }
         }
-
-        // Helper: Check traffic light state for crossing pedestrians
-        const _checkTrafficLight = (pedPos, game) => {
-          if (!game.sigs || game.sigs.length === 0) return { shouldWait: false, signalState: 'none' };
-
-          for (const sig of game.sigs) {
-            const sigDist = pedPos.distanceTo(sig.position);
-            // Check if signal is nearby (within crossing distance)
-            if (sigDist < 15) {
-              const sigState = sig.userData?.st || 'green';
-              // Pedestrians can cross on green, but should wait on red
-              if (sigState === 'red') {
-                return { shouldWait: true, signalState: 'red' };
-              }
-            }
-          }
-          return { shouldWait: false, signalState: 'green' };
-        };
-
-        // Helper: Find nearest intersection to a position (for crosswalk crossing)
-        const _nearestIntersection = (px, pz, ints) => {
-          if (!ints || ints.length === 0) return null;
-          let best = null, bestD = Infinity;
-          for (const [ix, iz] of ints) {
-            const d = Math.hypot(px - ix, pz - iz);
-            if (d < bestD) { bestD = d; best = [ix, iz]; }
-          }
-          return bestD < 30 ? best : null; // Only if within 30 units
-        };
-
-        // Helper: Check for approaching vehicles (player + NPCs)
-        const _checkVehicleApproaching = (ped, game) => {
-          let approaching = false;
-          let threatDir = null;
-          let minDist = Infinity;
-
-          // Check player vehicle
-          if (game.player && !game.isPedestrian && game.speed && Math.abs(game.speed) > 0.1) {
-            const pvDist = game.player.position.distanceTo(ped.position);
-            if (pvDist < 30 && pvDist < minDist) {
-              const isV = ped.userData.isV;
-              const pedDir = ped.userData.dir;
-              const approachingDir = isV
-                ? (game.player.position.z - ped.position.z) * pedDir
-                : (game.player.position.x - ped.position.x) * pedDir;
-              if (approachingDir > 0 && pvDist < 25) {
-                approaching = true;
-                threatDir = game.player.position.clone();
-                minDist = pvDist;
-              }
-            }
-          }
-
-          // Check NPC vehicles
-          if (!approaching && game.npcs) {
-            for (const n of game.npcs) {
-              if (!n.userData || !n.userData.spd || Math.abs(n.userData.spd) < 0.05) continue;
-              const npcDist = n.position.distanceTo(ped.position);
-              if (npcDist < 30 && npcDist < minDist) {
-                const isV = ped.userData.isV;
-                const pedDir = ped.userData.dir;
-                const approachingDir = isV
-                  ? (n.position.z - ped.position.z) * pedDir
-                  : (n.position.x - ped.position.x) * pedDir;
-                if (approachingDir > 0 && npcDist < 20) {
-                  approaching = true;
-                  threatDir = n.position.clone();
-                  minDist = npcDist;
-                  break;
-                }
-              }
-            }
-          }
-
-          return { approaching, threatDir, dist: minDist };
-        };
-
-        // Helper: Get safe escape direction from vehicle
-        const _getFleeVector = (pedPos, threatPos, sidewalkSide) => {
-          const fleeDir = this._v1.subVectors(pedPos, threatPos).normalize();
-          // Push toward sidewalk (away from road)
-          fleeDir.y = 0;
-          if (sidewalkSide) {
-            // Add lateral push toward sidewalk
-            const lateral = this._v3.set(-fleeDir.z, 0, fleeDir.x).multiplyScalar(sidewalkSide * 0.5);
-            fleeDir.add(lateral).normalize();
-          }
-          return fleeDir;
-        };
-
-        // ═══════════════════════════════════════════════════════════════
-        // MAIN PEDESTRIAN UPDATE LOOP
-        // ═══════════════════════════════════════════════════════════════
-        this.peds.forEach(p => {
-          const ud = p.userData;
-          if (!ud) return;
-          if (p._pedAI) {
-            // Cleanly delegated to PedestrianAI instance - avoid conflicting position overwrites
-            return;
-          }
-
-          if (ud.isChild) {
-            ud.t = (ud.t || 0) + dt * (ud.spd || 0.03);
-            const targetX = ud.targetX || 7.5;
-            const dirX = targetX > p.position.x ? 1 : -1;
-            p.position.x += dirX * (ud.spd || 0.03) * 60 * dt;
-            p.rotation.y = dirX > 0 ? Math.PI / 2 : -Math.PI / 2;
-            if (Math.abs(p.position.x - targetX) < 0.4) {
-              ud.targetX = targetX > 0 ? -7.5 : 7.5;
-            }
-            const lLeg = p.children && p.children.find(c => c.name === 'lLeg');
-            const rLeg = p.children && p.children.find(c => c.name === 'rLeg');
-            if (lLeg && rLeg) {
-              lLeg.rotation.x = Math.sin(ud.t * 8) * 0.45;
-              rLeg.rotation.x = -Math.sin(ud.t * 8) * 0.45;
-            }
-            return;
-          }
-
-          // Initialize pedestrian AI state if needed
-          p.userData.aiState = p.userData.aiState || 'walking'; // walking, idle, waiting, crossing, fleeing, exiting, entering
-          p.userData.t += dt * p.userData.spd;
-
-          const isPoliceVolunteer = p.userData.isPoliceVolunteer;
-
-          // ── BOUNDARY ENFORCEMENT: Keep pedestrians on sidewalks AND within world ──
-          // Enforce lateral bounds (sidewalk width)
-          const sidewalkMin = ud.roadC - ud.targetDist - 2; // Inner edge
-          const sidewalkMax = ud.roadC + ud.targetDist + 2;  // Outer edge
-
-          // World boundary limits (keep pedestrians within playable area)
-          const WORLD_BOUND = 150;
-
-          if (ud.isV) {
-            // Vertical road - enforce X bounds
-            if (p.position.x < sidewalkMin) p.position.x = sidewalkMin;
-            if (p.position.x > sidewalkMax) p.position.x = sidewalkMax;
-            // Enforce world bounds
-            if (p.position.z < -WORLD_BOUND) p.position.z = -WORLD_BOUND;
-            if (p.position.z > WORLD_BOUND) p.position.z = WORLD_BOUND;
-          } else {
-            // Horizontal road - enforce Z bounds
-            if (p.position.z < sidewalkMin) p.position.z = sidewalkMin;
-            if (p.position.z > sidewalkMax) p.position.z = sidewalkMax;
-            // Enforce world bounds
-            if (p.position.x < -WORLD_BOUND) p.position.x = -WORLD_BOUND;
-            if (p.position.x > WORLD_BOUND) p.position.x = WORLD_BOUND;
-          }
-
-          // ── VEHICLE THREAT DETECTION: Check for nearby vehicles ──
-          const vehicleCheck = _checkVehicleApproaching(p, this);
-          const threatDist = vehicleCheck.dist;
-          const isThreatClose = threatDist < 12;
-
-          // ── STATE MACHINE ──
-
-          // STATE: FLEEING (highest priority) - Vehicle very close
-          if (isThreatClose && ud.aiState !== 'fleeing' && ud.aiState !== 'exiting' && ud.aiState !== 'entering') {
-            ud.aiState = 'fleeing';
-            ud.fleeTimer = 0;
-          }
-
-          if (ud.aiState === 'fleeing') {
-            ud.fleeTimer += dt;
-            if (vehicleCheck.approaching && threatDist < 10) {
-              // Active flee - run away from threat
-              const fleeVec = _getFleeVector(p.position, vehicleCheck.threatDir, ud.side);
-              const fleeSpeed = 4.5; // Faster than walking when fleeing
-              p.position.x += fleeVec.x * dt * fleeSpeed;
-              p.position.z += fleeVec.z * dt * fleeSpeed;
-              // Face away from threat
-              p.rotation.y = Math.atan2(-fleeVec.x, -fleeVec.z);
-            } else if (ud.fleeTimer > 1.5) {
-              // Threat passed, return to walking after brief pause
-              ud.aiState = 'walking';
-              ud.fleeTimer = 0;
-            }
-            // Skip other states while fleeing
-            return;
-          }
-
-          // STATE: EXITING BUILDING
-          if (ud.state === 'exiting') {
-            ud.aiState = 'exiting';
-            const moveSpeed = ud.spd * 3.5;
-            if (ud.isV) {
-              p.position.x += -ud.side * dt * moveSpeed;
-              if (Math.abs(p.position.x - ud.roadC) <= ud.targetDist) {
-                p.position.x = ud.roadC + ud.side * ud.targetDist;
-                ud.state = 'sidewalk';
-                ud.aiState = 'walking';
-                p.rotation.y = ud.dir > 0 ? 0 : Math.PI;
-                ud.startZ = p.position.z;
-                ud.destDist = 10 + Math.random() * 20;
-                ud.distTraveled = 0;
-              }
-            } else {
-              p.position.z += -ud.side * dt * moveSpeed;
-              if (Math.abs(p.position.z - ud.roadC) <= ud.targetDist) {
-                p.position.z = ud.roadC + ud.side * ud.targetDist;
-                ud.state = 'sidewalk';
-                ud.aiState = 'walking';
-                p.rotation.y = ud.dir > 0 ? Math.PI/2 : -Math.PI/2;
-                ud.startZ = p.position.x;
-                ud.destDist = 10 + Math.random() * 20;
-                ud.distTraveled = 0;
-              }
-            }
-            return;
-          }
-
-          // STATE: WAITING (at crosswalk, checking for vehicles AND traffic lights)
-          // Check traffic light state first
-          const trafficLightCheck = _checkTrafficLight(p.position, this);
-          const shouldWaitForLight = trafficLightCheck.shouldWait && ud.aiState !== 'fleeing';
-
-          if (ud.aiState !== 'crossing' && (shouldWaitForLight || (vehicleCheck.approaching && ud.aiState !== 'idle' && ud.aiState !== 'entering'))) {
-            ud.aiState = 'waiting';
-            ud.waitTimer = (ud.waitTimer || 0) + dt;
-            // Look toward approaching vehicle
-            if (vehicleCheck.threatDir) {
-              p.rotation.y = Math.atan2(
-                vehicleCheck.threatDir.x - p.position.x,
-                vehicleCheck.threatDir.z - p.position.z
-              );
-            }
-            // Stop movement while waiting
-            return;
-          }
-          // Was waiting for crossing and light is now green — proceed to cross
-          if (ud._crossPending && ud.aiState === 'waiting') {
-            ud._crossPending = false;
-            ud.aiState = 'crossing';
-            ud.state = 'crossing';
-            return;
-          }
-
-          // STATE: CROSSING (crossing the road perpendicular to traffic)
-          if (ud.aiState === 'crossing') {
-            const cx = ud.crossTarget.x - p.position.x;
-            const cz = ud.crossTarget.z - p.position.z;
-            const crossDist = Math.sqrt(cx * cx + cz * cz);
-            if (crossDist < 1.0) {
-              // Reached the other side — resume walking on new sidewalk
-              ud.aiState = 'walking';
-              ud.state = 'sidewalk';
-              ud.side = -ud.side; // Now on opposite side
-              ud.roadC = ud.crossRoadCenter;
-              ud.targetDist = ud.crossTargetDist;
-              ud.dir = Math.random() > 0.5 ? 1 : -1;
-              ud.distTraveled = 0;
-              ud.destDist = 15 + Math.random() * 25;
-              p.rotation.y = ud.isV
-                ? (ud.dir > 0 ? 0 : Math.PI)
-                : (ud.dir > 0 ? Math.PI/2 : -Math.PI/2);
-            } else {
-              // Move toward crossing target
-              const crossSpeed = ud.spd * 2.5; // Slower than walking when crossing
-              p.position.x += (cx / crossDist) * crossSpeed * dt;
-              p.position.z += (cz / crossDist) * crossSpeed * dt;
-              // Face crossing direction
-              p.rotation.y = Math.atan2(cx, cz);
-              // Check for approaching vehicles mid-crossing — freeze if danger
-              const midCheck = _checkVehicleApproaching(p, this);
-              if (midCheck.approaching && midCheck.dist < 15) {
-                ud.aiState = 'waiting';
-                ud.waitTimer = 0;
-                ud._crossPending = true; // Remember to resume crossing after
-              }
-            }
-            return;
-          }
-
-          // STATE: IDLE (phone, look around, rest)
-          // Skip idle for police volunteer
-          if (!ud._idleState && !isPoliceVolunteer && ud.aiState === 'walking') {
-            ud._idleTimer = (ud._idleTimer !== undefined ? ud._idleTimer : Math.random() * 8);
-            ud._idleTimer -= dt;
-            if (ud._idleTimer <= 0) {
-              const idleRoll = Math.random();
-              if (idleRoll < 0.30) {
-                ud._idleState = true;
-                ud._idleDur = 2 + Math.random() * 4;
-                ud._idleType = 'phone';
-              } else if (idleRoll < 0.50) {
-                ud._idleState = true;
-                ud._idleDur = 2 + Math.random() * 5;
-                ud._idleType = 'look';
-              } else {
-                ud._idleTimer = 6 + Math.random() * 12;
-              }
-            }
-          }
-
-          if (ud._idleState) {
-            ud.aiState = 'idle';
-            ud._idleDur -= dt;
-            // Animate based on idle type
-            if (ud._idleType === 'phone') {
-              p.rotation.y += Math.sin(ud.t * 2.5) * 0.003;
-            } else if (ud._idleType === 'look') {
-              // Look left-right periodically
-              p.rotation.y += Math.sin(ud.t * 0.8) * 0.004;
-            }
-            if (ud._idleDur <= 0) {
-              ud._idleState = false;
-              ud._idleTimer = 4 + Math.random() * 10;
-              ud.aiState = 'walking';
-            }
-            // Skip walking while idle
-            return;
-          }
-
-          // STATE: WALKING (default: strictly locked to sidewalk centerline)
-          ud.aiState = 'walking';
-          const walkSpeed = ud.spd * 3.5;
-          const moveAmt = walkSpeed * dt;
-
-          // Lock lateral position strictly to sidewalk centerline
-          const targetSidewalk = ud.roadC + (ud.side > 0 ? ud.targetDist : -ud.targetDist);
-          if (ud.isV) {
-            p.position.x += (targetSidewalk - p.position.x) * 0.15;
-            p.position.z += ud.dir * moveAmt;
-            ud.distTraveled += moveAmt;
-          } else {
-            p.position.z += (targetSidewalk - p.position.z) * 0.15;
-            p.position.x += ud.dir * moveAmt;
-            ud.distTraveled += moveAmt;
-          }
-
-          // Reverse direction at destination — or cross the road
-          if (ud.distTraveled >= ud.destDist) {
-            // ~25% chance to cross the road (more likely at intersections)
-            const ints = this.mapCfg && this.mapCfg.ints;
-            const nearInt = _nearestIntersection(p.position.x, p.position.z, ints);
-            const crossChance = nearInt ? 0.45 : 0.2;
-            if (Math.random() < crossChance) {
-              // Calculate crossing target on the other side of the road
-              const isV = ud.isV;
-              const roadC = isV ? ud.roadC : ud.roadC;
-              const otherSide = -ud.side;
-              const crossOffset = otherSide * (18 / 2 + 1.25); // Sidewalk center distance
-              let targetX, targetZ;
-              if (isV) {
-                targetX = roadC + crossOffset;
-                targetZ = p.position.z; // Move perpendicular (X-axis) while keeping Z
-              } else {
-                targetX = p.position.x; // Move perpendicular (Z-axis) while keeping X
-                targetZ = roadC + crossOffset;
-              }
-
-              // If near an intersection, prefer to cross there — adjust target toward it
-              if (nearInt) {
-                if (isV) {
-                  targetZ = nearInt[1] + (Math.random() - 0.5) * 4; // Slight Z offset near crosswalk
-                } else {
-                  targetX = nearInt[0] + (Math.random() - 0.5) * 4;
-                }
-              }
-
-              ud.aiState = 'crossing';
-              ud.state = 'crossing';
-              ud.crossTarget = { x: targetX, z: targetZ };
-              ud.crossRoadCenter = ud.roadC;
-              ud.crossTargetDist = Math.abs(crossOffset);
-              // Freeze until traffic light allows
-              const tlCheck = _checkTrafficLight(p.position, this);
-              if (tlCheck.shouldWait) {
-                ud.aiState = 'waiting';
-                ud.waitTimer = 0;
-                ud._crossPending = true; // Remember we want to cross after waiting
-              }
-            } else {
-              ud.dir *= -1;
-              p.rotation.y = ud.isV ? (ud.dir > 0 ? 0 : Math.PI) : (ud.dir > 0 ? Math.PI/2 : -Math.PI/2);
-              ud.distTraveled = 0;
-              ud.destDist = 10 + Math.random() * 25;
-            }
-          }
-
-          // ── INTER-PEDESTRIAN AVOIDANCE ──
-          this.peds.forEach(other => {
-            if (other === p || !other.userData) return;
-            const dx = p.position.x - other.position.x;
-            const dz = p.position.z - other.position.z;
-            const dist = Math.sqrt(dx * dx + dz * dz);
-            // Maintain safe distance (1.5 units)
-            if (dist < 1.5 && dist > 0.01) {
-              const push = (1.5 - dist) * 0.6;
-              const nx = dx / dist;
-              const nz = dz / dist;
-              p.position.x += nx * push * dt * 6;
-              p.position.z += nz * push * dt * 6;
-            }
-          });
-
-          // ── OBSTACLE AVOIDANCE (buildings, poles, etc) ──
-          if (this.obstacles) {
-            this.obstacles.forEach(obs => {
-              const dx = p.position.x - obs.position.x;
-              const dz = p.position.z - obs.position.z;
-              const dist = Math.sqrt(dx * dx + dz * dz);
-              const obsRadius = (obs.userData?.halfW || 1.5) + 0.8; // Obstacle size + pedestrian radius
-              if (dist < obsRadius && dist > 0.01) {
-                const push = (obsRadius - dist) * 0.8;
-                p.position.x += (dx / dist) * push;
-                p.position.z += (dz / dist) * push;
-              }
-            });
-          }
-
-          // ── LEG ANIMATION ──
-          const legAnimSpeed = ud.aiState === 'idle' ? 0.08 : 12;
-          const legAnimAmp = ud.aiState === 'idle' ? 0.05 : 0.55;
-          if (ud.lLeg) ud.lLeg.rotation.x = Math.sin(ud.t * legAnimSpeed) * legAnimAmp;
-          if (ud.rLeg) ud.rLeg.rotation.x = Math.sin(ud.t * legAnimSpeed + Math.PI) * legAnimAmp;
-
-          // ── FBX ANIMATED CHARACTER BLEND ──
-          if (ud.isFBXAnimated && ud.mixer) {
-            const moving = ud.aiState === 'walk' || ud.aiState === 'chase'
-            if (ud.idleAction && ud.runAction) {
-              const targetIdle = moving ? 0 : 1
-              const targetRun = moving ? 1 : 0
-              ud.idleAction.setEffectiveWeight(ud.idleAction.getEffectiveWeight() + (targetIdle - ud.idleAction.getEffectiveWeight()) * 0.1)
-              ud.runAction.setEffectiveWeight(ud.runAction.getEffectiveWeight() + (targetRun - ud.runAction.getEffectiveWeight()) * 0.1)
-            }
-            ud.mixer.update(dt)
-          }
-
-          // ── POLICE VOLUNTEER SPECIAL BEHAVIOR ──
-          if (isPoliceVolunteer) {
-            ud.t += dt * 3;
-            const armWave = Math.sin(ud.t) * 0.8;
-            p.children.forEach(ch => {
-              if (ch.name && ch.name.includes('Arm')) {
-                ch.rotation.z = armWave;
-              }
-            });
-            p.rotation.y = Math.sin(ud.t * 0.5) * 0.3 + (ud.isV ? Math.PI/2 : 0);
-          }
-
-          // ── PLAYER COLLISION CHECK (INSTANT FAILURE ON HIT) ──
-          if (!this.isPedestrian && Math.abs(this.speed) > 0.1 && (!this._spawnInvulnerable || this._spawnInvulnerable <= 0) && this.player.position.distanceTo(p.position) < 2.0) {
-            this.speed = 0;
-            this.hp = 0;
-            toast('💥 HIT PEDESTRIAN! INSTANT FAILURE!', '#ff3b30');
-            this._uh();
-            this._go("Hit Pedestrian");
-          }
-        });
       }
       _uobs(dt) {
         if (!this.player) return;
@@ -11487,14 +11636,17 @@ class Game {
         }
 
         this.obstacles.forEach(o => {
-          const dx = px - o.position.x, dz = pz - o.position.z;
+          if (!o) return;
+          const obj = o.mesh || o;
+          if (!obj || !obj.position) return;
+          const dx = px - obj.position.x, dz = pz - obj.position.z;
           if (dx * dx + dz * dz > 400) return;
-          const ud = o.userData || {};
+          const ud = obj.userData || o.userData || {};
           const hw = ud.halfW || 1.6, hd = ud.halfD || 1.6;
 
           let overlapX = 0, overlapZ = 0;
           let localX = dx, localZ = dz;
-          const rotY = o.rotation ? o.rotation.y : 0;
+          const rotY = obj.rotation ? obj.rotation.y : 0;
           if (Math.abs(rotY) > 0.01) {
             const cos = Math.cos(-rotY);
             const sin = Math.sin(-rotY);
@@ -11509,13 +11661,7 @@ class Game {
 
           if (overlapX > 0 && overlapZ > 0) {
               this._collidedThisFrame = true;
-              const dmg = this.seatbeltOn ? 10 : 18;
-              this.hp = Math.max(0, this.hp - dmg);
-              if (this.hp <= 0) {
-                this._go(ud.isVehicle ? 'Vehicle Collision' : 'Collided with Structure');
-              } else {
-                this._uh();
-              }
+              // Elastic collision response
               // Elastic bounce response
               this.speed *= -0.35;
               this._camShakeAmt = Math.max(this._camShakeAmt, 0.45);
@@ -11543,11 +11689,11 @@ class Game {
 
               if (window.TrafficAudio) window.TrafficAudio.playCrash(1.2);
               if (ud.isVehicle) {
-                toast('💥 CRASH! Vehicle Collision! HP -' + dmg, '#ef4444', 3000);
+                toast('💥 Vehicle Collision!', '#ef4444', 2500);
               } else {
-                toast('🚧 CRASH! Structure Collision! HP -' + dmg, '#ef4444', 3000);
+                toast('🚧 Structure Collision!', '#ef4444', 2500);
               }
-              if (window.GameplayRecorder) GameplayRecorder.record('COLLISION_HIT', { hp: Math.round(this.hp), score: this.score });
+              if (window.GameplayRecorder) GameplayRecorder.record('COLLISION_HIT', { score: this.score });
           }
         });
 
@@ -11577,13 +11723,7 @@ class Game {
                     sb.userData.cd = 2.0;
                     if (Math.abs(this.speed) > 0.4) {
                         this.speed *= 0.6;
-                        this.hp -= this.seatbeltOn ? 4 : 5;
-                        this._uh();
-                        this._camShakeAmt = Math.max(this._camShakeAmt, 0.15);
-                        this.playerVehicle.position.y = 0.6;
-                        this._sbBounce = true;
-                        setTimeout(() => { if(this.playerVehicle) { this.playerVehicle.position.y = 0; this._sbBounce = false; } }, 150);
-                        toast('⚠️ High Speed on Breaker! Damage taken!', '#ff9500');
+                        toast('⚠️ Slow down on speed breakers!', '#ff9500');
                         sfx.play('error');
                     } else {
                         this.playerVehicle.position.y = 0.2;
@@ -11607,7 +11747,10 @@ class Game {
         let minDist = Infinity;
 
         const checkObj = (o) => {
-          const dx = o.position.x - px, dz = o.position.z - pz;
+          if (!o) return;
+          const obj = o.mesh || o;
+          if (!obj || !obj.position) return;
+          const dx = obj.position.x - px, dz = obj.position.z - pz;
           const dist = Math.hypot(dx, dz);
           if (dist === 0) return;
           const dot = (dx / dist) * forwardX + (dz / dist) * forwardZ;
@@ -11839,7 +11982,7 @@ class Game {
             const dx = veh.position.x - char.position.x;
             const dz = veh.position.z - char.position.z;
             const angle = (dx !== 0 || dz !== 0) ? Math.atan2(dx, dz) : veh.rotation.y;
-            _camOrbit(char.position, 3.0, 2.2, angle + Math.PI, 1.2);
+            _camOrbit(char.position, 3.8, 3.4, angle + Math.PI, 1.6);
             if (p >= 1) { this._enterState = 'SITTING_DOWN'; this._enterTimer = 0; }
           } else if (s === 'SITTING_DOWN') {
             const dur = 0.6;
@@ -11856,14 +11999,14 @@ class Game {
             _vehBounce(veh, this._enterDoorSide, ease * 1.0);
             const camAngle = veh.rotation.y + Math.PI;
             const _vcamSit = VEHICLE_CAM[this.vehMode] || VEHICLE_CAM_DEFAULT;
-            const orbDist = 3.5 + ease * (_vcamSit.dist - 3.5);
-            const orbHeight = 2.5 + ease * (_vcamSit.height - 2.5);
+            const orbDist = 4.2 + ease * (_vcamSit.dist - 4.2);
+            const orbHeight = 3.6 + ease * (_vcamSit.height - 3.6);
             this.camera.position.set(
               veh.position.x + Math.sin(camAngle) * orbDist,
               veh.position.y + orbHeight,
               veh.position.z + Math.cos(camAngle) * orbDist
             );
-            this.camera.lookAt(veh.position.x, veh.position.y + 1.0, veh.position.z);
+            this.camera.lookAt(veh.position.x, veh.position.y + 1.6, veh.position.z);
             if (p >= 1) { this._enterState = 'CLOSING_DOOR'; this._enterTimer = 0; sfx.play('door'); }
           } else if (s === 'CLOSING_DOOR') {
             const dur = 0.3;
@@ -11907,7 +12050,7 @@ class Game {
               );
               this.camera.lookAt(
                 veh.position.x + Math.sin(rotY) * (_vcamEnter.lookDist || 8),
-                veh.position.y + 1.0,
+                veh.position.y + 1.6,
                 veh.position.z + Math.cos(rotY) * (_vcamEnter.lookDist || 8)
               );
               const vt = this.vehMode || 'car';
@@ -12001,7 +12144,7 @@ class Game {
       _animateCharacterWalk(character, speed, dt) {
         if (!character) return
         const ud = character.userData
-        if (ud && ud.isMinecraft && typeof ud.update === 'function') {
+        if (ud && typeof ud.update === 'function') {
           ud.update(dt, speed);
           return;
         }
@@ -12140,7 +12283,9 @@ class Game {
         if (!this.player || !this.player.position) return;
         // Cinematic enter/exit has exclusive camera control — skip normal update
         if (this._camOverride) return;
-        // ── SLING-LOOK SMOOTHING ──
+        
+        // ── ORBIT PITCH & YAW CLAMPING & SMOOTHING ──
+        this.targetCamPitch = Math.max(-0.25, Math.min(0.95, this.targetCamPitch || 0));
         const slingSmooth = 12; // Higher = snappier, Lower = more floaty
         this.camYaw += (this.targetCamYaw - this.camYaw) * Math.min(1, dt * slingSmooth);
         this.camPitch += (this.targetCamPitch - this.camPitch) * Math.min(1, dt * slingSmooth);
@@ -12153,8 +12298,8 @@ class Game {
           this._camShakeAmt *= Math.pow(0.04, dt);
         }
 
-        if (this.isPointerLocked) {
-          // First Person Mode
+        if (this.firstPersonMode) {
+          // First Person Mode (optional toggle via 'V' key)
           const headHeight = this.isPedestrian ? 1.6 : 1.2;
           // For vehicles, offset slightly forward so we don't clip into the driver seat mesh
           const forwardOffset = this.isPedestrian ? 0 : 0.5;
@@ -12179,29 +12324,44 @@ class Game {
             this.camera.position.z + lz
           );
         } else {
-          // ── Third Person Chase Cam — per-vehicle profiles ──
+          // ── Third Person Chase Cam — per-vehicle profiles with Lower-Third Cinematic View ──
           const _vcam = (this.isPedestrian ? null : VEHICLE_CAM[this.vehMode]) || VEHICLE_CAM_DEFAULT;
-          const camDist = this.isPedestrian ? 4 : _vcam.dist;
-          const camHeight = this.isPedestrian ? 2.5 : _vcam.height;
-          const rotY = this.player.rotation.y + (this.camYaw || 0);
-          // Speed-based look-ahead: camera leads in the direction of travel
-          const lookAhead = this.isPedestrian ? 0 : Math.min(Math.abs(this.speed) * 5, _vcam.lookAhead);
-          const pitchOffset = (this.camPitch || 0) * 2;
+          const isReverse = !this.isPedestrian && (this.gear === 'R' || this.speed < -1.0);
+          const revCamFactor = isReverse ? -1 : 1;
+
+          // Dynamic speed pullback (widen distance as speed builds)
+          const speedPullback = this.isPedestrian ? 0 : Math.min(Math.abs(this.speed) / (this.maxSpd || 80), 1) * 2.2;
+          let camDist = (this.isPedestrian ? 3.8 : _vcam.dist) + speedPullback;
+          let camHeight = (this.isPedestrian ? 2.0 : _vcam.height) + (isReverse ? 1.2 : 0);
+          if (!this.isPedestrian && this._garageX !== undefined && this._garageZ !== undefined) {
+            const dGarage = Math.hypot(this.player.position.x - this._garageX, this.player.position.z - this._garageZ);
+            if (dGarage < 22) {
+              const f = Math.max(0, (22 - dGarage) / 22);
+              camDist = THREE.MathUtils.lerp(camDist, 4.2, f);
+              camHeight = THREE.MathUtils.lerp(camHeight, 2.2, f);
+            }
+          }
+          
+          const rotY = this.isPedestrian ? (this.camYaw || 0) : this.player.rotation.y + (this.camYaw || 0);
+          const pitchOffset = (this.camPitch || 0) * 1.4;
+
           this._camTarget.set(
-              this.player.position.x - Math.sin(rotY) * camDist + Math.sin(rotY) * lookAhead,
+              this.player.position.x - Math.sin(rotY) * camDist * revCamFactor,
               this.player.position.y + camHeight - pitchOffset,
-              this.player.position.z - Math.cos(rotY) * camDist + Math.cos(rotY) * lookAhead
+              this.player.position.z - Math.cos(rotY) * camDist * revCamFactor
           );
-          // ── Camera collision: raycast from player to target ──
-          if (this.obstacles && this.obstacles.length > 0) {
+
+          // ── Camera collision: throttled raycast from player to target ──
+          this._camRayFrame = (this._camRayFrame || 0) + 1;
+          if (this._camRayFrame % 2 === 0 && this.obstacles && this.obstacles.length > 0) {
             const _pp = this.player.position;
-            this._camRayOrigin.set(_pp.x, _pp.y + (this.isPedestrian ? 1.6 : 1.2), _pp.z);
+            this._camRayOrigin.set(_pp.x, _pp.y + (this.isPedestrian ? 1.5 : 1.2), _pp.z);
             this._camRayVec.subVectors(this._camTarget, this._camRayOrigin);
             const rayLen = this._camRayVec.length();
             if (rayLen > 1.0) {
               this._camRay.set(this._camRayOrigin, this._camRayVec.normalize());
               this._camRay.far = rayLen;
-              this._camRay.near = 1.5; // Avoid intersecting player vehicle chassis
+              this._camRay.near = 1.2; // Avoid intersecting player vehicle chassis
               const _nearObs = [];
               const margin = 5;
               for (let i = 0; i < this.obstacles.length; i++) {
@@ -12222,20 +12382,21 @@ class Game {
                   return true;
                 });
                 if (validHits.length > 0 && validHits[0].distance < rayLen) {
-                  const pullBack = 0.5;
+                  const pullBack = 0.4;
                   const dx = this._camTarget.x - _pp.x;
                   const dz = this._camTarget.z - _pp.z;
                   const d = Math.sqrt(dx * dx + dz * dz) || 1;
-                  const safeDist = Math.max(3.0, validHits[0].distance - pullBack);
+                  const safeDist = Math.max(2.4, validHits[0].distance - pullBack);
                   this._camTarget.set(
                     _pp.x + (dx / d) * safeDist,
-                    this._camTarget.y,  // preserve intended height
+                    Math.max(this._camTarget.y, _pp.y + (this.isPedestrian ? 2.5 : camHeight)),
                     _pp.z + (dz / d) * safeDist
                   );
                 }
               }
             }
           }
+
           // Phase 7.4: Smooth camera transition on mode switch (0.4s lerp) or instant snap
           if (!this._camSnapped) {
             this._camSnapped = true;
@@ -12247,21 +12408,24 @@ class Game {
           const baseLerp = Math.min(1, dt * _vcam.lerpSmoothing);
           const camLerp = transT > 0 ? Math.min(1, dt * 3) : baseLerp; // slower during transition
           this.camera.position.lerp(this._camTarget, camLerp);
-          // Hard floor clamp: whatever produced this._camTarget, never let the rendered
-          // camera end up at/below ground level (the "camera stuck under the city" bug —
-          // it can't recover on its own once below the ground plane, since everything it
-          // would see from there is the underside of road/building meshes).
-          if (this.camera.position.y < 0.6) this.camera.position.y = 0.6;
+          
+          // Hard floor clamp: never let the rendered camera end up below ground level
+          if (this.camera.position.y < 1.3) this.camera.position.y = 1.3;
 
           const tiltRoll = this._camTilt || 0;
           this.camera.up.set(0, 1, 0);
-          const lookAheadDist = this.isPedestrian ? 3 : _vcam.lookDist;
-          const targetLookY = this.player.position.y + (this.isPedestrian ? 1.4 : 0.8);
+
+          // Lower-third horizon tracking look-at target
+          const lookDistBonus = this.isPedestrian ? 0 : Math.min(Math.abs(this.speed) * 0.15, 6.0);
+          const lookAheadDist = (this.isPedestrian ? 2.5 : (_vcam.lookDist + lookDistBonus)) * revCamFactor;
+          const targetLookY = this.player.position.y + (this.isPedestrian ? 1.3 : 1.2);
+          
           this.camera.lookAt(
             this.player.position.x + Math.sin(rotY) * lookAheadDist + shakeX,
-            targetLookY - pitchOffset * 0.3 + shakeY,
+            targetLookY - pitchOffset * 0.6 + shakeY,
             this.player.position.z + Math.cos(rotY) * lookAheadDist
           );
+
           // Camera tilt: subtle roll based on steering input
           if (tiltRoll !== 0) {
             if (!this._rollQ) this._rollQ = new THREE.Quaternion();
@@ -12370,18 +12534,18 @@ class Game {
           }
         }
 
-        // ── Ambient light ──
-        if (this._ambient) this._ambient.intensity = cfg.isNight ? (cfg.amb || 0.15) : this._dnLerp(0.08, cfg.amb || 0.35, sunElev);
+        // ── Ambient light (ensures good visibility on roads at night) ──
+        if (this._ambient) this._ambient.intensity = cfg.isNight ? (cfg.amb || 0.25) : this._dnLerp(0.18, cfg.amb || 0.38, sunElev);
 
         // ── Hemisphere light ──
-        if (this._hemi) this._hemi.intensity = cfg.isNight ? 0.10 : this._dnLerp(0.08, 0.45, sunElev);
+        if (this._hemi) this._hemi.intensity = cfg.isNight ? 0.20 : this._dnLerp(0.15, 0.45, sunElev);
 
         // ── Sun intensity ──
         if (this._sun) this._sun.intensity = cfg.isNight ? 0.05 : this._dnLerp(0.05, 1.2, sunElev);
 
         // ── Moon (opposite to sun) ──
         if (this._moon && this.player) {
-          this._moon.intensity = cfg.isNight ? 0.6 : this._dnLerp(0.4, 0, sunElev);
+          this._moon.intensity = cfg.isNight ? 0.8 : this._dnLerp(0.5, 0, sunElev);
           const moonAngle = sunAngle + Math.PI;
           const mx = Math.cos(moonAngle) * 50;
           const my = Math.abs(Math.sin(moonAngle)) * 40 + 5;
@@ -12390,12 +12554,22 @@ class Game {
 
         // ── Tone mapping exposure ──
         if (this.renderCore && this.renderCore.renderer) {
-          this.renderCore.renderer.toneMappingExposure = cfg.isNight ? 0.55 : this._dnLerp(0.42, 0.62, sunElev);
+          this.renderCore.renderer.toneMappingExposure = cfg.isNight ? 0.65 : this._dnLerp(0.45, 0.65, sunElev);
         }
 
-        // ── Street lights ──
-        const slIntensity = cfg.isNight ? 1.0 : (sunElev < 0.3 ? this._dnLerp(0.8, 0, sunElev / 0.3) : 0);
+        // ── Street lights & Road Illumination ──
+        const isDark = cfg.isNight || sunElev < 0.32;
+        const slIntensity = cfg.isNight ? 1.0 : (sunElev < 0.32 ? this._dnLerp(0.9, 0, sunElev / 0.32) : 0);
         for (let i = 0; i < this._streetLights.length; i++) this._streetLights[i].intensity = slIntensity;
+
+        // Mumbai Street Lamp Lenses & Ground Light Pools
+        if (window._mumbaiStreetLampLens) {
+          window._mumbaiStreetLampLens.emissiveIntensity = isDark ? (0.4 + slIntensity * 1.0) : 0.05;
+          window._mumbaiStreetLampLens.needsUpdate = true;
+        }
+        if (window._mumbaiLightPoolMat) {
+          window._mumbaiLightPoolMat.opacity = isDark ? (0.12 + slIntensity * 0.28) : 0.0;
+        }
 
         // ── Building window glow ──
         const wlIntensity = cfg.isNight ? 0.8 : (sunElev < 0.4 ? this._dnLerp(0.6, 0, sunElev / 0.4) : 0);
@@ -12502,7 +12676,7 @@ class Game {
             } else if (this.isPedestrian && this.playerVehicle) {
               const dist = this.player.position.distanceTo(this.playerVehicle.position);
               const mcEnter = document.getElementById('mc-enter');
-              if (dist < 5) {
+              if (dist < 8.5) {
                 this.warnEl.innerHTML = `
                   <div style="background:linear-gradient(135deg, rgba(13, 19, 31, 0.95), rgba(21, 29, 45, 0.95)); border:2px solid #f59e0b; border-radius:30px; padding:10px 22px; color:#ffffff; font-weight:800; font-size:0.98rem; letter-spacing:0.4px; box-shadow:0 12px 32px rgba(0, 0, 0, 0.8), 0 0 20px rgba(245, 158, 11, 0.35); display:flex; align-items:center; gap:10px;">
                     <span style="font-size:1.3rem;">🚗</span>
@@ -12510,6 +12684,12 @@ class Game {
                   </div>
                 `;
                 this.warnEl.style.display = 'block';
+                this.warnEl.style.cursor = 'pointer';
+                this.warnEl.onclick = (ev) => {
+                  ev.preventDefault();
+                  this.keys['f'] = true;
+                  setTimeout(() => { this.keys['f'] = false; }, 120);
+                };
                 if (mcEnter) mcEnter.style.display = 'flex';
               } else {
                 this.warnEl.style.display = 'none';

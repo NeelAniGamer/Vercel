@@ -201,19 +201,34 @@
 
       .menu-container { position: relative; }
       .btn-menu {
-        width: 36px;
-        height: 36px;
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+        min-height: 38px;
         border-radius: 50%;
         border: 1px solid var(--border);
-        background: var(--card);
+        background: rgba(255, 255, 255, 0.06);
         color: var(--text);
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.2s;
+        transition: all 0.25s var(--ease);
+        backdrop-filter: blur(8px);
+        padding: 0;
       }
-      .btn-menu:hover { background: var(--hover); }
+      .btn-menu:hover, .btn-menu:focus-visible {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: var(--signal);
+        transform: scale(1.05);
+      }
+      .btn-menu svg {
+        width: 18px;
+        height: 18px;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+      }
 
       .dropdown {
         position: absolute;
@@ -988,10 +1003,18 @@
       .hz-toggle.night .hz-orb { left: 78px; background: radial-gradient(circle, #E2E8F0, #475569); }
 
       @media (max-width: 768px) {
-        .top-bar { width: 94vw; padding: 0 12px; height: 52px; }
+        .top-bar {
+          width: calc(100vw - 24px) !important;
+          max-width: calc(100vw - 24px) !important;
+          left: 12px !important;
+          transform: none !important;
+          padding: 0 10px !important;
+          height: 52px !important;
+          box-sizing: border-box !important;
+        }
         .global-progress-wrap { display: none; }
         .profile-name-sm { display: none; }
-        .profile-compact { padding: 4px; }
+        .profile-compact { padding: 4px; cursor: pointer; }
         .hz-toggle { width: 44px; height: 28px; border-radius: 14px; }
         .hz-orb { width: 22px; height: 22px; }
         .hz-toggle.night .hz-orb { left: 18px; }
@@ -1000,14 +1023,39 @@
         .license-right { text-align: center; }
         .bento-grid { grid-template-columns: 1fr; }
         .bento-card.wide { grid-column: span 1; }
-        .crt { padding: 30px 20px; font-size: 0.8rem; aspect-ratio: auto; min-height: 500px; }
-        .crtn { font-size: 2rem; }
-        .crt-course { font-size: 1.2rem; }
+        .crt {
+          box-sizing: border-box !important;
+          width: 100% !important;
+          max-width: 100% !important;
+          border-width: 6px !important;
+          padding: 24px 12px !important;
+          min-height: auto !important;
+          aspect-ratio: auto !important;
+          overflow: hidden !important;
+        }
+        .crt * {
+          box-sizing: border-box !important;
+        }
+        .crtn {
+          font-size: clamp(1.8rem, 6vw, 2.4rem) !important;
+        }
+        .crt-course {
+          font-size: clamp(1rem, 4vw, 1.3rem) !important;
+          margin: 16px 0 !important;
+          padding: 8px 14px !important;
+          max-width: 95% !important;
+        }
+        .crt-body {
+          max-width: 95% !important;
+          font-size: 0.95rem !important;
+          line-height: 1.5 !important;
+        }
         .share-bar { flex-wrap: wrap; gap: 8px; }
         .share-btn { padding: 10px 16px; font-size: 0.85rem; }
         .bottom-nav { bottom: 12px; padding: 6px; gap: 4px; }
         .nav-btn { padding: 8px 16px; font-size: 0.85rem; }
         .leaderboard-row .rank-change { font-size: 0.6rem; padding: 2px 3px; min-width: 16px; }
+        .dropdown { right: 0; max-width: calc(100vw - 32px); }
       }
 
       @media print {
@@ -1278,13 +1326,19 @@
       </div>
 
       <div class="top-bar-actions">
-        <div class="profile-compact">
+        <div class="profile-compact" onclick="toggleMenu()" title="Account settings">
           <div class="avatar-sm" id="avatar-sm"></div>
           <span class="profile-name-sm" id="top-name">Driver</span>
         </div>
 
         <div class="menu-container">
-          <button class="btn-menu" onclick="toggleMenu()">☰</button>
+          <button class="btn-menu" onclick="toggleMenu()" aria-label="Account menu" title="Account Menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <line x1="4" y1="7" x2="20" y2="7"></line>
+              <line x1="4" y1="12" x2="20" y2="12"></line>
+              <line x1="4" y1="17" x2="20" y2="17"></line>
+            </svg>
+          </button>
           <div class="dropdown" id="action-menu">
             <div class="dropdown-item" onclick="openEditModal()">✏️ Edit Profile</div>
             <div class="dropdown-item" onclick="resetProgressFromDashboard()">🗑️ Reset Progress</div>
@@ -2315,9 +2369,13 @@
       }
 
       function logoutAndClear() {
-        localStorage.removeItem('trafficSetupComplete'); localStorage.removeItem('traffic_local_user')
-        if (window.doLogout) window.doLogout()
-        window.location.href = 'Academy.html'
+        localStorage.removeItem('trafficSetupComplete');
+        localStorage.removeItem('traffic_local_user');
+        localStorage.removeItem('col_active_local_user');
+        if (window.colClearActiveLocalUser) window.colClearActiveLocalUser();
+        if (window.colDoLogout) window.colDoLogout();
+        else if (window.doLogout) window.doLogout();
+        window.location.href = 'Academy.html';
       }
 
       function resetProgressFromDashboard() {

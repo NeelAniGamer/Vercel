@@ -1,5 +1,5 @@
-const CACHE_NAME = 'col-cache-v6'
-const SW_VERSION = '2026-08-28'
+const CACHE_NAME = 'col-cache-v7'
+const SW_VERSION = '2026-09-15'
 const urlsToCache = ['/home.html', '/col-ui.css', '/col-mobile.css', '/Traffic/traffic-mobile.css', '/col-ui.js', '/col-router.js', '/col-auth.js', '/Icon.png']
 
 async function cacheResources() {

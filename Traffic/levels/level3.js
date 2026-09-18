@@ -3,7 +3,8 @@ window.LVS.push({
   id: 3,
   icon: '🚑',
   name: 'Lesson 3 - Ambulance on a Busy Road',
-  modes: ['pedestrian', 'car', 'bike'],
+  modes: ['car', 'bike', 'pedestrian'],
+  veh: 'car',
   col: '#e74c3c',
   ds: 'Emergency vehicles need a clear path. On a busy road, your quick reaction can save a life.',
   hps: [

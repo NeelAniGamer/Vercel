@@ -4,6 +4,7 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995"
      crossorigin="anonymous"></script>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="View your student progress, achievements, trophy case, and global leaderboard rankings on Class Of Learners." />
     <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
     <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/dashboard" />
@@ -354,9 +355,58 @@
       }
 
       @media (max-width: 768px) {
-        .user-header { flex-direction: column; text-align: center; }
-        .trophy-grid { grid-template-columns: 1fr; }
-        .lb-ctrl { flex-direction: column; align-items: stretch; }
+        .dashboard-container {
+          margin: 85px auto 40px;
+          padding: 0 16px;
+        }
+        .user-header {
+          flex-direction: column;
+          text-align: center;
+          padding: 24px 16px;
+          gap: 16px;
+        }
+        .trophy-grid {
+          grid-template-columns: 1fr;
+        }
+        .dash-tabs {
+          overflow-x: auto;
+          white-space: nowrap;
+          -webkit-overflow-scrolling: touch;
+          scrollbar-width: none;
+          gap: 8px;
+          padding-bottom: 8px;
+        }
+        .dash-tabs::-webkit-scrollbar {
+          display: none;
+        }
+        .leaderboard-wrap {
+          padding: 20px 14px;
+          border-radius: 20px;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+        .lb-ctrl {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 12px;
+        }
+        .lb-table {
+          min-width: 480px;
+        }
+      }
+      @media (max-width: 480px) {
+        .user-info h1 {
+          font-size: 1.8rem;
+        }
+        .user-avatar {
+          width: 68px;
+          height: 68px;
+          font-size: 1.6rem;
+        }
+        .dash-tab {
+          padding: 8px 12px;
+          font-size: 0.78rem;
+        }
       }
     </style>
     <script defer src="col-router.js"></script>
@@ -372,7 +422,10 @@
         <img src="Class.png" alt="Class Of Learners" class="brand-logo" />
         <span class="brand-name">Class Of Learners</span>
       </a>
-      <div class="nav-links">
+      <button class="mmb" id="mmb" aria-label="Toggle navigation menu">
+        <span class="m-line"></span><span class="m-line"></span><span class="m-line"></span>
+      </button>
+      <div class="nav-links" id="navLinks">
         <a href="/" class="nav-link">Home</a>
         <a href="about" class="nav-link">About</a>
         <a href="school" class="nav-link">School</a>
@@ -476,6 +529,32 @@
         const overlay = document.getElementById('auth-overlay');
         const ui = document.getElementById('dashboard-ui');
 
+        if (!window.colUser && window.colGetActiveLocalUser) {
+          window.colUser = window.colGetActiveLocalUser();
+        } else if (!window.colUser) {
+          try {
+            const raw = localStorage.getItem('col_active_local_user') || localStorage.getItem('traffic_local_user');
+            if (raw) {
+              const u = JSON.parse(raw);
+              if (u && (u.name || u.username)) {
+                window.colUser = {
+                  id: u.id || ('local_' + (u.username || u.name).replace(/[^a-zA-Z0-9_]/g, '')),
+                  name: u.name || u.username,
+                  email: u.email || (u.username ? (u.username.replace('@','') + '@local.col') : 'local@col.io'),
+                  username: u.username || ('@' + (u.name || 'user').toLowerCase().replace(/\s+/g, '')),
+                  isLocal: true,
+                  user_metadata: {
+                    full_name: u.name || u.username,
+                    name: u.name || u.username,
+                    role: u.role || 'student',
+                    preferred_vehicle: u.vehicle || 'Car'
+                  }
+                };
+              }
+            }
+          } catch (e) {}
+        }
+
         if (!window.colUser) {
           overlay.style.display = 'flex';
           ui.style.display = 'none';
@@ -486,11 +565,14 @@
         ui.style.display = 'block';
 
         document.getElementById('user-name').textContent = window.colUser.name || 'User';
-        document.getElementById('user-email').textContent = window.colUser.email || '';
+        document.getElementById('user-email').textContent = window.colUser.email || window.colUser.username || '';
         
         const role = window.colUser.user_metadata?.role || 'student';
         const roleBadge = document.getElementById('user-role-badge');
         roleBadge.textContent = role === 'parent_teacher' ? 'Parent / Teacher' : role.charAt(0).toUpperCase() + role.slice(1);
+        if (window.colUser.isLocal) {
+          roleBadge.textContent += ' • Local Account';
+        }
         
         const av = document.getElementById('user-avatar');
         if (window.colUser.picture) {
@@ -598,8 +680,59 @@
         const grid = document.getElementById('trophy-grid');
         grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--dim);">Loading trophies...</div>';
 
+        if (window.colUser && window.colUser.isLocal) {
+          renderLocalTrophies(grid);
+          return;
+        }
+
         const { data, error } = await window.getUserProgress();
+        if (error) {
+          renderLocalTrophies(grid);
+          return;
+        }
         renderTrophies(data, error, grid);
+      }
+
+      function renderLocalTrophies(grid) {
+        let mth = {};
+        try {
+          const raw = localStorage.getItem('mth4');
+          if (raw) mth = JSON.parse(raw);
+        } catch (e) {}
+
+        const unlockedBadges = mth.badges || [];
+        const completedLevels = mth.comp ? Object.keys(mth.comp).length : 0;
+        const totalScore = mth.total || 0;
+        const civicScore = mth.civicScore || 0;
+
+        const defaultAchievements = [
+          { name: 'First Ignition', desc: 'Completed your first driving session', icon: '🚗', slug: 'first-drive', unlocked: completedLevels > 0 },
+          { name: 'License Holder', desc: 'Passed beginner driver safety evaluation', icon: '🪪', slug: 'driver-license', unlocked: completedLevels >= 5 },
+          { name: 'Urban Navigator', desc: 'Navigated 10 complex traffic junctions', icon: '🚦', slug: 'urban-nav', unlocked: completedLevels >= 10 },
+          { name: 'Civic Guardian', desc: 'Maintained high civic safety standards (250+ civic score)', icon: '🛡️', slug: 'civic-guard', unlocked: civicScore >= 250 },
+          { name: 'Highway Legend', desc: 'Achieved mastery across 25+ simulation levels', icon: '🌟', slug: 'highway-master', unlocked: completedLevels >= 25 },
+          { name: 'Grand Master', desc: 'Completed all 52 traffic mastery modules', icon: '👑', slug: 'grand-master', unlocked: completedLevels >= 52 }
+        ];
+
+        grid.innerHTML = '';
+        defaultAchievements.forEach(def => {
+          const isCompleted = def.unlocked || unlockedBadges.includes(def.slug);
+          const card = document.createElement('div');
+          card.className = `trophy-card ${isCompleted ? 'unlocked' : 'locked'}`;
+          card.innerHTML = `
+            <span class="trophy-icon">${def.icon}</span>
+            <h3 class="trophy-name">${def.name}</h3>
+            <p class="trophy-desc">${def.desc}</p>
+            ${isCompleted
+              ? `<button class="btn-share" onclick="copyToClipboard('Class Of Learners Achievement: ' + '${def.name} Unlocked!')">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                  Unlocked
+                </button>`
+              : `<button class="btn-locked">Locked</button>`
+            }
+          `;
+          grid.appendChild(card);
+        });
       }
 
       async function loadTrophiesForStudent(uid) {
