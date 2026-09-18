@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </style>
         <div id="global-cursor"></div>
         <div id="global-toast">ACTION</div>
-        <button id="gesture-fab" onclick="window.startGlobalGesture && window.startGlobalGesture()">📷 Enable Hand Tracking</button>
+        <button id="gesture-fab" onclick="window.startGlobalGesture && window.startGlobalGesture()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>Enable Perceptus Flow</button>
         <div id="shutdown-flash"></div>
         
         <div id="pip-camera">
@@ -298,14 +298,14 @@ document.addEventListener('DOMContentLoaded', () => {
       await cameraInstance.start()
       isEngineRunning = true
       pipCamera.style.display = 'block'
-      fab.innerText = '🟢 Tracking Active'
+      fab.innerHTML = '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#000;margin-right:6px;"></span>Perceptus Active'
       fab.style.background = COLORS.POINT
       fab.style.color = '#000'
       showToast('Global Gesture Control Activated!', COLORS.POINT)
       syncLocalUI('START')
     } catch (e) {
       console.error(e)
-      fab.innerText = '⚠️ Camera Error'
+      fab.innerHTML = '<span style="color:#ef4444;margin-right:6px;font-weight:bold;">!</span>Camera Error'
       alert('Please allow camera access.')
     }
   }
@@ -325,7 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
       cameraInstance.stop()
     }
 
-    fab.innerText = '📷 Enable Hand Tracking'
+    fab.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>Enable Perceptus Flow'
     fab.style.background = 'rgba(10, 13, 20, 0.9)'
     fab.style.color = COLORS.POINT
     syncLocalUI('STOP')

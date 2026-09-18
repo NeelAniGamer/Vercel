@@ -1,18 +1,50 @@
-// Shared UI Logic: Cursor, Theme Toggle, Mobile Menu
+// Shared UI Logic: Cursor, Ambient Background, Theme Toggle, Mobile Menu
 ;(function () {
-  // 1. Cursor
+  // 0. Ambient Visual System Auto-Injector (60fps Aurora Mesh & Cyber Grid)
+  function initAmbientVisuals() {
+    if (document.querySelector('.col-ambient-bg')) return;
+    var bg = document.createElement('div');
+    bg.className = 'col-ambient-bg';
+    bg.setAttribute('aria-hidden', 'true');
+    bg.innerHTML = '<div class="col-ambient-orb col-orb-1"></div><div class="col-ambient-orb col-orb-2"></div><div class="col-ambient-orb col-orb-3"></div><div class="col-ambient-spotlight"></div>';
+    if (document.body) {
+      document.body.insertBefore(bg, document.body.firstChild);
+    } else {
+      document.addEventListener('DOMContentLoaded', function () {
+        document.body.insertBefore(bg, document.body.firstChild);
+      });
+    }
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAmbientVisuals);
+  } else {
+    initAmbientVisuals();
+  }
+
+  // 1. Cursor & Mouse Spotlight Tracking
   var dot = document.getElementById('cDot'),
     ring = document.getElementById('cRing')
+  var mx = window.innerWidth / 2,
+    my = window.innerHeight / 3,
+    rx = mx,
+    ry = my
+  var rafPending = false
+
+  document.addEventListener('mousemove', function (e) {
+    mx = e.clientX
+    my = e.clientY
+    if (dot) dot.style.transform = 'translate(' + mx + 'px,' + my + 'px) translate(-50%,-50%)'
+    if (!rafPending) {
+      rafPending = true
+      requestAnimationFrame(function () {
+        document.documentElement.style.setProperty('--mouse-x', mx + 'px')
+        document.documentElement.style.setProperty('--mouse-y', my + 'px')
+        rafPending = false
+      })
+    }
+  }, { passive: true })
+
   if (dot && ring) {
-    var mx = 0,
-      my = 0,
-      rx = 0,
-      ry = 0
-    document.addEventListener('mousemove', function (e) {
-      mx = e.clientX
-      my = e.clientY
-      dot.style.transform = 'translate(' + mx + 'px,' + my + 'px) translate(-50%,-50%)'
-    })
     ;(function draw() {
       rx += (mx - rx) * 0.13
       ry += (my - ry) * 0.13

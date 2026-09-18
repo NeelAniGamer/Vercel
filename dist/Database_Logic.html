@@ -450,7 +450,7 @@
         background: rgba(0, 255, 204, 0.15);
       }
       .wiki-link::before {
-        content: '🔗';
+        content: '↗';
         font-size: 1.1rem;
       }
 
@@ -490,8 +490,6 @@
       <link rel="icon" type="image/png" href="Icon.png" />
   </head>
   <body>
-    <canvas id="webgl-canvas"></canvas>
-
     <div class="container">
       <!-- Hero Section -->
       <section id="home" class="hero">
@@ -538,8 +536,6 @@
       </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script defer src="col-3d.js"></script>
     <script>
       /* =========================================================
            Dynamic Content Generation (50 Modules)
@@ -556,64 +552,64 @@
       // Base Topics Array to procedurally generate 50 deep modules
       const baseTopics = [
         // Tier 1: Fundamentals
-        { title: 'System Signals', icon: '🚦', query: 'Traffic_light', desc: 'Universal logic protocols of traffic lights and signs.' },
-        { title: 'Braking Physics', icon: '🛑', query: 'Braking_distance', desc: 'Relationship between velocity, reaction time, and momentum.' },
-        { title: 'Entity Priority', icon: '🚶', query: 'Right-of-way_(transportation)', desc: 'Navigating crosswalks and defining pedestrian priorities.' },
-        { title: 'Road Markings', icon: '🛣️', query: 'Road_surface_marking', desc: 'The syntax of painted lines, arrows, and hash marks.' },
-        { title: 'Intersection Logic', icon: '🔄', query: 'Intersection_(road)', desc: 'Algorithms for navigating 4-way stops and roundabouts.' },
-        { title: 'Vision Systems', icon: '👁️', query: 'Peripheral_vision', desc: 'Understanding human FOV and visual processing speeds.' },
-        { title: 'Acoustic Warnings', icon: '🔊', query: 'Vehicle_horn', desc: 'The role of sirens, horns, and auditory environmental awareness.' },
-        { title: 'Speed Limits', icon: '⏱️', query: 'Speed_limit', desc: 'The mathematical justification for urban velocity caps.' },
-        { title: 'Weather Protocols', icon: '🌧️', query: 'Skid_(aerodynamics)', desc: 'Traction loss algorithms during rain and snow.' },
-        { title: 'Night Operations', icon: '🌙', query: 'Headlamp', desc: 'Visibility degradation and illumination requirements at night.' },
+        { title: 'System Signals', icon: '', query: 'Traffic_light', desc: 'Universal logic protocols of traffic lights and signs.' },
+        { title: 'Braking Physics', icon: '', query: 'Braking_distance', desc: 'Relationship between velocity, reaction time, and momentum.' },
+        { title: 'Entity Priority', icon: '', query: 'Right-of-way_(transportation)', desc: 'Navigating crosswalks and defining pedestrian priorities.' },
+        { title: 'Road Markings', icon: '', query: 'Road_surface_marking', desc: 'The syntax of painted lines, arrows, and hash marks.' },
+        { title: 'Intersection Logic', icon: '', query: 'Intersection_(road)', desc: 'Algorithms for navigating 4-way stops and roundabouts.' },
+        { title: 'Vision Systems', icon: '', query: 'Peripheral_vision', desc: 'Understanding human FOV and visual processing speeds.' },
+        { title: 'Acoustic Warnings', icon: '', query: 'Vehicle_horn', desc: 'The role of sirens, horns, and auditory environmental awareness.' },
+        { title: 'Speed Limits', icon: '', query: 'Speed_limit', desc: 'The mathematical justification for urban velocity caps.' },
+        { title: 'Weather Protocols', icon: '', query: 'Skid_(aerodynamics)', desc: 'Traction loss algorithms during rain and snow.' },
+        { title: 'Night Operations', icon: '', query: 'Headlamp', desc: 'Visibility degradation and illumination requirements at night.' },
 
         // Tier 2: Infrastructure & Vehicles
-        { title: 'Blind Spots', icon: '🚛', query: 'Blind_spot_(vehicle)', desc: 'Geometric zones of invisibility around large vehicles.' },
-        { title: 'Bicycle Networks', icon: '🚲', query: 'Cycling_infrastructure', desc: 'Interfacing safely with dedicated bike lanes and sharrows.' },
-        { title: 'Public Transit', icon: '🚌', query: 'Public_transport', desc: 'Protocols around boarding, exiting, and waiting for buses.' },
-        { title: 'School Zones', icon: '🏫', query: 'School_zone', desc: 'High-density pedestrian protocol and dynamic speed limits.' },
-        { title: 'Railway Crossings', icon: '🚂', query: 'Level_crossing', desc: 'Extreme mass momentum vectors and crossing logic.' },
-        { title: 'Tire Mechanics', icon: '⚙️', query: 'Tire_contact_patch', desc: 'Friction coefficients and the rubber-to-road contact patch.' },
-        { title: 'Highway Merging', icon: '🛣️', query: 'Interchange_(road)', desc: 'Velocity matching and zip-merging algorithms.' },
-        { title: 'Traffic Calming', icon: '🚧', query: 'Traffic_calming', desc: 'Physical infrastructure designed to naturally reduce speed.' },
-        { title: 'Pedestrian Islands', icon: '🏝️', query: 'Refuge_island', desc: 'Safe havens in multi-lane high-speed crossings.' },
-        { title: 'Vehicle Mass', icon: '⚖️', query: 'Kinetic_energy', desc: 'How vehicle weight impacts survivability in collisions.' },
+        { title: 'Blind Spots', icon: '', query: 'Blind_spot_(vehicle)', desc: 'Geometric zones of invisibility around large vehicles.' },
+        { title: 'Bicycle Networks', icon: '', query: 'Cycling_infrastructure', desc: 'Interfacing safely with dedicated bike lanes and sharrows.' },
+        { title: 'Public Transit', icon: '', query: 'Public_transport', desc: 'Protocols around boarding, exiting, and waiting for buses.' },
+        { title: 'School Zones', icon: '', query: 'School_zone', desc: 'High-density pedestrian protocol and dynamic speed limits.' },
+        { title: 'Railway Crossings', icon: '', query: 'Level_crossing', desc: 'Extreme mass momentum vectors and crossing logic.' },
+        { title: 'Tire Mechanics', icon: '', query: 'Tire_contact_patch', desc: 'Friction coefficients and the rubber-to-road contact patch.' },
+        { title: 'Highway Merging', icon: '', query: 'Interchange_(road)', desc: 'Velocity matching and zip-merging algorithms.' },
+        { title: 'Traffic Calming', icon: '', query: 'Traffic_calming', desc: 'Physical infrastructure designed to naturally reduce speed.' },
+        { title: 'Pedestrian Islands', icon: '', query: 'Refuge_island', desc: 'Safe havens in multi-lane high-speed crossings.' },
+        { title: 'Vehicle Mass', icon: '', query: 'Kinetic_energy', desc: 'How vehicle weight impacts survivability in collisions.' },
 
         // Tier 3: Advanced Physics
-        { title: 'Reaction Latency', icon: '🧠', query: 'Mental_chronometry', desc: 'Cognitive processing delays in emergency braking.' },
-        { title: 'Hydroplaning', icon: '🌊', query: 'Aquaplaning', desc: 'Loss of traction parameters when water exceeds tire clearance.' },
-        { title: 'Centrifugal Force', icon: '🌀', query: 'Centrifugal_force', desc: 'Physics of maintaining traction through sharp curves.' },
-        { title: 'Impact Dissipation', icon: '💥', query: 'Crumple_zone', desc: 'How modern chassis design absorbs kinetic energy.' },
-        { title: 'Seatbelt Physics', icon: '💺', query: 'Seat_belt', desc: 'Inertia and the prevention of secondary impacts.' },
-        { title: 'Airbag Deployment', icon: '💨', query: 'Airbag', desc: 'Explosive deceleration cushioning via accelerometers.' },
-        { title: 'Tailgating Math', icon: '📏', query: 'Two-second_rule', desc: 'Calculating safe following distances via time offsets.' },
-        { title: 'Distracted Driving', icon: '📱', query: 'Distracted_driving', desc: 'The catastrophic effect of task-switching on reaction time.' },
-        { title: 'Glare & Optics', icon: '☀️', query: 'Glare_(vision)', desc: 'Sun glare, reflections, and retinal saturation.' },
-        { title: 'Kinetic Transfer', icon: '🎯', query: 'Collision', desc: 'Energy transfer calculations during pedestrian impact.' },
+        { title: 'Reaction Latency', icon: '', query: 'Mental_chronometry', desc: 'Cognitive processing delays in emergency braking.' },
+        { title: 'Hydroplaning', icon: '', query: 'Aquaplaning', desc: 'Loss of traction parameters when water exceeds tire clearance.' },
+        { title: 'Centrifugal Force', icon: '', query: 'Centrifugal_force', desc: 'Physics of maintaining traction through sharp curves.' },
+        { title: 'Impact Dissipation', icon: '', query: 'Crumple_zone', desc: 'How modern chassis design absorbs kinetic energy.' },
+        { title: 'Seatbelt Physics', icon: '', query: 'Seat_belt', desc: 'Inertia and the prevention of secondary impacts.' },
+        { title: 'Airbag Deployment', icon: '', query: 'Airbag', desc: 'Explosive deceleration cushioning via accelerometers.' },
+        { title: 'Tailgating Math', icon: '', query: 'Two-second_rule', desc: 'Calculating safe following distances via time offsets.' },
+        { title: 'Distracted Driving', icon: '', query: 'Distracted_driving', desc: 'The catastrophic effect of task-switching on reaction time.' },
+        { title: 'Glare & Optics', icon: '', query: 'Glare_(vision)', desc: 'Sun glare, reflections, and retinal saturation.' },
+        { title: 'Kinetic Transfer', icon: '', query: 'Collision', desc: 'Energy transfer calculations during pedestrian impact.' },
 
         // Tier 4: Smart Cities
-        { title: 'IoT Traffic Nets', icon: '📡', query: 'Intelligent_transportation_system', desc: 'Real-time traffic management using distributed sensors.' },
-        { title: 'Dynamic Routing', icon: '🗺️', query: 'Vehicle_routing_problem', desc: 'How GPS algorithms distribute urban load.' },
-        { title: 'Green Transit', icon: '🔋', query: 'Sustainable_transport', desc: 'The environmental efficiency of mass transportation.' },
-        { title: 'Emission Algorithms', icon: '💨', query: 'Exhaust_gas', desc: 'How smooth acceleration mathematically reduces carbon output.' },
-        { title: 'Smart Crossings', icon: '🚥', query: 'Pelican_crossing', desc: 'Responsive crosswalks that detect pedestrian presence.' },
-        { title: 'Gridlock Logic', icon: '🛑', query: 'Traffic_congestion', desc: 'The cascading failure cascade that causes phantom traffic jams.' },
-        { title: 'Urban Planning', icon: '🏙️', query: 'Urban_planning', desc: 'Designing cities for humans instead of vehicle throughput.' },
-        { title: 'Micro-mobility', icon: '🛴', query: 'Micromobility', desc: 'E-scooters and the integration of low-speed local transport.' },
-        { title: 'Congestion Pricing', icon: '💰', query: 'Congestion_pricing', desc: 'Economic algorithms to regulate peak-hour traffic density.' },
-        { title: 'V2X Communication', icon: '📶', query: 'Vehicle-to-everything', desc: 'Vehicles exchanging telemetry with city infrastructure.' },
+        { title: 'IoT Traffic Nets', icon: '', query: 'Intelligent_transportation_system', desc: 'Real-time traffic management using distributed sensors.' },
+        { title: 'Dynamic Routing', icon: '', query: 'Vehicle_routing_problem', desc: 'How GPS algorithms distribute urban load.' },
+        { title: 'Green Transit', icon: '', query: 'Sustainable_transport', desc: 'The environmental efficiency of mass transportation.' },
+        { title: 'Emission Algorithms', icon: '', query: 'Exhaust_gas', desc: 'How smooth acceleration mathematically reduces carbon output.' },
+        { title: 'Smart Crossings', icon: '', query: 'Pelican_crossing', desc: 'Responsive crosswalks that detect pedestrian presence.' },
+        { title: 'Gridlock Logic', icon: '', query: 'Traffic_congestion', desc: 'The cascading failure cascade that causes phantom traffic jams.' },
+        { title: 'Urban Planning', icon: '', query: 'Urban_planning', desc: 'Designing cities for humans instead of vehicle throughput.' },
+        { title: 'Micro-mobility', icon: '', query: 'Micromobility', desc: 'E-scooters and the integration of low-speed local transport.' },
+        { title: 'Congestion Pricing', icon: '', query: 'Congestion_pricing', desc: 'Economic algorithms to regulate peak-hour traffic density.' },
+        { title: 'V2X Communication', icon: '', query: 'Vehicle-to-everything', desc: 'Vehicles exchanging telemetry with city infrastructure.' },
 
         // Tier 5: Autonomous Future
-        { title: 'LiDAR Mapping', icon: '🔦', query: 'Lidar', desc: 'Laser-based 3D point cloud generation for vehicle vision.' },
-        { title: 'Radar Systems', icon: '📻', query: 'Radar', desc: 'Doppler tracking for velocity and distance in poor weather.' },
-        { title: 'Machine Vision', icon: '📸', query: 'Computer_vision', desc: 'Neural networks classifying pedestrians, bikes, and signs.' },
-        { title: 'Level 5 Autonomy', icon: '🤖', query: 'Self-driving_car', desc: 'The theoretical state of fully driverless network operation.' },
-        { title: 'AI Ethics', icon: '⚖️', query: 'Trolley_problem', desc: 'The algorithmic moral decisions programmed into autonomous cars.' },
-        { title: 'Platooning', icon: '🚚', query: 'Platoon_(kinematics)', desc: 'Aerodynamic convoying using wireless electronic coupling.' },
-        { title: 'Fail-Safe Protocols', icon: '🛡️', query: 'Fail-safe', desc: 'Redundancy systems when AI sensors lose signal.' },
-        { title: 'Pedestrian Prediction', icon: '🚶‍♂️', query: 'Predictive_modelling', desc: 'How AI anticipates sudden human movements.' },
-        { title: 'Cybersecurity', icon: '🔒', query: 'Automotive_security', desc: 'Preventing malicious hacks in connected vehicle networks.' },
-        { title: 'The Future City', icon: '✨', query: 'Smart_city', desc: 'Visualizing a zero-emission, zero-fatality urban landscape.' }
+        { title: 'LiDAR Mapping', icon: '', query: 'Lidar', desc: 'Laser-based 3D point cloud generation for vehicle vision.' },
+        { title: 'Radar Systems', icon: '', query: 'Radar', desc: 'Doppler tracking for velocity and distance in poor weather.' },
+        { title: 'Machine Vision', icon: '', query: 'Computer_vision', desc: 'Neural networks classifying pedestrians, bikes, and signs.' },
+        { title: 'Level 5 Autonomy', icon: '', query: 'Self-driving_car', desc: 'The theoretical state of fully driverless network operation.' },
+        { title: 'AI Ethics', icon: '', query: 'Trolley_problem', desc: 'The algorithmic moral decisions programmed into autonomous cars.' },
+        { title: 'Platooning', icon: '', query: 'Platoon_(kinematics)', desc: 'Aerodynamic convoying using wireless electronic coupling.' },
+        { title: 'Fail-Safe Protocols', icon: '', query: 'Fail-safe', desc: 'Redundancy systems when AI sensors lose signal.' },
+        { title: 'Pedestrian Prediction', icon: '', query: 'Predictive_modelling', desc: 'How AI anticipates sudden human movements.' },
+        { title: 'Cybersecurity', icon: '', query: 'Automotive_security', desc: 'Preventing malicious hacks in connected vehicle networks.' },
+        { title: 'The Future City', icon: '', query: 'Smart_city', desc: 'Visualizing a zero-emission, zero-fatality urban landscape.' }
       ]
 
       // Generate the 50 Module Objects

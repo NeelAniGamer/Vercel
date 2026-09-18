@@ -579,9 +579,6 @@
     <div class="ambient-orb"></div>
     <div class="ambient-orb"></div>
 
-    <!-- 3D Cosmos Canvas -->
-    <canvas id="cosmos"></canvas>
-
     <div class="app">
       <!-- Top Navbar -->
       <nav class="navbar" id="navbar">
@@ -590,10 +587,10 @@
           FutureScape
         </a>
         <div class="nav-actions">
-          <a href="/home" class="nav-btn">🏠 Main Hub</a>
-          <button class="nav-btn" id="themeToggleBtn" onclick="toggleSiteTheme()">🌙 Dark</button>
-          <button class="nav-btn" onclick="openInternshipHub()">💼 Internships & 20K Careers</button>
-          <button class="nav-btn" onclick="openShortlist()">⭐ Shortlist <span class="badge-count" id="favCount">0</span></button>
+          <a href="/home" class="nav-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Main Hub</a>
+          <button class="nav-btn" id="themeToggleBtn" onclick="toggleSiteTheme()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg> Theme</button>
+          <button class="nav-btn" onclick="openInternshipHub()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg> Internships &amp; 20K Careers</button>
+          <button class="nav-btn" onclick="openShortlist()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Shortlist <span class="badge-count" id="favCount">0</span></button>
           <button class="nav-btn primary" onclick="scrollToExplore(event)">Explore Paths</button>
         </div>
       </nav>
@@ -601,7 +598,7 @@
       <!-- Hero Section -->
       <section class="hero">
         <div class="hero-tag">
-          <span>✨</span> Comprehensive 2026 Edition · Class Of Learners
+          Comprehensive 2026 Edition · Class Of Learners
         </div>
         <h1>Navigate Your<br /><span class="gradient-text">Professional Destiny</span></h1>
         <p class="hero-sub">
@@ -630,22 +627,22 @@
       <!-- Search & Multi-Dimensional Filters -->
       <section class="controls-section" id="explore">
         <div class="search-box-wrap">
-          <span class="search-icon">🔍</span>
+          <span class="search-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
           <input type="text" class="search-input" id="search-input" placeholder="Search by career, degree, entrance exam (JEE, NEET, CAT), skill, or job role..." autocomplete="off" />
         </div>
 
         <div class="filter-group">
           <div class="filter-label">Domain Category</div>
           <div class="filter-pills" id="domain-filters">
-            <button class="pill-btn active" data-cat="all">🌟 All Domains</button>
-            <button class="pill-btn" data-cat="tech">⚡ Technology & AI</button>
-            <button class="pill-btn" data-cat="health">🩺 Healthcare & Medicine</button>
-            <button class="pill-btn" data-cat="eng">⚙️ Engineering & Robotics</button>
-            <button class="pill-btn" data-cat="space">🚀 Science & Space</button>
-            <button class="pill-btn" data-cat="biz">📈 Business & Finance</button>
-            <button class="pill-btn" data-cat="law">⚖️ Law & Governance</button>
-            <button class="pill-btn" data-cat="creative">🎨 Creative & Design</button>
-            <button class="pill-btn" data-cat="eco">🌿 Sustainability & Energy</button>
+            <button class="pill-btn active" data-cat="all">All Domains</button>
+            <button class="pill-btn" data-cat="tech">Technology &amp; AI</button>
+            <button class="pill-btn" data-cat="health">Healthcare &amp; Medicine</button>
+            <button class="pill-btn" data-cat="eng">Engineering &amp; Robotics</button>
+            <button class="pill-btn" data-cat="space">Science &amp; Space</button>
+            <button class="pill-btn" data-cat="biz">Business & Finance</button>
+            <button class="pill-btn" data-cat="law">Law &amp; Governance</button>
+            <button class="pill-btn" data-cat="creative">Creative & Design</button>
+            <button class="pill-btn" data-cat="eco">Sustainability & Energy</button>
           </div>
         </div>
 
@@ -653,11 +650,11 @@
           <div class="filter-label">High School Stream Eligibility</div>
           <div class="filter-pills" id="stream-filters">
             <button class="pill-btn active" data-stream="all">All Streams</button>
-            <button class="pill-btn" data-stream="pcm">📐 Science (PCM / Math)</button>
-            <button class="pill-btn" data-stream="pcb">🧬 Science (PCB / Bio)</button>
-            <button class="pill-btn" data-stream="commerce">💼 Commerce & Math</button>
-            <button class="pill-btn" data-stream="arts">🎭 Arts & Humanities</button>
-            <button class="pill-btn" data-stream="any">✨ Any Stream</button>
+            <button class="pill-btn" data-stream="pcm">Science (PCM / Math)</button>
+            <button class="pill-btn" data-stream="pcb">Science (PCB / Bio)</button>
+            <button class="pill-btn" data-stream="commerce">Commerce & Math</button>
+            <button class="pill-btn" data-stream="arts">Arts & Humanities</button>
+            <button class="pill-btn" data-stream="any">Any Stream</button>
           </div>
         </div>
 
@@ -686,11 +683,11 @@
         <div class="modal-card" style="max-width: 1040px;">
           <div class="modal-header">
             <div class="modal-top-row">
-              <span class="cat-tag cat-tech">🎓 Early-Career & Global Taxonomy Masterclass</span>
+              <span class="cat-tag cat-tech">Early-Career & Global Taxonomy Masterclass</span>
               <button class="modal-close" onclick="closeInternshipHub()">✕</button>
             </div>
             <div class="modal-title-row">
-              <div class="modal-icon">💼</div>
+              <div class="modal-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
               <div>
                 <h2 class="modal-title">The Internship Blueprint & The 20,000+ Global Career Universe</h2>
                 <div class="modal-tagline">How early-career pipelines actually convert into high-tier placements & how 20,000+ specialized vocations emerge</div>
@@ -749,7 +746,7 @@
               </p>
               <div class="pro-con-grid" style="grid-template-columns: 1fr 1fr;">
                 <div class="pro-box">
-                  <h4 style="color: var(--accent);">🔬 Depth Micro-Specialization</h4>
+                  <h4 style="color: var(--accent);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><path d="M6 18h8M3 22h18M14 22a7 7 0 1 0 0-14h-1"/></svg>Depth Micro-Specialization</h4>
                   <ul style="font-size: 13px; line-height: 1.6;">
                     <li><strong>Doctor</strong> → Cardiac Surgeon → <em>Pediatric ECMO Perfusion Specialist</em></li>
                     <li><strong>Space Engineer</strong> → <em>Astrodynamic Conjunction Collision Specialist</em></li>
@@ -758,7 +755,7 @@
                   </ul>
                 </div>
                 <div class="pro-box" style="border-color: rgba(192, 132, 252, 0.3); background: rgba(192, 132, 252, 0.05);">
-                  <h4 style="color: var(--accent-purple);">⚡ Cross-Domain Hybridization</h4>
+                  <h4 style="color: var(--accent-purple);">Cross-Domain Hybridization</h4>
                   <ul style="font-size: 13px; line-height: 1.6;">
                     <li><strong>Law + Shipping:</strong> <em>Maritime Admiralty High-Seas Litigator</em></li>
                     <li><strong>Geology + Climate:</strong> <em>Deep Subsurface $CO_2$ Geosequestration Modeler</em></li>
@@ -786,7 +783,7 @@
         <div class="modal-card" style="max-width: 1080px;">
           <div class="modal-header">
             <div class="modal-top-row">
-              <h2 class="modal-title">⚖️ Side-by-Side Career Comparison</h2>
+              <h2 class="modal-title">Side-by-Side Career Comparison</h2>
               <button class="modal-close" onclick="closeComparisonModal()">✕</button>
             </div>
             <p style="color:var(--text-secondary); font-size:14px;">Compare educational requirements, salaries, AI impact, and entrance exams across your shortlisted careers.</p>
@@ -809,10 +806,6 @@
       </footer>
     </div>
 
-    <!-- Three.js Cosmos Background -->
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script defer src="col-3d.js"></script>
-
     <!-- App Logic -->
     <script>
       const careers = [
@@ -820,7 +813,7 @@
     "id": "ai-ml",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "🤖",
+    "icon": "",
     "title": "Artificial Intelligence & Machine Learning",
     "tagline": "Architect the intelligence of tomorrow",
     "desc": "Design deep neural networks, large language models, computer vision systems, and autonomous agents that transform global computing.",
@@ -927,7 +920,7 @@
     "id": "cybersecurity",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "🛡️",
+    "icon": "",
     "title": "Cybersecurity & Ethical Hacking",
     "tagline": "Defend the digital sovereignty of nations and enterprises",
     "desc": "Identify zero-day vulnerabilities, neutralize cyber warfare attacks, design Zero Trust architectures, and fortify critical global infrastructure.",
@@ -1033,7 +1026,7 @@
     "id": "fullstack-systems",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "💻",
+    "icon": "",
     "title": "Full-Stack & Distributed Systems Engineering",
     "tagline": "Construct high-throughput applications that power the web",
     "desc": "Architect resilient backend microservices, real-time distributed databases, modern interactive user interfaces, and robust cloud APIs.",
@@ -1138,7 +1131,7 @@
     "id": "cloud-devops",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "☁️",
+    "icon": "",
     "title": "Cloud Architecture & DevOps / SRE",
     "tagline": "Engineer infinite scalability and flawless uptime",
     "desc": "Automate multi-cloud infrastructure, orchestrate Kubernetes clusters, build CI/CD deployment pipelines, and guarantee 99.999% global service availability.",
@@ -1242,7 +1235,7 @@
     "id": "data-science",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "📊",
+    "icon": "",
     "title": "Data Science & Big Data Engineering",
     "tagline": "Extract predictive intelligence from oceans of data",
     "desc": "Uncover hidden patterns in multi-petabyte datasets, build predictive statistical models, design automated ETL data pipelines, and inform multi-billion dollar executive decisions.",
@@ -1347,7 +1340,7 @@
     "id": "game-dev-xr",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "🎮",
+    "icon": "",
     "title": "Game Development, XR & Spatial Computing",
     "tagline": "Create immersive interactive worlds and virtual realities",
     "desc": "Program physics engines, multiplayer networking, spatial computing applications for Apple Vision Pro & Meta Quest, and AAA photorealistic game simulations.",
@@ -1448,7 +1441,7 @@
     "id": "blockchain-web3",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "⛓️",
+    "icon": "",
     "title": "Blockchain & Decentralized Web3 Systems",
     "tagline": "Build trustless financial protocols and decentralized sovereign infrastructure",
     "desc": "Program smart contracts in Solidity and Rust, architect zero-knowledge rollups, design tokenomics protocols, and audit decentralized finance (DeFi) security.",
@@ -1545,7 +1538,7 @@
     "id": "medicine-surgery",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "",
     "title": "Medicine, Surgery & Clinical Practice",
     "tagline": "Heal humanity through clinical mastery and surgical precision",
     "desc": "Diagnose complex diseases, perform life-saving surgical interventions, conduct clinical trials, and lead patient healthcare delivery.",
@@ -1647,7 +1640,7 @@
     "id": "biotech-genetics",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🧬",
+    "icon": "",
     "title": "Biotechnology & Genetic Engineering",
     "tagline": "Rewrite the code of life to cure diseases and engineer biology",
     "desc": "Harness CRISPR gene editing, synthetic biology, bioinformatics algorithms, and mRNA technology to create next-generation therapeutics and sustainable biomaterials.",
@@ -1749,7 +1742,7 @@
     "id": "biomedical-robotics",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🦾",
+    "icon": "",
     "title": "Biomedical Engineering & Medical Robotics",
     "tagline": "Merge technology and biology to build bionic prosthetics and surgical robots",
     "desc": "Engineer robotic surgical systems (like da Vinci), neural implants (brain-computer interfaces), artificial organs, and intelligent medical diagnostics hardware.",
@@ -1846,7 +1839,7 @@
     "id": "clinical-psychology",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🧠",
+    "icon": "",
     "title": "Clinical Psychology & Neuropsychology",
     "tagline": "Understand the human psyche and heal the mind",
     "desc": "Diagnose and treat mental health conditions, study neural cognition mechanisms, deliver psychotherapy interventions, and conduct behavioral neuroscience research.",
@@ -1947,7 +1940,7 @@
     "id": "robotics-mechatronics",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "🤖",
+    "icon": "",
     "title": "Robotics, Automation & Mechatronics",
     "tagline": "Give machines the power to perceive, move, and automate reality",
     "desc": "Design autonomous humanoid robots, warehouse automation fleets, drone swarms, and industrial robotic manipulators with sensor fusion and kinematics.",
@@ -2048,7 +2041,7 @@
     "id": "aerospace-space",
     "cat": "space",
     "catName": "Aviation, Defense & Space",
-    "icon": "🚀",
+    "icon": "",
     "title": "Aerospace & Astronautical Engineering",
     "tagline": "Propel humanity beyond Earth’s atmosphere to the stars",
     "desc": "Engineer orbital rocket propulsion, lunar landers, satellite constellations, supersonic aircraft, and hypersonic missile defense systems.",
@@ -2148,7 +2141,7 @@
     "id": "semiconductor-vlsi",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚡",
+    "icon": "",
     "title": "Semiconductor, VLSI & Chip Architecture",
     "tagline": "Design the microchips and silicon brains powering civilization",
     "desc": "Architect 2-nanometer microprocessors, GPU matrix engines, quantum hardware interconnects, and custom AI accelerator silicon (ASICs).",
@@ -2246,7 +2239,7 @@
     "id": "renewable-cleantech",
     "cat": "eco",
     "catName": "Sustainability, Agri & Energy",
-    "icon": "🌿",
+    "icon": "",
     "title": "Renewable Energy & CleanTech Engineering",
     "tagline": "Engineer the zero-carbon energy transition for planet Earth",
     "desc": "Design gigawatt solar farms, offshore wind turbine grids, next-gen lithium & solid-state batteries, green hydrogen plants, and smart electrical microgrids.",
@@ -2344,7 +2337,7 @@
     "id": "quantum-computing",
     "cat": "science",
     "catName": "Science & DeepTech",
-    "icon": "⚛️",
+    "icon": "",
     "title": "Quantum Computing & Quantum Physics",
     "tagline": "Harness the bizarre rules of quantum mechanics to solve impossible problems",
     "desc": "Program quantum circuits with Qiskit, design superconducting qubits, develop post-quantum cryptography, and simulate quantum chemistry for drug discovery.",
@@ -2441,7 +2434,7 @@
     "id": "astrophysics-space",
     "cat": "space",
     "catName": "Science & DeepTech",
-    "icon": "🔭",
+    "icon": "",
     "title": "Astrophysics & Space Science",
     "tagline": "Decode the origins, evolution, and mysteries of the cosmos",
     "desc": "Analyze James Webb Space Telescope data, model black hole gravitational waves, detect habitable exoplanets, and research dark matter and cosmology.",
@@ -2538,7 +2531,7 @@
     "id": "quant-finance",
     "cat": "biz",
     "catName": "Business, Finance & Law",
-    "icon": "📈",
+    "icon": "",
     "title": "Quantitative Finance & Algorithmic Trading",
     "tagline": "Engineer mathematical trading models and arbitrage global financial markets",
     "desc": "Develop high-frequency trading algorithms, build stochastic pricing models for complex derivatives, manage hedge fund portfolios, and optimize risk metrics.",
@@ -2634,7 +2627,7 @@
     "id": "corporate-law",
     "cat": "law",
     "catName": "Business, Finance & Law",
-    "icon": "⚖️",
+    "icon": "",
     "title": "Corporate, Tech & Cyber Law",
     "tagline": "Navigate complex multi-billion dollar mergers, IP disputes, and tech governance",
     "desc": "Advise Fortune 500 enterprises on cross-border M&A deals, navigate AI copyright and tech regulations, structure venture capital term sheets, and litigate corporate disputes.",
@@ -2732,7 +2725,7 @@
     "id": "product-management",
     "cat": "biz",
     "catName": "Business, Finance & Law",
-    "icon": "🎯",
+    "icon": "",
     "title": "Product Management & Tech Strategy",
     "tagline": "Define the vision, strategy, and roadmap for world-changing products",
     "desc": "Lead cross-functional teams of software engineers, UX designers, and marketers to build, launch, and scale products used by millions.",
@@ -2831,7 +2824,7 @@
     "id": "ui-ux-design",
     "cat": "creative",
     "catName": "Creative, Design & Media",
-    "icon": "🎨",
+    "icon": "",
     "title": "UI/UX & Product Design",
     "tagline": "Craft delightful, intuitive digital experiences for millions of users",
     "desc": "Design beautiful user interfaces, conduct behavioral user research, create scalable design systems, and architect frictionless interactive user journeys.",
@@ -2932,7 +2925,7 @@
     "id": "architecture-spatial",
     "cat": "creative",
     "catName": "Creative, Design & Media",
-    "icon": "🏛️",
+    "icon": "",
     "title": "Architecture & Sustainable Urban Planning",
     "tagline": "Sculpt skylines and design sustainable smart cities for the future",
     "desc": "Design monumental buildings, eco-friendly skyscrapers, transit-oriented smart cities, and biophilic public spaces using computational BIM and parametric design.",
@@ -3029,7 +3022,7 @@
     "id": "investment-banking",
     "cat": "biz",
     "catName": "Business, Finance & Law",
-    "icon": "💼",
+    "icon": "",
     "title": "Investment Banking & Private Equity",
     "tagline": "Orchestrate multi-billion dollar capital markets, IPOs, and acquisitions",
     "desc": "Structure mega-mergers, conduct discounted cash flow (DCF) valuation models, lead IPO underwriting on Wall Street, and invest private equity buyout funds.",
@@ -3126,7 +3119,7 @@
     "id": "civil-services-diplomacy",
     "cat": "law",
     "catName": "Business, Finance & Law",
-    "icon": "🏛️",
+    "icon": "",
     "title": "Civil Services, Diplomacy & Public Policy",
     "tagline": "Lead sovereign governance, public administration, and foreign diplomacy",
     "desc": "Administer government districts, formulate national economic and social policies, represent your nation in foreign embassies (UN/IFS), and direct public institutions.",
@@ -3221,7 +3214,7 @@
     "id": "dentistry-maxillofacial",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🦷",
+    "icon": "",
     "title": "Dentistry, Orthodontics & Oral Maxillofacial Surgery",
     "tagline": "Restore facial aesthetics, smile architecture, and oral health",
     "desc": "Perform complex dental restorations, micro-endodontics, orthodontic alignment, dental implantology, and reconstructive oral/maxillofacial facial surgery.",
@@ -3324,7 +3317,7 @@
     "id": "nursing-critical-care",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "👩‍⚕️",
+    "icon": "",
     "title": "Advanced Practice Nursing, Nurse Anesthesia & Critical Care",
     "tagline": "The frontline heartbeat of life-saving patient care",
     "desc": "Administer critical ICU patient monitoring, deliver advanced emergency resuscitation, manage clinical pharmacology, and practice as autonomous Nurse Practitioners (NP) and Certified Registered Nurse Anesthetists (CRNA).",
@@ -3428,7 +3421,7 @@
     "id": "pharmacy-drug-discovery",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "💊",
+    "icon": "",
     "title": "Pharmacy, Pharmacology & Global Clinical Trials",
     "tagline": "Discover, formulate, and regulate life-saving therapeutics",
     "desc": "Design pharmaceutical formulations, direct multi-phase human clinical trials, assess drug pharmacokinetics (PK/PD), and ensure safe medical dispensing.",
@@ -3530,7 +3523,7 @@
     "id": "physiotherapy-sports-rehab",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🏃‍♂️",
+    "icon": "",
     "title": "Physiotherapy, Sports Medicine & Biomechanical Rehabilitation",
     "tagline": "Rebuild human movement, athletic peak performance, and physical recovery",
     "desc": "Diagnose musculoskeletal dysfunctions, rehabilitate post-operative orthopedic patients, treat professional elite athletes, and restore functional mobility.",
@@ -3634,7 +3627,7 @@
     "id": "veterinary-animal-surgery",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🐾",
+    "icon": "",
     "title": "Veterinary Medicine, Animal Surgery & Wildlife Healthcare",
     "tagline": "Guard animal life, preserve biodiversity, and prevent zoonotic epidemics",
     "desc": "Diagnose companion animals, livestock, and exotic wildlife, perform complex animal orthopedic/soft-tissue surgeries, and manage public One-Health zoonotic disease control.",
@@ -3737,7 +3730,7 @@
     "id": "public-health-epidemiology",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🌐",
+    "icon": "",
     "title": "Public Health, Epidemiology & Global Health Policy",
     "tagline": "Save millions at a time by preventing disease outbreaks and engineering health systems",
     "desc": "Model infectious disease transmission, design national vaccination policies, analyze global healthcare data, and lead pandemic containment operations at WHO, CDC, and health ministries.",
@@ -3839,7 +3832,7 @@
     "id": "mechanical-automotive-ev",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "🚗",
+    "icon": "",
     "title": "Mechanical Engineering, Automotive & EV Powertrains",
     "tagline": "Design the machines, thermal systems, and electric powertrains that move the world",
     "desc": "Engineer next-generation electric vehicles, battery thermal management systems, hypercars, aerodynamic bodies, and high-precision mechanical machines.",
@@ -3942,7 +3935,7 @@
     "id": "civil-structural-smartcity",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "🌉",
+    "icon": "",
     "title": "Civil, Structural & Smart Infrastructure Megaprojects",
     "tagline": "Build the iconic bridges, skyscrapers, transit metros, and smart cities of tomorrow",
     "desc": "Design earthquake-resilient skyscrapers, underwater tunnels, high-speed rail viaducts, water megaprojects, and IoT-connected smart urban infrastructure.",
@@ -4044,7 +4037,7 @@
     "id": "chemical-materials-nanotech",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "🧪",
+    "icon": "",
     "title": "Chemical Engineering, Advanced Materials & Nanotechnology",
     "tagline": "Engineer matter at the molecular level to power the green transition and deep-tech",
     "desc": "Synthesize solid-state battery electrolytes, carbon nanotubes, semiconductor photoresists, green hydrogen catalysts, and industrial chemical manufacturing processes.",
@@ -4146,7 +4139,7 @@
     "id": "airline-pilot-aviation",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "✈️",
+    "icon": "",
     "title": "Commercial Airline Pilot & Aviation Flight Operations",
     "tagline": "Command commercial jetliners across global skies with calm cockpit mastery",
     "desc": "Fly commercial multi-engine jetliners (Airbus A350, Boeing 777/787), master aeronautical navigation, handle extreme weather, and safeguard hundreds of passenger lives.",
@@ -4247,7 +4240,7 @@
     "id": "merchant-navy-marine",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚓",
+    "icon": "",
     "title": "Merchant Navy, Nautical Navigation & Marine Engineering",
     "tagline": "Command giant ocean carriers and marine powerplants across the seven seas",
     "desc": "Navigate ultra-large container ships, LNG carriers, and supertankers across global oceans, manage 100,000-horsepower marine diesel engines, and command global maritime trade.",
@@ -4349,7 +4342,7 @@
     "id": "nuclear-fusion-energy",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚛️",
+    "icon": "",
     "title": "Nuclear Engineering, Reactor Physics & Fusion Energy",
     "tagline": "Harness the power of the atom and artificial stars for zero-carbon baseload energy",
     "desc": "Design advanced fission Small Modular Reactors (SMRs), magnetic confinement fusion tokamaks, radiation shielding, and next-generation nuclear propulsion for deep space.",
@@ -4451,7 +4444,7 @@
     "id": "chartered-accountancy-audit",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📑",
+    "icon": "",
     "title": "Chartered Accountancy (CA / CPA / ACCA) & Forensic Audit",
     "tagline": "The ultimate guardians of corporate financial integrity and statutory taxation",
     "desc": "Audit multi-billion dollar corporate balance sheets, uncover complex financial fraud, optimize cross-border corporate taxation, and provide authoritative statutory financial certification.",
@@ -4555,7 +4548,7 @@
     "id": "management-consulting-strategy",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "",
     "title": "Management Consulting & Corporate Strategy (MBB)",
     "tagline": "Solve the highest-stakes strategic puzzles for Fortune 500 CEOs and world leaders",
     "desc": "Advise enterprise executives and government ministries on market expansion, digital transformation, cost restructuring, and multi-billion dollar strategic turnarounds.",
@@ -4656,7 +4649,7 @@
     "id": "supply-chain-logistics",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📦",
+    "icon": "",
     "title": "Global Supply Chain Management, Autonomous Logistics & Procurement",
     "tagline": "Orchestrate the planetary movement of materials, manufacturing, and commerce",
     "desc": "Manage global container flows, optimize automated warehouse fulfillment, negotiate multi-billion dollar supplier contracts, and engineer resilient just-in-time supply networks.",
@@ -4759,7 +4752,7 @@
     "id": "marketing-growth-digital",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📈",
+    "icon": "",
     "title": "Digital Marketing, Brand Strategy & Growth Hacking",
     "tagline": "Engineer viral demand, capture human attention, and scale global brands",
     "desc": "Architect multi-channel growth funnels, run programmatic ad campaigns, design iconic brand narratives, and optimize customer acquisition economics (CAC/LTV).",
@@ -4862,7 +4855,7 @@
     "id": "actuarial-risk-science",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "🧮",
+    "icon": "",
     "title": "Actuarial Science & Quantitative Insurance Risk",
     "tagline": "Translate mathematical probability into multi-billion dollar financial security",
     "desc": "Calculate life expectancies, price catastrophic climate insurance, model sovereign pension liabilities, and certify financial solvency using advanced stochastic calculus.",
@@ -4964,7 +4957,7 @@
     "id": "pure-mathematics-cryptography",
     "cat": "space",
     "catName": "Science & Space",
-    "icon": "📐",
+    "icon": "",
     "title": "Pure & Applied Mathematics, Cryptography & Combinatorics",
     "tagline": "Uncover the fundamental laws of mathematical reality and cryptographic security",
     "desc": "Formulate mathematical proofs, design post-quantum cryptographic lattices, solve deep graph theory problems, and power zero-knowledge cryptographic systems.",
@@ -5065,7 +5058,7 @@
     "id": "marine-biology-oceanography",
     "cat": "space",
     "catName": "Science & Space",
-    "icon": "🌊",
+    "icon": "",
     "title": "Oceanography, Marine Biology & Deep-Sea Exploration",
     "tagline": "Explore Earth's final frontier: the mysteries, ecosystems, and depths of our oceans",
     "desc": "Study marine ecosystems, coral reef restoration, deep-sea hydrothermal vents, oceanic carbon sequestration, and operate autonomous underwater exploration submersibles.",
@@ -5167,7 +5160,7 @@
     "id": "climate-meteorology-earth",
     "cat": "space",
     "catName": "Science & Space",
-    "icon": "🌪️",
+    "icon": "",
     "title": "Meteorology, Atmospheric Physics & Planetary Climate Modeling",
     "tagline": "Forecast severe weather and simulate the Earth's future climate systems",
     "desc": "Forecast cyclones, atmospheric rivers, and extreme weather events, build supercomputer global climate simulations, and quantify planetary warming impacts.",
@@ -5269,7 +5262,7 @@
     "id": "criminal-litigation-judiciary",
     "cat": "law",
     "catName": "Law & Governance",
-    "icon": "⚖️",
+    "icon": "",
     "title": "Criminal Litigation, Constitutional Advocacy & Judiciary",
     "tagline": "Champion justice, defend fundamental constitutional rights, and uphold the rule of law",
     "desc": "Defend high-stakes criminal trials, argue landmark constitutional petitions before the Supreme Court, and adjudicate legal disputes as a judicial magistrate.",
@@ -5370,7 +5363,7 @@
     "id": "international-diplomacy-un",
     "cat": "law",
     "catName": "Law & Governance",
-    "icon": "🌐",
+    "icon": "",
     "title": "International Relations, Foreign Diplomacy & United Nations",
     "tagline": "Negotiate international treaties, manage peace diplomacy, and shape global affairs",
     "desc": "Represent sovereign nations in diplomatic negotiations, lead United Nations humanitarian missions, analyze geopolitical security, and author bilateral trade treaties.",
@@ -5472,7 +5465,7 @@
     "id": "public-policy-thinktank",
     "cat": "law",
     "catName": "Law & Governance",
-    "icon": "🏛️",
+    "icon": "",
     "title": "Public Policy, Legislative Drafting & Economic Governance",
     "tagline": "Architect national laws, economic policies, and governance systems",
     "desc": "Draft legislative bills, analyze economic reforms, advise parliamentary committees, and design social protection programs at premier policy think tanks.",
@@ -5574,7 +5567,7 @@
     "id": "filmmaking-cinematography",
     "cat": "creative",
     "catName": "Creative & Design",
-    "icon": "🎬",
+    "icon": "",
     "title": "Filmmaking, Directing, Cinematography & Screenwriting",
     "tagline": "Direct visual cinematic epics, author timeless stories, and move global audiences",
     "desc": "Direct cinematic feature films, craft screenplays, command lighting and high-end cinema cameras (ARRI/RED), and direct visual world-building for cinema and streaming.",
@@ -5675,7 +5668,7 @@
     "id": "animation-vfx-cgi",
     "cat": "creative",
     "catName": "Creative & Design",
-    "icon": "🪄",
+    "icon": "",
     "title": "3D Animation, Visual Effects (VFX) & Virtual Production",
     "tagline": "Build hyper-realistic CGI creatures, explosions, and digital worlds for Hollywood and gaming",
     "desc": "Simulate photorealistic particle physics (fluids, fire, destruction), model lifelike 3D digital creatures, rig characters, and composite visual effects for blockbuster entertainment.",
@@ -5778,7 +5771,7 @@
     "id": "modern-agritech-hydroponics",
     "cat": "eco",
     "catName": "Sustainability & Energy",
-    "icon": "🌱",
+    "icon": "",
     "title": "Precision Agritech, Hydroponics & Controlled-Environment Agriculture",
     "tagline": "Feed 10 billion humans sustainably through vertical farming and AI IoT agriculture",
     "desc": "Engineer indoor vertical farms, nutrient-film hydroponic systems, autonomous farm robotics, drone crop spectral imaging, and climate-resilient crop solutions.",
@@ -5880,7 +5873,7 @@
     "id": "academic-professorship-research",
     "cat": "space",
     "catName": "Science & Space",
-    "icon": "🎓",
+    "icon": "",
     "title": "University Professorship, Tenured Research & Higher Education",
     "tagline": "Expand the boundaries of human knowledge and mentor future generations",
     "desc": "Conduct foundational academic research, publish peer-reviewed papers, secure major research grants, and mentor master's and doctoral scholars at premier universities.",
@@ -5980,7 +5973,7 @@
     "id": "master-electrician-automation",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚡",
+    "icon": "",
     "title": "Industrial Automation Specialist & High-Voltage Master Electrician",
     "tagline": "Power the electrical backbone of gigafactories, power grids, and automated plants",
     "desc": "Program Programmable Logic Controllers (PLCs), commission high-voltage switchgear, wire automated factory robotic lines, and ensure zero-downtime industrial power distribution.",
@@ -6082,7 +6075,7 @@
     "id": "tech-startup-entrepreneur",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "🚀",
+    "icon": "",
     "title": "Tech Startup Founder, Venture Creation & Product Innovation",
     "tagline": "Build revolutionary companies from zero to one and transform global industries",
     "desc": "Identify massive market inefficiencies, assemble founding engineering teams, raise venture capital, launch minimum viable products (MVPs), and scale from zero to product-market fit.",
@@ -6183,7 +6176,7 @@
     "id": "clinical-perfusion-cardio",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🫀",
+    "icon": "",
     "title": "Clinical Perfusion, Cardiopulmonary Bypass & ECMO Life Support",
     "tagline": "Keep patients alive by artificially running their heart and lungs during open-heart surgery",
     "desc": "Operate the heart-lung machine during cardiac arrest surgery, manage Extracorporeal Membrane Oxygenation (ECMO) in critical ICUs, and regulate hemodynamic blood gases.",
@@ -6282,7 +6275,7 @@
     "id": "space-traffic-orbital",
     "cat": "space",
     "catName": "Science & Space",
-    "icon": "🛰️",
+    "icon": "",
     "title": "Space Traffic Management, Orbital Mechanics & Satellite Safety",
     "tagline": "Protect low Earth orbit from catastrophic collisions and coordinate the orbital highway",
     "desc": "Track 40,000+ satellites and orbital space debris, calculate orbital conjunction risks, plan collision avoidance maneuvers, and prevent the Kessler Syndrome.",
@@ -6384,7 +6377,7 @@
     "id": "flavor-chemist-sensory",
     "cat": "eco",
     "catName": "Sustainability & Energy",
-    "icon": "🍓",
+    "icon": "",
     "title": "Flavor Chemistry (Certified Flavorist) & Sensory Science",
     "tagline": "Craft the taste, aromas, and sensory chemistry of the global food and beverage industry",
     "desc": "Synthesize aromatic esters, natural botanical extracts, and taste molecules to formulate signature flavors for foods, beverages, plant-based meats, and pharmaceuticals.",
@@ -6483,7 +6476,7 @@
     "id": "acoustical-architecture-physics",
     "cat": "creative",
     "catName": "Creative & Design",
-    "icon": "🏛️",
+    "icon": "",
     "title": "Architectural Acoustics, Audio Physics & Noise Vibration Control",
     "tagline": "Sculpt the physics of sound for concert halls, opera houses, and silent environments",
     "desc": "Design world-class concert halls with perfect reverberation times, acoustically isolate recording studios, and engineer noise and vibration mitigation for smart cities.",
@@ -6585,7 +6578,7 @@
     "id": "carbon-sequestration-geology",
     "cat": "eco",
     "catName": "Sustainability & Energy",
-    "icon": "🌍",
+    "icon": "",
     "title": "Carbon Geosequestration, Direct Air Capture & Subsurface Geology",
     "tagline": "Permanently bury billions of tons of carbon dioxide underground to reverse climate change",
     "desc": "Model deep underground geological basalt formations and saline aquifers for supercritical $CO_2$ injection, mineralization, and permanent carbon removal.",
@@ -6687,7 +6680,7 @@
     "id": "maritime-admiralty-law",
     "cat": "law",
     "catName": "Law & Governance",
-    "icon": "⚖️",
+    "icon": "",
     "title": "Maritime Admiralty Law, High-Seas Salvage & Shipping Litigation",
     "tagline": "Litigate international ship collisions, marine cargo disputes, and high-seas salvage rights",
     "desc": "Represent global shipping lines, marine insurers, and salvors in international arbitration over vessel groundings, piracy, charterparties, and oil pollution.",
@@ -6787,7 +6780,7 @@
     "id": "art-conservation-forensics",
     "cat": "creative",
     "catName": "Creative & Design",
-    "icon": "🖼️",
+    "icon": "",
     "title": "Fine Art Conservation, Provenance Investigation & Heritage Science",
     "tagline": "Preserve priceless cultural masterpieces and investigate historical art provenance",
     "desc": "Restore centuries-old oil paintings and ancient antiquities using micro-chemistry, identify forged artworks through infrared reflectography, and preserve world heritage.",
@@ -6888,7 +6881,7 @@
     "id": "forensic-odontology-pathology",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🔬",
+    "icon": "",
     "title": "Forensic Pathology, DVI Identification & Crime Scene Investigation",
     "tagline": "Let the dead speak to solve criminal homicides and identify mass disaster victims",
     "desc": "Perform medical forensic autopsies, analyze post-mortem toxicology and wound ballistics, identify victims in mass disasters (DVI), and present expert testimony in homicide trials.",
@@ -7009,7 +7002,7 @@
       function updateThemeToggleBtn(isLight) {
         const btn = document.getElementById('themeToggleBtn');
         if (btn) {
-          btn.innerHTML = isLight ? '☀️ Light' : '🌙 Dark';
+          btn.innerHTML = isLight ? 'Light' : 'Dark';
           btn.title = isLight ? 'Switch to Dark Mode' : 'Switch to Light Mode';
         }
       }
@@ -7177,7 +7170,7 @@
         countLabel.textContent = 'Showing ' + filtered.length + ' of ' + careers.length + ' Career Pathways';
 
         if(filtered.length === 0) {
-          grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:60px 20px; color:var(--text-dim);"><div style="font-size:48px; margin-bottom:16px;">🔭</div><h3 style="color:var(--text); font-size:18px; margin-bottom:8px;">No Career Pathways Match Your Filter</h3><p>Try clearing your search query or selecting "All Domains" to see all 61 mapped paths.</p></div>';
+          grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:60px 20px; color:var(--text-dim);"><div style="margin-bottom:16px;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><h3 style="color:var(--text); font-size:18px; margin-bottom:8px;">No Career Pathways Match Your Filter</h3><p>Try clearing your search query or selecting "All Domains" to see all 61 mapped paths.</p></div>';
           return;
         }
 
@@ -7200,13 +7193,13 @@
           inner += '<div class="card-tagline">' + c.tagline + '</div>';
           inner += '<p class="card-desc">' + c.desc + '</p>';
           inner += '<div class="card-meta-chips">';
-          inner += '<span class="meta-chip blue">🎓 ' + c.stream + '</span>';
-          inner += '<span class="meta-chip green">💰 ' + c.salary.split('·')[0].trim() + '</span>';
-          inner += '<span class="meta-chip">📈 ' + c.growth.split('(')[0].trim() + '</span>';
+          inner += '<span class="meta-chip blue">' + c.stream + '</span>';
+          inner += '<span class="meta-chip green">' + c.salary.split('·')[0].trim() + '</span>';
+          inner += '<span class="meta-chip">' + c.growth.split('(')[0].trim() + '</span>';
           inner += '</div></div>';
           inner += '<div class="card-actions">';
           inner += '<button class="btn-explore">Explore Guide →</button>';
-          inner += '<button class="btn-cmp ' + (isCmp ? 'active' : '') + '" title="Compare with other careers">' + (isCmp ? '✓ Added' : '⚖️ Compare') + '</button>';
+          inner += '<button class="btn-cmp ' + (isCmp ? 'active' : '') + '" title="Compare with other careers">' + (isCmp ? 'Added' : 'Compare') + '</button>';
           inner += '</div>';
 
           card.innerHTML = inner;
@@ -7232,7 +7225,7 @@
         html += '<div class="modal-top-row">';
         html += '<span class="cat-tag cat-' + c.cat + '">' + c.catName + '</span>';
         html += '<div style="display:flex; align-items:center; gap:8px;">';
-        html += '<button class="nav-btn btn-print" title="Print complete career cheatsheet">🖨️ Print Roadmap</button>';
+        html += '<button class="nav-btn btn-print" title="Print complete career cheatsheet"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Print Roadmap</button>';
         html += '<button class="modal-close">✕</button>';
         html += '</div></div>';
         html += '<div class="modal-title-row">';
@@ -7247,13 +7240,13 @@
         html += '</div></div>';
 
         html += '<div class="modal-tabs">';
-        html += '<button class="modal-tab-btn active" data-tab="0">🌟 1. Overview & Vision</button>';
-        html += '<button class="modal-tab-btn" data-tab="1">🎓 2. Degrees & Exams</button>';
-        html += '<button class="modal-tab-btn" data-tab="2">🗺️ 3. Career Roadmap</button>';
-        html += '<button class="modal-tab-btn" data-tab="3">🛠️ 4. Skills & Roles</button>';
-        html += '<button class="modal-tab-btn" data-tab="4">💼 5. Internships & Co-ops</button>';
-        html += '<button class="modal-tab-btn" data-tab="5">🎯 6. Is This For You?</button>';
-        html += '<button class="modal-tab-btn" data-tab="6">📚 7. Resources & Books</button>';
+        html += '<button class="modal-tab-btn active" data-tab="0">1. Overview & Vision</button>';
+        html += '<button class="modal-tab-btn" data-tab="1">2. Degrees & Exams</button>';
+        html += '<button class="modal-tab-btn" data-tab="2">3. Career Roadmap</button>';
+        html += '<button class="modal-tab-btn" data-tab="3">4. Skills &amp; Roles</button>';
+        html += '<button class="modal-tab-btn" data-tab="4">5. Internships & Co-ops</button>';
+        html += '<button class="modal-tab-btn" data-tab="5">6. Is This For You?</button>';
+        html += '<button class="modal-tab-btn" data-tab="6">7. Resources & Books</button>';
         html += '</div>';
 
         html += '<div class="modal-body">';
@@ -7285,7 +7278,7 @@
         html += '<div class="tab-pane" id="tab-3">';
         html += '<div class="detail-box"><div class="detail-box-title"><span class="box-dot"></span> Core Hard & Technical Skills</div><div class="skills-cloud">' + c.skills.hardSkills.map(s => '<span class="skill-pill">' + s + '</span>').join('') + '</div></div>';
         html += '<div class="detail-box"><div class="detail-box-title"><span class="box-dot"></span> Indispensable Soft & Cognitive Skills</div><div class="skills-cloud">' + c.skills.softSkills.map(s => '<span class="skill-pill soft">' + s + '</span>').join('') + '</div></div>';
-        html += '<div class="detail-box"><div class="detail-box-title"><span class="box-dot"></span> High-Demand Job Roles & Titles</div><div class="role-list">' + c.roles.map(r => '<div class="role-item">💼 ' + r + '</div>').join('') + '</div></div>';
+        html += '<div class="detail-box"><div class="detail-box-title"><span class="box-dot"></span> High-Demand Job Roles & Titles</div><div class="role-list">' + c.roles.map(r => '<div class="role-item"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-right:8px;"></span>' + r + '</div>').join('') + '</div></div>';
         html += '</div>';
 
         // Tab 4 (Internships & Early-Career Gateways)
@@ -7305,15 +7298,15 @@
         html += '<div class="tab-pane" id="tab-5">';
         html += '<div class="detail-box"><div class="detail-box-title"><span class="box-dot"></span> Who Succeeds Here (Personality Fit)</div><div style="display:flex; flex-wrap:wrap; gap:8px;">' + c.decisionFit.traits.map(t => '<span class="skill-pill">' + t + '</span>').join('') + '</div><div style="margin-top:14px; font-size:14px; color:var(--text-secondary);"><strong>Typical Work Environment:</strong> ' + c.decisionFit.workStyle + '</div></div>';
         html += '<div class="pro-con-grid">';
-        html += '<div class="pro-box"><h4>🌟 Top Advantages & Perks</h4><ul>' + c.decisionFit.pros.map(p => '<li>' + p + '</li>').join('') + '</ul></div>';
-        html += '<div class="con-box"><h4>⚡ The Reality Check (Challenges)</h4><ul>' + c.decisionFit.cons.map(cn => '<li>' + cn + '</li>').join('') + '</ul></div>';
+        html += '<div class="pro-box"><h4>Top Advantages & Perks</h4><ul>' + c.decisionFit.pros.map(p => '<li>' + p + '</li>').join('') + '</ul></div>';
+        html += '<div class="con-box"><h4>The Reality Check (Challenges)</h4><ul>' + c.decisionFit.cons.map(cn => '<li>' + cn + '</li>').join('') + '</ul></div>';
         html += '</div>';
         html += '<div class="detail-box" style="margin-top:20px;"><div class="detail-box-title"><span class="box-dot"></span> Self-Discovery Reflection Questions</div><ul class="q-list" style="padding-left:20px;">' + c.reflectionQuestions.map(q => '<li>' + q + '</li>').join('') + '</ul></div>';
         html += '</div>';
 
         // Tab 6 (Resources & Books)
         html += '<div class="tab-pane" id="tab-6">';
-        html += '<div class="detail-box"><div class="detail-box-title"><span class="box-dot"></span> Curated Learning Resources, Books & Platforms</div><ul style="padding-left:20px; color:var(--text-secondary); font-size:14px; line-height:1.8;">' + c.resources.map(res => '<li><strong>📌</strong> ' + res + '</li>').join('') + '</ul></div>';
+        html += '<div class="detail-box"><div class="detail-box-title"><span class="box-dot"></span> Curated Learning Resources, Books & Platforms</div><ul style="padding-left:20px; color:var(--text-secondary); font-size:14px; line-height:1.8;">' + c.resources.map(res => '<li>' + res + '</li>').join('') + '</ul></div>';
         html += '</div>';
 
         html += '</div>'; // modal-body
@@ -7321,10 +7314,10 @@
         html += '<div class="modal-footer">';
         html += '<div class="modal-footer-left">';
         html += '<button class="nav-btn btn-modal-fav ' + (isFav ? 'primary' : '') + '">' + (isFav ? '★ Saved in Shortlist' : '☆ Save to Shortlist') + '</button>';
-        html += '<button class="nav-btn btn-modal-cmp">' + (isCmp ? '✓ Added to Compare' : '⚖️ Add to Compare') + '</button>';
+        html += '<button class="nav-btn btn-modal-cmp">' + (isCmp ? 'Added to Compare' : 'Add to Compare') + '</button>';
         html += '</div>';
         html += '<div class="modal-footer-right">';
-        html += '<button class="nav-btn btn-modal-share">🔗 Share Path</button>';
+        html += '<button class="nav-btn btn-modal-share">Share Path</button>';
         html += '</div></div>';
 
         card.innerHTML = html;

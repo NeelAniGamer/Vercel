@@ -3,7 +3,7 @@
   <head>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995"
      crossorigin="anonymous"></script>
-    <meta name="description" content="Admin Command Center — Class of Learners internal dashboard for managing projects, analytics, and team operations." />
+    <meta name="description" content="Admin Command Center — Class of Learners internal dashboard for managing projects, analytics, dynamic QR codes, user accounts, and system operations." />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Command Center | Class Of Learners</title>
@@ -12,16 +12,24 @@
     <style>
       /* ADMIN THEME VARIABLES */
       :root {
-        --bg-color: #0f172a;
+        --bg-color: #0b101d;
         --text-main: #f8fafc;
-        --text-muted: #cbd5e1;
-        --card-bg: #1e293b;
-        --border-light: #334155;
-        --nav-bg: rgba(15, 23, 42, 0.95);
+        --text-muted: #94a3b8;
+        --card-bg: #131b2e;
+        --card-sub: #0f172a;
+        --border-light: rgba(255, 255, 255, 0.08);
+        --border-glow: rgba(56, 189, 248, 0.25);
+        --nav-bg: rgba(11, 16, 29, 0.92);
         --primary: #38bdf8;
+        --primary-glow: rgba(56, 189, 248, 0.15);
         --danger: #ef4444;
+        --danger-glow: rgba(239, 68, 68, 0.15);
         --success: #10b981;
+        --success-glow: rgba(16, 185, 129, 0.15);
         --warning: #f59e0b;
+        --warning-glow: rgba(245, 158, 11, 0.15);
+        --purple: #a855f7;
+        --purple-glow: rgba(168, 85, 247, 0.15);
       }
 
       * {
@@ -41,6 +49,7 @@
         overflow-x: hidden;
         font-size: 14px;
       }
+
       code,
       .mono {
         font-family: 'Space Mono', monospace;
@@ -49,6 +58,7 @@
 
       ::-webkit-scrollbar {
         width: 8px;
+        height: 8px;
       }
       ::-webkit-scrollbar-track {
         background: var(--bg-color);
@@ -73,7 +83,7 @@
         align-items: center;
         justify-content: center;
         transition: opacity 0.5s;
-        background-image: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+        background-image: radial-gradient(circle at center, #172033 0%, #070a14 100%);
       }
       .lock-box {
         background: var(--card-bg);
@@ -81,9 +91,9 @@
         border-radius: 20px;
         padding: 40px;
         text-align: center;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
         width: 90%;
-        max-width: 420px;
+        max-width: 440px;
       }
       .lock-box h2 {
         font-size: 1.8rem;
@@ -95,11 +105,12 @@
         font-size: 0.95rem;
         color: var(--text-muted);
         margin-bottom: 30px;
+        line-height: 1.5;
       }
       .gbtn {
         width: 100%;
         padding: 14px;
-        background: #4285f4;
+        background: #10b981;
         border: none;
         border-radius: 8px;
         font-weight: 600;
@@ -111,10 +122,10 @@
         justify-content: center;
         gap: 12px;
         transition: 0.2s;
-        box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3);
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
       }
       .gbtn:hover {
-        background: #3367d6;
+        background: #059669;
         transform: translateY(-2px);
       }
 
@@ -126,7 +137,7 @@
         align-items: center;
         padding: 15px 40px;
         background: var(--nav-bg);
-        backdrop-filter: blur(10px);
+        backdrop-filter: blur(12px);
         border-bottom: 1px solid var(--border-light);
         position: sticky;
         top: 0;
@@ -145,88 +156,115 @@
         height: 32px;
         width: auto;
       }
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
       .nav-dl-btn {
         background: rgba(239, 68, 68, 0.1);
         color: var(--danger);
-        padding: 8px 20px;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: 700;
-        transition: 0.2s;
         border: 1px solid rgba(239, 68, 68, 0.3);
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 700;
         cursor: pointer;
+        transition: 0.2s;
+        font-size: 0.85rem;
       }
       .nav-dl-btn:hover {
         background: var(--danger);
         color: #fff;
-        box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
       }
 
-      /* LAYOUT */
+      /* CONTAINER & HEADER */
       .container {
-        max-width: 1400px;
-        margin: 40px auto 80px;
-        padding: 0 20px;
         width: 100%;
-        flex: 1;
+        max-width: 1280px;
+        padding: 30px 24px 60px;
       }
       .header {
+        margin-bottom: 30px;
         display: flex;
         justify-content: space-between;
-        align-items: flex-end;
-        margin-bottom: 30px;
-        border-bottom: 1px solid var(--border-light);
-        padding-bottom: 20px;
-        flex-wrap: wrap;
-        gap: 20px;
+        align-items: center;
       }
       .header h1 {
-        font-size: 2.2rem;
+        font-size: 2rem;
         font-weight: 800;
-        letter-spacing: -1px;
-        color: var(--text-main);
+        letter-spacing: -0.5px;
       }
       .header p {
-        color: var(--primary);
-        font-size: 0.95rem;
-        margin-top: 8px;
-        font-family: 'Space Mono', monospace;
+        color: var(--text-muted);
+        margin-top: 4px;
       }
 
-      .admin-grid {
-        display: grid;
-        grid-template-columns: 1fr 450px;
-        gap: 30px;
-        align-items: start;
+      /* TABS */
+      .tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 30px;
+        border-bottom: 1px solid var(--border-light);
+        padding-bottom: 15px;
+        overflow-x: auto;
+        width: 100%;
+        justify-content: flex-start;
       }
-
-      /* FEEDBACK UI */
-      .btn-clear {
-        background: rgba(16, 185, 129, 0.1);
-        color: var(--success);
-        border: 1px solid rgba(16, 185, 129, 0.3);
-        padding: 10px 20px;
+      .tab-btn {
+        background: transparent;
+        border: 1px solid transparent;
+        color: var(--text-muted);
+        font-weight: 700;
+        font-size: 0.9rem;
+        padding: 10px 18px;
         border-radius: 8px;
-        font-weight: 800;
         cursor: pointer;
-        transition: 0.3s;
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
+        transition: 0.2s;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
-      .btn-clear:hover {
-        background: var(--success);
-        color: #fff;
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+      .tab-btn svg {
+        flex-shrink: 0;
+      }
+      .tab-btn:hover {
+        color: var(--text-main);
+        background: rgba(255, 255, 255, 0.05);
+      }
+      .tab-btn.active {
+        background: var(--primary-glow);
+        color: var(--primary);
+        border: 1px solid rgba(56, 189, 248, 0.3);
       }
 
+      .tab-content {
+        display: none;
+        width: 100%;
+        animation: fadeIn 0.25s ease;
+      }
+      .tab-content.active {
+        display: block;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(4px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* PANELS & CARDS */
+      .controls-panel,
       .fb-container {
         background: var(--card-bg);
         border: 1px solid var(--border-light);
         border-radius: 16px;
         padding: 25px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
       }
       .fb-container-title {
         font-size: 1.2rem;
@@ -236,36 +274,134 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
       }
+
+      .btn-action {
+        background: var(--primary-glow);
+        color: var(--primary);
+        border: 1px solid rgba(56, 189, 248, 0.3);
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.2s;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .btn-action:hover {
+        background: var(--primary);
+        color: #0b101d;
+      }
+
+      .btn-danger-outline {
+        background: var(--danger-glow);
+        color: var(--danger);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.2s;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .btn-danger-outline:hover {
+        background: var(--danger);
+        color: #fff;
+      }
+
+      .btn-success-outline {
+        background: var(--success-glow);
+        color: var(--success);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.2s;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .btn-success-outline:hover {
+        background: var(--success);
+        color: #fff;
+      }
+
+      /* FILTER BARS */
+      .filter-bar {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .inp-search {
+        flex: 1;
+        min-width: 220px;
+        background: var(--card-sub);
+        border: 1px solid var(--border-light);
+        color: var(--text-main);
+        padding: 9px 14px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+      }
+      .inp-search:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+      .filter-select {
+        background: var(--card-sub);
+        border: 1px solid var(--border-light);
+        color: var(--text-main);
+        padding: 9px 14px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        cursor: pointer;
+      }
+      .filter-select:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+
+      /* FEEDBACK CARDS */
       .fb-grid {
         display: flex;
         flex-direction: column;
         gap: 15px;
-        max-height: 800px;
+        max-height: 750px;
         overflow-y: auto;
-        padding-right: 10px;
+        padding-right: 6px;
       }
       .fb-card {
-        background: rgba(15, 23, 42, 0.5);
+        background: rgba(15, 23, 42, 0.6);
         border: 1px solid var(--border-light);
         border-radius: 12px;
         padding: 20px;
         display: flex;
         flex-direction: column;
-        gap: 15px;
+        gap: 14px;
         transition: 0.2s;
       }
       .fb-card:hover {
-        border-color: var(--primary);
+        border-color: rgba(56, 189, 248, 0.4);
       }
       .fb-top {
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
+        gap: 12px;
       }
-      .fb-user {
-        font-weight: 800;
-        font-size: 1.1rem;
+      .fb-user-title {
+        font-weight: 700;
+        font-size: 1rem;
         color: var(--text-main);
         display: flex;
         align-items: center;
@@ -275,101 +411,137 @@
       .fb-email {
         font-size: 0.85rem;
         color: var(--text-muted);
-        font-weight: 600;
-        margin-top: 4px;
+        margin-top: 2px;
       }
-      .fb-type {
-        font-size: 0.7rem;
+      .badge-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .badge-crit {
+        background: rgba(239, 68, 68, 0.12);
+        border: 1px solid rgba(239, 68, 68, 0.4);
+        color: #fca5a5;
+      }
+      .badge-med {
+        background: rgba(245, 158, 11, 0.12);
+        border: 1px solid rgba(245, 158, 11, 0.4);
+        color: #fde68a;
+      }
+      .badge-low {
+        background: rgba(16, 185, 129, 0.12);
+        border: 1px solid rgba(16, 185, 129, 0.4);
+        color: #a7f3d0;
+      }
+      .badge-type {
         background: rgba(56, 189, 248, 0.1);
         border: 1px solid rgba(56, 189, 248, 0.3);
-        padding: 4px 10px;
-        border-radius: 20px;
-        font-weight: 800;
-        text-transform: uppercase;
         color: var(--primary);
-      }
-      .fb-stars {
-        color: var(--warning);
-        font-size: 1.2rem;
-        letter-spacing: 2px;
       }
       .fb-msg {
         font-size: 0.95rem;
         color: var(--text-main);
-        line-height: 1.5;
-        background: var(--bg-color);
-        padding: 15px;
+        line-height: 1.6;
+        background: var(--card-sub);
+        padding: 14px;
         border-radius: 8px;
         border: 1px solid var(--border-light);
       }
-
-      .fb-device {
+      .fb-meta-info {
         font-size: 0.8rem;
         color: var(--text-muted);
-        margin-top: 5px;
         font-family: 'Space Mono', monospace;
       }
-      .fb-steps {
-        background: rgba(239, 68, 68, 0.05);
-        border-left: 3px solid var(--danger);
-        padding: 12px;
-        margin-top: 10px;
-        border-radius: 0 8px 8px 0;
-        font-size: 0.85rem;
-        color: var(--text-main);
-      }
-
       .fb-bot {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        font-weight: 600;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding-top: 6px;
+        border-top: 1px solid var(--border-light);
       }
-      .fb-del {
-        color: var(--danger);
-        cursor: pointer;
+
+      /* TABLES */
+      .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        background: var(--card-sub);
+        border: 1px solid var(--border-light);
+        border-radius: 12px;
+      }
+      .cmd-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        font-size: 0.88rem;
+      }
+      .cmd-table th {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 14px 18px;
+        font-weight: 700;
+        color: var(--text-muted);
+        border-bottom: 1px solid var(--border-light);
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+      }
+      .cmd-table td {
+        padding: 14px 18px;
+        border-bottom: 1px solid var(--border-light);
+        color: var(--text-main);
+        vertical-align: middle;
+      }
+      .cmd-table tr:last-child td {
+        border-bottom: none;
+      }
+      .cmd-table tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .status-pill {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 6px;
+        font-size: 0.72rem;
         font-weight: 800;
         text-transform: uppercase;
-        border: none;
-        background: none;
-        letter-spacing: 0.5px;
       }
-      .fb-del:hover {
-        text-decoration: underline;
+      .status-dyn {
+        background: var(--primary-glow);
+        color: var(--primary);
+        border: 1px solid rgba(56, 189, 248, 0.3);
       }
-      .empty {
-        text-align: center;
-        padding: 60px 20px;
+      .status-sta {
+        background: rgba(255, 255, 255, 0.06);
         color: var(--text-muted);
-        border: 2px dashed var(--border-light);
-        border-radius: 16px;
-      }
-      .empty h3 {
-        font-size: 1.2rem;
-        font-weight: 800;
-        margin-bottom: 8px;
-        color: var(--text-main);
+        border: 1px solid var(--border-light);
       }
 
-      /* ROUTING CONTROLS UI */
-      .controls-panel {
+      .input-inline {
         background: var(--card-bg);
         border: 1px solid var(--border-light);
-        border-radius: 16px;
-        padding: 25px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-      }
-      .controls-panel h2 {
-        font-size: 1.2rem;
-        font-weight: 800;
-        margin-bottom: 25px;
         color: var(--text-main);
-        border-bottom: 1px solid var(--border-light);
-        padding-bottom: 15px;
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-family: 'Space Mono', monospace;
+        width: 100%;
+        min-width: 180px;
+      }
+      .input-inline:focus {
+        outline: none;
+        border-color: var(--primary);
       }
 
+      /* ROUTING & CONTROLS UI */
       .route-group-label {
         font-size: 0.75rem;
         font-weight: 800;
@@ -383,7 +555,6 @@
       .route-group-label:first-of-type {
         margin-top: 0;
       }
-
       .control-row {
         display: flex;
         justify-content: space-between;
@@ -393,109 +564,49 @@
         padding: 10px 15px;
         border-radius: 8px;
         border: 1px solid var(--border-light);
+        gap: 15px;
       }
-      .control-row span {
-        font-weight: 600;
-        color: var(--text-main);
-        font-size: 0.9rem;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
-      /* Custom Segmented Control */
-      .segmented-control {
-        display: flex;
-        background: var(--bg-color);
-        border: 1px solid var(--border-light);
-        border-radius: 6px;
-        overflow: hidden;
-      }
-      .segmented-control input {
-        display: none;
-      }
-      .segmented-control label {
-        padding: 6px 14px;
-        font-size: 0.75rem;
-        font-weight: 800;
-        cursor: pointer;
-        color: var(--text-muted);
-        transition: 0.2s;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        border-right: 1px solid var(--border-light);
-      }
-      .segmented-control label:last-child {
-        border-right: none;
-      }
-      .segmented-control label:hover {
-        background: rgba(255, 255, 255, 0.05);
-      }
-
-      .segmented-control input:checked + label.btn-200 {
-        background: rgba(16, 185, 129, 0.2);
-        color: var(--success);
-      }
-      .segmented-control input:checked + label.btn-404 {
-        background: rgba(239, 68, 68, 0.2);
-        color: var(--danger);
-      }
-      .segmented-control input:checked + label.btn-503 {
-        background: rgba(245, 158, 11, 0.2);
-        color: var(--warning);
-      }
-
-      /* Banner Controls */
       .banner-controls {
         margin-top: 30px;
-        background: rgba(56, 189, 248, 0.05);
-        padding: 20px;
-        border-radius: 12px;
-        border: 1px solid rgba(56, 189, 248, 0.2);
+        padding-top: 20px;
+        border-top: 1px solid var(--border-light);
       }
       .banner-controls h3 {
-        font-size: 0.9rem;
-        margin-bottom: 12px;
-        font-weight: 800;
-        color: var(--primary);
-        text-transform: uppercase;
-        letter-spacing: 1px;
+        font-size: 1rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        color: var(--text-main);
       }
       .banner-inp {
         width: 100%;
-        padding: 12px 15px;
+        padding: 12px 16px;
+        background: var(--card-sub);
         border: 1px solid var(--border-light);
         border-radius: 8px;
-        background: var(--bg-color);
         color: var(--text-main);
-        margin-bottom: 12px;
         font-size: 0.9rem;
-        outline: none;
-        transition: 0.2s;
+        margin-bottom: 15px;
       }
       .banner-inp:focus {
+        outline: none;
         border-color: var(--primary);
       }
-
       .ms-save {
         width: 100%;
-        padding: 16px;
+        padding: 14px;
         background: var(--primary);
         border: none;
-        border-radius: 10px;
+        border-radius: 8px;
         font-weight: 800;
-        font-size: 1rem;
+        font-size: 0.95rem;
         cursor: pointer;
-        color: #000;
-        transition: 0.3s;
+        color: #070a14;
+        transition: 0.2s;
         margin-top: 20px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
       }
       .ms-save:hover {
-        background: #fff;
-        transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(56, 189, 248, 0.3);
+        opacity: 0.9;
+        transform: translateY(-1px);
       }
 
       /* TOAST */
@@ -505,10 +616,10 @@
         right: 30px;
         background: var(--danger);
         color: #fff;
-        padding: 15px 25px;
-        border-radius: 12px;
-        font-weight: 800;
-        font-size: 0.95rem;
+        padding: 14px 22px;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 0.9rem;
         transform: translateY(20px);
         opacity: 0;
         transition: 0.3s;
@@ -520,11 +631,10 @@
         opacity: 1;
       }
       .toast.green {
-        background: var(--success);
-        border-color: var(--success);
+        background: #059669;
       }
 
-      /* CONFIRM MODAL CLASSES */
+      /* CONFIRM MODAL */
       .mo {
         position: fixed;
         inset: 0;
@@ -545,191 +655,112 @@
       .md {
         background: var(--card-bg);
         border: 1px solid var(--border-light);
-        border-radius: 24px;
+        border-radius: 20px;
         width: 90%;
-        max-width: 450px;
+        max-width: 440px;
         overflow: hidden;
-        transform: translateY(30px) scale(0.95);
-        transition: 0.4s;
-        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+        transform: translateY(20px) scale(0.97);
+        transition: 0.3s;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
         color: var(--text-main);
-        text-transform: none;
       }
       .mo.open .md {
         transform: translateY(0) scale(1);
       }
       .msk {
         width: 100%;
-        padding: 15px;
+        padding: 12px;
         background: none;
-        border: none;
+        border: 1px solid var(--border-light);
+        border-radius: 8px;
         font-size: 0.9rem;
         font-weight: 700;
         color: var(--text-muted);
         cursor: pointer;
-        transition: 0.3s;
+        transition: 0.2s;
       }
       .msk:hover {
         color: var(--text-main);
+        background: rgba(255, 255, 255, 0.05);
       }
       .msk-danger {
         width: 100%;
-        padding: 15px;
-        background: transparent;
-        border: 1px solid #ef4444;
-        border-radius: 12px;
-        font-size: 1rem;
-        font-weight: 800;
-        color: #ef4444;
+        padding: 12px;
+        background: var(--danger);
+        border: none;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #fff;
         cursor: pointer;
-        transition: 0.3s;
-        margin-bottom: 10px;
+        transition: 0.2s;
       }
       .msk-danger:hover {
-        background: rgba(239, 68, 68, 0.1);
+        background: #dc2626;
       }
 
-      /* TABS */
-      .tabs {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 30px;
-        border-bottom: 1px solid var(--border-light);
-        padding-bottom: 15px;
-        overflow-x: auto;
-        width: 100%;
-        justify-content: center;
-      }
-      .tab-btn {
-        background: transparent;
-        border: 1px solid transparent;
+      .empty {
+        text-align: center;
+        padding: 50px 20px;
         color: var(--text-muted);
+        border: 2px dashed var(--border-light);
+        border-radius: 14px;
+      }
+      .empty h3 {
+        font-size: 1.15rem;
         font-weight: 700;
-        font-size: 0.95rem;
-        padding: 12px 24px;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: 0.3s;
-        white-space: nowrap;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-      .tab-btn:hover {
+        margin-bottom: 6px;
         color: var(--text-main);
-        background: rgba(255, 255, 255, 0.05);
-      }
-      .tab-btn.active {
-        background: rgba(56, 189, 248, 0.1);
-        color: var(--primary);
-        border: 1px solid rgba(56, 189, 248, 0.3);
       }
 
-      .tab-content {
-        display: none;
+      /* FOOTER */
+      .sf {
         width: 100%;
-        animation: fadeIn 0.3s ease;
+        border-top: 1px solid var(--border-light);
+        padding: 30px 40px;
+        margin-top: auto;
+        background: var(--card-sub);
       }
-      .tab-content.active {
-        display: block;
+      .fi {
+        max-width: 1280px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+        color: var(--text-muted);
+        font-size: 0.85rem;
       }
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(5px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
+      .fl {
+        display: flex;
+        gap: 20px;
       }
-
-      /* MOBILE RESPONSIVENESS FIXES */
-      @media (max-width: 1000px) {
-        .admin-grid {
-          grid-template-columns: 1fr;
-        }
-      }
-      @media (max-width: 768px) {
-        .top-nav {
-          flex-direction: column;
-          padding: 15px;
-          text-align: center;
-          gap: 15px;
-        }
-        .nav-brand {
-          margin-bottom: 5px;
-        }
-        .header {
-          flex-direction: column;
-          align-items: center;
-          text-align: center;
-          gap: 15px;
-        }
-        .fb-container,
-        .controls-panel {
-          padding: 15px;
-        }
-        .control-row {
-          flex-direction: column;
-          align-items: stretch;
-          gap: 10px;
-        }
-        .segmented-control {
-          width: 100%;
-          display: flex;
-        }
-        .segmented-control label {
-          flex: 1;
-          text-align: center;
-        }
-        .lock-box {
-          width: 95%;
-          padding: 20px;
-        }
-        .fb-top {
-          flex-direction: column;
-          gap: 10px;
-        }
-        .fb-bot {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 10px;
-        }
+      .fl a:hover {
+        color: var(--primary);
       }
     </style>
-    <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/admin" />
 
+    <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/admin" />
     <script defer src="col-router.js"></script>
     <link rel="stylesheet" href="col-ui.css?v=1782446126.5715783" />
     <script defer src="col-ui.js"></script>
     <script defer src="col-auth.js"></script>
     <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
     <link rel="manifest" href="manifest.json" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-      <link rel="icon" type="image/png" href="Icon.png" />
+    <link rel="icon" type="image/png" href="Icon.png" />
   </head>
   <body>
     <div class="cd" id="cDot"></div>
     <div class="cr" id="cRing"></div>
-    <script>
-      ;(function () {
-        try {
-          if (localStorage.getItem('theme') === 'dark') {
-            document.body.classList.add('dark-mode')
-          }
-        } catch (e) {}
-      })()
-    </script>
 
+    <!-- LOCK SCREEN -->
     <div class="lock-screen" id="lockScreen">
       <div class="lock-box" id="lockBoxContent">
-        <img src="Class.png" alt="Class Of Learners Logo" style="height: 60px; margin-bottom: 20px; object-fit: contain" width="56" height="56" loading="lazy" decoding="async" />
+        <img src="Class.png" alt="Class Of Learners Logo" style="height: 56px; margin: 0 auto 20px; object-fit: contain; display: block" width="56" height="56" />
         <h2>System Terminal</h2>
-        <p>Please authenticate with administrator credentials.</p>
-        <button class="gbtn" onclick="if (window.openGlobalLogin) window.openGlobalLogin()" style="background: #10b981">
+        <p>Please authenticate with administrator credentials to access system controls.</p>
+        <button class="gbtn" onclick="if (window.openGlobalLogin) window.openGlobalLogin()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
           </svg>
@@ -738,13 +769,14 @@
       </div>
     </div>
 
+    <!-- NAVBAR -->
     <nav class="top-nav">
       <a href="/" class="nav-brand">
-        <img src="Class.png" alt="Class Of Learners Logo" class="brand-logo" style="margin-right: 10px" width="56" height="56" loading="lazy" decoding="async" />
-        <span class="mono">C:\COL\ADMIN></span>
+        <img src="Class.png" alt="Class Of Learners Logo" class="brand-logo" width="32" height="32" />
+        <span class="mono">C:\COL\ADMIN&gt;</span>
       </a>
       <div class="nav-links">
-        <a href="/" class="nav-brand" style="font-size: 0.9rem; color: var(--text-muted)">Exit Terminal</a>
+        <a href="/" class="nav-brand" style="font-size: 0.88rem; color: var(--text-muted)">Exit Terminal</a>
         <button class="nav-dl-btn" onclick="doLogoutAdmin()">Sign Out</button>
       </div>
     </nav>
@@ -753,62 +785,206 @@
       <div class="header">
         <div>
           <h1>Mission Control</h1>
-          <p id="subTxt">Routing Configurator & User Feedback Logging</p>
+          <p id="subTxt">Class of Learners Operations &bull; Database &bull; QR Studio &bull; Routing</p>
         </div>
       </div>
 
       <!-- TABS NAV -->
       <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('tab-logs', event)">📋 Feedback Logs</button>
-        <button class="tab-btn" onclick="switchTab('tab-analytics', event)">📊 Analytics</button>
-        <button class="tab-btn" onclick="switchTab('tab-routing', event)">🚦 Routing Config</button>
-        <button class="tab-btn" onclick="switchTab('tab-auth', event)">🔐 Auth Config</button>
-        <button class="tab-btn" onclick="switchTab('tab-editor', event)">💻 Source Code Editor</button>
+        <button class="tab-btn active" onclick="switchTab('tab-logs', event)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Feedback Logs
+        </button>
+        <button class="tab-btn" onclick="switchTab('tab-qrs', event)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          QR Command Center
+        </button>
+        <button class="tab-btn" onclick="switchTab('tab-users', event)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          User Accounts
+        </button>
+        <button class="tab-btn" onclick="switchTab('tab-analytics', event)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          Analytics
+        </button>
+        <button class="tab-btn" onclick="switchTab('tab-routing', event)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Routing Config
+        </button>
+        <button class="tab-btn" onclick="switchTab('tab-auth', event)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Auth Config
+        </button>
+        <button class="tab-btn" onclick="switchTab('tab-editor', event)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          Visual Editor
+        </button>
       </div>
 
-      <!-- TAB PANES -->
+      <!-- TAB 1: FEEDBACK LOGS -->
       <div id="tab-logs" class="tab-content active">
-        <div class="fb-container" style="max-width: 1000px; margin: 0 auto">
+        <div class="fb-container">
           <div class="fb-container-title">
-            <div>
-              <span>User Submissions</span>
-              <span id="fbCount" style="background: var(--bg-color); padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; border: 1px solid var(--border-light)">0</span>
+            <div style="display: flex; align-items: center; gap: 10px">
+              <span>User Feedback &amp; Bug Transmissions</span>
+              <span id="fbCount" style="background: var(--card-sub); padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; border: 1px solid var(--border-light)">0</span>
             </div>
             <div style="display: flex; gap: 10px">
-              <button class="btn-clear" onclick="renderFeedback()" style="background: rgba(16, 185, 129, 0.1); color: var(--success); border-color: rgba(16, 185, 129, 0.3); padding: 8px 15px">
-                🔄 Refresh
+              <button class="btn-action" onclick="renderFeedback()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                Refresh
               </button>
-              <button class="btn-clear" onclick="clearAll()" style="color: var(--danger); border-color: rgba(239, 68, 68, 0.3); padding: 8px 15px">Purge</button>
+              <button class="btn-danger-outline" onclick="clearAll()">Purge Old</button>
             </div>
           </div>
-          <div class="fb-grid" id="fbGrid" style="max-height: 700px"></div>
-        </div>
-      </div>
 
-      <div id="tab-analytics" class="tab-content">
-        <div class="controls-panel" style="max-width: 1000px; margin: 0 auto">
-          <h2>Supabase Analytics</h2>
-          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px">Overview of game traffic and performance from public.admin_stats view.</p>
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;" id="analyticsGrid">
-             <div class="stat-card" style="background: var(--bg-color); padding: 20px; border-radius: 8px; border: 1px solid var(--border-light); text-align: center">
-                <div style="font-size: 0.9rem; color: var(--dim)">Loading Analytics...</div>
-             </div>
+          <div class="filter-bar">
+            <input type="text" id="fbSearch" class="inp-search" placeholder="Search by user email, type, or message content..." oninput="filterFeedback()" />
+            <select id="fbStatusFilter" class="filter-select" onchange="filterFeedback()">
+              <option value="all">All Statuses</option>
+              <option value="open">Open</option>
+              <option value="in_progress">In Progress</option>
+              <option value="resolved">Resolved</option>
+            </select>
+            <select id="fbUrgFilter" class="filter-select" onchange="filterFeedback()">
+              <option value="all">All Urgencies</option>
+              <option value="3">Critical (3)</option>
+              <option value="2">Medium (2)</option>
+              <option value="1">Low (1)</option>
+            </select>
           </div>
-          <button class="ms-save" onclick="loadAnalytics()">Refresh Analytics</button>
+
+          <div class="fb-grid" id="fbGrid">
+            <div class="empty"><h3>Loading Transmissions...</h3></div>
+          </div>
         </div>
       </div>
 
+      <!-- TAB 2: QR COMMAND CENTER -->
+      <div id="tab-qrs" class="tab-content">
+        <div class="controls-panel">
+          <div class="fb-container-title">
+            <div style="display: flex; align-items: center; gap: 10px">
+              <span>QR Studio Cloud Directory</span>
+              <span id="qrCount" style="background: var(--card-sub); padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; border: 1px solid var(--border-light)">0</span>
+            </div>
+            <div style="display: flex; gap: 10px">
+              <a href="qr-editor.html" target="_blank" class="btn-action" style="text-decoration: none">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Create QR
+              </a>
+              <button class="btn-action" onclick="renderQrCommand()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                Refresh
+              </button>
+            </div>
+          </div>
+
+          <div class="filter-bar">
+            <input type="text" id="qrSearch" class="inp-search" placeholder="Filter by short code, title, or destination..." oninput="filterQrs()" />
+            <select id="qrTypeFilter" class="filter-select" onchange="filterQrs()">
+              <option value="all">All Modes</option>
+              <option value="dynamic">Dynamic Only</option>
+              <option value="static">Static Only</option>
+            </select>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="cmd-table" id="qrTable">
+              <thead>
+                <tr>
+                  <th>Code / Short Link</th>
+                  <th>Title &amp; Type</th>
+                  <th>Mode</th>
+                  <th>Destination Target (Live Edit)</th>
+                  <th>Scans</th>
+                  <th>Created</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="qrTableBody">
+                <tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--text-muted)">Loading QR Records...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: USER ACCOUNTS -->
+      <div id="tab-users" class="tab-content">
+        <div class="controls-panel">
+          <div class="fb-container-title">
+            <div style="display: flex; align-items: center; gap: 10px">
+              <span>Registered User Accounts</span>
+              <span id="userCount" style="background: var(--card-sub); padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; border: 1px solid var(--border-light)">0</span>
+            </div>
+            <button class="btn-action" onclick="renderUsers()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+              Refresh
+            </button>
+          </div>
+
+          <div class="filter-bar">
+            <input type="text" id="userSearch" class="inp-search" placeholder="Search user email or display name..." oninput="filterUsers()" />
+            <select id="userRoleFilter" class="filter-select" onchange="filterUsers()">
+              <option value="all">All Roles</option>
+              <option value="admin">Admins</option>
+              <option value="student">Students / Users</option>
+            </select>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="cmd-table" id="userTable">
+              <thead>
+                <tr>
+                  <th>User / Email</th>
+                  <th>Display Name</th>
+                  <th>Role</th>
+                  <th>Account Created</th>
+                  <th>Role Management</th>
+                </tr>
+              </thead>
+              <tbody id="userTableBody">
+                <tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--text-muted)">Loading Users...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 4: PLATFORM ANALYTICS -->
+      <div id="tab-analytics" class="tab-content">
+        <div class="controls-panel">
+          <div class="fb-container-title">
+            <div>
+              <span>Platform Intelligence</span>
+              <p style="color: var(--text-muted); font-size: 0.85rem; font-weight: 500; margin-top: 4px">Metrics gathered across games, driving simulator, QR interactions, and feedback.</p>
+            </div>
+            <button class="btn-action" onclick="loadAnalytics()">Refresh Metrics</button>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-bottom: 25px" id="analyticsGrid">
+            <div style="background: var(--card-sub); padding: 20px; border-radius: 10px; border: 1px solid var(--border-light); text-align: center">
+              <div style="font-size: 0.85rem; color: var(--text-muted)">Loading Analytics...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 5: ROUTING CONFIG -->
       <div id="tab-routing" class="tab-content">
-        <div class="controls-panel" style="max-width: 800px; margin: 0 auto">
-          <h2>Routing Overrides</h2>
+        <div class="controls-panel" style="max-width: 860px; margin: 0 auto">
+          <h2 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 20px; border-bottom: 1px solid var(--border-light); padding-bottom: 12px">
+            HTTP Routing Overrides
+          </h2>
 
           <div id="routing-container"></div>
 
           <div class="banner-controls">
             <h3>Global Announcement Banner</h3>
-            <input type="text" id="ctrl-banner-text" class="banner-inp" placeholder="Type alert message..." />
-            <label style="display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--text-main); font-size: 0.85rem">
-              <input type="checkbox" id="ctrl-banner-active" style="width: 16px; height: 16px; accent-color: var(--primary)" /> Broadcast Banner
+            <input type="text" id="ctrl-banner-text" class="banner-inp" placeholder="Type alert message (e.g., Scheduled maintenance at 02:00 UTC)..." />
+            <label style="display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--text-main); font-size: 0.85rem; cursor: pointer">
+              <input type="checkbox" id="ctrl-banner-active" style="width: 16px; height: 16px; accent-color: var(--primary)" />
+              Broadcast Live Banner across all pages
             </label>
           </div>
 
@@ -816,36 +992,45 @@
         </div>
       </div>
 
+      <!-- TAB 6: AUTH CONFIG -->
       <div id="tab-auth" class="tab-content">
-        <div class="controls-panel" style="max-width: 800px; margin: 0 auto">
-          <h2>Global Authentication (Supabase)</h2>
-          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px">Configure your Supabase Database to enable global cloud-syncing and account logins across the platform.</p>
+        <div class="controls-panel" style="max-width: 860px; margin: 0 auto">
+          <h2 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 20px; border-bottom: 1px solid var(--border-light); padding-bottom: 12px">
+            Global Authentication (Supabase)
+          </h2>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px">
+            Configure your Supabase Project URL and Anon/Public Key to enable cloud account synchronization.
+          </p>
 
-          <div class="banner-controls">
+          <div class="banner-controls" style="margin-top: 0; padding-top: 0; border-top: none">
             <h3>Supabase Project URL</h3>
-            <input type="text" id="ctrl-supabase-url" class="banner-inp" placeholder="e.g., https://xyz.supabase.co" />
+            <input type="text" id="ctrl-supabase-url" class="banner-inp" placeholder="https://xyz.supabase.co" />
 
             <h3 style="margin-top: 15px">Supabase Anon/Public Key</h3>
             <input type="password" id="ctrl-supabase-key" class="banner-inp" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." />
           </div>
 
-          <button class="ms-save" onclick="saveSiteConfig()">Deploy Auth Configuration</button>
+          <div style="display: flex; gap: 12px; margin-top: 10px">
+            <button class="btn-action" onclick="testSupabaseConn()" style="padding: 12px 20px">Test Connection</button>
+            <button class="ms-save" onclick="saveSiteConfig()" style="margin-top: 0; flex: 1">Deploy Auth Configuration</button>
+          </div>
         </div>
       </div>
 
+      <!-- TAB 7: SOURCE CODE / VISUAL EDITOR -->
       <div id="tab-editor" class="tab-content">
-        <div
-          class="editor-panel"
-          style="max-width: 1200px; margin: 0 auto; background: var(--card-bg); border: 1px solid var(--border-light); border-radius: 16px; padding: 25px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2)"
-        >
-          <h2 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 20px; color: var(--text-main); border-bottom: 1px solid var(--border-light); padding-bottom: 15px">
-            Visual Builder (Live Preview)
+        <div class="controls-panel" style="max-width: 1200px; margin: 0 auto">
+          <h2 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 20px; border-bottom: 1px solid var(--border-light); padding-bottom: 12px">
+            Visual Layout Builder (Live Preview)
           </h2>
 
           <div style="display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap">
             <input type="password" id="gh-token" class="banner-inp" style="flex: 1; margin-bottom: 0" placeholder="Enter GitHub Personal Access Token (PAT) with repo scope" />
-            <button class="btn-clear" onclick="saveGhToken()" style="background: rgba(56, 189, 248, 0.1); color: var(--primary); border-color: rgba(56, 189, 248, 0.3)">Save Token</button>
-            <button class="btn-clear" onclick="loadGhFiles()" style="background: rgba(16, 185, 129, 0.1); color: var(--success); border-color: rgba(16, 185, 129, 0.3)">🔄 Fetch Files</button>
+            <button class="btn-action" onclick="saveGhToken()">Save PAT</button>
+            <button class="btn-action" onclick="loadGhFiles()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+              Fetch Repo Files
+            </button>
           </div>
 
           <div style="display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap">
@@ -854,38 +1039,43 @@
             </select>
           </div>
 
-          <div
-            id="builder-toolbar"
-            style="display: none; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; background: rgba(15, 23, 42, 0.5); padding: 10px; border-radius: 8px; border: 1px solid var(--border-light)"
-          >
-            <button class="btn-clear" onclick="setIframeSize('100%')" style="flex: 1; border-color: var(--border-light); color: var(--text-main)">🌐 Desktop</button>
-            <button class="btn-clear" onclick="setIframeSize('768px')" style="flex: 1; border-color: var(--border-light); color: var(--text-main)">📋 Tablet</button>
-            <button class="btn-clear" onclick="setIframeSize('375px')" style="flex: 1; border-color: var(--border-light); color: var(--text-main)">📋 Mobile</button>
-            <button class="ms-save" id="gh-deploy-btn" onclick="deployGhFile()" style="margin-top: 0; padding: 10px 20px; width: auto">Deploy Changes Directly to Vercel</button>
+          <div id="builder-toolbar" style="display: none; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; background: rgba(15, 23, 42, 0.6); padding: 10px; border-radius: 8px; border: 1px solid var(--border-light)">
+            <button class="btn-action" onclick="setIframeSize('100%')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              Desktop
+            </button>
+            <button class="btn-action" onclick="setIframeSize('768px')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+              Tablet
+            </button>
+            <button class="btn-action" onclick="setIframeSize('375px')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+              Mobile
+            </button>
+            <button class="btn-success-outline" id="gh-deploy-btn" onclick="deployGhFile()" style="margin-left: auto">
+              Deploy Changes Directly to Vercel
+            </button>
           </div>
 
-          <div style="width: 100%; overflow-x: auto; padding-bottom: 20px">
-            <iframe
-              id="gh-preview"
-              style="width: 100%; height: 600px; background: #fff; border: 2px solid var(--border-light); border-radius: 8px; transition: width 0.3s ease; margin: 0 auto; display: block"
-              src="about:blank"
-            ></iframe>
+          <div style="width: 100%; overflow-x: auto; padding-bottom: 15px">
+            <iframe id="gh-preview" style="width: 100%; height: 600px; background: #fff; border: 1px solid var(--border-light); border-radius: 8px; transition: width 0.3s ease; margin: 0 auto; display: block" src="about:blank"></iframe>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- CONFIRM MODAL (NO EMOJIS) -->
     <div class="mo" id="confirmMo">
-      <div class="md" style="max-width: 400px; text-align: center">
-        <div class="md-body" style="padding: 40px 30px">
-          <div style="font-size: 3rem; margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.3))">📱</div>
-          <h2 id="confirmTitle" style="font-size: 1.4rem; font-weight: 800; margin-bottom: 10px; color: var(--text-main); text-transform: none">Confirm Action</h2>
-          <p id="confirmMsg" style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 25px; line-height: 1.5; text-transform: none">Are you sure?</p>
-          <div style="display: flex; gap: 15px">
-            <button class="msk" onclick="closeConfirm()" style="margin: 0; flex: 1; padding: 12px; background: var(--bg-color); border: 1px solid var(--border-light); border-radius: 8px">
-              Cancel
-            </button>
-            <button class="msk-danger" id="confirmBtn" style="margin: 0; flex: 1; padding: 12px; border-radius: 8px">Confirm</button>
+      <div class="md" style="text-align: center">
+        <div style="padding: 35px 25px">
+          <div style="width: 54px; height: 54px; border-radius: 50%; background: var(--danger-glow); border: 1px solid rgba(239, 68, 68, 0.4); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: var(--danger)">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <h2 id="confirmTitle" style="font-size: 1.3rem; font-weight: 800; margin-bottom: 8px">Confirm Action</h2>
+          <p id="confirmMsg" style="font-size: 0.92rem; color: var(--text-muted); margin-bottom: 24px; line-height: 1.5">Are you sure you want to proceed?</p>
+          <div style="display: flex; gap: 12px">
+            <button class="msk" onclick="closeConfirm()">Cancel</button>
+            <button class="msk-danger" id="confirmBtn">Confirm</button>
           </div>
         </div>
       </div>
@@ -896,304 +1086,795 @@
     <script>
       const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxN5tS8uTeW6KoX_sVOxjV_x7X2W67k9d9Ubb_iQvMPzZNXrP-93MtjFlhE3gtbDn8/exec";
       let confirmActionCallback = null;
+      let cachedFeedback = [];
+      let cachedQrs = [];
+      let cachedUsers = [];
+
       function showConfirm(title, msg, callback) {
-          document.getElementById('confirmTitle').innerText = title;
-          document.getElementById('confirmMsg').innerText = msg;
-          confirmActionCallback = callback;
-          document.getElementById('confirmMo').classList.add('open');
+        document.getElementById('confirmTitle').innerText = title;
+        document.getElementById('confirmMsg').innerText = msg;
+        confirmActionCallback = callback;
+        document.getElementById('confirmMo').classList.add('open');
       }
       function closeConfirm() {
-          document.getElementById('confirmMo').classList.remove('open');
-          confirmActionCallback = null;
+        document.getElementById('confirmMo').classList.remove('open');
+        confirmActionCallback = null;
       }
       document.getElementById('confirmBtn').addEventListener('click', function() {
-          if(confirmActionCallback) confirmActionCallback();
-          closeConfirm();
+        if (confirmActionCallback) confirmActionCallback();
+        closeConfirm();
       });
 
-      const ADMIN_EMAIL = "subscriptionfound@gmail.com";
+      const ADMIN_EMAILS = ["subscriptionfound@gmail.com", "neelgbadri@gmail.com"];
 
-      function checkAdminAccess() {
-          try {
-              if (!window.colUser) {
-                  console.log("Admin Check: colUser is null");
-                  return; // Not logged in yet
-              }
-
-              console.log("Admin Check User:", window.colUser.email);
-
-              const userEmail = (window.colUser.email || "").toLowerCase().trim();
-              const adminEmail = ADMIN_EMAIL.toLowerCase().trim();
-
-              if (userEmail === adminEmail) {
-                  document.getElementById('lockScreen').style.opacity = '0';
-                  setTimeout(() => document.getElementById('lockScreen').style.display = 'none', 500);
-
-                  const navProfile = document.getElementById('navUserProfile');
-                  if (navProfile) navProfile.style.display = 'none';
-                  const pCard = document.getElementById('pCard');
-                  if (pCard) pCard.style.display = 'none';
-
-                  toast(`Access Granted: ${window.colUser.email}`, 'green');
-                  renderFeedback();
-                  buildRoutingUI();
-              } else {
-                  document.getElementById('lockBoxContent').innerHTML = `
-                      <div style="font-size:3.5rem; margin-bottom:15px; filter:drop-shadow(0 0 15px var(--danger));">🚧</div>
-                      <h2 style="color:var(--danger)">Access Denied</h2>
-                      <p>The account <b style="color:var(--text-main)">${window.colUser.email}</b> lacks administrative privileges.</p>
-                      <button style="width: 100%; padding: 14px; background: transparent; border: 1px solid var(--danger); border-radius: 8px; font-weight: 700; font-size: 0.95rem; cursor: pointer; color: var(--danger); transition: 0.3s; margin-top: 10px;" onclick="doLogoutAdmin()">Sign Out & Retry</button>
-                  `;
-              }
-          } catch (e) {
-              console.error("Admin Check Error:", e);
-              alert("Login Error: " + e.message);
+      async function checkAdminAccess() {
+        try {
+          if (!window.colUser) {
+            console.log("Admin Check: colUser is null");
+            return;
           }
-      };
+
+          const userEmail = (window.colUser.email || "").toLowerCase().trim();
+          let isAdmin = ADMIN_EMAILS.includes(userEmail);
+
+          if (!isAdmin && window.supabaseClient) {
+            try {
+              const { data, error } = await window.supabaseClient.rpc('is_admin');
+              if (!error && data === true) isAdmin = true;
+            } catch (e) {
+              console.warn("Admin RPC check fallback:", e);
+            }
+          }
+
+          if (isAdmin) {
+            document.getElementById('lockScreen').style.opacity = '0';
+            setTimeout(() => (document.getElementById('lockScreen').style.display = 'none'), 500);
+
+            toast(`Admin Session Verified: ${window.colUser.email}`, 'green');
+            renderFeedback();
+            renderQrCommand();
+            renderUsers();
+            buildRoutingUI();
+          } else {
+            document.getElementById('lockBoxContent').innerHTML = `
+              <div style="width: 56px; height: 56px; border-radius: 50%; background: var(--danger-glow); border: 1px solid rgba(239, 68, 68, 0.4); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: var(--danger)">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+              </div>
+              <h2 style="color:var(--danger)">Access Denied</h2>
+              <p>The account <b style="color:var(--text-main)">${window.colUser.email}</b> lacks administrative privileges.</p>
+              <button class="btn-danger-outline" style="width: 100%; justify-content: center; padding: 12px; margin-top: 10px" onclick="doLogoutAdmin()">Sign Out &amp; Retry</button>
+            `;
+          }
+        } catch (e) {
+          console.error("Admin Check Error:", e);
+        }
+      }
 
       window.addEventListener('col-auth-changed', checkAdminAccess);
 
       function doLogoutAdmin() {
-          if(window.supabaseClient) {
-              window.supabaseClient.auth.signOut().then(() => {
-                  window.location.reload();
-              });
-          } else {
-              window.location.reload();
-          }
+        if (window.supabaseClient) {
+          window.supabaseClient.auth.signOut().then(() => window.location.reload());
+        } else {
+          window.location.reload();
+        }
       }
 
-      function toast(msg, cls){ let t=document.getElementById('toast'); if(!t)return; t.textContent=msg; t.className='toast '+(cls||''); t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000);}
+      function toast(msg, cls) {
+        const t = document.getElementById('toast');
+        if (!t) return;
+        t.textContent = msg;
+        t.className = 'toast ' + (cls || '');
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3500);
+      }
 
-      function renderFeedback() {
-          const grid = document.getElementById('fbGrid');
-          if (!WEB_APP_URL || WEB_APP_URL === "PASTE_YOUR_COPIED_URL_HERE") {
-              grid.innerHTML = `<div class="empty"><h3 style="color:var(--danger)">Configuration Needed</h3><p>Please paste your Web App URL into the admin.html file to connect the database.</p></div>`;
+      /* ------------------------------------------------------------- */
+      /* 1. FEEDBACK MANAGEMENT                                        */
+      /* ------------------------------------------------------------- */
+      async function renderFeedback() {
+        const grid = document.getElementById('fbGrid');
+        grid.innerHTML = '<div class="empty"><h3>Loading Transmissions from Supabase...</h3></div>';
+
+        if (window.supabaseClient) {
+          try {
+            const { data, error } = await window.supabaseClient
+              .from('feedback')
+              .select('*')
+              .order('created_at', { ascending: false });
+
+            if (!error && data) {
+              cachedFeedback = data;
+              displayFeedback(cachedFeedback);
               return;
+            }
+          } catch (err) {
+            console.warn("Supabase feedback fetch error:", err);
           }
-          grid.innerHTML = '<div class="empty"><h3>Loading Logs from Cloud...</h3></div>';
+        }
+
+        // Fallback to Google Apps Script
+        if (WEB_APP_URL && WEB_APP_URL !== "PASTE_YOUR_COPIED_URL_HERE") {
           fetch(WEB_APP_URL)
-          .then(res => res.json())
-          .then(arr => {
-              document.getElementById('fbCount').textContent = arr.length;
-              grid.innerHTML = '';
-              if(arr.length === 0) { grid.innerHTML = `<div class="empty"><h3>No Data Logs Found</h3></div>`; return; }
-              arr.forEach(fb => {
-                  let stars = ''; for(let i=0; i<fb.rating; i++) stars += '⭐';
-                  let dynamicContent = `<div class="fb-msg">"${fb.message}"</div>`;
-                  if (fb.device) dynamicContent += `<div class="fb-device">🌐 ${fb.device}</div>`;
-                  if (fb.steps) dynamicContent += `<div class="fb-steps"><strong>Steps to Reproduce:</strong><br>${fb.steps.replace(/\n/g, '<br>')}</div>`;
-                  const card = document.createElement('div');
-                  card.className = 'fb-card';
-                  card.innerHTML = `
-                      <div class="fb-top">
-                          <div><div class="fb-user">${fb.name} <span class="fb-type">${fb.type}</span></div><div class="fb-email">${fb.email}</div></div>
-                          <div class="fb-stars">${stars}</div>
-                      </div>
-                      ${dynamicContent}
-                      <div class="fb-bot">
-                          <span class="mono">LOG_${fb.id.toString().slice(-6)} | ${fb.date}</span>
-                          <button class="fb-del" onclick="deleteFb(${fb.id})">Drop Log</button>
-                      </div>
-                  `;
-                  grid.appendChild(card);
-              });
-          })
-          .catch(err => { grid.innerHTML = `<div class="empty"><h3 style="color:var(--danger)">Connection Error</h3><p>Could not reach the Google Sheets database.</p></div>`; });
+            .then(res => res.json())
+            .then(arr => {
+              cachedFeedback = arr.map(a => ({
+                id: a.id,
+                user_email: a.email,
+                category: a.type || 'General',
+                message: a.message,
+                urgency: a.urgency || 1,
+                user_agent: a.device || '',
+                created_at: a.date,
+                status: 'open'
+              }));
+              displayFeedback(cachedFeedback);
+            })
+            .catch(() => {
+              grid.innerHTML = '<div class="empty"><h3 style="color:var(--danger)">No Connection</h3><p>Could not reach feedback table or fallback service.</p></div>';
+            });
+        } else {
+          grid.innerHTML = '<div class="empty"><h3 style="color:var(--text-muted)">No Feedback</h3><p>No feedback transmissions found in database.</p></div>';
+        }
+      }
+
+      function displayFeedback(list) {
+        const grid = document.getElementById('fbGrid');
+        document.getElementById('fbCount').textContent = list.length;
+        grid.innerHTML = '';
+
+        if (!list || list.length === 0) {
+          grid.innerHTML = '<div class="empty"><h3>No Transmissions Found</h3><p>All user feedback transmissions have been reviewed or resolved.</p></div>';
+          return;
+        }
+
+        list.forEach(fb => {
+          const urg = parseInt(fb.urgency) || 1;
+          const urgClass = urg === 3 ? 'badge-crit' : urg === 2 ? 'badge-med' : 'badge-low';
+          const urgLabel = urg === 3 ? 'Critical' : urg === 2 ? 'Medium' : 'Low';
+          const author = fb.user_email || fb.email || 'Anonymous Explorer';
+          const status = fb.status || 'open';
+          const dateStr = fb.created_at ? new Date(fb.created_at).toLocaleString() : 'Recent';
+
+          const card = document.createElement('div');
+          card.className = 'fb-card';
+          card.innerHTML = `
+            <div class="fb-top">
+              <div>
+                <div class="fb-user-title">
+                  <span>${escapeHtml(author)}</span>
+                  <span class="badge-pill badge-type">${escapeHtml(fb.category || fb.feedback_type || 'General')}</span>
+                  <span class="badge-pill ${urgClass}">${urgLabel} Priority</span>
+                </div>
+                <div class="fb-email">Transmission: ${escapeHtml(String(fb.id).slice(-8))}</div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px">
+                <select class="filter-select" style="padding: 5px 10px; font-size: 0.8rem" onchange="updateFeedbackStatus('${fb.id}', this.value)">
+                  <option value="open" ${status === 'open' ? 'selected' : ''}>Open</option>
+                  <option value="in_progress" ${status === 'in_progress' ? 'selected' : ''}>In Progress</option>
+                  <option value="resolved" ${status === 'resolved' ? 'selected' : ''}>Resolved</option>
+                </select>
+              </div>
+            </div>
+            <div class="fb-msg">${escapeHtml(fb.message || '')}</div>
+            ${fb.user_agent ? `<div class="fb-meta-info">Client: ${escapeHtml(fb.user_agent)}</div>` : ''}
+            <div class="fb-bot">
+              <span class="fb-meta-info">${dateStr}</span>
+              <button class="btn-danger-outline" style="padding: 4px 10px; font-size: 0.78rem" onclick="deleteFb('${fb.id}')">Drop Log</button>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+      }
+
+      function filterFeedback() {
+        const query = (document.getElementById('fbSearch').value || '').toLowerCase();
+        const stat = document.getElementById('fbStatusFilter').value;
+        const urg = document.getElementById('fbUrgFilter').value;
+
+        const filtered = cachedFeedback.filter(fb => {
+          const m = (fb.message || '').toLowerCase();
+          const e = (fb.user_email || fb.email || '').toLowerCase();
+          const c = (fb.category || '').toLowerCase();
+          const matchesQuery = !query || m.includes(query) || e.includes(query) || c.includes(query);
+          const matchesStat = stat === 'all' || (fb.status || 'open') === stat;
+          const matchesUrg = urg === 'all' || String(fb.urgency || 1) === urg;
+          return matchesQuery && matchesStat && matchesUrg;
+        });
+
+        displayFeedback(filtered);
+      }
+
+      async function updateFeedbackStatus(id, newStatus) {
+        if (!window.supabaseClient) {
+          toast('Supabase client unavailable.', '');
+          return;
+        }
+        const { error } = await window.supabaseClient
+          .from('feedback')
+          .update({ status: newStatus })
+          .eq('id', id);
+
+        if (error) {
+          toast('Error updating status: ' + error.message, '');
+        } else {
+          toast(`Status updated: ${newStatus}`, 'green');
+          const item = cachedFeedback.find(f => f.id === id);
+          if (item) item.status = newStatus;
+        }
       }
 
       function deleteFb(id) {
-          showConfirm("Purge Log", "Are you sure you want to permanently drop this specific transmission log globally?", function() {
-              fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "delete", id: id }) }).then(() => { toast('Log dropped successfully.', 'green'); renderFeedback(); }).catch(err => toast('Error deleting log.', ''));
-          });
+        showConfirm('Drop Transmission', 'Permanently delete this feedback transmission from the global database?', async function() {
+          if (window.supabaseClient) {
+            const { error } = await window.supabaseClient.from('feedback').delete().eq('id', id);
+            if (!error) {
+              toast('Transmission purged.', 'green');
+              cachedFeedback = cachedFeedback.filter(f => f.id !== id);
+              displayFeedback(cachedFeedback);
+              return;
+            }
+          }
+          if (WEB_APP_URL) {
+            fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'delete', id: id }) })
+              .then(() => { toast('Log purged.', 'green'); renderFeedback(); })
+              .catch(() => toast('Error deleting log.', ''));
+          }
+        });
       }
 
       function clearAll() {
-          showConfirm("Purge Database", "CRITICAL WARNING: This will permanently wipe ALL feedback logs globally from the database. Proceed?", function() {
-              fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: "deleteAll" }) }).then(() => { toast('All logs deleted successfully.', 'green'); renderFeedback(); }).catch(err => toast('Error clearing logs.', ''));
-          });
+        showConfirm('Purge Old Logs', 'Permanently drop resolved logs from the feedback database?', async function() {
+          if (window.supabaseClient) {
+            const { error } = await window.supabaseClient.from('feedback').delete().eq('status', 'resolved');
+            if (!error) {
+              toast('Resolved logs purged globally.', 'green');
+              renderFeedback();
+              return;
+            }
+          }
+          toast('Operation completed.', 'green');
+        });
       }
 
+      /* ------------------------------------------------------------- */
+      /* 2. QR COMMAND CENTER                                          */
+      /* ------------------------------------------------------------- */
+      async function renderQrCommand() {
+        const tbody = document.getElementById('qrTableBody');
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--text-muted)">Querying QR Codes from Supabase...</td></tr>';
+
+        if (!window.supabaseClient) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--danger)">Supabase client required.</td></tr>';
+          return;
+        }
+
+        try {
+          const { data, error } = await window.supabaseClient
+            .from('qr_codes')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+          if (error) throw error;
+          cachedQrs = data || [];
+          document.getElementById('qrCount').textContent = cachedQrs.length;
+          displayQrs(cachedQrs);
+        } catch (e) {
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--danger)">Error loading QR database: ${escapeHtml(e.message)}</td></tr>`;
+        }
+      }
+
+      function displayQrs(list) {
+        const tbody = document.getElementById('qrTableBody');
+        tbody.innerHTML = '';
+
+        if (!list || list.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--text-muted)">No QR records found.</td></tr>';
+          return;
+        }
+
+        list.forEach(q => {
+          const shortCode = q.short_code || '';
+          const isDyn = q.is_dynamic !== false;
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>
+              <div style="font-weight: 700; color: var(--primary)" class="mono">${escapeHtml(shortCode)}</div>
+              <a href="/q?c=${encodeURIComponent(shortCode)}" target="_blank" style="font-size: 0.78rem; color: var(--text-muted); text-decoration: underline">/q?c=${escapeHtml(shortCode)}</a>
+            </td>
+            <td>
+              <div style="font-weight: 600">${escapeHtml(q.title || 'Untitled QR')}</div>
+              <span class="badge-pill badge-type" style="margin-top: 4px; font-size: 0.7rem">${escapeHtml(q.qr_type || 'url')}</span>
+            </td>
+            <td>
+              <span class="status-pill ${isDyn ? 'status-dyn' : 'status-sta'}">${isDyn ? 'Dynamic' : 'Static'}</span>
+            </td>
+            <td>
+              <div style="display: flex; gap: 6px; align-items: center">
+                <input type="text" class="input-inline" id="dest_${escapeHtml(shortCode)}" value="${escapeHtml(q.destination_url || '')}" />
+                <button class="btn-action" style="padding: 5px 10px; font-size: 0.75rem" onclick="updateQrDestination('${escapeHtml(shortCode)}')">Update</button>
+              </div>
+            </td>
+            <td>
+              <span style="font-weight: 700; color: var(--primary); font-family: var(--mono)">${q.scan_count || 0}</span>
+            </td>
+            <td style="font-size: 0.8rem; color: var(--text-muted); white-space: nowrap">
+              ${q.created_at ? new Date(q.created_at).toLocaleDateString() : 'N/A'}
+            </td>
+            <td>
+              <div style="display: flex; gap: 6px">
+                <a href="qr-editor.html?id=${encodeURIComponent(shortCode)}" target="_blank" class="btn-action" style="padding: 5px 8px; font-size: 0.75rem; text-decoration: none">Editor</a>
+                <button class="btn-danger-outline" style="padding: 5px 8px; font-size: 0.75rem" onclick="deleteQrRecord('${escapeHtml(shortCode)}')">Delete</button>
+              </div>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      function filterQrs() {
+        const query = (document.getElementById('qrSearch').value || '').toLowerCase();
+        const mode = document.getElementById('qrTypeFilter').value;
+
+        const filtered = cachedQrs.filter(q => {
+          const c = (q.short_code || '').toLowerCase();
+          const t = (q.title || '').toLowerCase();
+          const d = (q.destination_url || '').toLowerCase();
+          const matchesQuery = !query || c.includes(query) || t.includes(query) || d.includes(query);
+          const isDyn = q.is_dynamic !== false;
+          const matchesMode = mode === 'all' || (mode === 'dynamic' && isDyn) || (mode === 'static' && !isDyn);
+          return matchesQuery && matchesMode;
+        });
+
+        displayQrs(filtered);
+      }
+
+      async function updateQrDestination(shortCode) {
+        const inp = document.getElementById(`dest_${shortCode}`);
+        if (!inp) return;
+        const newUrl = inp.value.trim();
+        if (!newUrl) {
+          toast('Destination URL cannot be empty.', '');
+          return;
+        }
+
+        try {
+          toast('Updating live destination...', 'green');
+          const { error } = await window.supabaseClient
+            .from('qr_codes')
+            .update({ destination_url: newUrl, updated_at: new Date().toISOString() })
+            .eq('short_code', shortCode);
+
+          if (error) throw error;
+          toast(`Updated target for ${shortCode}`, 'green');
+          const item = cachedQrs.find(q => q.short_code === shortCode);
+          if (item) item.destination_url = newUrl;
+        } catch (e) {
+          toast('Update error: ' + e.message, '');
+        }
+      }
+
+      function deleteQrRecord(shortCode) {
+        showConfirm('Delete QR Record', `Permanently delete QR code [${shortCode}] from the cloud? Scans will stop redirecting.`, async function() {
+          try {
+            const { error } = await window.supabaseClient
+              .from('qr_codes')
+              .delete()
+              .eq('short_code', shortCode);
+
+            if (error) throw error;
+            toast(`QR ${shortCode} deleted.`, 'green');
+            cachedQrs = cachedQrs.filter(q => q.short_code !== shortCode);
+            document.getElementById('qrCount').textContent = cachedQrs.length;
+            displayQrs(cachedQrs);
+          } catch (e) {
+            toast('Delete error: ' + e.message, '');
+          }
+        });
+      }
+
+      /* ------------------------------------------------------------- */
+      /* 3. USER ACCOUNTS MANAGEMENT                                   */
+      /* ------------------------------------------------------------- */
+      async function renderUsers() {
+        const tbody = document.getElementById('userTableBody');
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--text-muted)">Querying registered user profiles...</td></tr>';
+
+        if (!window.supabaseClient) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--danger)">Supabase client required.</td></tr>';
+          return;
+        }
+
+        try {
+          const { data: userProfiles, error: err1 } = await window.supabaseClient
+            .from('user_profiles')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+          const { data: profiles, error: err2 } = await window.supabaseClient
+            .from('profiles')
+            .select('*');
+
+          const profileMap = {};
+          if (profiles) {
+            profiles.forEach(p => { profileMap[p.id] = p; });
+          }
+
+          cachedUsers = (userProfiles || []).map(up => {
+            const prof = profileMap[up.user_id] || profileMap[up.id] || {};
+            return {
+              id: up.id,
+              user_id: up.user_id || up.id,
+              email: prof.email || up.student_id || 'Registered User',
+              display_name: up.display_name || up.username || prof.username || prof.full_name || 'Anonymous',
+              role: up.role || 'student',
+              created_at: up.created_at || prof.created_at
+            };
+          });
+
+          document.getElementById('userCount').textContent = cachedUsers.length;
+          displayUsers(cachedUsers);
+        } catch (e) {
+          tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--danger)">Error loading users: ${escapeHtml(e.message)}</td></tr>`;
+        }
+      }
+
+      function displayUsers(list) {
+        const tbody = document.getElementById('userTableBody');
+        tbody.innerHTML = '';
+
+        if (!list || list.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--text-muted)">No user records found.</td></tr>';
+          return;
+        }
+
+        list.forEach(u => {
+          const isAdmin = u.role === 'admin';
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>
+              <div style="font-weight: 700; color: var(--text-main)">${escapeHtml(u.email)}</div>
+              <div class="mono" style="font-size: 0.75rem; color: var(--text-muted)">${escapeHtml(u.user_id || '')}</div>
+            </td>
+            <td>
+              <div style="font-weight: 600">${escapeHtml(u.display_name)}</div>
+            </td>
+            <td>
+              <span class="status-pill ${isAdmin ? 'status-dyn' : 'status-sta'}" style="text-transform: uppercase">${escapeHtml(u.role)}</span>
+            </td>
+            <td style="font-size: 0.8rem; color: var(--text-muted); white-space: nowrap">
+              ${u.created_at ? new Date(u.created_at).toLocaleDateString() : 'Active'}
+            </td>
+            <td>
+              <button class="${isAdmin ? 'btn-danger-outline' : 'btn-action'}" style="padding: 5px 12px; font-size: 0.8rem" onclick="toggleUserRole('${u.user_id}', '${isAdmin ? 'student' : 'admin'}')">
+                ${isAdmin ? 'Demote to Student' : 'Promote to Admin'}
+              </button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      function filterUsers() {
+        const query = (document.getElementById('userSearch').value || '').toLowerCase();
+        const role = document.getElementById('userRoleFilter').value;
+
+        const filtered = cachedUsers.filter(u => {
+          const e = (u.email || '').toLowerCase();
+          const d = (u.display_name || '').toLowerCase();
+          const matchesQuery = !query || e.includes(query) || d.includes(query);
+          const matchesRole = role === 'all' || (role === 'admin' && u.role === 'admin') || (role === 'student' && u.role !== 'admin');
+          return matchesQuery && matchesRole;
+        });
+
+        displayUsers(filtered);
+      }
+
+      async function toggleUserRole(userId, newRole) {
+        showConfirm('Update User Role', `Change role for user [${userId}] to ${newRole.toUpperCase()}?`, async function() {
+          try {
+            const { error } = await window.supabaseClient
+              .from('user_profiles')
+              .update({ role: newRole })
+              .or(`user_id.eq.${userId},id.eq.${userId}`);
+
+            if (error) throw error;
+            toast(`Role updated to ${newRole}.`, 'green');
+            renderUsers();
+          } catch (e) {
+            toast('Role change error: ' + e.message, '');
+          }
+        });
+      }
+
+      /* ------------------------------------------------------------- */
+      /* 4. ROUTING & CONTROLS CONFIG                                  */
+      /* ------------------------------------------------------------- */
       const PAGE_GROUPS = {
-          "Core Hub": [ {id: "index", label: "📄 Home (home.html)"}, {id: "about", label: "📄 About Us (about.html)"}, {id: "school", label: "📄 School (school.html)"}, {id: "sneh-asha", label: "📄 Sneh Asha (sneh-asha.html)"}, {id: "download", label: "📋 Downloads (download.html)"} ],
-          "Applications": [ {id: "ati", label: "🖥️ ATI Info (ati.html)"}, {id: "ati-demo", label: "🖥️ ATI Demo (ati-demo.html)"}, {id: "solar", label: "💥 Solar Engine (solar.html)"}, {id: "gesture", label: "🔒️ Gesture (gesture.html)"}, {id: "rpg", label: "🛠️ RPG Game (rpg.html)"}, {id: "qr", label: "📱 QR Dash (qr.html)"}, {id: "qr-editor", label: "📱 QR Editor (qr-editor.html)"} ],
-          "Support": [ {id: "feedback", label: "🌐 Feedback (feedback.html)"}, {id: "privacy", label: "📝️ Privacy (privacy.html)"}, {id: "terms", label: "⚠️ Terms (terms.html)"} ]
+        "Core Hub": [
+          { id: "index", label: "Home (home.html)" },
+          { id: "about", label: "About Us (about.html)" },
+          { id: "school", label: "School (school.html)" },
+          { id: "sneh-asha", label: "Sneh Asha (sneh-asha.html)" },
+          { id: "download", label: "Downloads (download.html)" }
+        ],
+        "Applications": [
+          { id: "ati", label: "Advanced Typing Instructor (ati.html)" },
+          { id: "ati-demo", label: "ATI Interactive Demo (ati-demo.html)" },
+          { id: "solar", label: "Solar Engine 3D (solar.html)" },
+          { id: "gesture", label: "Perceptus Flow (gesture.html)" },
+          { id: "rpg", label: "RPG Game (rpg.html)" },
+          { id: "qr", label: "QR Dashboard (qr.html)" },
+          { id: "qr-editor", label: "QR Studio Editor (qr-editor.html)" }
+        ],
+        "Support &amp; Legal": [
+          { id: "feedback", label: "Feedback (feedback.html)" },
+          { id: "privacy", label: "Privacy Policy (privacy.html)" },
+          { id: "terms", label: "Terms of Service (terms.html)" }
+        ]
       };
 
       function buildRoutingUI() {
-          const container = document.getElementById('routing-container');
-          container.innerHTML = '';
-          let conf = { pages: {}, banner: {active: false, text: ''}, auth: {url: '', key: ''} };
-          try {
-              const stored = localStorage.getItem('col_admin_config');
-              if(stored) { const parsed = JSON.parse(stored); conf.pages = parsed.pages || {}; conf.banner = parsed.banner || {active: false, text: ''}; conf.auth = parsed.auth || {url: '', key: ''}; }
-          } catch(e){}
-          for (const [groupName, pages] of Object.entries(PAGE_GROUPS)) {
-              const label = document.createElement('div'); label.className = 'route-group-label'; label.innerText = groupName; container.appendChild(label);
-              pages.forEach(p => {
-                  const currentStatus = conf.pages[p.id] || '200';
-                  const row = document.createElement('div'); row.className = 'control-row';
-                  row.innerHTML = `
-                      <span class="mono" style="flex:1">${p.label}</span>
-                      <select id="ctrl-${p.id}" class="banner-inp" style="flex:1; margin-bottom:0; padding:10px; font-family:var(--font-mono); font-weight:700; font-size:0.85rem; cursor:pointer;">
-                          <option value="200" ${currentStatus==='200'?'selected':''}>🚫 200 - LIVE</option>
-                          <option value="301" ${currentStatus==='301'?'selected':''}>📟 301 - Redirect</option>
-                          <option value="401" ${currentStatus==='401'?'selected':''}>💻 401 - Unauthorized</option>
-                          <option value="403" ${currentStatus==='403'?'selected':''}>🛑 403 - Forbidden</option>
-                          <option value="404" ${currentStatus==='404'?'selected':''}>✅ 404 - Not Found</option>
-                          <option value="500" ${currentStatus==='500'?'selected':''}>🌐 500 - Server Error</option>
-                          <option value="503" ${currentStatus==='503'?'selected':''}>🚧 503 - Maintenance</option>
-                      </select>
-                  `;
-                  container.appendChild(row);
-              });
+        const container = document.getElementById('routing-container');
+        container.innerHTML = '';
+        let conf = { pages: {}, banner: { active: false, text: '' }, auth: { url: '', key: '' } };
+        try {
+          const stored = localStorage.getItem('col_admin_config');
+          if (stored) {
+            const parsed = JSON.parse(stored);
+            conf.pages = parsed.pages || {};
+            conf.banner = parsed.banner || { active: false, text: '' };
+            conf.auth = parsed.auth || { url: '', key: '' };
           }
-          document.getElementById('ctrl-banner-text').value = conf.banner.text || '';
-          document.getElementById('ctrl-banner-active').checked = conf.banner.active || false;
-          document.getElementById('ctrl-supabase-url').value = conf.auth.url || '';
-          document.getElementById('ctrl-supabase-key').value = conf.auth.key || '';
+        } catch (e) {}
+
+        for (const [groupName, pages] of Object.entries(PAGE_GROUPS)) {
+          const label = document.createElement('div');
+          label.className = 'route-group-label';
+          label.innerHTML = groupName;
+          container.appendChild(label);
+
+          pages.forEach(p => {
+            const currentStatus = conf.pages[p.id] || '200';
+            const row = document.createElement('div');
+            row.className = 'control-row';
+            row.innerHTML = `
+              <span class="mono" style="flex:1">${p.label}</span>
+              <select id="ctrl-${p.id}" class="banner-inp" style="flex:1; margin-bottom:0; padding:9px; font-family:var(--font-mono); font-weight:700; font-size:0.85rem; cursor:pointer;">
+                <option value="200" ${currentStatus === '200' ? 'selected' : ''}>200 - LIVE</option>
+                <option value="301" ${currentStatus === '301' ? 'selected' : ''}>301 - Redirect</option>
+                <option value="401" ${currentStatus === '401' ? 'selected' : ''}>401 - Unauthorized</option>
+                <option value="403" ${currentStatus === '403' ? 'selected' : ''}>403 - Forbidden</option>
+                <option value="404" ${currentStatus === '404' ? 'selected' : ''}>404 - Not Found</option>
+                <option value="500" ${currentStatus === '500' ? 'selected' : ''}>500 - Server Error</option>
+                <option value="503" ${currentStatus === '503' ? 'selected' : ''}>503 - Maintenance</option>
+              </select>
+            `;
+            container.appendChild(row);
+          });
+        }
+
+        document.getElementById('ctrl-banner-text').value = conf.banner.text || '';
+        document.getElementById('ctrl-banner-active').checked = conf.banner.active || false;
+        document.getElementById('ctrl-supabase-url').value = conf.auth.url || '';
+        document.getElementById('ctrl-supabase-key').value = conf.auth.key || '';
       }
 
       function saveSiteConfig() {
-          const config = { pages: {}, banner: {}, auth: {} };
-          for (const pages of Object.values(PAGE_GROUPS)) {
-              pages.forEach(p => {
-                  const selected = document.getElementById(`ctrl-${p.id}`);
-                  if (selected) config.pages[p.id] = selected.value;
-              });
-          }
-          config.banner.active = document.getElementById('ctrl-banner-active').checked;
-          config.banner.text = document.getElementById('ctrl-banner-text').value.trim();
-          config.auth.url = document.getElementById('ctrl-supabase-url').value.trim();
-          config.auth.key = document.getElementById('ctrl-supabase-key').value.trim();
-          localStorage.setItem('col_admin_config', JSON.stringify(config));
-          saveConfigToGitHub(config);
+        const config = { pages: {}, banner: {}, auth: {} };
+        for (const pages of Object.values(PAGE_GROUPS)) {
+          pages.forEach(p => {
+            const selected = document.getElementById(`ctrl-${p.id}`);
+            if (selected) config.pages[p.id] = selected.value;
+          });
+        }
+        config.banner.active = document.getElementById('ctrl-banner-active').checked;
+        config.banner.text = document.getElementById('ctrl-banner-text').value.trim();
+        config.auth.url = document.getElementById('ctrl-supabase-url').value.trim();
+        config.auth.key = document.getElementById('ctrl-supabase-key').value.trim();
+        localStorage.setItem('col_admin_config', JSON.stringify(config));
+        saveConfigToGitHub(config);
       }
 
       async function saveConfigToGitHub(config) {
+        try {
+          toast('Deploying routing configuration...', 'green');
+          let sha = '';
           try {
-              toast('Deploying routing config globally...', 'green');
-              let sha = "";
-              try { const data = await fetchGh("contents/config.json"); sha = data.sha; } catch(e) {}
-              const base64Content = btoa(unescape(encodeURIComponent(JSON.stringify(config, null, 2))));
-              await fetchGh("contents/config.json", { method: 'PUT', body: JSON.stringify({ message: "Admin update: routing config.json", content: base64Content, sha: sha || undefined }) });
-              toast('🚧 Global Configuration Deployed! Live in seconds.', 'green');
-          } catch (e) { toast('Save failed: ' + e.message, ''); }
+            const data = await fetchGh('contents/config.json');
+            sha = data.sha;
+          } catch (e) {}
+          const base64Content = btoa(unescape(encodeURIComponent(JSON.stringify(config, null, 2))));
+          await fetchGh('contents/config.json', {
+            method: 'PUT',
+            body: JSON.stringify({ message: 'Admin update: routing config.json', content: base64Content, sha: sha || undefined })
+          });
+          toast('Global Configuration Deployed! Live in seconds.', 'green');
+        } catch (e) {
+          toast('Save failed: ' + e.message, '');
+        }
       }
 
-      window.addEventListener('load', function() {
-          const cm=document.getElementById('confirmMo'); if(cm) cm.addEventListener('click',function(e){if(e.target===this)closeConfirm();});
-          setTimeout(checkAdminAccess, 500);
-      });
+      async function testSupabaseConn() {
+        const url = document.getElementById('ctrl-supabase-url').value.trim();
+        const key = document.getElementById('ctrl-supabase-key').value.trim();
+        if (!url || !key) {
+          toast('Please enter Supabase URL and Key first.', '');
+          return;
+        }
+        toast('Testing connection to Supabase...', 'green');
+        try {
+          const res = await fetch(`${url}/rest/v1/profiles?select=count`, {
+            headers: { apikey: key, Authorization: `Bearer ${key}` }
+          });
+          if (res.ok) {
+            toast('Connection Successful! Supabase verified.', 'green');
+          } else {
+            toast(`Supabase ping returned HTTP ${res.status}`, '');
+          }
+        } catch (e) {
+          toast('Connection test failed: ' + e.message, '');
+        }
+      }
 
+      /* ------------------------------------------------------------- */
+      /* 5. ANALYTICS                                                  */
+      /* ------------------------------------------------------------- */
+      async function loadAnalytics() {
+        const grid = document.getElementById('analyticsGrid');
+        if (!grid) return;
+        if (!window.supabaseClient) {
+          grid.innerHTML = '<div style="color: var(--text-muted); grid-column: 1 / -1; text-align: center">Supabase client not initialized.</div>';
+          return;
+        }
+        try {
+          const { data: stats } = await window.supabaseClient.from('admin_stats').select('*').maybeSingle();
+          const { count: qrCount } = await window.supabaseClient.from('qr_codes').select('*', { count: 'exact', head: true });
+          const { count: fbCount } = await window.supabaseClient.from('feedback').select('*', { count: 'exact', head: true });
+
+          const totalUsers = stats?.total_users || cachedUsers.length || 0;
+          const dau = stats?.dau || 0;
+          const wau = stats?.wau || 0;
+          const completions = stats?.total_completions || 0;
+          const certs = stats?.certs_issued || 0;
+
+          grid.innerHTML = `
+            <div class="stat-card" style="background: var(--card-sub); padding: 20px; border-radius: 10px; border: 1px solid var(--border-light); text-align: center">
+              <div style="font-size: 0.85rem; color: var(--text-muted)">Total Registered Users</div>
+              <div style="font-size: 2rem; color: var(--primary); font-family: var(--mono); font-weight: 700; margin-top: 6px">${totalUsers}</div>
+            </div>
+            <div class="stat-card" style="background: var(--card-sub); padding: 20px; border-radius: 10px; border: 1px solid var(--border-light); text-align: center">
+              <div style="font-size: 0.85rem; color: var(--text-muted)">Daily Active (DAU)</div>
+              <div style="font-size: 2rem; color: var(--success); font-family: var(--mono); font-weight: 700; margin-top: 6px">${dau}</div>
+            </div>
+            <div class="stat-card" style="background: var(--card-sub); padding: 20px; border-radius: 10px; border: 1px solid var(--border-light); text-align: center">
+              <div style="font-size: 0.85rem; color: var(--text-muted)">Weekly Active (WAU)</div>
+              <div style="font-size: 2rem; color: var(--success); font-family: var(--mono); font-weight: 700; margin-top: 6px">${wau}</div>
+            </div>
+            <div class="stat-card" style="background: var(--card-sub); padding: 20px; border-radius: 10px; border: 1px solid var(--border-light); text-align: center">
+              <div style="font-size: 0.85rem; color: var(--text-muted)">Levels Completed</div>
+              <div style="font-size: 2rem; color: var(--purple); font-family: var(--mono); font-weight: 700; margin-top: 6px">${completions}</div>
+            </div>
+            <div class="stat-card" style="background: var(--card-sub); padding: 20px; border-radius: 10px; border: 1px solid var(--border-light); text-align: center">
+              <div style="font-size: 0.85rem; color: var(--text-muted)">Active QR Codes</div>
+              <div style="font-size: 2rem; color: var(--primary); font-family: var(--mono); font-weight: 700; margin-top: 6px">${qrCount || cachedQrs.length}</div>
+            </div>
+            <div class="stat-card" style="background: var(--card-sub); padding: 20px; border-radius: 10px; border: 1px solid var(--border-light); text-align: center">
+              <div style="font-size: 0.85rem; color: var(--text-muted)">Cumulative QR Scans</div>
+              <div style="font-size: 2rem; color: var(--warning); font-family: var(--mono); font-weight: 700; margin-top: 6px">${cachedQrs.reduce((a, b) => a + (b.scan_count || 0), 0)}</div>
+            </div>
+            <div class="stat-card" style="background: var(--card-sub); padding: 20px; border-radius: 10px; border: 1px solid var(--border-light); text-align: center">
+              <div style="font-size: 0.85rem; color: var(--text-muted)">Feedback Transmissions</div>
+              <div style="font-size: 2rem; color: #fff; font-family: var(--mono); font-weight: 700; margin-top: 6px">${fbCount || cachedFeedback.length}</div>
+            </div>
+            <div class="stat-card" style="background: var(--card-sub); padding: 20px; border-radius: 10px; border: 1px solid var(--border-light); text-align: center">
+              <div style="font-size: 0.85rem; color: var(--text-muted)">Certificates Issued</div>
+              <div style="font-size: 2rem; color: var(--primary); font-family: var(--mono); font-weight: 700; margin-top: 6px">${certs}</div>
+            </div>
+          `;
+        } catch (e) {
+          grid.innerHTML = '<div style="color: var(--danger); grid-column: 1 / -1; text-align: center">Error loading platform analytics.</div>';
+        }
+      }
+
+      /* ------------------------------------------------------------- */
+      /* 6. GITHUB VISUAL BUILDER                                      */
+      /* ------------------------------------------------------------- */
       const GH_OWNER = "NeelAniGamer";
       const GH_REPO = "Vercel";
       let currentFileSha = "";
 
       async function getGhToken() {
-          if (!window.supabaseClient || !window.colUser) throw new Error("Supabase Auth required to fetch secrets.");
-          const { data, error } = await window.supabaseClient.from('admin_secrets').select('secret_value').eq('key_name', 'github_pat').maybeSingle();
-          if (error) throw error;
-          if (!data || !data.secret_value) throw new Error("No GitHub PAT securely saved in Database. Please save one first.");
-          return data.secret_value;
+        if (!window.supabaseClient || !window.colUser) throw new Error("Supabase Auth required to fetch PAT.");
+        const { data, error } = await window.supabaseClient.from('admin_secrets').select('secret_value').eq('key_name', 'github_pat').maybeSingle();
+        if (error) throw error;
+        if (!data || !data.secret_value) throw new Error("No GitHub PAT saved in Database. Please save one first.");
+        return data.secret_value;
       }
 
       async function saveGhToken() {
-          const token = document.getElementById('gh-token').value.trim();
-          if (!token) { toast('Please input a token.', ''); return; }
-          if (!window.supabaseClient || !window.colUser) { toast('Supabase Auth required.', ''); return; }
-          toast('Locking token in database...', 'green');
-          const { error } = await window.supabaseClient.from('admin_secrets').upsert({ key_name: 'github_pat', secret_value: token });
-          if (error) { toast('Database Error: ' + error.message, ''); } else { document.getElementById('gh-token').value = ''; toast('GitHub Token encrypted and secured!', 'green'); }
+        const token = document.getElementById('gh-token').value.trim();
+        if (!token) { toast('Please input a PAT.', ''); return; }
+        if (!window.supabaseClient || !window.colUser) { toast('Supabase Auth required.', ''); return; }
+        toast('Securing token in database...', 'green');
+        const { error } = await window.supabaseClient.from('admin_secrets').upsert({ key_name: 'github_pat', secret_value: token });
+        if (error) { toast('Database Error: ' + error.message, ''); } else { document.getElementById('gh-token').value = ''; toast('GitHub PAT securely encrypted!', 'green'); }
       }
 
       async function fetchGh(endpoint, options = {}) {
-          const token = await getGhToken();
-          const res = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/${endpoint}`, {
-              ...options,
-              headers: { "Authorization": `Bearer ${token}`, "Accept": "application/vnd.github.v3+json", "X-GitHub-Api-Version": "2022-11-28", ...options.headers }
-          });
-          if (!res.ok) throw new Error(`GitHub API Error: ${res.statusText}`);
-          return res.json();
+        const token = await getGhToken();
+        const res = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/${endpoint}`, {
+          ...options,
+          headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github.v3+json', 'X-GitHub-Api-Version': '2022-11-28', ...options.headers }
+        });
+        if (!res.ok) throw new Error(`GitHub API Error: ${res.statusText}`);
+        return res.json();
       }
 
       async function loadGhFiles() {
-          try {
-              toast('Fetching files from GitHub...', 'green');
-              const data = await fetchGh("contents/");
-              const select = document.getElementById('gh-file-select');
-              select.innerHTML = '<option value="">-- Select a file to edit --</option>';
+        try {
+          toast('Fetching repository files...', 'green');
+          const data = await fetchGh('contents/');
+          const select = document.getElementById('gh-file-select');
+          select.innerHTML = '<option value="">-- Select a file to edit --</option>';
 
-              data.filter(f => f.type === 'file').forEach(f => {
-                  const opt = document.createElement('option');
-                  opt.value = f.path;
-                  opt.textContent = f.path;
-                  select.appendChild(opt);
-              });
-              toast('Files loaded!', 'green');
-          } catch(e) {
-              toast(e.message, '');
-          }
+          data.filter(f => f.type === 'file').forEach(f => {
+            const opt = document.createElement('option');
+            opt.value = f.path;
+            opt.textContent = f.path;
+            select.appendChild(opt);
+          });
+          toast('Files loaded!', 'green');
+        } catch (e) {
+          toast(e.message, '');
+        }
       }
 
       const VISUAL_BUILDER_SCRIPT = `
-      <script defer src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"><\\/script>
+      <script defer src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"><\/script>
       <script id="col-builder-script">
       function initBuilder() {
-          if (typeof interact === 'undefined') {
-              setTimeout(initBuilder, 100);
-              return;
-          }
-
+          if (typeof interact === 'undefined') { setTimeout(initBuilder, 100); return; }
           let styleBlock = document.getElementById('col-visual-styles');
           if(!styleBlock) {
               styleBlock = document.createElement('style');
               styleBlock.id = 'col-visual-styles';
               document.head.appendChild(styleBlock);
           }
-
           let idCounter = 1;
           document.querySelectorAll('body *').forEach(el => {
               if(!el.id && !el.dataset.colId && el.tagName !== 'SCRIPT' && el.tagName !== 'STYLE') {
                   el.dataset.colId = 'col-el-' + Math.random().toString(36).substr(2, 9);
               }
           });
-
           window.__colRules = window.__colRules || { desktop: {}, mobile: {}, tablet: {} };
-
           function renderStyles() {
               let css = '';
-              css += '@media screen and (min-width: 1025px) {\\n';
-              for(let id in window.__colRules.desktop) css += \`[data-col-id="\${id}"], #\${id} { \${window.__colRules.desktop[id]} }\\n\`;
-              css += '}\\n';
-
-              css += '@media screen and (min-width: 769px) and (max-width: 1024px) {\\n';
-              for(let id in window.__colRules.tablet) css += \`[data-col-id="\${id}"], #\${id} { \${window.__colRules.tablet[id]} }\\n\`;
-              css += '}\\n';
-
-              css += '@media screen and (max-width: 768px) {\\n';
-              for(let id in window.__colRules.mobile) css += \`[data-col-id="\${id}"], #\${id} { \${window.__colRules.mobile[id]} }\\n\`;
-              css += '}\\n';
-
+              css += '@media screen and (min-width: 1025px) {\n';
+              for(let id in window.__colRules.desktop) css += \`[data-col-id="\${id}"], #\${id} { \${window.__colRules.desktop[id]} }\n\`;
+              css += '}\n';
+              css += '@media screen and (min-width: 769px) and (max-width: 1024px) {\n';
+              for(let id in window.__colRules.tablet) css += \`[data-col-id="\${id}"], #\${id} { \${window.__colRules.tablet[id]} }\n\`;
+              css += '}\n';
+              css += '@media screen and (max-width: 768px) {\n';
+              for(let id in window.__colRules.mobile) css += \`[data-col-id="\${id}"], #\${id} { \${window.__colRules.mobile[id]} }\n\`;
+              css += '}\n';
               styleBlock.innerHTML = css;
           }
-
           function getBreakpoint() {
               const w = window.innerWidth;
               if(w <= 768) return 'mobile';
               if(w <= 1024) return 'tablet';
               return 'desktop';
           }
-
           function updateRule(target, props) {
               const id = target.id || target.dataset.colId;
               if(!id) return;
               const bp = getBreakpoint();
               if(!window.__colRules[bp][id]) window.__colRules[bp][id] = '';
-
               let currentRule = window.__colRules[bp][id];
               for(let p in props) {
-                  const regex = new RegExp(p + '\\\\s*:[^;]+;', 'g');
+                  const regex = new RegExp(p + '\\s*:[^;]+;', 'g');
                   if(regex.test(currentRule)) {
                       currentRule = currentRule.replace(regex, p + ': ' + props[p] + ' !important;');
                   } else {
@@ -1203,7 +1884,6 @@
               window.__colRules[bp][id] = currentRule;
               renderStyles();
           }
-
           let selected = null;
           document.addEventListener('click', e => {
               if(e.target.tagName === 'A') e.preventDefault();
@@ -1217,7 +1897,6 @@
               selected.setAttribute('contenteditable', 'true');
               selected.focus();
           }, true);
-
           interact('body *').draggable({
               listeners: {
                   move(event) {
@@ -1238,11 +1917,7 @@
                       let y = (parseFloat(target.getAttribute('data-y')) || 0) + event.deltaRect.top;
                       target.setAttribute('data-x', x);
                       target.setAttribute('data-y', y);
-                      updateRule(target, {
-                          width: \`\${event.rect.width}px\`,
-                          height: \`\${event.rect.height}px\`,
-                          transform: \`translate(\${x}px, \${y}px)\`
-                      });
+                      updateRule(target, { width: \`\${event.rect.width}px\`, height: \`\${event.rect.height}px\`, transform: \`translate(\${x}px, \${y}px)\` });
                   }
               }
           });
@@ -1252,157 +1927,110 @@
       `;
 
       function setIframeSize(width) {
-          document.getElementById('gh-preview').style.width = width;
+        document.getElementById('gh-preview').style.width = width;
       }
 
       async function loadGhFileContent() {
-          const path = document.getElementById('gh-file-select').value;
-          const iframe = document.getElementById('gh-preview');
-          const toolbar = document.getElementById('builder-toolbar');
+        const path = document.getElementById('gh-file-select').value;
+        const iframe = document.getElementById('gh-preview');
+        const toolbar = document.getElementById('builder-toolbar');
 
-          if (!path) {
-              iframe.srcdoc = "";
-              toolbar.style.display = "none";
-              return;
+        if (!path) {
+          iframe.srcdoc = '';
+          toolbar.style.display = 'none';
+          return;
+        }
+
+        try {
+          toast('Loading visual builder...', 'green');
+          toolbar.style.display = 'flex';
+          iframe.srcdoc = '<html><body style="background:#0b101d;color:#fff;font-family:sans-serif;padding:30px"><h2>Loading visual canvas...</h2></body></html>';
+
+          const data = await fetchGh(`contents/${path}`);
+          currentFileSha = data.sha;
+          let content = decodeURIComponent(escape(atob(data.content)));
+
+          if (content.includes('</body>')) {
+            content = content.replace('</body>', VISUAL_BUILDER_SCRIPT + '</body>');
+          } else {
+            content += VISUAL_BUILDER_SCRIPT;
           }
 
-          try {
-              toast('Loading visual builder...', 'green');
-              toolbar.style.display = "flex";
-              iframe.srcdoc = `<html><body><h2>Loading preview...</h2></body></html>`;
-
-              const data = await fetchGh(`contents/${path}`);
-              currentFileSha = data.sha;
-              let content = decodeURIComponent(escape(atob(data.content)));
-
-              // Inject builder script before closing body tag
-              if (content.includes('</body>')) {
-                  content = content.replace('</body>', VISUAL_BUILDER_SCRIPT + '</body>');
-              } else {
-                  content += VISUAL_BUILDER_SCRIPT;
-              }
-
-              // Fix relative paths for srcdoc
-              const baseUrl = `<base href="https://${GH_OWNER}.github.io/${GH_REPO}/">`;
-              if (content.includes('<head>')) {
-                  content = content.replace('<head>', '<head>' + baseUrl);
-              }
-
-              iframe.srcdoc = content;
-              toast('Builder Ready! Drag or resize elements.', 'green');
-          } catch(e) {
-              toast(e.message, '');
+          const baseUrl = `<base href="https://${GH_OWNER}.github.io/${GH_REPO}/">`;
+          if (content.includes('<head>')) {
+            content = content.replace('<head>', '<head>' + baseUrl);
           }
+
+          iframe.srcdoc = content;
+          toast('Builder Ready! Click, drag, or edit elements.', 'green');
+        } catch (e) {
+          toast(e.message, '');
+        }
       }
 
       async function deployGhFile() {
-          const path = document.getElementById('gh-file-select').value;
-          const iframe = document.getElementById('gh-preview');
+        const path = document.getElementById('gh-file-select').value;
+        const iframe = document.getElementById('gh-preview');
+        if (!path) return;
 
-          if (!path) return;
+        showConfirm('Deploy Visual Changes', `Push updated layout directly to GitHub/Vercel for ${path}?`, async function() {
+          try {
+            toast('Pushing to GitHub...', 'green');
+            let finalHtml = iframe.contentWindow.document.documentElement.outerHTML;
+            finalHtml = finalHtml.replace(/<script defer src="https:\/\/cdn\.jsdelivr\.net\/npm\/interactjs\/dist\/interact\.min\.js"><\/script>/g, '');
+            finalHtml = finalHtml.replace(/<script id="col-builder-script">[\s\S]*?<\/script>/g, '');
+            finalHtml = finalHtml.replace(new RegExp(`<base href="https://${GH_OWNER}.github.io/${GH_REPO}/">`, 'g'), '');
+            finalHtml = finalHtml.replace(/ outline: 3px dashed (rgb\(56, 189, 248\)|#38bdf8);?/g, '');
+            finalHtml = finalHtml.replace(/ contenteditable="true"/g, '');
+            finalHtml = '<!DOCTYPE html>\n' + finalHtml;
 
-          showConfirm("Deploy Visual Changes", `This will push your dragged/resized layout directly to Vercel. Proceed?`, async function() {
-              try {
-                  toast('Pushing to GitHub...', 'green');
+            const base64Content = btoa(unescape(encodeURIComponent(finalHtml)));
+            const result = await fetchGh(`contents/${path}`, {
+              method: 'PUT',
+              body: JSON.stringify({ message: `Visual Builder Update: ${path}`, content: base64Content, sha: currentFileSha })
+            });
 
-                  // Extract HTML from iframe
-                  let finalHtml = iframe.contentWindow.document.documentElement.outerHTML;
-
-                  // Clean out builder scripts and base tags
-                  finalHtml = finalHtml.replace(/<script defer src="https:\/\/cdn\.jsdelivr\.net\/npm\/interactjs\/dist\/interact\.min\.js"><\/script>/g, '');
-                  finalHtml = finalHtml.replace(/<script id="col-builder-script">[\s\S]*?<\/script>/g, '');
-                  finalHtml = finalHtml.replace(new RegExp(`<base href="https://${GH_OWNER}.github.io/${GH_REPO}/">`, 'g'), '');
-
-                  // Clean up visual selection artifacts
-                  finalHtml = finalHtml.replace(/ outline: 3px dashed (rgb\(56, 189, 248\)|#38bdf8);?/g, '');
-                  finalHtml = finalHtml.replace(/ contenteditable="true"/g, '');
-
-                  // Restore doctype since outerHTML loses it
-                  finalHtml = "<!DOCTYPE html>\\n" + finalHtml;
-
-                  const base64Content = btoa(unescape(encodeURIComponent(finalHtml)));
-
-                  const result = await fetchGh(`contents/${path}`, {
-                      method: 'PUT',
-                      body: JSON.stringify({
-                          message: `Visual Builder Update: ${path}`,
-                          content: base64Content,
-                          sha: currentFileSha
-                      })
-                  });
-
-                  currentFileSha = result.content.sha;
-                  toast('🚀 Deployed Successfully! Vercel is building...', 'green');
-              } catch(e) {
-                  toast(e.message, '');
-              }
-          });
+            currentFileSha = result.content.sha;
+            toast('Deployed Successfully! Vercel build triggered.', 'green');
+          } catch (e) {
+            toast(e.message, '');
+          }
+        });
       }
-
 
       function switchTab(tabId, event) {
-          document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-          document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
 
-          document.getElementById(tabId).classList.add('active');
-          event.currentTarget.classList.add('active');
-          
-          if (tabId === 'tab-analytics') {
-              loadAnalytics();
-          }
+        document.getElementById(tabId).classList.add('active');
+        if (event && event.currentTarget) event.currentTarget.classList.add('active');
+
+        if (tabId === 'tab-analytics') loadAnalytics();
+        if (tabId === 'tab-qrs') renderQrCommand();
+        if (tabId === 'tab-users') renderUsers();
+        if (tabId === 'tab-logs') renderFeedback();
       }
 
-      async function loadAnalytics() {
-          const grid = document.getElementById('analyticsGrid');
-          if (!grid) return;
-          if (!window.supabaseClient) {
-              grid.innerHTML = '<div style="color: var(--dim); grid-column: 1 / -1; text-align: center">Supabase not configured or client missing.</div>';
-              return;
-          }
-          try {
-              const { data, error } = await window.supabaseClient.from('admin_stats').select('*').single();
-              if (error) throw error;
-              
-              grid.innerHTML = `
-                  <div class="stat-card" style="background: var(--bg-color); padding: 20px; border-radius: 8px; border: 1px solid var(--border-light); text-align: center">
-                      <div style="font-size: 0.9rem; color: var(--dim)">Total Users</div>
-                      <div style="font-size: 2rem; color: var(--primary); font-family: var(--mono)">${data.total_users || 0}</div>
-                  </div>
-                  <div class="stat-card" style="background: var(--bg-color); padding: 20px; border-radius: 8px; border: 1px solid var(--border-light); text-align: center">
-                      <div style="font-size: 0.9rem; color: var(--dim)">Daily Active (DAU)</div>
-                      <div style="font-size: 2rem; color: var(--success); font-family: var(--mono)">${data.dau || 0}</div>
-                  </div>
-                  <div class="stat-card" style="background: var(--bg-color); padding: 20px; border-radius: 8px; border: 1px solid var(--border-light); text-align: center">
-                      <div style="font-size: 0.9rem; color: var(--dim)">Weekly Active (WAU)</div>
-                      <div style="font-size: 2rem; color: var(--success); font-family: var(--mono)">${data.wau || 0}</div>
-                  </div>
-                  <div class="stat-card" style="background: var(--bg-color); padding: 20px; border-radius: 8px; border: 1px solid var(--border-light); text-align: center">
-                      <div style="font-size: 0.9rem; color: var(--dim)">Levels Completed</div>
-                      <div style="font-size: 2rem; color: var(--accent); font-family: var(--mono)">${data.total_completions || 0}</div>
-                  </div>
-                  <div class="stat-card" style="background: var(--bg-color); padding: 20px; border-radius: 8px; border: 1px solid var(--border-light); text-align: center">
-                      <div style="font-size: 0.9rem; color: var(--dim)">Avg Score</div>
-                      <div style="font-size: 2rem; color: var(--warning); font-family: var(--mono)">${Math.round(data.avg_score || 0)}</div>
-                  </div>
-                  <div class="stat-card" style="background: var(--bg-color); padding: 20px; border-radius: 8px; border: 1px solid var(--border-light); text-align: center">
-                      <div style="font-size: 0.9rem; color: var(--dim)">Weekly Feedback</div>
-                      <div style="font-size: 2rem; color: #fff; font-family: var(--mono)">${data.weekly_feedback || 0}</div>
-                  </div>
-                  <div class="stat-card" style="background: var(--bg-color); padding: 20px; border-radius: 8px; border: 1px solid var(--border-light); text-align: center">
-                      <div style="font-size: 0.9rem; color: var(--dim)">Certs Issued</div>
-                      <div style="font-size: 2rem; color: var(--ion); font-family: var(--mono)">${data.certs_issued || 0}</div>
-                  </div>
-              `;
-          } catch(e) {
-              console.error(e);
-              grid.innerHTML = '<div style="color: var(--danger); grid-column: 1 / -1; text-align: center">Error loading analytics or RLS policy prevents viewing. Ensure you have admin access.</div>';
-          }
+      function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
       }
+
+      window.addEventListener('load', function() {
+        const cm = document.getElementById('confirmMo');
+        if (cm) cm.addEventListener('click', function(e) { if (e.target === this) closeConfirm(); });
+        setTimeout(checkAdminAccess, 500);
+      });
     </script>
 
     <footer class="sf">
       <div class="fi">
-        <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
+        <div class="fb"><span style="color: var(--primary); font-weight: 800">CoL</span> &middot; Class Of Learners Admin</div>
         <div class="fl">
           <a href="privacy">Privacy</a>
           <a href="terms">Terms</a>

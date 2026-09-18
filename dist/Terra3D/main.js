@@ -609,7 +609,7 @@ function onMouseMove(event) {
             }
             const tooltip = document.getElementById('country-tooltip');
             if (tooltip) {
-                document.getElementById('tooltip-name').textContent = '🌕 The Moon';
+                document.getElementById('tooltip-name').textContent = 'The Moon';
                 document.getElementById('tooltip-region').textContent = 'Earth\'s Natural Satellite (Easter Egg)';
                 tooltip.classList.add('visible');
                 tooltip.style.left = (event.clientX + 15) + 'px';

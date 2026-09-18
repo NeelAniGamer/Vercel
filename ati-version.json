@@ -1,9 +1,9 @@
 {
-  "version": "3.2.0",
-  "versionCode": 320,
+  "version": "3.2.1",
+  "versionCode": 321,
   "releaseDate": "2026-09-18",
   "downloadUrl": "https://github.com/NeelAniGamer/Vercel/releases/download/Projects/AdvancedTypingInstructor_Setup.exe",
-  "changelog": "v3.2.0: 3-Variable Dynamic Gem Valuation (Typing Duration & Cadence, Word Difficulty & Phonetic Length, and AI Weak vs Strong Key Mastery); Fair Level Gem Maximum Ceiling; Anti-Stress & Speed Flow Shop additions (Serenity Stress Nullifier, Rhythm Cadence Metronome, Flow Stabilizer, Graceful Backspace Buffer, Neuro Weak-Spot Amplifier, Overdrive Velocity Matrix, Fortune Magnet, Flame Guardian); Legendary Shop Forge recipes (Tranquil Overdrive & Neuro Conqueror); and Universal In-Place Upgrader for seamless updates across all previous installations.",
+  "changelog": "v3.2.1: Native Windows System Tray ('BG Taskbar') integration — Closing the app window minimizes to the system tray rather than killing the process, keeping background cadence tracking and AI weak-key adaptation active; Windows startup launches silently into the notification area; Single-instance handshake restores running app on shortcut launch; Context menu with dashboard quick launch, live background keystroke stats, and Windows autostart toggle.",
   "mandatory": false,
   "minRequiredVersion": "1.0.0"
 }

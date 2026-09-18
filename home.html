@@ -2218,7 +2218,7 @@
                   <line x1="6" y1="1" x2="6" y2="4" />
                   <line x1="10" y1="1" x2="10" y2="4" />
                   <line x1="14" y1="1" x2="14" y2="4" /></svg
-                >Gesture Control</a
+                >Perceptus Flow</a
               ><a href="rpg"
                 ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg
@@ -2232,7 +2232,7 @@
                   <rect x="20" y="14" width="2" height="2" />
                   <rect x="14" y="20" width="2" height="2" />
                   <rect x="20" y="20" width="2" height="2" /></svg
-                >QR Generator</a
+                >QR Studio Matrix</a
               ><a href="Terra3D/"
                 ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="10" />
@@ -2268,30 +2268,12 @@
           <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
         </svg>
       </button>
-      <a href="home-zoom" class="nav-dl-btn desktop-dl" style="background: transparent; border: 1px solid var(--ion); color: var(--ion); margin-right: 8px;">🚀 3D Zoom View</a>
       <a href="download" class="nav-dl-btn desktop-dl">Downloads Hub</a>
     </nav>
 
     <section class="hero" id="heroSection">
-      <canvas id="orrery"></canvas>
       <div class="hvig"></div>
       <div class="hvigb"></div>
-
-      <!-- 3D Interactive Control Deck (HUD) -->
-      <div class="orrery-hud" id="orreryHud" aria-label="3D Laboratory Controls">
-        <button class="hud-btn hud-mode-btn" id="stageModeBtn" title="Toggle 3D Lab / Stage Mode">
-          <span class="hud-mode-icon">🌌</span>
-          <span class="hud-mode-label">3D Lab Mode</span>
-        </button>
-        <div class="hud-group">
-          <button class="hud-btn" id="orbitToggleBtn" title="Pause / Resume Orbital Revolution">⏸ Pause</button>
-          <button class="hud-btn" id="speedToggleBtn" title="Cycle Orbital Speed (1x, 2x, 0.5x)">1.0x</button>
-          <button class="hud-btn" id="zoomInBtn" title="Zoom In (+)">+</button>
-          <button class="hud-btn" id="zoomOutBtn" title="Zoom Out (−)">&minus;</button>
-          <button class="hud-btn" id="resetCamBtn" title="Reset Camera Orientation & Zoom">⟲ Reset</button>
-          <button class="hud-btn hud-sound-btn" id="soundToggleBtn" title="Toggle Procedural Synth Chimes">🔇 Sound</button>
-        </div>
-      </div>
 
       <div class="hc" id="heroContent">
         <div class="hey">Mumbai &middot; India &middot; Est.&nbsp;2024</div>
@@ -2305,36 +2287,36 @@
             >View Projects
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7" /></svg
           ></a>
-          <a href="home-zoom" class="btn-g" style="border-color: var(--ion); color: var(--ion);">🚀 3D Zoom Experience &#8594;</a>
+          <a href="download" class="btn-g">Apps &amp; Downloads &#8594;</a>
           <a href="about" class="btn-g">Our Story &#8594;</a>
           <a href="COL.apk" class="btn-g mobile-dl" download style="border-color: var(--signal); color: var(--signal)">Download Android App</a>
         </div>
       </div>
 
       <!-- Planetary Quick-Focus Dock -->
-      <nav class="orrery-dock" id="orreryDock" aria-label="Quick Focus Planetary Dock">
-        <div class="dock-label">FOCUS</div>
+      <nav class="orrery-dock" id="orreryDock" aria-label="Quick Focus Project Dock">
+        <div class="dock-label">ENGINES</div>
         <div class="dock-chips">
           <button class="dock-chip active" data-node="core" style="--chip-glow: var(--signal)">
-            <span class="dock-icon">🪐</span><span class="dock-name">Core</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10"/></svg><span class="dock-name">Core</span>
           </button>
           <button class="dock-chip" data-node="Traffic" style="--chip-glow: var(--signal)">
-            <span class="dock-icon">🏎️</span><span class="dock-name">Traffic Hero</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg><span class="dock-name">Traffic Hero</span>
           </button>
           <button class="dock-chip" data-node="Solar" style="--chip-glow: var(--teal)">
-            <span class="dock-icon">☀️</span><span class="dock-name">Solar Engine</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg><span class="dock-name">Solar Engine</span>
           </button>
           <button class="dock-chip" data-node="ATI" style="--chip-glow: var(--ion)">
-            <span class="dock-icon">⌨️</span><span class="dock-name">ATI Typing</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg><span class="dock-name">ATI Typing</span>
           </button>
           <button class="dock-chip" data-node="Gesture" style="--chip-glow: var(--plasma)">
-            <span class="dock-icon">👁️</span><span class="dock-name">Vision Engine</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg><span class="dock-name">Perceptus Flow</span>
           </button>
           <button class="dock-chip" data-node="RPG" style="--chip-glow: var(--em)">
-            <span class="dock-icon">🎮</span><span class="dock-name">RPG Game</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span class="dock-name">RPG Game</span>
           </button>
           <button class="dock-chip" data-node="QR" style="--chip-glow: var(--dim)">
-            <span class="dock-icon">📱</span><span class="dock-name">QR Matrix</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span class="dock-name">QR Matrix</span>
           </button>
         </div>
       </nav>
@@ -2342,7 +2324,7 @@
       <!-- Holographic In-Place Node Inspector Card -->
       <div class="node-inspector" id="nodeInspector" aria-hidden="true">
         <div class="ni-header">
-          <div class="ni-icon" id="niIcon">🏎️</div>
+          <div class="ni-icon" id="niIcon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="8" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="7.5" cy="15.5" r="1.5"/><circle cx="16.5" cy="15.5" r="1.5"/></svg></div>
           <div class="ni-meta">
             <div class="ni-badge" id="niBadge">3D Simulation & AI</div>
             <h3 class="ni-title" id="niTitle">Mumbai Traffic Hero</h3>
@@ -2363,7 +2345,7 @@
             Launch Engine <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
           <button class="ni-btn ni-btn-secondary" id="niFocusBtn">
-            Center View 🎯
+            Center View
           </button>
           <button class="ni-btn ni-btn-ghost" id="niDismissBtn">
             Return Orbit ✕
@@ -2396,18 +2378,24 @@
     <section class="vp-section">
       <div class="vp-grid">
         <div class="vp-card rv">
-          <div class="vp-icon">🚀</div>
+          <div class="vp-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          </div>
           <h3 class="vp-title">Performance First</h3>
           <p class="vp-desc">Our tools are built natively without bulky frameworks, ensuring lightning-fast load times and seamless cross-device compatibility.</p>
         </div>
         <div class="vp-card rv">
-          <div class="vp-icon">💡</div>
+          <div class="vp-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/><circle cx="12" cy="12" r="5"/></svg>
+          </div>
           <h3 class="vp-title">Interactive Learning</h3>
           <p class="vp-desc">Move beyond textbooks and static pages. We create immersive environments where you learn by experimenting in real-time.</p>
         </div>
         <div class="vp-card rv">
-          <div class="vp-icon">🌍</div>
-          <h3 class="vp-title">Open & Accessible</h3>
+          <div class="vp-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
+          <h3 class="vp-title">Open &amp; Accessible</h3>
           <p class="vp-desc">Education should have zero barriers. Everything we build is free to access and meticulously designed for the global community.</p>
         </div>
       </div>
@@ -2460,23 +2448,23 @@
             </div></div
         ></a>
         <a href="gesture" class="pc ct" data-delay="160"
-          ><div class="badge bp">Prototype</div>
+          ><div class="badge bp">Autonomous AI</div>
           <div class="pv" style="background: #060d10">
             <div class="vg">
               <div class="gg"></div>
               <div class="gsc"></div>
-              <div class="gh">&#128400;&#65039;</div>
+              <div class="gh"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg></div>
             </div>
           </div>
           <div class="pb">
             <div class="pn">03</div>
-            <h3 class="pname">Perceptus Vision Engine</h3>
+            <h3 class="pname">Perceptus Flow: Vision Co-Pilot</h3>
             <p class="pdesc">
-              Push-producer spatial machine vision and hand tracking. Stream 10 Hz continuous posture and discrete gesture events to local Python desktop agents or remote APIs.
+              Touchless spatial machine vision and multimodal AI co-pilot using standard webcams. Zero extra hardware required — control cursor, pinch-click, scroll, and air-draw in mid-air.
             </p>
           </div>
           <div class="pf">
-            <div class="ptags"><span class="tag">CV</span><span class="tag">Python</span></div>
+            <div class="ptags"><span class="tag">AI Vision</span><span class="tag">Spatial UI</span><span class="tag">Webcam</span></div>
             <div class="plink">
               Explore <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
             </div></div
@@ -2491,15 +2479,15 @@
           </div>
           <div class="pb">
             <div class="pn">04</div>
-            <h3 class="pname">QR Code Generator</h3>
+            <h3 class="pname">QR Studio Matrix</h3>
             <p class="pdesc">
-              Generate custom, fully scannable QR codes instantly. Type any URL or text, customize colors, add your brand logo, and download in seconds with a responsive, modern interface.
+              Next-generation static &amp; dynamic QR engine with cloud redirection, real-time scan analytics, custom geometric styles, logo embedding, camera scanner, and bulk generation.
             </p>
           </div>
           <div class="pf">
-            <div class="ptags"><span class="tag">Tool</span><span class="tag">JavaScript</span></div>
+            <div class="ptags"><span class="tag">Dynamic QR</span><span class="tag">Analytics</span><span class="tag">Cloud Sync</span></div>
             <div class="plink">
-              Generate <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+              Studio <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
             </div></div
         ></a>
         <a href="rpg" class="pc cp" data-delay="320"
@@ -2508,7 +2496,7 @@
             <div class="vr">
               <div class="rc"></div>
               <div class="rg"></div>
-              <div class="ri">&#9876;&#65039;</div>
+              <div class="ri"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M16 16l4 4"/><path d="M19 21l2-2"/></svg></div>
               <div class="ro">
                 <div class="rob"></div>
                 <div class="rob"></div>
@@ -3399,9 +3387,6 @@
 
     <div class="toast" id="toast"></div>
 
-    <!-- 3D Interactive World Background -->
-    <script defer src="col-3d.js"></script>
-
     <script>
       // ============= CURSOR HOVER EFFECTS =============
       ;(function () {
@@ -3578,10 +3563,10 @@
             badge: 'Studio Engine Hub',
             key: 'signal',
             page: 'about',
-            icon: '🪐',
+            icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10"/></svg>',
             stats: {
               status: 'ONLINE',
-              engine: 'NATIVE WEBGL',
+              engine: 'STUDIO ARCHITECTURE',
               orbit: 'R=0 CORE',
               fps: '60 STABLE'
             },
@@ -3593,7 +3578,7 @@
             badge: '3D Simulation & AI',
             key: 'signal',
             page: 'Traffic/Driving',
-            icon: '🏎️',
+            icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>',
             stats: {
               status: 'ONLINE',
               engine: 'THREE.JS / WEBGL',
@@ -3608,7 +3593,7 @@
             badge: 'Astrophysics & Orbitals',
             key: 'teal',
             page: 'solar',
-            icon: '☀️',
+            icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>',
             stats: {
               status: 'ONLINE',
               engine: 'HIGH-PRECISION 64B',
@@ -3623,7 +3608,7 @@
             badge: 'Interactive Learning',
             key: 'ion',
             page: 'ati',
-            icon: '⌨️',
+            icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>',
             stats: {
               status: 'ONLINE',
               engine: 'TOUCH TYPING UX',
@@ -3634,26 +3619,26 @@
             cta: 'Launch ATI'
           },
           Gesture: {
-            name: 'Perceptus Vision Engine',
+            name: 'Perceptus Flow: Vision Co-Pilot',
             badge: 'Spatial Machine Vision',
             key: 'plasma',
             page: 'gesture',
-            icon: '👁️',
+            icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>',
             stats: {
               status: 'ONLINE',
-              engine: '10 HZ CV PIPELINE',
+              engine: '60 FPS AI CV PIPELINE',
               orbit: 'R=17 AU',
               fps: '60 STABLE'
             },
-            desc: 'Contactless spatial human-computer interaction engine. Streams 10 Hz continuous posture and discrete gesture events for hands-free 3D control.',
-            cta: 'Explore Vision Engine'
+            desc: 'Touchless spatial machine vision and multimodal AI co-pilot using standard webcams. Zero extra hardware required — control cursor, pinch-click, scroll, and air-draw in mid-air.',
+            cta: 'Launch Perceptus Flow'
           },
           RPG: {
             name: 'RPG Game Engine',
             badge: 'Gameplay & Physics',
             key: 'em',
             page: 'rpg',
-            icon: '🎮',
+            icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
             stats: {
               status: 'ACTIVE DEV',
               engine: 'CUSTOM CANVAS 2D',
@@ -3668,15 +3653,15 @@
             badge: 'Utility & Cryptography',
             key: 'dim',
             page: 'qr',
-            icon: '📱',
+            icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>',
             stats: {
               status: 'ONLINE',
-              engine: 'FAST CLIENT JS',
+              engine: 'CLOUD DYNAMIC JS',
               orbit: 'R=30 AU',
               fps: '60 STABLE'
             },
-            desc: 'Generate custom, scannable QR codes instantly. Customize dot shapes, vibrant gradients, and embedded logos with real-time high-res export.',
-            cta: 'Generate QR Code'
+            desc: 'Generate static & dynamic QR codes with live redirect tracking, custom dot geometries, gradient fills, embedded logos, camera/file scanner, and batch ZIP export.',
+            cta: 'Open QR Studio'
           }
         }
 
@@ -3724,7 +3709,7 @@
 
           currentNodeKey = nodeKey
 
-          if (niIcon) niIcon.textContent = data.icon
+          if (niIcon) niIcon.innerHTML = data.icon
           if (niBadge) {
             niBadge.textContent = data.badge
             niBadge.style.color = 'var(--' + data.key + ')'
@@ -3796,7 +3781,7 @@
           stageModeBtn.addEventListener('click', function () {
             var isStage = heroSection.classList.toggle('stage-mode')
             var label = stageModeBtn.querySelector('.hud-mode-label')
-            if (label) label.textContent = isStage ? 'Exit 3D Lab ✕' : '3D Lab Mode'
+            if (label) label.textContent = isStage ? 'Exit 3D Lab' : '3D Lab Mode'
             if (window.__col3d && window.__col3d.setStageMode) {
               window.__col3d.setStageMode(isStage)
             }
@@ -3811,7 +3796,7 @@
           orbitToggleBtn.addEventListener('click', function () {
             if (!window.__col3d) return
             var isAuto = window.__col3d.toggleAutoOrbit()
-            orbitToggleBtn.textContent = isAuto ? '⏸ Pause' : '▶ Orbit'
+            orbitToggleBtn.textContent = isAuto ? 'Pause' : 'Orbit'
             if (window.__col3d.playChime) window.__col3d.playChime('ping')
           })
         }
@@ -3854,12 +3839,12 @@
         if (soundToggleBtn) {
           var isSound = false
           try { isSound = localStorage.getItem('col_3d_sound') === 'true' } catch(e) {}
-          soundToggleBtn.textContent = isSound ? '🔊 Sound' : '🔇 Sound'
+          soundToggleBtn.textContent = isSound ? 'Audio On' : 'Audio Muted'
 
           soundToggleBtn.addEventListener('click', function () {
             if (!window.__col3d) return
             var s = window.__col3d.toggleSound()
-            soundToggleBtn.textContent = s ? '🔊 Sound' : '🔇 Sound'
+            soundToggleBtn.textContent = s ? 'Audio On' : 'Audio Muted'
           })
         }
 

@@ -13,6 +13,7 @@
 <script defer src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 <script defer src="qr-dynamic.js"></script>
 <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/qr-editor" />
 
@@ -166,10 +167,10 @@ body::after {
 .tc { padding: 25px 20px; background: var(--panel); border: 1px solid var(--border); border-radius: 16px; cursor: pointer; transition: 0.3s; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.1); font: inherit; color: inherit; width: 100%; }
 .tc:hover { border-color: var(--pri); transform: translateY(-5px); box-shadow: 0 15px 30px var(--glow); background: var(--panel-hover); }
 .tc.sel { border-color: var(--pri); background: rgba(16,185,129,0.08); box-shadow: 0 0 0 2px var(--pri), inset 0 0 20px var(--glow); }
-.tc-icon { font-size: 2.5rem; margin-bottom: 15px; transition: 0.3s; }
-.tc:hover .tc-icon { transform: scale(1.1); }
-.tc-info h4 { font-size: 1.05rem; font-weight: 800; color: var(--txt); margin-bottom: 5px; }
-.tc-info p { font-size: 0.8rem; color: var(--txt-m); line-height: 1.4; }
+.tc-icon { display: flex; align-items: center; justify-content: center; height: 48px; margin-bottom: 15px; transition: 0.3s; color: var(--pri); }
+.tc-icon svg { width: 34px; height: 34px; stroke: var(--pri); transition: 0.3s; }
+.tc:hover .tc-icon svg { transform: scale(1.12); filter: drop-shadow(0 0 10px var(--glow-strong)); stroke: var(--pri-hover); }
+.tc.sel .tc-icon svg { stroke: var(--pri-hover); filter: drop-shadow(0 0 12px var(--glow-strong)); }
 
 .cf { display: flex; flex-direction: column; gap: 20px; max-width: 800px; }
 .fl { font-size: 0.8rem; font-weight: 800; color: var(--txt-m); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; display: block; }
@@ -497,11 +498,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
             <button class="dropdown-btn act" aria-expanded="false" aria-haspopup="true" onclick="this.parentElement.classList.toggle('active'); this.setAttribute('aria-expanded', this.parentElement.classList.contains('active'))">Projects <span class="darr" aria-hidden="true">▼</span></button>
             <div class="dropdown-content">
                 <div class="dropdown-content-inner">
-                    <a href="ati">Typing Instructor <span>⌨️</span></a>
-                    <a href="solar">Solar Engine <span>🌍</span></a>
-                    <a href="gesture">Gesture Control <span>🖐️</span></a>
-                    <a href="rpg">RPG Game <span>⚔️</span></a>
-                    <a href="qr">QR Generator <span>⬛</span></a>
+                    <a href="ati">Typing Instructor <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg></a>
+                    <a href="solar">Solar Engine <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg></a>
+                    <a href="gesture">Perceptus Flow <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg></a>
+                    <a href="rpg">RPG Game <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></a>
+                    <a href="qr" class="active">QR Studio Matrix <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></a>
                 </div>
             </div>
         </div>
@@ -529,21 +530,46 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 <div class="qr-app" role="main">
 <aside class="app-sb">
   <div class="sb-top">
-    <div class="sb-top-title">⬛ QR STUDIO</div>
+    <div class="sb-top-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 6px;"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      QR STUDIO MATRIX
+    </div>
     <div class="sb-top-sub">By Class Of Learners</div>
   </div>
   
   <div class="sb-lbl">Create</div>
-  <a href="qr-editor" class="sb-btn act"><span class="sb-icon">⊕</span>New QR</a>
-  <a href="#" onclick="openBulkModal(); return false;" class="sb-btn"><span class="sb-icon">🎯</span>Bulk QR generation</a>
+  <a href="qr-editor" class="sb-btn act">
+    <span class="sb-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+    New QR
+  </a>
+  <a href="#" onclick="openBulkModal(); return false;" class="sb-btn">
+    <span class="sb-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
+    Bulk Generator
+  </a>
+  <a href="#" onclick="openScannerModal(); return false;" class="sb-btn">
+    <span class="sb-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="3" y1="12" x2="21" y2="12"/></svg></span>
+    Scan QR Code
+  </a>
   
   <div class="sb-lbl" style="margin-top: 15px;">Manage</div>
-  <a href="qr.html?view=qrs" class="sb-btn"><span class="sb-icon">📁</span>My QR codes</a>
-  <a href="qr.html?view=stats" class="sb-btn"><span class="sb-icon">📊</span>Stats</a>
-  <a href="qr.html?view=templates" class="sb-btn"><span class="sb-icon">📑</span>Templates</a>
+  <a href="qr.html?view=qrs" class="sb-btn">
+    <span class="sb-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>
+    My QR codes
+  </a>
+  <a href="qr.html?view=stats" class="sb-btn">
+    <span class="sb-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+    Stats
+  </a>
+  <a href="qr.html?view=templates" class="sb-btn">
+    <span class="sb-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg></span>
+    Templates
+  </a>
   
   <div class="sb-lbl" style="margin-top: 15px;">Settings</div>
-  <button class="sb-btn" onclick="if(window.openGlobalLogin) window.openGlobalLogin(); else window.location.href='qr.html?login=true';"><span class="sb-icon">⚙️</span>Account</button>
+  <button class="sb-btn" onclick="if(window.openGlobalLogin) window.openGlobalLogin(); else window.location.href='qr.html?login=true';">
+    <span class="sb-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
+    Account
+  </button>
   
   <div class="sb-foot">
     <button class="sign-btn" id="sbSignBtn" onclick="if(window.openGlobalLogin) window.openGlobalLogin();">
@@ -698,7 +724,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
         <div class="ds open" id="dsQS">
           <button class="dsh" onclick="toggleDS('dsQS')" aria-expanded="true" aria-controls="dsQSb">
-            <div class="dsh-l"><div class="dsi">⚡</div><div><div class="dst">Quick Styles</div><div class="dss">Apply pre-designed style presets with one click.</div></div></div>
+            <div class="dsh-l"><div class="dsi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div><div><div class="dst">Quick Styles</div><div class="dss">Apply pre-designed style presets with one click.</div></div></div>
             <span class="dschev" aria-hidden="true">▼</span>
           </button>
           <div class="dsb open" id="dsQSb">
@@ -753,7 +779,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
         
         <div class="ds" id="dsCl">
           <button class="dsh" onclick="toggleDS('dsCl')" aria-expanded="false" aria-controls="dsClb">
-            <div class="dsh-l"><div class="dsi">🎨</div><div><div class="dst">Border and background</div><div class="dss">Modify colours and gradients.</div></div></div>
+            <div class="dsh-l"><div class="dsi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.563-2.512 5.563-5.563C22 6.5 17.5 2 12 2Z"/></svg></div><div><div class="dst">Border and background</div><div class="dss">Modify colours and gradients.</div></div></div>
             <span class="dschev" aria-hidden="true">▼</span>
           </button>
           <div class="dsb" id="dsClb">
@@ -850,7 +876,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
             <label style="font-size:0.85rem; font-weight:600; color:var(--q-text-m); margin-bottom:10px; display:block;">Select a logo</label>
             <div class="logo-ps" id="logoPs"></div>
             <div class="logo-up" onclick="document.getElementById('lFile').click()" role="button" tabindex="0" aria-label="Upload logo image" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();document.getElementById('lFile').click();}">
-              <div class="up-icon">⬆️</div>
+              <div class="up-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin:0 auto; stroke:var(--pri);"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
               <p>Add your logo <span style="font-size:0.8rem; font-weight:400; color:var(--q-text-m);">(JPG, JPEG, or PNG / 2MB max)</span></p>
             </div>
             
@@ -865,12 +891,12 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
             </div>
 
             <input type="file" id="lFile" accept="image/*" style="display:none" onchange="handleLogo(this)" aria-label="Upload logo image">
-            <button id="rmLogo" style="display:none;width:100%;padding:12px;margin-top:15px;background:var(--q-panel);border:1px solid #ef4444;border-radius:12px;color:#ef4444;font-weight:600;cursor:pointer" onclick="rmL()">✖ Remove Current Logo</button>
+            <button id="rmLogo" style="display:none;width:100%;padding:12px;margin-top:15px;background:var(--q-panel);border:1px solid #ef4444;border-radius:12px;color:#ef4444;font-weight:600;cursor:pointer;align-items:center;justify-content:center;gap:8px;" onclick="rmL()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Remove Current Logo</button>
           </div>
         </div>
 
       </div>
-      <div class="sn-row"><button class="btn-bk" onclick="goStep(2)" style="background:var(--q-bg); color:var(--q-text); border:1px solid var(--q-border);">← Back</button><button class="btn-cp" onclick="saveQR(false)">✅ Finalize & Save</button></div>
+      <div class="sn-row"><button class="btn-bk" onclick="goStep(2)" style="background:var(--q-bg); color:var(--q-text); border:1px solid var(--q-border); display:flex; align-items:center; gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg> Back</button><button class="btn-cp" onclick="saveQR(false)" style="display:flex; align-items:center; gap:8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Finalize & Save</button></div>
     </div>
     
     <footer class="site-footer" style="width: 100%; padding: 40px 20px 30px; text-align: center; border-top: 1px solid var(--border); background: var(--nav); margin-top: auto;">
@@ -887,7 +913,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 <aside class="prev-p">
   <div class="prev-hd">
     <h3>Real-Time Preview</h3>
-    <div class="prev-typ" id="prevBadge">🌐 Website</div>
+    <div class="prev-typ" id="prevBadge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> <span>Website</span></div>
   </div>
   <div class="prev-cw">
     <div id="qrWrap"></div>
@@ -900,7 +926,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   </div>
   <div class="prev-act">
     <div class="dlr">
-      <button class="dl-main" onclick="dlQR('png')">⬇️ Download PNG</button>
+      <button class="dl-main" onclick="dlQR('png')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download PNG
+      </button>
       <label for="dlSz" class="sr-only">Download size</label>
       <select class="dl-sz" id="dlSz" title="Export Resolution">
         <option value="400">400px (Mobile)</option>
@@ -911,12 +940,27 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
       </select>
     </div>
     <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-      <button class="dl-svg" onclick="dlQR('copy')" title="Copy directly to clipboard" style="padding:10px; font-size:0.8rem;">📋 Copy Image</button>
-      <button class="dl-svg" onclick="dlQR('svg')" title="Lossless Vector format" style="padding:10px; font-size:0.8rem;">📐 Vector (SVG)</button>
-      <button class="dl-svg" onclick="dlQR('webp')" title="Modern WebP image" style="padding:10px; font-size:0.8rem;">🖼️ WebP</button>
-      <button class="dl-svg" onclick="dlQR('print')" title="Generate printable flyer" style="padding:10px; font-size:0.8rem;">🖨️ Print Sheet</button>
+      <button class="dl-svg" onclick="dlQR('copy')" title="Copy directly to clipboard" style="padding:10px; font-size:0.8rem; display:flex; align-items:center; justify-content:center; gap:6px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy Image
+      </button>
+      <button class="dl-svg" onclick="dlQR('svg')" title="Lossless Vector format" style="padding:10px; font-size:0.8rem; display:flex; align-items:center; justify-content:center; gap:6px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+        Vector (SVG)
+      </button>
+      <button class="dl-svg" onclick="dlQR('webp')" title="Modern WebP image" style="padding:10px; font-size:0.8rem; display:flex; align-items:center; justify-content:center; gap:6px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        WebP
+      </button>
+      <button class="dl-svg" onclick="dlQR('print')" title="Generate printable flyer" style="padding:10px; font-size:0.8rem; display:flex; align-items:center; justify-content:center; gap:6px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Print Sheet
+      </button>
     </div>
-    <button class="sv-btn" onclick="saveQR(false)">💾 Save to Dashboard</button>
+    <button class="sv-btn" onclick="saveQR(false)" style="display:flex; align-items:center; justify-content:center; gap:8px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      Save to Dashboard
+    </button>
   </div>
 </aside>
 </div>
@@ -976,7 +1020,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 <div class="modal-backdrop" id="bulkModal" role="dialog" aria-modal="true" aria-labelledby="bulkModalTitle">
     <div class="modal-card">
         <div class="modal-header">
-            <div class="modal-icon" aria-hidden="true">🎯</div>
+            <div class="modal-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
             <h2 class="modal-title" id="bulkModalTitle">Bulk QR Generator</h2>
         </div>
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
@@ -998,6 +1042,69 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
                     Generate & Download
                 </button>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- SCANNER MODAL -->
+<div class="modal-backdrop" id="scannerModal" role="dialog" aria-modal="true" aria-labelledby="scannerModalTitle">
+    <div class="modal-card" style="max-width: 560px;">
+        <div class="modal-header" style="justify-content: space-between; align-items: center;">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div class="modal-icon" aria-hidden="true">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3"/></svg>
+                </div>
+                <h2 class="modal-title" id="scannerModalTitle">QR Scanner & Decoder</h2>
+            </div>
+            <button onclick="closeScannerModal()" style="background:none; border:none; color:var(--txt-m); cursor:pointer; padding:6px; border-radius:6px; display:flex; align-items:center; justify-content:center;" aria-label="Close modal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+        </div>
+        <p class="modal-desc" style="margin-bottom: 15px;">Scan an existing QR code using your webcam or decode directly from an image file.</p>
+        
+        <div style="display:flex; gap:10px; margin-bottom: 20px;">
+            <button class="btn-bk" id="scanTabCam" onclick="switchScanTab('camera')" style="flex:1; padding:10px; font-size:0.9rem; border-color:var(--pri); color:var(--pri);">Webcam Stream</button>
+            <button class="btn-bk" id="scanTabFile" onclick="switchScanTab('file')" style="flex:1; padding:10px; font-size:0.9rem;">Upload Image File</button>
+        </div>
+
+        <!-- Camera Section -->
+        <div id="scanCamSection" style="display:flex; flex-direction:column; align-items:center;">
+            <div style="position:relative; width:100%; height:260px; overflow:hidden; border-radius:12px; background:#000; border:1px solid var(--border); display:flex; align-items:center; justify-content:center;">
+                <video id="scanVideo" playsinline autoplay muted style="width:100%; height:100%; object-fit:cover; display:none;"></video>
+                <canvas id="scanCanvas" style="display:none;"></canvas>
+                <div id="scanOverlay" style="position:absolute; inset:20px; border:2px dashed rgba(16,185,129,0.7); border-radius:12px; pointer-events:none; display:none; box-shadow: 0 0 20px rgba(16,185,129,0.3);"></div>
+                <div id="camPrompt" style="padding:30px 20px; text-align:center; color:var(--txt-m);">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:10px; display:block; margin:0 auto 10px; stroke:var(--pri);"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    <p style="font-size:0.9rem; margin-bottom:15px;">Camera access required to scan live QR codes</p>
+                    <button class="btn-nx" style="margin:0 auto; padding:8px 20px; font-size:0.9rem;" onclick="startCamScanner()">Start Camera</button>
+                </div>
+            </div>
+            <div id="camStatus" style="font-size:0.85rem; color:var(--txt-m); margin-top:10px; font-family:var(--font-mono);">Standby</div>
+        </div>
+
+        <!-- File Section -->
+        <div id="scanFileSection" style="display:none; flex-direction:column;">
+            <div class="logo-up" onclick="document.getElementById('scanImageInput').click()" style="padding:35px 20px; text-align:center; border:2px dashed var(--border); border-radius:14px; cursor:pointer;">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin:0 auto 10px; display:block; stroke:var(--pri);"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                <div style="font-weight:700; color:var(--txt);">Click or Drop QR Image to Decode</div>
+                <p style="font-size:0.8rem; color:var(--txt-m); margin-top:5px;">Supports PNG, JPG, WebP, SVG</p>
+                <input type="file" id="scanImageInput" accept="image/*" style="display:none;" onchange="handleScanFile(this)">
+            </div>
+        </div>
+
+        <!-- Decoded Result Box -->
+        <div id="scanResultBox" style="display:none; margin-top:20px; padding:15px; background:var(--panel); border:1px solid var(--pri); border-radius:12px; animation:fadeIn 0.3s ease;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <span style="font-size:0.75rem; font-weight:800; color:var(--pri); text-transform:uppercase; letter-spacing:1px;">Decoded Payload</span>
+                <span id="scanResultType" style="font-size:0.75rem; color:var(--txt-m); font-family:var(--font-mono);"></span>
+            </div>
+            <div id="scanResultText" style="word-break:break-all; font-family:var(--font-mono); font-size:0.9rem; color:var(--txt); margin-bottom:15px; max-height:100px; overflow-y:auto; padding:8px; background:rgba(0,0,0,0.2); border-radius:8px;"></div>
+            <div style="display:flex; gap:10px;">
+                <button class="btn-cp" style="flex:1; padding:10px 16px; font-size:0.85rem;" onclick="importScannedPayload()">Import into Editor</button>
+                <button class="btn-bk" id="scanOpenBtn" style="padding:10px 16px; font-size:0.85rem;" onclick="openScannedUrl()">Open Link</button>
+            </div>
+        </div>
+
+        <div class="modal-actions" style="margin-top:20px;">
+            <button class="btn-bk" onclick="closeScannerModal()">Close</button>
         </div>
     </div>
 </div>
@@ -1053,32 +1160,32 @@ const opts={
 function g(id) { const el = document.getElementById(id); return el ? el.value : ''; }
 
 const DYN=[
-  {id:'url',icon:'🌐',name:'Website',desc:'Open a standard URL link'},
-  {id:'pdf',icon:'📄',name:'PDF Doc',desc:'Show a hosted PDF file'},
-  {id:'images',icon:'🖼️',name:'Gallery',desc:'View an image gallery'},
-  {id:'video',icon:'▶️',name:'Video',desc:'Play a hosted video'},
-  {id:'vcard+',icon:'👤',name:'Contact+',desc:'Interactive profile page'},
-  {id:'links',icon:'🔗',name:'Social Links',desc:'Linktree style hub'},
-  {id:'social',icon:'👍',name:'Social',desc:'Social media profile'},
-  {id:'business',icon:'🏢',name:'Business',desc:'Company info page'},
-  {id:'event',icon:'📅',name:'Event',desc:'Promote ticket sales'},
-  {id:'feedback',icon:'⭐',name:'Review',desc:'Collect customer ratings'},
-  {id:'maps',icon:'📍',name:'Location',desc:'Google Maps drop pin'},
-  {id:'menu',icon:'🍔',name:'Menu',desc:'Restaurant digital menu'},
-  {id:'appstore',icon:'📱',name:'App Store',desc:'Smart app store redirect (iOS/Android)'},
-  {id:'calendar',icon:'📅',name:'Calendar Event',desc:'Add event to calendar'},
-  {id:'payment',icon:'💳',name:'Payment Link',desc:'Stripe/PayPal checkout redirect'},
-  {id:'coupon',icon:'🎫',name:'Coupon',desc:'Redeemable discount code'},
-  {id:'survey',icon:'📋',name:'Survey',desc:'Feedback or NPS form'}
+  {id:'url',icon:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',name:'Website',desc:'Open a standard URL link'},
+  {id:'pdf',icon:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',name:'PDF Doc',desc:'Show a hosted PDF file'},
+  {id:'images',icon:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',name:'Gallery',desc:'View an image gallery'},
+  {id:'video',icon:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>',name:'Video',desc:'Play a hosted video'},
+  {id:'vcard+',icon:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><path d="M19 11v6m-3-3h6"/></svg>',name:'Contact+',desc:'Interactive profile page'},
+  {id:'links',icon:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',name:'Social Links',desc:'Linktree style hub'},
+  {id:'social',icon:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>',name:'Social',desc:'Social media profile'},
+  {id:'business',icon:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="9" y1="22" x2="9" y2="18"/><line x1="15" y1="22" x2="15" y2="18"/><line x1="9" y1="18" x2="15" y2="18"/><line x1="8" y1="6" x2="10" y2="6"/><line x1="14" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="14" y1="14" x2="16" y2="14"/></svg>',name:'Business',desc:'Company info page'},
+  {id:'event',icon:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="m9 16 2 2 4-4"/></svg>',name:'Event',desc:'Promote ticket sales'},
+  {id:'feedback',icon:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',name:'Review',desc:'Collect customer ratings'},
+  {id:'maps',icon:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',name:'Location',desc:'Google Maps drop pin'},
+  {id:'menu',icon:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>',name:'Menu',desc:'Restaurant digital menu'},
+  {id:'appstore',icon:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>',name:'App Store',desc:'Smart app store redirect (iOS/Android)'},
+  {id:'calendar',icon:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',name:'Calendar Event',desc:'Add event to calendar'},
+  {id:'payment',icon:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>',name:'Payment Link',desc:'Stripe/PayPal checkout redirect'},
+  {id:'coupon',icon:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><line x1="13" y1="5" x2="13" y2="19" stroke-dasharray="2 2"/></svg>',name:'Coupon',desc:'Redeemable discount code'},
+  {id:'survey',icon:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="13" y2="15"/></svg>',name:'Survey',desc:'Feedback or NPS form'}
 ];
 const STA=[
-  {id:'text',icon:'📝',name:'Raw Text',desc:'Displays encoded plain text'},
-  {id:'vcard',icon:'👤',name:'vCard',desc:'Offline contact details'},
-  {id:'wifi',icon:'📶',name:'Wi-Fi',desc:'Auto-connect to network'},
-  {id:'whatsapp',icon:'💬',name:'WhatsApp',desc:'Pre-fill a chat message'},
-  {id:'email',icon:'✉️',name:'Email',desc:'Compose a new email'},
-  {id:'sms',icon:'📱',name:'SMS',desc:'Draft a text message'},
-  {id:'phone',icon:'📞',name:'Phone',desc:'Auto-dial a phone number'}
+  {id:'text',icon:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>',name:'Raw Text',desc:'Displays encoded plain text'},
+  {id:'vcard',icon:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',name:'vCard',desc:'Offline contact details'},
+  {id:'wifi',icon:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>',name:'Wi-Fi',desc:'Auto-connect to network'},
+  {id:'whatsapp',icon:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>',name:'WhatsApp',desc:'Pre-fill a chat message'},
+  {id:'email',icon:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',name:'Email',desc:'Compose a new email'},
+  {id:'sms',icon:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',name:'SMS',desc:'Draft a text message'},
+  {id:'phone',icon:'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',name:'Phone',desc:'Auto-dial a phone number'}
 ];
 
 const FORMS={
@@ -1322,8 +1429,14 @@ function applyQS(style) {
         });
     }
     // Sync UI: color pickers
-    if(opts.dotsOptions && opts.dotsOptions.color) { var fgEl=document.getElementById('fgH'); if(fgEl) fgEl.value=opts.dotsOptions.color; }
-    if(opts.backgroundOptions && opts.backgroundOptions.color) { var bgEl=document.getElementById('bgH'); if(bgEl) bgEl.value=opts.backgroundOptions.color; }
+    if(opts.dotsOptions && opts.dotsOptions.color) { 
+        var fgEl=document.getElementById('fgH'); if(fgEl) fgEl.value=opts.dotsOptions.color.toUpperCase(); 
+        var fgP=document.getElementById('fgP'); if(fgP) fgP.value=opts.dotsOptions.color; 
+    }
+    if(opts.backgroundOptions && opts.backgroundOptions.color) { 
+        var bgEl=document.getElementById('bgH'); if(bgEl) bgEl.value=opts.backgroundOptions.color.toUpperCase(); 
+        var bgP=document.getElementById('bgP'); if(bgP) bgP.value=opts.backgroundOptions.color; 
+    }
     // Sync UI: dot grid
     var dotType=opts.dotsOptions?opts.dotsOptions.type:'square';
     document.querySelectorAll('#dotG .vb').forEach(function(b){ if(b.dataset.dt===dotType) b.classList.add('sel'); else b.classList.remove('sel'); });
@@ -1706,8 +1819,8 @@ function goStep(n){
 }
 function nextFrom1(){
   const badge=document.getElementById('prevBadge');
-  const t=DYN.concat(STA).filter(x=>x.id===selType)[0]||{icon:'ðŸŒ',name:'URL'};
-  if(badge) badge.textContent=t.icon+' '+t.name;
+  const t=DYN.concat(STA).filter(x=>x.id===selType)[0]||{icon:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',name:'URL'};
+  if(badge) badge.innerHTML=t.icon+' <span>'+t.name+'</span>';
   buildCF();goStep(2);
 }
 function nextFrom2(){
@@ -1718,7 +1831,14 @@ function buildTypeGrids(){
   function mc(t){
     const d=document.createElement('button');d.className='tc'+(t.id==='url'?' sel':'');d.dataset.t=t.id;
     d.setAttribute('role','radio');d.setAttribute('aria-checked',t.id==='url'?'true':'false');
-    d.onclick=function(){ document.querySelectorAll('.tc').forEach(x=>{x.classList.remove('sel');x.setAttribute('aria-checked','false')}); d.classList.add('sel'); d.setAttribute('aria-checked','true'); selType=t.id; };
+    d.onclick=function(){ 
+      document.querySelectorAll('.tc').forEach(x=>{x.classList.remove('sel');x.setAttribute('aria-checked','false')}); 
+      d.classList.add('sel'); d.setAttribute('aria-checked','true'); 
+      selType=t.id; 
+      const badge=document.getElementById('prevBadge');
+      if(badge) badge.innerHTML=t.icon+' <span>'+t.name+'</span>';
+      lu();
+    };
     d.innerHTML=`<div class="tc-icon">${t.icon}</div><div class="tc-info"><h4>${t.name}</h4><p>${t.desc}</p></div>`; return d;
   }
   const dg=document.getElementById('dynG'),sg=document.getElementById('statG');
@@ -1757,8 +1877,11 @@ function dlQR(ext){
   toast('Rendering high-res format...', 'green');
   const tmpWrapper = document.createElement('div');
   tmpWrapper.style.position = 'fixed';
-  tmpWrapper.style.left = '-9999px';
-  tmpWrapper.style.top = '-9999px';
+  tmpWrapper.style.left = '0px';
+  tmpWrapper.style.top = '0px';
+  tmpWrapper.style.zIndex = '-9999';
+  tmpWrapper.style.opacity = '1';
+  tmpWrapper.style.pointerEvents = 'none';
   tmpWrapper.style.background = '#ffffff';
   tmpWrapper.style.padding = '40px';
   
@@ -1913,7 +2036,7 @@ function saveQR(silent = false){
       if(svg){ const s=new XMLSerializer().serializeToString(svg); img='data:image/svg+xml;base64,'+btoa(s); }
     }
     document.body.removeChild(tmp);
-    const to=DYN.concat(STA).filter(x=>x.id===selType)[0]||{name:'QR',icon:'⬛'};
+    const to=DYN.concat(STA).filter(x=>x.id===selType)[0]||{name:'QR',icon:''};
     
     const urlParams = new URLSearchParams(window.location.search);
     const editId = urlParams.get('id');
@@ -1978,12 +2101,26 @@ function saveQR(silent = false){
         });
     }
 
-    if (window.colUser && window.supabaseClient) {
+    if (window.supabaseClient) {
         try {
-            await window.supabaseClient.from('qr_codes').upsert({
-                user_id: window.colUser.id,
-                qr_data: saved
-            });
+            const user = (window.colAuth && window.colAuth.currentUser) || window.colUser;
+            const row = {
+                short_code: shortCode,
+                title: advSettings.name || to.name,
+                qr_type: selType,
+                destination_url: getContent(),
+                is_dynamic: isDynamic,
+                design_config: finalOpts,
+                qr_data: entry,
+                updated_at: new Date().toISOString()
+            };
+            if (user && user.id) row.user_id = user.id;
+
+            if (shortCode) {
+                await window.supabaseClient.from('qr_codes').upsert(row, { onConflict: 'short_code' });
+            } else if (user && user.id) {
+                await window.supabaseClient.from('qr_codes').insert([row]);
+            }
         } catch(e) { console.error('Cloud Sync failed', e); }
     }
     
@@ -2161,6 +2298,182 @@ async function runBulkGeneration() {
     }
 }
 
+// ──── SCANNER MODAL CONTROLLER ────
+let scanStream = null;
+let scanAnimationId = null;
+let lastScannedPayload = '';
+
+function openScannerModal() {
+  const m = document.getElementById('scannerModal');
+  if (m) m.classList.add('open');
+  switchScanTab('camera');
+}
+
+function closeScannerModal() {
+  const m = document.getElementById('scannerModal');
+  if (m) m.classList.remove('open');
+  stopCamScanner();
+}
+
+function switchScanTab(tab) {
+  const camSec = document.getElementById('scanCamSection');
+  const fileSec = document.getElementById('scanFileSection');
+  const tabCam = document.getElementById('scanTabCam');
+  const tabFile = document.getElementById('scanTabFile');
+  if (tab === 'camera') {
+    if (camSec) camSec.style.display = 'flex';
+    if (fileSec) fileSec.style.display = 'none';
+    if (tabCam) { tabCam.style.borderColor = 'var(--pri)'; tabCam.style.color = 'var(--pri)'; }
+    if (tabFile) { tabFile.style.borderColor = 'var(--border)'; tabFile.style.color = 'var(--txt-m)'; }
+  } else {
+    stopCamScanner();
+    if (camSec) camSec.style.display = 'none';
+    if (fileSec) fileSec.style.display = 'flex';
+    if (tabFile) { tabFile.style.borderColor = 'var(--pri)'; tabFile.style.color = 'var(--pri)'; }
+    if (tabCam) { tabCam.style.borderColor = 'var(--border)'; tabCam.style.color = 'var(--txt-m)'; }
+  }
+}
+
+async function startCamScanner() {
+  if (typeof jsQR === 'undefined') {
+    toast('Scanner library loading, please retry in a second', '');
+    return;
+  }
+  const video = document.getElementById('scanVideo');
+  const camPrompt = document.getElementById('camPrompt');
+  const overlay = document.getElementById('scanOverlay');
+  const status = document.getElementById('camStatus');
+  try {
+    scanStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
+    });
+    if (video) {
+      video.srcObject = scanStream;
+      video.setAttribute('playsinline', 'true');
+      video.style.display = 'block';
+      await video.play();
+    }
+    if (camPrompt) camPrompt.style.display = 'none';
+    if (overlay) overlay.style.display = 'block';
+    if (status) status.textContent = 'Scanning frame in real-time...';
+    scanAnimationFrame();
+  } catch (err) {
+    console.error('Camera access error:', err);
+    if (status) status.textContent = 'Camera permission denied or unavailable';
+    toast('Camera access denied or unavailable', '');
+  }
+}
+
+function stopCamScanner() {
+  if (scanAnimationId) {
+    cancelAnimationFrame(scanAnimationId);
+    scanAnimationId = null;
+  }
+  if (scanStream) {
+    scanStream.getTracks().forEach(track => track.stop());
+    scanStream = null;
+  }
+  const video = document.getElementById('scanVideo');
+  const camPrompt = document.getElementById('camPrompt');
+  const overlay = document.getElementById('scanOverlay');
+  const status = document.getElementById('camStatus');
+  if (video) { video.style.display = 'none'; video.srcObject = null; }
+  if (camPrompt) camPrompt.style.display = 'block';
+  if (overlay) overlay.style.display = 'none';
+  if (status) status.textContent = 'Standby';
+}
+
+function scanAnimationFrame() {
+  const video = document.getElementById('scanVideo');
+  const canvas = document.getElementById('scanCanvas');
+  if (!video || !canvas || video.readyState !== video.HAVE_ENOUGH_DATA) {
+    scanAnimationId = requestAnimationFrame(scanAnimationFrame);
+    return;
+  }
+  const ctx = canvas.getContext('2d');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  if (typeof jsQR !== 'undefined') {
+    const code = jsQR(imageData.data, imageData.width, imageData.height, {
+      inversionAttempts: 'dontInvert'
+    });
+    if (code && code.data) {
+      showScannedResult(code.data);
+      stopCamScanner();
+      return;
+    }
+  }
+  scanAnimationId = requestAnimationFrame(scanAnimationFrame);
+}
+
+function handleScanFile(input) {
+  if (!input.files || !input.files[0]) return;
+  const file = input.files[0];
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.getElementById('scanCanvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      if (typeof jsQR !== 'undefined') {
+        const code = jsQR(imageData.data, imageData.width, imageData.height);
+        if (code && code.data) {
+          showScannedResult(code.data);
+          toast('QR Code Decoded Successfully!', 'green');
+        } else {
+          toast('No QR Code detected in image', '');
+        }
+      }
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function showScannedResult(data) {
+  lastScannedPayload = data;
+  const box = document.getElementById('scanResultBox');
+  const txt = document.getElementById('scanResultText');
+  const typeEl = document.getElementById('scanResultType');
+  const openBtn = document.getElementById('scanOpenBtn');
+  if (box) box.style.display = 'block';
+  if (txt) txt.textContent = data;
+  const isUrl = /^https?:\/\//i.test(data);
+  if (typeEl) typeEl.textContent = isUrl ? 'Web URL' : 'Data Payload';
+  if (openBtn) openBtn.style.display = isUrl ? 'inline-block' : 'none';
+}
+
+function importScannedPayload() {
+  if (!lastScannedPayload) return;
+  if (/^https?:\/\//i.test(lastScannedPayload)) {
+    selType = 'url';
+  } else {
+    selType = 'text';
+  }
+  document.querySelectorAll('.tc').forEach(x => {
+    if (x.dataset.t === selType) x.classList.add('sel'); else x.classList.remove('sel');
+  });
+  goStep(2);
+  buildCF();
+  const f0 = document.getElementById('f0');
+  if (f0) { f0.value = lastScannedPayload; }
+  lu();
+  closeScannerModal();
+  toast('Imported decoded payload into editor', 'green');
+}
+
+function openScannedUrl() {
+  if (lastScannedPayload && /^https?:\/\//i.test(lastScannedPayload)) {
+    window.open(lastScannedPayload, '_blank', 'noopener,noreferrer');
+  }
+}
+
 function loadEditData() {
     const urlParams = new URLSearchParams(window.location.search);
     const id = urlParams.get('id');
@@ -2207,12 +2520,14 @@ function loadEditData() {
 
     // Restore color pickers
     if (opts.dotsOptions && opts.dotsOptions.color) {
-        const el = document.getElementById('cDot');
-        if(el) el.value = opts.dotsOptions.color;
+        const c = opts.dotsOptions.color;
+        const p = document.getElementById('fgP'); if(p) p.value = c;
+        const h = document.getElementById('fgH'); if(h) h.value = c.toUpperCase();
     }
     if (opts.backgroundOptions && opts.backgroundOptions.color) {
-        const el = document.getElementById('cBg');
-        if(el) el.value = opts.backgroundOptions.color;
+        const c = opts.backgroundOptions.color;
+        const p = document.getElementById('bgP'); if(p) p.value = c;
+        const h = document.getElementById('bgH'); if(h) h.value = c.toUpperCase();
     }
     if (opts.cornersSquareOptions && opts.cornersSquareOptions.color) {
         const el = document.getElementById('csqC');

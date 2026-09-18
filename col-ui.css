@@ -1541,3 +1541,121 @@ body.lm .site-footer {
   color: #64748b !important;
 }
 
+/* ═══════════════════════════════════════════════════════════════════
+   COL AMBIENT VISUAL SYSTEM (Modern 60fps Aurora Mesh & Cyber Grid)
+   Replaces heavy 3D WebGL backgrounds with GPU-accelerated CSS layers
+   ═══════════════════════════════════════════════════════════════════ */
+.col-ambient-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -10;
+  overflow: hidden;
+  background: var(--void, #070a14);
+  transition: background 0.5s ease;
+}
+
+/* 1. Cyber coordinate grid */
+.col-ambient-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(circle at 50% 40%, rgba(0, 0, 0, 1) 30%, rgba(0, 0, 0, 0) 80%);
+  -webkit-mask-image: radial-gradient(circle at 50% 40%, rgba(0, 0, 0, 1) 30%, rgba(0, 0, 0, 0) 80%);
+}
+
+/* 2. Fluid Aurora Mesh Orbs */
+.col-ambient-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.35;
+  pointer-events: none;
+  transform: translateZ(0);
+  will-change: transform, opacity;
+  animation: colOrbFloat 22s ease-in-out infinite alternate;
+}
+
+.col-orb-1 {
+  width: 550px;
+  height: 550px;
+  top: -100px;
+  left: 10%;
+  background: radial-gradient(circle, rgba(94, 212, 245, 0.55), rgba(94, 212, 245, 0));
+  animation-duration: 25s;
+}
+
+.col-orb-2 {
+  width: 650px;
+  height: 650px;
+  top: 30%;
+  right: 5%;
+  background: radial-gradient(circle, rgba(184, 155, 255, 0.45), rgba(184, 155, 255, 0));
+  animation-duration: 28s;
+  animation-delay: -7s;
+}
+
+.col-orb-3 {
+  width: 500px;
+  height: 500px;
+  bottom: 5%;
+  left: 20%;
+  background: radial-gradient(circle, rgba(0, 240, 204, 0.4), rgba(0, 240, 204, 0));
+  animation-duration: 20s;
+  animation-delay: -14s;
+}
+
+@keyframes colOrbFloat {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(40px, -60px, 0) scale(1.1); }
+  100% { transform: translate3d(-50px, 40px, 0) scale(0.95); }
+}
+
+/* 3. Interactive Mouse Spotlight */
+.col-ambient-spotlight {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    650px circle at var(--mouse-x, 50vw) var(--mouse-y, 40vh),
+    rgba(94, 212, 245, 0.08),
+    transparent 65%
+  );
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/* Light Mode Overrides */
+body.lm .col-ambient-bg {
+  background: var(--void, #f8fafc);
+}
+body.lm .col-ambient-bg::before {
+  background-image: 
+    linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+}
+body.lm .col-ambient-orb {
+  opacity: 0.22;
+  filter: blur(120px);
+}
+body.lm .col-orb-1 {
+  background: radial-gradient(circle, rgba(14, 114, 160, 0.45), transparent);
+}
+body.lm .col-orb-2 {
+  background: radial-gradient(circle, rgba(111, 79, 224, 0.35), transparent);
+}
+body.lm .col-orb-3 {
+  background: radial-gradient(circle, rgba(10, 140, 122, 0.3), transparent);
+}
+body.lm .col-ambient-spotlight {
+  background: radial-gradient(
+    550px circle at var(--mouse-x, 50vw) var(--mouse-y, 40vh),
+    rgba(14, 114, 160, 0.06),
+    transparent 65%
+  );
+}
+
+

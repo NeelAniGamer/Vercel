@@ -1367,7 +1367,7 @@
         position: relative;
       }
       .magnetic-locked::after {
-        content: '🎯 TARGET LOCKED';
+        content: 'TARGET LOCKED';
         position: absolute;
         top: -24px;
         right: 10px;
@@ -1785,11 +1785,11 @@
           <button class="dropdown-btn act">Projects <span class="darr">▼</span></button>
           <div class="dropdown-content">
             <div class="dropdown-content-inner">
-              <a href="ati">Typing Instructor <span>⌨️</span></a>
-              <a href="solar">Solar Engine <span>🌍</span></a>
-              <a href="gesture" class="active" style="color: var(--primary);">Perceptus Flow <span>✨</span></a>
-              <a href="rpg">RPG Game <span>⚔️</span></a>
-              <a href="qr">QR Generator <span>⬛</span></a>
+              <a href="ati">Typing Instructor</a>
+              <a href="solar">Solar Engine</a>
+              <a href="gesture" class="active" style="color: var(--primary);">Perceptus Flow</a>
+              <a href="rpg">RPG Game</a>
+              <a href="qr">QR Generator</a>
             </div>
           </div>
         </div>
@@ -1830,13 +1830,13 @@
     <!-- ──── HERO SECTION ──── -->
     <header class="game-hero">
       <canvas id="cyberCanvas"></canvas>
-      <div class="hero-badge">✨ INTRODUCING PERCEPTUS FLOW &bull; Autonomous AI Vision &amp; Spatial Co-Pilot</div>
+      <div class="hero-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>INTRODUCING PERCEPTUS FLOW &bull; Autonomous AI Vision &amp; Spatial Co-Pilot</div>
       <h1><span id="typewriter-text"></span><span class="cursor-blink">_</span></h1>
       <div class="hero-reveal" id="heroReveal">
         <p>Introducing Perceptus Flow: Touchless computing redefined. Control Windows, navigate pages, and air-draw in mid-air using live AI spatial machine vision. Zero extra hardware required — your standard webcam turns into an intelligent spatial gesture sensor.</p>
         <div class="hero-cta">
           <a href="download" class="btn-download">Download Perceptus</a>
-          <button class="btn-demo" onclick="startCameraEngine()">▶ Launch Vision Engine</button>
+          <button class="btn-demo" onclick="startCameraEngine()"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:6px"><polygon points="5 3 19 12 5 21 5 3"/></svg>Launch Vision Engine</button>
         </div>
       </div>
     </header>
@@ -1846,7 +1846,7 @@
       <div class="engine-container" id="vision-engine">
         <div class="engine-hud-header">
           <div class="hud-title">
-            <span>📷</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
             <span>PERCEPTUS // MULTIMODAL AI &amp; SPATIAL VISION ENGINE</span>
           </div>
           <div class="hud-chips">
@@ -1870,10 +1870,10 @@
             <div class="overlay-title">INITIALIZE VISION ENGINE</div>
             <div class="overlay-sub">Click anywhere to enable webcam access and start 60 FPS hand tracking</div>
             <div class="quick-tags">
-              <div class="q-tag">☝️ Index: Point & Move</div>
-              <div class="q-tag">🤌 Pinch: Click & Select</div>
-              <div class="q-tag">✌️ 2-Fingers: Zoom & Scroll</div>
-              <div class="q-tag">✍️ Air-Draw on Canvas</div>
+              <div class="q-tag"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg> Index: Point &amp; Move</div>
+              <div class="q-tag"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="9"/></svg> Pinch: Click &amp; Select</div>
+              <div class="q-tag"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg> 2-Fingers: Zoom &amp; Scroll</div>
+              <div class="q-tag"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Air-Draw on Canvas</div>
             </div>
           </div>
 
@@ -1921,21 +1921,21 @@
         <div class="engine-controls-bar">
           <div class="routing-device-group">
             <div class="device-select-item">
-              <label for="cameraSelect" class="device-lbl">📷 CAM:</label>
+              <label for="cameraSelect" class="device-lbl"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>CAM:</label>
               <select id="cameraSelect" class="control-select" onchange="changeCamera()">
                 <option value="">Default Camera</option>
               </select>
             </div>
 
             <div class="device-select-item">
-              <label for="audioSelect" class="device-lbl">🎙️ MIC:</label>
+              <label for="audioSelect" class="device-lbl"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>MIC:</label>
               <select id="audioSelect" class="control-select" onchange="changeAudioInput()">
                 <option value="">Default Microphone</option>
               </select>
             </div>
 
             <div class="device-select-item">
-              <label for="ttsVoiceSelect" class="device-lbl">🔊 VOICE:</label>
+              <label for="ttsVoiceSelect" class="device-lbl"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>VOICE:</label>
               <select id="ttsVoiceSelect" class="control-select" onchange="changeTTSVoice()">
                 <option value="">Default Voice</option>
               </select>
@@ -1944,10 +1944,10 @@
 
           <div class="routing-actions-group">
             <button class="control-chip-btn active" id="btnMirrorCam" onclick="toggleCamMirror()" title="Flip camera horizontally">
-              <span>↔️ Mirror</span>
+              <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><polyline points="4 8 4 3 9 3"/><line x1="4" y1="3" x2="9" y2="8"/></svg>Mirror</span>
             </button>
             <button class="control-chip-btn active" id="btnSoundFX" onclick="toggleSoundFX()" title="Toggle audio sound effects">
-              <span>🔊 SFX: ON</span>
+              <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>SFX: ON</span>
             </button>
             <button class="control-btn" id="btnToggleTracking" onclick="toggleTracking()">Start Engine</button>
             <button class="control-btn btn-secondary" onclick="reconnectDesktopLink()">Probe Desktop ws://</button>
@@ -2002,18 +2002,18 @@
         <!-- Quick Command Chips -->
         <div class="ai-quick-chips">
           <span class="chip-label">QUICK TASKS:</span>
-          <button class="ai-chip-btn" onclick="executeQuickTask('Click Quantum Pulse target')">⚡ "Click Quantum Pulse"</button>
-          <button class="ai-chip-btn" onclick="executeQuickTask('Click Hyperdrive Matrix target')">🚀 "Click Hyperdrive Matrix"</button>
-          <button class="ai-chip-btn" onclick="executeQuickTask('Draw a glowing cyber star on the canvas')">⭐ "Draw a Star"</button>
-          <button class="ai-chip-btn" onclick="executeQuickTask('Clear the drawing canvas')">🧹 "Clear Canvas"</button>
-          <button class="ai-chip-btn" onclick="executeQuickTask('Scroll down to features')">📜 "Scroll to Features"</button>
-          <button class="ai-chip-btn" onclick="executeQuickTask('Open Notepad')">💻 "Open Notepad (OS)"</button>
+          <button class="ai-chip-btn" onclick="executeQuickTask('Click Quantum Pulse target')">"Click Quantum Pulse"</button>
+          <button class="ai-chip-btn" onclick="executeQuickTask('Click Hyperdrive Matrix target')">"Click Hyperdrive Matrix"</button>
+          <button class="ai-chip-btn" onclick="executeQuickTask('Draw a glowing cyber star on the canvas')">"Draw a Star"</button>
+          <button class="ai-chip-btn" onclick="executeQuickTask('Clear the drawing canvas')">"Clear Canvas"</button>
+          <button class="ai-chip-btn" onclick="executeQuickTask('Scroll down to features')">"Scroll to Features"</button>
+          <button class="ai-chip-btn" onclick="executeQuickTask('Open Notepad')">"Open Notepad (OS)"</button>
         </div>
 
         <!-- Real-time Cognitive Activity Stream -->
         <div class="ai-neural-stream">
           <div class="stream-header">
-            <span class="stream-title">⚡ REAL-TIME COGNITIVE ACTIVITY STREAM</span>
+            <span class="stream-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>REAL-TIME COGNITIVE ACTIVITY STREAM</span>
             <span class="stream-target" id="streamGroundedTarget">GROUNDED TARGET: NONE</span>
           </div>
           <div class="stream-log" id="aiStreamLog">
@@ -2025,7 +2025,7 @@
       <!-- ──── INTERACTIVE TEST PLAYGROUND ──── -->
       <div class="playground-box">
         <div class="playground-title">
-          <span>🎮 INTERACTIVE TEST PLAYGROUND</span>
+          <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h4m-2-2v4m7-2h.01m3-2h.01"/></svg>INTERACTIVE TEST PLAYGROUND</span>
           <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 400;">POINT WITH FINGER & PINCH TO INTERACT</span>
         </div>
         <p class="playground-desc">
@@ -2037,15 +2037,15 @@
           <div class="targets-panel">
             <div style="font-family: 'Space Mono', monospace; font-size: 0.8rem; color: var(--primary); font-weight: 700;">AIR-CLICK TARGETS</div>
             <button class="target-btn" id="tBtn1" onclick="handleTargetClick(this, 'Quantum Pulse')">
-              <span>⚡ Quantum Pulse</span>
+              <span>Quantum Pulse</span>
               <span class="target-counter" id="tc1">0 clicks</span>
             </button>
             <button class="target-btn" id="tBtn2" onclick="handleTargetClick(this, 'Hyperdrive Matrix')">
-              <span>🚀 Hyperdrive Matrix</span>
+              <span>Hyperdrive Matrix</span>
               <span class="target-counter" id="tc2">0 clicks</span>
             </button>
             <button class="target-btn" id="tBtn3" onclick="handleTargetClick(this, 'Neural Uplink')">
-              <span>🧠 Neural Uplink</span>
+              <span>Neural Uplink</span>
               <span class="target-counter" id="tc3">0 clicks</span>
             </button>
           </div>
@@ -2053,7 +2053,7 @@
           <!-- Air-Drawing Studio -->
           <div class="drawing-panel">
             <div class="drawing-header">
-              <span>✍️ AIR-DRAWING PAD (PINCH TO DRAW)</span>
+              <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>AIR-DRAWING PAD (PINCH TO DRAW)</span>
               <div class="drawing-actions">
                 <button class="btn-clear" onclick="clearAirCanvas()">Clear Canvas</button>
               </div>
@@ -2070,7 +2070,7 @@
     <!-- ──── FEATURES GRID (MATCHING ATI / SOLAR) ──── -->
     <div class="features-grid">
       <div class="feature-card">
-        <div class="icon-wrapper">⚡</div>
+        <div class="icon-wrapper"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
         <h3>Sub-Millisecond Tracking</h3>
         <p>Embedded 2D Kalman filter & exponential moving average algorithms suppress human fingertip micro-jitter for buttery 60 FPS accuracy.</p>
         <div class="tech-tags">
@@ -2081,7 +2081,7 @@
       </div>
 
       <div class="feature-card">
-        <div class="icon-wrapper">👁️</div>
+        <div class="icon-wrapper"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
         <h3>Zero Extra Hardware</h3>
         <p>No Leap Motion or expensive depth sensors needed. Operates seamlessly on standard 720p or 1080p webcams with real-time 3D hand topology.</p>
         <div class="tech-tags">
@@ -2092,7 +2092,7 @@
       </div>
 
       <div class="feature-card">
-        <div class="icon-wrapper">🖥️</div>
+        <div class="icon-wrapper"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
         <h3>Real Windows Hardware Link</h3>
         <p>Connects directly via local WebSocket to <code>PerceptusFlow.exe</code> and <code>mouse_server.py</code> to control the native OS mouse across all desktop apps.</p>
         <div class="tech-tags">
@@ -2111,7 +2111,7 @@
       </p>
       <div class="cheat-grid">
         <div class="cheat-card">
-          <div class="c-icon" style="color: var(--accent-gold);">☝️</div>
+          <div class="c-icon" style="color: var(--accent-gold);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></div>
           <div class="c-meta">
             <span class="c-title" style="color: var(--accent-gold);">Index Point</span>
             <span class="c-desc">Move cursor anywhere on screen with smooth Kalman stabilization.</span>
@@ -2119,7 +2119,7 @@
         </div>
 
         <div class="cheat-card">
-          <div class="c-icon" style="color: var(--primary);">🤌</div>
+          <div class="c-icon" style="color: var(--primary);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/></svg></div>
           <div class="c-meta">
             <span class="c-title" style="color: var(--primary);">Pinch (Index+Thumb)</span>
             <span class="c-desc">Left click on any interactive target or trigger on-screen items.</span>
@@ -2127,7 +2127,7 @@
         </div>
 
         <div class="cheat-card">
-          <div class="c-icon" style="color: var(--accent-orange);">✊</div>
+          <div class="c-icon" style="color: var(--accent-orange);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="4" width="14" height="16" rx="3"/></svg></div>
           <div class="c-meta">
             <span class="c-title" style="color: var(--accent-orange);">Pinch & Hold</span>
             <span class="c-desc">Grab and drag windows, scrollbars, or draw continuous lines on canvas.</span>
@@ -2135,7 +2135,7 @@
         </div>
 
         <div class="cheat-card">
-          <div class="c-icon" style="color: var(--accent-emerald);">✌️</div>
+          <div class="c-icon" style="color: var(--accent-emerald);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg></div>
           <div class="c-meta">
             <span class="c-title" style="color: var(--accent-emerald);">Two Fingers Up</span>
             <span class="c-desc">Vertical page navigation and smooth scrolling up and down.</span>
@@ -2151,7 +2151,7 @@
         </div>
 
         <div class="cheat-card">
-          <div class="c-icon" style="color: var(--accent-violet);">👍</div>
+          <div class="c-icon" style="color: var(--accent-violet);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg></div>
           <div class="c-meta">
             <span class="c-title" style="color: var(--accent-violet);">Thumb Up</span>
             <span class="c-desc">Right click context menu trigger at the active cursor position.</span>
@@ -2159,7 +2159,7 @@
         </div>
 
         <div class="cheat-card">
-          <div class="c-icon" style="color: var(--text-muted);">✋</div>
+          <div class="c-icon" style="color: var(--text-muted);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="4"/></svg></div>
           <div class="c-meta">
             <span class="c-title">Open Palm</span>
             <span class="c-desc">Pause / standby mode. Releases mouse focus and resets tracking.</span>
@@ -2167,7 +2167,7 @@
         </div>
 
         <div class="cheat-card">
-          <div class="c-icon" style="color: var(--accent-rose);">✊</div>
+          <div class="c-icon" style="color: var(--accent-rose);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/></svg></div>
           <div class="c-meta">
             <span class="c-title" style="color: var(--accent-rose);">Closed Fist</span>
             <span class="c-desc">Full idle mode. Suppresses unintended clicks and motions.</span>
@@ -2236,7 +2236,7 @@
       const cCanvas = document.getElementById('cyberCanvas')
       const cCtx = cCanvas.getContext('2d')
       let cParticles = []
-      const spatialGlyphs = ['[+]', '⟁', '⊡', '⟨•⟩', '⚡', '01', '◈', '🖐️', '⌥', 'λ']
+      const spatialGlyphs = ['[+]', '⟁', '⊡', '⟨•⟩', '✦', '01', '◈', '::', '//', 'λ']
 
       function resizeCyberCanvas() {
         cCanvas.width = window.innerWidth
@@ -2431,7 +2431,7 @@
       function toggleSoundFX() {
         isSoundFXEnabled = !isSoundFXEnabled
         if (btnSoundFX) {
-          btnSoundFX.innerHTML = isSoundFXEnabled ? '<span>🔊 SFX: ON</span>' : '<span>🔇 SFX: OFF</span>'
+          btnSoundFX.innerHTML = isSoundFXEnabled ? '<span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>SFX: ON</span>' : '<span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><line x1="1" y1="1" x2="23" y2="23"/><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M23 9l-6 6"/><path d="M17 9l6 6"/></svg>SFX: OFF</span>'
           btnSoundFX.classList.toggle('active', isSoundFXEnabled)
         }
         logAI(`[AUDIO] Sound effects ${isSoundFXEnabled ? 'activated' : 'muted'}.`, 'system')

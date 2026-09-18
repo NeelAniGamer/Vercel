@@ -6,21 +6,27 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Exo+2:wght@300;400;600;800&display=swap');
 
 :root {
-  --acc:      #ff9955;
-  --acc2:     #4b90ff;
-  --acc3:     #55ffcc;
-  --bg:       #060810;
-  --panel:    rgba(8,12,22,0.92);
-  --border:   rgba(255,153,85,0.28);
-  --border2:  rgba(75,144,255,0.25);
-  --text:     #e8eaf0;
-  --muted:    #6a7080;
-  --mono:     'Space Mono', monospace;
-  --display:  'Exo 2', sans-serif;
-  --bar-h:    52px;
-  --status-h: 34px;
-  --panel-w:  420px;
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --acc:          #ff9e58;
+  --acc-glow:     rgba(255, 158, 88, 0.45);
+  --acc2:         #4ea8ff;
+  --acc2-glow:    rgba(78, 168, 255, 0.4);
+  --acc3:         #45f0df;
+  --acc3-glow:    rgba(69, 240, 223, 0.4);
+  --bg:           #040711;
+  --panel:        rgba(7, 12, 26, 0.88);
+  --panel-solid:  #080d1a;
+  --border:       rgba(255, 158, 88, 0.35);
+  --border2:      rgba(78, 168, 255, 0.3);
+  --border3:      rgba(69, 240, 223, 0.3);
+  --text:         #edf0f8;
+  --muted:        #7b8499;
+  --mono:         'Space Mono', monospace;
+  --display:      'Exo 2', sans-serif;
+  --bar-h:        54px;
+  --status-h:     36px;
+  --panel-w:      430px;
+  --ease-out:     cubic-bezier(0.16, 1, 0.3, 1);
+  --glass-shadow: 0 16px 48px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 /* ── Reset ────────────────────────────────────────────────────────────────── */
@@ -112,17 +118,17 @@ input        { font-family: var(--mono); }
   left: 18px;
   right: 18px;
   height: var(--bar-h);
-  background: rgba(6, 10, 24, 0.85);
+  background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 14px;
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
   display: flex;
   align-items: center;
   gap: 14px;
   padding: 0 20px;
   z-index: 300;
-  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6);
+  box-shadow: var(--glass-shadow);
   will-change: transform;
 }
 
@@ -152,9 +158,9 @@ input        { font-family: var(--mono); }
 #speed-display { font-family: var(--mono); font-size: 0.75rem; color: var(--acc); min-width: 68px; text-align: center; letter-spacing: 1px; }
 
 #top-right-btns { display: flex; gap: 6px; flex-shrink: 0; margin-left: auto; }
-.icon-btn { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: var(--muted); width: 30px; height: 30px; border-radius: 4px; font-size: 0.85rem; display: grid; place-items: center; transition: color 0.2s, border-color 0.2s, background 0.2s; }
-.icon-btn:hover  { color: var(--text); border-color: var(--border); background: rgba(255,255,255,0.08); }
-.icon-btn.active { color: var(--acc2); border-color: var(--border2); background: rgba(75,144,255,0.1); }
+.icon-btn { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: var(--muted); width: 32px; height: 32px; border-radius: 6px; font-size: 0.85rem; display: grid; place-items: center; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
+.icon-btn:hover  { color: var(--text); border-color: var(--acc2); background: rgba(78,168,255,0.12); box-shadow: 0 0 14px rgba(78,168,255,0.25); transform: translateY(-1px); }
+.icon-btn.active { color: var(--acc2); border-color: var(--acc2); background: rgba(78,168,255,0.18); box-shadow: 0 0 16px rgba(78,168,255,0.35); }
 
 /* ── SCALE INDICATOR ──────────────────────────────────────────────────────── */
 #scale-indicator { position: absolute; bottom: calc(var(--status-h) + 14px); left: 20px; background: var(--panel); border: 1px solid var(--border2); border-radius: 8px; padding: 8px 14px; z-index: 200; min-width: 210px; backdrop-filter: blur(16px); }
@@ -219,8 +225,8 @@ kbd { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1
   bottom: calc(var(--status-h) + 16px);
   width: var(--panel-w);
   background: var(--panel);
-  backdrop-filter: blur(32px);
-  -webkit-backdrop-filter: blur(32px);
+  backdrop-filter: blur(32px) saturate(190%);
+  -webkit-backdrop-filter: blur(32px) saturate(190%);
   border: 1px solid var(--border);
   border-radius: 14px;
   display: flex;
@@ -229,7 +235,7 @@ kbd { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1
   transform: translateX(calc(var(--panel-w) + 40px));
   transition: transform 0.48s var(--ease-out);
   z-index: 200;
-  box-shadow: -12px 0 60px rgba(0,0,0,0.85), inset 0 0 0 1px rgba(255,153,85,0.06);
+  box-shadow: -14px 0 60px rgba(0,0,0,0.85), inset 0 0 0 1px rgba(255,158,88,0.12), inset 0 1px 0 rgba(255,255,255,0.12);
   will-change: transform;
 }
 #hud.active { transform: translateX(0); }
@@ -270,8 +276,8 @@ kbd { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1
 .value { font-family: var(--mono); font-size: 0.84rem; color: var(--text); text-align: right; }
 .no-data { color: var(--muted); font-size: 0.84rem; font-style: italic; padding: 12px 0; }
 
-#focus-btn { margin: 0 16px 16px; padding: 11px; background: transparent; border: 1px solid var(--acc); color: var(--acc); border-radius: 6px; font-size: 0.78rem; letter-spacing: 3px; transition: background 0.2s, color 0.2s; flex-shrink: 0; }
-#focus-btn:hover { background: var(--acc); color: #000; }
+#focus-btn { margin: 0 16px 16px; padding: 12px; background: linear-gradient(135deg, rgba(255, 158, 88, 0.12) 0%, rgba(255, 158, 88, 0.04) 100%); border: 1.5px solid var(--acc); color: var(--acc); border-radius: 8px; font-family: var(--mono); font-size: 0.78rem; font-weight: 700; letter-spacing: 3px; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); flex-shrink: 0; box-shadow: 0 0 16px rgba(255, 158, 88, 0.15); }
+#focus-btn:hover { background: var(--acc); color: #040711; box-shadow: 0 0 24px var(--acc-glow); transform: translateY(-1px); }
 
 /* ── STATUS BAR ───────────────────────────────────────────────────────────── */
 #status-bar { position: absolute; bottom: 0; left: 0; right: 0; height: var(--status-h); background: rgba(4,6,14,0.92); border-top: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; gap: 10px; padding: 0 20px; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); z-index: 300; }

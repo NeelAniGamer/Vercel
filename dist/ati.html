@@ -1164,11 +1164,11 @@
           <button class="dropdown-btn act">Projects <span class="darr">▼</span></button>
           <div class="dropdown-content">
             <div class="dropdown-content-inner">
-              <a href="ati">Typing Instructor <span>⌨️</span></a>
-              <a href="solar">Solar Engine <span>🌍</span></a>
-              <a href="gesture">Perceptus Flow <span>🖐️</span></a>
-              <a href="rpg">RPG Game <span>⚔️</span></a>
-              <a href="qr">QR Generator <span>⬛</span></a>
+              <a href="ati">Typing Instructor <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg></a>
+              <a href="solar">Solar Engine <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg></a>
+              <a href="gesture">Perceptus Flow <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg></a>
+              <a href="rpg">RPG Game <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></a>
+              <a href="qr">QR Studio Matrix <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></a>
             </div>
           </div>
         </div>
@@ -1206,15 +1206,13 @@
     </script>
 
     <header class="game-hero" style="position: relative;">
-      <canvas id="bgCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;"></canvas>
-      <canvas id="cyberCanvas"></canvas>
-      <div class="hero-badge anim-target">ATI v2.5.0 &bull; Cyber-Mechanical Edition</div>
+      <div class="hero-badge anim-target">ATI v3.2.0 &bull; Cyber-Mechanical Edition</div>
       <h1><span id="typewriter-text"></span><span class="cursor-blink">_</span></h1>
       <div class="hero-reveal" id="heroReveal">
         <p>Deploying high-fidelity syntax mastery module. Train your muscle memory for complex coding languages.</p>
         <div class="hero-cta">
           <a href="download" class="btn-download">Initialize Download</a>
-          <a href="ati-demo" class="btn-demo">▶ Play Web Demo</a>
+          <a href="ati-demo" class="btn-demo"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:6px"><polygon points="5 3 19 12 5 21 5 3"/></svg>Play Web Demo</a>
         </div>
       </div>
     </header>
@@ -1241,7 +1239,7 @@
       </div>
       <div class="feature-card anim-target" style="transition-delay: 0.3s">
         <div class="feature-content">
-          <div class="icon-wrapper">⌨️</div>
+          <div class="icon-wrapper"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"/></svg></div>
           <h3>Mech Simulator</h3>
           <p>Virtual mechanical keyboard interface with custom switch sounds and visual heatmaps.</p>
         </div>
@@ -1302,56 +1300,6 @@
     </div>
 
     <script>
-      // --- CANVAS PARTICLE BACKGROUND LOGIC ---
-      const canvas = document.getElementById('cyberCanvas')
-      const ctx = canvas.getContext('2d')
-      let particles = []
-      const symbols = ['{ }', '</>', '()', '++;', '=>', '[ ]', '==', 'def']
-
-      function resizeCanvas() {
-        canvas.width = window.innerWidth
-        canvas.height = document.querySelector('.game-hero').offsetHeight
-      }
-
-      class TechParticle {
-        constructor() {
-          this.x = Math.random() * canvas.width
-          this.y = canvas.height + Math.random() * 100
-          this.speed = Math.random() * 0.5 + 0.2
-          this.text = symbols[Math.floor(Math.random() * symbols.length)]
-          this.opacity = Math.random() * 0.3 + 0.1
-          this.size = Math.random() * 10 + 10
-        }
-        update() {
-          this.y -= this.speed
-          if (this.y < -20) {
-            this.y = canvas.height + 20
-            this.x = Math.random() * canvas.width
-          }
-        }
-        draw() {
-          ctx.fillStyle = `rgba(56, 189, 248, ${this.opacity})`
-          ctx.font = `${this.size}px 'Space Mono', monospace`
-          ctx.fillText(this.text, this.x, this.y)
-        }
-      }
-
-      function initParticles() {
-        particles = []
-        for (let i = 0; i < 40; i++) particles.push(new TechParticle())
-      }
-
-      function animateParticles() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height)
-        particles.forEach((p) => {
-          p.update()
-          p.draw()
-        })
-        requestAnimationFrame(animateParticles)
-      }
-
-      window.addEventListener('resize', resizeCanvas)
-
       // --- 3D TILT EFFECT FOR FEATURE CARDS ---
       function initTiltEffect() {
         const cards = document.querySelectorAll('.feature-card')
@@ -1441,6 +1389,5 @@
         <div class="fc">&copy; 2026 Neel, Ansh, Aarush &amp; Yash Raj.</div>
       </div>
     </footer>
-    <script defer src="col-3d.js"></script>
   </body>
 </html>

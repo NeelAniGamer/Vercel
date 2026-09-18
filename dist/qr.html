@@ -1298,14 +1298,14 @@
         <a href="sneh-asha" class="nav-link">Sneh Asha</a>
         <a href="download" class="nav-dl-btn mobile-dl">Downloads</a>
         <div class="dropdown" id="projectsDropdown">
-          <button class="dropdown-btn act" onclick="this.parentElement.classList.toggle('active'); this.setAttribute('aria-expanded', this.parentElement.classList.contains('active'))" aria-haspopup="true" aria-expanded="false">Projects <span>▼</span></button>
+          <button class="dropdown-btn act" onclick="this.parentElement.classList.toggle('active'); this.setAttribute('aria-expanded', this.parentElement.classList.contains('active'))" aria-haspopup="true" aria-expanded="false">Projects <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-left:4px;"><polyline points="6 9 12 15 18 9"/></svg></button>
           <div class="dropdown-content">
             <div class="dropdown-content-inner">
-              <a href="ati">Typing Instructor <span>⌨️</span></a>
-              <a href="solar">Solar Engine <span>☀️</span></a>
-              <a href="gesture">Gesture Control <span>🖐️</span></a>
-              <a href="rpg">RPG Game <span>⚔️</span></a>
-              <a href="qr">QR Generator <span>📱</span></a>
+              <a href="ati"><span>Typing Instructor</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"/></svg></a>
+              <a href="solar"><span>Solar Engine</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></a>
+              <a href="gesture"><span>Perceptus Flow</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg></a>
+              <a href="rpg"><span>RPG Universe</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></a>
+              <a href="qr"><span>QR Studio Matrix</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></a>
             </div>
           </div>
         </div>
@@ -1317,7 +1317,7 @@
           Sign In
         </button>
         <div class="nav-user-profile" id="navUserProfile" onclick="openLogin()">
-          <div class="nav-user-avatar" id="navUserAv">?</div>
+          <div class="nav-user-avatar" id="navUserAv"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
           <span id="navUserName" style="font-size: 0.85rem; font-weight: 800; color: var(--text-main)">User</span>
         </div>
 
@@ -1329,13 +1329,16 @@
     <div class="qr-app" role="main" id="qrMainContent">
       <aside class="app-sb">
         <div class="sb-top">
-          <div class="sb-top-title">⬛ QR STUDIO</div>
+          <div class="sb-top-title" style="display:flex; align-items:center; justify-content:center; gap:8px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="stroke:var(--pri);"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            <span>QR STUDIO</span>
+          </div>
           <div class="sb-top-sub">By Class Of Learners</div>
         </div>
 
         <div class="sb-lbl">Create</div>
-        <a href="qr-editor" class="sb-btn"><span class="sb-icon">⊕</span>New QR</a>
-        <a href="qr-editor.html?action=bulk" class="sb-btn"><span class="sb-icon">🎯</span>Bulk QR generation</a>
+        <a href="qr-editor" class="sb-btn"><span class="sb-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>New QR</a>
+        <a href="qr-editor.html?action=bulk" class="sb-btn"><span class="sb-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span>Bulk QR Generation</a>
 
         <div class="sb-lbl" style="margin-top: 15px">Manage</div>
         <a
@@ -1346,7 +1349,7 @@
             switchView('qrs')
             return false
           "
-          ><span class="sb-icon">🔒²</span>My QR codes</a
+          ><span class="sb-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span>My QR Codes</a
         >
         <a
           href="#"
@@ -1356,7 +1359,7 @@
             switchView('stats')
             return false
           "
-          ><span class="sb-icon">📄</span>Stats</a
+          ><span class="sb-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>Analytics & Stats</a
         >
         <a
           href="#"
@@ -1366,11 +1369,11 @@
             switchView('templates')
             return false
           "
-          ><span class="sb-icon">📄</span>Templates</a
+          ><span class="sb-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg></span>Design Templates</a
         >
 
         <div class="sb-lbl" style="margin-top: 15px">Settings</div>
-        <button class="sb-btn" onclick="openLogin()"><span class="sb-icon">⚙️</span>Account</button>
+        <button class="sb-btn" onclick="openLogin()"><span class="sb-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>Account</button>
 
         <div class="sb-foot">
           <button class="sign-btn" id="sbSignBtn" onclick="openLogin()">
@@ -1393,13 +1396,12 @@
         <div class="db-container">
           <div id="view-qrs" class="db-view">
             <div class="db-hd" style="position: relative; overflow: hidden; padding: 30px; border-radius: 14px; margin-bottom: 20px;">
-              <canvas id="bgCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;"></canvas>
               <div>
                 <h1>My Saved Codes</h1>
                 <p id="dbSub">Manage your generated assets.</p>
                 <p style="margin-top: 15px; max-width: 600px; color: var(--txt-m); font-size: 0.95rem; line-height: 1.5;">Welcome to the Class Of Learners QR Generator Dashboard. This free educational tool allows you to easily create, manage, and download custom QR codes for websites, Wi-Fi networks, vCards, and more. All your generated assets are saved locally to your device.</p>
               </div>
-              <a href="qr-editor" class="btn-nx" style="height: fit-content; margin: 0">+ Create New</a>
+              <a href="qr-editor" class="btn-nx" style="height: fit-content; margin: 0; display:flex; align-items:center; gap:8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Create New</a>
             </div>
 
             <div class="db-sync-bar" id="dbSyncBar" style="display: none">
@@ -1415,8 +1417,8 @@
                 Cloud Backup: <span id="driveStatus">Not Synced</span>
               </div>
               <div style="display: flex; gap: 10px">
-                <button class="dbf" onclick="syncDrive()">⬆ Upload to Drive</button>
-                <button class="dbf" onclick="loadFromDrive()">⬇ Fetch from Drive</button>
+                <button class="dbf" onclick="syncDrive()" style="display:flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Upload to Drive</button>
+                <button class="dbf" onclick="loadFromDrive()" style="display:flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Fetch from Drive</button>
               </div>
             </div>
 
@@ -1537,7 +1539,7 @@
         if (!g) return
         g.innerHTML = ''
         if (!filtered.length) {
-          g.innerHTML = `<div class="db-emp"><div class="ei">🔒</div><h2>Workspace Empty</h2><p>No assets found for this filter.</p><button class="btn-nx" style="margin: 20px auto 0" onclick="window.location.href='qr-editor'">Initialize New QR</button></div>`
+          g.innerHTML = `<div class="db-emp"><div class="ei"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="stroke:var(--pri);"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div><h2>Workspace Empty</h2><p>No assets found for this filter.</p><button class="btn-nx" style="margin: 20px auto 0; display:flex; align-items:center; gap:8px;" onclick="window.location.href='qr-editor'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Initialize New QR</button></div>`
           return
         }
         var frag = document.createDocumentFragment()
@@ -1546,9 +1548,9 @@
           c.className = 'dbc'
           const nameStr = q.advSettings && q.advSettings.name ? q.advSettings.name : q.content
           const shortC = nameStr.length > 38 ? nameStr.substring(0, 38) + '…' : nameStr
-          c.innerHTML = `<div class="dbt">${q.thumb ? `<img src="${q.thumb}" alt="QR" loading="lazy">` : '<div style="font-size:2rem;opacity:.25">🔒</div>'}</div>
-    <div class="dbb"><div class="dtyp">${q.typeIcon} ${q.typeName}</div><h3 title="${q.content}">${shortC}</h3><div class="ddt">📄 ${q.date}</div></div>
-    <div class="dba"><button class="dba-btn" onclick="editQR(${q.id})">✏️ Editor</button><button class="dba-btn" onclick="reDL(${q.id})">⬇ Export</button><button class="dba-btn del" onclick="delQR(${q.id})">🗑 Delete</button></div>`
+          c.innerHTML = `<div class="dbt">${q.thumb ? `<img src="${q.thumb}" alt="QR" loading="lazy">` : '<div style="font-size:2rem;opacity:.25;display:flex;align-items:center;justify-content:center;height:100%;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>'}</div>
+    <div class="dbb"><div class="dtyp" style="display:flex;align-items:center;gap:6px;">${q.typeIcon || ''} <span>${q.typeName || 'QR Code'}</span></div><h3 title="${q.content}">${shortC}</h3><div class="ddt" style="display:flex;align-items:center;gap:4px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ${q.date}</div></div>
+    <div class="dba"><button class="dba-btn" onclick="editQR(${q.id})" style="display:flex;align-items:center;justify-content:center;gap:4px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Editor</button><button class="dba-btn" onclick="reDL(${q.id})" style="display:flex;align-items:center;justify-content:center;gap:4px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export</button><button class="dba-btn del" onclick="delQR(${q.id})" style="display:flex;align-items:center;justify-content:center;gap:4px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Delete</button></div>`
           frag.appendChild(c)
         })
         g.appendChild(frag)
@@ -1562,12 +1564,14 @@
         })
         renderDB()
       }
-      function delQR(id) {
+      async function delQR(id) {
         if (!confirm('Permanently purge this QR asset?')) return
         let idx = -1
+        let deletedItem = null
         for (let i = 0; i < saved.length; i++) {
           if (saved[i].id === id) {
             idx = i
+            deletedItem = saved[i]
             break
           }
         }
@@ -1575,6 +1579,13 @@
           saved.splice(idx, 1)
           Storage.set('qrs_min', JSON.stringify(saved))
           renderDB()
+        }
+        if (window.supabaseClient && deletedItem) {
+          try {
+            if (deletedItem.shortCode) {
+              await window.supabaseClient.from('qr_codes').delete().eq('short_code', deletedItem.shortCode)
+            }
+          } catch(e) { console.error('Cloud delete failed', e) }
         }
       }
       async function renderStats() {
@@ -1611,7 +1622,7 @@
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                 </div>
                 <div style="background:var(--panel); border:1px solid var(--border); padding:10px 15px; border-radius:8px; color:var(--txt-m); display:flex; align-items:center; gap:10px; font-size:0.9rem;">
-                    Time zone: Asia/Calcutta ✎
+                    Time zone: Asia/Calcutta <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-left:4px;"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
                 </div>
             </div>
             <button class="dbf" style="display:flex; align-items:center; gap:8px;">
@@ -1808,7 +1819,7 @@
           accHtml += `
             <div style="background:var(--panel); border:1px solid var(--border); border-radius:8px; overflow:hidden; transition:0.3s; margin-bottom:15px;" class="acc-box">
                 <button style="width:100%; padding:20px; background:transparent; border:none; display:flex; justify-content:space-between; align-items:center; cursor:pointer; color:var(--txt); font-weight:700; font-size:1rem;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'; this.querySelector('svg').style.transform = this.nextElementSibling.style.display === 'block' ? 'rotate(180deg)' : 'rotate(0deg)';">
-                    ${qr.typeIcon || '⬛'} ${qr.typeName || qr.type} ${qr.advSettings?.name || ''}
+                    ${qr.typeName || qr.type} ${qr.advSettings?.name || ''}
                     <span style="font-size:0.85rem; color:var(--txt-m); font-weight:500;">${analytics.totalScans} scans / ${analytics.uniqueScans} unique</span>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition:0.3s;"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </button>
@@ -1900,27 +1911,27 @@
         
         <div class="db-grid" style="margin-top:20px;">
             <a href="qr-editor.html?template=business_card" class="dbc" style="cursor:pointer;">
-                <div class="dbt" style="background: linear-gradient(135deg, #3b82f6, #2dd4bf);"><div style="font-size: 4rem;">💼</div></div>
+                <div class="dbt" style="background: linear-gradient(135deg, #3b82f6, #2dd4bf);"><div style="display:flex;align-items:center;justify-content:center;height:100%;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div></div>
                 <div class="dbb"><h3>Modern Business Card</h3><div class="ddt">Professional layout with gradient logo support</div></div>
             </a>
             
             <a href="qr-editor.html?template=wifi_neon" class="dbc" style="cursor:pointer;">
-                <div class="dbt" style="background: linear-gradient(135deg, #10b981, #f59e0b);"><div style="font-size: 4rem;">📄</div></div>
+                <div class="dbt" style="background: linear-gradient(135deg, #10b981, #f59e0b);"><div style="display:flex;align-items:center;justify-content:center;height:100%;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg></div></div>
                 <div class="dbb"><h3>Neon Wi-Fi Access</h3><div class="ddt">Vibrant styling for quick guest access</div></div>
             </a>
             
             <a href="qr-editor.html?template=minimal_menu" class="dbc" style="cursor:pointer;">
-                <div class="dbt" style="background: linear-gradient(135deg, #ec4899, #8b5cf6);"><div style="font-size: 4rem;">🍽️</div></div>
+                <div class="dbt" style="background: linear-gradient(135deg, #ec4899, #8b5cf6);"><div style="display:flex;align-items:center;justify-content:center;height:100%;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg></div></div>
                 <div class="dbb"><h3>Minimalist Menu</h3><div class="ddt">Clean and scannable design for restaurants</div></div>
             </a>
             
             <a href="qr-editor.html?template=social_hub" class="dbc" style="cursor:pointer;">
-                <div class="dbt" style="background: linear-gradient(135deg, #6366f1, #a855f7);"><div style="font-size: 4rem;">🔗</div></div>
+                <div class="dbt" style="background: linear-gradient(135deg, #6366f1, #a855f7);"><div style="display:flex;align-items:center;justify-content:center;height:100%;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div></div>
                 <div class="dbb"><h3>Social Media Hub</h3><div class="ddt">Optimized for Linktree or social profiles</div></div>
             </a>
 
             <a href="qr-editor.html?template=event_promo" class="dbc" style="cursor:pointer;">
-                <div class="dbt" style="background: linear-gradient(135deg, #f97316, #ea580c);"><div style="font-size: 4rem;">🎟️</div></div>
+                <div class="dbt" style="background: linear-gradient(135deg, #f97316, #ea580c);"><div style="display:flex;align-items:center;justify-content:center;height:100%;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="m9 16 2 2 4-4"/></svg></div></div>
                 <div class="dbb"><h3>Event &amp; Ticket Promo</h3><div class="ddt">High-conversion flyer &amp; badge styling</div></div>
             </a>
         </div>
@@ -2027,7 +2038,7 @@
             Storage.set('qrs_user', JSON.stringify(curUser))
             updatePUI()
             closeMo()
-            toast('✅ Authenticated: ' + savedName, 'green')
+            toast('Authenticated: ' + savedName, 'green')
           } else {
             toast('Authentication failed.', '')
           }
@@ -2130,7 +2141,7 @@
           Storage.set('qrs_user', JSON.stringify(curUser))
           updatePUI()
           closeMo()
-          toast('✅ Username Updated', 'green')
+          toast('Username updated', 'green')
         }
       }
       function doLogout() {
@@ -2192,7 +2203,44 @@ async function loadFromDrive() {
         checkURLForToken()
         loadUser()
         renderDB()
+        setTimeout(syncCloudQRs, 500)
       })()
+
+      window.addEventListener('col-auth-changed', function() {
+        loadUser()
+        syncCloudQRs()
+      })
+
+      async function syncCloudQRs() {
+        if (!window.supabaseClient) return;
+        try {
+          const user = (window.colAuth && window.colAuth.currentUser) || window.colUser;
+          if (!user || !user.id) return;
+          const { data, error } = await window.supabaseClient
+            .from('qr_codes')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('updated_at', { ascending: false });
+          if (!error && data && data.length > 0) {
+            data.forEach(row => {
+              if (row.qr_data && typeof row.qr_data === 'object') {
+                const existingIdx = saved.findIndex(x => (row.short_code && x.shortCode === row.short_code) || x.id === row.qr_data.id);
+                if (existingIdx > -1) {
+                  saved[existingIdx] = Object.assign({}, saved[existingIdx], row.qr_data, {
+                    scans_count: row.scans_count || 0
+                  });
+                } else {
+                  saved.unshift(Object.assign({}, row.qr_data, {
+                    scans_count: row.scans_count || 0
+                  }));
+                }
+              }
+            });
+            Storage.set('qrs_min', JSON.stringify(saved));
+            renderDB();
+          }
+        } catch(e) { console.error('Cloud QR sync error:', e); }
+      }
 
       function toggleTheme(element) {
         if (element && element.checked) {
@@ -2279,6 +2327,6 @@ async function loadFromDrive() {
         <div class="fc">&copy; 2026 Neel, Ansh, Aarush &amp; Yash Raj.</div>
       </div>
     </footer>
-    <script defer src="col-3d.js"></script>
+    <script defer src="col-ui.js"></script>
   </body>
 </html>

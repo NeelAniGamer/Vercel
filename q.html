@@ -1,68 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995"
-     crossorigin="anonymous"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Dynamic QR Code Redirection Service by Class Of Learners." />
   <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
   <title>Redirecting... | Class Of Learners</title>
+  <link rel="icon" type="image/png" href="Icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="qr-dynamic.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #070a14;
+      --card-bg: rgba(15, 23, 42, 0.85);
+      --border: rgba(255, 255, 255, 0.08);
+      --accent: #10b981;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --danger: #ef4444;
+    }
     body {
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: #070a14;
-      color: #e8e3d8;
+      background: var(--bg);
+      color: var(--text);
       display: flex;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      padding: 20px;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(16, 185, 129, 0.08), transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(94, 212, 245, 0.08), transparent 40%);
+      z-index: 0;
     }
     .card {
-      background: rgba(18, 24, 38, 0.95);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: var(--card-bg);
+      border: 1px solid var(--border);
       border-radius: 20px;
-      padding: 36px 28px;
-      max-width: 440px;
+      padding: 40px 32px;
+      max-width: 460px;
       width: 100%;
       text-align: center;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(12px);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(20px);
+      position: relative;
+      z-index: 1;
+      animation: fadeIn 0.3s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     .spinner {
       width: 44px;
       height: 44px;
       border: 3px solid rgba(255, 255, 255, 0.1);
-      border-top-color: #10b981;
+      border-top-color: var(--accent);
       border-radius: 50%;
-      animation: spin 0.9s linear infinite;
+      animation: spin 0.8s linear infinite;
       margin: 0 auto 20px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
     .title {
-      font-size: 1.25rem;
+      font-size: 1.35rem;
       font-weight: 700;
-      color: #f8fafc;
+      color: var(--text);
       margin-bottom: 8px;
     }
     .msg {
-      color: #94a3b8;
+      color: var(--text-muted);
       font-size: 0.95rem;
       line-height: 1.5;
       margin-bottom: 24px;
     }
-    .icon-badge {
-      font-size: 2.8rem;
-      margin-bottom: 16px;
-      display: inline-block;
+    .icon-container {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      color: var(--accent);
+    }
+    .icon-container.err {
+      color: var(--danger);
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.3);
     }
     .pwd-input {
       width: 100%;
-      background: #0d121f;
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(7, 10, 20, 0.8);
+      border: 1px solid var(--border);
       color: #fff;
       padding: 14px 16px;
       border-radius: 12px;
@@ -74,7 +117,7 @@
       letter-spacing: 2px;
     }
     .pwd-input:focus {
-      border-color: #3b82f6;
+      border-color: var(--accent);
     }
     .btn {
       width: 100%;
@@ -84,25 +127,36 @@
       font-weight: 600;
       cursor: pointer;
       border: none;
-      transition: opacity 0.2s, transform 0.1s;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
     }
     .btn-primary {
-      background: linear-gradient(135deg, #3b82f6, #2563eb);
-      color: #fff;
+      background: var(--accent);
+      color: #070a14;
+    }
+    .btn-primary:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
     }
     .btn-secondary {
-      background: rgba(255, 255, 255, 0.05);
-      color: #94a3b8;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      margin-top: 10px;
-      text-decoration: none;
-      display: inline-block;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      margin-top: 12px;
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text);
     }
     .btn:active {
       transform: scale(0.98);
     }
     .err-text {
-      color: #ef4444;
+      color: var(--danger);
       font-size: 0.85rem;
       margin-top: -10px;
       margin-bottom: 14px;
@@ -132,29 +186,82 @@
 
       const app = document.getElementById('app');
 
-      function renderError(icon, title, message) {
+      function renderError(svgIcon, title, message) {
         app.innerHTML = `
-          <div class="icon-badge">${icon}</div>
+          <div class="icon-container err">${svgIcon}</div>
           <div class="title">${title}</div>
           <div class="msg">${message}</div>
-          <a href="/home" class="btn btn-secondary">Return to Home</a>
+          <a href="/home" class="btn btn-secondary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Return to Home
+          </a>
         `;
       }
 
+      const ICONS = {
+        missing: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
+        notFound: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+        expired: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+        locked: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
+        warning: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
+      };
+
       if (!code) {
-        renderError('🔍', 'Missing QR Code', 'No destination or QR code identifier was provided.');
+        renderError(ICONS.missing, 'Missing QR Code', 'No destination or QR code identifier was provided.');
         return;
       }
+
+      // Initialize Supabase client
+      let sbClient = null;
+      try {
+        const cfgRes = await fetch('config.json');
+        const cfg = await cfgRes.json();
+        if (cfg.auth && cfg.auth.url && typeof window.supabase !== 'undefined') {
+          sbClient = window.supabase.createClient(cfg.auth.url, cfg.auth.key);
+        }
+      } catch(e) {}
 
       try {
         let entry = null;
 
-        // 1. Lookup in DYNAMIC_QR
-        if (typeof DYNAMIC_QR !== 'undefined') {
+        // 1. First priority: Remote Supabase dynamic QR lookup (RPC lookup_dynamic_qr)
+        if (sbClient) {
+          try {
+            const { data, error } = await sbClient.rpc('lookup_dynamic_qr', { p_code: code });
+            if (data && data.found) {
+              entry = {
+                id: data.id,
+                shortCode: data.short_code,
+                title: data.title,
+                type: data.type,
+                destination: data.destination_url,
+                isDynamic: data.is_dynamic,
+                isPasswordProtected: data.is_password_protected,
+                isExpired: data.is_expired,
+                scansCount: data.scans_count
+              };
+
+              // Asynchronously record detailed analytics
+              sbClient.rpc('record_qr_scan', {
+                p_code: code,
+                p_user_agent: navigator.userAgent,
+                p_device_type: /Mobile|Android|iPhone|iPad/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop',
+                p_browser: navigator.userAgent.includes('Chrome') ? 'Chrome' : navigator.userAgent.includes('Firefox') ? 'Firefox' : navigator.userAgent.includes('Safari') ? 'Safari' : 'Other',
+                p_os: navigator.userAgent.includes('Windows') ? 'Windows' : navigator.userAgent.includes('Mac') ? 'macOS' : navigator.userAgent.includes('Android') ? 'Android' : navigator.userAgent.includes('iOS') ? 'iOS' : 'Linux',
+                p_referer: document.referrer || 'Direct'
+              }).then(() => {}).catch(() => {});
+            }
+          } catch(rpcErr) {
+            console.warn('Supabase lookup_dynamic_qr error:', rpcErr);
+          }
+        }
+
+        // 2. Second priority: Local storage lookup via DYNAMIC_QR
+        if (!entry && typeof DYNAMIC_QR !== 'undefined') {
           entry = DYNAMIC_QR.getByCode(code);
         }
 
-        // 2. Lookup in qrs_min
+        // 3. Fallback: qrs_min in localStorage
         if (!entry) {
           try {
             const raw = localStorage.getItem('qrs_min');
@@ -165,23 +272,14 @@
           } catch(e) {}
         }
 
-        // 3. Fallback via parent if inside iframe
-        if (!entry && window.parent !== window) {
-          try {
-            if (window.parent.DYNAMIC_QR) {
-              entry = window.parent.DYNAMIC_QR.getByCode(code);
-            }
-          } catch(e) {}
-        }
-
         if (!entry) {
-          renderError('❌', 'QR Code Not Found', 'This dynamic QR code may have been deleted or expired.');
+          renderError(ICONS.notFound, 'QR Code Not Found', 'This dynamic QR code may have been deleted or does not exist.');
           return;
         }
 
         // Expiration check
-        if (entry.expiry && new Date(entry.expiry) < new Date()) {
-          renderError('⌛', 'QR Code Expired', `This link expired on ${new Date(entry.expiry).toLocaleDateString()}.`);
+        if (entry.isExpired || (entry.expiry && new Date(entry.expiry) < new Date())) {
+          renderError(ICONS.expired, 'QR Code Expired', 'This dynamic campaign link has reached its expiration date.');
           return;
         }
 
@@ -189,42 +287,19 @@
         if (entry.schedule) {
           const now = new Date();
           if (entry.schedule.start && new Date(entry.schedule.start) > now) {
-            renderError('📅', 'Upcoming Campaign', `This QR code will be active starting on ${new Date(entry.schedule.start).toLocaleDateString()}.`);
+            renderError(ICONS.expired, 'Upcoming Campaign', `This QR code will activate on ${new Date(entry.schedule.start).toLocaleDateString()}.`);
             return;
           }
           if (entry.schedule.end && new Date(entry.schedule.end) < now) {
-            renderError('⌛', 'Campaign Ended', `This campaign ended on ${new Date(entry.schedule.end).toLocaleDateString()}.`);
+            renderError(ICONS.expired, 'Campaign Ended', `This campaign concluded on ${new Date(entry.schedule.end).toLocaleDateString()}.`);
             return;
           }
         }
 
-        // Handle Scan tracking
-        const trackScan = () => {
-          const scanData = {
-            ip: 'client',
-            country: 'Unknown',
-            city: 'Unknown',
-            device: /Mobile|Android|iPhone|iPad/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop',
-            os: navigator.userAgent.includes('Windows') ? 'Windows' :
-                navigator.userAgent.includes('Mac') ? 'macOS' :
-                navigator.userAgent.includes('Android') ? 'Android' :
-                navigator.userAgent.includes('iPhone') || navigator.userAgent.includes('iPad') ? 'iOS' : 'Linux',
-            browser: navigator.userAgent.includes('Chrome') ? 'Chrome' :
-                     navigator.userAgent.includes('Firefox') ? 'Firefox' :
-                     navigator.userAgent.includes('Safari') ? 'Safari' : 'Other',
-            referrer: document.referrer || 'Direct'
-          };
-
-          if (typeof DYNAMIC_QR !== 'undefined') {
-            DYNAMIC_QR.trackScan(code, scanData);
-          }
-        };
-
         const doRedirect = (dest) => {
-          trackScan();
           let target = dest || entry.destination || entry.content;
           if (!target) {
-            renderError('⚠️', 'Empty Destination', 'This QR code has no destination configured.');
+            renderError(ICONS.warning, 'Empty Destination', 'This QR code has no target link configured.');
             return;
           }
           if (!/^https?:\/\//i.test(target) && !/^mailto:/i.test(target) && !/^tel:/i.test(target) && !/^sms:/i.test(target) && !/^wa\.me/i.test(target)) {
@@ -233,22 +308,25 @@
           window.location.href = target;
         };
 
-        // Password protected check
-        if (entry.password) {
+        // Password protection check
+        if (entry.isPasswordProtected || entry.password) {
           const savedAuth = sessionStorage.getItem('qr_auth_' + code);
-          if (savedAuth && (savedAuth === entry.password || DYNAMIC_QR.hashPassword(savedAuth) === entry.password)) {
+          if (savedAuth && (savedAuth === entry.password || (typeof DYNAMIC_QR !== 'undefined' && DYNAMIC_QR.hashPassword(savedAuth) === entry.password))) {
             doRedirect();
             return;
           }
 
           app.innerHTML = `
-            <div class="icon-badge">🔒</div>
+            <div class="icon-container">${ICONS.locked}</div>
             <div class="title">Protected QR Code</div>
-            <div class="msg">Please enter the security password to proceed to this destination.</div>
+            <div class="msg">Please enter the passcode to access this destination.</div>
             <form id="pwdForm" onsubmit="return false;">
-              <input type="password" class="pwd-input" id="pwdInput" placeholder="••••••••" autofocus required />
-              <div class="err-text" id="errText">Incorrect password. Please try again.</div>
-              <button type="submit" class="btn btn-primary" id="pwdSubmit">Unlock &amp; Continue</button>
+              <input type="password" class="pwd-input" id="pwdInput" placeholder="Enter Passcode" autofocus required />
+              <div class="err-text" id="errText">Incorrect passcode. Please try again.</div>
+              <button type="submit" class="btn btn-primary" id="pwdSubmit">
+                Unlock &amp; Continue
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </button>
             </form>
           `;
 
@@ -258,15 +336,15 @@
 
           pwdForm.onsubmit = function(e) {
             e.preventDefault();
-            const val = pwdInput.value;
-            if (val === entry.password || DYNAMIC_QR.hashPassword(val) === entry.password) {
+            const val = pwdInput.value.trim();
+            if (val === entry.password || (typeof DYNAMIC_QR !== 'undefined' && DYNAMIC_QR.hashPassword(val) === entry.password)) {
               sessionStorage.setItem('qr_auth_' + code, val);
               app.innerHTML = `
                 <div class="spinner"></div>
-                <div class="title">Unlocked!</div>
-                <div class="msg">Redirecting you now...</div>
+                <div class="title">Access Verified</div>
+                <div class="msg">Redirecting to destination...</div>
               `;
-              setTimeout(() => doRedirect(), 400);
+              setTimeout(() => doRedirect(), 300);
             } else {
               errText.style.display = 'block';
               pwdInput.value = '';
@@ -276,12 +354,12 @@
           return;
         }
 
-        // Immediate redirect
+        // Direct instant redirect
         doRedirect();
 
       } catch (err) {
         console.error('Redirection error:', err);
-        renderError('⚠️', 'Redirect Error', 'Unable to complete redirection. Please try again later.');
+        renderError(ICONS.warning, 'Redirect Error', 'Unable to complete redirection. Please try again.');
       }
     })();
   </script>

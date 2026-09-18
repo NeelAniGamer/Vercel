@@ -48,7 +48,7 @@
     </script>
 
     <div id="measure-display" style="display: none">
-      <span id="measure-icon">📏</span>
+      <span id="measure-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20M7 7l5-5 5 5M7 17l5 5 5-5"/></svg></span>
       <span id="measure-text">Select first object⬦</span>
       <button id="measure-close" onclick="window.toggleMeasure && window.toggleMeasure()">✕</button>
     </div>
@@ -69,7 +69,7 @@
       <div id="home-content">
         <div id="home-badge">
           <span class="badge-dot"></span>
-          SOLAR ENGINE · v3.3
+          SOLAR ENGINE · v3.4
           <span class="badge-dot"></span>
         </div>
 
@@ -95,21 +95,27 @@
 
         <div id="home-features">
           <div class="hf-card">
-            <div class="hf-icon">📏</div>
+            <div class="hf-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            </div>
             <div class="hf-text">
               <div class="hf-title">REAL ORBITAL MECHANICS</div>
               <div class="hf-sub">Accurate period simulation at variable speed</div>
             </div>
           </div>
           <div class="hf-card">
-            <div class="hf-icon">🚀</div>
+            <div class="hf-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/></svg>
+            </div>
             <div class="hf-text">
               <div class="hf-title">GALACTIC ZOOM</div>
               <div class="hf-sub">Pan from Earth orbit to the Milky Way</div>
             </div>
           </div>
           <div class="hf-card">
-            <div class="hf-icon">⬡</div>
+            <div class="hf-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+            </div>
             <div class="hf-text">
               <div class="hf-title">DEEP DATABANK</div>
               <div class="hf-sub">Physics, atmosphere & mission data for every object</div>
@@ -118,9 +124,11 @@
         </div>
 
         <button id="launch-btn" onclick="enterApp()">
-          <span class="lb-icon">🎯</span>
+          <span class="lb-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+          </span>
           <span class="lb-text">ENTER THE SOLAR SYSTEM</span>
-          <span class="lb-arrow">→</span>
+          <span class="lb-arrow">&rarr;</span>
         </button>
 
         <div id="home-keys">
@@ -138,33 +146,61 @@
 
     <div id="top-bar">
       <div id="brand">
-        <span class="brand-icon">🌌</span>
-        <span class="brand-text">SOLAR ENGINE <span class="brand-ver">v3.3</span></span>
+        <span class="brand-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(30 12 12)"/><circle cx="12" cy="12" r="3"/></svg>
+        </span>
+        <span class="brand-text">SOLAR ENGINE <span class="brand-ver">v3.4</span></span>
       </div>
 
       <div id="search-wrap">
-        <span class="search-icon">🔍</span>
+        <span class="search-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </span>
         <input id="search-input" type="text" placeholder="Search planets, stars, anomalies⬦" autocomplete="off" spellcheck="false" />
         <div id="search-results"></div>
       </div>
 
       <div id="time-controls">
-        <button class="tc-btn" id="btn-rewind" title="Slow down (-)">«</button>
-        <button class="tc-btn" id="btn-pause" title="Pause / Resume (Space)">⏸</button>
-        <button class="tc-btn" id="btn-forward" title="Speed up (+)">»</button>
-        <span id="speed-display" title="Simulation speed">1000×</span>
+        <button class="tc-btn" id="btn-rewind" title="Slow down (-)">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 19 2 12 11 5 11 19"/><polygon points="22 19 13 12 22 5 22 19"/></svg>
+        </button>
+        <button class="tc-btn" id="btn-pause" title="Pause / Resume (Space)">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+        </button>
+        <button class="tc-btn" id="btn-forward" title="Speed up (+)">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 19 22 12 13 5 13 19"/><polygon points="2 19 11 12 2 5 2 19"/></svg>
+        </button>
+        <span id="speed-display" title="Simulation speed">1000&times;</span>
       </div>
 
       <div id="top-right-btns">
-        <button class="icon-btn" id="btn-reset-cam" title="Reset camera (H)">⌨</button>
-        <button class="icon-btn" id="btn-toggle-orbits" title="Toggle orbits (O)">🪐</button>
-        <button class="icon-btn" id="btn-random-fact" title="Random Discovery (D)">🔭</button>
-        <button class="icon-btn" id="btn-compare" title="Compare two objects (C)">💡</button>
-        <button class="icon-btn" id="btn-timeline" title="Cosmic Timeline (T)">🌌</button>
-        <button class="icon-btn" id="btn-settings" title="Settings">⚙</button>
-        <button class="icon-btn" id="btn-shortcuts" title="Keyboard shortcuts (?)">?</button>
-        <button class="icon-btn" id="btn-screenshot" title="Screenshot">⬡</button>
-        <button class="icon-btn" id="btn-fullscreen" title="Fullscreen (F11)">⤢</button>
+        <button class="icon-btn" id="btn-reset-cam" title="Reset camera (H)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
+        </button>
+        <button class="icon-btn" id="btn-toggle-orbits" title="Toggle orbits (O)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(30 12 12)"/><circle cx="12" cy="12" r="2"/></svg>
+        </button>
+        <button class="icon-btn" id="btn-random-fact" title="Random Discovery (D)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </button>
+        <button class="icon-btn" id="btn-compare" title="Compare two objects (C)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="18" rx="1"/><rect x="14" y="3" width="7" height="18" rx="1"/></svg>
+        </button>
+        <button class="icon-btn" id="btn-timeline" title="Cosmic Timeline (T)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </button>
+        <button class="icon-btn" id="btn-settings" title="Settings">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+        <button class="icon-btn" id="btn-shortcuts" title="Keyboard shortcuts (?)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </button>
+        <button class="icon-btn" id="btn-screenshot" title="Screenshot">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        </button>
+        <button class="icon-btn" id="btn-fullscreen" title="Fullscreen (F11)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+        </button>
       </div>
     </div>
 
@@ -177,7 +213,10 @@
 
     <div id="settings-panel">
       <div id="sp-header">
-        <span class="sp-title">⚙ CONTROLS &amp; SETTINGS</span>
+        <span class="sp-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 6px;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          CONTROLS &amp; SETTINGS
+        </span>
         <button id="sp-close" onclick="toggleSettings(false)">✕</button>
       </div>
 
@@ -254,7 +293,7 @@
     <div id="shortcuts-overlay" onclick="if (event.target === this) closeShortcuts()">
       <div id="shortcuts-modal">
         <div id="sm-header">
-          <span>⌨ KEYBOARD SHORTCUTS</span>
+          <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px;"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"/></svg>KEYBOARD SHORTCUTS</span>
           <button onclick="closeShortcuts()">✕</button>
         </div>
         <div id="sm-grid">
@@ -356,7 +395,10 @@
         </div>
       </div>
 
-      <button id="focus-btn" onclick="focusSelectedPlanet()">🎯 FOCUS CAMERA</button>
+      <button id="focus-btn" onclick="focusSelectedPlanet()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 6px;"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
+        FOCUS CAMERA
+      </button>
     </div>
 
     <div id="status-bar">
@@ -376,12 +418,18 @@
     <div id="galaxy-label">
       <div id="gl-name">MILKY WAY GALAXY</div>
       <div id="gl-sub">Diameter: ~105,700 light-years · ~400 billion stars</div>
-      <div id="gl-you">🌎 Our Solar System</div>
+      <div id="gl-you">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px;"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        Our Solar System
+      </div>
     </div>
 
     <div id="fact-toast">
       <div id="fact-toast-header">
-        <span>🔭 RANDOM DISCOVERY</span>
+        <span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 6px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          RANDOM DISCOVERY
+        </span>
         <button onclick="document.getElementById('fact-toast').classList.remove('active')">✕</button>
       </div>
       <div id="fact-toast-object"></div>
@@ -390,7 +438,10 @@
 
     <div id="compare-panel">
       <div id="cp-header">
-        <span>💡 OBJECT COMPARISON</span>
+        <span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 6px;"><rect x="3" y="3" width="7" height="18" rx="1"/><rect x="14" y="3" width="7" height="18" rx="1"/></svg>
+          OBJECT COMPARISON
+        </span>
         <button onclick="closeCompare()">✕</button>
       </div>
       <div id="cp-hint">Click any object in the scene to add it to the comparison (max 2).</div>
@@ -409,19 +460,22 @@
 
     <div id="timeline-panel">
       <div id="tp-header">
-        <span>🌌 COSMIC TIMELINE &amp; SCALE</span>
+        <span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 6px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          COSMIC TIMELINE &amp; SCALE
+        </span>
         <button onclick="document.getElementById('timeline-panel').classList.remove('active')">✕</button>
       </div>
       <div id="tp-body">
         <div class="tp-scale-title">THE COSMIC SCALE</div>
-        <div class="tp-scale-row"><span class="tp-icon">🔬</span><span class="tp-label">SUBATOMIC</span><span class="tp-val">~10⁻¹⁵ m - Quarks, protons, neutrons</span></div>
-        <div class="tp-scale-row"><span class="tp-icon">⚛</span><span class="tp-label">ATOMIC</span><span class="tp-val">~10⁻¹⁰ m - Atoms, molecules</span></div>
-        <div class="tp-scale-row"><span class="tp-icon">🧬</span><span class="tp-label">BIOLOGICAL</span><span class="tp-val">~10⁻⁶ m - Cells, organisms</span></div>
-        <div class="tp-scale-row tp-highlight"><span class="tp-icon">🌍</span><span class="tp-label">PLANETARY</span><span class="tp-val">~10⁷ m - Moons, planets, dwarf planets</span></div>
-        <div class="tp-scale-row tp-highlight"><span class="tp-icon">⭐</span><span class="tp-label">STELLAR</span><span class="tp-val">~10⁹ m - Stars, star systems, nebulae</span></div>
-        <div class="tp-scale-row tp-highlight"><span class="tp-icon">🌌</span><span class="tp-label">GALACTIC</span><span class="tp-val">~10²⁰ m - Galaxies (Milky Way: 10²¹ m)</span></div>
-        <div class="tp-scale-row"><span class="tp-icon">🌌</span><span class="tp-label">SUPERCLUSTER</span><span class="tp-val">~10²³ m - Laniakea: 520M light-years</span></div>
-        <div class="tp-scale-row"><span class="tp-icon">∞</span><span class="tp-label">OBSERVABLE UNIVERSE</span><span class="tp-val">~8.8×10²⁶ m - 93 billion light-years</span></div>
+        <div class="tp-scale-row"><span class="tp-icon">&bull;</span><span class="tp-label">SUBATOMIC</span><span class="tp-val">~10⁻¹⁵ m - Quarks, protons, neutrons</span></div>
+        <div class="tp-scale-row"><span class="tp-icon">&bull;</span><span class="tp-label">ATOMIC</span><span class="tp-val">~10⁻¹⁰ m - Atoms, molecules</span></div>
+        <div class="tp-scale-row"><span class="tp-icon">&bull;</span><span class="tp-label">BIOLOGICAL</span><span class="tp-val">~10⁻⁶ m - Cells, organisms</span></div>
+        <div class="tp-scale-row tp-highlight"><span class="tp-icon">&bull;</span><span class="tp-label">PLANETARY</span><span class="tp-val">~10⁷ m - Moons, planets, dwarf planets</span></div>
+        <div class="tp-scale-row tp-highlight"><span class="tp-icon">&bull;</span><span class="tp-label">STELLAR</span><span class="tp-val">~10⁹ m - Stars, star systems, nebulae</span></div>
+        <div class="tp-scale-row tp-highlight"><span class="tp-icon">&bull;</span><span class="tp-label">GALACTIC</span><span class="tp-val">~10²⁰ m - Galaxies (Milky Way: 10²¹ m)</span></div>
+        <div class="tp-scale-row"><span class="tp-icon">&bull;</span><span class="tp-label">SUPERCLUSTER</span><span class="tp-val">~10²³ m - Laniakea: 520M light-years</span></div>
+        <div class="tp-scale-row"><span class="tp-icon">&infin;</span><span class="tp-label">OBSERVABLE UNIVERSE</span><span class="tp-val">~8.8×10²⁶ m - 93 billion light-years</span></div>
         <div class="tp-divider"></div>
         <div class="tp-scale-title">UNIVERSE HISTORY</div>
         <div class="tp-time-row"><span class="tp-time">t = 0</span><span class="tp-event">Big Bang - all energy in a single point</span></div>
@@ -500,17 +554,17 @@
 
         // Type icon - centred
         const icons = {
-          star: '⭐',
-          planet: '🪐',
-          dwarf: '🌑',
-          comet: '☄',
+          star: '✦',
+          planet: '◎',
+          dwarf: '○',
+          comet: '✧',
           probe: '⬡',
           blackhole: '⬤',
-          pulsar: '🪐',
-          galaxy: '🌌',
-          interstellar: '🛸'
+          pulsar: '◈',
+          galaxy: '❖',
+          interstellar: '▲'
         }
-        const icon = icons[data.type] || '🪐'
+        const icon = icons[data.type] || '◎'
         ctx.font = `bold ${Math.round(H * 0.44)}px Arial, sans-serif`
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
@@ -687,7 +741,7 @@
         resetHUDTabs()
         document.getElementById('hud-title').textContent = data.name
         document.getElementById('hud-type-badge').textContent = data.typeBadge || data.type?.toUpperCase() || 'OBJECT'
-        document.getElementById('sb-selected').textContent = '🌌 ' + data.name
+        document.getElementById('sb-selected').textContent = '❖ ' + data.name
 
         const AU = (data.dist / 149.6).toFixed(2)
         document.getElementById('qs-dist').textContent = data.dist > 0 ? AU : '0 (origin)'
@@ -716,7 +770,7 @@
         document.getElementById('tab-overview-text').textContent = data.overview || data.desc || '-'
         const factBox = document.getElementById('tab-overview-fact')
         factBox.style.display = data.funFact ? 'block' : 'none'
-        factBox.textContent = data.funFact ? '💡 ' + data.funFact : ''
+        factBox.textContent = data.funFact ? '✦ ' + data.funFact : ''
 
         document.getElementById('tab-physics-rows').innerHTML = buildRows(data.stats)
         document.getElementById('tab-atmos-rows').innerHTML = buildRows(data.atmosphere)
