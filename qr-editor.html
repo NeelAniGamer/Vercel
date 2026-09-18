@@ -41,9 +41,14 @@
   --nav-bg: var(--nav);
   --border-light: var(--border);
   --card-bg: var(--panel);
+  /* Bridge to shared col-ui top bar theming */
+  --page-theme: var(--pri);
+  --page-theme-light: #059669;
+  --primary: var(--pri);
 }
 
-body.light {
+body.light,
+body.lm {
   --bg: #f8fafc; --panel: rgba(255, 255, 255, 0.8); --panel-hover: rgba(241, 245, 249, 0.9);
   --border: rgba(0, 0, 0, 0.08); --txt: #0f172a; --txt-m: #64748b;
   --nav: rgba(255, 255, 255, 0.85);
@@ -72,50 +77,18 @@ body::after {
   .qr-app { display: grid; grid-template-columns: 280px 1fr 360px; height: calc(100vh - 73px); width: 100%; max-width: 1800px; margin: 0 auto; overflow: hidden; }
 }
 
-.top-nav { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; background: var(--nav-bg); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-light); position: sticky; top: 0; z-index: 1000; flex-wrap: wrap; gap: 15px; transition: 0.3s;}
+/* Top bar: layout/blur/drawer owned by shared col-ui.css; page only sets accent via --page-theme */
+.top-nav { --page-theme: var(--pri); --primary: var(--pri); }
         
-        .nav-brand { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 1.2rem; letter-spacing: -0.5px; text-decoration: none; color: var(--text-main); transition: color 0.3s; font-family: 'Inter', sans-serif; text-transform: none;}
-        .brand-logo { height: 40px; width: auto; object-fit: contain; }
+        /* .nav-brand + .brand-logo: inherited from col-ui.css */
         
-        .nav-links { display: flex; gap: 20px; flex-wrap: wrap; align-items: center;}
-        .nav-link { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: 0.2s; }
-        .nav-link:hover { color: var(--google-blue); }
-        .nav-dl-btn { background: var(--google-blue); color: white; padding: 10px 24px; border-radius: 30px; text-decoration: none; font-weight: 600; transition: 0.2s; }
+        /* .nav-links/.nav-link/.nav-dl-btn: inherited from col-ui.css */
 
-        .dropdown { position: relative; display: inline-block; }
-        .dropdown-btn { color: var(--text-muted); background: none; border: none; font-size: 0.95rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; font-family: 'Inter', sans-serif; transition: color 0.2s ease; padding: 0; }
-        .dropdown-btn:hover, .dropdown.active .dropdown-btn, .dropdown-btn.act { color: var(--google-blue); }
-        .dropdown-btn span { font-size: 0.7rem; transition: transform 0.3s ease; }
-        .dropdown.active .dropdown-btn span { transform: rotate(180deg); }
-        .dropdown-content { display: flex; flex-direction: column; position: absolute; top: 100%; left: 50%; transform: translateX(-50%) translateY(10px); background: transparent; min-width: 220px; z-index: 1001; padding-top: 15px; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.5s; }
-        .dropdown-content-inner { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-light); box-shadow: 0 15px 35px rgba(0,0,0,0.5); overflow: hidden; display: flex; flex-direction: column; padding: 10px 0; }
-        .dropdown.active .dropdown-content { opacity: 1; visibility: visible; pointer-events: auto; transform: translateX(-50%) translateY(0); transition-delay: 0s; }
-        .dropdown.active:not(:hover) .dropdown-content { opacity: 0; visibility: hidden; transform: translateX(-50%) translateY(10px); transition-delay: 0.5s; }
-        .dropdown-content a { color: var(--text-muted); padding: 12px 20px; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: 0.2s; display: flex; align-items: center; justify-content: space-between;}
-        .dropdown-content a:hover { background: rgba(37, 99, 235, 0.08); color: var(--google-blue); padding-left: 25px;}
+        /* .dropdown family: inherited from col-ui.css */
 
-        .theme-switch-wrapper { display: flex; align-items: center; gap: 8px; margin-left: 10px; border-left: 1px solid var(--border-light); padding-left: 15px; }
-        .theme-label { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;}
-        .theme-switch { display: inline-block; position: relative; width: 44px; height: 24px; cursor: pointer; }
-        .theme-switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; }
-        input:checked + .slider { background-color: var(--google-blue); }
-        input:checked + .slider:before { transform: translateX(20px); }
-        .slider.round { border-radius: 24px; }
-        .slider.round:before { border-radius: 50%; }
+        /* Theme toggle: shared .tw/.tsb/.tst in col-ui.css */
 
-        /* Global Account UI */
-        .nav-login-btn { background: rgba(16,185,129,0.1); color: #34d399; border: 1px solid #34d399; padding: 8px 20px; border-radius: 30px; font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px; text-decoration:none; }
-        .nav-login-btn:hover { background: #34d399; color: #000; box-shadow: 0 0 20px rgba(52,211,153,0.4); }
-        body.light .nav-login-btn { color: #047857; border-color: #10b981; }
-        body.light .nav-login-btn:hover { background: #10b981; color: #000; box-shadow: 0 0 20px rgba(16,185,129,0.4); }
-        .nav-user-profile { display: none; align-items: center; gap: 10px; padding: 5px 15px 5px 5px; background: transparent; border: 1px solid var(--border-light); border-radius: 30px; cursor: pointer; transition: 0.3s; }
-        .nav-user-profile:hover { border-color: #10b981; }
-        .nav-user-avatar { width: 32px; height: 32px; border-radius: 50%; background: #10b981; color: #000; display: flex; justify-content: center; align-items: center; font-weight: 800; overflow: hidden; }
-
-        .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-main); }
-        .mobile-dl { display: none; }
+        /* Account UI + mobile menu: owned by col-ui.css + col-mobile.css */
 
 /* SIDEBAR */
 .app-sb { background: var(--panel); backdrop-filter: blur(20px); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; padding: 25px 20px; }
@@ -283,15 +256,7 @@ select.fi { cursor: pointer; appearance: none; background-image: url('data:image
   .site-nav { padding: 15px 20px; }
   .desktop-dl { display: none; }
             .mobile-dl { display: block; text-align: center; width: 100%; margin-top: 5px; }
-            .top-nav { width: 95%; margin: 15px auto 0; border-radius: 20px; top: 15px; padding: 10px 15px; flex-direction: row; justify-content: space-between; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid var(--border-light); }
-            body.light .top-nav { box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-            .mobile-menu-btn { display: block; }
-            .nav-brand { gap: 8px; font-size: 1.05rem; }
-            .brand-logo { height: 32px; }
-            .nav-links { display: none; position: absolute; top: 110%; left: 0; width: 100%; background: var(--nav-bg); backdrop-filter: blur(15px); border: 1px solid var(--border-light); border-radius: 16px; padding: 20px; flex-direction: column; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-            body.light .nav-links { box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-            .nav-links.active { display: flex; }
-            .theme-switch-wrapper { margin: 10px auto 0; width: 100%; justify-content: center; border-left: none; padding-left: 0; }
+            /* Top bar responsive: owned by shared col-ui.css (@media max-width:900px). No page overrides. */
   .type-grid { grid-template-columns: 1fr 1fr; }
   .corr-g { grid-template-columns: 1fr 1fr; }
   .fr2 { grid-template-columns: 1fr; }
@@ -472,10 +437,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 <script defer src="col-ui.js"></script>
 <script defer src="col-auth.js"></script>
 
-  <link rel="manifest" href="manifest.json">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="icon" type="image/png" href="Icon.png" />
   </head>
 <body>
 
@@ -899,14 +860,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
       <div class="sn-row"><button class="btn-bk" onclick="goStep(2)" style="background:var(--q-bg); color:var(--q-text); border:1px solid var(--q-border); display:flex; align-items:center; gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg> Back</button><button class="btn-cp" onclick="saveQR(false)" style="display:flex; align-items:center; gap:8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Finalize & Save</button></div>
     </div>
     
-    <footer class="site-footer" style="width: 100%; padding: 40px 20px 30px; text-align: center; border-top: 1px solid var(--border); background: var(--nav); margin-top: auto;">
-        <div style="display:flex; justify-content:center; gap:25px; margin-bottom:15px; flex-wrap: wrap;">
-            <a href="privacy" style="color:var(--txt-m); text-decoration:none; font-weight:600;">Privacy Policy</a>
-            <a href="terms" style="color:var(--txt-m); text-decoration:none; font-weight:600;">Terms of Service</a>
-            <a href="feedback" style="color:var(--txt-m); text-decoration:none; font-weight:600;">Provide Feedback</a>
-        </div>
-        <div style="color:var(--txt-m); font-size:0.85rem; font-weight:600;">© 2026 Class Of Learners. Developed By Neel, Ansh, Aarush And Yash Raj. All Rights Reserved.</div>
-    </footer>
   </div>
 </div>
 
@@ -2663,9 +2616,15 @@ document.addEventListener('keydown', function(e){
   if(dStep >= 1 && dStep <= 3) { goStep(dStep); }
 })();
 
+// Theme switch owned by shared col-ui.js (window.toggleTheme, body.lm + #tsck/#tLabel).
+// Fallback kept for no-JS-shared edge: sync both theme classes.
 function toggleTheme(element){
-    if(element && element.checked){ document.body.classList.remove('light'); Storage.set('theme', 'dark'); }
-    else{ document.body.classList.add('light'); Storage.set('theme', 'light'); }
+    var isLight = !!(element && element.checked);
+    document.body.classList.toggle('light', isLight);
+    document.body.classList.toggle('lm', isLight);
+    try { (window.Storage || Storage).set('theme', isLight ? 'light' : 'dark'); } catch (e) { try { localStorage.setItem('theme', isLight ? 'light' : 'dark'); } catch (_e) {} }
+    var lbl = document.getElementById('tLabel');
+    if (lbl) lbl.textContent = isLight ? 'Light Mode' : 'Dark Mode';
   }
 </script>
 
