@@ -46,7 +46,7 @@ textarea {
 }
 
 /* Touch feedback */
-@media (pointer: coarse) {
+@media (pointer: coarse), (max-width: 900px) {
   a,
   button,
   [role='button'] {
@@ -54,8 +54,12 @@ textarea {
     -webkit-tap-highlight-color: transparent;
   }
   .cd,
-  .cr {
+  .cr,
+  #cRing,
+  #cDot {
     display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
   }
 }
 
@@ -95,7 +99,7 @@ code {
     border: 1px solid var(--line, rgba(255, 255, 255, 0.1));
     color: var(--ink, #e8e3d8);
     cursor: pointer;
-    z-index: 1002;
+    z-index: 1000 !important;
     transition: transform var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
   }
   .mmb:active {
@@ -121,139 +125,479 @@ code {
     transform: translateY(-6px) rotate(-45deg);
   }
 
-  /* Mobile Nav Drawer */
-  .nav-links {
+  /* Suppress hamburger button and duplicate close button when drawer is active to prevent top artifacts */
+  .nav-links.active ~ .mmb,
+  body.nav-lock .mmb,
+  #topNav:has(.nav-links.active) .mmb {
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+  .nav-links.active ~ #mobileClose,
+  .nav-links.active ~ .mobile-close,
+  body.nav-lock #mobileClose,
+  body.nav-lock .mobile-close {
+    display: none !important;
+  }
+
+  /* ── 2. CENTERED VISIONOS MOBILE DRAWER MODAL ── */
+  .col-mobile-drawer {
     position: fixed !important;
     inset: 0 !important;
-    width: 100vw !important;
-    height: 100dvh !important;
-    background: #070a14 !important;
-    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.9) !important;
+    z-index: 2000 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: max(16px, env(safe-area-inset-top, 16px)) 16px max(24px, env(safe-area-inset-bottom, 24px)) 16px !important;
+    pointer-events: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transition: opacity 0.28s ease, visibility 0.28s !important;
+  }
+  .col-mobile-drawer.active {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+  .cmd-backdrop {
+    position: absolute !important;
+    inset: 0 !important;
+    background: rgba(3, 6, 14, 0.75) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+  }
+  .cmd-panel {
+    position: relative !important;
+    z-index: 2 !important;
+    width: 100% !important;
+    max-width: 440px !important;
+    max-height: min(88vh, 760px) !important;
+    margin: auto !important;
+    background: rgba(10, 15, 28, 0.95) !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    border-radius: 26px !important;
+    padding: 18px 16px !important;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.85) !important;
+    backdrop-filter: blur(36px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(36px) saturate(200%) !important;
+    display: flex !important;
     flex-direction: column !important;
-    justify-content: flex-start !important;
-    align-items: stretch !important;
-    padding: calc(env(safe-area-inset-top, 0px) + 76px) 24px calc(env(safe-area-inset-bottom, 0px) + 84px) !important;
-    gap: 4px !important;
+    gap: 12px !important;
     overflow-y: auto !important;
-    overscroll-behavior: contain;
-    -webkit-overflow-scrolling: touch;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transform: translateX(100%);
-    transition: transform var(--dur-slow) var(--ease-out), opacity var(--dur-med) var(--ease-out), visibility 0s linear var(--dur-slow);
-    z-index: 1001;
-    flex-wrap: nowrap !important;
-    border: none !important;
-    border-radius: 0 !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+    transform: scale(0.92) translateY(14px) !important;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
   }
-  body.lm .nav-links {
-    background: #f3f2eb !important;
-    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.15) !important;
+  .col-mobile-drawer.active .cmd-panel {
+    transform: scale(1) translateY(0) !important;
   }
-  .nav-links.active {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-    transform: translateX(0);
-    transition-delay: 0s;
+  body.lm .cmd-panel {
+    background: rgba(246, 248, 252, 0.96) !important;
+    border-color: rgba(0, 0, 0, 0.12) !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18) !important;
   }
 
-  /* Nav link rows inside mobile drawer */
-  .nav-links .nav-link,
-  .nav-links .dropdown {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    min-height: var(--tap-opt);
-    padding: 12px 14px;
-    font-size: 1.05rem;
-    color: var(--ink, #e8e3d8);
-    border-bottom: 1px solid var(--line, rgba(255, 255, 255, 0.08));
-    width: 100%;
-    text-decoration: none;
+  /* ── Header ── */
+  .cmd-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 2px 4px 10px 4px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    flex-shrink: 0 !important;
   }
-  .nav-links .nav-link svg,
-  .nav-links .dropdown-btn svg {
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
-    stroke: var(--dim, #8891aa);
+  body.lm .cmd-header {
+    border-bottom-color: rgba(0, 0, 0, 0.08) !important;
   }
-  .nav-links .nav-link.act {
+  .cmd-brand {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+  .cmd-logo {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 9px !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  }
+  .cmd-brand-name {
+    font-size: 1.02rem !important;
+    font-weight: 700 !important;
+    color: var(--ink, #fff) !important;
+    display: block !important;
+  }
+  body.lm .cmd-brand-name {
+    color: #0f172a !important;
+  }
+  .cmd-brand-badge {
+    display: inline-block !important;
+    font-size: 0.65rem !important;
+    font-weight: 700 !important;
+    padding: 2px 7px !important;
+    border-radius: 6px !important;
+    background: rgba(242, 184, 75, 0.18) !important;
+    color: var(--signal, #f2b84b) !important;
+    border: 1px solid rgba(242, 184, 75, 0.35) !important;
+  }
+  .cmd-close-btn {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.16) !important;
+    color: var(--ink, #fff) !important;
+    cursor: pointer !important;
+    transition: transform 0.2s ease, background 0.2s ease !important;
+  }
+  .cmd-close-btn:active {
+    transform: scale(0.9) !important;
+  }
+  body.lm .cmd-close-btn {
+    background: rgba(0, 0, 0, 0.06) !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+    color: #0f172a !important;
+  }
+
+  /* ── Grouped Inset Card Navigation ── */
+  .cmd-nav-group {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 18px !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    flex-shrink: 0 !important;
+  }
+  body.lm .cmd-nav-group {
+    background: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04) !important;
+  }
+  .cmd-link {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 12px !important;
+    min-height: 48px !important;
+    padding: 11px 15px !important;
+    font-size: 0.98rem !important;
+    font-weight: 600 !important;
+    color: #e2e8f0 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+    width: 100% !important;
+    text-decoration: none !important;
+    position: relative !important;
+    transition: background 0.15s ease !important;
+  }
+  body.lm .cmd-link {
+    color: #1e293b !important;
+    border-bottom-color: rgba(0, 0, 0, 0.05) !important;
+  }
+  .cmd-link:last-child {
+    border-bottom: none !important;
+  }
+  .cmd-link:active {
+    background: rgba(255, 255, 255, 0.08) !important;
+  }
+  .cmd-link svg {
+    width: 19px !important;
+    height: 19px !important;
+    flex-shrink: 0 !important;
+    stroke: #94a3b8 !important;
+    stroke-width: 2 !important;
+  }
+  .cmd-link.act {
+    color: var(--signal, #f2b84b) !important;
+    background: rgba(242, 184, 75, 0.08) !important;
+  }
+  .cmd-link.act svg {
+    stroke: var(--signal, #f2b84b) !important;
+  }
+  .cmd-link::after {
+    content: '' !important;
+    position: static !important;
+    width: 6px !important;
+    height: 6px !important;
+    border-top: 2px solid rgba(255, 255, 255, 0.25) !important;
+    border-right: 2px solid rgba(255, 255, 255, 0.25) !important;
+    transform: rotate(45deg) !important;
+    margin-left: auto !important;
+  }
+  body.lm .cmd-link::after {
+    border-color: rgba(0, 0, 0, 0.25) !important;
+  }
+  .cmd-link.act::after {
+    border-color: var(--signal, #f2b84b) !important;
+  }
+
+  /* ── Accordion ── */
+  .cmd-accordion {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+  }
+  body.lm .cmd-accordion {
+    border-bottom-color: rgba(0, 0, 0, 0.05) !important;
+  }
+  .cmd-accordion-btn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 12px !important;
+    width: 100% !important;
+    min-height: 48px !important;
+    padding: 11px 15px !important;
+    font-size: 0.98rem !important;
+    font-weight: 600 !important;
+    color: #e2e8f0 !important;
+    background: none !important;
+    border: none !important;
+    cursor: pointer !important;
+    text-align: left !important;
+  }
+  body.lm .cmd-accordion-btn {
+    color: #1e293b !important;
+  }
+  .cmd-accordion-btn svg {
+    width: 19px !important;
+    height: 19px !important;
+    stroke: #94a3b8 !important;
+    stroke-width: 2 !important;
+  }
+  .cmd-accordion.active .cmd-accordion-btn svg {
+    stroke: var(--teal, #00f0cc) !important;
+  }
+  .cmd-accordion.active .cmd-accordion-btn {
+    color: var(--teal, #00f0cc) !important;
+  }
+  .cmd-acc-arrow {
+    margin-left: auto !important;
+    font-size: 0.7rem !important;
+    color: #94a3b8 !important;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  }
+  .cmd-accordion.active .cmd-acc-arrow {
+    transform: rotate(180deg) !important;
+    color: var(--teal, #00f0cc) !important;
+  }
+  .cmd-accordion-list {
+    max-height: 0 !important;
+    overflow: hidden !important;
+    opacity: 0 !important;
+    transition: max-height 0.35s ease, opacity 0.25s ease !important;
+    background: rgba(0, 0, 0, 0.22) !important;
+    padding: 0 6px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+  }
+  body.lm .cmd-accordion-list {
+    background: rgba(0, 0, 0, 0.03) !important;
+  }
+  .cmd-accordion.active .cmd-accordion-list {
+    max-height: 500px !important;
+    opacity: 1 !important;
+    padding: 4px 6px 8px 6px !important;
+  }
+  .cmd-acc-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 11px !important;
+    padding: 8px 12px !important;
+    border-radius: 9px !important;
+    font-size: 0.92rem !important;
+    font-weight: 500 !important;
+    color: #cbd5e1 !important;
+    text-decoration: none !important;
+    transition: background 0.15s ease !important;
+  }
+  body.lm .cmd-acc-item {
+    color: #334155 !important;
+  }
+  .cmd-acc-item:active {
+    background: rgba(255, 255, 255, 0.08) !important;
+  }
+  .cmd-acc-item svg {
+    width: 17px !important;
+    height: 17px !important;
+    stroke: #94a3b8 !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* ── Appearance Card ── */
+  .cmd-setting-card {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 18px !important;
+    padding: 12px 16px !important;
+    flex-shrink: 0 !important;
+  }
+  body.lm .cmd-setting-card {
+    background: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04) !important;
+  }
+  .cmd-setting-info {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+  }
+  .cmd-setting-icon {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 10px !important;
+    background: rgba(242, 184, 75, 0.15) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     color: var(--signal, #f2b84b) !important;
   }
-
-  /* Dropdown accordion in drawer */
-  .nav-links .dropdown {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 0;
+  .cmd-setting-title {
+    font-size: 0.92rem !important;
+    font-weight: 600 !important;
+    color: var(--ink, #fff) !important;
+    line-height: 1.2 !important;
   }
-  .nav-links .dropdown-btn {
-    width: 100%;
-    justify-content: space-between;
-    padding: 12px 14px;
-    font-size: 1.05rem;
-    min-height: var(--tap-opt);
-    color: var(--ink, #e8e3d8);
-    background: none;
-    border: none;
-    cursor: pointer;
+  body.lm .cmd-setting-title {
+    color: #0f172a !important;
   }
-  .nav-links .dropdown-content {
-    position: static !important;
-    transform: none !important;
-    opacity: 0;
-    max-height: 0;
-    overflow: hidden;
-    margin: 0 0 8px 24px;
+  .cmd-setting-desc {
+    font-size: 0.74rem !important;
+    color: #94a3b8 !important;
+  }
+  .cmd-setting-card .hz-toggle {
+    margin: 0 !important;
     padding: 0 !important;
-    visibility: hidden;
-    pointer-events: none;
-    transition: max-height var(--dur-med) var(--ease-out), opacity var(--dur-fast) var(--ease-out);
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-  }
-  .nav-links .dropdown.active .dropdown-content {
-    opacity: 1;
-    max-height: 480px;
-    visibility: visible;
-    pointer-events: auto;
-  }
-  .nav-links .dropdown-content-inner {
-    background: rgba(255, 255, 255, 0.04) !important;
-    border: 1px solid var(--line, rgba(255, 255, 255, 0.08)) !important;
-    border-radius: 12px !important;
-    padding: 6px !important;
-  }
-  .nav-links .dropdown-content a {
-    font-size: 0.95rem !important;
-    padding: 10px 14px !important;
-    border-radius: 8px;
-    min-height: 40px;
-    color: var(--ink, #e8e3d8);
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 10px;
   }
 
-  /* Drawer Bottom Controls */
-  .nav-links > .hz-toggle {
-    margin-top: 16px !important;
-    align-self: center;
+  /* ── Quick Deck ── */
+  .cmd-quick-deck {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    flex-shrink: 0 !important;
   }
-  .nav-links > .nav-login-btn,
-  .nav-links > .nav-user-profile,
-  .nav-links > .nav-dl-btn {
-    width: 100%;
-    min-height: var(--tap-opt);
-    justify-content: center;
-    font-size: 1rem;
-    border-radius: 12px;
-    margin-top: 10px;
+  .cmd-tile {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    padding: 10px 12px !important;
+    border-radius: 14px !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    text-decoration: none !important;
+    transition: transform 0.2s ease, background 0.2s ease !important;
+  }
+  body.lm .cmd-tile {
+    background: #ffffff !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+  }
+  .cmd-tile.highlight {
+    grid-column: 1 / -1 !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 12px !important;
+    background: rgba(242, 184, 75, 0.12) !important;
+    border-color: rgba(242, 184, 75, 0.35) !important;
+  }
+  .cmd-tile-icon {
+    font-size: 1.3rem !important;
+    margin-bottom: 2px !important;
+  }
+  .cmd-tile.highlight .cmd-tile-icon {
+    font-size: 1.6rem !important;
+    margin-bottom: 0 !important;
+  }
+  .cmd-tile-title {
+    font-size: 0.88rem !important;
+    font-weight: 700 !important;
+    color: var(--ink, #fff) !important;
+  }
+  body.lm .cmd-tile-title {
+    color: #0f172a !important;
+  }
+  .cmd-tile-sub {
+    font-size: 0.72rem !important;
+    color: #94a3b8 !important;
+  }
+
+  /* ── Actions Deck ── */
+  .cmd-actions-deck {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    flex-shrink: 0 !important;
+  }
+  .cmd-btn-primary {
+    width: 100% !important;
+    min-height: 46px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    font-size: 0.94rem !important;
+    font-weight: 700 !important;
+    border-radius: 12px !important;
+    background: rgba(242, 184, 75, 0.15) !important;
+    color: var(--signal, #f2b84b) !important;
+    border: 1px solid rgba(242, 184, 75, 0.45) !important;
+    cursor: pointer !important;
+  }
+  .cmd-btn-primary:active {
+    transform: scale(0.97) !important;
+  }
+  .cmd-btn-secondary {
+    width: 100% !important;
+    min-height: 46px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    font-size: 0.94rem !important;
+    font-weight: 700 !important;
+    border-radius: 12px !important;
+    background: rgba(255, 255, 255, 0.07) !important;
+    color: #fff !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    text-decoration: none !important;
+  }
+  body.lm .cmd-btn-secondary {
+    background: #0f172a !important;
+    color: #ffffff !important;
+    border: none !important;
+  }
+  .cmd-btn-secondary:active {
+    transform: scale(0.97) !important;
+  }
+
+  /* ── Footer ── */
+  .cmd-footer {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 4px 4px 0 4px !important;
+    font-size: 0.72rem !important;
+    color: #64748b !important;
+    flex-shrink: 0 !important;
+  }
+  .cmd-footer a {
+    color: #94a3b8 !important;
+    text-decoration: none !important;
+  }
+  body.lm .cmd-footer a {
+    color: #64748b !important;
+  }
+
+  /* Hide desktop navbar on mobile screen size */
+  .top-nav .nav-links {
+    display: none !important;
   }
 
   .desktop-dl {
@@ -264,34 +608,41 @@ code {
   }
 
   /* ─────────────────────────────────────────────────────────────────
-     3. MOBILE FLOATING BOTTOM THUMB BAR
+     3. MOBILE FLOATING BOTTOM THUMB BAR (PERSISTENT ON SCROLL)
      ───────────────────────────────────────────────────────────────── */
   .col-bottom-bar {
-    display: flex;
-    position: fixed;
-    left: 50%;
-    bottom: max(12px, env(safe-area-inset-bottom, 0px));
-    transform: translateX(-50%);
-    width: min(calc(100vw - 24px), 420px);
-    background: var(--panel, rgba(17, 24, 39, 0.95));
-    border: 1px solid var(--lineb, rgba(255, 255, 255, 0.16));
-    border-radius: var(--r-pill);
-    padding: 6px;
-    gap: 4px;
-    z-index: 999;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
-    backdrop-filter: blur(18px) saturate(1.2);
-    -webkit-backdrop-filter: blur(18px) saturate(1.2);
-    align-items: center;
-    justify-content: space-between;
-    transition: transform var(--dur-med, 280ms) var(--ease-out, ease), opacity var(--dur-fast, 160ms) var(--ease-out, ease);
+    display: flex !important;
+    position: fixed !important;
+    left: 10px !important;
+    right: 10px !important;
+    margin: 0 auto !important;
+    bottom: max(12px, env(safe-area-inset-bottom, 0px)) !important;
+    width: min(calc(100vw - 20px), 440px) !important;
+    background: var(--panel, rgba(14, 20, 32, 0.95)) !important;
+    border: 1px solid var(--lineb, rgba(255, 255, 255, 0.14)) !important;
+    border-radius: var(--r-pill) !important;
+    padding: 4px 6px !important;
+    gap: 2px !important;
+    z-index: 999 !important;
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.45) !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    transition: transform var(--dur-med, 280ms) var(--ease-out, ease), opacity var(--dur-fast, 160ms) var(--ease-out, ease) !important;
+    -webkit-user-select: none;
+    user-select: none;
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    pointer-events: auto !important;
   }
-  .col-bottom-bar.hidden {
-    transform: translateX(-50%) translateY(calc(100% + 24px)) !important;
+  /* Bottom bar stays visible while scrolling - only hidden if explicitly closed or modal */
+  body.nav-lock .col-bottom-bar {
     opacity: 0 !important;
     pointer-events: none !important;
+    transform: translateY(20px) !important;
   }
-  .col-bottom-bar a {
+  .col-bottom-bar a,
+  .col-bottom-bar button,
+  .col-bottom-bar .bbar-item {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -299,17 +650,26 @@ code {
     justify-content: center;
     gap: 3px;
     min-height: 48px;
-    padding: 4px;
-    border-radius: var(--r-pill);
+    min-width: 44px;
+    padding: 4px 2px;
+    border-radius: 20px;
     color: var(--dim, #8891aa);
-    font-size: 0.65rem;
+    font-size: 0.62rem;
     font-weight: 700;
     letter-spacing: 0.04em;
-    text-transform: uppercase;
+    text-transform: capitalize;
     text-decoration: none;
-    transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
   }
-  .col-bottom-bar a svg {
+  .col-bottom-bar a svg,
+  .col-bottom-bar button svg,
+  .col-bottom-bar .bbar-item svg {
     width: 20px;
     height: 20px;
     stroke: currentColor;
@@ -317,23 +677,52 @@ code {
     stroke-width: 1.8;
   }
   .col-bottom-bar a.act,
+  .col-bottom-bar button.act,
+  .col-bottom-bar .bbar-item.act,
   .col-bottom-bar a:active,
-  .col-bottom-bar a:hover {
-    background: rgba(242, 184, 75, 0.14);
+  .col-bottom-bar button:active {
+    background: rgba(242, 184, 75, 0.16);
     color: var(--signal, #f2b84b);
   }
-  .col-bottom-bar a.act svg {
+  .col-bottom-bar a.act svg,
+  .col-bottom-bar button.act svg,
+  .col-bottom-bar .bbar-item.act svg {
     stroke: var(--signal, #f2b84b);
   }
 
   /* Safe padding so bottom bar does not obscure page content */
   body {
-    padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  /* Ensure hero section doesn't get clipped by bottom bar */
+  .hero {
+    padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
   }
   body.nav-lock .col-bottom-bar {
     opacity: 0;
     pointer-events: none;
-    transform: translateX(-50%) translateY(20px);
+    transform: translateY(20px);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   DESKTOP RESET FOR INJECTED DRAWER DOM (>= 901px)
+   ───────────────────────────────────────────────────────────────── */
+@media (min-width: 901px) {
+  .drawer-header,
+  .drawer-close-btn,
+  .drawer-quick-deck,
+  .drawer-footer,
+  .drawer-setting-info {
+    display: none !important;
+  }
+  .drawer-nav-group,
+  .drawer-setting-card,
+  .drawer-actions-deck {
+    display: contents !important;
+  }
+  .drawer-setting-card .hz-toggle {
+    display: inline-flex !important;
   }
 }
 
@@ -370,23 +759,18 @@ code {
     padding-top: calc(env(safe-area-inset-top, 0px) + 72px);
     padding-bottom: 36px;
   }
-  .orrery-dock {
-    position: relative !important;
-    margin: 16px 20px 24px !important;
-    bottom: auto !important;
-    left: auto !important;
-    transform: none !important;
-    width: calc(100% - 40px) !important;
-    z-index: 5 !important;
+  .orrery-dock,
+  .node-inspector {
+    display: none !important;
   }
   .hero h1,
   .about-hero h1 {
-    font-size: clamp(2rem, 8vw, 3.2rem) !important;
+    font-size: clamp(2rem, 8vw, 3rem) !important;
     line-height: 1.05 !important;
   }
   .hlede,
   .sdesc {
-    font-size: 1rem !important;
+    font-size: 0.95rem !important;
     line-height: 1.6 !important;
   }
   .hcta,
@@ -398,23 +782,23 @@ code {
     margin-top: 18px !important;
   }
   .hcta .btn-p {
-    grid-column: 1 !important;
+    grid-column: 1 / -1 !important;
     width: 100% !important;
-    min-height: 46px !important;
-    padding: 10px 14px !important;
-    font-size: 0.9rem !important;
+    min-height: 48px !important;
+    padding: 12px 20px !important;
+    font-size: 0.92rem !important;
     border-radius: 24px !important;
     justify-content: center !important;
     white-space: nowrap !important;
   }
   .hcta .btn-g:not(.mobile-dl) {
-    grid-column: 2 !important;
     width: 100% !important;
     min-height: 46px !important;
-    padding: 10px 14px !important;
-    font-size: 0.9rem !important;
+    padding: 10px 10px !important;
+    font-size: 0.84rem !important;
     border-radius: 24px !important;
     justify-content: center !important;
+    text-align: center !important;
     white-space: nowrap !important;
   }
   .hcta .mobile-dl,
@@ -422,9 +806,9 @@ code {
   .btn-demo {
     grid-column: 1 / -1 !important;
     width: 100% !important;
-    min-height: 44px !important;
-    padding: 10px 16px !important;
-    font-size: 0.88rem !important;
+    min-height: 48px !important;
+    padding: 12px 16px !important;
+    font-size: 0.9rem !important;
     border-radius: 24px !important;
     justify-content: center !important;
   }
@@ -505,6 +889,15 @@ code {
   #webgl-canvas {
     display: none !important;
   }
+  /* When 3D is hidden, remove the heavy vignette overlays */
+  .hvig,
+  .hvigb {
+    display: none !important;
+  }
+  /* Stage hint not needed when no 3D */
+  .stage-hint {
+    display: none !important;
+  }
 }
 
 /* Thin scrollbars on touch devices */
@@ -516,5 +909,209 @@ code {
   ::-webkit-scrollbar-thumb {
     background: var(--lineb, rgba(255, 255, 255, 0.16));
     border-radius: 4px;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   7. PERF & POLISH OVERRIDES (mobile)
+   ───────────────────────────────────────────────────────────────── */
+@media (pointer: coarse) {
+  /* Hide the mouse-follow spotlight — it exists for desktop pointers only */
+  .col-ambient-spotlight {
+    display: none;
+  }
+  /* Denser ambient layers burn battery for near-zero visual gain on small screens */
+  .col-ambient-orb {
+    opacity: 0.22;
+  }
+}
+
+/* Full-screen WebGL canvases: never let them capture the touch scroll gesture */
+#orrery,
+#constellation,
+#cosmos,
+#bgCanvas,
+#schoolBg,
+#webgl-canvas {
+  touch-action: pan-y;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   8. TAP TARGET LIFT (>= 44px on touch) — page-specific fixes
+   ───────────────────────────────────────────────────────────────── */
+@media (pointer: coarse) {
+  /* Global auth modal close button (30px on every page) */
+  .col-auth-close {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px;
+    min-height: 44px;
+  }
+  /* Home orrery dock chips (26px tall) */
+  .dock-chip {
+    min-height: 44px;
+    padding: 8px 14px;
+  }
+  /* Gesture page chips (29–35px) */
+  .control-chip-btn,
+  .ai-chip-btn {
+    min-height: 44px;
+    padding: 8px 14px;
+  }
+  .ai-chip-btn:hover {
+    min-height: 44px;
+  }
+  /* Dashboard share button (35px) */
+  .btn-share {
+    min-height: 44px;
+    padding: 10px 20px;
+  }
+  /* Feedback page: attachment remove button + tiny inline buttons (15px) */
+  .fb-attach-remove,
+  button[onclick*='removeAttachedFile'] {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 10px 14px;
+  }
+  /* QR editor: back/next row buttons (33px) + export size select */
+  .btn-nx,
+  .btn-cp,
+  .btn-bk {
+    min-height: 44px;
+  }
+  .dl-sz {
+    min-height: 44px;
+  }
+  /* TrafficSetup: small inline auth links (38x42) */
+  .remote-auth-panel a,
+  .auth-slide a {
+    min-height: 44px;
+  }
+  /* Feedback: "Clear History" inline button (79x15) */
+  .fb-card button {
+    min-height: 44px;
+    padding: 10px 14px;
+  }
+  /* TrafficSetup: "Log in" inline link (38x42) — page loads traffic-mobile.css */
+  .remote-auth-subtitle a {
+    min-height: 44px;
+    padding: 8px 6px;
+  }
+  /* Terra3D: unlabeled round icon buttons (36-38px) + its own CSS */
+  #settings-btn,
+  .drawer-tab {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  /* Academy bottom-nav items widen to full 48px touch standard */
+  .mobile-bottom-nav .nav-item {
+    min-height: 48px;
+    min-width: 48px;
+    justify-content: center;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   10. SELF-CONTAINED SUB-APPS (own design systems, no col-ui.css)
+   CastFlow & Terra3D ship their own CSS and don't load col-mobile.css,
+   so their touch rules must live in a file they actually fetch.
+   ═══════════════════════════════════════════════════════════════════ */
+@media (pointer: coarse) {
+  /* CastFlow header/footer brand links (32px & 26px tall) + footer text links */
+  .logo {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .footer-links a,
+  .flinks a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  /* Terra3D HUD icon buttons (36-38px) */
+  #settings-btn,
+  #drawer-close {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* Home: node-inspector close button (27x26 in page-owned CSS) */
+.ni-close {
+  min-width: 44px;
+  min-height: 44px;
+}
+/* QR editor download panel: stacked controls on narrow screens */
+@media (max-width: 480px) {
+  .dlr {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .dl-sz {
+    width: 100%;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   9. iOS INPUT ZOOM + SAFE-AREA HARDENING (<= 480px)
+   ───────────────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  /* Any input the page forces below 16px re-inherit the zoom-safe size */
+  input[type='text'],
+  input[type='email'],
+  input[type='password'],
+  input[type='number'],
+  input[type='search'],
+  input[type='tel'],
+  input:not([type]),
+  textarea,
+  select {
+    font-size: max(16px, 1rem) !important;
+  }
+  /* Collected modals & fixed sheets respect the home-indicator area */
+  .mo {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
+
+/* Ultra-narrow phones (<= 360px): prevent cramped grid/card text */
+@media (max-width: 360px) {
+  .pgrid,
+  .team-grid,
+  .vp-grid,
+  .features-grid,
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .hero h1,
+  .about-hero h1 {
+    font-size: clamp(1.7rem, 9vw, 2.4rem) !important;
+  }
+}
+
+/* Root CastFlow landing page (no shared CSS): touch targets for its own
+   nav/footer link lists and brand marks. */
+@media (pointer: coarse) {
+  .logo {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  nav ul a,
+  .footer-col a,
+  .footer-bottom a {
+    min-height: 44px;
+    min-width: 44px;
+    justify-content: center;
+    display: inline-flex;
+    align-items: center;
+  }
+  .social-links a {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 }

@@ -8,8 +8,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>QR Dashboard | Class Of Learners</title>
     <script defer src="qr-dynamic.js"></script>
+    <link rel="stylesheet" href="col-ui.css" />
+    <link rel="stylesheet" href="liquid-glass.css" />
+    <link rel="stylesheet" href="mobile-perf.css" />
+    <script defer src="pull-refresh.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
     <style>
       /* ── EXACT UI THEME ── */
@@ -36,9 +41,14 @@
         --nav-bg: var(--nav);
         --border-light: var(--border);
         --card-bg: var(--panel);
+        /* Bridge to shared col-ui top bar theming */
+        --page-theme: var(--pri);
+        --page-theme-light: #059669;
+        --primary: var(--pri);
       }
 
-      body.light {
+      body.light,
+      body.lm {
         --bg: #f8fafc;
         --panel: rgba(255, 255, 255, 0.8);
         --panel-hover: rgba(241, 245, 249, 0.9);
@@ -119,319 +129,44 @@
         }
       }
 
+      /* Top bar: layout/blur/drawer owned by shared col-ui.css; page only sets accent */
+    <link rel="stylesheet" href="liquid-glass.css" />
+    <link rel="stylesheet" href="mobile-perf.css" />
+    <script defer src="pull-refresh.js"></script>
       .top-nav {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 20px 50px;
-        background: var(--nav-bg);
-        backdrop-filter: blur(10px);
-        border-bottom: 1px solid var(--border-light);
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        flex-wrap: wrap;
-        gap: 15px;
-        transition: 0.3s;
+        --page-theme: var(--pri);
+        --primary: var(--pri);
       }
 
-      .nav-brand {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-weight: 800;
-        font-size: 1.2rem;
-        letter-spacing: -0.5px;
-        text-decoration: none;
-        color: var(--text-main);
-        transition: color 0.3s;
-        font-family: 'Inter', sans-serif;
-        text-transform: none;
-      }
-      .brand-logo {
-        height: 40px;
-        width: auto;
-        object-fit: contain;
-      }
+      /* .nav-brand + .brand-logo: inherited from col-ui.css (circular signal logo + glow) */
+    <link rel="stylesheet" href="liquid-glass.css" />
+    <link rel="stylesheet" href="mobile-perf.css" />
+    <script defer src="pull-refresh.js"></script>
 
-      .nav-links {
-        display: flex;
-        gap: 20px;
-        flex-wrap: wrap;
-        align-items: center;
-      }
-      .nav-link {
-        color: var(--text-muted);
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 0.95rem;
-        transition: 0.2s;
-      }
-      .nav-link:hover {
-        color: var(--google-blue);
-      }
-      .nav-dl-btn {
-        background: var(--google-blue);
-        color: white;
-        padding: 10px 24px;
-        border-radius: 30px;
-        text-decoration: none;
-        font-weight: 600;
-        transition: 0.2s;
-      }
+      /* .nav-links/.nav-link/.nav-dl-btn: inherited from col-ui.css (themed via --page-theme) */
+    <link rel="stylesheet" href="liquid-glass.css" />
+    <link rel="stylesheet" href="mobile-perf.css" />
+    <script defer src="pull-refresh.js"></script>
 
-      .dropdown {
-        position: relative;
-        display: inline-block;
-      }
-      .dropdown-btn {
-        color: var(--text-muted);
-        background: none;
-        border: none;
-        font-size: 0.95rem;
-        font-weight: 600;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-family: 'Inter', sans-serif;
-        transition: color 0.2s ease;
-        padding: 0;
-      }
-      .dropdown-btn:hover,
-      .dropdown.active .dropdown-btn,
-      .dropdown-btn.act {
-        color: var(--google-blue);
-      }
-      .dropdown-btn span {
-        font-size: 0.7rem;
-        transition: transform 0.3s ease;
-      }
-      .dropdown.active .dropdown-btn span {
-        transform: rotate(180deg);
-      }
-      .dropdown-content {
-        display: flex;
-        flex-direction: column;
-        position: absolute;
-        top: 100%;
-        left: 50%;
-        transform: translateX(-50%) translateY(10px);
-        background: transparent;
-        min-width: 220px;
-        z-index: 1001;
-        padding-top: 15px;
-        opacity: 0;
-        visibility: hidden;
-        pointer-events: none;
-        transition:
-          opacity 0.3s ease,
-          transform 0.3s ease,
-          visibility 0s linear 0.5s;
-      }
-      .dropdown-content-inner {
-        background: var(--card-bg);
-        border-radius: 12px;
-        border: 1px solid var(--border-light);
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        padding: 10px 0;
-      }
-      .dropdown-content-inner {
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-      }
-      .dropdown.active .dropdown-content {
-        opacity: 1;
-        visibility: visible;
-        pointer-events: auto;
-        transform: translateX(-50%) translateY(0);
-        transition-delay: 0s;
-      }
-      .dropdown.active:not(:hover) .dropdown-content {
-        opacity: 0;
-        visibility: hidden;
-        transform: translateX(-50%) translateY(10px);
-        transition-delay: 0.5s;
-      }
-      .dropdown-content a {
-        color: var(--text-muted);
-        padding: 12px 20px;
-        text-decoration: none;
-        font-size: 0.9rem;
-        font-weight: 600;
-        transition: 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-      .dropdown-content a:hover {
-        background: rgba(37, 99, 235, 0.08);
-        color: var(--google-blue);
-        padding-left: 25px;
-      }
+      /* .dropdown family: inherited from col-ui.css (desktop hover + mobile accordion) */
+    <link rel="stylesheet" href="liquid-glass.css" />
+    <link rel="stylesheet" href="mobile-perf.css" />
+    <script defer src="pull-refresh.js"></script>
 
-      .theme-switch-wrapper {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-left: 10px;
-        border-left: 1px solid var(--border-light);
-        padding-left: 15px;
-      }
-      .theme-label {
-        font-size: 0.8rem;
-        font-weight: 700;
-        color: var(--text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-      .theme-switch {
-        display: inline-block;
-        position: relative;
-        width: 44px;
-        height: 24px;
-        cursor: pointer;
-      }
-      .theme-switch input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-      }
-      .slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #cbd5e1;
-        transition: 0.4s;
-      }
-      .slider:before {
-        position: absolute;
-        content: '';
-        height: 18px;
-        width: 18px;
-        left: 3px;
-        bottom: 3px;
-        background-color: white;
-        transition: 0.4s;
-      }
-      input:checked + .slider {
-        background-color: var(--google-blue);
-      }
-      input:checked + .slider:before {
-        transform: translateX(20px);
-      }
-      .slider.round {
-        border-radius: 24px;
-      }
-      .slider.round:before {
-        border-radius: 50%;
-      }
+      /* Theme toggle: shared .tw/.tsb/.tst in col-ui.css (uses body.lm + #tsck/#tLabel) */
+    <link rel="stylesheet" href="liquid-glass.css" />
+    <link rel="stylesheet" href="mobile-perf.css" />
+    <script defer src="pull-refresh.js"></script>
 
-      /* Global Account UI */
-      .nav-login-btn {
-        background: rgba(16, 185, 129, 0.1);
-        color: #047857;
-        border: 1px solid #10b981;
-        padding: 8px 20px;
-        border-radius: 30px;
-        font-weight: 800;
-        font-size: 0.85rem;
-        cursor: pointer;
-        transition: 0.3s;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        text-decoration: none;
-      }
-      .nav-login-btn {
-        color: #34d399;
-        border-color: #34d399;
-      }
-      .nav-login-btn:hover {
-        background: #34d399;
-        color: #000;
-        box-shadow: 0 0 20px rgba(52, 211, 153, 0.4);
-      }
-      body.light .nav-login-btn {
-        color: #10b981;
-        border-color: #10b981;
-      }
-      body.light .nav-login-btn:hover {
-        background: #10b981;
-        color: #fff;
-        box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
-      }
-      .nav-user-profile {
-        display: none;
-        align-items: center;
-        gap: 10px;
-        padding: 5px 15px 5px 5px;
-        background: transparent;
-        border: 1px solid var(--border-light);
-        border-radius: 30px;
-        cursor: pointer;
-        transition: 0.3s;
-      }
-      .nav-user-profile:hover {
-        border-color: #10b981;
-      }
-      .nav-user-avatar {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        background: #10b981;
-        color: #000;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-weight: 800;
-        overflow: hidden;
-      }
+      /* Account UI (.nav-login-btn/.nav-user-profile): inherited from col-ui.css */
+    <link rel="stylesheet" href="liquid-glass.css" />
+    <link rel="stylesheet" href="mobile-perf.css" />
+    <script defer src="pull-refresh.js"></script>
 
-      .mobile-menu-btn {
-        display: none;
-        background: none;
-        border: none;
-        cursor: pointer;
-        width: 44px;
-        height: 44px;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        gap: 6px;
-        position: relative;
-        z-index: 1002;
-      }
-      .m-line {
-        width: 26px;
-        height: 2px;
-        background: var(--text-main);
-        border-radius: 2px;
-        transition:
-          transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-          opacity 0.3s;
-        transform-origin: center;
-        display: block;
-        pointer-events: none;
-      }
-      .mobile-menu-btn.active .m-line:nth-child(1) {
-        transform: translateY(8px) rotate(45deg);
-      }
-      .mobile-menu-btn.active .m-line:nth-child(2) {
-        opacity: 0;
-      }
-      .mobile-menu-btn.active .m-line:nth-child(3) {
-        transform: translateY(-8px) rotate(-45deg);
-      }
-      .mobile-dl {
-        display: none;
-      }
+      /* Mobile menu (.mmb/.m-line) + .mobile-dl: owned by col-ui.css + col-mobile.css */
+    <link rel="stylesheet" href="liquid-glass.css" />
+    <link rel="stylesheet" href="mobile-perf.css" />
+    <script defer src="pull-refresh.js"></script>
 
       /* SIDEBAR */
       .app-sb {
@@ -1190,58 +925,10 @@
           width: 100%;
           margin-top: 5px;
         }
-        .top-nav {
-          width: 95%;
-          margin: 15px auto 0;
-          border-radius: 20px;
-          top: 15px;
-          padding: 10px 15px;
-          flex-direction: row;
-          justify-content: space-between;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-          border: 1px solid var(--border-light);
-        }
-        body.light .top-nav {
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-        .mobile-menu-btn {
-          display: flex;
-        }
-        .nav-brand {
-          gap: 8px;
-          font-size: 1.05rem;
-        }
-        .brand-logo {
-          height: 32px;
-        }
-        .nav-links {
-          display: none;
-          position: absolute;
-          top: 110%;
-          left: 0;
-          width: 100%;
-          background: var(--nav-bg);
-          backdrop-filter: blur(15px);
-          border: 1px solid var(--border-light);
-          border-radius: 16px;
-          padding: 20px;
-          flex-direction: column;
-          gap: 15px;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-        body.light .nav-links {
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-        .nav-links.active {
-          display: flex;
-        }
-        .theme-switch-wrapper {
-          margin: 10px auto 0;
-          width: 100%;
-          justify-content: center;
-          border-left: none;
-          padding-left: 0;
-        }
+        /* Top bar responsive: owned by shared col-ui.css (@media max-width:900px). No page overrides. */
+    <link rel="stylesheet" href="liquid-glass.css" />
+    <link rel="stylesheet" href="mobile-perf.css" />
+    <script defer src="pull-refresh.js"></script>
         .db-hd {
           flex-direction: column;
           align-items: flex-start;
@@ -1256,8 +943,8 @@
       }
 
       /* Focus-visible for keyboard navigation */
-      *:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-      button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+      *:focus-visible { outline: 2px solid var(--pri); outline-offset: 2px; }
+      button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--pri); outline-offset: 2px; }
 
       /* Reduced motion */
       @media (prefers-reduced-motion: reduce) {
@@ -1279,26 +966,21 @@
       <link rel="icon" type="image/png" href="Icon.png" />
   </head>
   <body>
-    <a href="#qrMainContent" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:9999;padding:8px 16px;background:var(--accent);color:#000;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;" onfocus="this.style.cssText='position:fixed;left:0;top:0;width:auto;height:auto;z-index:9999;padding:8px 16px;background:var(--accent);color:#000;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;'" onblur="this.style.cssText='position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:9999;padding:8px 16px;background:var(--accent);color:#000;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;'">Skip to main content</a>
+    <a href="#qrMainContent" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:9999;padding:8px 16px;background:var(--pri);color:#000;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;" onfocus="this.style.cssText='position:fixed;left:0;top:0;width:auto;height:auto;z-index:9999;padding:8px 16px;background:var(--pri);color:#000;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;'" onblur="this.style.cssText='position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:9999;padding:8px 16px;background:var(--pri);color:#000;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;'">Skip to main content</a>
 
     <nav class="top-nav">
       <a href="/" class="nav-brand">
-        <img loading="lazy" src="Class.png" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" />
+        <img src="Class.png" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" />
         <span>Class Of Learners</span>
       </a>
-      <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleQrMenu()" aria-label="Toggle navigation menu" aria-expanded="false">
-        <span class="m-line" aria-hidden="true"></span>
-        <span class="m-line" aria-hidden="true"></span>
-        <span class="m-line" aria-hidden="true"></span>
-      </button>
-      <div class="nav-links">
-        <a href="/" class="nav-link" style="color: var(--google-blue)">Home</a>
+      <button class="mmb" id="mmb" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navLinks"></button>
+      <div class="nav-links" id="navLinks">
+        <a href="/" class="nav-link">Home</a>
         <a href="about" class="nav-link">About</a>
         <a href="school" class="nav-link">School</a>
         <a href="sneh-asha" class="nav-link">Sneh Asha</a>
-        <a href="download" class="nav-dl-btn mobile-dl">Downloads</a>
         <div class="dropdown" id="projectsDropdown">
-          <button class="dropdown-btn act" onclick="this.parentElement.classList.toggle('active'); this.setAttribute('aria-expanded', this.parentElement.classList.contains('active'))" aria-haspopup="true" aria-expanded="false">Projects <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-left:4px;"><polyline points="6 9 12 15 18 9"/></svg></button>
+          <button class="dropdown-btn act" aria-haspopup="true" aria-expanded="false">Projects <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-left:4px;"><polyline points="6 9 12 15 18 9"/></svg></button>
           <div class="dropdown-content">
             <div class="dropdown-content-inner">
               <a href="ati"><span>Typing Instructor</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"/></svg></a>
@@ -1310,21 +992,28 @@
           </div>
         </div>
 
+        <div class="tw">
+          <span class="tl" id="tLabel">Dark Mode</span>
+          <label class="tsb">
+            <input type="checkbox" id="tsck" onchange="window.toggleTheme(this)" />
+            <div class="tst"><div class="tsth"></div></div>
+          </label>
+        </div>
         <button class="nav-login-btn" id="navLoginBtn" onclick="openLogin()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.34 0-10 1.67-10 5v2h20v-2c0-3.33-6.66-5-10-5z" />
-          </svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           Sign In
         </button>
         <div class="nav-user-profile" id="navUserProfile" onclick="openLogin()">
           <div class="nav-user-avatar" id="navUserAv"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-          <span id="navUserName" style="font-size: 0.85rem; font-weight: 800; color: var(--text-main)">User</span>
+          <span class="nun" id="navUserName">User</span>
         </div>
 
         <a href="download" class="nav-dl-btn mobile-dl">Downloads Hub</a>
       </div>
       <a href="download" class="nav-dl-btn desktop-dl">Downloads Hub</a>
     </nav>
+
+    <div class="cd" id="cDot"></div><div class="cr" id="cRing"></div>
 
     <div class="qr-app" role="main" id="qrMainContent">
       <aside class="app-sb">
@@ -1451,18 +1140,8 @@
           <div id="view-templates" class="db-view" style="display: none"></div>
         </div>
 
-        <footer class="site-footer" style="width: 100%; padding: 40px 20px 30px; text-align: center; border-top: 1px solid var(--border); background: var(--nav); margin-top: auto">
-          <div style="display: flex; justify-content: center; gap: 25px; margin-bottom: 15px; flex-wrap: wrap">
-            <a href="privacy" style="color: var(--txt-m); text-decoration: none; font-weight: 600">Privacy Policy</a>
-            <a href="terms" style="color: var(--txt-m); text-decoration: none; font-weight: 600">Terms of Service</a>
-            <a href="feedback" style="color: var(--txt-m); text-decoration: none; font-weight: 600">Provide Feedback</a>
-          </div>
-          <div style="color: var(--txt-m); font-size: 0.85rem; font-weight: 600">© 2026 Class Of Learners. Developed By Neel, Ansh, Aarush And Yash Raj. All Rights Reserved.</div>
-        </footer>
       </div>
     </div>
-
-    <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
     <script>
       var Storage = {
@@ -1521,6 +1200,10 @@
         return _libCache[name]
       }
 
+      function escHtml(s) {
+        return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
+      }
+
       function renderDB() {
         const filtered = dbFil === 'all' ? saved : saved.filter((q) => q.type === dbFil)
         document.getElementById('stTotal').textContent = saved.length
@@ -1546,10 +1229,14 @@
         filtered.forEach((q) => {
           const c = document.createElement('div')
           c.className = 'dbc'
-          const nameStr = q.advSettings && q.advSettings.name ? q.advSettings.name : q.content
-          const shortC = nameStr.length > 38 ? nameStr.substring(0, 38) + '…' : nameStr
+          const rawName = q.advSettings && q.advSettings.name ? q.advSettings.name : (q.content || '')
+          const nameStr = String(rawName)
+          const shortC = escHtml(nameStr.length > 38 ? nameStr.substring(0, 38) + '…' : nameStr)
+          const safeTitle = escHtml(String(q.content || ''))
+          const safeType = escHtml(String(q.typeName || 'QR Code'))
+          const safeDate = escHtml(String(q.date || ''))
           c.innerHTML = `<div class="dbt">${q.thumb ? `<img src="${q.thumb}" alt="QR" loading="lazy">` : '<div style="font-size:2rem;opacity:.25;display:flex;align-items:center;justify-content:center;height:100%;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>'}</div>
-    <div class="dbb"><div class="dtyp" style="display:flex;align-items:center;gap:6px;">${q.typeIcon || ''} <span>${q.typeName || 'QR Code'}</span></div><h3 title="${q.content}">${shortC}</h3><div class="ddt" style="display:flex;align-items:center;gap:4px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ${q.date}</div></div>
+    <div class="dbb"><div class="dtyp" style="display:flex;align-items:center;gap:6px;">${q.typeIcon || ''} <span>${safeType}</span></div><h3 title="${safeTitle}">${shortC}</h3><div class="ddt" style="display:flex;align-items:center;gap:4px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ${safeDate}</div></div>
     <div class="dba"><button class="dba-btn" onclick="editQR(${q.id})" style="display:flex;align-items:center;justify-content:center;gap:4px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Editor</button><button class="dba-btn" onclick="reDL(${q.id})" style="display:flex;align-items:center;justify-content:center;gap:4px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export</button><button class="dba-btn del" onclick="delQR(${q.id})" style="display:flex;align-items:center;justify-content:center;gap:4px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Delete</button></div>`
           frag.appendChild(c)
         })
@@ -2153,10 +1840,6 @@
         toast('Logged out successfully.', '')
       }
 
-async function loadFromDrive() {
-        toast('Cloud sync not yet implemented for QR Studio', 'yellow')
-      }
-
       function downloadAnalyticsCSV(shortCode) {
         const csv = DYNAMIC_QR.exportCSV(shortCode);
         if(!csv) { toast('No analytics data', ''); return; }
@@ -2191,17 +1874,23 @@ async function loadFromDrive() {
 
       ;(function () {
         const theme = Storage.get('theme')
-        const chk = document.getElementById('themeChk')
+        const chk = document.getElementById('tsck')
+        const lbl = document.getElementById('tLabel')
         if (theme === 'light') {
           document.body.classList.add('light')
-          if (chk) chk.checked = false
+          document.body.classList.add('lm')
+          if (chk) chk.checked = true
+          if (lbl) lbl.textContent = 'Light Mode'
         } else {
           document.body.classList.remove('light')
-          if (chk) chk.checked = true
+          document.body.classList.remove('lm')
+          if (chk) chk.checked = false
+          if (lbl) lbl.textContent = 'Dark Mode'
         }
 
         checkURLForToken()
         loadUser()
+        updatePUI()
         renderDB()
         setTimeout(syncCloudQRs, 500)
       })()
@@ -2242,37 +1931,11 @@ async function loadFromDrive() {
         } catch(e) { console.error('Cloud QR sync error:', e); }
       }
 
-      function toggleTheme(element) {
-        if (element && element.checked) {
-          document.body.classList.remove('light')
-          Storage.set('theme', 'dark')
-        } else {
-          document.body.classList.add('light')
-          Storage.set('theme', 'light')
-        }
-      }
-
-      function toggleQrMenu() {
-        var btn = document.getElementById('mobileMenuBtn')
-        var nav = document.querySelector('.nav-links')
-        if (btn) { btn.classList.toggle('active'); btn.setAttribute('aria-expanded', btn.classList.contains('active')); }
-        if (nav) nav.classList.toggle('active')
-      }
-
-      // Close mobile menu on outside click
-      document.addEventListener('click', function(e){
-        var nav=document.querySelector('.nav-links');
-        var btn=document.getElementById('mobileMenuBtn');
-        if(nav && btn && nav.classList.contains('active') && !nav.contains(e.target) && !btn.contains(e.target)){
-          nav.classList.remove('active'); btn.classList.remove('active'); btn.setAttribute('aria-expanded','false');
-        }
-      });
-      // Close mobile menu on Escape
+      // Mobile drawer + theme switch owned by shared col-ui.js (#mmb/#navLinks, window.toggleTheme).
+      // Page only keeps desktop dropdown auto-close + Escape-to-close-dropdowns.
+      // Close desktop dropdown on Escape
       document.addEventListener('keydown', function(e){
         if(e.key==='Escape'){
-          var nav=document.querySelector('.nav-links');
-          var btn=document.getElementById('mobileMenuBtn');
-          if(nav && nav.classList.contains('active')){ nav.classList.remove('active'); btn.classList.remove('active'); btn.setAttribute('aria-expanded','false'); }
           document.querySelectorAll('.dropdown').forEach(function(d){ d.classList.remove('active'); var b=d.querySelector('.dropdown-btn'); if(b) b.setAttribute('aria-expanded','false'); });
         }
       });

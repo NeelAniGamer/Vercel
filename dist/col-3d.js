@@ -8,6 +8,9 @@
   // Guard: prefers-reduced-motion only. Mobile & touch are fully supported with optimized gestures & pixel ratio!
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
+  // Lazy-load Three.js only when the 3D canvas is near the viewport.
+  // This avoids parsing & compiling a ~600KB script on pages where the
+  // hero section is not yet visible (e.g. long scroll pages).
   function waitForThree(cb) {
     if (typeof THREE !== 'undefined') { cb(); return }
     if (!document.querySelector('script[src*="three"]')) {
@@ -23,7 +26,19 @@
     }, 100)
   }
 
-  waitForThree(initEngine)
+  // Defer Three.js init until hero canvas is within ~400px of viewport
+  var heroCanvas = document.getElementById('orrery')
+  if (heroCanvas && 'IntersectionObserver' in window) {
+    var heroIO = new IntersectionObserver(function (entries) {
+      if (entries[0].isIntersecting) {
+        heroIO.disconnect()
+        waitForThree(initEngine)
+      }
+    }, { rootMargin: '400px 0px' })
+    heroIO.observe(heroCanvas)
+  } else {
+    waitForThree(initEngine)
+  }
 
   function initEngine() {
     var canvas = document.getElementById('orrery') ||
@@ -39,12 +54,24 @@
 
     var isMobile = window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches
 
+    // SKIP Three.js entirely on mobile — massive perf win.
+    // The 3D orrery is hidden via CSS on mobile anyway, so no need to
+    // parse/compile/execute the ~600KB Three.js library + scene setup.
+    if (isMobile) {
+      // Still expose the API so HUD buttons don't throw errors
+      window.__col3d = window.__col3d || {}
+      return
+    }
+
+    // Low-power mode: heavy page OR modest hardware → leaner scene budget
+    var isLowPower = /ati|gesture|qr|dashboard|feedback|verify/i.test(path)
+
     // ─── Renderer ───
-    var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: !isMobile, alpha: true, powerPreference: 'high-performance' })
+    var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: !isMobile, alpha: true, powerPreference: isMobile ? 'low-power' : 'high-performance' })
     renderer.setSize(window.innerWidth, window.innerHeight)
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.25 : 1.5))
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1 : 1.5))
     renderer.setClearColor(0x000000, 0)
-    canvas.style.willChange = 'transform'
+    if (!isMobile) canvas.style.willChange = 'transform'
 
     var scene = new THREE.Scene()
     scene.fog = new THREE.FogExp2(0x070a14, 0.003)
@@ -149,13 +176,16 @@
       canvas.style.cursor = 'grab'
     })
 
-    // Mouse Wheel Zoom
+    // Mouse Wheel Zoom (Require Ctrl key or 3D stage mode to zoom, allowing normal page scrolling)
     function handleWheel(e) {
-      // Zoom if inside hero or over canvas
       var hero = document.getElementById('heroSection') || document.querySelector('.hero')
-      if (e.target === canvas || (hero && hero.contains(e.target) && !e.target.closest('.node-inspector, .pc'))) {
-        e.preventDefault()
-        baseZoom = Math.max(20, Math.min(95, baseZoom + e.deltaY * 0.04))
+      var isStage = hero && hero.classList.contains('stage-mode')
+      // Only intercept zoom if user explicitly holds Ctrl/Meta or is in full 3D Lab stage mode
+      if (e.ctrlKey || e.metaKey || isStage) {
+        if (e.target === canvas || (hero && hero.contains(e.target) && !e.target.closest('.node-inspector, .pc'))) {
+          e.preventDefault()
+          baseZoom = Math.max(20, Math.min(95, baseZoom + e.deltaY * 0.04))
+        }
       }
     }
     window.addEventListener('wheel', handleWheel, { passive: false })
@@ -223,15 +253,31 @@
 
     canvas.style.cursor = 'grab'
 
-    // ─── Tab visibility ───
+    // ─── Tab visibility & canvas visibility ───
     var visible = true
+    var canvasVisible = true
     document.addEventListener('visibilitychange', function () { visible = !document.hidden })
+    if ('IntersectionObserver' in window) {
+      canvasVisible = false
+      new IntersectionObserver(function (entries) {
+        canvasVisible = entries[0].isIntersecting
+      }, { threshold: 0.02 }).observe(canvas)
+    }
 
-    // ─── Resize ───
-    window.addEventListener('resize', function () {
+    // ─── Resize (debounced; also handles orientation change) ───
+    var _resizeT = null
+    function onResize() {
       camera.aspect = window.innerWidth / window.innerHeight
       camera.updateProjectionMatrix()
       renderer.setSize(window.innerWidth, window.innerHeight)
+    }
+    window.addEventListener('resize', function () {
+      clearTimeout(_resizeT)
+      _resizeT = setTimeout(onResize, 150)
+    })
+    window.addEventListener('orientationchange', function () {
+      clearTimeout(_resizeT)
+      _resizeT = setTimeout(onResize, 250)
     })
 
     // ─── Theme ───
@@ -752,11 +798,11 @@
           })
         })
 
-        // Starfield particles
-        var dustCount = isMobile ? 180 : 380
+        // Starfield particles (budget scales with device: mobile < desktop)
+        var dustCount = isMobile ? 150 : 300
         scene.add(createDust('dim', dustCount, 40, 180))
-        scene.add(createDust('signal', isMobile ? 60 : 120, 25, 110))
-        scene.add(createDust('ion', isMobile ? 50 : 100, 30, 130))
+        scene.add(createDust('signal', isMobile ? 50 : 100, 25, 110))
+        scene.add(createDust('ion', isMobile ? 40 : 80, 30, 130))
 
         // Node click & inspect handler
         window.__col3d.onClick(function (targetName, hitPoint) {
@@ -1073,7 +1119,7 @@
         root.add(new THREE.LineSegments(connGeo, connMat))
 
         // Background dust
-        scene.add(createDust('dim', 350, 60, 120))
+        scene.add(createDust('dim', isMobile ? 150 : 250, 60, 120))
 
         // Tooltip
         document.addEventListener('mousemove', function (e) {
@@ -1139,7 +1185,7 @@
           orbs.push(mesh)
         }
 
-        scene.add(createDust('dim', 300, 60, 100))
+        scene.add(createDust('dim', isMobile ? 120 : 200, 60, 100))
 
         applyTheme()
         new MutationObserver(applyTheme).observe(document.body, { attributes: true, attributeFilter: ['class'] })
@@ -1206,7 +1252,7 @@
         root.add(accentL)
         root.add(accentR)
 
-        scene.add(createDust('ion', 250, 50, 100))
+        scene.add(createDust('ion', isMobile ? 100 : 160, 50, 100))
 
         applyTheme()
         new MutationObserver(applyTheme).observe(document.body, { attributes: true, attributeFilter: ['class'] })
@@ -1300,7 +1346,7 @@
         horizon.position.set(0, -1.5, -68)
         root.add(horizon)
 
-        scene.add(createDust('ion', 200, 40, 90))
+        scene.add(createDust('ion', isMobile ? 80 : 130, 40, 90))
 
         applyTheme()
         new MutationObserver(applyTheme).observe(document.body, { attributes: true, attributeFilter: ['class'] })
@@ -1348,7 +1394,7 @@
         var core = new THREE.Mesh(new THREE.IcosahedronGeometry(1.5, 2), coreMat)
         root.add(core)
 
-        scene.add(createDust('signal', 200, 40, 80))
+        scene.add(createDust('signal', isMobile ? 80 : 130, 40, 80))
 
         applyTheme()
         new MutationObserver(applyTheme).observe(document.body, { attributes: true, attributeFilter: ['class'] })
@@ -1384,7 +1430,7 @@
         var posAtt = waveGeo.attributes.position
         for (var k = 0; k < posAtt.count; k++) origY.push(posAtt.getY(k))
 
-        scene.add(createDust('plasma', 200, 40, 80))
+        scene.add(createDust('plasma', isMobile ? 80 : 130, 40, 80))
 
         applyTheme()
         new MutationObserver(applyTheme).observe(document.body, { attributes: true, attributeFilter: ['class'] })
@@ -1419,7 +1465,7 @@
         var cCore = new THREE.Mesh(new THREE.OctahedronGeometry(1.2, 0), cCoreMat)
         root.add(cCore)
 
-        scene.add(createDust('em', 200, 40, 80))
+        scene.add(createDust('em', isMobile ? 80 : 130, 40, 80))
 
         applyTheme()
         new MutationObserver(applyTheme).observe(document.body, { attributes: true, attributeFilter: ['class'] })
@@ -1456,7 +1502,7 @@
           }
         }
 
-        scene.add(createDust('signal', 200, 40, 80))
+        scene.add(createDust('signal', isMobile ? 80 : 130, 40, 80))
 
         applyTheme()
         new MutationObserver(applyTheme).observe(document.body, { attributes: true, attributeFilter: ['class'] })
@@ -1501,7 +1547,7 @@
       var sphere = new THREE.Mesh(geo, mat)
       root.add(sphere)
 
-      scene.add(createDust(colorKey, 300, 50, 100))
+      scene.add(createDust(colorKey, isMobile ? 120 : 200, 50, 100))
 
       applyTheme()
       new MutationObserver(applyTheme).observe(document.body, { attributes: true, attributeFilter: ['class'] })
@@ -1529,13 +1575,17 @@
     setTimeout(function () { canvas.style.opacity = '1'; if (canvas.classList) canvas.classList.add('v') }, 120)
 
     // ─── Animation loop ───
+    // 30fps cap on desktop, 24fps on mobile/low-power. Skips ALL work when the
+    // tab is hidden OR the canvas is scrolled off-screen (huge win on long pages).
     var clock = new THREE.Clock()
-    var FRAME_MS = 1000 / 30
+    // Cap at 24fps on mobile/low-power, 24fps on desktop too for smoother
+    // frame pacing (most monitors are 60Hz, 24fps = every 2.5 frames = less GPU)
+    var FRAME_MS = 1000 / (isLowPower ? 20 : 24)
     var lastFrame = 0
 
     function animate(now) {
       requestAnimationFrame(animate)
-      if (!visible) return
+      if (!visible || !canvasVisible) return
       var elapsed = now - lastFrame
       if (elapsed < FRAME_MS) return
       lastFrame = now - (elapsed % FRAME_MS)

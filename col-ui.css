@@ -51,23 +51,54 @@ body {
   -webkit-touch-callout: none;
 }
 
+/* ─────────────────────────────────────────────────────────────────
+   GLOBAL TITLE CASE TYPING STYLE
+   Transforms all site text to the user's Title Case typing style
+   (Capitalizing The First Letter Of Every Word).
+   ───────────────────────────────────────────────────────────────── */
+body,
+h1, h2, h3, h4, h5, h6,
+p, a, button, span, label, li, dt, dd,
+blockquote, figcaption, th, td,
+.nav-link, .nav-links a, .dropdown-btn,
+.bbar-item, .bbar-item span, .btn-p, .btn-g,
+.hey, .hlede, .sdesc, .pdesc, .stat-label, .meta, .badge,
+.tag, .dock-name, .dock-label, .ni-title, .ni-badge,
+.hero h1, .section h2, .footer-col h4, .brand-name,
+.fb, .fl a, .footer-links a, .eyebrow, .card-title, .card-desc {
+  text-transform: capitalize !important;
+}
+
 code,
 pre,
 .tech-tag,
 kbd,
 .brand,
+.code,
+.mono-code,
+.no-cap,
 [style*='monospace'],
+pre *,
+code *,
 .term-dot {
   text-transform: none !important;
 }
 input,
 textarea,
 select {
+  text-transform: none !important;
   -webkit-touch-callout: default;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
 /* GLOBAL NAVBAR */
+/* Brand link is a 24px-tall text row by default — give touch users the
+   standard 44px target (only matters when the brand sits alone on a line). */
+@media (pointer: coarse) {
+  .nav-brand {
+    min-height: 44px;
+  }
+}
 .top-nav {
   width: 100%;
   display: flex;
@@ -79,7 +110,7 @@ select {
   position: sticky;
   top: 0;
   z-index: 1000;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 15px;
   transition: 0.3s;
   /* Compositor layer: isolates the nav so blur doesn't repaint page content */
@@ -106,6 +137,7 @@ select {
   text-decoration: none;
   color: var(--text-main, #f8fafc);
   font-family: 'Inter', sans-serif;
+  flex-shrink: 0;
 }
 .brand-logo {
   height: 38px;
@@ -124,8 +156,8 @@ body.lm .brand-logo {
 }
 .nav-links {
   display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
+  gap: 14px;
+  flex-wrap: nowrap;
   align-items: center;
 }
 .nav-link {
@@ -927,23 +959,24 @@ body.lm .nav-login-btn:hover {
   .mobile-close {
     display: flex !important;
     position: absolute;
-    top: calc(env(safe-area-inset-top, 0px) + 16px);
-    right: 20px;
-    width: 44px;
-    height: 44px;
+    top: calc(env(safe-area-inset-top, 0px) + 14px);
+    right: 16px;
+    width: 48px;
+    height: 48px;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid var(--lineb, rgba(255, 255, 255, 0.16));
+    background: rgba(255, 255, 255, 0.06);
+    border: 1.5px solid rgba(242, 184, 75, 0.3);
     border-radius: 50%;
     color: var(--ink, #e8e3d8);
     cursor: pointer;
     z-index: 1005;
-    transition: transform var(--dur-fast, 160ms) var(--ease-out, ease), background var(--dur-fast, 160ms) var(--ease-out, ease);
+    transition: transform var(--dur-fast, 160ms) var(--ease-out, ease), background var(--dur-fast, 160ms) var(--ease-out, ease), border-color var(--dur-fast, 160ms) var(--ease-out, ease);
   }
   .mobile-close:active {
-    transform: scale(0.92);
-    background: rgba(255, 255, 255, 0.16);
+    transform: scale(0.9);
+    background: rgba(242, 184, 75, 0.15);
+    border-color: rgba(242, 184, 75, 0.5);
   }
   body.lm .mobile-close {
     background: rgba(0, 0, 0, 0.05);
@@ -1213,7 +1246,7 @@ body.lm .nav-login-btn:hover {
   font-family: 'Space Mono', monospace;
   font-size: 0.7rem;
   letter-spacing: 0.28em;
-  text-transform: uppercase;
+  text-transform: capitalize;
   color: var(--text-muted, #8891aa);
 }
 .fb span {
@@ -1544,6 +1577,9 @@ body.lm .site-footer {
 /* ═══════════════════════════════════════════════════════════════════
    COL AMBIENT VISUAL SYSTEM (Modern 60fps Aurora Mesh & Cyber Grid)
    Replaces heavy 3D WebGL backgrounds with GPU-accelerated CSS layers
+   Perf: orbs use radial-gradient falloff instead of filter:blur (the
+   gradient IS a blur — at a fraction of the GPU cost). Layers pause
+   when scrolled out of view / tab hidden via JS-added .col-perf-pause.
    ═══════════════════════════════════════════════════════════════════ */
 .col-ambient-bg {
   position: fixed;
@@ -1551,8 +1587,31 @@ body.lm .site-footer {
   pointer-events: none;
   z-index: -10;
   overflow: hidden;
+  contain: strict;
   background: var(--void, #070a14);
   transition: background 0.5s ease;
+}
+/* Pause every ambient animation when the layer is off-screen or tab hidden */
+.col-perf-pause .col-ambient-orb,
+.col-perf-pause.col-ambient-bg .col-ambient-orb {
+  animation-play-state: paused !important;
+}
+/* Skip ambient floating orbs on mobile / touch devices for maximum framerate */
+@media (max-width: 768px), (pointer: coarse) {
+  .col-ambient-orb,
+  .col-ambient-spotlight {
+    display: none !important;
+  }
+}
+/* Global user-motion preference: kill all decorative animation & transitions */
+@media (prefers-reduced-motion: reduce) {
+  .col-ambient-orb,
+  .col-ambient-bg::before {
+    animation: none !important;
+  }
+  .col-ambient-orb {
+    filter: none;
+  }
 }
 
 /* 1. Cyber coordinate grid */
@@ -1568,15 +1627,16 @@ body.lm .site-footer {
   -webkit-mask-image: radial-gradient(circle at 50% 40%, rgba(0, 0, 0, 1) 30%, rgba(0, 0, 0, 0) 80%);
 }
 
-/* 2. Fluid Aurora Mesh Orbs */
+/* 2. Fluid Aurora Mesh Orbs — gradient falloff replaces filter:blur()
+   (visually identical glow, dramatically cheaper to composite; the old
+   blur(100px)/blur(120px) forced giant render passes every frame) */
 .col-ambient-orb {
   position: absolute;
   border-radius: 50%;
-  filter: blur(100px);
   opacity: 0.35;
   pointer-events: none;
   transform: translateZ(0);
-  will-change: transform, opacity;
+  will-change: transform;
   animation: colOrbFloat 22s ease-in-out infinite alternate;
 }
 
@@ -1639,7 +1699,6 @@ body.lm .col-ambient-bg::before {
 }
 body.lm .col-ambient-orb {
   opacity: 0.22;
-  filter: blur(120px);
 }
 body.lm .col-orb-1 {
   background: radial-gradient(circle, rgba(14, 114, 160, 0.45), transparent);

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Liquid Glass UI Laboratory | Standard & Apple VisionOS</title>
+  <link rel="icon" type="image/png" href="Icon.png" />
+  <link rel="stylesheet" href="col-ui.css" />
+  <link rel="stylesheet" href="liquid-glass-ui.css" />
+  
+  <style>
+    :root {
+      --void: #070a14;
+      --ink: #f3f4f6;
+      --dim: #94a3b8;
+      --signal: #f2b84b;
+      --teal: #00f0cc;
+      --plasma: #b89bff;
+      --coral: #ff5e7e;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: #060913;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* ── ANIMATED COLORFUL BACKDROP (Exposes Refraction) ── */
+    .lab-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(50px);
+      opacity: 0.65;
+      animation: floatOrb 18s ease-in-out infinite alternate;
+    }
+
+    .orb-1 {
+      width: 480px;
+      height: 480px;
+      background: radial-gradient(circle, #f2b84b 0%, rgba(242, 184, 75, 0) 70%);
+      top: 10%;
+      left: 15%;
+      animation-duration: 16s;
+    }
+
+    .orb-2 {
+      width: 550px;
+      height: 550px;
+      background: radial-gradient(circle, #00f0cc 0%, rgba(0, 240, 204, 0) 70%);
+      top: 40%;
+      right: 12%;
+      animation-duration: 22s;
+      animation-direction: alternate-reverse;
+    }
+
+    .orb-3 {
+      width: 420px;
+      height: 420px;
+      background: radial-gradient(circle, #b89bff 0%, rgba(184, 155, 255, 0) 70%);
+      bottom: 5%;
+      left: 30%;
+      animation-duration: 19s;
+    }
+
+    .orb-4 {
+      width: 360px;
+      height: 360px;
+      background: radial-gradient(circle, #ff5e7e 0%, rgba(255, 94, 126, 0) 70%);
+      top: -10%;
+      right: 25%;
+      animation-duration: 14s;
+    }
+
+    @keyframes floatOrb {
+      0% {
+        transform: translate3d(0, 0, 0) scale(1);
+      }
+      50% {
+        transform: translate3d(60px, -40px, 0) scale(1.15);
+      }
+      100% {
+        transform: translate3d(-50px, 50px, 0) scale(0.92);
+      }
+    }
+
+    /* Geometric Background Patterns to Test Lens Distortion */
+    .bg-grid-lines {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+      background-size: 50px 50px;
+      opacity: 0.85;
+    }
+
+    .bg-floating-text {
+      position: absolute;
+      font-size: 14vw;
+      font-weight: 900;
+      color: rgba(255, 255, 255, 0.03);
+      user-select: none;
+      white-space: nowrap;
+      top: 28%;
+      left: 50%;
+      transform: translateX(-50%);
+      letter-spacing: -0.04em;
+    }
+
+    /* ── LABORATORY SHELL ── */
+    #root {
+      position: relative;
+      z-index: 10;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 36px 24px 120px;
+    }
+
+    .lab-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .lab-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: capitalize;
+      background: rgba(242, 184, 75, 0.15);
+      color: var(--signal);
+      border: 1px solid rgba(242, 184, 75, 0.3);
+      margin-bottom: 14px;
+    }
+
+    .lab-header h1 {
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      margin: 0 0 14px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .lab-header p {
+      color: var(--dim);
+      font-size: 1.05rem;
+      max-width: 62ch;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* Control Panel */
+    .controls-panel {
+      margin-bottom: 40px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .toggle-group {
+      display: inline-flex;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 4px;
+      border-radius: 32px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .toggle-btn {
+      padding: 8px 18px;
+      border-radius: 24px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: var(--dim);
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .toggle-btn.active {
+      background: rgba(255, 255, 255, 0.18);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Live Playground Grid */
+    .showcase-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 32px;
+      margin-bottom: 60px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .tag-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 8px;
+      letter-spacing: 0.05em;
+    }
+
+    .tag-standard {
+      background: rgba(255, 255, 255, 0.1);
+      color: #cbd5e1;
+    }
+
+    .tag-apple {
+      background: linear-gradient(135deg, rgba(0, 240, 204, 0.25), rgba(242, 184, 75, 0.25));
+      border: 1px solid rgba(0, 240, 204, 0.4);
+      color: #00f0cc;
+    }
+
+    .feature-list {
+      list-style: none;
+      padding: 0;
+      margin: 20px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      font-size: 0.9rem;
+      color: var(--dim);
+    }
+
+    .feature-list li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .feature-list svg {
+      color: var(--teal);
+      flex-shrink: 0;
+    }
+
+    .hint-drag {
+      font-size: 0.78rem;
+      color: var(--signal);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 14px;
+      font-weight: 600;
+    }
+
+    /* Dock Playground Area */
+    .dock-showcase-area {
+      text-align: center;
+      margin-top: 50px;
+      padding: 30px;
+    }
+
+    /* ── LIGHT MICA MODE OVERRIDES ── */
+    body.light-mode {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+
+    body.light-mode .lab-header h1 {
+      color: #0f172a;
+    }
+
+    body.light-mode .lab-header p {
+      color: #475569;
+    }
+
+    body.light-mode .bg-grid-lines {
+      background-image: 
+        linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+    }
+
+    body.light-mode .bg-floating-text {
+      color: rgba(0, 0, 0, 0.035);
+    }
+
+    body.light-mode .toggle-group {
+      background: rgba(255, 255, 255, 0.7);
+      border-color: rgba(0, 0, 0, 0.1);
+    }
+
+    body.light-mode .toggle-btn {
+      color: #64748b;
+    }
+
+    body.light-mode .toggle-btn.active {
+      background: #ffffff;
+      color: #0f172a;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    }
+
+    body.light-mode .standard-glass {
+      background: rgba(255, 255, 255, 0.72);
+      border-color: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+      color: #0f172a;
+    }
+
+    body.light-mode .apple-liquid-glass {
+      background: rgba(255, 255, 255, 0.65);
+      border-color: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 1);
+      color: #0f172a;
+    }
+
+    body.light-mode .card-header h3 {
+      color: #0f172a;
+    }
+
+    body.light-mode .standard-glass p,
+    body.light-mode .apple-liquid-glass p {
+      color: #475569 !important;
+    }
+
+    body.light-mode .feature-list {
+      color: #334155;
+    }
+
+    body.light-mode .tag-standard {
+      background: rgba(0, 0, 0, 0.08);
+      color: #1e293b;
+    }
+
+    body.light-mode .apple-glass-pill {
+      color: #1e293b;
+      background: rgba(255, 255, 255, 0.65);
+      border-color: rgba(0, 0, 0, 0.12);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    body.light-mode .apple-glass-pill:hover {
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    body.light-mode .apple-glass-pill.primary {
+      background: rgba(242, 184, 75, 0.25);
+      color: #92400e;
+      border-color: rgba(242, 184, 75, 0.6);
+    }
+
+    body.light-mode .apple-glass-dock {
+      background: rgba(255, 255, 255, 0.75);
+      border-color: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 1);
+    }
+
+    body.light-mode .apple-dock-item {
+      color: #334155;
+      background: rgba(255, 255, 255, 0.6);
+      border-color: rgba(0, 0, 0, 0.08);
+    }
+
+    body.light-mode .apple-dock-item:hover,
+    body.light-mode .apple-dock-item.active {
+      background: #ffffff;
+      color: #0f172a;
+      border-color: rgba(242, 184, 75, 0.5);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1), 0 0 12px rgba(242, 184, 75, 0.3);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Animated Backdrop -->
+  <div class="lab-backdrop" aria-hidden="true">
+    <div class="bg-grid-lines"></div>
+    <div class="bg-floating-text">LIQUID GLASS</div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="orb orb-4"></div>
+  </div>
+
+  <div id="root"></div>
+
+  <!-- Precompiled, Offline-Ready React 19 Liquid Glass Application -->
+  <script defer src="glass-bundle.js"></script>
+</body>
+</html>

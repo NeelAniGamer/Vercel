@@ -1,0 +1,1867 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995" crossorigin="anonymous"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="The Making Of Class Of Learners — Discover The AIs, Local LLMs, Agentic Tools, Cloud Platforms, And Step-By-Step Playbooks Used To Build Our Studio." />
+    <meta property="og:title" content="The Making | Class Of Learners" />
+    <meta property="og:description" content="See The Full Stack: Claude Code By Ollama, Antigravity, OpenCode, Freebuff, Gemini, Lovable, Supabase, Android Studio, Vercel, GitHub, Digitalplat, ClouDNS, And How Anyone Can Replicate It." />
+    <meta property="og:url" content="https://advancedlogiclabs.dpdns.org/making" />
+    <meta property="og:type" content="website" />
+    <title>The Making | Class Of Learners</title>
+    <link rel="icon" type="image/png" href="Icon.png" />
+    <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/making" />
+
+    <script>
+      ;(function () {
+        try {
+          var c = localStorage.getItem('col_admin_config')
+          if (c) {
+            var cfg = JSON.parse(c),
+              p = window.location.pathname.split('/').pop() || 'making',
+              s = cfg.pages[p] || '200'
+            if (s === '503') {
+              document.write(
+                '<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:#F2B84B">503</h1><h2>System Maintenance</h2><p style="color:#8C94B0">Check Back Soon.</p></div>'
+              )
+              window.stop()
+            }
+          }
+        } catch (e) {}
+      })()
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" /></noscript>
+
+    <style>
+      :root {
+        --void: #070a14;
+        --void2: #0c1224;
+        --panel: #111827;
+        --panel-glass: rgba(17, 24, 39, 0.72);
+        --line: rgba(255, 255, 255, 0.08);
+        --lineb: rgba(255, 255, 255, 0.16);
+        --ink: #e8e3d8;
+        --dim: #8891aa;
+        --signal: #f2b84b;
+        --ion: #5ed4f5;
+        --teal: #00f0cc;
+        --plasma: #b89bff;
+        --em: #34d399;
+        --nav: rgba(7, 10, 20, 0.75);
+        --serif: 'Instrument Serif', Georgia, serif;
+        --sans: 'Inter', system-ui, sans-serif;
+        --mono: 'Space Mono', monospace;
+        --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+        --r: 20px;
+      }
+
+      *, *::before, *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        background: var(--void);
+        color: var(--ink);
+        font-family: var(--sans);
+        line-height: 1.6;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+        transition: background 0.4s var(--ease), color 0.4s var(--ease);
+      }
+
+      /* Light Theme Overrides */
+      body.lm {
+        --void: #f5f4ef;
+        --void2: #eae8df;
+        --panel: #ffffff;
+        --panel-glass: rgba(255, 255, 255, 0.85);
+        --line: rgba(0, 0, 0, 0.08);
+        --lineb: rgba(0, 0, 0, 0.15);
+        --ink: #18191f;
+        --dim: #5c6275;
+        --nav: rgba(245, 244, 239, 0.85);
+      }
+
+      a { color: inherit; text-decoration: none; }
+      button { font-family: inherit; cursor: pointer; border: none; background: none; }
+
+      /* Ambient Radial Glows */
+      .bg-aurora {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        overflow: hidden;
+      }
+      .bg-orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(120px);
+        opacity: 0.18;
+      }
+      .bg-orb-1 { width: 550px; height: 550px; top: -100px; left: -100px; background: var(--signal); }
+      .bg-orb-2 { width: 650px; height: 650px; top: 35%; right: -150px; background: var(--ion); }
+      .bg-orb-3 { width: 500px; height: 500px; bottom: 10%; left: 15%; background: var(--plasma); }
+
+      /* Top Navigation */
+      .top-nav {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        height: 72px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        padding: 0 32px !important;
+        z-index: 900 !important;
+        background: var(--nav) !important;
+        backdrop-filter: blur(24px) !important;
+        -webkit-backdrop-filter: blur(24px) !important;
+        border-bottom: 1px solid var(--line) !important;
+        flex-wrap: nowrap !important;
+        gap: 20px !important;
+        transition: background 0.3s var(--ease), border-color 0.3s var(--ease);
+      }
+      .nav-brand {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        font-weight: 700 !important;
+        font-size: 1.05rem !important;
+        flex-shrink: 0 !important;
+      }
+      .brand-logo { border-radius: 12px; }
+      .nav-links {
+        display: flex !important;
+        align-items: center !important;
+        gap: 16px !important;
+        flex-wrap: nowrap !important;
+      }
+      .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.92rem;
+        font-weight: 500;
+        color: var(--dim);
+        padding: 8px 12px;
+        border-radius: 10px;
+        transition: color 0.2s, background 0.2s;
+      }
+      .nav-link svg { width: 16px; height: 16px; }
+      .nav-link:hover, .nav-link.act {
+        color: var(--ink);
+        background: rgba(255, 255, 255, 0.05);
+      }
+      body.lm .nav-link:hover, body.lm .nav-link.act {
+        background: rgba(0, 0, 0, 0.05);
+      }
+      .nav-link.act {
+        color: var(--signal);
+      }
+
+      /* Dropdown */
+      .dropdown { position: relative; }
+      .dropdown-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.92rem;
+        font-weight: 500;
+        color: var(--dim);
+        padding: 8px 12px;
+        border-radius: 10px;
+        transition: color 0.2s;
+      }
+      .dropdown-btn:hover { color: var(--ink); }
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        min-width: 210px;
+        background: var(--panel);
+        border: 1px solid var(--lineb);
+        border-radius: 14px;
+        padding: 8px;
+        box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+        z-index: 1000;
+      }
+      .dropdown.active .dropdown-content { display: block; }
+      .dropdown-content-inner a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        color: var(--dim);
+        transition: all 0.2s;
+      }
+      .dropdown-content-inner a:hover {
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--ink);
+      }
+
+      /* Theme & Auth Buttons */
+      .nav-actions {
+        display: flex !important;
+        align-items: center !important;
+        gap: 14px !important;
+        flex-shrink: 0 !important;
+        flex-wrap: nowrap !important;
+      }
+      .hz-toggle {
+        width: 44px;
+        height: 24px;
+        background: rgba(255, 255, 255, 0.12);
+        border-radius: 12px;
+        position: relative;
+        cursor: pointer;
+        padding: 2px;
+        transition: background 0.3s;
+      }
+      .hz-orb {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: var(--signal);
+        transition: transform 0.3s var(--spring);
+      }
+      body.lm .hz-orb { transform: translateX(20px); background: #3b82f6; }
+      .nav-dl-btn {
+        padding: 8px 16px;
+        background: var(--lineb);
+        border-radius: 10px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        transition: background 0.2s;
+      }
+      .nav-dl-btn:hover { background: rgba(255, 255, 255, 0.22); }
+      .mmb {
+        display: none;
+        width: 40px;
+        height: 40px;
+        align-items: center;
+        justify-content: center;
+        color: var(--ink);
+      }
+      .mmb svg { width: 24px; height: 24px; stroke: currentColor; }
+
+      /* Main Container */
+      .main-wrapper {
+        position: relative;
+        z-index: 10;
+        max-width: 1240px;
+        margin: 0 auto;
+        padding: 120px 24px 100px;
+      }
+
+      /* Hero Banner */
+      .hero-header {
+        text-align: center;
+        max-width: 860px;
+        margin: 0 auto 56px;
+      }
+      .hero-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 16px;
+        border-radius: 999px;
+        background: rgba(242, 184, 75, 0.12);
+        border: 1px solid rgba(242, 184, 75, 0.3);
+        color: var(--signal);
+        font-family: var(--mono);
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+      }
+      .hero-title {
+        font-family: var(--serif);
+        font-size: clamp(2.4rem, 5.5vw, 4.2rem);
+        line-height: 1.12;
+        font-weight: 400;
+        letter-spacing: -0.02em;
+        margin-bottom: 22px;
+        color: var(--ink);
+      }
+      .hero-title span {
+        background: linear-gradient(135deg, var(--signal) 0%, var(--plasma) 50%, var(--ion) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-style: italic;
+      }
+      .hero-subtitle {
+        font-size: clamp(1.05rem, 2vw, 1.25rem);
+        color: var(--dim);
+        line-height: 1.68;
+        margin-bottom: 36px;
+      }
+
+      /* Stats Deck */
+      .stats-deck {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+        margin-bottom: 56px;
+      }
+      .stat-card {
+        background: var(--panel-glass);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 22px;
+        text-align: center;
+        transition: transform 0.3s var(--ease), border-color 0.3s;
+      }
+      .stat-card:hover {
+        transform: translateY(-4px);
+        border-color: var(--lineb);
+      }
+      .stat-num {
+        font-family: var(--mono);
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--signal);
+        margin-bottom: 4px;
+      }
+      .stat-label {
+        font-size: 0.88rem;
+        color: var(--dim);
+        font-weight: 500;
+      }
+
+      /* Filter & Search Bar */
+      .control-bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 40px;
+        padding: 16px 22px;
+        background: var(--panel-glass);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+      }
+      .filter-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .filter-pill {
+        padding: 8px 16px;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--dim);
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--line);
+        transition: all 0.2s var(--ease);
+      }
+      .filter-pill:hover, .filter-pill.active {
+        color: var(--ink);
+        background: rgba(255, 255, 255, 0.12);
+        border-color: var(--lineb);
+      }
+      .filter-pill.active {
+        background: var(--signal);
+        color: #070a14;
+        border-color: var(--signal);
+      }
+      .search-box {
+        position: relative;
+        flex: 1;
+        min-width: 240px;
+        max-width: 340px;
+      }
+      .search-box input {
+        width: 100%;
+        padding: 10px 16px 10px 38px;
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        color: var(--ink);
+        font-size: 0.88rem;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      body.lm .search-box input {
+        background: rgba(255, 255, 255, 0.7);
+      }
+      .search-box input:focus {
+        border-color: var(--signal);
+      }
+      .search-box svg {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 16px;
+        height: 16px;
+        color: var(--dim);
+      }
+
+      /* Bento Cards Grid */
+      .bento-grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 24px;
+      }
+      .bento-card {
+        grid-column: span 6;
+        background: var(--panel-glass);
+        backdrop-filter: blur(28px);
+        -webkit-backdrop-filter: blur(28px);
+        border: 1px solid var(--line);
+        border-radius: var(--r);
+        padding: 32px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.35s var(--ease), border-color 0.3s var(--ease), box-shadow 0.35s;
+      }
+      .bento-card:hover {
+        transform: translateY(-6px);
+        border-color: var(--lineb);
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+      }
+      .bento-card.wide {
+        grid-column: span 12;
+      }
+      .card-accent-bar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--card-accent, var(--signal));
+      }
+
+      /* Card Header */
+      .card-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 20px;
+      }
+      .card-identity {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .card-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid var(--lineb);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        overflow: hidden;
+      }
+      .card-icon img, .card-icon svg {
+        width: 28px;
+        height: 28px;
+        object-fit: contain;
+        display: block;
+      }
+      body.lm .card-icon {
+        background: rgba(0, 0, 0, 0.04);
+        border-color: rgba(0, 0, 0, 0.1);
+      }
+      body.lm .card-icon img.invert-on-light,
+      body.lm .card-icon svg.invert-on-light {
+        filter: invert(1);
+      }
+      .card-title-group h2 {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--ink);
+        line-height: 1.25;
+      }
+      .card-badge {
+        display: inline-block;
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--card-accent, var(--signal));
+        border: 1px solid var(--line);
+        margin-top: 4px;
+      }
+
+      /* Section Blocks */
+      .section-block {
+        margin-top: 20px;
+      }
+      .section-heading {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--card-accent, var(--signal));
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .section-heading svg { width: 16px; height: 16px; }
+      .section-body {
+        font-size: 0.94rem;
+        color: var(--ink);
+        line-height: 1.68;
+      }
+      .section-body p {
+        margin-bottom: 12px;
+      }
+
+      /* Steps List */
+      .playbook-steps {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        margin-top: 14px;
+      }
+      .playbook-step {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        font-size: 0.92rem;
+        color: var(--ink);
+      }
+      .step-num {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid var(--lineb);
+        color: var(--card-accent, var(--signal));
+        font-family: var(--mono);
+        font-size: 0.75rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+      .step-text {
+        flex: 1;
+        line-height: 1.55;
+      }
+      .step-text strong {
+        color: var(--card-accent, var(--signal));
+      }
+
+      /* Code Snippet Box */
+      .code-box {
+        position: relative;
+        background: #04060d;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 38px 16px 14px 16px;
+        margin-top: 12px;
+        overflow-x: auto;
+      }
+      body.lm .code-box {
+        background: #1e2433;
+        color: #f1f5f9;
+      }
+      .code-box code {
+        display: block;
+        white-space: pre;
+        font-family: var(--mono);
+        font-size: 0.82rem;
+        line-height: 1.6;
+        color: #e2e8f0;
+        min-width: fit-content;
+      }
+      .code-copy-btn {
+        position: absolute;
+        top: 8px;
+        right: 10px;
+        z-index: 5;
+        padding: 4px 10px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        color: #cbd5e1;
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        font-weight: 600;
+        transition: all 0.2s;
+      }
+      .code-copy-btn:hover {
+        background: var(--signal);
+        color: #070a14;
+      }
+
+      /* Card Footer Tags */
+      .card-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 24px;
+        padding-top: 18px;
+        border-top: 1px solid var(--line);
+      }
+      .card-tag {
+        font-size: 0.76rem;
+        font-family: var(--mono);
+        padding: 4px 10px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--dim);
+        border: 1px solid var(--line);
+      }
+
+      /* Footer */
+      .sf {
+        margin-top: 100px;
+        border-top: 1px solid var(--line);
+        padding: 40px 0;
+      }
+      .fi {
+        max-width: 1240px;
+        margin: 0 auto;
+        padding: 0 24px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+      }
+      .fb { font-weight: 700; font-size: 1.1rem; }
+      .fl { display: flex; gap: 20px; }
+      .fl a { color: var(--dim); font-size: 0.9rem; transition: color 0.2s; }
+      .fl a:hover { color: var(--ink); }
+      .fc { color: var(--dim); font-size: 0.85rem; width: 100%; text-align: center; margin-top: 12px; }
+
+      /* Responsive Rules */
+      @media (max-width: 992px) {
+        .bento-card { grid-column: span 12; }
+        .hero-title { font-size: 2.5rem; }
+      }
+      @media (max-width: 900px) {
+        .top-nav .nav-links { display: none !important; }
+        .top-nav .nav-dl-btn { display: none !important; }
+        .mmb { display: flex !important; }
+        .main-wrapper { padding-top: 96px; padding-bottom: 120px; }
+        .control-bar { flex-direction: column; align-items: stretch; }
+        .search-box { max-width: 100%; }
+      }
+    </style>
+
+    <script defer src="col-router.js"></script>
+    <link rel="stylesheet" href="col-ui.css?v=1782446126.5715783" />
+    <link rel="stylesheet" href="col-mobile.css" />
+    <link rel="stylesheet" href="liquid-glass.css" />
+    <link rel="stylesheet" href="mobile-perf.css" />
+    <script defer src="pull-refresh.js"></script>
+    <script defer src="col-ui.js"></script>
+    <script defer src="col-auth.js"></script>
+    <link rel="manifest" href="manifest.json" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  </head>
+  <body>
+    <script>
+      ;(function () {
+        try {
+          if (localStorage.getItem('theme') === 'light') document.body.classList.add('lm')
+        } catch (e) {}
+      })()
+    </script>
+
+    <!-- Ambient Aurora -->
+    <div class="bg-aurora">
+      <div class="bg-orb bg-orb-1"></div>
+      <div class="bg-orb bg-orb-2"></div>
+      <div class="bg-orb bg-orb-3"></div>
+    </div>
+
+    <!-- Top Navigation -->
+    <nav class="top-nav" id="topNav">
+      <a href="/" class="nav-brand">
+        <img src="Class.png" alt="Class Of Learners" class="brand-logo" width="44" height="44" fetchpriority="high" decoding="async" />
+        <span class="brand-name">Class Of Learners</span>
+      </a>
+
+      <div class="nav-links" id="navLinks">
+        <a href="/" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Home
+        </a>
+        <a href="about" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          About
+        </a>
+        <a href="school" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+          School
+        </a>
+        <a href="sneh-asha" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+          Sneh Asha
+        </a>
+        <a href="making" class="nav-link act">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          Making
+        </a>
+
+        <div class="dropdown" id="projDD" onclick="this.classList.toggle('active')">
+          <button class="dropdown-btn" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            Projects <span class="darr">&#9660;</span>
+          </button>
+          <div class="dropdown-content">
+            <div class="dropdown-content-inner">
+              <a href="ati"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>Typing Instructor</a>
+              <a href="solar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>Solar Engine</a>
+              <a href="gesture"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>Perceptus Flow</a>
+              <a href="rpg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>RPG Game</a>
+              <a href="qr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="8" height="8" rx="1"/><rect x="14" y="2" width="8" height="8" rx="1"/><rect x="2" y="14" width="8" height="8" rx="1"/><rect x="14" y="14" width="4" height="4"/><rect x="20" y="14" width="2" height="2"/><rect x="14" y="20" width="2" height="2"/><rect x="20" y="20" width="2" height="2"/></svg>QR Studio Matrix</a>
+              <a href="Terra3D/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>Terra3D Atlas</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <div class="hz-toggle" onclick="toggleLocalTheme()" title="Toggle Appearance">
+          <div class="hz-orb"></div>
+        </div>
+        <a href="download" class="nav-dl-btn">Downloads Hub</a>
+        <button class="mmb" id="mmb" aria-label="Toggle Mobile Menu" onclick="window.openMobileDrawer && window.openMobileDrawer()">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M3 6H21M3 12H21M3 18H21" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-wrapper">
+      <!-- Hero Header -->
+      <header class="hero-header">
+        <div class="hero-eyebrow">Studio Engineering &amp; Architecture</div>
+        <h1 class="hero-title">The Making Of Class Of Learners: <span>Built &amp; Orchestrated</span></h1>
+        <p class="hero-subtitle">
+          From Local Agentic Terminal Coding Powered By Ollama To Planetary 3D Shaders On Vercel Edge — Here Is The Transparent Breakdown Of Every Tool We Used And Exactly How You Can Do It Too.
+        </p>
+      </header>
+
+      <!-- Stats Overview Deck -->
+      <section class="stats-deck">
+        <div class="stat-card">
+          <div class="stat-num">13</div>
+          <div class="stat-label">Production Platforms &amp; AIs</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">100%</div>
+          <div class="stat-label">Local Data Privacy With Ollama</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">$0.00</div>
+          <div class="stat-label">API Cost For Local Terminal Agents</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">6</div>
+          <div class="stat-label">Shipped Real-Time Apps</div>
+        </div>
+      </section>
+
+      <!-- Filter & Search Controls -->
+      <div class="control-bar">
+        <div class="filter-pills" id="filterPills">
+          <button class="filter-pill active" data-filter="all">All 13 Systems</button>
+          <button class="filter-pill" data-filter="agentic">Agentic Coding</button>
+          <button class="filter-pill" data-filter="intelligence">AI Intelligence</button>
+          <button class="filter-pill" data-filter="cloud">Cloud &amp; DNS</button>
+          <button class="filter-pill" data-filter="tools">Developer Tools</button>
+        </div>
+
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="searchInput" placeholder="Search Technologies Or Playbooks..." />
+        </div>
+      </div>
+
+      <!-- Bento Grid Of All 13 Technologies -->
+      <section class="bento-grid" id="techGrid">
+
+        <!-- 1. Claude Code Powered By Ollama -->
+        <article class="bento-card wide" data-category="agentic" style="--card-accent: #f2b84b;">
+          <div class="card-accent-bar"></div>
+          <div>
+            <div class="card-header">
+              <div class="card-identity">
+                <div class="card-icon"><img src="assets/logos/ollama.svg" alt="Ollama" class="invert-on-light" width="28" height="28" /></div>
+                <div class="card-title-group">
+                  <h2>Claude Code Powered By Ollama</h2>
+                  <span class="card-badge">Local Agentic Terminal Intelligence</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-block">
+              <div class="section-heading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                How We Used It In Class Of Learners
+              </div>
+              <div class="section-body">
+                <p>
+                  Rather Than Relying Exclusively On Cloud API Tokens, We Connected Anthropic's Official <strong>Claude Code</strong> Terminal Agent To <strong>Ollama</strong> Running High-Performance Open-Weight Models Locally (Such As Qwen 2.5 Coder 32B And DeepSeek-Coder).
+                </p>
+                <p>
+                  This Gave Us An Autonomous Terminal Coding Agent Capable Of Deep AST Refactoring, Mass File Linting, Batch Script Processing, And Complex Code Rewrites Entirely On Our Local Workstation. It Operates With 100% Data Privacy, Zero Cloud Latency, Zero API Cost, And Full Offline Resilience Even When Internet Access Was Down.
+                </p>
+              </div>
+            </div>
+
+            <div class="section-block">
+              <div class="section-heading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                How Anyone Can Do That Too (The Playbook)
+              </div>
+              <ul class="playbook-steps">
+                <li class="playbook-step">
+                  <div class="step-num">1</div>
+                  <div class="step-text">
+                    <strong>Install Ollama:</strong> Download Ollama On Windows, macOS, Or Linux To Serve Open-Weight Models Locally Via A Native REST API.
+                  </div>
+                </li>
+                <li class="playbook-step">
+                  <div class="step-num">2</div>
+                  <div class="step-text">
+                    <strong>Pull A Premier Coding Model:</strong> Run A Top-Tier Open-Weight Coding Model (Qwen 2.5 Coder Or DeepSeek Coder V2) With High Context Window Support:
+                  </div>
+                </li>
+              </ul>
+
+              <div class="code-box">
+                <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+                <code>ollama run qwen2.5-coder:32b</code>
+              </div>
+
+              <ul class="playbook-steps">
+                <li class="playbook-step">
+                  <div class="step-num">3</div>
+                  <div class="step-text">
+                    <strong>Install Claude Code CLI:</strong> Install Anthropic's Official Agentic Terminal CLI Globally Via Node Package Manager:
+                  </div>
+                </li>
+              </ul>
+
+              <div class="code-box">
+                <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+                <code>npm install -g @anthropic-ai/claude-code</code>
+              </div>
+
+              <ul class="playbook-steps">
+                <li class="playbook-step">
+                  <div class="step-num">4</div>
+                  <div class="step-text">
+                    <strong>Bridge Claude Code Directly To Ollama:</strong> Point The Anthropic Client Endpoint Directly To Your Local Ollama Host Using Either Environment Variables Or A LiteLLM Local OpenAI-Compatible Proxy:
+                  </div>
+                </li>
+              </ul>
+
+              <div class="code-box">
+                <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+                <code># Point Directly To Local Ollama OpenAI-Compatible Endpoint:
+export ANTHROPIC_BASE_URL="http://localhost:11434/v1"
+export ANTHROPIC_API_KEY="ollama"
+
+# Or Launch An OpenAI-To-Anthropic Adapter Via LiteLLM:
+pip install litellm
+litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
+              </div>
+
+              <ul class="playbook-steps">
+                <li class="playbook-step">
+                  <div class="step-num">5</div>
+                  <div class="step-text">
+                    <strong>Run Autonomous Sessions:</strong> Launch The Agent In Your Working Directory By Executing <code>claude</code> And Directing Complex Code Modifications Hands-Free!
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card-tags">
+            <span class="card-tag">Local LLM</span>
+            <span class="card-tag">Zero API Cost</span>
+            <span class="card-tag">Qwen 2.5 Coder</span>
+            <span class="card-tag">100% Private</span>
+            <span class="card-tag">Terminal Agent</span>
+          </div>
+        </article>
+
+        <!-- 2. Google Antigravity -->
+        <article class="bento-card" data-category="agentic" style="--card-accent: #5ed4f5;">
+          <div class="card-accent-bar"></div>
+          <div>
+            <div class="card-header">
+              <div class="card-identity">
+                <div class="card-icon"><img src="assets/logos/google.svg" alt="Google" width="28" height="28" /></div>
+                <div class="card-title-group">
+                  <h2>Google Antigravity</h2>
+                  <span class="card-badge">Autonomous Multi-Step Pair Programmer</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-block">
+              <div class="section-heading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                How We Used It In Class Of Learners
+              </div>
+              <div class="section-body">
+                <p>
+                  Antigravity Served As Our Primary Senior Architecture Pair-Programming Engine. It Generated Full Planning Artifacts, Structured File Modifications Across 20+ HTML/JS Subsystems, Integrated Automated Playwright Headless Browser Verification, And Maintained Strict Adherence To Our Studio's Design Tokens.
+                </p>
+              </div>
+            </div>
+
+            <div class="section-block">
+              <div class="section-heading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                How Anyone Can Do That Too (The Playbook)
+              </div>
+              <ul class="playbook-steps">
+                <li class="playbook-step">
+                  <div class="step-num">1</div>
+                  <div class="step-text">
+                    <strong>Define Strict Workspace Rules:</strong> Create An <code>AGENTS.md</code> Or Project Guidelines File At The Repository Root Defining Architectural Boundaries, Design Tokens, And Build Commands.
+                  </div>
+                </li>
+                <li class="playbook-step">
+                  <div class="step-num">2</div>
+                  <div class="step-text">
+                    <strong>Adopt Planning Discipline:</strong> Always Have The Agent Draft An <code>implementation_plan.md</code> Before Touching Code To Prevent Scope Creep And Accidental Regressions.
+                  </div>
+                </li>
+                <li class="playbook-step">
+                  <div class="step-num">3</div>
+                  <div class="step-text">
+                    <strong>Run Headless Browser Verification:</strong> Pair The Agent With Node/Playwright Scripts To Take Real Screenshots Of Desktop And Mobile Viewports Automatically.
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card-tags">
+            <span class="card-tag">DeepMind</span>
+            <span class="card-tag">Planning Mode</span>
+            <span class="card-tag">Playwright QA</span>
+            <span class="card-tag">MCP Tools</span>
+          </div>
+        </article>
+
+        <!-- 3. OpenCode -->
+        <article class="bento-card" data-category="tools" style="--card-accent: #b89bff;">
+          <div class="card-accent-bar"></div>
+          <div>
+            <div class="card-header">
+              <div class="card-identity">
+                <div class="card-icon"><img src="assets/logos/opencode.svg" alt="OpenCode" width="28" height="28" /></div>
+                <div class="card-title-group">
+                  <h2>OpenCode</h2>
+                  <span class="card-badge">AI-Native Developer Terminal Environment</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-block">
+              <div class="section-heading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                How We Used It In Class Of Learners
+              </div>
+              <div class="section-body">
+                <p>
+                  We Used OpenCode For Terminal-First Development Sessions In Our Subprojects (Such As Advanced Typing Instructor And GestureUI). With Its Direct Support For <code>opencode.json</code> And The BrowserMCP Plugin, OpenCode Enabled Rapid Debugging Of Local Python/WebSocket Backends Directly Inside The CLI.
+                </p>
+              </div>
+            </div>
+
+            <div class="section-block">
+              <div class="section-heading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                How Anyone Can Do That Too (The Playbook)
+              </div>
+              <ul class="playbook-steps">
+                <li class="playbook-step">
+                  <div class="step-num">1</div>
+                  <div class="step-text">
+                    <strong>Install OpenCode:</strong> Install The Global OpenCode Package Or Run It Via Your Favorite Package Manager:
+                  </div>
+                </li>
+              </ul>
+              <div class="code-box">
+                <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+                <code>npm install -g opencode-ai</code>
+              </div>
+              <ul class="playbook-steps">
+                <li class="playbook-step">
+                  <div class="step-num">2</div>
+                  <div class="step-text">
+                    <strong>Configure Workspace Config:</strong> Add An <code>opencode.json</code> In Your Project Root Specifying Active Plugins And Environment Variables.
+                  </div>
+                </li>
+                <li class="playbook-step">
+                  <div class="step-num">3</div>
+                  <div class="step-text">
+                    <strong>Start Interactive Coding:</strong> Run <code>opencode</code> To Launch Context-Aware Multi-File Edits And Automated Script Execution.
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card-tags">
+            <span class="card-tag">Terminal CLI</span>
+            <span class="card-tag">BrowserMCP</span>
+            <span class="card-tag">Local Context</span>
+          </div>
+        </article>
+
+        <!-- 4. Freebuff -->
+        <article class="bento-card" data-category="tools" style="--card-accent: #00f0cc;">
+          <div class="card-accent-bar"></div>
+          <div>
+            <div class="card-header">
+              <div class="card-identity">
+                <div class="card-icon"><img src="assets/logos/freebuff.svg" alt="Freebuff" width="28" height="28" /></div>
+                <div class="card-title-group">
+                  <h2>Freebuff</h2>
+                  <span class="card-badge">Sandbox Testing &amp; Network Proxy Environment</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-block">
+              <div class="section-heading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                How We Used It In Class Of Learners
+              </div>
+              <div class="section-body">
+                <p>
+                  Freebuff Was Used As A Safe Local Staging Sandbox And Network Proxy Utility. It Enabled Our Team To Mock Supabase Authentication Responses, Simulate 503 Maintenance Headers, Test Offline PWA Caching Scenarios, And Intercept Outgoing Telemetry Safely Before Going Live.
+                </p>
+              </div>
+            </div>
+
+            <div class="section-block">
+              <div class="section-heading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                How Anyone Can Do That Too (The Playbook)
+              </div>
+              <ul class="playbook-steps">
+                <li class="playbook-step">
+                  <div class="step-num">1</div>
+                  <div class="step-text">
+                    <strong>Deploy A Local Proxy / Sandbox:</strong> Set Up A Local Interceptor Or Mocking Proxy (E.g. Mitmproxy Or Freebuff Utilities) Bound To <code>127.0.0.1:8080</code>.
+                  </div>
+                </li>
+                <li class="playbook-step">
+                  <div class="step-num">2</div>
+                  <div class="step-text">
+                    <strong>Simulate Network Degradation:</strong> Test Extreme Edge Conditions (3G Speed Throttling, High Packet Drop, 500 Server Errors) To Validate UI Graceful Fallbacks.
+                  </div>
+                </li>
+                <li class="playbook-step">
+                  <div class="step-num">3</div>
+                  <div class="step-text">
+                    <strong>Inspect Client Payloads:</strong> Verify That No Sensitive API Keys Or Unsanitized User Data Leak Across Network Boundaries.
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card-tags">
+            <span class="card-tag">Sandbox</span>
+            <span class="card-tag">Proxy Testing</span>
+            <span class="card-tag">Mock Data</span>
+            <span class="card-tag">Security Audit</span>
+          </div>
+        </article>
+
+        <!-- 5. Claude Web (Anthropic) -->
+        <article class="bento-card" data-category="intelligence" style="--card-accent: #f97316;">
+          <div class="card-accent-bar"></div>
+          <div>
+            <div class="card-header">
+              <div class="card-identity">
+                <div class="card-icon"><img src="assets/logos/claude.svg" alt="Claude" width="28" height="28" /></div>
+                <div class="card-title-group">
+                  <h2>Claude Web (Anthropic)</h2>
+                  <span class="card-badge">Deep Architectural Reasoning &amp; Design Taste</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-block">
+              <div class="section-heading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                How We Used It In Class Of Learners
+              </div>
+              <div class="section-body">
+                <p>
+                  Claude Web (Powered By Claude 3.5 Sonnet And Claude 3.7 Sonnet) Was Instrumental In Designing The CoL Visual Aesthetic. It Authored Our Core Design Tokens (<code>--void</code>, <code>--panel</code>, <code>--signal</code>, <code>--ease</code>), Structured The Complex Orbital Physics Equations For Solar Engine, And Refined Our Technical Documentation.
+                </p>
+              </div>
+            </div>
+
+            <div class="section-block">
+              <div class="section-heading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                How Anyone Can Do That Too (The Playbook)
+              </div>
+              <ul class="playbook-steps">
+                <li class="playbook-step">
+                  <div class="step-num">1</div>
+                  <div class="step-text">
+                    <strong>Create Claude Projects:</strong> Group Your Entire Design Philosophy, CSS Files, And Brand Guides Inside A Claude Project For Persistent Architectural Memory.
+                  </div>
+                </li>
+                <li class="playbook-step">
+                  <div class="step-num">2</div>
+                  <div class="step-text">
+                    <strong>Use Interactive Artifacts:</strong> Request Complex CSS Animations And Micro-Interactions As Standalone HTML Artifacts To Test In Real-Time.
+                  </div>
+                </li>
+                <li class="playbook-step">
+                  <div class="step-num">3</div>
+                  <div class="step-text">
+                    <strong>Engage Extended Thinking:</strong> Use Claude's Deep Reasoning Capabilities To Formulate Complex Algorithms (E.g. Keplarian Orbital Calculations).
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card-tags">
+            <span class="card-tag">Anthropic</span>
+            <span class="card-tag">Claude 3.7</span>
+            <span class="card-tag">Artifacts</span>
+            <span class="card-tag">Design Tokens</span>
+          </div>
+        </article>
+
+        <!-- 6. Gemini Web (Google DeepMind) -->
+        <article class="bento-card" data-category="intelligence" style="--card-accent: #38bdf8;">
+          <div class="card-accent-bar"></div>
+          <div>
+            <div class="card-header">
+              <div class="card-identity">
+                <div class="card-icon"><img src="assets/logos/gemini.svg" alt="Gemini" width="28" height="28" /></div>
+                <div class="card-title-group">
+                  <h2>Gemini Web (Google DeepMind)</h2>
+                  <span class="card-badge">Multimodal Vision &amp; Massive Context Synthesis</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-block">
+              <div class="section-heading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                How We Used It In Class Of Learners
+              </div>
+              <div class="section-body">
+                <p>
+                  With Its 2-Million-Token Context Window And Multimodal Vision Capabilities, Gemini Was Our Lead Auditor For Visual Regressions. By Ingesting Full-Screen Screenshots And Entire Bundled Codebases At Once, Gemini Identified Sub-Pixel Misalignments And Optimized GeoJSON Polygons In Terra3D Atlas.
+                </p>
+              </div>
+            </div>
+
+            <div class="section-block">
+              <div class="section-heading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                How Anyone Can Do That Too (The Playbook)
+              </div>
+              <ul class="playbook-steps">
+                <li class="playbook-step">
+                  <div class="step-num">1</div>
+                  <div class="step-text">
+                    <strong>Perform Visual UI Audits:</strong> Drag And Drop UI Screenshots Directly Into Gemini Web And Ask: <em>"Analyze This Screenshot For Contrast Ratio, Hierarchy Flaws, And Visual Distortions."</em>
+                  </div>
+                </li>
+                <li class="playbook-step">
+                  <div class="step-num">2</div>
+                  <div class="step-text">
+                    <strong>Upload Massive Datasets:</strong> Provide Entire GeoJSON Files Or Multi-Megabyte JSON Level Files In A Single Prompt To Generate Parsing Optimizations.
+                  </div>
+                </li>
+                <li class="playbook-step">
+                  <div class="step-num">3</div>
+                  <div class="step-text">
+                    <strong>Cross-Compare Layouts:</strong> Upload Side-By-Side Desktop And Mobile Screenshots To Audit Responsive Symmetry And Touch Target Sizing.
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card-tags">
+            <span class="card-tag">Gemini Pro</span>
+            <span class="card-tag">2M Token Context</span>
+            <span class="card-tag">Multimodal Vision</span>
+            <span class="card-tag">UI Auditing</span>
+          </div>
+        </article>
+
+        <!-- 7. Lovable -->
+        <article class="bento-card" data-category="tools" style="--card-accent: #ec4899;">
+          <div class="card-accent-bar"></div>
+          <div>
+            <div class="card-header">
+              <div class="card-identity">
+                <div class="card-icon"><img src="assets/logos/lovable.svg" alt="Lovable" width="28" height="28" /></div>
+                <div class="card-title-group">
+                  <h2>Lovable</h2>
+                  <span class="card-badge">Full-Stack Prototyping &amp; Reactive Component Scaffolds</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-block">
+              <div class="section-heading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                How We Used It In Class Of Learners
+              </div>
+              <div class="section-body">
+                <p>
+                  Lovable Enabled Lightning-Fast Full-Stack Prototyping. We Used Its Natural-Language-To-Code Engine To Rapidly Explore Interactive Card Layouts, Student Dashboard Concepts, Responsive Bento Grids, And Modern Tailwind CSS Utilities Before Transferring Production Code Into Our Vanilla Engine.
+                </p>
+              </div>
+            </div>
+
+            <div class="section-block">
+              <div class="section-heading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                How Anyone Can Do That Too (The Playbook)
+              </div>
+              <ul class="playbook-steps">
+                <li class="playbook-step">
+                  <div class="step-num">1</div>
+                  <div class="step-text">
+                    <strong>Prompt Your UI Concept:</strong> Visit Lovable.dev And Prompt Your Interface Idea In Plain English (E.g. <em>"A Dark VisionOS Student Studio Dashboard With Ambient Glows"</em>).
+                  </div>
+                </li>
+                <li class="playbook-step">
+                  <div class="step-num">2</div>
+                  <div class="step-text">
+                    <strong>Iterate In Real-Time:</strong> Use Visual Chat To Refine Component Hierarchies, Button Hover Physics, And Mobile Responsiveness.
+                  </div>
+                </li>
+                <li class="playbook-step">
+                  <div class="step-num">3</div>
+                  <div class="step-text">
+                    <strong>Export Clean Code:</strong> Connect Directly To GitHub To Push The Generated Clean Code Or Extract Specific CSS Snippets Into Your Project.
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card-tags">
+            <span class="card-tag">Lovable.dev</span>
+            <span class="card-tag">Rapid Scaffolding</span>
+            <span class="card-tag">React UI</span>
+            <span class="card-tag">Tailwind</span>
+          </div>
+        </article>
+
+        <!-- 8. Supabase -->
+        <article class="bento-card" data-category="cloud" style="--card-accent: #3ecf8e;">
+          <div class="card-accent-bar"></div>
+          <div>
+            <div class="card-header">
+              <div class="card-identity">
+                <div class="card-icon"><img src="assets/logos/supabase.svg" alt="Supabase" width="28" height="28" /></div>
+                <div class="card-title-group">
+                  <h2>Supabase</h2>
+                  <span class="card-badge">PostgreSQL Database, Auth &amp; Cloud Sync</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-block">
+              <div class="section-heading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                How We Used It In Class Of Learners
+              </div>
+              <div class="section-body">
+                <p>
+                  Supabase Powers The Entire Serverless Persistence And Identity Layer Across Class Of Learners. Through Our Centralized <code>col-auth.js</code> Module, It Coordinates Google OAuth2 Browser Authentication With PKCE Verification For Safe, Smooth Sign-Ins Across Every Subproject.
+                </p>
+                <p>
+                  We Use Its Managed PostgreSQL Engine With Row Level Security (RLS) To Securely Synchronize Student Progress, Typing High Scores, Tournament Leaderboards, And Official Driving Academy Completion Certificates Without Requiring Complex Custom Backend Servers.
+                </p>
+              </div>
+            </div>
+
+            <div class="section-block">
+              <div class="section-heading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                How Anyone Can Do That Too (The Playbook)
+              </div>
+              <ul class="playbook-steps">
+                <li class="playbook-step">
+                  <div class="step-num">1</div>
+                  <div class="step-text">
+                    <strong>Create A Supabase Project:</strong> Sign Up At Supabase.com And Create A Free PostgreSQL Cloud Project In Seconds.
+                  </div>
+                </li>
+                <li class="playbook-step">
+                  <div class="step-num">2</div>
+                  <div class="step-text">
+                    <strong>Enable Google OAuth Provider:</strong> In The Supabase Dashboard Under Authentication &gt; Providers, Turn On Google And Provide Your Client ID And Secret.
+                  </div>
+                </li>
+                <li class="playbook-step">
+                  <div class="step-num">3</div>
+                  <div class="step-text">
+                    <strong>Initialize Client In Browser:</strong> Load The Supabase JavaScript SDK Via CDN Or NPM And Initialize With Your Project URL And Anon Key:
+                  </div>
+                </li>
+              </ul>
+
+              <div class="code-box">
+                <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+                <code>// Import Supabase SDK In Any Browser Or App
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+const supabase = createClient('https://xyz.supabase.co', 'YOUR_ANON_KEY')
+
+// Trigger Google OAuth Login In One Line
+await supabase.auth.signInWithOAuth({
+  provider: 'google',
+  options: { redirectTo: window.location.origin }
+})</code>
+              </div>
+
+              <ul class="playbook-steps">
+                <li class="playbook-step">
+                  <div class="step-num">4</div>
+                  <div class="step-text">
+                    <strong>Enforce Row Level Security (RLS):</strong> Protect User Records By Creating SQL Policies That Only Allow Authenticated Users To Read And Write Their Own Rows:
+                  </div>
+                </li>
+              </ul>
+
+              <div class="code-box">
+                <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+                <code>-- Enable RLS On Student Profiles Table
+alter table student_profiles enable row level security;
+
+-- Only Allow Users To Read And Update Their Own Data
+create policy "Users Can Manage Own Records"
+  on student_profiles for all
+  using (auth.uid() = user_id);</code>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-tags">
+            <span class="card-tag">Supabase</span>
+            <span class="card-tag">PostgreSQL</span>
+            <span class="card-tag">Google OAuth</span>
+            <span class="card-tag">Row Level Security</span>
+            <span class="card-tag">Realtime Sync</span>
+          </div>
+        </article>
+
+        <!-- 9. Android Studio -->
+        <article class="bento-card" data-category="tools" style="--card-accent: #3ddc84;">
+          <div class="card-accent-bar"></div>
+          <div>
+            <div class="card-header">
+              <div class="card-identity">
+                <div class="card-icon"><img src="assets/logos/androidstudio.svg" alt="Android Studio" width="28" height="28" /></div>
+                <div class="card-title-group">
+                  <h2>Android Studio</h2>
+                  <span class="card-badge">Native Android WebView &amp; APK Compilation</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-block">
+              <div class="section-heading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                How We Used It In Class Of Learners
+              </div>
+              <div class="section-body">
+                <p>
+                  Android Studio Bridges Our Web Technologies Into A High-Performance Native Mobile Package (Located In The <code>android/</code> Repository Directory). It Compiles Our Entire Interactive Suite Into Standalone Signed Android APK Installers For Students On Mobile Devices.
+                </p>
+                <p>
+                  We Tuned The Underlying Android WebView Configuration With Full Hardware Acceleration (<code>android:hardwareAccelerated="true"</code>), Edge-To-Edge Immersive Display Cutout Handling, And Touch-Optimized Layouts To Deliver 60 FPS WebGL Driving Simulation And Interactive Solar Animations On Phones And Tablets.
+                </p>
+              </div>
+            </div>
+
+            <div class="section-block">
+              <div class="section-heading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                How Anyone Can Do That Too (The Playbook)
+              </div>
+              <ul class="playbook-steps">
+                <li class="playbook-step">
+                  <div class="step-num">1</div>
+                  <div class="step-text">
+                    <strong>Install Android Studio:</strong> Download And Install Official Android Studio, Setting Up Android SDK 34+ And Build Tools.
+                  </div>
+                </li>
+                <li class="playbook-step">
+                  <div class="step-num">2</div>
+                  <div class="step-text">
+                    <strong>Configure Hardware Acceleration In Manifest:</strong> In <code>AndroidManifest.xml</code>, Enable Internet Permissions And Hardware Acceleration For WebGL Fluidity:
+                  </div>
+                </li>
+              </ul>
+
+              <div class="code-box">
+                <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+                <code>&lt;manifest xmlns:android="http://schemas.android.com/apk/res/android"&gt;
+  &lt;uses-permission android:name="android.permission.INTERNET" /&gt;
+  &lt;application
+    android:hardwareAccelerated="true"
+    android:theme="@style/Theme.AppCompat.NoActionBar"&gt;
+    ...
+  &lt;/application&gt;
+&lt;/manifest&gt;</code>
+              </div>
+
+              <ul class="playbook-steps">
+                <li class="playbook-step">
+                  <div class="step-num">3</div>
+                  <div class="step-text">
+                    <strong>Configure Immersive WebView:</strong> In <code>MainActivity.java</code> Or Kotlin, Enable JavaScript And DOM Storage For Rich Web Apps:
+                  </div>
+                </li>
+              </ul>
+
+              <div class="code-box">
+                <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+                <code>WebView webView = findViewById(R.id.webView);
+WebSettings settings = webView.getSettings();
+settings.setJavaScriptEnabled(true);
+settings.setDomStorageEnabled(true);
+settings.setDatabaseEnabled(true);
+webView.loadUrl("https://advancedlogiclabs.dpdns.org");</code>
+              </div>
+
+              <ul class="playbook-steps">
+                <li class="playbook-step">
+                  <div class="step-num">4</div>
+                  <div class="step-text">
+                    <strong>Build Signed Release APK:</strong> Compile The Production Binary Using Gradle From Terminal Or The Android Studio Build Menu:
+                  </div>
+                </li>
+              </ul>
+
+              <div class="code-box">
+                <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+                <code>./gradlew assembleRelease</code>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-tags">
+            <span class="card-tag">Android Studio</span>
+            <span class="card-tag">Hardware WebGL</span>
+            <span class="card-tag">Native APK</span>
+            <span class="card-tag">Gradle Build</span>
+            <span class="card-tag">Immersive WebView</span>
+          </div>
+        </article>
+
+        <!-- 10. Vercel -->
+        <article class="bento-card" data-category="cloud" style="--card-accent: #ffffff;">
+          <div class="card-accent-bar"></div>
+          <div>
+            <div class="card-header">
+              <div class="card-identity">
+                <div class="card-icon"><img src="assets/logos/vercel.svg" alt="Vercel" class="invert-on-light" width="28" height="28" /></div>
+                <div class="card-title-group">
+                  <h2>Vercel</h2>
+                  <span class="card-badge">Global Edge CDN, Clean URLs &amp; Git CI/CD</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-block">
+              <div class="section-heading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                How We Used It In Class Of Learners
+              </div>
+              <div class="section-body">
+                <p>
+                  Vercel Is Our Production Edge Backbone. It Delivers Ultra-Low Latency Anycast Routing Worldwide, Automatically Enforces Clean HTML URLs (Transforming <code>/home.html</code> Into <code>/home</code>), Manages Automatic Stale-While-Revalidate Caching For 3D Models (<code>.glb</code>), And Triggers Instant Git Deployments.
+                </p>
+              </div>
+            </div>
+
+            <div class="section-block">
+              <div class="section-heading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                How Anyone Can Do That Too (The Playbook)
+              </div>
+              <ul class="playbook-steps">
+                <li class="playbook-step">
+                  <div class="step-num">1</div>
+                  <div class="step-text">
+                    <strong>Deploy In Seconds:</strong> Install The Official Vercel CLI And Run Deployment With A Single Command:
+                  </div>
+                </li>
+              </ul>
+              <div class="code-box">
+                <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+                <code>npm i -g vercel && vercel deploy --prod</code>
+              </div>
+              <ul class="playbook-steps">
+                <li class="playbook-step">
+                  <div class="step-num">2</div>
+                  <div class="step-text">
+                    <strong>Configure vercel.json:</strong> Set Up Clean URLs And Optimized Static Asset Caching Headers:
+                  </div>
+                </li>
+              </ul>
+              <div class="code-box">
+                <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+                <code>{
+  "cleanUrls": true,
+  "headers": [
+    {
+      "source": "/(.*)\\.(glb|png|css|js)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800, stale-while-revalidate=86400" }]
+    }
+  ]
+}</code>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-tags">
+            <span class="card-tag">Edge Network</span>
+            <span class="card-tag">Clean URLs</span>
+            <span class="card-tag">Global Anycast</span>
+            <span class="card-tag">Git Deploy</span>
+          </div>
+        </article>
+
+        <!-- 11. GitHub -->
+        <article class="bento-card" data-category="tools" style="--card-accent: #6e5494;">
+          <div class="card-accent-bar"></div>
+          <div>
+            <div class="card-header">
+              <div class="card-identity">
+                <div class="card-icon"><img src="assets/logos/github.svg" alt="GitHub" class="invert-on-light" width="28" height="28" /></div>
+                <div class="card-title-group">
+                  <h2>GitHub</h2>
+                  <span class="card-badge">Version Control, Actions CI/CD &amp; Releases</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-block">
+              <div class="section-heading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                How We Used It In Class Of Learners
+              </div>
+              <div class="section-body">
+                <p>
+                  GitHub Coordinates Collaborative Source Control Across Our Student Team (Neel, Ansh, Aarush, And Yash Raj). It Manages Release Binaries For The Advanced Typing Instructor Windows Installer (<code>AdvancedTypingInstructor_Setup.exe</code>), Automates Asset Sync, And Safeguards Branch History.
+                </p>
+              </div>
+            </div>
+
+            <div class="section-block">
+              <div class="section-heading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                How Anyone Can Do That Too (The Playbook)
+              </div>
+              <ul class="playbook-steps">
+                <li class="playbook-step">
+                  <div class="step-num">1</div>
+                  <div class="step-text">
+                    <strong>Initialize Git Repository:</strong> Track Your Project With Git And Push To A Free GitHub Repository:
+                  </div>
+                </li>
+              </ul>
+              <div class="code-box">
+                <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+                <code>git init
+git add .
+git commit -m "feat: initial release"
+git remote add origin https://github.com/YourUser/YourRepo.git
+git push -u origin main</code>
+              </div>
+              <ul class="playbook-steps">
+                <li class="playbook-step">
+                  <div class="step-num">2</div>
+                  <div class="step-text">
+                    <strong>Automate CI/CD Pipelines:</strong> Create <code>.github/workflows/verify.yml</code> To Automatically Run Playwright Tests And Linters On Every Pull Request.
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card-tags">
+            <span class="card-tag">Git</span>
+            <span class="card-tag">Version Control</span>
+            <span class="card-tag">Releases</span>
+            <span class="card-tag">CI/CD Workflows</span>
+          </div>
+        </article>
+
+        <!-- 12. Digitalplat -->
+        <article class="bento-card" data-category="cloud" style="--card-accent: #34d399;">
+          <div class="card-accent-bar"></div>
+          <div>
+            <div class="card-header">
+              <div class="card-identity">
+                <div class="card-icon" style="overflow: hidden;"><img src="assets/logos/digitalplat.jpg" alt="DigitalPlat" width="40" height="40" style="border-radius: 8px;" /></div>
+                <div class="card-title-group">
+                  <h2>Digitalplat</h2>
+                  <span class="card-badge">Infrastructure Hosting &amp; Dynamic Subdomain Routing</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-block">
+              <div class="section-heading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                How We Used It In Class Of Learners
+              </div>
+              <div class="section-body">
+                <p>
+                  Digitalplat Powers Our Custom Production Domain Routing And Dynamic DNS Bridging (<code>advancedlogiclabs.dpdns.org</code>). It Coordinates Reverse Proxy Handshakes, SSL Certificate Hand-Offs, And Provides Reliable VPS Staging For Real-Time WebSocket Testing.
+                </p>
+              </div>
+            </div>
+
+            <div class="section-block">
+              <div class="section-heading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                How Anyone Can Do That Too (The Playbook)
+              </div>
+              <ul class="playbook-steps">
+                <li class="playbook-step">
+                  <div class="step-num">1</div>
+                  <div class="step-text">
+                    <strong>Configure Dynamic DNS Host:</strong> Register Your Desired Dynamic Subdomain (E.g. On Digitalplat DPDNS) To Map Changing IP Addresses To A Static Hostname.
+                  </div>
+                </li>
+                <li class="playbook-step">
+                  <div class="step-num">2</div>
+                  <div class="step-text">
+                    <strong>Set Up Reverse Proxy:</strong> Use Caddy Or Nginx To Automatically Terminate SSL And Route Traffic Securely Over Port 443:
+                  </div>
+                </li>
+              </ul>
+              <div class="code-box">
+                <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+                <code>advancedlogiclabs.dpdns.org {
+  reverse_proxy localhost:3000
+}</code>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-tags">
+            <span class="card-tag">DPDNS</span>
+            <span class="card-tag">Dynamic DNS</span>
+            <span class="card-tag">SSL Termination</span>
+            <span class="card-tag">Reverse Proxy</span>
+          </div>
+        </article>
+
+        <!-- 13. ClouDNS -->
+        <article class="bento-card" data-category="cloud" style="--card-accent: #3b82f6;">
+          <div class="card-accent-bar"></div>
+          <div>
+            <div class="card-header">
+              <div class="card-identity">
+                <div class="card-icon"><img src="assets/logos/cloudns.png" alt="ClouDNS" width="34" height="24" /></div>
+                <div class="card-title-group">
+                  <h2>ClouDNS</h2>
+                  <span class="card-badge">Anycast Geo-Distributed Managed DNS &amp; DDoS Protection</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-block">
+              <div class="section-heading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                How We Used It In Class Of Learners
+              </div>
+              <div class="section-body">
+                <p>
+                  ClouDNS Provides The Authoritative Anycast DNS Infrastructure For Class Of Learners. It Delivers Sub-10ms Name Resolution Globally, Hosts Fast-Propagating TXT Verification Records For Google AdSense And Search Console, And Guarantees 100% DNS Uptime With Built-In DDoS Mitigation.
+                </p>
+              </div>
+            </div>
+
+            <div class="section-block">
+              <div class="section-heading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                How Anyone Can Do That Too (The Playbook)
+              </div>
+              <ul class="playbook-steps">
+                <li class="playbook-step">
+                  <div class="step-num">1</div>
+                  <div class="step-text">
+                    <strong>Add Primary Zone:</strong> Create An Authoritative Zone At ClouDNS.net And Update Your Domain's Nameservers At Your Registrar To ClouDNS Anycast Nodes (<code>ns11.cloudns.net</code>, <code>ns12.cloudns.net</code>).
+                  </div>
+                </li>
+                <li class="playbook-step">
+                  <div class="step-num">2</div>
+                  <div class="step-text">
+                    <strong>Configure Fast-Propagating Records:</strong> Set Low TTLs (300 Seconds) For Rapid Iteration On A, CNAME, And TXT Security Records:
+                  </div>
+                </li>
+              </ul>
+              <div class="code-box">
+                <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+                <code># Example ClouDNS Record Configuration
+CNAME  @  cname.vercel-dns.com.  TTL=300
+TXT    @  google-site-verification=bWaer2b60VA1y3...  TTL=300</code>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-tags">
+            <span class="card-tag">Anycast DNS</span>
+            <span class="card-tag">DDoS Resilience</span>
+            <span class="card-tag">Fast TTL</span>
+            <span class="card-tag">Geo-Redundancy</span>
+          </div>
+        </article>
+
+      </section>
+    </main>
+
+    <!-- Site Footer -->
+    <footer class="sf">
+      <div class="fi">
+        <div class="fb">Class Of Learners &middot; Studio Hub</div>
+        <div class="fl">
+          <a href="/">Home</a>
+          <a href="about">About</a>
+          <a href="making">The Making</a>
+          <a href="privacy">Privacy</a>
+          <a href="terms">Terms</a>
+          <a href="download">Downloads</a>
+        </div>
+        <div class="fc">&copy; 2026 Neel, Ansh, Aarush &amp; Yash Raj. Built With Local Intelligence &amp; Precision.</div>
+      </div>
+    </footer>
+
+    <!-- Interactive Filtering & Copy Scripts -->
+    <script>
+      // Local Theme Toggle
+      function toggleLocalTheme() {
+        if (typeof window.hzToggle === 'function') {
+          window.hzToggle()
+        } else {
+          document.body.classList.toggle('lm')
+          try {
+            localStorage.setItem('theme', document.body.classList.contains('lm') ? 'light' : 'dark')
+          } catch(e) {}
+        }
+      }
+
+      // Filter Pills Logic
+      var filterButtons = document.querySelectorAll('.filter-pill')
+      var techCards = document.querySelectorAll('.bento-card')
+      var searchInput = document.getElementById('searchInput')
+
+      filterButtons.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          filterButtons.forEach(function(b) { b.classList.remove('active') })
+          btn.classList.add('active')
+          applyFilters()
+        })
+      })
+
+      if (searchInput) {
+        searchInput.addEventListener('input', applyFilters)
+      }
+
+      function applyFilters() {
+        var activeBtn = document.querySelector('.filter-pill.active')
+        var activeFilter = activeBtn ? activeBtn.dataset.filter : 'all'
+        var query = searchInput ? searchInput.value.toLowerCase().trim() : ''
+
+        techCards.forEach(function(card) {
+          var cat = card.dataset.category || ''
+          var cardText = card.innerText.toLowerCase()
+
+          var matchesCategory = (activeFilter === 'all' || cat === activeFilter)
+          var matchesSearch = (query === '' || cardText.indexOf(query) !== -1)
+
+          if (matchesCategory && matchesSearch) {
+            card.style.display = 'flex'
+          } else {
+            card.style.display = 'none'
+          }
+        })
+      }
+
+      // Copy Code Utility
+      function copyCode(btn) {
+        var codeBox = btn.closest('.code-box')
+        var codeEl = codeBox ? codeBox.querySelector('code') : null
+        if (!codeEl) return
+
+        var textToCopy = codeEl.innerText
+        navigator.clipboard.writeText(textToCopy).then(function() {
+          var originalText = btn.textContent
+          btn.textContent = 'Copied!'
+          btn.style.background = '#34d399'
+          btn.style.color = '#070a14'
+          setTimeout(function() {
+            btn.textContent = originalText
+            btn.style.background = ''
+            btn.style.color = ''
+          }, 2000)
+        }).catch(function() {
+          btn.textContent = 'Failed'
+        })
+      }
+    </script>
+  </body>
+</html>

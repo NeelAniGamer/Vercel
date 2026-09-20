@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Mumbai Traffic Academy & 3D Tuning HQ | Class Of Learners</title>
-  <meta name="description" content="Explore the 3D interior architecture of Mumbai Traffic Academy — featuring the Theory Classroom, 3D Tuning Garage Workshop, Police CCTV Control Room, and Central Lobby." />
+  <title>Mumbai Central Adventure Hub | Class Of Learners</title>
+  <meta name="description" content="Poppy Playtime Chapter 3-style Central Hub Adventure: Start inside the Safehouse, find the key, step out into the massive Central Hub, restore power, tune your supercar, and deploy to the track." />
   <link rel="icon" href="Icon.png" type="image/png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -13,11 +13,12 @@
   <style>
     :root {
       --void: #070a14;
-      --panel: rgba(14, 20, 35, 0.88);
-      --border: rgba(255, 255, 255, 0.12);
+      --panel: rgba(14, 20, 35, 0.9);
+      --border: rgba(255, 255, 255, 0.14);
       --signal: #f59e0b;
       --cyan: #06b6d4;
       --teal: #14b8a6;
+      --green: #10b981;
       --red: #ef4444;
       --ink: #f8fafc;
       --dim: #94a3b8;
@@ -58,7 +59,7 @@
       z-index: 10;
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
       pointer-events: none;
     }
 
@@ -94,98 +95,144 @@
       letter-spacing: -0.02em;
     }
 
-    /* Room Quick Navigation Tabs */
-    .room-nav {
+    /* Top-Mounted Sequential Objective Banner (Displayed One By One) */
+    .top-objective-container {
       pointer-events: auto;
       display: flex;
-      gap: 8px;
+      flex-direction: column;
+      align-items: center;
+      margin: 0 auto;
+    }
+
+    .top-objective-hud {
+      background: rgba(15, 23, 42, 0.94);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      border-radius: 18px;
+      padding: 12px 24px;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7), 0 0 24px rgba(6, 182, 212, 0.25);
+      min-width: 440px;
+      max-width: 580px;
+      transition: all 0.3s ease;
+    }
+
+    .top-objective-hud.objective-pulse {
+      animation: objectiveGlow 1.2s ease;
+    }
+
+    @keyframes objectiveGlow {
+      0% { transform: scale(0.97); box-shadow: 0 0 0 rgba(6, 182, 212, 0); }
+      50% { transform: scale(1.03); box-shadow: 0 0 35px rgba(6, 182, 212, 0.7); }
+      100% { transform: scale(1.0); box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7), 0 0 24px rgba(6, 182, 212, 0.25); }
+    }
+
+    .objective-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .objective-badge {
+      font-size: 0.70rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.25), rgba(59, 130, 246, 0.25));
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.5);
+      padding: 3px 10px;
+      border-radius: 6px;
+    }
+
+    .objective-dist-badge {
+      font-size: 0.74rem;
+      font-family: 'Space Mono', monospace;
+      color: #fbbf24;
+      background: rgba(251, 191, 36, 0.12);
+      border: 1px solid rgba(251, 191, 36, 0.3);
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    .objective-content-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .objective-icon-box {
+      font-size: 1.8rem;
+      background: rgba(255, 255, 255, 0.06);
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .objective-text-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .objective-title {
+      font-size: 0.98rem;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.3;
+    }
+
+    .objective-hint {
+      font-size: 0.78rem;
+      color: var(--dim);
+      margin-top: 3px;
+    }
+
+    /* Fast Action Buttons in Top Right */
+    .top-actions {
+      pointer-events: auto;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .action-btn {
       background: var(--panel);
       backdrop-filter: blur(16px);
       border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 6px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    }
-
-    .nav-tab {
-      background: transparent;
-      border: none;
-      color: var(--dim);
-      font-size: 0.85rem;
-      font-weight: 600;
-      padding: 8px 14px;
-      border-radius: 9px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .nav-tab:hover {
       color: var(--ink);
-      background: rgba(255, 255, 255, 0.06);
-    }
-
-    .nav-tab.active {
-      color: #070a14;
-      background: var(--cyan);
-      font-weight: 700;
-    }
-
-    /* Exit & Launch Driving Button */
-    .launch-btn {
-      pointer-events: auto;
-      background: linear-gradient(135deg, #f59e0b, #d97706);
-      color: #070a14;
-      font-weight: 800;
-      font-size: 0.88rem;
-      padding: 10px 18px;
-      border: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 10px 16px;
       border-radius: 12px;
       cursor: pointer;
       display: flex;
       align-items: center;
       gap: 8px;
-      box-shadow: 0 4px 18px rgba(245, 158, 11, 0.35);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.4);
+      transition: all 0.2s ease;
       text-decoration: none;
     }
 
-    .launch-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 24px rgba(245, 158, 11, 0.5);
-    }
-
-    /* Bottom Control Tips Bar */
-    .hub-footer {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 10;
-      background: var(--panel);
-      backdrop-filter: blur(16px);
-      border: 1px solid var(--border);
-      border-radius: 30px;
-      padding: 8px 24px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      font-size: 0.82rem;
-      color: var(--dim);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-      pointer-events: none;
-    }
-
-    .control-pill {
+    .action-btn:hover {
       background: rgba(255, 255, 255, 0.1);
-      color: var(--ink);
-      font-family: 'Space Mono', monospace;
-      font-size: 0.72rem;
-      padding: 3px 8px;
-      border-radius: 6px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .launch-btn {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #ffffff;
+      font-weight: 800;
+      border: none;
+      box-shadow: 0 4px 18px rgba(16, 185, 129, 0.35);
+    }
+
+    .launch-btn:hover {
+      box-shadow: 0 6px 24px rgba(16, 185, 129, 0.5);
     }
 
     /* Garage Customizer Side Drawer */
@@ -260,7 +307,6 @@
       transform: scale(1.1);
     }
 
-    /* Tuning Specs & Telemetry Card */
     .tuning-specs-card {
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.08);
@@ -310,7 +356,6 @@
       font-family: 'Space Mono', monospace;
     }
 
-    /* Deploy to Track Button */
     .deploy-track-btn {
       width: 100%;
       background: linear-gradient(135deg, #10b981, #059669);
@@ -337,7 +382,7 @@
       box-shadow: 0 8px 26px rgba(16, 185, 129, 0.5);
     }
 
-    /* Deployment Modal Overlay */
+    /* Modal Deployment Overlay */
     .deploy-modal {
       position: fixed;
       inset: 0;
@@ -370,10 +415,10 @@
       to { transform: scale(1); opacity: 1; }
     }
 
-    /* Notification Toast */
+    /* Toast Notification */
     #toast {
       position: absolute;
-      top: 80px;
+      top: 105px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 20;
@@ -389,7 +434,7 @@
       pointer-events: none;
     }
 
-    /* Crosshair for first person */
+    /* Interactive Crosshair & Action Prompt */
     .crosshair {
       position: absolute;
       top: 50%;
@@ -404,9 +449,40 @@
       pointer-events: none;
     }
 
+    /* Bottom Control Tips Bar */
+    .hub-footer {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      background: var(--panel);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      padding: 8px 24px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 0.82rem;
+      color: var(--dim);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      pointer-events: none;
+    }
+
+    .control-pill {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--ink);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
     @media (max-width: 768px) {
       .hub-header { flex-direction: column; gap: 10px; align-items: stretch; }
-      .room-nav { justify-content: center; overflow-x: auto; }
+      .top-objective-hud { min-width: 90%; max-width: 94%; padding: 10px 16px; }
       .hub-footer { width: 92%; font-size: 0.75rem; padding: 8px 12px; justify-content: center; }
       .customizer-panel { width: calc(100% - 32px); left: 16px; right: 16px; top: auto; bottom: 80px; }
     }
@@ -414,7 +490,7 @@
 </head>
 <body>
 
-  <!-- 3D Canvas -->
+  <!-- 3D WebGL Canvas -->
   <canvas id="webgl-canvas"></canvas>
   <div class="crosshair"></div>
 
@@ -424,26 +500,36 @@
   <!-- Top Header HUD -->
   <header class="hub-header">
     <div class="hub-brand">
-      <span class="hub-badge">3D HQ</span>
-      <span class="hub-title">MUMBAI TRAFFIC ACADEMY</span>
+      <span class="hub-badge">HUB</span>
+      <span class="hub-title">MUMBAI CENTRAL ADVENTURE</span>
     </div>
 
-    <!-- Room Switcher Tabs -->
-    <nav class="room-nav">
-      <button class="nav-tab active" data-room="lobby">🏛️ Lobby</button>
-      <button class="nav-tab" data-room="classroom">📚 Classroom</button>
-      <button class="nav-tab" data-room="garage">🔧 3D Garage</button>
-      <button class="nav-tab" data-room="control">📹 CCTV Center</button>
-      <button class="nav-tab" data-room="outside">🛣️ Outside Traffic</button>
-    </nav>
+    <!-- Top-Mounted Sequential Objective Banner (Shown One By One) -->
+    <div class="top-objective-container">
+      <div class="top-objective-hud" id="top-objective-hud">
+        <div class="objective-header-row">
+          <span class="objective-badge" id="objective-stage-badge">OBJECTIVE 1 OF 5</span>
+          <span class="objective-dist-badge" id="objective-distance">--m to Key</span>
+        </div>
+        <div class="objective-content-row">
+          <div class="objective-icon-box" id="objective-icon">🗝️</div>
+          <div class="objective-text-group">
+            <div class="objective-title" id="objective-title">Find the Front Door Key inside the House</div>
+            <div class="objective-hint" id="objective-hint">Search the study desk in the living room [Press E near Key]</div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <!-- Quick Launch into Road Driving Mode -->
-    <a href="Driving.html" class="launch-btn">
-      <span>🚗 Test Track</span>
-    </a>
+    <!-- Top Right Quick Actions -->
+    <div class="top-actions">
+      <a href="Driving.html" class="action-btn launch-btn">
+        <span>🏁 Test Track</span>
+      </a>
+    </div>
   </header>
 
-  <!-- Garage Tuning Drawer (Shows when inside Garage) -->
+  <!-- Garage Tuning Drawer (Appears when near Apex Garage) -->
   <aside class="customizer-panel" id="garage-customizer">
     <div class="customizer-title">⚡ 3D VEHICLE TUNING</div>
 
@@ -474,7 +560,6 @@
       </div>
     </div>
 
-    <!-- Live Vehicle Specs Telemetry Card -->
     <div class="tuning-specs-card">
       <div class="tuning-specs-row">
         <span>Vehicle:</span>
@@ -498,7 +583,6 @@
       </div>
     </div>
 
-    <!-- Prominent "Go To The Track" Button -->
     <button class="deploy-track-btn" id="btn-deploy-track" onclick="window.deployToTestTrack()">
       <span>🏁 SAVE SETUP & GO TO TEST TRACK</span>
     </button>
@@ -507,10 +591,10 @@
   <!-- Track Deployment Modal Overlay -->
   <div class="deploy-modal" id="deploy-modal">
     <div class="deploy-modal-content">
-      <div style="font-size: 3rem; margin-bottom: 12px; animation: bounce 1s infinite alternate;">🏎️ 💨</div>
+      <div style="font-size: 3rem; margin-bottom: 12px;">🏎️ 💨</div>
       <h2 style="font-size: 1.4rem; font-weight: 800; color: #34d399; margin-bottom: 8px;">ROLLING OUT TO TEST TRACK!</h2>
       <p style="color: var(--dim); font-size: 0.9rem; margin-bottom: 18px;" id="deploy-modal-desc">
-        Saving vehicle configuration and deploying to the Mumbai circuit...
+        Saving vehicle configuration and deploying directly onto the Mumbai circuit...
       </p>
       <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.4); border-radius: 8px; padding: 6px 14px; font-size: 0.8rem; color: #6ee7b7; font-family: monospace;">
         <div class="pulse-dot"></div>
@@ -523,20 +607,28 @@
   <footer class="hub-footer">
     <span><span class="control-pill">W</span><span class="control-pill">A</span><span class="control-pill">S</span><span class="control-pill">D</span> Move</span>
     <span>•</span>
-    <span><span class="control-pill">Mouse</span> Look Around</span>
+    <span><span class="control-pill">Shift</span> Sprint</span>
     <span>•</span>
-    <span>Walk through doorways between rooms</span>
+    <span><span class="control-pill">E</span> Interact / Pick Up</span>
+    <span>•</span>
+    <span><span class="control-pill">Mouse</span> Look</span>
   </footer>
 
-  <!-- Three.js r128 from CDN -->
+  <!-- Three.js r128 Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <!-- 3D Interior Architecture Engine -->
-  <script src="room-architect.js"></script>
+  <!-- Loaders (Local with CDN fallback) -->
+  <script src="libs/GLTFLoader.js"></script>
+  <script src="libs/OBJLoader.js"></script>
+  <script src="libs/MTLLoader.js"></script>
+  <!-- Model Registry Engine -->
+  <script src="model-registry.js"></script>
+  <!-- Poppy Playtime Playcare-Style Adventure Architect Engine -->
+  <script src="adventure-architect.js"></script>
 
   <script>
     (function() {
       // 1. Toast Notification Helper
-      window.toast = function(msg, color = '#38bdf8', duration = 3000) {
+      window.toast = function(msg, color = '#38bdf8', duration = 3200) {
         const t = document.getElementById('toast');
         if (!t) return;
         t.innerText = msg;
@@ -551,11 +643,14 @@
       // 2. Initialize Three.js Scene, Camera, Renderer
       const canvas = document.getElementById('webgl-canvas');
       const scene = new THREE.Scene();
-      scene.background = new THREE.Color(0x070a14);
+      scene.background = new THREE.Color(0x060810);
+      scene.fog = new THREE.FogExp2(0x060810, 0.012);
 
-      const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 100);
-      camera.position.set(-8, 1.6, -3); // Spawn inside Lobby
-      camera.rotation.set(0, 0, 0);
+      const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 150);
+      // Spawn player inside House Interior
+      camera.position.set(-45, 1.65, 2);
+      camera.rotation.order = 'YXZ';
+      window.camera = camera;
 
       const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
       renderer.setSize(window.innerWidth, window.innerHeight);
@@ -563,31 +658,35 @@
       renderer.shadowMap.enabled = true;
       renderer.shadowMap.type = THREE.PCFSoftShadowMap;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 1.05;
+      renderer.toneMappingExposure = 1.15;
 
-      // Balanced global architectural illumination
-      const ambient = new THREE.AmbientLight(0xffffff, 0.45);
+      // 3. Balanced Atmospheric Outdoor & Indoor Lighting (Under 6 light limit)
+      const ambient = new THREE.AmbientLight(0xffffff, 0.55);
       scene.add(ambient);
 
-      const hemiLight = new THREE.HemisphereLight(0xdbeafe, 0x1e293b, 0.4);
-      hemiLight.position.set(0, 30, 0);
+      const hemiLight = new THREE.HemisphereLight(0xbae6fd, 0x334155, 0.52);
+      hemiLight.position.set(0, 40, 0);
       scene.add(hemiLight);
 
-      const sunLight = new THREE.DirectionalLight(0xfff8ee, 0.75);
-      sunLight.position.set(25, 45, 25);
+      const sunLight = new THREE.DirectionalLight(0xffedd5, 0.95);
+      sunLight.position.set(30, 50, 20);
+      sunLight.castShadow = true;
+      sunLight.shadow.mapSize.width = 1024;
+      sunLight.shadow.mapSize.height = 1024;
+      sunLight.shadow.camera.near = 0.5;
+      sunLight.shadow.camera.far = 150;
+      sunLight.shadow.camera.left = -50;
+      sunLight.shadow.camera.right = 50;
+      sunLight.shadow.camera.top = 50;
+      sunLight.shadow.camera.bottom = -50;
       scene.add(sunLight);
 
-      const fillLight = new THREE.DirectionalLight(0xbfdbfe, 0.35);
-      fillLight.position.set(-25, 30, -35);
-      scene.add(fillLight);
-
-      // 3. Build All 4 3D Rooms using RoomArchitect
-      const architect = new window.RoomArchitect(scene);
-      architect.buildAllRooms();
+      // 4. Construct Big Central Hub & House Interior Adventure
+      const architect = new window.AdventureArchitect(scene);
+      architect.buildWorld();
       architect.bindControls();
-      architect.teleportToRoom('lobby', camera);
 
-      // 4. Mouse Look & Pointer Drag
+      // 5. Mouse Look & Pointer Lock
       let isMouseDown = false;
       let prevMouseX = 0;
       let prevMouseY = 0;
@@ -595,7 +694,7 @@
       let camYaw = 0;
 
       window.addEventListener('mousedown', (e) => {
-        if (e.target.closest('.room-nav') || e.target.closest('.customizer-panel') || e.target.closest('.launch-btn')) return;
+        if (e.target.closest('.customizer-panel') || e.target.closest('.action-btn') || e.target.closest('.top-objective-hud')) return;
         isMouseDown = true;
         prevMouseX = e.clientX;
         prevMouseY = e.clientY;
@@ -614,8 +713,6 @@
         camPitch -= dy * 0.003;
         camPitch = Math.max(-Math.PI / 3, Math.min(Math.PI / 3, camPitch));
 
-        camera.rotation.set(0, 0, 0);
-        camera.rotation.order = 'YXZ';
         camera.rotation.y = camYaw;
         camera.rotation.x = camPitch;
       });
@@ -639,35 +736,15 @@
           camPitch -= dy * 0.004;
           camPitch = Math.max(-Math.PI / 3, Math.min(Math.PI / 3, camPitch));
 
-          camera.rotation.order = 'YXZ';
           camera.rotation.y = camYaw;
           camera.rotation.x = camPitch;
         }
       });
       window.addEventListener('touchend', () => { isMouseDown = false; });
 
-      // 5. Room Navigation Tabs Event Listeners
-      const customizerPanel = document.getElementById('garage-customizer');
-      const tabs = document.querySelectorAll('.nav-tab');
-
-      tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-          tabs.forEach(t => t.classList.remove('active'));
-          tab.classList.add('active');
-          const roomKey = tab.dataset.room;
-          architect.teleportToRoom(roomKey, camera);
-
-          // Update camera yaw for optimal panoramic room view
-          if (roomKey === 'classroom') { camYaw = 0; camPitch = 0; }
-          else if (roomKey === 'garage') { camYaw = -Math.PI / 2; camPitch = 0; }
-          else if (roomKey === 'control') { camYaw = 0; camPitch = 0; }
-          else if (roomKey === 'outside') { camYaw = 0.95; camPitch = -0.05; }
-          else { camYaw = 0; camPitch = 0; }
-          camera.rotation.set(camPitch, camYaw, 0);
-
-          // Toggle garage customizer side panel
-          customizerPanel.style.display = (roomKey === 'garage') ? 'block' : 'none';
-        });
+      // Click on 3D canvas triggers interact
+      canvas.addEventListener('click', () => {
+        architect.interact(camera);
       });
 
       // 6. Customizer Swatch Clicks & Vehicle Configuration State
@@ -684,7 +761,6 @@
 
           currentPaint = parseInt(swatch.dataset.paint, 16);
           currentPaintName = swatch.getAttribute('title') || 'Custom Color';
-
           architect.setCarPaint(currentPaint, null);
 
           const sumPaint = document.getElementById('summary-paint');
@@ -692,8 +768,11 @@
             sumPaint.innerText = currentPaintName;
             sumPaint.style.color = swatch.style.background;
           }
-
           window.toast(`✨ Body Paint: ${currentPaintName}`, swatch.style.background);
+
+          if (architect.objectives.currentStage === 4) {
+            architect.objectives.advance(5);
+          }
         });
       });
 
@@ -705,7 +784,6 @@
 
           currentGlow = parseInt(swatch.dataset.glow, 16);
           currentGlowName = swatch.getAttribute('title') || 'Custom Glow';
-
           architect.setCarPaint(null, currentGlow);
 
           const sumGlow = document.getElementById('summary-glow');
@@ -713,21 +791,23 @@
             sumGlow.innerText = currentGlowName;
             sumGlow.style.color = swatch.style.background;
           }
-
           window.toast(`⚡ Underglow Neon: ${currentGlowName}`, swatch.style.background);
+
+          if (architect.objectives.currentStage === 4) {
+            architect.objectives.advance(5);
+          }
         });
       });
 
-      // 6.5 Deploy Custom Supercar to Test Track
+      // 7. Deploy Custom Supercar to Test Track
       window.deployToTestTrack = function() {
-        console.log('[Hub] Deploying custom supercar to test track:', {
+        console.log('[AdventureHub] Deploying customized vehicle to Test Track:', {
           paint: currentPaint,
           paintName: currentPaintName,
           underglow: currentGlow,
           glowName: currentGlowName
         });
 
-        // Save customized vehicle config to localStorage for Driving.html / game_core.js
         try {
           const config = {
             paint: currentPaint,
@@ -739,64 +819,55 @@
           };
           localStorage.setItem('traffic_player_car', JSON.stringify(config));
         } catch (err) {
-          console.warn('[Hub] Failed to store traffic_player_car:', err);
+          console.warn('[AdventureHub] Failed to save config to localStorage:', err);
         }
 
-        // Show departure transition modal
         const modal = document.getElementById('deploy-modal');
         const modalDesc = document.getElementById('deploy-modal-desc');
         if (modalDesc) {
           modalDesc.innerHTML = `Deploying your <strong>${currentPaintName}</strong> Apex GT-V10 with <strong>${currentGlowName}</strong> Neon Underglow directly onto the Mumbai Test Track...`;
         }
-        if (modal) {
-          modal.style.display = 'flex';
-        }
+        if (modal) modal.style.display = 'flex';
 
         window.toast('🏁 Rolling out to Test Track...', '#10b981', 2500);
 
-        // Smooth transport transition
         setTimeout(() => {
           window.location.href = 'Driving.html?mode=car&customCar=1';
         }, 1200);
       };
 
-      // 7. Window Resize Handler
+      // 8. Window Resize Handler
       window.addEventListener('resize', () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
       });
 
-      // 8. Animation & Render Loop
+      // 9. Animation & Render Loop
+      const customizerPanel = document.getElementById('garage-customizer');
       let clock = new THREE.Clock();
+
       function animate() {
         requestAnimationFrame(animate);
         const delta = clock.getDelta();
 
         architect.update(delta, camera);
 
-        // Detect which room player is currently standing in dynamically
-        const px = architect.playerPos.x;
-        const pz = architect.playerPos.z;
-        let curRoom = 'lobby';
-        if (pz < -24) curRoom = 'outside';
-        else if (px < 0 && pz < -10) curRoom = 'classroom';
-        else if (px >= 0 && pz < -10) curRoom = 'control';
-        else if (px >= 0 && pz >= -10) curRoom = 'garage';
-
-        if (architect._activeRoom !== curRoom) {
-          architect._activeRoom = curRoom;
-          tabs.forEach(t => {
-            t.classList.toggle('active', t.dataset.room === curRoom);
-          });
-          customizerPanel.style.display = (curRoom === 'garage') ? 'block' : 'none';
+        // Proximity detection for Apex Garage (X: 45, Z: 0)
+        const distToGarage = architect.playerPos.distanceTo(new THREE.Vector3(45, 1, 0));
+        const shouldShowCustomizer = distToGarage < 14;
+        if (customizerPanel) {
+          customizerPanel.style.display = shouldShowCustomizer ? 'block' : 'none';
         }
 
         renderer.render(scene, camera);
       }
       animate();
 
-      window.toast('👋 Welcome to Mumbai Traffic Academy HQ! Explore the rooms.', '#14b8a6', 4000);
+      window.toast('🗝️ Objective 1: Find the Front Door Key in the House!', '#fbbf24', 4500);
+
+      // Expose architect on window for testing
+      window.architect = architect;
     })();
   </script>
 </body>

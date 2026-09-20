@@ -1,0 +1,276 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   mobile-perf.css — Kill expensive GPU effects on mobile for 60fps
+   Loaded LAST to override everything else.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. NUKE backdrop-filter on non-iPhone mobile for 60fps ─────────────
+   iPhones have dedicated CoreAnimation hardware for real-time glass shaders.
+   Android and other devices use clean solid/matte UI to prevent any frame drops. ── */
+@media (max-width: 768px) {
+  html:not(.is-iphone) .top-nav,
+  html:not(.is-iphone) .top-nav::before,
+  html:not(.is-iphone) .orrery-dock,
+  html:not(.is-iphone) .node-inspector,
+  html:not(.is-iphone) .col-bottom-bar,
+  html:not(.is-iphone) .hud-group,
+  html:not(.is-iphone) .mo .md,
+  html:not(.is-iphone) .dropdown-content-inner,
+  html:not(.is-iphone) .stage-hint,
+  html:not(.is-iphone) #ntip-inner,
+  html:not(.is-iphone) .toast,
+  html:not(.is-iphone) .nav-links,
+  html:not(.is-iphone) .mmb,
+  html:not(.is-iphone) .sf {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* Replace blur with simple solid-ish backgrounds for non-iPhone devices */
+  html:not(.is-iphone) .top-nav {
+    background: rgba(7, 10, 20, 0.94) !important;
+  }
+  html:not(.is-iphone) .top-nav::before {
+    display: none !important;
+  }
+  html:not(.is-iphone) .orrery-dock {
+    background: rgba(10, 14, 26, 0.94) !important;
+  }
+  html:not(.is-iphone) .node-inspector {
+    background: rgba(10, 14, 26, 0.96) !important;
+  }
+  html:not(.is-iphone) .col-bottom-bar {
+    background: rgba(17, 24, 39, 0.96) !important;
+  }
+  html:not(.is-iphone) .dropdown-content-inner {
+    background: rgba(17, 24, 39, 0.96) !important;
+  }
+  html:not(.is-iphone) .mo .md {
+    background: rgba(11, 16, 26, 0.98) !important;
+  }
+  html:not(.is-iphone) .nav-links {
+    background: #070a14 !important;
+  }
+  html:not(.is-iphone) .mmb {
+    background: rgba(17, 24, 39, 0.95) !important;
+  }
+  html:not(.is-iphone) .sf {
+    background: rgba(7, 10, 20, 0.95) !important;
+  }
+
+  /* Light mode equivalents for non-iPhone */
+  html:not(.is-iphone) body.lm .top-nav {
+    background: rgba(243, 242, 235, 0.96) !important;
+  }
+  html:not(.is-iphone) body.lm .orrery-dock {
+    background: rgba(243, 242, 235, 0.96) !important;
+  }
+  html:not(.is-iphone) body.lm .col-bottom-bar {
+    background: rgba(243, 242, 235, 0.96) !important;
+  }
+  html:not(.is-iphone) body.lm .dropdown-content-inner {
+    background: rgba(255, 255, 255, 0.96) !important;
+  }
+  html:not(.is-iphone) body.lm .nav-links {
+    background: #f3f2eb !important;
+  }
+  html:not(.is-iphone) body.lm .mmb {
+    background: rgba(255, 255, 255, 0.95) !important;
+  }
+  html:not(.is-iphone) body.lm .sf {
+    background: rgba(243, 242, 235, 0.95) !important;
+  }
+}
+
+/* ── 2. Disable CSS animations that burn GPU on mobile ─────────────────── */
+@media (max-width: 768px) {
+  /* Kill the QR cell animation entirely */
+  .qm2 {
+    animation: none !important;
+  }
+  .qb {
+    display: none !important;
+  }
+
+  /* Kill the RPG orbit dots */
+  .rob {
+    animation: none !important;
+    opacity: 0.6 !important;
+  }
+
+  /* Kill the scan line on ATI showcase */
+  .scanline {
+    display: none !important;
+  }
+
+  /* Kill the typing cursor blink — it's a layout trigger */
+  .cursor-blink {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+
+  /* Kill the hero subtitle flicker */
+  .game-hero h1 {
+    animation: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Kill the cyber pulse on icon wrappers */
+  .icon-wrapper {
+    animation: none !important;
+  }
+
+  /* Kill the stage hint pulse */
+  .sh-dot {
+    animation: none !important;
+  }
+
+  /* Kill the hero scroll line animation */
+  .scl::after {
+    animation: none !important;
+  }
+}
+
+/* ── 3. Reduce box-shadow complexity on mobile ──────────────────────────── */
+@media (max-width: 768px) {
+  .pc,
+  .vp-card,
+  .feature-card {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  .pc:hover,
+  .vp-card:hover,
+  .feature-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  /* Simplify nav shadows */
+  .top-nav {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+  }
+
+  /* Simplify bottom bar */
+  .col-bottom-bar {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+  }
+  .nav-links {
+    box-shadow: none !important;
+  }
+  .mmb {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+  }
+}
+
+/* ── 4. GPU compositing hints for mobile ────────────────────────────────── */
+@media (max-width: 768px) {
+  .top-nav {
+    will-change: transform;
+    transform: translateZ(0);
+  }
+
+  .col-bottom-bar {
+    will-change: transform;
+  }
+
+  .nav-links {
+    will-change: transform;
+    transform: translateZ(0);
+  }
+
+  .pc,
+  .vp-card {
+    will-change: transform;
+    transform: translateZ(0);
+  }
+
+  /* Prevent layout thrash on card hover */
+  .pc {
+    contain: layout style;
+  }
+}
+
+/* ── 5. Reduce animation duration / complexity ──────────────────────────── */
+@media (max-width: 768px) {
+  /* Shorter transitions = less GPU work per frame */
+  .pc {
+    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+  }
+
+  .pc .pv img {
+    transition: opacity 0.2s ease !important;
+    transform: none !important;
+  }
+
+  /* Disable image scale on hover (causes repaint) */
+  .pc:hover .pv img {
+    transform: none !important;
+  }
+
+  /* Simpler card reveals */
+  .rv {
+    transition: opacity 0.4s ease !important;
+    transform: none !important;
+  }
+
+  .rv.vis {
+    opacity: 1 !important;
+  }
+}
+
+/* ── 6. Font loading optimization ───────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Use system fonts on mobile to avoid font swap jank */
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important;
+  }
+
+  /* Only load Space Mono for code elements */
+  code, pre, .mono, .fb, .sey, .hey, .pn, .tag, .plink, .brand-name {
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace !important;
+  }
+}
+
+/* ── 7. Disable Liquid Glass on mobile (it uses backdrop-filter) ────────── */
+@media (max-width: 768px) {
+  .is-iphone .top-nav,
+  .is-iphone .orrery-dock,
+  .is-iphone .node-inspector,
+  .is-iphone .col-bottom-bar,
+  .is-iphone .mo .md,
+  .is-iphone .hud-group {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* Keep the solid glass look but kill the blur */
+  .is-iphone .top-nav::after,
+  .is-iphone .orrery-dock::after,
+  .is-iphone .node-inspector::after,
+  .is-iphone .col-bottom-bar::after {
+    display: none !important;
+  }
+}
+
+/* ── 8. Reduce paint complexity ─────────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Remove gradients that cause repaints */
+  .pc::before {
+    display: none !important;
+  }
+
+  /* Simplify the hero vignette */
+  .hvig,
+  .hvigb {
+    display: none !important;
+  }
+
+  /* Remove the grid overlay on cards */
+  .gg {
+    opacity: 0.1 !important;
+  }
+
+  /* Remove the star field on RPG cards */
+  .rc {
+    opacity: 0.3 !important;
+  }
+}

@@ -49,7 +49,8 @@
     <!-- dns-prefetch for Three.js CDN so DNS resolves before script is needed -->
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
     <!-- font-display=swap prevents FOIT (invisible text) during font load → better LCP -->
-    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" /></noscript>
     <style>
       *,
       *::before,
@@ -132,7 +133,7 @@
         font-size: 0.72rem;
         letter-spacing: 0.42em;
         color: var(--dim);
-        text-transform: uppercase;
+        text-transform: capitalize;
       }
       .lid span {
         color: var(--signal);
@@ -209,7 +210,7 @@
         padding: 14px 32px;
         background: var(--nav);
         border-bottom: 1px solid var(--line);
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         gap: 14px;
         transition:
           background 0.5s var(--ease),
@@ -225,8 +226,9 @@
         content: '';
         position: absolute;
         inset: 0;
-        backdrop-filter: blur(18px) saturate(1.4);
-        -webkit-backdrop-filter: blur(18px) saturate(1.4);
+        /* Reduced blur from 18px to 12px — saves ~15% compositor cost */
+        backdrop-filter: blur(12px) saturate(1.2);
+        -webkit-backdrop-filter: blur(12px) saturate(1.2);
         z-index: -1;
         pointer-events: none;
       }
@@ -238,6 +240,7 @@
         display: flex;
         align-items: center;
         gap: 13px;
+        flex-shrink: 0;
       }
       .brand-logo {
         height: 28px;
@@ -252,14 +255,14 @@
         font-size: 0.78rem;
         font-weight: 700;
         letter-spacing: 0.24em;
-        text-transform: uppercase;
+        text-transform: capitalize;
         color: var(--ink);
       }
       .nav-links {
         display: flex;
-        gap: 18px;
+        gap: 14px;
         align-items: center;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
       }
       .nav-link {
         color: var(--dim);
@@ -304,6 +307,8 @@
         box-shadow: 0 12px 28px -10px var(--signal);
       }
       .desktop-dl {
+        flex-shrink: 0;
+        white-space: nowrap;
       }
       .mobile-dl {
         display: none;
@@ -337,48 +342,51 @@
       .dropdown.active .darr {
         transform: rotate(180deg);
       }
-      .dropdown-content {
-        position: absolute;
-        top: calc(100% + 14px);
-        left: 50%;
-        transform: translateX(-50%) translateY(6px);
-        min-width: 225px;
-        z-index: 1001;
-        opacity: 0;
-        visibility: hidden;
-        pointer-events: none;
-        transition:
-          opacity 0.28s var(--ease),
-          transform 0.28s var(--ease),
-          visibility 0s linear 0.32s;
-      }
-      .dropdown.active .dropdown-content {
-        opacity: 1;
-        visibility: visible;
-        pointer-events: auto;
-        transform: translateX(-50%) translateY(0);
-        transition-delay: 0s;
-      }
-      .dropdown-content-inner {
-        background: var(--panel);
-        border: 1px solid var(--lineb);
-        border-radius: 14px;
-        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.55);
-        padding: 8px;
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-      }
-      .dropdown-content a {
-        color: var(--dim);
-        padding: 11px 14px;
-        font-size: 0.88rem;
-        font-weight: 500;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        transition: 0.2s;
+      @media (min-width: 901px) {
+        .dropdown-content {
+          position: absolute;
+          top: calc(100% + 14px);
+          left: 50%;
+          transform: translateX(-50%) translateY(6px);
+          min-width: 225px;
+          z-index: 1001;
+          opacity: 0;
+          visibility: hidden;
+          pointer-events: none;
+          transition:
+            opacity 0.28s var(--ease),
+            transform 0.28s var(--ease),
+            visibility 0s linear 0.32s;
+        }
+        .dropdown.active .dropdown-content {
+          opacity: 1;
+          visibility: visible;
+          pointer-events: auto;
+          transform: translateX(-50%) translateY(0);
+          transition-delay: 0s;
+        }
+        .dropdown-content-inner {
+          background: var(--panel);
+          border: 1px solid var(--lineb);
+          border-radius: 14px;
+          box-shadow: 0 30px 60px rgba(0, 0, 0, 0.55);
+          padding: 8px;
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+        .dropdown-content a {
+          color: var(--dim);
+          padding: 11px 14px;
+          font-size: 0.88rem;
+          font-weight: 500;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: flex-start;
+          gap: 12px;
+          transition: 0.2s;
+        }
       }
       .dropdown-content a:hover {
         background: rgba(255, 255, 255, 0.07);
@@ -396,7 +404,7 @@
         font-size: 0.7rem;
         font-weight: 700;
         color: var(--dim);
-        text-transform: uppercase;
+        text-transform: capitalize;
         letter-spacing: 0.07em;
         min-width: 32px;
       }
@@ -620,8 +628,9 @@
         align-items: center;
         gap: 10px;
         background: rgba(10, 14, 26, 0.82);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
+        /* Reduced blur from 20px to 10px — saves compositor cost */
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
         border: 1px solid var(--lineb);
         border-radius: 40px;
         padding: 6px 10px;
@@ -686,8 +695,9 @@
         width: 380px;
         max-width: calc(100vw - 32px);
         background: rgba(10, 14, 26, 0.9);
-        backdrop-filter: blur(24px);
-        -webkit-backdrop-filter: blur(24px);
+        /* Reduced blur from 24px to 12px — major compositor savings */
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
         border: 1px solid var(--lineb);
         border-radius: 22px;
         padding: 24px;
@@ -732,7 +742,7 @@
         font-family: var(--mono);
         font-size: 0.65rem;
         letter-spacing: 0.08em;
-        text-transform: uppercase;
+        text-transform: capitalize;
         color: var(--signal);
         margin-bottom: 4px;
       }
@@ -753,6 +763,12 @@
         padding: 2px 6px;
         border-radius: 8px;
         transition: color 0.2s, background 0.2s;
+      }
+      @media (pointer: coarse) {
+        .ni-close {
+          min-width: 44px;
+          min-height: 44px;
+        }
       }
       .ni-close:hover {
         color: var(--ink);
@@ -1014,7 +1030,7 @@
         font-size: 0.7rem;
         letter-spacing: 0.4em;
         color: var(--signal);
-        text-transform: uppercase;
+        text-transform: capitalize;
         margin-bottom: 30px;
         display: inline-flex;
         align-items: center;
@@ -1122,7 +1138,7 @@
         font-size: 0.68rem;
         letter-spacing: 0.34em;
         color: var(--dim);
-        text-transform: uppercase;
+        text-transform: capitalize;
         opacity: 0;
         animation: fi 1s var(--ease) 2.1s forwards;
       }
@@ -1165,7 +1181,7 @@
         text-align: right;
         line-height: 2;
         letter-spacing: 0.05em;
-        text-transform: uppercase;
+        text-transform: capitalize;
         opacity: 0;
         animation: fi 1s var(--ease) 2.1s forwards;
       }
@@ -1212,7 +1228,7 @@
         font-family: 'Space Mono', monospace;
         font-size: 0.65rem;
         letter-spacing: 0.2em;
-        text-transform: uppercase;
+        text-transform: capitalize;
         color: var(--ink);
         white-space: nowrap;
       }
@@ -1290,7 +1306,7 @@
         font-size: 0.7rem;
         letter-spacing: 0.36em;
         color: var(--signal);
-        text-transform: uppercase;
+        text-transform: capitalize;
         margin-bottom: 14px;
         display: flex;
         align-items: center;
@@ -1383,6 +1399,16 @@
       .pc:hover {
         border-color: var(--lineb);
         transform: translateY(-11px);
+      }
+      /* Hover effects only make sense with a fine pointer; on touch they fire
+         on tap and then stick. Also caps the image-scale transition repaints. */
+      @media (pointer: coarse) {
+        .pc:hover {
+          transform: none;
+        }
+        .pc:hover .pv img {
+          transform: none;
+        }
       }
       .pc.ci:hover {
         box-shadow: 0 28px 60px -20px rgba(94, 212, 245, 0.22);
@@ -1699,7 +1725,7 @@
         font-size: 0.62rem;
         font-weight: 700;
         letter-spacing: 0.12em;
-        text-transform: uppercase;
+        text-transform: capitalize;
         color: var(--dim);
         padding: 5px 10px;
         border-radius: 6px;
@@ -1715,7 +1741,7 @@
         font-size: 0.7rem;
         font-weight: 700;
         letter-spacing: 0.1em;
-        text-transform: uppercase;
+        text-transform: capitalize;
         color: var(--dim);
         display: flex;
         align-items: center;
@@ -1741,7 +1767,7 @@
         font-size: 0.63rem;
         font-weight: 700;
         letter-spacing: 0.12em;
-        text-transform: uppercase;
+        text-transform: capitalize;
         padding: 5px 11px;
         border-radius: 6px;
       }
@@ -1792,7 +1818,7 @@
         font-family: var(--mono);
         font-size: 0.7rem;
         letter-spacing: 0.28em;
-        text-transform: uppercase;
+        text-transform: capitalize;
         color: var(--dim);
       }
       .fb span {
@@ -1870,7 +1896,7 @@
         font-size: 0.7rem;
         font-weight: 700;
         color: var(--dim);
-        text-transform: uppercase;
+        text-transform: capitalize;
         letter-spacing: 0.08em;
         display: block;
         margin-bottom: 8px;
@@ -2002,7 +2028,7 @@
       }
       @media (max-width: 768px) {
         .hc {
-          padding: calc(env(safe-area-inset-top, 0px) + 130px) 20px 40px;
+          padding: calc(env(safe-area-inset-top, 0px) + 100px) 20px 40px;
         }
         .hst {
           display: none;
@@ -2028,9 +2054,13 @@
         .pc.feat,
         .pc:not(.feat) {
           grid-column: 1;
-          padding: 24px 20px;
+          padding: 0;
           background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
           border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        /* Remove 3D tilt on mobile — it causes jank on touch */
+        .pc:hover {
+          transform: none !important;
         }
         .vp-grid {
           grid-template-columns: 1fr;
@@ -2056,8 +2086,8 @@
           font-size: 1.4rem;
         }
         .hero h1 {
-          font-size: 2.8rem;
-          line-height: 1.1;
+          font-size: clamp(2.2rem, 9vw, 3rem);
+          line-height: 1.08;
         }
         .hey {
           margin-bottom: 20px;
@@ -2103,27 +2133,107 @@
         .nav-login-btn {
           margin-top: 10px;
         }
+        /* Hide heavy animated elements on mobile for perf */
+        .gsc, .qb, .rc, .rg {
+          display: none !important;
+        }
       }
       @media (max-width: 480px) {
         .hero h1 {
-          font-size: 2.4rem;
+          font-size: clamp(1.9rem, 8vw, 2.6rem);
+        }
+        .hlede {
+          font-size: 0.92rem !important;
+          line-height: 1.65 !important;
         }
         .hcta {
-          flex-direction: row;
-          flex-wrap: wrap;
-          justify-content: center;
-          gap: 12px;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 10px;
         }
-        .btn-p,
-        .btn-g {
+        .hcta .btn-p {
+          grid-column: 1 / -1;
           justify-content: center;
-          width: auto !important;
-          flex: 0 1 auto;
+          width: 100% !important;
+          min-height: 46px;
+          padding: 12px 20px !important;
+          font-size: 0.88rem !important;
         }
+        .hcta .btn-g:not(.mobile-dl) {
+          justify-content: center;
+          width: 100% !important;
+          min-height: 46px;
+          padding: 10px 10px !important;
+          font-size: 0.84rem !important;
+          text-align: center;
+        }
+        .hcta .mobile-dl {
+          grid-column: 1 / -1;
+          justify-content: center;
+          width: 100% !important;
+          min-height: 46px;
+          padding: 12px 16px !important;
+          font-size: 0.88rem !important;
+        }
+        /* Reduce card preview height on small phones */
+        .pv {
+          height: 180px;
+        }
+        .pc.feat .pv {
+          height: 220px;
+        }
+      }
+      /* ── MOBILE PERF: kill expensive GPU effects on non-iPhone ── */
+      @media (max-width: 768px) {
+        /* Kill all backdrop-filter blur on non-iPhone mobile */
+        html:not(.is-iphone) .top-nav, html:not(.is-iphone) .top-nav::before, html:not(.is-iphone) .orrery-dock, html:not(.is-iphone) .node-inspector,
+        html:not(.is-iphone) .col-bottom-bar, html:not(.is-iphone) .hud-group, html:not(.is-iphone) .mo .md, html:not(.is-iphone) .dropdown-content-inner,
+        html:not(.is-iphone) .stage-hint, html:not(.is-iphone) .toast {
+          backdrop-filter: none !important;
+          -webkit-backdrop-filter: none !important;
+        }
+        html:not(.is-iphone) .top-nav { background: rgba(7,10,20,0.94) !important; }
+        html:not(.is-iphone) .top-nav::before { display: none !important; }
+        html:not(.is-iphone) .orrery-dock { background: rgba(10,14,26,0.94) !important; }
+        html:not(.is-iphone) .node-inspector { background: rgba(10,14,26,0.96) !important; }
+        html:not(.is-iphone) .col-bottom-bar { background: rgba(17,24,39,0.96) !important; }
+        html:not(.is-iphone) .dropdown-content-inner { background: rgba(17,24,39,0.96) !important; }
+        html:not(.is-iphone) body.lm .top-nav { background: rgba(243,242,235,0.96) !important; }
+        html:not(.is-iphone) body.lm .orrery-dock { background: rgba(243,242,235,0.96) !important; }
+        html:not(.is-iphone) body.lm .col-bottom-bar { background: rgba(243,242,235,0.96) !important; }
+        /* Kill QR animation */
+        .qm2 { animation: none !important; }
+        .qb { display: none !important; }
+        /* Kill RPG dots */
+        .rob { animation: none !important; opacity: 0.6 !important; }
+        /* Kill hero vignette overlays */
+        .hvig, .hvigb { display: none !important; }
+        /* Kill grid overlay on cards */
+        .gg { opacity: 0.1 !important; }
+        /* Kill star field */
+        .rc { opacity: 0.3 !important; }
+        /* Kill scan line */
+        .gsc { display: none !important; }
+        /* Simplify card transitions */
+        .pc { transition: border-color 0.2s ease, box-shadow 0.2s ease !important; }
+        .pc .pv img { transition: opacity 0.2s ease !important; transform: none !important; }
+        .pc:hover .pv img { transform: none !important; }
+        /* Simplify card shadows */
+        .pc, .vp-card { box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important; }
+        /* GPU hints */
+        .top-nav, .nav-links { will-change: transform; transform: translateZ(0); }
+        .col-bottom-bar { will-change: transform; }
+        .pc { contain: layout style; }
+        /* Use system font to avoid font swap jank */
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important; }
       }
     </style>
     <script defer src="col-router.js"></script>
     <link rel="stylesheet" href="col-ui.css?v=1782446126.5715783" />
+    <link rel="stylesheet" href="col-mobile.css" />
+    <link rel="stylesheet" href="liquid-glass.css" />
+    <link rel="stylesheet" href="mobile-perf.css" />
+    <script defer src="pull-refresh.js"></script>
     <script defer src="col-ui.js"></script>
     <script defer src="col-auth.js"></script>
     <link rel="manifest" href="manifest.json" />
@@ -2182,6 +2292,11 @@
           ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" /></svg
           >Sneh Asha</a
+        >
+        <a href="making" class="nav-link"
+          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg
+          >Making</a
         >
         <div class="dropdown" id="projDD" onclick="this.classList.toggle('active')">
           <button class="dropdown-btn">
@@ -2279,8 +2394,8 @@
         <div class="hey">Mumbai &middot; India &middot; Est.&nbsp;2024</div>
         <h1>Engineering The <em>Future</em> Of Interactive Learning.</h1>
         <p class="hlede">
-          A working portfolio of programming logic, machine vision, and deep-space physics engines &mdash; built by three students from Mumbai, designed for the world. We build tools that make complex
-          computer science concepts accessible, engaging, and performant.
+          A working portfolio of programming logic, machine vision, and deep-space physics engines &mdash; built by three students from Mumbai. We build tools that make complex computer science concepts
+          click for anyone willing to try.
         </p>
         <div class="hcta">
           <a href="#projects" class="btn-p"
@@ -2295,7 +2410,7 @@
 
       <!-- Planetary Quick-Focus Dock -->
       <nav class="orrery-dock" id="orreryDock" aria-label="Quick Focus Project Dock">
-        <div class="dock-label">ENGINES</div>
+        <div class="dock-label">Engines</div>
         <div class="dock-chips">
           <button class="dock-chip active" data-node="core" style="--chip-glow: var(--signal)">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10"/></svg><span class="dock-name">Core</span>
@@ -2332,10 +2447,10 @@
           <button class="ni-close" id="niCloseBtn" aria-label="Close Inspector">&times;</button>
         </div>
         <div class="ni-telemetry" id="niTelemetry">
-          <div class="ni-tele-cell"><span class="ni-tele-k">STATUS</span><span class="ni-tele-v" id="niTeleStatus">ONLINE</span></div>
-          <div class="ni-tele-cell"><span class="ni-tele-k">ENGINE</span><span class="ni-tele-v" id="niTeleEngine">THREE.JS / WEBGL</span></div>
-          <div class="ni-tele-cell"><span class="ni-tele-k">ORBIT</span><span class="ni-tele-v" id="niTeleOrbit">R=20 AU</span></div>
-          <div class="ni-tele-cell"><span class="ni-tele-k">FPS</span><span class="ni-tele-v" id="niTeleFps">60 STABLE</span></div>
+          <div class="ni-tele-cell"><span class="ni-tele-k">Status</span><span class="ni-tele-v" id="niTeleStatus">Online</span></div>
+          <div class="ni-tele-cell"><span class="ni-tele-k">Engine</span><span class="ni-tele-v" id="niTeleEngine">Three.js / WebGL</span></div>
+          <div class="ni-tele-cell"><span class="ni-tele-k">Orbit</span><span class="ni-tele-v" id="niTeleOrbit">R=20 AU</span></div>
+          <div class="ni-tele-cell"><span class="ni-tele-k">FPS</span><span class="ni-tele-v" id="niTeleFps">60 Stable</span></div>
         </div>
         <p class="ni-desc" id="niDesc">
           An authentic Mumbai city driving simulator featuring procedurally controlled intersections, real-time traffic signal logic, pedestrians, and dynamic camera angles.
@@ -2369,20 +2484,20 @@
         <div class="scl"></div>
       </div>
       <div class="hst">
-        <div><b>PROJECTS</b> &mdash; 06</div>
-        <div><b>TEAM</b> &mdash; 06</div>
-        <div><b>BASE</b> &mdash; Mumbai</div>
+        <div><b>Projects</b> &mdash; 06</div>
+        <div><b>Team</b> &mdash; 06</div>
+        <div><b>Base</b> &mdash; Mumbai</div>
       </div>
     </section>
 
-    <section class="vp-section">
+    <section class="vp-section" style="content-visibility:auto; contain-intrinsic-size: 0 600px">
       <div class="vp-grid">
         <div class="vp-card rv">
           <div class="vp-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
           </div>
           <h3 class="vp-title">Performance First</h3>
-          <p class="vp-desc">Our tools are built natively without bulky frameworks, ensuring lightning-fast load times and seamless cross-device compatibility.</p>
+          <p class="vp-desc">Our tools are built natively without bulky frameworks, keeping load times fast across every device.</p>
         </div>
         <div class="vp-card rv">
           <div class="vp-icon">
@@ -2396,26 +2511,26 @@
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
           </div>
           <h3 class="vp-title">Open &amp; Accessible</h3>
-          <p class="vp-desc">Education should have zero barriers. Everything we build is free to access and meticulously designed for the global community.</p>
+          <p class="vp-desc">Education should have zero barriers. Everything we build is free to access and works for anyone, anywhere.</p>
         </div>
       </div>
     </section>
 
-    <section class="ps" id="projects">
+    <section class="ps" id="projects" style="content-visibility:auto; contain-intrinsic-size: 0 1200px">
       <div class="sh">
         <div>
           <div class="sey">Portfolio</div>
           <h2 class="st">Six Tools.<br />One Studio.</h2>
         </div>
         <p class="ssb">
-          Each project is a standalone engine &mdash; a focused exploration of a specific domain of computer science and interactive design, engineered from scratch to push the boundaries of what web
-          applications can do.
+          Each project is a standalone engine &mdash; a focused exploration of a specific domain of computer science and interactive design, engineered from scratch to show what web
+          applications can really do.
         </p>
       </div>
       <div class="pgrid">
         <a href="solar" class="pc ci feat" data-delay="0"
           ><div class="badge bflag">Co-Flagship</div>
-          <div class="pv"><img src="solar.webp" alt="Solar System Engine" width="900" height="500" loading="eager" decoding="async" /></div>
+          <div class="pv"><img src="solar.webp" alt="Solar System Engine" width="900" height="500" loading="lazy" decoding="async" /></div>
           <div class="pb">
             <div class="pn">01 &mdash; Physics Engine</div>
             <h3 class="pname">Solar System Engine V3.3</h3>
@@ -2432,7 +2547,7 @@
         ></a>
         <a href="ati" class="pc cs feat" data-delay="80"
           ><div class="badge bflag">Co-Flagship</div>
-          <div class="pv"><img src="ATI 1.png" alt="Advanced Typing Instructor" width="900" height="500" loading="eager" decoding="async" /></div>
+          <div class="pv"><img src="ATI 1.png" alt="Advanced Typing Instructor" width="900" height="500" loading="lazy" decoding="async" /></div>
           <div class="pb">
             <div class="pn">02 &mdash; Learning Platform</div>
             <h3 class="pname">Advanced Typing Instructor</h3>
@@ -2481,7 +2596,7 @@
             <div class="pn">04</div>
             <h3 class="pname">QR Studio Matrix</h3>
             <p class="pdesc">
-              Next-generation static &amp; dynamic QR engine with cloud redirection, real-time scan analytics, custom geometric styles, logo embedding, camera scanner, and bulk generation.
+              Static &amp; dynamic QR engine with cloud redirection, real-time scan analytics, custom geometric styles, logo embedding, camera scanner, and bulk generation.
             </p>
           </div>
           <div class="pf">
@@ -3248,7 +3363,7 @@
       } /* Remove dark gradient overlay on images in light mode */
     </style>
 
-    <section class="ps" id="educational" style="padding-top: 40px">
+    <section class="ps" id="educational" style="content-visibility:auto; contain-intrinsic-size: 0 600px; padding-top: 40px">
       <div class="sh">
         <div>
           <div class="sey">Educational</div>
@@ -3273,7 +3388,7 @@
           <div class="pb">
             <div class="pn">01 &mdash; Guide</div>
             <h3 class="pname">The Career</h3>
-            <p class="pdesc">Discover your ideal career path with immersive exploration across professional domains.</p>
+            <p class="pdesc">Find your ideal career path with guided breakdowns of what different tech roles actually look like.</p>
           </div>
           <div class="pf">
             <div class="ptags"><span class="tag">Educational</span><span class="tag">Career</span></div>
@@ -3377,10 +3492,10 @@
       </div>
     </section>
 
-<footer class="sf">
+<footer class="sf" style="content-visibility:auto; contain-intrinsic-size: 0 200px">
       <div class="fi">
         <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
-        <div class="fl"><a href="privacy">Privacy</a><a href="terms">Terms</a><a href="feedback">Feedback</a><a href="download">Downloads</a></div>
+        <div class="fl"><a href="making">Making</a><a href="privacy">Privacy</a><a href="terms">Terms</a><a href="feedback">Feedback</a><a href="download">Downloads</a></div>
         <div class="fc">&copy; 2026 Neel, Ansh, Aarush & Yash Raj.</div>
       </div>
     </footer>
@@ -3446,28 +3561,34 @@
       })()
 
       // 3D tilt on card hover — rAF-throttled so getBoundingClientRect and style
-      // mutations only run once per frame (max 60/s) instead of on every mouse event
-      document.querySelectorAll('.pc').forEach(function (card) {
-        var _rafId = null, _ex = 0, _ey = 0
-        card.addEventListener('mousemove', function (e) {
-          if (innerWidth < 768) return
-          _ex = e.clientX; _ey = e.clientY
-          if (_rafId) return
-          _rafId = requestAnimationFrame(function () {
-            _rafId = null
-            var r = card.getBoundingClientRect()
-            var x = (_ex - r.left) / r.width - 0.5
-            var y = (_ey - r.top) / r.height - 0.5
-            card.style.transform = 'translateY(-11px) perspective(900px) rotateX(' + (-y * 5) + 'deg) rotateY(' + (x * 5) + 'deg)'
+      // mutations only run once per frame (max 60/s) instead of on every mouse event.
+      // Disabled entirely on touch devices and narrow viewports to avoid jank.
+      if (innerWidth >= 768 && !window.matchMedia('(pointer: coarse)').matches) {
+        document.querySelectorAll('.pc').forEach(function (card) {
+          var _rafId = null, _ex = 0, _ey = 0, _rect = null
+          card.addEventListener('mouseenter', function () {
+            _rect = card.getBoundingClientRect()
+          }, { passive: true })
+          card.addEventListener('mousemove', function (e) {
+            _ex = e.clientX; _ey = e.clientY
+            if (_rafId) return
+            _rafId = requestAnimationFrame(function () {
+              _rafId = null
+              if (!_rect) _rect = card.getBoundingClientRect()
+              var x = (_ex - _rect.left) / _rect.width - 0.5
+              var y = (_ey - _rect.top) / _rect.height - 0.5
+              card.style.transform = 'translateY(-8px) perspective(900px) rotateX(' + (-y * 4) + 'deg) rotateY(' + (x * 4) + 'deg)'
+            })
+          }, { passive: true })
+          card.addEventListener('mouseleave', function () {
+            if (_rafId) { cancelAnimationFrame(_rafId); _rafId = null }
+            _rect = null
+            card.style.transform = ''
           })
-        }, { passive: true })
-        card.addEventListener('mouseleave', function () {
-          if (_rafId) { cancelAnimationFrame(_rafId); _rafId = null }
-          card.style.transform = ''
         })
-      })
+      }
 
-      // QR art
+      // QR art — throttled to 1200ms to reduce constant style invalidation
       ;(function () {
         var m = document.getElementById('qrm')
         if (!m) return
@@ -3483,7 +3604,7 @@
           if (!cs.length) return
           cs[Math.floor(Math.random() * cs.length)].classList.toggle('on')
           cs[Math.floor(Math.random() * cs.length)].classList.toggle('on')
-        }, 650)
+        }, 1200)
       })()
 
       // Theme
@@ -3867,7 +3988,7 @@
     <script>
     function hzInit(){var t=localStorage.getItem('theme');if(t==='light'){document.body.classList.add('lm')}else{document.body.classList.remove('lm')}hzSync()}
     function hzSync(){var el=document.querySelector('.hz-toggle');if(!el)return;if(document.body.classList.contains('lm')){el.classList.remove('night')}else{el.classList.add('night')}}
-    function hzToggle(){requestAnimationFrame(function(){document.body.classList.toggle('lm');localStorage.setItem('theme',document.body.classList.contains('lm')?'light':'dark');hzSync()})}
+    function hzToggle(){if(navigator.vibrate)navigator.vibrate(8);requestAnimationFrame(function(){document.body.classList.toggle('lm');localStorage.setItem('theme',document.body.classList.contains('lm')?'light':'dark');hzSync()})}
     hzInit()
     </script>
   </body>

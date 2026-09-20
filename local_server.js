@@ -2,7 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT && Number(process.env.PORT) > 0 ? Number(process.env.PORT) : 3000;
 const ROOT_DIR = __dirname;
 
 const MIME_TYPES = {
@@ -87,8 +87,8 @@ const server = http.createServer((req, res) => {
         <body>
           <h1 style="color:#f2b84b;">404 Not Found</h1>
           <p>The requested file does not exist.</p>
-          <a href="/home-zoom" style="color:#5ed4f5;margin-top:16px;">🚀 Open 3D Zoom Live Site</a>
-          <a href="/home" style="color:#8891aa;margin-top:8px;">Open Classic Home</a>
+          <a href="/hub" style="color:#5ed4f5;margin-top:16px;">🚗 Open Tuning Hub</a>
+          <a href="/home" style="color:#8891aa;margin-top:8px;">Open Home</a>
         </body>
       </html>
     `);

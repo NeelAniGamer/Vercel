@@ -39,8 +39,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
+    rel="preload"
     href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap"
-    rel="stylesheet" />
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" /></noscript>
   <style>
     :root {
       --void: #070a14;
@@ -1608,9 +1611,19 @@
         font-size: 2.6rem;
       }
     }
+    /* ── ABOUT MOBILE PERF ── */
+    @media (max-width: 768px) {
+      html:not(.is-iphone) .top-nav { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background: rgba(7,10,20,0.92) !important; }
+      html:not(.is-iphone) .top-nav::before { display: none !important; }
+      body.lm .top-nav { background: rgba(243,242,235,0.95) !important; }
+      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important; }
+    }
   </style>
   <script defer src="col-router.js"></script>
   <link rel="stylesheet" href="col-ui.css?v=1782446126.5715783" />
+    <link rel="stylesheet" href="liquid-glass.css" />
+    <link rel="stylesheet" href="mobile-perf.css" />
+    <script defer src="pull-refresh.js"></script>
   <script defer src="col-ui.js"></script>
   <script defer src="col-auth.js"></script>
   <link rel="manifest" href="manifest.json" />
@@ -1668,6 +1681,10 @@
           <path
             d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
         </svg>Sneh Asha</a>
+      <a href="making" class="nav-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+        </svg>Making</a>
       <div class="dropdown" id="projDD" onclick="this.classList.toggle('active')">
         <button class="dropdown-btn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -1766,8 +1783,8 @@
       <p class="hlede">
         Three passionate students from Mumbai with a shared obsession for programming logic, deep-space physics, and
         interactive design &mdash; building tools the world can learn from. We believe
-        that technology should be accessible, and education should be an engaging journey fueled by curiosity and
-        innovation.
+        that technology should be accessible, and education should be engaging, hands-on, and driven by genuine
+        curiosity.
       </p>
     </div>
     <div class="sci">
@@ -1777,7 +1794,7 @@
   </section>
 
   <!-- ==================== STATS ==================== -->
-  <section class="stats-bar">
+  <section class="stats-bar" style="content-visibility:auto; contain-intrinsic-size: 0 200px">
     <div class="stats-grid">
       <div class="stat rv">
         <div class="stat-num">06</div>
@@ -1799,7 +1816,7 @@
   </section>
 
   <!-- ==================== MENTOR ==================== -->
-  <section class="section mentor-section rv">
+  <section class="section mentor-section rv" style="content-visibility:auto; contain-intrinsic-size: 0 400px">
     <div class="sey">Guided By</div>
     <div class="mentor-card">
       <div class="mentor-avatar">S</div>
@@ -1807,9 +1824,8 @@
         <h2 class="mentor-name">Sanjana Kasbe</h2>
         <div class="mentor-role">Project Mentor &amp; Educator</div>
         <p class="mentor-desc">
-          Providing invaluable guidance, feedback, and academic support to help shape and refine these advanced learning
-          modules and programming projects. Her mentorship drives the studio's ambition
-          to build beyond the classroom.
+          She provides guidance, feedback, and academic support that helps shape and refine these learning
+          modules and programming projects. Her mentorship pushes the studio to build beyond the classroom.
         </p>
       </div>
     </div>
@@ -1829,8 +1845,8 @@
         <p class="tm-bio"
           style="font-size: 0.9rem; color: var(--dim); margin: 15px 0; text-align: left; line-height: 1.6">
           Neel architects the core systems and backend logic. Passionate about low-level programming and algorithmic
-          efficiency, he ensures every module runs smoothly, from complex math calculations
-          to seamless user authentication.
+          efficiency, he makes sure every module runs cleanly, from complex math calculations
+          to user authentication.
         </p>
         <div class="tm-tags">
           <span class="tag">Python</span><span class="tag">C++</span><span class="tag">System Arch</span><span
@@ -1843,8 +1859,8 @@
         <div class="tm-role">Co-Developer &amp; Quality Assurance</div>
         <p class="tm-bio"
           style="font-size: 0.9rem; color: var(--dim); margin: 15px 0; text-align: left; line-height: 1.6">
-          Ansh meticulously tests edge cases and refines user flows. His keen eye for detail ensures high reliability
-          across all projects, acting as the bridge between raw ideas and polished
+          Ansh meticulously tests edge cases and refines user flows. His keen eye for detail keeps everything reliable
+          across all projects, connecting raw ideas to polished
           implementations.
         </p>
         <div class="tm-tags"><span class="tag">HTML / CSS</span><span class="tag">QA Testing</span><span
@@ -1869,8 +1885,7 @@
         <div class="tm-role">QA Tester, UI/UX Designer &amp; Idea Developer</div>
         <p class="tm-bio"
           style="font-size: 0.9rem; color: var(--dim); margin: 15px 0; text-align: left; line-height: 1.6">
-          Yashraj Jadhav specializes in refining user experiences, stress-testing core concepts, and developing new ideas. By bridging the gap between
-          initial ideation and final implementation, he ensures every feature is intuitive and robust.
+          Yashraj Jadhav specializes in refining user experiences, stress-testing core concepts, and developing new ideas. He takes features from early sketches to final implementation, making sure each one is intuitive and reliable.
         </p>
         <div class="tm-tags"><span class="tag">QA Testing</span><span class="tag">UI/UX Design</span><span
             class="tag">Idea Developer</span></div>
@@ -1977,10 +1992,11 @@
   </section>
 
   <!-- ==================== FOOTER ==================== -->
-  <footer class="sf">
+  <footer class="sf" style="content-visibility:auto; contain-intrinsic-size: 0 200px">
     <div class="fi">
       <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
       <div class="fl">
+        <a href="making">The Making</a>
         <a href="privacy">Privacy</a>
         <a href="terms">Terms</a>
         <a href="feedback">Feedback</a>
@@ -2144,7 +2160,7 @@
   <script>
     function hzInit() { var t = localStorage.getItem('theme'); if (t === 'light') { document.body.classList.add('lm') } else { document.body.classList.remove('lm') } hzSync() }
     function hzSync() { var el = document.querySelector('.hz-toggle'); if (!el) return; if (document.body.classList.contains('lm')) { el.classList.remove('night') } else { el.classList.add('night') } }
-    function hzToggle() { document.body.classList.toggle('lm'); localStorage.setItem('theme', document.body.classList.contains('lm') ? 'light' : 'dark'); hzSync() }
+    function hzToggle() { if(navigator.vibrate)navigator.vibrate(8); document.body.classList.toggle('lm'); localStorage.setItem('theme', document.body.classList.contains('lm') ? 'light' : 'dark'); hzSync() }
     hzInit()
   </script>
 </body>

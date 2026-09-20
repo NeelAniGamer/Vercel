@@ -1201,6 +1201,7 @@ body.light-mode #main-menu {
 
 .menu-content {
   max-width: 480px;
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 24px;

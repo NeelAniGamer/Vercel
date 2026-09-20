@@ -7,7 +7,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ATI | Advanced Typing Instructor</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" /></noscript>
     <style>
       /* Force Deep Dark/Cyber Theme for ATI */
       :root,
@@ -1022,17 +1023,84 @@
       }
 
       /* ──── COMPLETE MOBILE RESPONSIVENESS FIXES ──── */
-      @media (max-width: 768px) {
-        /* 1. Floating Top Nav Bar Fix */
+      /* ──── MOBILE CLOSE BUTTON ──── */
+      .mobile-close {
+        display: none;
+      }
+
+      @media (max-width: 900px) {
+        .mmb {
+          display: flex !important;
+          align-items: center;
+          justify-content: center;
+          z-index: 1005;
+          position: fixed !important;
+          top: 20px !important;
+          right: 24px !important;
+          width: 44px !important;
+          height: 44px !important;
+          min-width: 44px !important;
+          min-height: 44px !important;
+          background: rgba(17, 24, 39, 0.7) !important;
+          border: 1px solid var(--border-light) !important;
+          padding: 0 !important;
+          border-radius: 50% !important;
+          backdrop-filter: blur(14px) !important;
+          -webkit-backdrop-filter: blur(14px) !important;
+          cursor: pointer;
+        }
+        .m-line {
+          display: block;
+          width: 20px;
+          height: 2px;
+          background: var(--text-main);
+          border-radius: 2px;
+          transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s;
+          transform-origin: center;
+        }
+        .mmb.active .m-line:nth-child(1) {
+          transform: translateY(7px) rotate(45deg);
+          background: var(--primary);
+        }
+        .mmb.active .m-line:nth-child(2) {
+          opacity: 0;
+          transform: scaleX(0);
+        }
+        .mmb.active .m-line:nth-child(3) {
+          transform: translateY(-7px) rotate(-45deg);
+          background: var(--primary);
+        }
+        .mobile-close {
+          display: flex !important;
+          position: fixed;
+          top: calc(env(safe-area-inset-top, 0px) + 16px);
+          right: 20px;
+          width: 44px;
+          height: 44px;
+          align-items: center;
+          justify-content: center;
+          background: rgba(255, 255, 255, 0.08);
+          border: 1px solid var(--border-light);
+          border-radius: 50%;
+          color: var(--text-main);
+          cursor: pointer;
+          z-index: 1005;
+        }
+        .mobile-close svg {
+          width: 20px;
+          height: 20px;
+          stroke: currentColor;
+        }
         .top-nav {
           position: fixed;
           top: 15px;
-          left: 5%;
-          width: 90%;
-          border-radius: 50px;
-          padding: 12px 20px;
+          left: 15px;
+          right: 15px;
+          width: auto !important;
+          border-radius: 40px;
+          padding: 10px 20px;
           border: 1px solid var(--border-light);
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
           background: var(--nav-bg);
           z-index: 1000;
         }
@@ -1045,54 +1113,27 @@
         .brand-logo {
           height: 24px !important;
         }
-        .mobile-menu-btn {
-          display: block;
-          order: 2;
-          font-size: 1.2rem !important;
-        }
         .desktop-dl {
           display: none;
         }
-
-        /* 2. Hide Menu Links By Default & Show As Floating Box */
-        .nav-links {
-          display: none !important;
-          position: absolute;
-          top: calc(100% + 15px);
-          left: 0;
-          width: 100%;
-          flex-direction: column;
-          align-items: center;
-          padding: 20px;
-          background: var(--card-bg);
-          border: 1px solid var(--border-light);
-          border-radius: 20px;
-          box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
-        }
-        .nav-links.active {
-          display: flex !important;
-        }
-
-        /* Smaller Content Inside Dropdown */
         .nav-link,
         .dropdown-btn,
         .dropdown-content a {
           width: 100%;
           text-align: center;
           justify-content: center;
-          font-size: 0.85rem !important;
-          padding: 8px 0 !important;
+          font-size: 0.95rem !important;
+          padding: 10px 0 !important;
         }
-
         .mobile-dl {
-          display: flex;
+          display: flex !important;
           justify-content: center;
           width: 100%;
           margin-top: 15px;
           font-size: 0.85rem !important;
-          padding: 8px 20px !important;
+          padding: 10px 20px !important;
+          min-height: 44px;
         }
-
         .dropdown-content {
           position: static;
           transform: none !important;
@@ -1106,13 +1147,11 @@
           padding: 0;
           align-items: center;
         }
-
-        /* 3. Fix Project Name Shrinking (Hero Section) */
         .game-hero {
           padding: 130px 15px 60px;
         }
         .game-hero h1 {
-          font-size: 2.2rem;
+          font-size: clamp(1.8rem, 8vw, 2.5rem);
           line-height: 1.2;
           word-wrap: break-word;
         }
@@ -1124,13 +1163,38 @@
         .btn-demo {
           width: 100%;
           justify-content: center;
+          min-height: 48px;
         }
+        .features-grid {
+          grid-template-columns: 1fr;
+          margin: 100px auto 60px;
+          padding: 0 16px;
+        }
+        /* Disable 3D tilt on mobile */
+        .feature-card:hover {
+          transform: none !important;
+        }
+      }
+      /* ── ATI MOBILE PERF ── */
+      @media (max-width: 768px) {
+        .top-nav { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background: rgba(2,6,23,0.95) !important; }
+        .feature-card { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important; }
+        .main-display { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+        .site-footer { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+        .mo { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+        .md { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+        .feature-card::before { display: none !important; }
+        .feature-card:hover { transform: none !important; box-shadow: 0 8px 24px rgba(0,0,0,0.3) !important; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important; }
       }
     </style>
     <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/ati" />
 
     <script defer src="col-router.js"></script>
     <link rel="stylesheet" href="col-ui.css?v=1782446126.5715783" />
+    <link rel="stylesheet" href="liquid-glass.css" />
+    <link rel="stylesheet" href="mobile-perf.css" />
+    <script defer src="pull-refresh.js"></script>
     <script defer src="col-ui.js"></script>
     <script defer src="col-auth.js"></script>
     <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
@@ -1148,12 +1212,8 @@
         <img src="Class.png" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" />
         <span class="brand-name">Class Of Learners</span>
       </a>
-      <button class="mmb" id="mmb">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="3" y1="12" x2="21" y2="12"></line>
-          <line x1="3" y1="6" x2="21" y2="6"></line>
-          <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
+      <button class="mmb" id="mmb" aria-label="Toggle menu">
+        <span class="m-line"></span><span class="m-line"></span><span class="m-line"></span>
       </button>
       <div class="nav-links" id="navLinks">
         <a href="/" class="nav-link">Home</a>
@@ -1192,6 +1252,9 @@
         </div>
         <a href="download" class="nav-dl-btn mobile-dl">Download Hub</a>
       </div>
+      <button class="mobile-close" id="mobileClose" aria-label="Close menu">
+        <svg viewBox="0 0 24 24" fill="none"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" /><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+      </button>
       <a href="download" class="nav-dl-btn desktop-dl">Download Hub</a>
     </nav>
 
@@ -1366,10 +1429,7 @@
       }
 
       window.addEventListener('load', () => {
-        // Initialize new Canvas and Tilt animations
-        resizeCanvas()
-        initParticles()
-        animateParticles()
+        // Initialize Tilt animations (particle canvas removed)
         initTiltEffect()
 
         setTimeout(typeWriter, 400)

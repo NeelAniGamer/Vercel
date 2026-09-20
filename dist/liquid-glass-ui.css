@@ -1,0 +1,301 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   liquid-glass-ui.css — Standard & Apple VisionOS Liquid Glass Design System
+   
+   Tier 1: Standard Glass — High-performance frosted glass for all devices
+   Tier 2: Apple Liquid Glass — Optical refraction, specular tracking & spring bounce
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Apple Kinematics & Springs */
+  --apple-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --apple-liquid-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.35);
+  --apple-ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --apple-squish: cubic-bezier(0.2, 0.9, 0.3, 1);
+
+  /* Optical Defaults */
+  --glass-blur: 26px;
+  --glass-saturate: 190%;
+  --glass-refract-scale: 12px;
+  --light-x: 50%;
+  --light-y: 20%;
+  --glass-sheen-opacity: 0.45;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   1. TIER 1: STANDARD GLASS (Universal, Lightweight & Accessible)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.standard-glass {
+  position: relative;
+  background: rgba(18, 24, 38, 0.72);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 20px;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  color: var(--ink, #f3f4f6);
+  padding: 24px;
+  transition: transform 0.3s var(--apple-ease), box-shadow 0.3s var(--apple-ease), border-color 0.3s ease;
+  overflow: hidden;
+}
+
+.standard-glass:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.28);
+  box-shadow:
+    0 18px 42px rgba(0, 0, 0, 0.36),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* Light Mode for Standard Glass */
+.light-mode .standard-glass,
+body.lm .standard-glass {
+  background: rgba(255, 255, 255, 0.75);
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  color: #111827;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   2. TIER 2: APPLE VISIONOS LIQUID GLASS (React Interactive)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.apple-liquid-glass {
+  position: relative;
+  background: rgba(16, 22, 38, 0.58);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) contrast(102%) brightness(1.08);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) contrast(102%) brightness(1.08);
+  border: 0.5px solid rgba(255, 255, 255, 0.24);
+  border-radius: 26px;
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.4),
+    0 2px 6px rgba(0, 0, 0, 0.2),
+    inset 0 1px 1px rgba(255, 255, 255, 0.5),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.3);
+  color: var(--ink, #ffffff);
+  padding: 28px;
+  user-select: none;
+  touch-action: none;
+  cursor: grab;
+  will-change: transform, box-shadow;
+  transition:
+    transform 0.55s var(--apple-spring),
+    box-shadow 0.4s var(--apple-ease),
+    border-color 0.3s ease;
+  overflow: hidden;
+}
+
+/* Active Dragging / Press: Liquid Tactile Squish */
+.apple-liquid-glass.is-pressing,
+.apple-liquid-glass:active {
+  cursor: grabbing;
+  box-shadow:
+    0 12px 28px rgba(0, 0, 0, 0.5),
+    0 1px 3px rgba(0, 0, 0, 0.3),
+    inset 0 1.5px 1.5px rgba(255, 255, 255, 0.65),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.38);
+}
+
+/* Dynamic Specular Glint Reflection Follows Cursor/Tilt */
+.apple-liquid-glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle 280px at var(--light-x, 50%) var(--light-y, 20%),
+    rgba(255, 255, 255, var(--glass-sheen-opacity, 0.42)) 0%,
+    rgba(255, 255, 255, 0.12) 40%,
+    transparent 75%
+  );
+  mix-blend-mode: overlay;
+  z-index: 1;
+  transition: opacity 0.3s ease;
+}
+
+/* Chromatic Aberration & Prismatic Edge Rim */
+.apple-liquid-glass.has-chromatic::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow:
+    inset 0 1px 0 rgba(0, 240, 255, 0.35),
+    inset 0 -1px 0 rgba(255, 0, 128, 0.3);
+  mix-blend-mode: screen;
+  z-index: 2;
+  opacity: 0.85;
+}
+
+/* Light Mode VisionOS Glass */
+.light-mode .apple-liquid-glass,
+body.lm .apple-liquid-glass {
+  background: rgba(255, 255, 255, 0.68);
+  border: 0.5px solid rgba(255, 255, 255, 0.85);
+  box-shadow:
+    0 20px 48px rgba(0, 0, 0, 0.1),
+    0 4px 12px rgba(0, 0, 0, 0.04),
+    inset 0 1.5px 1px rgba(255, 255, 255, 0.95),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.08);
+  color: #0f172a;
+}
+
+.light-mode .apple-liquid-glass::before,
+body.lm .apple-liquid-glass::before {
+  background: radial-gradient(
+    circle 280px at var(--light-x, 50%) var(--light-y, 20%),
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(255, 255, 255, 0.25) 45%,
+    transparent 80%
+  );
+  mix-blend-mode: soft-light;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   3. APPLE LIQUID DOCK & GLASS PILL CONTROLS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.apple-glass-dock {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: rgba(20, 26, 42, 0.64);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 0.5px solid rgba(255, 255, 255, 0.25);
+  border-radius: 40px;
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+.apple-dock-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.4s var(--apple-spring), background 0.2s ease, box-shadow 0.3s ease;
+  user-select: none;
+}
+
+.apple-dock-item:hover {
+  transform: translateY(-8px) scale(1.15);
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.3),
+    0 0 16px rgba(242, 184, 75, 0.35);
+}
+
+.apple-dock-item:active {
+  transform: translateY(-2px) scale(0.92);
+  transition: transform 0.12s ease;
+}
+
+/* Glass Pill Buttons */
+.apple-glass-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 30px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+  border: 0.5px solid rgba(255, 255, 255, 0.28);
+  box-shadow:
+    0 6px 16px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: transform 0.4s var(--apple-spring), background 0.2s ease, box-shadow 0.3s ease;
+}
+
+.apple-glass-pill:hover {
+  transform: translateY(-2px) scale(1.03);
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.apple-glass-pill:active {
+  transform: scale(0.94);
+  transition: transform 0.1s ease;
+}
+
+.apple-glass-pill.primary {
+  background: rgba(242, 184, 75, 0.22);
+  border-color: rgba(242, 184, 75, 0.55);
+  color: #f2b84b;
+}
+
+.apple-glass-pill.primary:hover {
+  background: rgba(242, 184, 75, 0.35);
+  box-shadow:
+    0 10px 28px rgba(242, 184, 75, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   4. ANIMATIONS & SPECULAR SHIMMER
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@keyframes glassSheenGlide {
+  0% {
+    transform: translateX(-120%) rotate(25deg);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.6;
+  }
+  70% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateX(220%) rotate(25deg);
+    opacity: 0;
+  }
+}
+
+.apple-sheen-sweep {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 45%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0.05) 55%,
+    transparent 100%
+  );
+  animation: glassSheenGlide 4.5s ease-in-out infinite;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   5. OPTICAL REFRACTION FILTER ATTACHMENT
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.refract-optical {
+  backdrop-filter: url(#apple-liquid-lens) blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+}

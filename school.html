@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="CBSE Bhavani Shankar School, Mumbai — The academic foundation behind Class Of Learners. Discover the school's programs, facilities, and how it fostered our technical innovation."
+      content="CBSE Bhavani Shankar School, Mumbai — The academic foundation behind Class Of Learners. Discover the school's programs, facilities, and how it shaped our approach to technology."
     />
     <meta property="og:title" content="Our School | Class Of Learners" />
     <meta property="og:description" content="CBSE Bhavani Shankar School, Mumbai — Where Class Of Learners began. Our school's academic programs and technical innovation." />
@@ -43,7 +43,8 @@
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" /></noscript>
     <style>
       :root {
         --void: #070a14;
@@ -1031,9 +1032,19 @@
         max-width: 100vw !important;
         overflow: hidden !important;
       }
+      /* ── SCHOOL MOBILE PERF ── */
+      @media (max-width: 768px) {
+        html:not(.is-iphone) .top-nav { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background: rgba(7,10,20,0.92) !important; }
+        html:not(.is-iphone) .top-nav::before { display: none !important; }
+        body.lm .top-nav { background: rgba(243,242,235,0.95) !important; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important; }
+      }
     </style>
     <script defer src="col-router.js"></script>
     <link rel="stylesheet" href="col-ui.css?v=1782446126.5715783" />
+    <link rel="stylesheet" href="liquid-glass.css" />
+    <link rel="stylesheet" href="mobile-perf.css" />
+    <script defer src="pull-refresh.js"></script>
     <script defer src="col-ui.js"></script>
     <script defer src="col-auth.js"></script>
     <link rel="manifest" href="manifest.json" />
@@ -1178,7 +1189,7 @@
         <br />
         <div class="hero-badge">Mumbai Public School</div>
         <h1>CBSE Bhavani Shankar <em>School</em>.</h1>
-        <p class="hlede">A foundation of technical excellence, discipline, and collaborative innovation in the heart of Mumbai.</p>
+        <p class="hlede">A school built on technical depth, discipline, and real teamwork — right in the heart of Mumbai.</p>
       </div>
     </section>
 
@@ -1186,7 +1197,7 @@
     <section class="section rv">
       <div class="main-school-card">
         <p>
-          Our academic environment has fostered our drive for <strong>technical excellence</strong> and <strong>collaborative innovation</strong>. It is within these halls that we developed the
+          Our academic environment shaped our drive for <strong>technical excellence</strong> and <strong>working together on hard problems</strong>. It is within these halls that we developed the
           teamwork and logic skills necessary to conceptualize, design, and build advanced applications like the Typing Instructor and Solar Engine. The structured yet dynamic curriculum encouraged us
           to look beyond the textbooks and actively solve real-world problems through code and creativity.
         </p>
@@ -1322,7 +1333,7 @@
     </section>
 
     <!-- PILLARS -->
-    <section class="section pillars-section rv">
+    <section class="section pillars-section rv" style="content-visibility:auto; contain-intrinsic-size: 0 400px">
       <div class="hey" style="margin-bottom: 6px; max-width: 1360px; margin-left: auto; margin-right: auto">Values</div>
       <h2 style="font-family: var(--serif); font-size: 2.4rem; font-weight: 400; margin-bottom: 32px; color: var(--ink); max-width: 1360px; margin-left: auto; margin-right: auto">
         Core <em style="color: var(--signal)">Pillars</em>
@@ -1341,7 +1352,7 @@
         <div class="pillar-box rv">
           <div class="pillar-icon">&#129309;</div>
           <h3 class="pillar-title">Teamwork</h3>
-          <p class="pillar-desc">Cultivating an environment where peer-to-peer collaboration turns individual ideas into fully realized software.</p>
+          <p class="pillar-desc">Peer-to-peer collaboration is built into how we work here — individual ideas get refined into actual, shipped software.</p>
         </div>
       </div>
     </section>
@@ -1465,7 +1476,7 @@
       })()
     </script>
 
-    <footer class="sf">
+    <footer class="sf" style="content-visibility:auto; contain-intrinsic-size: 0 200px">
       <div class="fi">
         <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
         <div class="fl">
@@ -1480,7 +1491,7 @@
     <script>
     function hzInit(){var t=localStorage.getItem('theme');if(t==='light'){document.body.classList.add('lm')}else{document.body.classList.remove('lm')}hzSync()}
     function hzSync(){var el=document.querySelector('.hz-toggle');if(!el)return;if(document.body.classList.contains('lm')){el.classList.remove('night')}else{el.classList.add('night')}}
-    function hzToggle(){document.body.classList.toggle('lm');localStorage.setItem('theme',document.body.classList.contains('lm')?'light':'dark');hzSync()}
+    function hzToggle(){if(navigator.vibrate)navigator.vibrate(8);document.body.classList.toggle('lm');localStorage.setItem('theme',document.body.classList.contains('lm')?'light':'dark');hzSync()}
     hzInit()
     </script>
   </body>

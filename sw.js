@@ -1,5 +1,5 @@
-const CACHE_NAME = 'col-cache-v7'
-const SW_VERSION = '2026-09-15'
+const CACHE_NAME = 'col-cache-v8'
+const SW_VERSION = '2026-09-19'
 const urlsToCache = ['/home.html', '/col-ui.css', '/col-mobile.css', '/Traffic/traffic-mobile.css', '/col-ui.js', '/col-router.js', '/col-auth.js', '/Icon.png']
 
 async function cacheResources() {
@@ -50,26 +50,27 @@ self.addEventListener('activate', (event) => {
 })
 
 self.addEventListener('fetch', (event) => {
+  const req = event.request
+  // Non-GET or cross-origin: pass through untouched
+  if (req.method !== 'GET' || !req.url.startsWith(self.location.origin)) return
+  // Range requests (audio/video seeking) must not be intercepted
+  if (req.headers.has('range')) return
+
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      const fetchPromise = fetch(event.request)
+    caches.open(CACHE_NAME).then(async (cache) => {
+      const cached = await cache.match(req)
+      const fetchPromise = fetch(req)
         .then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
-            if (event.request.url.startsWith('http')) {
-              const responseToCache = networkResponse.clone()
-              caches.open(CACHE_NAME).then((cache) => {
-                cache.put(event.request, responseToCache)
-              })
-            }
+            // Response is consumed by cache.put() -> respond with a clone
+            cache.put(req, networkResponse.clone())
           }
           return networkResponse
         })
-        .catch(() => {
-          // Network failed — fallback to cached response or offline page
-          return caches.match('/home.html')
-        })
+        .catch(() => cached || caches.match('/home.html'))
 
-      return cachedResponse || fetchPromise
+      // Stale-while-revalidate: instant cached response, network updates in background
+      return cached || fetchPromise
     })
   )
 })

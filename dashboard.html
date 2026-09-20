@@ -199,6 +199,11 @@
         align-items: center;
         gap: 8px;
       }
+      @media (pointer: coarse) {
+        .btn-share {
+          min-height: 44px;
+        }
+      }
       .btn-share:hover {
         transform: scale(1.05);
         box-shadow: 0 0 15px var(--signal);
@@ -411,6 +416,9 @@
     </style>
     <script defer src="col-router.js"></script>
     <link rel="stylesheet" href="col-ui.css" />
+    <link rel="stylesheet" href="liquid-glass.css" />
+    <link rel="stylesheet" href="mobile-perf.css" />
+    <script defer src="pull-refresh.js"></script>
     <script defer src="col-ui.js"></script>
     <script defer src="col-auth.js"></script>
     <script defer src="col-achievements.js"></script>

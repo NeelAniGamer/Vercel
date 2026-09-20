@@ -846,3 +846,13 @@ canvas#gc {
   max-width: 100vw;
   max-height: 100dvh;
 }
+
+/* ── Tap target: inline "Log in" link in auth subtitle (38x42 → 44px) ── */
+@media (pointer: coarse) {
+  .remote-auth-subtitle a {
+    min-height: 44px;
+    padding: 8px 6px;
+    display: inline-flex;
+    align-items: center;
+  }
+}
