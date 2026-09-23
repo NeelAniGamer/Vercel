@@ -4,31 +4,37 @@
  */
 
 // 1. GLOBAL UI & THEME CONTROLLERS
+// NOTE: Theme ownership lives in col-ui.js (window.toggleTheme / .lm class).
+// These wrappers delegate so download.html (which loads both files) stays consistent.
 window.toggleMenu = function () {
   const navLinks = document.querySelector('.nav-links')
   if (navLinks) navLinks.classList.toggle('active')
 }
 
-window.toggleTheme = function (element) {
-  if (element.checked) {
-    document.body.classList.add('dark-mode')
-    localStorage.setItem('theme', 'dark')
-  } else {
-    document.body.classList.remove('dark-mode')
-    localStorage.setItem('theme', 'light')
-  }
+if (!window._colThemeDelegated) {
+  window._colThemeDelegated = true;
+  const _nativeToggle = window.toggleTheme;
+  window.toggleTheme = function (element) {
+    if (window.hzToggle) { try { window.hzToggle(element); return; } catch (e) {} }
+    if (typeof _nativeToggle === 'function') { try { _nativeToggle(element); return; } catch (e) {} }
+    try {
+      const isChecked = element && element.checked;
+      document.body.classList.toggle('lm', !!isChecked);
+      localStorage.setItem('theme', isChecked ? 'light' : 'dark');
+    } catch (e) {}
+  };
 }
 
 window.initializeTheme = function () {
-  const toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]')
-  if (localStorage.getItem('theme') === 'dark') {
-    document.body.classList.add('dark-mode')
-    if (toggleSwitch) toggleSwitch.checked = true
-  } else {
-    document.body.classList.remove('dark-mode')
-    if (toggleSwitch) toggleSwitch.checked = false
-  }
-}
+  try {
+    const toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
+    const t = localStorage.getItem('theme');
+    const isLight = t === 'light';
+    document.body.classList.toggle('lm', isLight);
+    document.body.classList.toggle('dark-mode', !isLight);
+    if (toggleSwitch) toggleSwitch.checked = !!isLight;
+  } catch (e) {}
+};
 
 // Run immediately on first load
 window.addEventListener('DOMContentLoaded', window.initializeTheme)
@@ -137,11 +143,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function loadScript(src) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const s = document.createElement('script')
       s.src = src
       s.crossOrigin = 'anonymous'
       s.onload = resolve
+      s.onerror = () => reject(new Error('Failed to load ' + src))
       document.head.appendChild(s)
     })
   }
@@ -156,6 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
       await loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js')
       await loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js')
       await loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js')
+      if (typeof Hands === 'undefined' || typeof Camera === 'undefined') throw new Error('MediaPipe unavailable');
 
       const hands = new Hands({ locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}` })
       hands.setOptions({ maxNumHands: 1, modelComplexity: 1, minDetectionConfidence: 0.7, minTrackingConfidence: 0.7 })
@@ -306,7 +314,9 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (e) {
       console.error(e)
       fab.innerHTML = '<span style="color:#ef4444;margin-right:6px;font-weight:bold;">!</span>Camera Error'
-      alert('Please allow camera access.')
+      try { if (window.toast) toast('Gesture Camera Unavailable — Check Connection', 'error'); } catch (_e) {}
+      fab.innerText = 'Enable Gestures';
+      try { alert('Gesture engine failed to start. Check camera permission and connection.'); } catch (_e) {}
     }
   }
 

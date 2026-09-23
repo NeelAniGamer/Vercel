@@ -98,7 +98,7 @@ function showConsequenceModal(violationType) {
       <div style="background:rgba(94,212,245,0.1);border:1px solid rgba(94,212,245,0.3);border-radius:8px;padding:12px;margin-bottom:16px;font-size:${isMobile ? '0.75rem' : '0.8rem'};color:var(--signal);">
         <strong>📊 Mumbai ${stat.year} Data:</strong> ${stat.stat} ${stat.unit} (${stat.source})
       </div>
-      <button onclick="this.closest('.modal').remove()" style="width:100%;background:var(--red);color:#fff;border:none;padding:12px;border-radius:10px;font-weight:700;font-size:${isMobile ? '0.9rem' : '1rem'};cursor:pointer;">Understood — Drive Safely</button>
+      <button onclick="this.closest('.modal')?this.closest('.modal').remove():this.remove()" style="width:100%;background:var(--red);color:#fff;border:none;padding:12px;border-radius:10px;font-weight:700;font-size:${isMobile ? '0.9rem' : '1rem'};cursor:pointer;">Understood — Drive Safely</button>
     </div>
   `;
   modal.className = 'modal';

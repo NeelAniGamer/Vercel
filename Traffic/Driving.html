@@ -2,6 +2,10 @@
 <html lang="en">
 
 <head>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995"
      crossorigin="anonymous"></script>
     <script>const origAtob = window.atob; window.atob = function(str) { try { return origAtob(str); } catch(e) { console.error("ATOB FAILED ON STRING (length " + str.length + "):", str.substring(0, 100)); throw e; } };</script>
@@ -46,12 +50,11 @@
   <link rel="stylesheet" href="traffic-mobile.css" />
   <script defer src="../col-ui.js"></script>
   <script defer src="../col-auth.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/BufferGeometryUtils.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <script src="traffic-charts.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" onerror="if(!window.THREE){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js';s.onerror=function(){var e=document.getElementById('loading-screen');if(e)e.innerHTML='<div style=padding:40px;text-align:center;color:#fff><h2>3D Engine Failed To Load</h2><p>Check Your Connection And Reload.</p></div>'};document.head.appendChild(s;}"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/BufferGeometryUtils.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script defer src="traffic-charts.js"></script>
   <link rel="stylesheet" href="traffic-charts.css" />
   <link rel="stylesheet" href="welcome-back.css" />
   <link rel="stylesheet" href="animations.css" />
@@ -240,6 +243,20 @@
         max-height: 25vh !important;
         font-size: 0.55rem !important;
         padding: 4px 8px !important;
+        transition: max-height 0.3s ease, opacity 0.3s ease;
+      }
+
+      /* F3 contextual HUD diet: at speed, only speed + next instruction stay.
+         Toggled by game_core (_updateJuice) via body.hud-focus-drive. */
+      body.hud-focus-drive #objective-desc {
+        display: none !important;
+      }
+      body.hud-focus-drive #task-tracker {
+        max-height: 54px !important;
+        overflow: hidden !important;
+      }
+      body.hud-focus-drive #hudbar {
+        opacity: 0.5 !important;
       }
 
       
@@ -614,7 +631,11 @@
     #loading-screen {
       position: fixed;
       inset: 0;
-      background: linear-gradient(135deg, #070a14 0%, #0d1117 40%, #111827 100%);
+      /* Home-site backdrop: city art under a deep readable veil */
+      background:
+        linear-gradient(180deg, rgba(4,6,14,0.82) 0%, rgba(4,6,14,0.68) 55%, rgba(4,6,14,0.9) 100%),
+        url('tut_4_simulator.png') center 35% / cover no-repeat,
+        linear-gradient(135deg, #070a14 0%, #0d1117 40%, #111827 100%);
       z-index: var(--z-loading);
       display: none;
       flex-direction: column;
@@ -709,29 +730,36 @@
 
     #loading-bar-container {
       width: 100%;
-      height: 6px;
-      background: rgba(255,255,255,0.06);
-      border-radius: 3px;
+      height: 10px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
       overflow: hidden;
       position: relative;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5), inset 0 1px 2px rgba(0,0,0,0.6);
     }
     #loading-bar-container::after {
       content: '';
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%);
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.18) 50%, transparent 100%);
       animation: shimmer 2s ease-in-out infinite;
+      pointer-events: none;
     }
     @keyframes shimmer { 0%,100% { transform: translateX(-100%); } 50% { transform: translateX(100%); } }
 
     #loading-bar {
       width: 0%;
       height: 100%;
-      background: linear-gradient(90deg, #34d399, #5ed4f5);
-      border-radius: 3px;
+      background: linear-gradient(90deg, #f2b84b 0%, #34d399 55%, #5ed4f5 100%);
+      background-size: 200% 100%;
+      border-radius: 5px;
       transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
+      box-shadow: 0 0 16px rgba(52,211,153,0.55);
+      animation: barSlide 3s linear infinite;
     }
+    @keyframes barSlide { from { background-position: 0% 0; } to { background-position: 200% 0; } }
 
     .ls-tips {
       margin-top: 40px;
@@ -1154,7 +1182,7 @@
       left: 50%;
       max-width: calc(100vw - 32px);
       transform: translateX(-50%) translateY(-100px);
-      z-index: 100;
+      z-index: 200000;
       transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
@@ -1227,6 +1255,7 @@
       padding: 40px 60px;
       width: 100%;
     }
+    @media (max-width: 480px) { .lw { padding: 24px 16px; } }
 
     .sec-hdr {
       font-family: 'Lora', serif;
@@ -1237,7 +1266,7 @@
 
     .lv-track {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
       gap: 24px;
       margin-bottom: 40px;
     }
@@ -6528,21 +6557,22 @@
       document.body.appendChild(errDiv)
     })
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/fflate.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/FBXLoader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/MTLLoader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/math/SimplexNoise.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/SSAOShader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/SSAOPass.js"></script>
-  <script src="vehicles.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/fflate.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/FBXLoader.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/MTLLoader.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/math/SimplexNoise.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/SSAOShader.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/SSAOPass.js"></script>
+  <script defer src="vehicles.js"></script>
 <style>
     /* ========================================================================= */
     /* ========================================================================= */
@@ -7266,7 +7296,7 @@
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
       background-color: var(--void);
-      z-index: 999999;
+      z-index: 999998;
       flex-direction: column;
       align-items: center;
       justify-content: center;
@@ -7284,7 +7314,7 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(-90deg); }
     }
-    @media (orientation: portrait) and (max-width: 900px) {
+    @media (orientation: portrait) and (max-width: 900px) and (min-width: 768px) {
       #landscape-enforcer {
         display: flex;
       }
@@ -7295,8 +7325,9 @@
       <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
       <line x1="12" y1="18" x2="12.01" y2="18"></line>
     </svg>
-    <h2 style="font-family: var(--sans); font-size: 1.5rem; margin-bottom: 10px;">Please Rotate Your Device</h2>
-    <p style="font-family: var(--sans); color: var(--dim);">This simulator requires landscape orientation.</p>
+    <h2 style="font-family: var(--sans); font-size: 1.5rem; margin-bottom: 10px;">Rotate For Best View</h2>
+    <p style="font-family: var(--sans); color: var(--dim);">Landscape recommended — tap below to keep playing in portrait.</p>
+    <button onclick="document.getElementById('landscape-enforcer').style.display='none'" style="margin-top:16px;padding:12px 28px;border-radius:12px;border:1px solid var(--signal);background:transparent;color:var(--ink);font-weight:700;cursor:pointer;">Continue In Portrait</button>
   </div>
 
   
@@ -7523,7 +7554,8 @@
   <div id="rotate-device-overlay">
     <div class="rd-icon">📱</div>
     <div class="rd-title">Turn your phone sideways</div>
-    <div class="rd-sub">Driving needs landscape mode</div>
+    <div class="rd-sub">Landscape Recommended — Portrait Play Fully Supported</div>
+    <button id="rotate-continue-btn" style="margin-top:8px;padding:12px 28px;border-radius:12px;border:1px solid #5ed4f5;background:rgba(94,212,245,0.12);color:#fff;font-weight:700;font-size:0.9rem;cursor:pointer;min-height:48px;">Continue In Portrait</button>
   </div>
 
   <div id="pause-overlay"
@@ -7837,12 +7869,15 @@
         <button class="btn btn-p"
           style="background: #b02a37; font-size: 1.1rem; padding: 12px; border-radius: 30px; width: 100%; border: none"
           onclick="window.game && window.game.retryLevel()">Try Again</button>
+        <button class="btn btn-p"
+          style="background: #1e40af; font-size: 1.05rem; padding: 12px; border-radius: 30px; width: 100%; border: none"
+          onclick="window.game && window.game.respawnAtCheckpoint()">↩️ Checkpoint (+3s)</button>
         <button class="btn btn-g"
           style="font-size: 1rem; padding: 12px; border-radius: 30px; width: 100%; background: transparent; border: 2px solid #ccc; color: #555"
           onclick="
-              document.getElementById('crash-screen').style.display = 'none'
-              ui.showLevels()
-              setTimeout(() => ui._selSyl('theory'), 100)
+              document.getElementById('crash-screen').style.display = 'none';
+              if (window.ui && window.ui.showLevels) { window.ui.showLevels(); setTimeout(() => window.ui._selSyl && window.ui._selSyl('theory'), 100); }
+              else { window.location.href = 'Academy.html?screen=levels'; }
             ">
           Course Overview
         </button>
@@ -8288,7 +8323,7 @@
         🎭 Character
       </button>
 
-      <button class="nav-login-btn" id="btn-garage-start" onclick="window.location.href='hub.html'" style="
+      <button class="nav-login-btn" id="btn-garage-start" onclick="window.openCustomize && window.openCustomize()" style="
             background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(245, 158, 11, 0.2));
             border: 1px solid rgba(6, 182, 212, 0.5);
             color: var(--text);
@@ -8590,70 +8625,71 @@
     </div>
   </div>
 
-  <script src="cert_assets.js?v=2"></script>
-  <script src="env.js?v=2"></script>
-  <script src="auto.js?v=2"></script>
-  <script src="bus.js?v=2"></script>
-  <script src="lambo.js?v=2"></script>
+  <script defer src="cert_assets.js?v=2"></script>
+  <script defer src="env.js?v=2"></script>
+  <script defer src="auto.js?v=2"></script>
+  <script defer src="bus.js?v=2"></script>
+  <script defer src="lambo.js?v=2"></script>
   <script>
     window.LVS = []
   </script>
-  <script src="levels/level1.js"></script>
-  <script src="levels/level2.js"></script>
-  <script src="levels/level3.js"></script>
-  <script src="levels/level4.js"></script>
-  <script src="levels/level5.js"></script>
-  <script src="levels/level6.js"></script>
-  <script src="levels/level7.js"></script>
-  <script src="levels/level8.js"></script>
-  <script src="levels/level9.js"></script>
-  <script src="levels/level10.js"></script>
-  <script src="levels/level11.js"></script>
-  <script src="levels/level12.js"></script>
-  <script src="levels/level13.js"></script>
-  <script src="levels/level14.js"></script>
-  <script src="levels/level15.js"></script>
-  <script src="levels/level16.js"></script>
-  <script src="levels/level17.js"></script>
-  <script src="levels/level18.js"></script>
-  <script src="levels/level19.js"></script>
-  <script src="levels/level20.js"></script>
-  <script src="levels/level21.js"></script>
-  <script src="levels/level22.js"></script>
-  <script src="levels/level23.js"></script>
-  <script src="levels/level24.js"></script>
-  <script src="levels/level25.js"></script>
-  <script src="levels/level26.js"></script>
-  <script src="levels/level27.js"></script>
-  <script src="levels/level28.js"></script>
-  <script src="levels/level29.js"></script>
-  <script src="levels/level30.js"></script>
-  <script src="levels/level31.js"></script>
-  <script src="levels/level32.js"></script>
-  <script src="levels/level33.js"></script>
-  <script src="levels/level34.js"></script>
-  <script src="levels/level35.js"></script>
-  <script src="levels/level36.js"></script>
-  <script src="levels/level37.js"></script>
-  <script src="levels/level38.js"></script>
-  <script src="levels/level39.js"></script>
-  <script src="levels/level40.js"></script>
-  <script src="levels/level41.js"></script>
-  <script src="levels/level42.js"></script>
-  <script src="levels/level43.js"></script>
-  <script src="levels/level44.js"></script>
-  <script src="levels/level45.js"></script>
-  <script src="levels/level46.js"></script>
-  <script src="levels/level47.js"></script>
-  <script src="levels/level48.js"></script>
-  <script src="levels/level49.js"></script>
-  <script src="levels/level50.js"></script>
-  <script src="levels/level51.js"></script>
-  <script src="levels/level52.js"></script>
-  <script src="levels/level53.js"></script>
-  <script src="levels/level54.js"></script>
-  <script src="levels/level_custom.js"></script>
-  <script src="suburban_scenery.js?v=20260917_v11"></script>
+  <script defer src="levels/level1.js"></script>
+  <script defer src="levels/level2.js"></script>
+  <script defer src="levels/level3.js"></script>
+  <script defer src="levels/level4.js"></script>
+  <script defer src="levels/level5.js"></script>
+  <script defer src="levels/level6.js"></script>
+  <script defer src="levels/level7.js"></script>
+  <script defer src="levels/level8.js"></script>
+  <script defer src="levels/level9.js"></script>
+  <script defer src="levels/level10.js"></script>
+  <script defer src="levels/level11.js"></script>
+  <script defer src="levels/level12.js"></script>
+  <script defer src="levels/level13.js"></script>
+  <script defer src="levels/level14.js"></script>
+  <script defer src="levels/level15.js"></script>
+  <script defer src="levels/level16.js"></script>
+  <script defer src="levels/level17.js"></script>
+  <script defer src="levels/level18.js"></script>
+  <script defer src="levels/level19.js"></script>
+  <script defer src="levels/level20.js"></script>
+  <script defer src="levels/level21.js"></script>
+  <script defer src="levels/level22.js"></script>
+  <script defer src="levels/level23.js"></script>
+  <script defer src="levels/level24.js"></script>
+  <script defer src="levels/level25.js"></script>
+  <script defer src="levels/level26.js"></script>
+  <script defer src="levels/level27.js"></script>
+  <script defer src="levels/level28.js"></script>
+  <script defer src="levels/level29.js"></script>
+  <script defer src="levels/level30.js"></script>
+  <script defer src="levels/level31.js"></script>
+  <script defer src="levels/level32.js"></script>
+  <script defer src="levels/level33.js"></script>
+  <script defer src="levels/level34.js"></script>
+  <script defer src="levels/level35.js"></script>
+  <script defer src="levels/level36.js"></script>
+  <script defer src="levels/level37.js"></script>
+  <script defer src="levels/level38.js"></script>
+  <script defer src="levels/level39.js"></script>
+  <script defer src="levels/level40.js"></script>
+  <script defer src="levels/level41.js"></script>
+  <script defer src="levels/level42.js"></script>
+  <script defer src="levels/level43.js"></script>
+  <script defer src="levels/level44.js"></script>
+  <script defer src="levels/level45.js"></script>
+  <script defer src="levels/level46.js"></script>
+  <script defer src="levels/level47.js"></script>
+  <script defer src="levels/level48.js"></script>
+  <script defer src="levels/level49.js"></script>
+  <script defer src="levels/level50.js"></script>
+  <script defer src="levels/level51.js"></script>
+  <script defer src="levels/level52.js"></script>
+  <script defer src="levels/level53.js"></script>
+  <script defer src="levels/level54.js"></script>
+  <script defer src="levels/level_custom.js"></script>
+  <script defer src="levels/level_freeram.js"></script>
+  <script defer src="suburban_scenery.js?v=20260917_v11"></script>
 
   <script>
 
@@ -8684,31 +8720,31 @@
       }, 500);
     })();
   </script>
-  <script src="pools.js?v=20260831_v9"></script>
-  <script src="road-graph.js?v=20260831_v9"></script>
-  <script src="render_core.js?v=20260831_v9"></script>
-  <script src="safezone-ui.js?v=20260831_v9"></script>
-  <script src="world-streamer.js?v=20260831_v9"></script>
-  <script src="mission-manager.js?v=20260831_v9"></script>
-  <script src="scenery-kit.js?v=20260831_v9"></script>
-  <script src="collectible-system.js?v=20260831_v9"></script>
-  <script src="checkpoint-system.js?v=20260831_v9"></script>
-  <script src="gameplay-recorder.js?v=20260831_v9"></script>
-  <script src="task-manager.js?v=20260831_v9"></script>
-  <script src="scenario2d.js?v=20260831_v9"></script>
-  <script src="course.js?v=20260831_v9"></script>
-  <script src="traffic-audio.js?v=20260917_v10"></script>
-  <script src="game_core.js?v=20260917_v10"></script>
-  <script src="npc-ai.js?v=20260831_v9"></script>
-  <script src="traffic-manager.js?v=20260831_v9"></script>
-  <script src="rule-breaker-profiles.js?v=20260831_v9"></script>
-  <script src="minecraft_character.js"></script>
-  <script src="ai-scene-generator.js"></script>
-  <script src="room-architect.js"></script>
-  <script src="traffic-ai-copilot.js"></script>
-  <script src="ai-map-llm.js"></script>
-  <script src="ui.js?v=20260917_v10"></script>
-  <script src="start.js?v=20260831_v9"></script>
+  <script defer src="pools.js?v=20260831_v9"></script>
+  <script defer src="road-graph.js?v=20260831_v9"></script>
+  <script defer src="render_core.js?v=20260831_v9"></script>
+  <script defer src="safezone-ui.js?v=20260831_v9"></script>
+  <script defer src="world-streamer.js?v=20260831_v9"></script>
+  <script defer src="mission-manager.js?v=20260831_v9"></script>
+  <script defer src="scenery-kit.js?v=20260831_v9"></script>
+  <script defer src="collectible-system.js?v=20260831_v9"></script>
+  <script defer src="checkpoint-system.js?v=20260831_v9"></script>
+  <script defer src="gameplay-recorder.js?v=20260831_v9"></script>
+  <script defer src="task-manager.js?v=20260831_v9"></script>
+  <script defer src="scenario2d.js?v=20260831_v9"></script>
+  <script defer src="course.js?v=20260831_v9"></script>
+  <script defer src="traffic-audio.js?v=20260917_v10"></script>
+  <script defer src="game_core.js?v=20260917_v10"></script>
+  <script defer src="npc-ai.js?v=20260831_v9"></script>
+  <script defer src="traffic-manager.js?v=20260831_v9"></script>
+  <script defer src="rule-breaker-profiles.js?v=20260831_v9"></script>
+  <script defer src="minecraft_character.js"></script>
+  <script defer src="ai-scene-generator.js"></script>
+  <script defer src="room-architect.js"></script>
+  <script defer src="traffic-ai-copilot.js"></script>
+  <script defer src="ai-map-llm.js"></script>
+  <script defer src="ui.js?v=20260917_v10"></script>
+  <script defer src="start.js?v=20260831_v9"></script>
 
   
   <div id="kid-steer"></div>
@@ -9624,6 +9660,18 @@
           try { window.game._updateDayNight(0); } catch(e) {}
         }
         if (window.game.scene) {
+          // Stash the level's real atmosphere once, so toggling back restores it
+          // (the old code hardcoded day fog far=350, which fogged out whole maps).
+          if (!window.game._dayAtmoStash && window.game.scene.fog) {
+            const fog = window.game.scene.fog;
+            const amb = window.game.scene.children.find(c => c.isAmbientLight);
+            window.game._dayAtmoStash = {
+              fogColor: fog.color.getHex(), fogNear: fog.near, fogFar: fog.far,
+              ambInt: amb ? amb.intensity : 0.6,
+              bg: window.game.scene.background ? window.game.scene.background.getHex() : 0x87b6d8
+            };
+          }
+          const stash = window.game._dayAtmoStash || {};
           const fog = window.game.scene.fog;
           const amb = window.game.scene.children.find(c => c.isAmbientLight);
           if (_pauseNightOn) {
@@ -9631,19 +9679,52 @@
             if (amb) { amb.intensity = 0.15; }
             window.game.scene.background = new THREE.Color(0x0a0a1a);
           } else {
-            if (fog) { fog.color.set(0xc8d6e5); fog.near = 50; fog.far = 350; }
-            if (amb) { amb.intensity = 0.6; }
-            window.game.scene.background = new THREE.Color(0xc8d6e5);
+            if (fog) {
+              fog.color.set(stash.fogColor !== undefined ? stash.fogColor : 0xc8d6e5);
+              fog.near = stash.fogNear !== undefined ? stash.fogNear : 50;
+              fog.far = stash.fogFar !== undefined ? stash.fogFar : 2000;
+            }
+            if (amb) { amb.intensity = stash.ambInt !== undefined ? stash.ambInt : 0.6; }
+            if (stash.bg !== undefined) window.game.scene.background = new THREE.Color(stash.bg);
           }
+          // Headlights actually follow the toggle now (they were built once at spawn)
+          try {
+            const pv = window.game.playerVehicle;
+            if (pv) {
+              if (window.game.hL) window.game.hL.intensity = _pauseNightOn ? 3.2 : 0;
+              if (window.game.hR) window.game.hR.intensity = _pauseNightOn ? 3.2 : 0;
+              if (window.game._headlightCones) window.game._headlightCones.forEach(c => { c.material.opacity = _pauseNightOn ? 0.10 : 0.0; });
+            }
+          } catch (e) {}
         }
       }
     }
 
-    // Gyroscope toggle
+    // Gyroscope toggle (drives the game's real gyro pipeline: _autoGyro / _stopGyro)
     let _pauseGyroOn = false;
     function pauseToggleGyro() {
       _pauseGyroOn = !_pauseGyroOn;
       const btn = document.getElementById('pause-gyro-toggle');
+      if (window.game) {
+        if (_pauseGyroOn) {
+          if (typeof window.game._autoGyro === 'function') window.game._autoGyro();
+          else { window.game.gyroOn = true; }
+          // Re-sync the label once the (possibly async) permission flow settles
+          setTimeout(() => {
+            const on = !!(window.game && window.game.gyroOn);
+            _pauseGyroOn = on;
+            if (btn) {
+              btn.textContent = on ? 'On' : 'Off';
+              btn.style.background = on ? 'rgba(52,211,153,0.6)' : 'rgba(255,255,255,0.1)';
+              btn.style.color = on ? '#fff' : 'rgba(255,255,255,0.7)';
+            }
+            localStorage.setItem('traffic_gyro', on ? '1' : '0');
+          }, 1200);
+        } else {
+          window.game.gyroOn = false;
+          if (typeof window.game._stopGyro === 'function') window.game._stopGyro();
+        }
+      }
       if (btn) {
         btn.textContent = _pauseGyroOn ? 'On' : 'Off';
         btn.style.background = _pauseGyroOn ? 'rgba(52,211,153,0.6)' : 'rgba(255,255,255,0.1)';
@@ -9652,15 +9733,14 @@
       localStorage.setItem('traffic_gyro', _pauseGyroOn ? '1' : '0');
       if (window.game) {
         window.game._gyroEnabled = _pauseGyroOn;
-        if (_pauseGyroOn && !window.game.gyroOn) {
-          window.game.calibrateGyro?.();
-        }
       }
     }
 
     function pauseCalibrateGyro() {
-      if (window.game && window.game.calibrateGyro) {
-        window.game.calibrateGyro();
+      if (window.game && typeof window.game._runCalibration === 'function') {
+        window.game._runCalibration();
+      } else if (window.game && typeof window.game._autoGyro === 'function') {
+        window.game._autoGyro();
       }
     }
 
@@ -9962,7 +10042,7 @@
   </div>
   </div>
 
-<script src="welcome-back.js"></script>
+<script defer src="welcome-back.js"></script>
 
   <!-- Signal HUD Indicator for Syllabus Mode -->
   <div id="syllabus-sig-ind" style="position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 10000; pointer-events: none; transition: all 0.3s ease; display: none;">

@@ -116,7 +116,7 @@ function startServer(port) {
     console.log(`========================================\n`);
   });
 
-  server.on('error', (e) => {
+  server.once('error', (e) => {
     if (e.code === 'EADDRINUSE') {
       console.log(`Port ${port} in use, trying http://localhost:${port + 1}...`);
       startServer(port + 1);

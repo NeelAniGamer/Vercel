@@ -12,6 +12,7 @@ window.LVS.push({
   col: '#e74c3c',
   speedLimit: 40,
   schoolSpeedLimit: 20,
+  pillars: ['law', 'mumbai', 'thirty_second_fun', 'respect_time'],
   hasSchool: true,
   hasAIDirector: true,
   usesMapLLM: true,
@@ -20,10 +21,42 @@ window.LVS.push({
   flasherZ: 380,
   busBayZ: 460,
   schoolZ: 600,
+  schoolX: 436,
   isSilenceZone: true,
   timeLimit: 360,
   roadLength: 1400,
   npcTypes: ['car', 'sedan', 'innova', 'suv', 'taxi', 'bike', 'splendor', 'activa', 'cycle', 'bus', 'truck', 'auto'],
+  // Dismissal-hour traffic personality: cautious parents + school buses dominate, nobody honks
+  // (vehicle types like auto-rickshaws come from npcTypes, not the profile mix)
+  npcMix: { school_parent: 34, cautious: 22, normal: 18, school_bus: 10, teen: 8, impatient_taxi: 8 },
+  pedMix: { child: 48, normal: 24, kid_dasher: 8, rusher: 8, cautious: 8, elderly_ped: 4 },
+  npcs: [
+    // Papa Sharma-style parent SUV cruising SV Avenue toward the school
+    { type: 'suv', color: 0x1f4037, profileKey: 'school_parent', route: [{ x: 215, z: -100 }, { x: 215, z: 150 }, { x: 215, z: 250 }] },
+    // Cautious kaali-peeli taxi near Tilak Bazar (NOT Raju — this one behaves)
+    { type: 'taxi', color: 0xffaa00, profileKey: 'cautious', route: [{ x: 60, z: -116.5 }, { x: 150, z: -116.5 }, { x: 210, z: -116.5 }] },
+    // Delivery tempo on Gokhale Link — pulls aside for the school crowd
+    { type: 'truck', color: 0x664422, profileKey: 'delivery', route: [{ x: 250, z: 263.5 }, { x: 350, z: 263.5 }] },
+    // F2 RIVAL: "Turbo Sanjana" the auto driver races your whole corridor to the school.
+    // Reach the gate before she finishes her run for +500.
+    { type: 'auto', color: 0x228b22, profileKey: 'aggressive', rival: true, name: 'Sanjana', route: [{ x: 215, z: -100 }, { x: 215, z: 150 }, { x: 250, z: 263.5 }, { x: 380, z: 263.5 }, { x: 436, z: 350 }] }
+  ],
+  roadProblems: [
+    // Monsoon-ravaged Tilak Bazar corner — everyone slows here
+    { kind: 'potholes', x: 120, z: -116.5, count: 7, spread: 12 },
+    // Drain repair chicane on Gokhale Link forces single-file
+    { kind: 'barricade', x: 300, z: 263.5, rotY: 0 },
+    // Double-parked tempo narrowing the Link further
+    { kind: 'parked_truck', x: 352, z: 266.5, rotY: Math.PI / 2 },
+    // Pre-monsoon puddle on the School Boulevard Hujan
+    { kind: 'puddle', x: 436, z: 340, r: 5 },
+    // Map dressing: Tilak zebra + boards + SV Avenue lamp posts
+    { kind: 'zebra', x: 110, z: -120, w: 14, rotY: Math.PI / 2 },
+    { kind: 'signboard', x: 60, z: -106, rotY: 0, text: 'Tilak Bazar', sub: 'Market • Go Slow' },
+    { kind: 'streetlight', x: 212, z: -40, rotY: 0 },
+    { kind: 'streetlight', x: 228, z: 80, rotY: Math.PI },
+    { kind: 'streetlight', x: 212, z: 200, rotY: 0 }
+  ],
   anchorNodes: [
     { x: -75, z: -230, zone: 'Residential' },
     { x: 110, z: -230, zone: 'Residential' },
@@ -105,28 +138,32 @@ window.LVS.push({
   ],
   story: {
     title: 'Operation School Bell: The St. Xavier Dismissal',
-    briefing: '01:10 PM. St. Xavier High School dismissal is in 20 minutes. Pre-monsoon clouds loom over Mumbai, and hundreds of students will pour onto the street. Start at your residential home, get in your car, drive across Shanti Niketan Colony, navigate the Tilak Bazar corner turn, cruise down Swami Vivekananda Avenue, turn onto Gokhale School Link, enter the designated St. Xavier School Silence Zone, obey Crossing Guard Shinde, and pick up Aryan safely at the campus gates.',
-    storyBeat: 'A quiet afternoon turns urgent. Your family radio crackles: "Beta, Aryan ka dismissal 1:30 baje hai! Shanti Niketan society gate se nikal kar Tilak Bazar aur SV Avenue se St. Xavier School jao. Gate pe buses aur bachchon ki bheed hone wali hai. Gaadi nikalo aur safely pohocho!" On the police frequency, Traffic Havaldar Desai alerts: "Suburban corridor alert: Strict 20 km/h and zero honking near St. Xavier campus!"',
+    briefing: '01:10 PM. St. Xavier High School dismissal is in 20 minutes. Pre-monsoon clouds loom over Mumbai, and hundreds of students will pour onto the street. Start at your residential home, get in your car, drive across Shanti Niketan Colony, navigate the Tilak Bazar corner turn, cruise down Swami Vivekananda Avenue, turn onto Gokhale School Link, enter the designated St. Xavier School Silence Zone, obey Crossing Guard Shinde, and pick up Neel safely at the campus gates.',
+    storyBeat: 'A quiet afternoon turns urgent. Your family radio crackles: "Beta, Neel ka dismissal 1:30 baje hai! Shanti Niketan society gate se nikal kar Tilak Bazar aur SV Avenue se St. Xavier School jao. Gate pe buses aur bachchon ki bheed hone wali hai. Gaadi nikalo aur safely pohocho!" On the police frequency, Traffic Havaldar Desai alerts: "Suburban corridor alert: Strict 20 km/h and zero honking near St. Xavier campus!"',
     dialogue: [
-      { triggerZ: -300, speaker: 'Family Voice', line: '"Aryan ka dismissal time ho gaya hai! Shanti Niketan society gate se nikal kar Tilak Bazar aur SV Avenue se St. Xavier School jao. Gaadi nikalo aur safely chalana!"' },
+      { triggerZ: -300, speaker: 'Family Voice', line: '"Neel ka dismissal time ho gaya hai! Shanti Niketan society gate se nikal kar Tilak Bazar aur SV Avenue se St. Xavier School jao. Gaadi nikalo aur safely chalana!"' },
       { triggerZ: -160, speaker: 'Havaldar Desai (Radio)', line: '"All units: Tilak Bazar corner turn ahead. High pedestrian density near Mahalaxmi Kirana store. Slow down for the right turn!"' },
       { triggerZ: -120, speaker: 'Havaldar Desai (Radio)', line: '"Now in Tilak Bazar Market. Watch for pedestrians and auto-rickshaws near the BEST bus stop."' },
       { triggerZ: -80, speaker: 'Family Voice', line: '"Turn left onto Swami Vivekananda 4-lane Avenue! Maintain lane discipline and watch for oncoming traffic."' },
       { triggerZ: 60, speaker: 'Havaldar Desai (Radio)', line: '"Midtown SV Avenue. Maintain steady 40-50 km/h cruising speed past high-rise societies."' },
+      { triggerZ: 60, speaker: 'Sanjana', line: '"Turbo Sanjana ko school run mein koi nahi haraata! Tum apne Neel ko dekho, race main jeetungi!"' },
       { triggerZ: 220, speaker: 'Havaldar Desai (Radio)', line: '"Attention driver: Right turn ahead into Gokhale School Link Road. Silence Zone begins — ZERO HONKING!"' },
       { triggerZ: 300, speaker: 'Havaldar Desai (Radio)', line: '"Turn left onto St. Xavier School Boulevard! Approaching school dismissal zone — strictly no horn!"' },
+      { triggerZ: 340, speaker: 'Havaldar Desai (Radio)', line: '"Puddle on the boulevard from morning rain — lift off the throttle, no sudden braking with kids around!"' },
       { triggerZ: 380, speaker: 'Havaldar Desai (Radio)', line: '"ATTENTION: St. Xavier High School Zone ahead! Amber flasher is active! Slow down to 20 km/h IMMEDIATELY!"' },
       { triggerZ: 540, speaker: 'Crossing Guard Shinde', line: '"STOP! Gaadi roko! St. Xavier ke bachche tabletop crosswalk cross kar rahe hain! Wait behind the white line!"' },
-      { triggerZ: 600, speaker: 'Aryan & Principal', line: '"Bhaiya aap aa gaye! Perfect timing! Thank you for waiting at the crossing!"' },
+      { triggerZ: 600, speaker: 'Neel & Principal', line: '"Bhaiya aap aa gaye! Perfect timing! Thank you for waiting at the crossing!"' },
       { triggerZ: 610, speaker: 'Havaldar Desai', line: '"Shaabash! Multi-district route completed with zero violations. A true Mumbai Traffic Hero!"' }
     ]
   },
-  ds: 'Spawn on foot at your residential home, walk to your garage, enter your vehicle with [F], and navigate through Shanti Niketan Colony, the Tilak Bazar corner, Swami Vivekananda Avenue, Gokhale Link, and the St. Xavier School Precinct. Obey residential 40 km/h and arterial 50 km/h limits, decelerate to under 20 km/h at the school warning flasher, yield to crossing school children, and park at the school gate.',
+  ds: 'Spawn on foot at your residential home, walk to your garage, enter your vehicle with [F], and navigate through Shanti Niketan Colony, the Tilak Bazar corner (pothole-ridden), Swami Vivekananda Avenue, the Gokhale Link drain-repair chicane, and the St. Xavier School Precinct. Obey residential 40 km/h and arterial 50 km/h limits, decelerate to under 20 km/h at the school warning flasher, yield to crossing school children, and park at the school gate.',
   hps: [
     'Walk across your front yard to the garage and press [F] to enter your vehicle.',
     'Drive past Shanti Niketan CHS gate and boom barrier onto the colony road.',
     'Make a safe 90° right turn at Tilak Bazar corner past Mahalaxmi Kirana store and Chai Tapri.',
     'Turn left onto Swami Vivekananda 4-lane Avenue and maintain lane discipline.',
+    'Thread the Gokhale Link drain-repair chicane single-file — barricade right, parked tempo left.',
+    'Ride over Tilak Bazar potholes slowly instead of swerving into oncoming traffic.',
     'Turn right at Gokhale Link Road and enter the designated School Silence Zone.',
     'When you spot the flashing amber school beacon, reduce speed immediately to under 20 km/h.',
     'Stop completely behind the white stop line when Crossing Guard Shinde raises the STOP sign.',

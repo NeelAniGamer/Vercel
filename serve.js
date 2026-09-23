@@ -37,7 +37,8 @@ function resolveFilePath(reqPath) {
   let decoded = decodeURIComponent(reqPath);
   if (decoded === '/' || decoded === '') decoded = '/home.html';
 
-  let filePath = path.join(ROOT_DIR, decoded);
+  let filePath = path.normalize(path.join(ROOT_DIR, decoded));
+  if (!filePath.startsWith(ROOT_DIR)) return null;
 
   if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
     const indexHtml = path.join(filePath, 'index.html');
@@ -124,7 +125,7 @@ function startServer(port = 3000) {
     console.log(`======================================================\n`);
   });
 
-  server.on('error', (err) => {
+  server.once('error', (err) => {
     if (err.code === 'EADDRINUSE') {
       console.log(`Port ${port} is in use, trying ${port + 1}...`);
       startServer(port + 1);

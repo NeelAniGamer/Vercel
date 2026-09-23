@@ -3,8 +3,8 @@
   if (window._colRouterRunning) return
   window._colRouterRunning = true
   try {
-    // Fetch global config from GitHub/Vercel
-    const res = await fetch('config.json?t=' + new Date().getTime())
+    // Fetch global config from GitHub/Vercel (root-absolute so /Traffic/* pages resolve)
+    const res = await fetch('/config.json?t=' + new Date().getTime())
     if (!res.ok) return
     const config = await res.json()
 

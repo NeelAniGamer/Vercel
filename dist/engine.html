@@ -344,7 +344,7 @@
       </div>
 
       <div id="hud-surface">
-        <img id="hud-img" src="" alt="Surface" loading="lazy" />
+        <img id="hud-img" alt="Surface" loading="lazy" />
         <div id="hud-img-overlay"></div>
       </div>
 
@@ -644,7 +644,7 @@
 
         function initStars() {
           stars = []
-          const N = Math.min(Math.floor((W * H) / 3000), 500)
+          const N = Math.min(Math.floor((W * H) / 5000), 280)
           for (let i = 0; i < N; i++) {
             stars.push({
               x: Math.random() * W,

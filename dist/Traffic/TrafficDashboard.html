@@ -11,9 +11,9 @@
     <link rel="icon" type="image/png" href="../Icon.png" />
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,600;1,400&family=Space+Mono&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <script src="traffic-charts.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script defer src="traffic-charts.js"></script>
     <link rel="stylesheet" href="traffic-charts.css" />
     <link rel="stylesheet" href="welcome-back.css" />
 
@@ -861,11 +861,63 @@
       }
 
 
+      /* ── Podium motion: staggered rise-in per spot ── */
+      /* `backwards` (not `forwards`) so the :hover lift keeps working after entry */
+      .podium-spot {
+        animation: podiumRiseIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+      }
+      @keyframes podiumRiseIn {
+        from { opacity: 0; transform: translateY(18px) scale(0.92); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+      }
+      /* ── First place: gentle victory float + breathing glow ── */
+      .podium-spot.first .podium-avatar {
+        animation: champFloat 3.2s ease-in-out 0.6s infinite;
+      }
+      @keyframes champFloat {
+        0%, 100% { transform: translateY(0); box-shadow: 0 0 20px rgba(245,158,11,0.3); }
+        50%      { transform: translateY(-5px); box-shadow: 0 0 32px rgba(245,158,11,0.55); }
+      }
+      /* ── Rank-1 row spotlight (only the leader gets the moving sheen) ── */
+      .leaderboard-row[data-rank="1"] {
+        position: relative;
+        overflow: hidden;
+      }
+      .leaderboard-row[data-rank="1"]::after {
+        content: '';
+        position: absolute; top: 0; bottom: 0; width: 45%;
+        background: linear-gradient(100deg, transparent, rgba(245,158,11,0.10), transparent);
+        animation: leaderSheen 3.6s ease-in-out 1s infinite;
+        pointer-events: none;
+      }
+      @keyframes leaderSheen {
+        0%   { left: -45%; }
+        55%, 100% { left: 100%; }
+      }
+      /* ── Gold tier badge shimmer ── */
+      .tier-badge.gold {
+        position: relative;
+        overflow: hidden;
+      }
+      .tier-badge.gold::after {
+        content: '';
+        position: absolute; top: 0; bottom: 0; width: 50%;
+        background: linear-gradient(100deg, transparent, rgba(251,191,36,0.35), transparent);
+        animation: leaderSheen 2.8s ease-in-out 0.8s infinite;
+        pointer-events: none;
+      }
+
+
       @media (prefers-reduced-motion: reduce) {
-        .leaderboard-row, .rank .rank-num, .rank-change, .leaderboard-row .rank {
+        .leaderboard-row, .rank .rank-num, .rank-change, .leaderboard-row .rank,
+        .podium-spot, .podium-spot.first .podium-avatar,
+        .leaderboard-row[data-rank="1"]::after, .tier-badge.gold::after {
           animation: none !important;
           opacity: 1 !important;
           transform: none !important;
+        }
+        .leaderboard-row[data-rank="1"]::after, .tier-badge.gold::after {
+          display: none !important;
         }
       }
 
@@ -1542,7 +1594,7 @@
 
                     <div class="lb-stats-header">
             <div class="total-players"><span class="dot"></span> <span id="lb-total-count">Loading...</span></div>
-            <div>Top performers</div>
+            <div style="display:flex;gap:12px;align-items:center;"><span id="lb-updated-at" style="font-size:0.7rem;color:var(--muted);"></span><div>Top performers</div></div>
           </div>
 
                     <div id="lb-panel-xp" class="lb-panel" role="tabpanel" aria-labelledby="lb-tab-xp">
@@ -1843,14 +1895,15 @@
 
         ;[document.getElementById('avatar-sm'), document.getElementById('hero-avatar')].forEach(el => {
           if (!el) return;
-          let userPhoto = null
+          // Live session first (Google PFP); never stale snapshots or other accounts
+          let userPhoto = (window.colUser && (window.colUser.picture || (window.colUser.user_metadata && window.colUser.user_metadata.avatar_url))) || null
           try {
-            if (!_isReadOnlyMode) {
+            if (!userPhoto && !_isReadOnlyMode) {
               const ls = localStorage.getItem('col_user')
-              if (ls) { const u = JSON.parse(ls); userPhoto = u.avatar || u.photo || null }
+              if (ls) { const u = JSON.parse(ls); userPhoto = u.picture || u.avatar || u.photo || null }
             }
           } catch (e) {}
-          if (userPhoto) el.innerHTML = '<img src="' + userPhoto + '" alt="avatar" />'
+          if (userPhoto) el.innerHTML = '<img src="' + String(userPhoto).replace(/"/g, '') + '" alt="avatar" />'
           else el.textContent = userInitials
         })
 
@@ -2610,6 +2663,13 @@
         document.querySelectorAll('.lb-your-rank').forEach(p => p.style.display = 'none')
         const yr = document.getElementById('lb-your-rank-' + board)
         if (yr && yr.innerHTML.trim()) yr.style.display = 'flex'
+
+        try {
+          const totalEl = document.getElementById('lb-total-count')
+          if (totalEl && window._lbCounts && window._lbCounts[board] != null) {
+            totalEl.textContent = window._lbCounts[board] + ' players'
+          }
+        } catch (e) {}
       }
 
       async function loadLeaderboard() {
@@ -2629,42 +2689,60 @@
         }
 
         const EMPTY_MSG = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:0.85rem;">No data yet — be the first! 🚀</div>'
-        const ERROR_MSG = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:0.85rem;">Unable to load. Check connection.</div>'
+        const ERROR_MSG = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:0.85rem;">Unable to load. Check connection.<br><button onclick="loadLeaderboard()" style="margin-top:12px;padding:8px 18px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:var(--text);font-weight:700;cursor:pointer;">↻ Retry</button></div>'
         const AUTH_MSG  = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:0.85rem;">Sign in to view the leaderboard.</div>'
+        const OFFLINE_MSG = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:0.85rem;">Leaderboard service unreachable (offline or blocked).<br><button onclick="loadLeaderboard()" style="margin-top:12px;padding:8px 18px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:var(--text);font-weight:700;cursor:pointer;">↻ Retry</button></div>'
+
+        // Escape display names (stored-XSS guard: names come from the database)
+        function escLb(s) {
+          return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
+        }
 
         if (!window.supabaseClient) {
-          boards.forEach(b => { const el = document.getElementById('leaderboard-' + b); if (el) el.innerHTML = AUTH_MSG })
+          boards.forEach(b => { const el = document.getElementById('leaderboard-' + b); if (el) el.innerHTML = OFFLINE_MSG })
           return
         }
 
         const profileMap = {}
 
-        function renderBoard(containerId, board, users, metric) {
+        function renderBoard(containerId, board, users, metric, keyOf) {
           const container = document.getElementById(containerId)
           if (!container) return
           if (!users || users.length === 0) { container.innerHTML = EMPTY_MSG; return }
 
+          // Dense ranks: tied scores share a rank (1, 2, 2, 4…)
+          const kf = (typeof keyOf === 'function') ? keyOf : (() => 0)
+          let _dr = 0, _lk = null
+          const ranks = users.map(u => { const k = kf(u); if (_lk === null || k !== _lk) { _dr++; _lk = k } return _dr })
 
           const podiumEl = document.getElementById('lb-podium-' + board)
           if (podiumEl) {
             if (users.length >= 1) {
-              const podiumOrder = []
-              const podiumClasses = []
-              const podiumMedals = []
-              if (users.length >= 2) { podiumOrder.push(users[1]); podiumClasses.push('second'); podiumMedals.push('🥈') }
-              if (users.length >= 1) { podiumOrder.push(users[0]); podiumClasses.push('first'); podiumMedals.push('🥇') }
-              if (users.length >= 3) { podiumOrder.push(users[2]); podiumClasses.push('third'); podiumMedals.push('🥉') }
-              podiumEl.innerHTML = podiumOrder.map((u, idx) => {
-                const name = profileMap[u.user_id] || u.display_name || u.username || 'Anon'
-                const score = u.score || u.badge_count || u.modules_completed || 0
-                const initial = name.charAt(0).toUpperCase()
-                return `<div class="podium-spot ${podiumClasses[idx]}">
-                  <div class="podium-avatar" style="background: linear-gradient(135deg, ${idx===1?'#fbbf24':idx===0?'#94a3b8':'#d97706'}, ${idx===1?'#f59e0b':idx===0?'#64748b':'#b45309'})">
+              // Explicit [user, place] pairs: display order is 2nd, 1st, 3rd,
+              // but colors/medals must follow the PLACE (old code tinted by
+              // display index, so a lone #1 got a silver avatar).
+              const places = users.length >= 3
+                ? [[users[1], 2], [users[0], 1], [users[2], 3]]
+                : users.length >= 2
+                  ? [[users[1], 2], [users[0], 1]]
+                  : [[users[0], 1]]
+              const placeStyle = {
+                1: { cls: 'first', medal: '🥇', g1: '#fbbf24', g2: '#f59e0b' },
+                2: { cls: 'second', medal: '🥈', g1: '#94a3b8', g2: '#64748b' },
+                3: { cls: 'third', medal: '🥉', g1: '#d97706', g2: '#b45309' }
+              }
+              podiumEl.innerHTML = places.map(([u, place], idx) => {
+                const st = placeStyle[place]
+                const name = escLb(profileMap[u.user_id] || u.display_name || u.username || 'Anon')
+                const score = metric(u)
+                const initial = escLb(name.charAt(0).toUpperCase())
+                return `<div class="podium-spot ${st.cls}" style="animation-delay:${(idx * 0.12).toFixed(2)}s">
+                  <div class="podium-avatar" style="background: linear-gradient(135deg, ${st.g1}, ${st.g2})">
                     ${initial}
                   </div>
                   <div class="podium-name">${name}</div>
-                  <div class="podium-score">${score.toLocaleString()}</div>
-                  <div class="podium-base">${podiumMedals[idx]}</div>
+                  <div class="podium-score">${score}</div>
+                  <div class="podium-base">${st.medal}</div>
                 </div>`
               }).join('')
               podiumEl.style.display = 'flex'
@@ -2679,10 +2757,10 @@
             const youIdx = users.findIndex(u => u.user_id === currentUserId)
             if (youIdx >= 0) {
               const you = users[youIdx]
-              const yourRank = youIdx + 1
+              const yourRank = ranks[youIdx]
               const totalPlayers = users.length
               const percentile = totalPlayers > 1 ? Math.round(((totalPlayers - yourRank) / (totalPlayers - 1)) * 100) : 100
-              const name = profileMap[you.user_id] || you.display_name || 'You'
+              const name = escLb(profileMap[you.user_id] || you.display_name || 'You')
               yourRankEl.innerHTML = `
                 <div class="your-rank-num">#${yourRank}</div>
                 <div class="your-rank-info">
@@ -2701,7 +2779,13 @@
 
 
           const totalEl = document.getElementById('lb-total-count')
-          if (totalEl) totalEl.textContent = users.length + ' players'
+          if (totalEl) {
+            window._lbCounts = window._lbCounts || {}
+            window._lbCounts[board] = users.length
+            const activeTab = document.querySelector('.lb-tab.active')
+            const activeBoard = activeTab ? activeTab.dataset.board : board
+            totalEl.textContent = (window._lbCounts[activeBoard] || users.length) + ' players'
+          }
 
 
           const storageKey = 'lb_ranks_' + (currentUserId || 'anon') + '_' + board
@@ -2713,7 +2797,7 @@
           } catch(e) {}
 
           const currentRanks = {}
-          users.forEach((u, i) => { if (u.user_id) currentRanks[u.user_id] = i + 1 })
+          users.forEach((u, i) => { if (u.user_id) currentRanks[u.user_id] = ranks[i] })
           try {
             localStorage.setItem(storageKey, JSON.stringify(currentRanks))
           } catch(e) {}
@@ -2729,8 +2813,8 @@
 
           const rows = users.slice(0).map((u, i) => {
             const isYou = u.user_id && u.user_id === currentUserId
-            const displayUsername = profileMap[u.user_id] || u.display_name || u.username || u.full_name || 'Anonymous'
-            const curRank = i + 1
+            const displayUsername = escLb(profileMap[u.user_id] || u.display_name || u.username || u.full_name || 'Anonymous')
+            const curRank = ranks[i]
             const prevRank = u.user_id ? prevRanks[u.user_id] : null
             let rankChangeHtml = ''
             let rowClass = isYou ? ' you' : ''
@@ -2887,16 +2971,16 @@
         }
 
         if (certsByScore && certsByScore.length > 0) {
-          renderBoard('leaderboard-xp', 'xp', certsByScore, u => `${(u.score || 0).toLocaleString()} XP`)
+          renderBoard('leaderboard-xp', 'xp', certsByScore, u => `${(u.score || 0).toLocaleString()} XP`, u => (u.score || 0))
           const byModules = [...certsByScore].sort((a, b) => (b.modules_completed || 0) - (a.modules_completed || 0))
-          renderBoard('leaderboard-modules', 'modules', byModules, u => `${u.modules_completed || 0} / 52 modules`)
+          renderBoard('leaderboard-modules', 'modules', byModules, u => `${u.modules_completed || 0} / 52 modules`, u => (u.modules_completed || 0))
         } else {
           ;['leaderboard-xp', 'leaderboard-modules'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = EMPTY_MSG })
         }
 
         if (wallets && wallets.length > 0) {
           const walletsNamed = wallets.map(w => ({ ...w, display_name: profileMap[w.user_id] || 'Learner' }))
-          renderBoard('leaderboard-civic', 'civic', walletsNamed, u => `₹${(u.balance || 0).toLocaleString()}`)
+          renderBoard('leaderboard-civic', 'civic', walletsNamed, u => `₹${(u.balance || 0).toLocaleString()}`, u => (u.balance || 0))
         } else {
           const el = document.getElementById('leaderboard-civic'); if (el) el.innerHTML = EMPTY_MSG
         }
@@ -2907,10 +2991,27 @@
           const badgeUsers = Object.entries(badgeCount)
             .sort((a, b) => b[1] - a[1])
             .map(([uid, count]) => ({ user_id: uid, display_name: profileMap[uid] || 'Learner', badge_count: count }))
-          renderBoard('leaderboard-badges', 'badges', badgeUsers, u => `${u.badge_count} badge${u.badge_count !== 1 ? 's' : ''}`)
+          renderBoard('leaderboard-badges', 'badges', badgeUsers, u => `${u.badge_count} badge${u.badge_count !== 1 ? 's' : ''}`, u => u.badge_count)
         } else {
           const el = document.getElementById('leaderboard-badges'); if (el) el.innerHTML = EMPTY_MSG
         }
+
+        if (window._lbUpdatedAt) {
+          try {
+            const stamp = document.getElementById('lb-updated-at')
+            if (stamp) stamp.textContent = 'Updated ' + new Date(window._lbUpdatedAt).toLocaleTimeString()
+          } catch (e) {}
+        }
+        window._lbUpdatedAt = Date.now()
+
+        // Scope podiums + your-rank cards to the active tab on first paint.
+        // (renderBoard shows each board's extras; without this, all 4 podiums
+        // stack vertically until the user clicks a tab — the reported bug.)
+        try {
+          const activeTab = document.querySelector('.lb-tab.active')
+          const activeBoard = activeTab ? activeTab.dataset.board : 'xp'
+          if (typeof switchLbTab === 'function') switchLbTab(activeBoard)
+        } catch (e) {}
       }
 
 

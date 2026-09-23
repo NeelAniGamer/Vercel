@@ -66,6 +66,22 @@ class TrafficAudioEngine {
 
       this.masterGain.connect(comp);
       comp.connect(this.ctx.destination);
+      // Sub-mix buses: voice (horns/sirens/dialogue stingers), world
+      // (engine/wind/crash), ui (clicks). Each persists its own volume.
+      const mkBus = (key, def) => {
+        const g = this.ctx.createGain();
+        let v = def;
+        try {
+          const s = localStorage.getItem('traffic_bus_' + key);
+          if (s !== null && !isNaN(parseFloat(s))) v = Math.max(0, Math.min(1, parseFloat(s)));
+        } catch (e) {}
+        g.gain.value = v;
+        g.connect(this.masterGain);
+        return g;
+      };
+      this.voiceGain = mkBus('voice', 1);
+      this.worldGain = mkBus('world', 1);
+      this.uiGain = mkBus('ui', 1);
       this.initialized = true;
     } catch (e) {
       // AudioContext creation silently deferred until user gesture
@@ -84,6 +100,43 @@ class TrafficAudioEngine {
     }
   }
 
+  // Per-bus volume (voice/world/ui), persisted. Ducking never touches these.
+  setBusVolume(bus, volume) {
+    const v = Math.max(0, Math.min(1, typeof volume === 'number' ? volume : parseFloat(volume)));
+    const g = bus === 'voice' ? this.voiceGain : bus === 'world' ? this.worldGain : bus === 'ui' ? this.uiGain : null;
+    if (g) {
+      try { g.gain.setTargetAtTime(v * (this._duckFactor || 1), this.ctx.currentTime, 0.05); }
+      catch (e) { try { g.gain.value = v; } catch (e2) {} }
+      try { localStorage.setItem('traffic_bus_' + bus, String(v)); } catch (e) {}
+    }
+  }
+
+  // Duck the world bus under dialogue/voice moments, then restore.
+  // factor 0.5 ≈ −6dB. Re-calling extends the hold; volumes stay intact.
+  duckWorld(factor = 0.5, holdMs = 4000) {
+    if (!this.ctx || !this.worldGain) return;
+    try {
+      this._duckFactor = Math.max(0.05, Math.min(1, factor));
+      this.worldGain.gain.cancelScheduledValues(this.ctx.currentTime);
+      this.worldGain.gain.setTargetAtTime(this._duckBase() * this._duckFactor, this.ctx.currentTime, 0.15);
+      clearTimeout(this._duckTimer);
+      this._duckTimer = setTimeout(() => {
+        try {
+          this._duckFactor = 1;
+          this.worldGain.gain.setTargetAtTime(this._duckBase(), this.ctx.currentTime, 0.4);
+        } catch (e) {}
+      }, holdMs);
+    } catch (e) {}
+  }
+
+  _duckBase() {
+    try {
+      const s = localStorage.getItem('traffic_bus_world');
+      if (s !== null && !isNaN(parseFloat(s))) return Math.max(0, Math.min(1, parseFloat(s)));
+    } catch (e) {}
+    return 1;
+  }
+
   _ensureUnlocked() {
     this._initContext();
     if (this.ctx && this.ctx.state === 'suspended') {
@@ -92,7 +145,42 @@ class TrafficAudioEngine {
   }
 
   // ── 1. SUPERCAR V8 / V10 ACOUSTIC ENGINE SYNTHESIZER ──
-  startEngine(initialRpm = 0.20) {
+  // Per-vehicle engine character: real cars don't all sound like one sedan.
+  // freqMul shifts the whole engine up/down, filterMul opens/closes the intake,
+  // gainMul balances loudness (a truck is felt more than heard vs a bike).
+  static ENGINE_PRESETS = {
+    default:  { freqMul: 1.0,  filterMul: 1.0,  gainMul: 1.0 },
+    car:      { freqMul: 1.0,  filterMul: 1.0,  gainMul: 1.0 },
+    taxi:     { freqMul: 1.1,  filterMul: 1.05, gainMul: 1.0 },
+    // High-revving performance cars: scream higher, brighter intake
+    supercar_white: { freqMul: 1.4, filterMul: 1.5, gainMul: 1.1 },
+    sports_cyan:    { freqMul: 1.4, filterMul: 1.5, gainMul: 1.1 },
+    bmw_m4:         { freqMul: 1.3, filterMul: 1.35, gainMul: 1.1 },
+    nilu_27:        { freqMul: 1.5, filterMul: 1.6, gainMul: 1.15 },
+    // Singles & two-strokes: buzzy, thin, quieter
+    bike:           { freqMul: 1.9, filterMul: 1.2, gainMul: 0.7 },
+    splendor:       { freqMul: 1.9, filterMul: 1.2, gainMul: 0.7 },
+    activa:         { freqMul: 2.0, filterMul: 1.15, gainMul: 0.65 },
+    ktm:            { freqMul: 1.7, filterMul: 1.3, gainMul: 0.8 },
+    cyberpunk_bike: { freqMul: 2.2, filterMul: 1.4, gainMul: 0.6 },
+    cycle:          { freqMul: 1.0, filterMul: 0.4, gainMul: 0.0 },
+    auto:           { freqMul: 2.3, filterMul: 0.9, gainMul: 0.85 },
+    auto_yellow:    { freqMul: 2.3, filterMul: 0.9, gainMul: 0.85 },
+    // Diesels: low growl, darker intake, heavier body
+    bus:            { freqMul: 0.55, filterMul: 0.7, gainMul: 1.15 },
+    bus_green:      { freqMul: 0.55, filterMul: 0.7, gainMul: 1.15 },
+    truck:          { freqMul: 0.5,  filterMul: 0.65, gainMul: 1.2 },
+    ambulance:      { freqMul: 0.9,  filterMul: 1.0, gainMul: 1.05 },
+    police:         { freqMul: 1.05, filterMul: 1.1, gainMul: 1.05 }
+  };
+
+  // Horn voices: air horns (truck/bus) sit much lower than a taxi's dual trumpet
+  static HORN_PITCH = {
+    taxi: 1.0, car: 1.0, bike: 1.25, auto: 1.15,
+    bus: 0.62, truck: 0.55, ambulance: 0.8, police: 0.9
+  };
+
+  startEngine(initialRpm = 0.20, vehicleType = 'car') {
     this._ensureUnlocked();
     if (!this.ctx || this._engineRunning) return;
 
@@ -102,6 +190,25 @@ class TrafficAudioEngine {
       this._currentGear = 1;
       this._gearRpm = initialRpm;
       this._lastShiftTime = now;
+      const preset = TrafficAudioEngine.ENGINE_PRESETS[vehicleType] || TrafficAudioEngine.ENGINE_PRESETS.default;
+      this._vehPreset = preset;
+
+      // ── Starter motor crank (3 churns) before the engine catches ──
+      try {
+        const crankOsc = this.ctx.createOscillator();
+        crankOsc.type = 'square';
+        crankOsc.frequency.setValueAtTime(75, now);
+        const crankGain = this.ctx.createGain();
+        crankGain.gain.setValueAtTime(0.001, now);
+        for (let c = 0; c < 3; c++) {
+          crankGain.gain.linearRampToValueAtTime(0.10, now + c * 0.11 + 0.02);
+          crankGain.gain.linearRampToValueAtTime(0.001, now + c * 0.11 + 0.10);
+        }
+        crankOsc.connect(crankGain);
+        crankGain.connect(this.worldGain);
+        crankOsc.start(now);
+        crankOsc.stop(now + 0.36);
+      } catch (e) {}
 
       // Master engine volume gain
       const engineGain = this.ctx.createGain();
@@ -160,10 +267,28 @@ class TrafficAudioEngine {
       turboOsc.connect(turboFilter);
       turboFilter.connect(turboGain);
 
+      // ── Layer D: Wind + road noise (looped noise, gain follows speed) ──
+      const windLen = this.ctx.sampleRate * 2;
+      const windBuf = this.ctx.createBuffer(1, windLen, this.ctx.sampleRate);
+      const windData = windBuf.getChannelData(0);
+      for (let i = 0; i < windLen; i++) windData[i] = Math.random() * 2 - 1;
+      const windSrc = this.ctx.createBufferSource();
+      windSrc.buffer = windBuf;
+      windSrc.loop = true;
+      const windFilter = this.ctx.createBiquadFilter();
+      windFilter.type = 'lowpass';
+      windFilter.frequency.setValueAtTime(400, now);
+      const windGain = this.ctx.createGain();
+      windGain.gain.setValueAtTime(0.0001, now);
+      windSrc.connect(windFilter);
+      windFilter.connect(windGain);
+      windGain.connect(this.worldGain);
+      windSrc.start(now);
+
       // Connect all engine layers
       engineFilter.connect(engineGain);
       turboGain.connect(engineGain);
-      engineGain.connect(this.masterGain);
+      engineGain.connect(this.worldGain);
 
       subOsc.start(now);
       saw1.start(now);
@@ -178,6 +303,9 @@ class TrafficAudioEngine {
         saw2,
         turboOsc,
         turboGain,
+        windSrc,
+        windFilter,
+        windGain,
         baseFreq: 32
       };
     } catch (e) {}
@@ -220,14 +348,15 @@ class TrafficAudioEngine {
       this._gearRpm += (targetRpm - this._gearRpm) * 0.18;
       const rpm = this._gearRpm;
 
-      // Frequencies for smooth combustion pulses (warm rumble)
-      const baseFreq = 30 + rpm * 75 + (isBoosting ? 18 : 0);
+      // Frequencies for smooth combustion pulses (warm rumble), voiced per vehicle
+      const preset = this._vehPreset || TrafficAudioEngine.ENGINE_PRESETS.default;
+      const baseFreq = (30 + rpm * 75 + (isBoosting ? 18 : 0)) * preset.freqMul;
       this.engineNode.subOsc.frequency.setTargetAtTime(baseFreq, now, 0.03);
       this.engineNode.saw1.frequency.setTargetAtTime(baseFreq * 2.0, now, 0.03);
       this.engineNode.saw2.frequency.setTargetAtTime(baseFreq * 3.0, now, 0.03);
 
       // Filter cutoff sweeps upward with RPM & throttle - capped comfortably at ~1800Hz
-      const filterCutoff = 280 + rpm * 950 + (isThrottle ? 500 : 0) + (isBoosting ? 300 : 0);
+      const filterCutoff = (280 + rpm * 950 + (isThrottle ? 500 : 0) + (isBoosting ? 300 : 0)) * preset.filterMul;
       this.engineNode.filter.frequency.setTargetAtTime(filterCutoff, now, 0.04);
 
       // Subtle turbo spool airflow (soft and gentle background)
@@ -237,8 +366,15 @@ class TrafficAudioEngine {
       this.engineNode.turboGain.gain.setTargetAtTime(turboVol, now, 0.06);
 
       // Engine master volume - balanced and comfortable
-      const targetGain = 0.22 + (isThrottle ? 0.12 : 0.02) + rpm * 0.14 + (isBoosting ? 0.08 : 0);
+      const targetGain = (0.22 + (isThrottle ? 0.12 : 0.02) + rpm * 0.14 + (isBoosting ? 0.08 : 0)) * preset.gainMul;
       this.engineNode.gain.gain.setTargetAtTime(targetGain, now, 0.04);
+
+      // Wind + rolling noise follows road speed (bicycles get almost none via gainMul)
+      if (this.engineNode.windGain) {
+        const windVol = Math.min(0.11, absSpeed * 0.004) * (0.4 + 0.6 * preset.gainMul);
+        this.engineNode.windGain.gain.setTargetAtTime(windVol, now, 0.15);
+        this.engineNode.windFilter.frequency.setTargetAtTime(350 + absSpeed * 28, now, 0.2);
+      }
 
       // Detect throttle release from high RPM -> Turbo Blow-off valve ('pshh-t-t-t')
       if (this._prevThrottle && !isThrottle && rpm > 0.55) {
@@ -287,7 +423,7 @@ class TrafficAudioEngine {
 
       noise.connect(f);
       f.connect(g);
-      g.connect(this.masterGain);
+      g.connect(this.worldGain);
 
       noise.start(now);
       noise.stop(now + dur);
@@ -309,7 +445,7 @@ class TrafficAudioEngine {
       popGain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
 
       popOsc.connect(popGain);
-      popGain.connect(this.masterGain);
+      popGain.connect(this.worldGain);
       popOsc.start(now);
       popOsc.stop(now + 0.06);
 
@@ -328,7 +464,7 @@ class TrafficAudioEngine {
       nG.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
       nSrc.connect(nFilter);
       nFilter.connect(nG);
-      nG.connect(this.masterGain);
+      nG.connect(this.worldGain);
       nSrc.start(now);
       nSrc.stop(now + 0.05);
     } catch (e) {}
@@ -346,6 +482,7 @@ class TrafficAudioEngine {
           en.saw1.stop();
           en.saw2.stop();
           en.turboOsc.stop();
+          if (en.windSrc) { try { en.windGain.gain.setTargetAtTime(0.0001, this.ctx.currentTime, 0.05); en.windSrc.stop(); } catch (e) {} }
           en.gain.disconnect();
         } catch (e) {}
       }, 300);
@@ -403,11 +540,11 @@ class TrafficAudioEngine {
         osc.connect(gain);
         gain.connect(panner);
         nGain.connect(panner);
-        panner.connect(this.masterGain);
+        panner.connect(this.worldGain);
       } else {
         osc.connect(gain);
-        gain.connect(this.masterGain);
-        nGain.connect(this.masterGain);
+        gain.connect(this.worldGain);
+        nGain.connect(this.worldGain);
       }
 
       osc.start(now);
@@ -432,7 +569,7 @@ class TrafficAudioEngine {
       latchG.gain.setValueAtTime(0.40, now);
       latchG.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
       latch.connect(latchG);
-      latchG.connect(this.masterGain);
+      latchG.connect(this.worldGain);
       latch.start(now);
       latch.stop(now + 0.035);
 
@@ -445,7 +582,7 @@ class TrafficAudioEngine {
       bodyG.gain.setValueAtTime(0.85, now + 0.015);
       bodyG.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
       body.connect(bodyG);
-      bodyG.connect(this.masterGain);
+      bodyG.connect(this.worldGain);
       body.start(now + 0.015);
       body.stop(now + 0.26);
     } catch (e) {}
@@ -464,7 +601,7 @@ class TrafficAudioEngine {
       latchG.gain.setValueAtTime(0.35, now);
       latchG.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
       latch.connect(latchG);
-      latchG.connect(this.masterGain);
+      latchG.connect(this.worldGain);
       latch.start(now);
       latch.stop(now + 0.09);
     } catch (e) {}
@@ -484,7 +621,7 @@ class TrafficAudioEngine {
       g1.gain.setValueAtTime(0.45, now);
       g1.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
       osc1.connect(g1);
-      g1.connect(this.masterGain);
+      g1.connect(this.worldGain);
       osc1.start(now);
       osc1.stop(now + 0.03);
 
@@ -496,16 +633,23 @@ class TrafficAudioEngine {
       g2.gain.setValueAtTime(0.55, now + 0.025);
       g2.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
       osc2.connect(g2);
-      g2.connect(this.masterGain);
+      g2.connect(this.worldGain);
       osc2.start(now + 0.025);
       osc2.stop(now + 0.08);
     } catch (e) {}
   }
 
   // ── 5. AUTHENTIC MUMBAI DUAL-TONE BRASS HORN ──
-  playHorn(duration = 0.38) {
+  playHorn(duration = 0.38, pitch = 1) {
     this._ensureUnlocked();
     if (!this.ctx) return;
+    // NPC horns arrive as a horn-voice name (e.g. 'taxi', 'truck') — map to pitch.
+    // (Previously a string here poisoned the envelope math and horns went silent.)
+    if (typeof duration === 'string') {
+      pitch = TrafficAudioEngine.HORN_PITCH[duration] || 1;
+      duration = 0.38;
+    }
+    if (typeof pitch !== 'number' || !(pitch > 0)) pitch = 1;
     try {
       const now = this.ctx.currentTime;
       const g = this.ctx.createGain();
@@ -514,25 +658,25 @@ class TrafficAudioEngine {
       g.gain.setValueAtTime(0.28, now + duration - 0.06);
       g.gain.exponentialRampToValueAtTime(0.001, now + duration);
 
-      // Warm acoustic Mumbai electric dual trumpets (A4 435Hz + C#5 548Hz)
+      // Warm acoustic Mumbai electric dual trumpets (A4 435Hz + C#5 548Hz), voiced by pitch
       const o1 = this.ctx.createOscillator();
       o1.type = 'triangle';
-      o1.frequency.setValueAtTime(435, now);
+      o1.frequency.setValueAtTime(435 * pitch, now);
 
       const o2 = this.ctx.createOscillator();
       o2.type = 'sawtooth';
-      o2.frequency.setValueAtTime(548, now);
+      o2.frequency.setValueAtTime(548 * pitch, now);
 
-      // Lowpass filter to eliminate harsh buzzy bite
+      // Lowpass filter to eliminate harsh buzzy bite (opens up for shrill bike horns)
       const f = this.ctx.createBiquadFilter();
       f.type = 'lowpass';
-      f.frequency.value = 1100;
+      f.frequency.value = 1100 * Math.min(1.6, pitch);
       f.Q.value = 0.8;
 
       o1.connect(f);
       o2.connect(f);
       f.connect(g);
-      g.connect(this.masterGain);
+      g.connect(this.voiceGain);
 
       o1.start(now);
       o2.start(now);
@@ -543,6 +687,38 @@ class TrafficAudioEngine {
 
   playHonk(duration = 0.38) {
     return this.playHorn(duration);
+  }
+
+  // ── F1 Juice: near-miss air whoosh (short filtered noise sweep) ──
+  playWhoosh() {
+    this._ensureUnlocked();
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+    if (now - (this._lastWhooshTime || 0) < 0.5) return;
+    this._lastWhooshTime = now;
+    try {
+      const dur = 0.28;
+      const buffer = this.ctx.createBuffer(1, Math.floor(this.ctx.sampleRate * dur), this.ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < data.length; i++) {
+        const t = i / data.length;
+        data[i] = (Math.random() * 2 - 1) * Math.sin(t * Math.PI) * 0.7;
+      }
+      const src = this.ctx.createBufferSource();
+      src.buffer = buffer;
+      const f = this.ctx.createBiquadFilter();
+      f.type = 'bandpass';
+      f.Q.value = 1.2;
+      f.frequency.setValueAtTime(500, now);
+      f.frequency.exponentialRampToValueAtTime(3800, now + dur);
+      const g = this.ctx.createGain();
+      g.gain.setValueAtTime(0.22, now);
+      g.gain.exponentialRampToValueAtTime(0.001, now + dur);
+      src.connect(f);
+      f.connect(g);
+      g.connect(this.worldGain);
+      src.start(now);
+    } catch (e) {}
   }
 
   // ── 6. DYNAMIC TIRE SCREECH & ASPHALT DRIFT ──
@@ -578,7 +754,7 @@ class TrafficAudioEngine {
 
       noise.connect(f);
       f.connect(g);
-      g.connect(this.masterGain);
+      g.connect(this.worldGain);
 
       noise.start(now);
       noise.stop(now + duration);
@@ -608,7 +784,7 @@ class TrafficAudioEngine {
 
       osc.connect(f);
       f.connect(g);
-      g.connect(this.masterGain);
+      g.connect(this.voiceGain);
 
       osc.start(now);
       osc.stop(now + 1.25);
@@ -632,7 +808,7 @@ class TrafficAudioEngine {
         g.gain.setValueAtTime(0.28, now + i * 0.055);
         g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.055 + 0.32);
         osc.connect(g);
-        g.connect(this.masterGain);
+        g.connect(this.voiceGain);
         osc.start(now + i * 0.055);
         osc.stop(now + i * 0.055 + 0.35);
       });
@@ -654,7 +830,7 @@ class TrafficAudioEngine {
       subG.gain.setValueAtTime(0.90 * intensity, now);
       subG.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
       sub.connect(subG);
-      subG.connect(this.masterGain);
+      subG.connect(this.worldGain);
       sub.start(now);
       sub.stop(now + 0.42);
 
@@ -678,7 +854,7 @@ class TrafficAudioEngine {
 
       noise.connect(filter);
       filter.connect(nGain);
-      nGain.connect(this.masterGain);
+      nGain.connect(this.worldGain);
 
       noise.start(now);
       noise.stop(now + 0.42);
@@ -699,7 +875,7 @@ class TrafficAudioEngine {
       g.gain.setValueAtTime(0.22, now);
       g.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
       osc.connect(g);
-      g.connect(this.masterGain);
+      g.connect(this.uiGain);
       osc.start(now);
       osc.stop(now + 0.025);
     } catch (e) {}
@@ -725,7 +901,7 @@ class TrafficAudioEngine {
         g.gain.setValueAtTime(0.38, now + n.t);
         g.gain.exponentialRampToValueAtTime(0.001, now + n.t + n.d);
         osc.connect(g);
-        g.connect(this.masterGain);
+        g.connect(this.voiceGain);
         osc.start(now + n.t);
         osc.stop(now + n.t + n.d + 0.05);
       });

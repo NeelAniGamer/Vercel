@@ -4,7 +4,8 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995"
      crossorigin="anonymous"></script>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#070a14">
   <title>Driving Simulator React Mode</title>
     <link rel="icon" type="image/png" href="../Icon.png" />
   <script src="https://cdn.tailwindcss.com"></script>
@@ -14,11 +15,18 @@
   <link rel="stylesheet" href="traffic-mobile.css" />
 </head>
 <body class="bg-[#0b1020] m-0 overflow-hidden text-white">
-  <!-- React will mount into this div -->
-  <div id="root"></div>
+  <!-- React will mount into this div (bundle built to dist/ by node build.js;
+       root serves Driving.html until then) -->
+  <div id="root">
+    <div style="display:flex;height:100vh;align-items:center;justify-content:center;flex-direction:column;gap:16px;font-family:sans-serif;text-align:center;padding:24px;">
+      <h1>React Simulator Builds At Deploy Time</h1>
+      <p>The bundled app ships in <code>dist/Traffic/simulator-bundle.js</code>. Play the live build:</p>
+      <a href="Driving.html" style="padding:12px 28px;border-radius:12px;background:#f2b84b;color:#000;font-weight:800;text-decoration:none;">Play Driving Simulator</a>
+    </div>
+  </div>
 
-  <!-- Load the bundled React app -->
-  <script type="module" src="simulator-bundle.js"></script>
+  <!-- Load the bundled React app (present in dist/ after build; 404-safe in root) -->
+  <script>fetch('simulator-bundle.js',{method:'HEAD'}).then(function(r){if(r.ok){var s=document.createElement('script');s.type='module';s.src='simulator-bundle.js';document.body.appendChild(s);var fb=document.getElementById('root');}}).catch(function(){});</script>
   <script src="welcome-back.js"></script>
 </body>
 </html>

@@ -88,10 +88,13 @@ code {
   /* Hamburger button */
   .mmb {
     display: flex !important;
-    width: var(--tap-opt);
-    height: var(--tap-opt);
-    min-width: var(--tap-opt);
-    min-height: var(--tap-opt);
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    min-height: 38px !important;
     align-items: center;
     justify-content: center;
     border-radius: 50%;

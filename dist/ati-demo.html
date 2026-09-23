@@ -31,8 +31,8 @@
         --dim: #8891aa;
         --signal: #f2b84b;
         --ion: #5ed4f5;
-        --teal: #00f0cc;
-        --plasma: #b89bff;
+        --teal: #a3e635;
+        --plasma: #fb923c;
         --em: #34d399;
         --nav: rgba(7, 10, 20, 0.68);
         --serif: 'Instrument Serif', Georgia, serif;
@@ -53,8 +53,8 @@
         --dim: #475569;
         --signal: #d97706;
         --ion: #0284c7;
-        --teal: #0d9488;
-        --plasma: #7c3aed;
+        --teal: #4d7c0f;
+        --plasma: #ea580c;
         --em: #059669;
         --nav: rgba(248, 250, 252, 0.9);
       }
@@ -184,8 +184,8 @@
       }
 
       .btn-auto-test {
-        background: linear-gradient(135deg, #4f46e5, #0284c7);
-        color: #ffffff;
+        background: linear-gradient(135deg, #65a30d, #4d7c0f);
+        color: #f7fee7;
         border: none;
         padding: 9px 18px;
         border-radius: 10px;
@@ -196,12 +196,12 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+        box-shadow: 0 4px 15px rgba(101, 163, 13, 0.35);
         transition: all 0.25s;
       }
       .btn-auto-test:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(79, 70, 229, 0.45);
+        box-shadow: 0 6px 20px rgba(101, 163, 13, 0.5);
       }
       .btn-auto-test.running {
         background: linear-gradient(135deg, #ef4444, #dc2626);
@@ -223,7 +223,7 @@
       /* Stats HUD */
       .stats-strip {
         display: grid;
-        grid-template-columns: repeat(5, 1fr);
+        grid-template-columns: repeat(6, 1fr);
         gap: 12px;
         margin-bottom: 20px;
       }
@@ -243,10 +243,134 @@
         font-family: var(--mono);
         line-height: 1;
       }
+      /* Typing Playbook & Doubt Solver */
+      .ati-section-title {
+        font-family: var(--mono);
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+        color: var(--signal);
+        text-align: center;
+        margin: 44px 0 18px;
+      }
+      .tips-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 12px;
+        margin-bottom: 8px;
+      }
+      .tip-card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: var(--r);
+        padding: 18px;
+      }
+      .tip-card h3 {
+        font-size: 0.95rem;
+        margin-bottom: 8px;
+        color: var(--ink);
+      }
+      .tip-card h3 span {
+        color: var(--teal);
+        font-family: var(--mono);
+        margin-right: 8px;
+      }
+      .tip-card p {
+        font-size: 0.86rem;
+        color: var(--dim);
+        line-height: 1.6;
+      }
+      .doubt-panel {
+        background: var(--panel);
+        border: 1px solid var(--lineb);
+        border-radius: var(--r);
+        padding: 24px 22px;
+        margin-bottom: 24px;
+      }
+      .doubt-note {
+        font-size: 0.82rem;
+        color: var(--dim);
+        margin-bottom: 14px;
+      }
+      .doubt-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 14px;
+      }
+      .doubt-chip {
+        padding: 7px 14px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--dim);
+        background: rgba(163, 230, 53, 0.06);
+        border: 1px solid var(--lineb);
+        cursor: pointer;
+      }
+      .doubt-chip:hover {
+        color: #070a14;
+        background: var(--teal);
+      }
+      .doubt-row {
+        display: flex;
+        gap: 10px;
+      }
+      .doubt-input {
+        flex: 1;
+        min-width: 0;
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: 1px solid var(--lineb);
+        background: var(--void2);
+        color: var(--ink);
+        font-size: 16px;
+        outline: none;
+      }
+      .doubt-input:focus {
+        border-color: var(--teal);
+      }
+      .doubt-ask {
+        padding: 12px 24px;
+        border-radius: 12px;
+        border: none;
+        background: var(--teal);
+        color: #070a14;
+        font-weight: 800;
+        font-size: 0.9rem;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .doubt-answer {
+        margin-top: 14px;
+        padding: 14px 16px;
+        border-radius: 12px;
+        background: var(--void2);
+        border-left: 3px solid var(--teal);
+        font-size: 0.9rem;
+        line-height: 1.65;
+        color: var(--ink);
+      }
+      .doubt-answer strong {
+        color: var(--teal);
+      }
+      @media (max-width: 640px) {
+        .stats-strip {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        .doubt-row {
+          flex-direction: column;
+        }
+        .doubt-ask {
+          width: 100%;
+        }
+      }
       .stat-val.acc { color: var(--em); }
       .stat-val.time { color: var(--ion); }
       .stat-val.streak { color: var(--plasma); }
       .stat-val.cpm { color: var(--teal); }
+      .stat-val.best { color: var(--signal); }
       .stat-lbl {
         font-family: var(--mono);
         font-size: 0.62rem;
@@ -276,7 +400,7 @@
         box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
       }
 
-      .terminal.glow-1 { border-color: var(--teal); box-shadow: 0 0 40px rgba(0, 240, 204, 0.2); }
+      .terminal.glow-1 { border-color: var(--teal); box-shadow: 0 0 40px rgba(163, 230, 53, 0.2); }
       .terminal.glow-2 { border-color: var(--signal); box-shadow: 0 0 60px rgba(242, 184, 75, 0.3); }
       .terminal.glow-3 { border-color: #f43f5e; box-shadow: 0 0 80px rgba(244, 63, 94, 0.4); }
 
@@ -321,6 +445,8 @@
         white-space: pre-wrap;
         max-height: 380px;
         overflow-y: auto;
+        /* A horizontal scrollbar can never appear; long tokens clip safely */
+        overflow-x: hidden;
       }
 
       .char { transition: color 0.1s, text-shadow 0.1s; display: inline-block; }
@@ -550,40 +676,209 @@
       }
 
       .hidden-input { position: absolute; opacity: 0; top: -9999px; }
+      /* ──── MOBILE RESPONSIVENESS ──── */
+      @media (max-width: 900px) {
+        .page-wrap {
+          /* clear the fixed top pill nav and the injected bottom nav bar */
+          padding: 104px 16px 110px;
+        }
+        .ati-hero { margin-bottom: 24px; }
+        .stats-strip {
+          grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+          gap: 8px;
+        }
+        .stat-card { padding: 12px 8px; }
+        .stat-val { font-size: 1.4rem; }
+        .stat-lbl { font-size: 0.55rem; letter-spacing: 0.08em; }
+        .term-bar {
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 8px;
+          padding: 10px 12px;
+        }
+        .sparkline-box {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 8px;
+          text-align: center;
+        }
+        #wpmCanvas { width: 100%; height: 44px; }
+        .kb-header {
+          flex-wrap: wrap;
+          gap: 8px;
+          justify-content: center;
+          text-align: center;
+        }
+        .kb-container { padding: 12px; }
+        .typing-area {
+          padding: 20px 14px;
+          font-size: clamp(1rem, 4.6vw, 1.35rem);
+          line-height: 1.9;
+          min-height: 160px;
+        }
+        .cursor { height: 1.2em; }
+      }
+      @media (max-width: 768px) {
+        /* Every key flexes so a full row fits the viewport — no h-scroll */
+        .kb-row { gap: 4px; margin-bottom: 4px; }
+        .key {
+          flex: 1 1 0;
+          min-width: 0;
+          height: 40px;
+          font-size: 0.72rem;
+          overflow: hidden;
+        }
+        .key.backspace,
+        .key.tab,
+        .key.caps,
+        .key.enter,
+        .key.shift {
+          flex: 1.7 1 0;
+          min-width: 0;
+        }
+        .key.space { flex: 6 1 0; min-width: 0; }
+        /* Long key labels shrink to symbols so keys can get narrow */
+        .key.backspace,
+        .key.tab,
+        .key.caps,
+        .key.enter,
+        .key.shift,
+        .key.space {
+          font-size: 0;
+        }
+        .key.backspace::after { content: "\232B"; font-size: 0.85rem; }
+        .key.tab::after { content: "\21E5"; font-size: 0.85rem; }
+        .key.caps::after { content: "\21EA"; font-size: 0.85rem; }
+        .key.enter::after { content: "\23CE"; font-size: 0.85rem; }
+        .key.shift::after { content: "\21E7"; font-size: 0.85rem; }
+      }
     </style>
   </head>
   <body>
     <!-- Navigation Bar -->
-    <nav class="top-nav">
+    <nav class="top-nav" id="topNav">
       <a href="/" class="nav-brand">
         <img src="Class.png" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" />
         <span class="brand-name">Class Of Learners</span>
       </a>
-      <div class="nav-links">
-        <a href="home" class="nav-link">Home</a>
-        <a href="about" class="nav-link">About</a>
-        <a href="school" class="nav-link">School</a>
-        <a href="Career" class="nav-link">Careers</a>
-        <div class="dropdown" onclick="this.classList.toggle('active')">
-          <button class="dropdown-btn act">Projects <span class="darr">▼</span></button>
+      <div class="nav-links" id="navLinks">
+        <a href="/" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
+          </svg>Home
+        </a>
+        <a href="about" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 16v-4" />
+            <path d="M12 8h.01" />
+          </svg>About
+        </a>
+        <a href="school" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" />
+            <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />
+          </svg>School
+        </a>
+        <a href="sneh-asha" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+          </svg>Sneh Asha
+        </a>
+        <a href="making" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+          </svg>Making
+        </a>
+        <div class="dropdown" id="projDD" onclick="this.classList.toggle('active')">
+          <button class="dropdown-btn act">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+              <line x1="8" y1="21" x2="16" y2="21" />
+              <line x1="12" y1="17" x2="12" y2="21" />
+            </svg>Projects <span class="darr">&#9660;</span>
+          </button>
           <div class="dropdown-content">
             <div class="dropdown-content-inner">
-              <a href="ati" class="active">Typing Instructor <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg></a>
-              <a href="solar">Solar Engine <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg></a>
-              <a href="gesture">Perceptus Flow <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg></a>
-              <a href="rpg">RPG Game <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></a>
-              <a href="qr">QR Studio Matrix <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></a>
+              <a href="ati" class="act">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="4 7 4 4 20 4 20 7" />
+                  <line x1="9" y1="20" x2="15" y2="20" />
+                  <line x1="12" y1="4" x2="12" y2="20" />
+                </svg>Typing Instructor
+              </a>
+              <a href="solar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="5" />
+                  <line x1="12" y1="1" x2="12" y2="3" />
+                  <line x1="12" y1="21" x2="12" y2="23" />
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                  <line x1="1" y1="12" x2="3" y2="12" />
+                  <line x1="21" y1="12" x2="23" y2="12" />
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                </svg>Solar Engine
+              </a>
+              <a href="gesture">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 8h1a4 4 0 010 8h-1" />
+                  <path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z" />
+                  <line x1="6" y1="1" x2="6" y2="4" />
+                  <line x1="10" y1="1" x2="10" y2="4" />
+                  <line x1="14" y1="1" x2="14" y2="4" />
+                </svg>Perceptus Flow
+              </a>
+              <a href="rpg">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                </svg>RPG Game
+              </a>
+              <a href="qr">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="2" width="8" height="8" rx="1" />
+                  <rect x="14" y="2" width="8" height="8" rx="1" />
+                  <rect x="2" y="14" width="8" height="8" rx="1" />
+                  <rect x="14" y="14" width="4" height="4" />
+                  <rect x="20" y="14" width="2" height="2" />
+                  <rect x="14" y="20" width="2" height="2" />
+                  <rect x="20" y="20" width="2" height="2" />
+                </svg>QR Studio Matrix
+              </a>
+              <a href="Terra3D/">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="2" y1="12" x2="22" y2="12" />
+                  <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+                </svg>Terra3D Atlas
+              </a>
             </div>
           </div>
         </div>
-        <a href="download" class="nav-link">Download</a>
-        <div class="tw">
-          <span class="tl" id="tLabel">Theme</span>
-          <label class="tsb">
-            <input type="checkbox" id="tsck" onchange="window.toggleTheme(this)" />
-            <div class="tst"><div class="tsth"></div></div>
-          </label>
+      </div>
+      <div class="nav-actions">
+        <div class="hz-toggle" onclick="hzToggle()">
+          <div class="hz-clouds"></div>
+          <div class="hz-stars"></div>
+          <div class="hz-orb"></div>
         </div>
+        <button class="nav-login-btn" id="navLoginBtn" onclick="if (window.openGlobalLogin) window.openGlobalLogin(); else if (window.openLogin) window.openLogin();">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>Sign In
+        </button>
+        <div class="nav-user-profile" id="navUserProfile" onclick="if (window.openGlobalLogin) window.openGlobalLogin(); else if (window.openLogin) window.openLogin();">
+          <div class="nav-user-avatar" id="navUserAv">?</div>
+          <span class="nun" id="navUserName">User</span>
+        </div>
+        <a href="download" class="nav-dl-btn desktop-dl">Downloads Hub</a>
+        <button class="mmb" id="mmb" aria-label="Toggle menu">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M3 6H21M3 12H21M3 18H21" stroke-width="1.5" stroke-linecap="round" />
+          </svg>
+        </button>
       </div>
     </nav>
 
@@ -669,6 +964,10 @@
           <div class="stat-val streak" id="statStreak">0</div>
           <div class="stat-lbl">Streak Multiplier</div>
         </div>
+        <div class="stat-card">
+          <div class="stat-val best" id="statBest">0</div>
+          <div class="stat-lbl">Personal Best</div>
+        </div>
       </div>
 
       <!-- Typing Terminal -->
@@ -741,11 +1040,11 @@
         <div class="kb-header">
           <span class="kb-title">Interactive QWERTY Finger Positioning &amp; Next-Key Radar</span>
           <div class="finger-guide-legend">
-            <div class="legend-item"><div class="legend-dot" style="background: #a855f7;"></div> Pinky</div>
+            <div class="legend-item"><div class="legend-dot" style="background: #fb923c;"></div> Pinky</div>
             <div class="legend-item"><div class="legend-dot" style="background: #3b82f6;"></div> Ring</div>
             <div class="legend-item"><div class="legend-dot" style="background: #10b981;"></div> Middle</div>
             <div class="legend-item"><div class="legend-dot" style="background: #f59e0b;"></div> Index</div>
-            <div class="legend-item"><div class="legend-dot" style="background: #06b6d4;"></div> Thumb</div>
+            <div class="legend-item"><div class="legend-dot" style="background: #a3e635;"></div> Thumb</div>
           </div>
         </div>
 
@@ -756,6 +1055,29 @@
 
       <!-- Hidden Input for Native Mobile & Desktop Typing -->
       <input type="text" class="hidden-input" id="hiddenInput" autocomplete="off" spellcheck="false" autocorrect="off" />
+
+      <!-- Typing Playbook -->
+      <div class="ati-section-title">Typing Playbook</div>
+      <div class="tips-grid">
+        <div class="tip-card"><h3><span>01</span>Accuracy Before Speed</h3><p>Every Mistake Costs Time And Breaks Streak. Hold 95% Accuracy First, Then Raise Pace By 5 WPM Steps.</p></div>
+        <div class="tip-card"><h3><span>02</span>Anchor On Home Row</h3><p>Rest Fingers On A S D F And J K L Semicolon. Feel The F And J Bumps To Reset Without Looking Down.</p></div>
+        <div class="tip-card"><h3><span>03</span>Fifteen Focused Minutes</h3><p>Short Daily Sessions Beat Weekend Marathons. Try One 60 Second Endurance Run Every Day.</p></div>
+        <div class="tip-card"><h3><span>04</span>Eyes On Screen</h3><p>Never Watch The Keyboard. Trust Muscle Memory And Let The Next-Key Radar Guide Your Fingers.</p></div>
+        <div class="tip-card"><h3><span>05</span>Drill Weak Keys</h3><p>Paste Tricky Words Or Symbols Into Custom Mode And Repeat Until They Feel Automatic.</p></div>
+        <div class="tip-card"><h3><span>06</span>Stay Loose</h3><p>Relaxed Wrists Type Faster. Shake Out Tension Between Runs And Keep A Steady Rhythm.</p></div>
+      </div>
+
+      <!-- Typing Doubt Solver -->
+      <div class="ati-section-title">Doubt Solver</div>
+      <div class="doubt-panel">
+        <p class="doubt-note">Ask Any Doubt About Typing, Scores, Or Practice. Answers Come From Built-In Study Notes.</p>
+        <div class="doubt-chips" id="atiDoubtChips"></div>
+        <div class="doubt-row">
+          <input type="text" class="doubt-input" id="atiDoubtInput" placeholder="Ask Anything, For Example: How Do I Type Faster?" aria-label="Ask A Typing Doubt" autocomplete="off" />
+          <button class="doubt-ask" id="atiDoubtAsk" type="button">Ask</button>
+        </div>
+        <div class="doubt-answer" id="atiDoubtAnswer" role="status" aria-live="polite" hidden></div>
+      </div>
     </div>
 
     <!-- Custom Text Modal -->
@@ -986,6 +1308,11 @@
         document.getElementById('statCPM').textContent = '0';
         document.getElementById('statAcc').textContent = '100%';
         document.getElementById('statStreak').textContent = '0';
+        try {
+          document.getElementById('statBest').textContent = localStorage.getItem('ati_best_wpm_' + duration) || '0';
+        } catch (e) {
+          document.getElementById('statBest').textContent = '0';
+        }
         document.getElementById('resultsOverlay').classList.remove('show');
         document.getElementById('terminal').className = 'terminal';
 
@@ -1113,6 +1440,26 @@
         document.getElementById('resKeys').textContent = totalKeys;
         document.getElementById('resStreak').textContent = maxStreak;
 
+        // Real consistency from pace stability (was a static placeholder)
+        let consistency = 100;
+        if (wpmHistory.length > 2) {
+          const mean = wpmHistory.reduce((a, b) => a + b, 0) / wpmHistory.length;
+          if (mean > 0) {
+            const variance = wpmHistory.reduce((a, b) => a + (b - mean) * (b - mean), 0) / wpmHistory.length;
+            consistency = Math.max(0, Math.round(100 - (Math.sqrt(variance) / mean) * 100));
+          }
+        }
+        document.getElementById('resConsistency').textContent = consistency + '%';
+
+        // Personal best persisted locally per test duration
+        try {
+          const bestKey = 'ati_best_wpm_' + duration;
+          const prevBest = parseInt(localStorage.getItem(bestKey) || '0', 10) || 0;
+          const newBest = Math.max(prevBest, finalWPM);
+          localStorage.setItem(bestKey, String(newBest));
+          document.getElementById('statBest').textContent = newBest;
+        } catch (e) {}
+
         // Grade assignment
         let grade = 'F';
         let gradeClass = 'grade-F';
@@ -1154,8 +1501,8 @@
 
         // Gradient under curve
         const grad = ctx.createLinearGradient(0, 0, 0, h);
-        grad.addColorStop(0, 'rgba(0, 240, 204, 0.25)');
-        grad.addColorStop(1, 'rgba(0, 240, 204, 0.0)');
+        grad.addColorStop(0, 'rgba(163, 230, 53, 0.25)');
+        grad.addColorStop(1, 'rgba(163, 230, 53, 0.0)');
 
         ctx.beginPath();
         ctx.moveTo(pts[0].x, pts[0].y);
@@ -1180,9 +1527,9 @@
           ctx.quadraticCurveTo(pts[i - 1].x, pts[i - 1].y, xc, yc);
         }
         ctx.lineTo(pts[pts.length - 1].x, pts[pts.length - 1].y);
-        ctx.strokeStyle = '#00f0cc';
+        ctx.strokeStyle = '#a3e635';
         ctx.lineWidth = 2;
-        ctx.shadowColor = 'rgba(0, 240, 204, 0.6)';
+        ctx.shadowColor = 'rgba(163, 230, 53, 0.6)';
         ctx.shadowBlur = 6;
         ctx.stroke();
         ctx.shadowBlur = 0;
@@ -1243,6 +1590,12 @@
           return;
         }
 
+        // Never steal keystrokes from real inputs (doubt solver, custom text)
+        var t = e.target;
+        if (t && t.id !== 'hiddenInput' && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable)) {
+          return;
+        }
+
         if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 't') {
           toggleAutoSim();
           return;
@@ -1263,6 +1616,122 @@
       window.addEventListener('load', () => {
         updateCursor();
       });
+
+      // Typing Doubt Solver (Built-In Study Notes)
+      ;(function () {
+        var TYPING_KB = [
+          { keys: ['wpm', 'speed', 'fast', 'words per minute'], title: 'WPM', answer: '<strong>WPM (Words Per Minute):</strong> Computed As (Correct Characters ÷ 5) ÷ Minutes Played. This Test Shows Net WPM, So Errors Lower Your Score. Most Beginners Type 30 To 40 WPM; 75 WPM Is Professional Level.' },
+          { keys: ['accuracy', 'accurate', 'mistake', 'error'], title: 'Accuracy', answer: '<strong>Accuracy:</strong> Correct Keystrokes ÷ Total Keystrokes × 100. Train Accuracy Before Speed: Every Error Costs Both Time And Streak. Aim For 95% Or Higher Before Pushing Pace.' },
+          { keys: ['home row', 'homerow', 'finger', 'asdf', 'jkl'], title: 'Home Row', answer: '<strong>Home Row:</strong> Rest Left Fingers On A S D F And Right Fingers On J K L Semicolon. The Bumps On F And J Guide You Without Looking. Each Finger Owns Its Column; Thumbs Handle Space.' },
+          { keys: ['improve', 'better', 'practice', 'tips', 'learn', 'beginner'], title: 'How To Improve', answer: '<strong>How To Improve:</strong> Practice 15 Focused Minutes Daily, Keep Eyes On The Screen (Never The Keyboard), Master Accuracy First, Then Add 5 WPM At A Time. Drill Your Weakest Keys With Custom Mode.' },
+          { keys: ['mode', 'javascript', 'python', 'rust', 'quotes', 'literature', 'custom', 'code'], title: 'Test Modes', answer: '<strong>Test Modes:</strong> Words For General Speed, JavaScript / Python / Rust For Code With Real Symbols And Indentation, Literature For Prose Rhythm, And Custom To Paste Your Own Paragraphs Or Snippets.' },
+          { keys: ['second', 'duration', '15', '30', '60', 'time', 'sprint', 'endurance'], title: 'Durations', answer: '<strong>Durations:</strong> 15 Seconds Trains Bursts And Reaction, 30 Seconds Is The Standard Benchmark, 60 Seconds Tests Endurance And Consistency. Your Best Score Is Saved Separately Per Duration.' },
+          { keys: ['auto', 'simulat', 'bot', 'demo'], title: 'Auto-Test', answer: '<strong>Run Auto-Test:</strong> An AI Typist Demonstrates The Engine At 45 (Human), 75 (Pro), 120 (Speed Demon), Or 180 WPM (Cyber Typist). Watch Its Rhythm, Then Try To Match It Yourself.' },
+          { keys: ['consistency', 'steady', 'stable', 'rhythm'], title: 'Consistency', answer: '<strong>Consistency:</strong> Measures How Steady Your Pace Is Across The Test (100% Means Perfectly Even). Smooth, Even Typing Beats Fast Bursts With Pauses.' },
+          { keys: ['grade', 'score', 'rank', 's', 'a', 'b', 'c'], title: 'Grades', answer: '<strong>Grades:</strong> S Needs 100+ WPM At 97% Accuracy, A Needs 75 WPM At 94%, B Needs 50 WPM At 88%, C Needs 30 WPM At 80%. Anything Below Earns F. Keep Practicing.' },
+          { keys: ['best', 'record', 'high score', 'save'], title: 'Personal Best', answer: '<strong>Personal Best:</strong> Your Top WPM Per Duration Is Stored In This Browser And Shown In The HUD. Beat It To Set A New Record; Switching Durations Shows That Duration Best.' },
+          { keys: ['streak', 'combo', 'multiplier', 'glow'], title: 'Streaks', answer: '<strong>Streaks:</strong> Consecutive Correct Keys Build Your Streak; Any Error Resets It. Long Streaks Light Up The Terminal Glow. Stay Calm After Mistakes To Rebuild Quickly.' },
+          { keys: ['sound', 'audio', 'mechanical', 'keyboard sound', 'mute'], title: 'Sound', answer: '<strong>Sound:</strong> The Speaker Button Cycles Blue (Clicky), Brown (Thocky), Red (Linear), And Muted Profiles. Sound Feedback Helps Rhythm; Mute It In Shared Spaces.' },
+          { keys: ['hello', 'hi', 'hey', 'namaste'], title: 'Greeting', answer: '<strong>Hello, Typist.</strong> Ask Me About Speed, Accuracy, Practice, Modes, Or Grades. Tap Any Topic Chip Above To Start.' },
+          { keys: ['thank', 'thanks', 'shukriya'], title: 'Thanks', answer: '<strong>You Are Welcome.</strong> Keep Your Wrists Loose And Your Eyes On The Screen.' },
+          { keys: ['who are you', 'your name', 'what are you'], title: 'About Me', answer: '<strong>I Am The Typing Doubt Solver,</strong> A Built-In Study Notes Assistant For This Demo. I Answer Questions About Typing Technique, Scores, Modes, And Practice.' },
+          { keys: ['help', 'what can you', 'how to ask', 'topics'], title: 'Help', answer: '<strong>I Can Answer:</strong> WPM, Accuracy, Home Row, Practice Tips, Test Modes, Grades, Streaks, And Sound. Mix Two Topics In One Question And I Answer Both.' },
+          { keys: ['bye', 'alvida', 'see you'], title: 'Farewell', answer: '<strong>Goodbye For Now.</strong> Fifteen Focused Minutes Tomorrow Beats An Hour Next Week.' }
+        ]
+        var STOPWORDS = ['what', 'why', 'how', 'when', 'where', 'which', 'is', 'are', 'was', 'were', 'do', 'does', 'did', 'tell', 'me', 'about', 'the', 'a', 'an', 'of', 'in', 'on', 'and', 'or', 'for', 'to', 'it', 'its', 'please', 'something', 'anything', 'question', 'doubt', 'know', 'my']
+        var CHIP_TOPICS = ['How To Improve', 'What Is WPM', 'Home Row', 'Test Modes', 'Grades']
+
+        function stem(w) {
+          if (w.length > 4) {
+            if (w.slice(-3) === 'ies') return w.slice(0, -3) + 'y'
+            if (w.slice(-3) === 'ing') return w.slice(0, -3)
+            if (w.slice(-2) === 'ed') return w.slice(0, -2)
+            if (w.slice(-1) === 's') return w.slice(0, -1)
+          }
+          return w
+        }
+        function norm(s) {
+          return (s || '').toLowerCase().replace(/[^a-z0-9 ]/g, ' ')
+        }
+        function queryWords(q) {
+          return norm(q).split(/\s+/)
+            .filter(function (w) { return w.length > 2 && STOPWORDS.indexOf(w) === -1 })
+            .map(stem)
+        }
+        function scoreEntry(entry, words) {
+          var score = 0
+          for (var k = 0; k < entry.keys.length; k++) {
+            var key = stem(entry.keys[k])
+            if (words.indexOf(key) !== -1) score += 2
+            else {
+              for (var w = 0; w < words.length; w++) {
+                if (key.indexOf(words[w]) === 0 || words[w].indexOf(key) === 0) { score += 1; break }
+              }
+            }
+          }
+          return score
+        }
+        // Returns up to two best matches so mixed questions get both answers.
+        function findAnswers(q) {
+          var words = queryWords(q)
+          if (!words.length) return []
+          var ranked = TYPING_KB.map(function (entry) {
+            return { entry: entry, score: scoreEntry(entry, words) }
+          }).filter(function (r) { return r.score > 0 })
+          ranked.sort(function (a, b) { return b.score - a.score })
+          var hits = ranked.slice(0, 2)
+          if (hits.length === 2 && hits[1].score < 2) hits = [hits[0]]
+          return hits.map(function (h) { return h.entry })
+        }
+        function findAnswer(q) {
+          var hits = findAnswers(q)
+          return hits.length ? hits[0] : null
+        }
+        function renderAnswer(box, rawQuery) {
+          var hits = findAnswers(rawQuery)
+          box.hidden = false
+          if (hits.length === 2) {
+            box.innerHTML = hits[0].answer + '<br><br><strong>Also Related:</strong><br>' + hits[1].answer
+          } else if (hits.length === 1) {
+            box.innerHTML = hits[0].answer
+          } else {
+            box.innerHTML = '<strong>That Is Outside My Study Notes.</strong> Try Topics Like WPM, Accuracy, Home Row, Or Grades.'
+          }
+        }
+
+        var input = document.getElementById('atiDoubtInput')
+        var askBtn = document.getElementById('atiDoubtAsk')
+        var answerBox = document.getElementById('atiDoubtAnswer')
+        var chipsBox = document.getElementById('atiDoubtChips')
+        if (!input || !askBtn || !answerBox) return
+
+        CHIP_TOPICS.forEach(function (topic) {
+          var chip = document.createElement('button')
+          chip.type = 'button'
+          chip.className = 'doubt-chip'
+          chip.textContent = topic
+          chip.addEventListener('click', function () {
+            input.value = topic
+            renderAnswer(answerBox, topic)
+          })
+          chipsBox.appendChild(chip)
+        })
+
+        function askNow() {
+          var q = input.value.trim()
+          if (!q) {
+            answerBox.hidden = false
+            answerBox.innerHTML = '<strong>Type Your Doubt First,</strong> Or Tap Any Topic Chip Above.'
+            return
+          }
+          renderAnswer(answerBox, q)
+        }
+        askBtn.addEventListener('click', askNow)
+        input.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') askNow()
+          e.stopPropagation()
+        })
+      })()
     </script>
 
     <!-- Footer -->
@@ -1270,12 +1739,13 @@
       <div class="fi">
         <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
         <div class="fl">
+          <a href="making">Making</a>
           <a href="privacy">Privacy</a>
           <a href="terms">Terms</a>
           <a href="feedback">Feedback</a>
           <a href="download">Downloads</a>
         </div>
-        <div class="fc">&copy; 2026 Class Of Learners Studio. All rights reserved.</div>
+        <div class="fc">&copy; 2026 Neel, Ansh, Aarush &amp; Yash Raj.</div>
       </div>
     </footer>
   </body>

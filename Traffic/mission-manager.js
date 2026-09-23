@@ -832,6 +832,8 @@ class MissionManager {
     this.clear();
     this.active = true;
     this.init();
+    // Snapshot wallet tokens so the reward screen can show tokens earned THIS run
+    this._runTokensStart = (window.S && window.S.missionTokens) || 0;
 
     if (!levelConfig) return [];
 
@@ -1149,13 +1151,18 @@ class MissionManager {
     if (!levelConfig.hasSchool && !levelConfig.isSilenceZone) return null;
 
     const baseReward = levelConfig.isPedestrian ? 3000 : 4500;
+    // Zone follows the level's real school: explicit schoolX/schoolZ, else route finish, else origin.
+    const route = levelConfig.route || [];
+    const last = route.length ? route[route.length - 1] : null;
+    const zx = (levelConfig.schoolX !== undefined) ? levelConfig.schoolX : (last ? last.x : 0);
+    const zz = (levelConfig.schoolZ !== undefined) ? levelConfig.schoolZ : (last ? last.z : 0);
     return new SchoolPatrolMission({
       target: 3,
       reward: baseReward,
       tokenReward: Math.floor(baseReward / 100),
       data: {
         targetSpeeders: 2 + Math.floor(Math.random() * 2),
-        schoolZone: { x: 0, z: 0, radius: 60 }
+        schoolZone: { x: zx, z: zz, radius: 60 }
       }
     });
   }
@@ -1415,8 +1422,18 @@ class MissionManager {
   }
 
   _grantMissionTokens(mission) {
-    const tokens = mission.tokenReward || 0;
+    let tokens = mission.tokenReward || 0;
     if (tokens <= 0) return;
+
+    // Weekly challenge: 2× mission tokens while playing this week's level
+    try {
+      const w = JSON.parse(localStorage.getItem('traffic_weekly') || 'null');
+      const lvId = String((this.game && (this.game.lvId || (this.game.mapCfg && this.game.mapCfg.id))) || '');
+      if (w && lvId && String(w.lv) === lvId) {
+        const weekNow = Math.floor(Date.now() / 604800000);
+        if (String(w.week) === String(weekNow)) tokens *= 2;
+      }
+    } catch (e) {}
 
     // Add to game's mission tokens
     if (this.game && typeof this.game.missionTokens !== 'undefined') {

@@ -188,10 +188,10 @@ if (!window.closeMo) {
   window.colSetActiveLocalUser = setActiveLocalUser
   window.colClearActiveLocalUser = clearActiveLocalUser
 
-  // 1. Fetch Global Configuration to get Supabase Keys
+  // 1. Fetch Global Configuration to get Supabase Keys (root-absolute so /Traffic/* pages resolve)
   let authConfig = null
   try {
-    const res = await fetch('config.json?t=' + new Date().getTime())
+    const res = await fetch('/config.json?t=' + new Date().getTime())
     if (res.ok) {
       const config = await res.json()
       if (config.auth && config.auth.url && config.auth.key) {
@@ -686,8 +686,7 @@ if (!window.closeMo) {
     renderAuthPanel('otp')
   }
 
-  window.colDoGoogle = async () => {
-    if (window.AndroidBridge) {
+  window.colDoGoogle = async () => {    if (window.AndroidBridge) {
       window.AndroidBridge.signInWithGoogle()
       return
     }
@@ -914,6 +913,21 @@ if (!window.closeMo) {
     updateAuthUI()
   }
   window.doLogout = window.colDoLogout
+  // Legacy inline-handler aliases (about.html + injected modal use bare names)
+  window.gSignIn = function () { try { return window.colDoGoogle && window.colDoGoogle(); } catch (e) {} };
+  window.updateUsername = function () {
+    try {
+      const inp = document.getElementById('miName');
+      const name = inp && inp.value ? inp.value.trim().slice(0, 40) : '';
+      if (!name) { try { toast('Enter A Username First', '#ef4444'); } catch (e) {} return; }
+      const cur = (typeof getActiveLocalUser === 'function' && getActiveLocalUser()) || window.colUser || {};
+      const updated = Object.assign({}, cur, { name });
+      if (typeof setActiveLocalUser === 'function') setActiveLocalUser(updated);
+      if (window.colUser) window.colUser.name = name;
+      try { toast('Username Saved', '#22c55e'); } catch (e) {}
+      try { if (typeof updateAuthUI === 'function') updateAuthUI(); } catch (e) {}
+    } catch (e) { console.warn('[col-auth] updateUsername failed:', e); }
+  };
 
   // --- Secure Profile Linking (Verification Code Flow) ---
   window.colAuthGenerateCode = async () => {
@@ -976,7 +990,7 @@ if (!window.closeMo) {
       // Fetch expected fingerprint from config
       let expected = null
       try {
-        const res = await fetch('config.json?t=' + Date.now())
+        const res = await fetch('/config.json?t=' + Date.now())
         if (res.ok) {
           const cfg = await res.json()
           expected = cfg.apkCertFingerprint || null

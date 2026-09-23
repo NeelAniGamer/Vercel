@@ -7,7 +7,10 @@ const distDir = path.join(__dirname, 'dist');
 const excludes = [
   'node_modules', '.git', '.claude', '.agents', 'dist', 'android', '.gradle',
   'react-src', '.playwright-mcp', 'tests', 'build.js', 'package.json', 'package-lock.json',
-  'tsconfig.json', '.github'
+  'tsconfig.json', '.github',
+  // Deploy hygiene (Phase 0): never ship build outputs, secrets, local DBs, or desktop binaries
+  'dist-web', 'dist-electron', '.env', 'traffic.db',
+  'AdvancedTypingInstructor.exe', 'AdvancedTypingInstructor_Setup.exe'
 ];
 
 function copyDirSync(src, dest) {
@@ -32,6 +35,16 @@ function copyDirSync(src, dest) {
 }
 
 async function build() {
+  console.log("Validating Traffic Academy levels (maintained set)...");
+  try {
+    require('child_process').execSync(
+      'node Traffic/tools/validate-levels.js --scope=level1,level5,level_custom',
+      { stdio: 'inherit' }
+    );
+  } catch (err) {
+    console.error("Level validation failed — fix Traffic/levels errors above.");
+    process.exit(1);
+  }
   console.log("Copying static files to dist/...");
   if (fs.existsSync(distDir)) {
     fs.rmSync(distDir, { recursive: true, force: true });

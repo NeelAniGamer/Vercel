@@ -1434,12 +1434,26 @@ class Game {
 
       _checkOrientation() {
         if (!this._isMobile) return;
+        try {
+          if (sessionStorage.getItem('traffic_portrait_ok') === '1') {
+            const overlay = document.getElementById('rotate-device-overlay');
+            if (overlay) overlay.classList.remove('on');
+            return;
+          }
+        } catch (e) {}
         const isPortrait = window.innerHeight > window.innerWidth;
         const overlay = document.getElementById('rotate-device-overlay');
         if (isPortrait) {
-          if (overlay) overlay.classList.add('on');
-          if (screen.orientation && screen.orientation.lock) {
-            screen.orientation.lock('landscape-primary').catch(() => {});
+          if (overlay) {
+            overlay.classList.add('on');
+            if (!overlay._dismissBound) {
+              overlay._dismissBound = true;
+              const btn = overlay.querySelector('#rotate-continue-btn');
+              if (btn) btn.addEventListener('click', () => {
+                try { sessionStorage.setItem('traffic_portrait_ok', '1'); } catch (e) {}
+                overlay.classList.remove('on');
+              });
+            }
           }
         } else {
           if (overlay) overlay.classList.remove('on');
@@ -1477,6 +1491,8 @@ class Game {
 
         window.addEventListener('keydown', e => {
             this.keys[e.key.toLowerCase()] = true;
+            // 150ms input buffer: taps during enter/exit transitions aren't eaten
+            if (e.key.toLowerCase() === 'f' && !e.repeat) { this._fTapT = this.timer; this._fTapConsumed = false; }
             this._lastInputTime = this.timer;
             if (this._idleHintShown) { this._idleHintShown = false; const h = document.getElementById('idle-hint'); if (h) h.style.display = 'none'; }
             const gm = { p: 'P', r: 'R', n: 'N', d: 'D', '1': '1', '2': '2', '3': '3', '4': '4', '5': '5' };
@@ -1492,6 +1508,8 @@ class Game {
                if (typeof toast === 'function') toast(this.firstPersonMode ? '🎥 Switched to First Person' : '🎥 Switched to Third Person', '#3498db');
              }
               if (e.key === 'Escape') this.togglePause();
+             // T: resume a saved mid-level run (offered at level start when one exists)
+             if (e.key.toLowerCase() === 't') { try { this._resumeRunOffer(); } catch (e2) {} }
              // ── SPEED CONTROLS ──
              if (e.key.toLowerCase() === 'c') this.toggleCruiseControl && this.toggleCruiseControl();
              if (e.key.toLowerCase() === 'l') this.toggleSpeedLimiter && this.toggleSpeedLimiter();
@@ -1804,14 +1822,24 @@ class Game {
           }
         };
 
-        // Rotate-device overlay: driving needs landscape; block play and show a prompt
-        // otherwise, clearing automatically the moment the device is turned.
+        // Rotate-device overlay: landscape suggested on touch portrait, but the
+        // player can dismiss and keep playing in portrait (session-scoped).
         this._checkOrientation = () => {
           const overlay = document.getElementById('rotate-device-overlay');
           if (!overlay) return;
+          let dismissed = false;
+          try { dismissed = sessionStorage.getItem('traffic_portrait_ok') === '1'; } catch (e) {}
+          if (!overlay._dismissBound) {
+            overlay._dismissBound = true;
+            const btn = overlay.querySelector('#rotate-continue-btn');
+            if (btn) btn.addEventListener('click', () => {
+              try { sessionStorage.setItem('traffic_portrait_ok', '1'); } catch (e) {}
+              overlay.classList.remove('on');
+            });
+          }
           const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
           const isPortrait = window.innerHeight > window.innerWidth;
-          if (isTouch && isPortrait && this.playing) {
+          if (isTouch && isPortrait && this.playing && !dismissed) {
             overlay.classList.add('on');
           } else {
             overlay.classList.remove('on');
@@ -2401,7 +2429,7 @@ class Game {
         if (g === 'P' || g === 'N') { this.speed *= .1; }
         else if (this.speed > 0 && newCap < this.gcap && this.speed > newCap) { this.speed = newCap * 0.92; }
         this.gcap = newCap;
-        document.getElementById('gread').textContent = 'GEAR: ' + g;
+        const _gr = document.getElementById('gread'); if (_gr) _gr.textContent = 'GEAR: ' + g;
         document.querySelectorAll('.gb').forEach(b => b.classList.toggle('ag', b.dataset.g === g));
       }
 
@@ -2496,7 +2524,7 @@ class Game {
               this.score -= 50;
               this.fine += 2000;
               if (window.GameplayRecorder) GameplayRecorder.record('NO_HONKING', { speed: Math.round(Math.abs(this.speed) * 100), score: this.score, fine: this.fine });
-              this._triggerPoliceStrobe(); ui.issueChallan('Honking in No-Honking Zone (repeat offense)', 'Sec 190(2) MV Act', '₹2,000', 'Silence Zone Violation');
+              this._triggerPoliceStrobe(); (window.ui&&typeof window.ui.issueChallan==="function"?window.ui.issueChallan:function(){})('Honking in No-Honking Zone (repeat offense)', 'Sec 190(2) MV Act', '₹2,000', 'Silence Zone Violation');
             } else {
               this.violationsLog.push('NO_HONKING_WARNING');
               toast('⚠️ Honking in silence zone — first warning', '#f2b84b');
@@ -2855,7 +2883,7 @@ class Game {
         // 1. Audio Engine Update
         if (window.TrafficAudio) {
           if (isCar) {
-            if (!window.TrafficAudio.isEngineRunning) window.TrafficAudio.startEngine();
+            if (!window.TrafficAudio.isEngineRunning) window.TrafficAudio.startEngine(undefined, this.vehMode || 'car');
             window.TrafficAudio.updateEngine(this.speed, isThrottle, this.boosting);
           } else {
             if (window.TrafficAudio.isEngineRunning) window.TrafficAudio.stopEngine();
@@ -3361,6 +3389,13 @@ class Game {
         this.mode = lv.mode || this.vehMode;
         this.isPedestrian = (this.vehMode === 'pedestrian');
         this.lvId = lv.id; this.score = 0; this.hp = 100; this.fine = 0; this.vio = 0; this.timer = 0; this.speed = 0; this.routeIdx = 0; this.retries = 0; this.vx = 0; this.vz = 0;
+        this._splitTimes = []; this._driftScore = 0; this._driftQuiet = 0; this._nmCooldown = 0; this._fovKick = 0;
+        this._victoryPrimed = false; this._victorySlow = 0;
+        this._completing = false; this._completeToken = (this._completeToken || 0) + 1;
+        try { this._recordTelemetry('attempt'); } catch (e) {}
+        this._ghostPts = []; this._ghostLastT = -1; this._ghostIdx = 0; this._ghostTried = false;
+        try { this._destroyGhostMesh(); } catch (e) {}
+        try { window._namedTags = []; } catch (e) {}
         // Start gameplay recording
         if (window.GameplayRecorder) GameplayRecorder.start(lv.id, lv.name || '');
         this.ms = { inSz: false, passed: false, amb: null };
@@ -3450,6 +3485,14 @@ class Game {
         this._hideLoading();
         const po = document.getElementById('play-overlay'); if (po) po.remove();
         this.playing = true; this.pause = false; ui.show(null);
+        // Offer resume if a fresh autosave exists for this level (same spot + mission)
+        try {
+          const rs = (typeof this._loadRun === 'function') ? this._loadRun() : null;
+          if (rs) {
+            this._pendingResume = rs;
+            setTimeout(() => { try { toast('💾 Saved run found — press T to resume where you left off', '#5ed4f5', 7000); } catch (e) {} }, 1200);
+          } else { this._pendingResume = null; }
+        } catch (e) { this._pendingResume = null; }
         this._initViolationsLog();
         if (window.TaskManager) {
           this.taskManager = new window.TaskManager(this);
@@ -3512,7 +3555,7 @@ class Game {
         }
         this._syncIndicatorUI();
         
-        if (mob()) document.getElementById('tc').classList.add('on');
+        if (mob()) { const _tc = document.getElementById('tc'); if (_tc) _tc.classList.add('on'); }
         if (mob()) this._autoGyro();
         if (this._checkOrientation) this._checkOrientation();
         const _hlvEl = document.getElementById('hlv'); if (_hlvEl) _hlvEl.textContent = lv.id; const _hobjEl = document.getElementById('hobj'); if (_hobjEl) _hobjEl.textContent = lv.tg || ''; this._uh(); if (window.sfx && sfx.play) sfx.play('ok');
@@ -3528,24 +3571,27 @@ class Game {
           // Top HUD stack (objective & tasks) and civic-controls are managed by explicit layout in Driving.html
           if (this.dom.mmc) {
             SZ.register('minimap', this.dom.mmc, 'BL', { order: 0, priority: 'high' });
-            // Tap/click minimap → open fullscreen map
+            // Tap/click minimap → open fullscreen map (bound once; _actualStart runs per retry)
+            if (!this._fsMapBound) {
             this.dom.mmc.addEventListener('click', () => {
               const ov = document.getElementById('fs-map-overlay');
               if (ov) { ov.classList.add('active'); this._fsMapOpen = true; this._drawFullscreenMap(); }
             });
+            }
           }
-          // Fullscreen map close button + Escape key
+          // Fullscreen map close button + Escape key (bound once)
           const fsClose = document.getElementById('fs-map-close');
-          if (fsClose) fsClose.addEventListener('click', () => {
+          if (fsClose && !this._fsMapBound) fsClose.addEventListener('click', () => {
             const ov = document.getElementById('fs-map-overlay');
             if (ov) { ov.classList.remove('active'); this._fsMapOpen = false; }
           });
-          document.addEventListener('keydown', e => {
+          if (!this._fsMapBound) document.addEventListener('keydown', e => {
             if (e.key === 'Escape' && this._fsMapOpen) {
               const ov = document.getElementById('fs-map-overlay');
               if (ov) { ov.classList.remove('active'); this._fsMapOpen = false; }
             }
           });
+          if (!this._fsMapBound) this._fsMapBound = true;
           if (this.dom['sig-ind']) SZ.register('signal', this.dom['sig-ind'], 'TC', { order: 0, priority: 'high' });
           if (this.dom['dn-clock']) SZ.register('clock', this.dom['dn-clock'], 'TC', { order: 1, priority: 'medium' });
           if (document.getElementById('spgauge')) SZ.register('speedometer', document.getElementById('spgauge'), 'BR', { order: 0, priority: 'high' });
@@ -3559,7 +3605,7 @@ class Game {
           }
         }
       }
-      stopPlay() { this.playing = false; this.tasks = []; const tt = document.getElementById('task-tracker'); if (tt) tt.style.display = 'none'; const slb = document.getElementById('speed-limit-badge'); if (slb) slb.style.display = 'none'; ['gc', 'player-hud-card', 'hud', 'hudbar', 'hwrap', 'spgauge', 'gp', 'tc', 'mobile-controls', 'objective-overlay'].forEach(i => { const el = document.getElementById(i); if (el) el.classList.remove('on'); }); const cc = document.getElementById('civic-controls'); if (cc) cc.style.display = 'none'; const bg = this.dom['boostgauge']; if (bg) bg.style.display = 'none'; const bv = this.dom['boost-vignette']; if (bv) { bv.style.display = 'none'; bv.style.opacity = '0'; }         const br = this.dom['boost-ready']; if (br) { br.style.display = 'none'; br.style.opacity = '0'; }         const sl = this.dom['speed-lines']; if (sl) { sl.style.display = 'none'; sl.style.opacity = '0'; } this._camShakeAmt = 0; this._camTilt = 0; this._camFovTarget = 60; if(this.dom['mmc']) this.dom['mmc'].classList.remove('on'); const cmp = document.getElementById('compass-strip'); if (cmp) cmp.style.display = 'none'; if(this.dom['da']) this.dom['da'].style.display = 'none'; if(this.dom['sig-ind']) this.dom['sig-ind'].style.display = 'none'; if(this.dom['ow']) this.dom['ow'].classList.remove('on'); if(this.dom['phone-gps']) this.dom['phone-gps'].classList.remove('on'); this.phoneGpsOn = false; if(this.dom['phone-gps-btn']) this.dom['phone-gps-btn'].style.display = 'none'; 
+      stopPlay() { try { if (this.playing && !this.levelCompleted && (this.timer || 0) > 15) { this._recordTelemetry('quit', { cp: this.hits || 0, timer: this.timer || 0 }); } } catch (e) {} this.playing = false; this.tasks = []; try { document.body.classList.remove('hud-focus-drive'); } catch (e) {} const tt = document.getElementById('task-tracker'); if (tt) tt.style.display = 'none'; const slb = document.getElementById('speed-limit-badge'); if (slb) slb.style.display = 'none'; ['gc', 'player-hud-card', 'hud', 'hudbar', 'hwrap', 'spgauge', 'gp', 'tc', 'mobile-controls', 'objective-overlay'].forEach(i => { const el = document.getElementById(i); if (el) el.classList.remove('on'); }); const cc = document.getElementById('civic-controls'); if (cc) cc.style.display = 'none'; const bg = this.dom['boostgauge']; if (bg) bg.style.display = 'none'; const bv = this.dom['boost-vignette']; if (bv) { bv.style.display = 'none'; bv.style.opacity = '0'; }         const br = this.dom['boost-ready']; if (br) { br.style.display = 'none'; br.style.opacity = '0'; }         const sl = this.dom['speed-lines']; if (sl) { sl.style.display = 'none'; sl.style.opacity = '0'; } this._camShakeAmt = 0; this._camTilt = 0; this._camFovTarget = 60; if(this.dom['mmc']) this.dom['mmc'].classList.remove('on'); const cmp = document.getElementById('compass-strip'); if (cmp) cmp.style.display = 'none'; if(this.dom['da']) this.dom['da'].style.display = 'none'; if(this.dom['sig-ind']) this.dom['sig-ind'].style.display = 'none'; if(this.dom['ow']) this.dom['ow'].classList.remove('on'); if(this.dom['phone-gps']) this.dom['phone-gps'].classList.remove('on'); this.phoneGpsOn = false; if(this.dom['phone-gps-btn']) this.dom['phone-gps-btn'].style.display = 'none'; 
         
         // Release all pooled objects to prevent memory leaks
         if (window.ThreePools) ThreePools.releaseAll();
@@ -3920,7 +3966,7 @@ class Game {
                       const _lvId = (ui.cur ? ui.cur.id : 1);
                       const cumCheck = this.checkCumulativeViolation('mobile_use', _lvId);
                       if (cumCheck.enforce) {
-                        this._triggerPoliceStrobe(); ui.issueChallan('Using Mobile while Driving', 'Sec 184 MV Act', '₹5,000', 'Dangerous Driving');
+                        this._triggerPoliceStrobe(); (window.ui&&typeof window.ui.issueChallan==="function"?window.ui.issueChallan:function(){})('Using Mobile while Driving', 'Sec 184 MV Act', '₹5,000', 'Dangerous Driving');
                         this.vio++; this.violationsLog.push('MOBILE_USE'); this.score -= 50; this.fine += 5000;
                       } else {
                         this.violationsLog.push('MOBILE_USE_WARNING');
@@ -3949,10 +3995,16 @@ class Game {
       toggleGyro(btn) {
         if (this.gyroOn) {
           this.gyroOn = false;
+          if (typeof this._stopGyro === 'function') this._stopGyro();
           if (btn) btn.style.borderColor = '#555';
           toast('Gyroscope OFF', '#666');
         } else {
           this.requestGyroPermission();
+          // Camera gyro shares the gyroOn flag with steering — calibrate the baseline
+          // so steering doesn't pull with a stale zero the moment it engages.
+          if (typeof this._runCalibration === 'function') {
+            setTimeout(() => { try { if (this.gyroOn) this._runCalibration(); } catch (e) {} }, 600);
+          }
           if (btn) btn.style.borderColor = '#34d399';
         }
       }
@@ -4029,12 +4081,14 @@ class Game {
         }
         
         popup.dataset.cause = cause;
-        document.getElementById('irl-death-msg').innerHTML = `You were struck by a ${cause}.<br><br><span style="color:#e8e3d8;">In the real world, being hit by a vehicle causes catastrophic physical trauma, permanent disability, or instant death.</span><br><br>Always look both ways, use designated crossings, and never play in traffic.`;
+        const _idm = document.getElementById('irl-death-msg'); if (_idm) _idm.innerHTML = `You were struck by a ${cause}.<br><br><span style="color:#e8e3d8;">In the real world, being hit by a vehicle causes catastrophic physical trauma, permanent disability, or instant death.</span><br><br>Always look both ways, use designated crossings, and never play in traffic.`;
         popup.style.display = 'flex';
       }
 
       _initTasks(lv) {
         this.tasks = lv.tasks ? JSON.parse(JSON.stringify(lv.tasks)) : [];
+        this._warnedSchoolSpeed = false;
+        this._schoolSlowDwell = 0;
         this._renderTasks();
       }
       
@@ -4150,24 +4204,51 @@ class Game {
         }
       }
 
+      // True when stopped near a NON-green signal (strict red-light task target)
+      _nearRedSignal(radius) {
+        try {
+          if (!this.sigs || !this.sigs.length || !this.player) return false;
+          for (const sg of this.sigs) {
+            if (!sg || !sg.position) continue;
+            const st = sg.userData && sg.userData.st;
+            if (st === 'green') continue;
+            const d = this.player.position.distanceTo(sg.position);
+            if (d < (radius || 30)) return true;
+          }
+        } catch (e) {}
+        return false;
+      }
+
       _checkTasks() {
-        if (!this.tasks || this.tasks.length === 0) return;
-        let changed = false;
+        if (!this.tasks || this.tasks.length === 0) return;        let changed = false;
         for (const t of this.tasks) {
           if (t.done) continue;
           let complete = false;
           switch (t.type) {
+            case 'enter_vehicle':
+              // Completes once the player has climbed into any vehicle (Lessons 1/5/54 start on foot)
+              if (this._everEnteredVehicle || !this.isPedestrian) complete = true;
+              break;
             case 'stop':
               if (t.target === 'stationary' && Math.abs(this.speed) < 0.05) complete = true;
               else if (t.target === 'walking_speed' && Math.abs(this.speed) < 0.15) complete = true;
               else if (t.target === 'parking_zone' && Math.abs(this.speed) < 0.05) complete = true;
               else if (t.target === 'parking_spot' && Math.abs(this.speed) < 0.05) complete = true;
               else if (t.target === 'red_light' && Math.abs(this.speed) < 0.05) complete = true;
+              // Strict variant: stopped NEAR a red signal (not just anywhere)
+              else if (t.target === 'red_signal' && Math.abs(this.speed) < 0.05 && this._nearRedSignal(30)) complete = true;
               else if (t.target === 'cow' && this._animalObstacle && this._animalObstacle.everWaitedNear) complete = true;
               else if (t.target === 'cow_moved' && this._animalObstacle && this._animalObstacle.moved) complete = true;
               break;
             case 'reach':
               if (t.target === 'destination' && this.cps && this.hits >= this.cps.length && this.cps.length > 0) complete = true;
+              // Route-checkpoint tasks: checkpoint_N completes after N checkpoint hits (Lessons 1/5/54)
+              else if (typeof t.target === 'string' && t.target.indexOf('checkpoint_') === 0) {
+                const n = parseInt(t.target.split('_')[1], 10);
+                if (!isNaN(n) && (this.hits || 0) >= n) complete = true;
+              }
+              // finish = all route checkpoints cleared (same as destination)
+              else if (t.target === 'finish' && this.cps && this.hits >= this.cps.length && this.cps.length > 0) complete = true;
               else if (t.target === 'green_light' && this._movedAfterGreen) complete = true;
               else if (t.target === 'parking_spot' && this._reachedParking) complete = true;
               else if (t.target === 'market_zone' && this._reachedMarket) complete = true;
@@ -4192,15 +4273,30 @@ class Game {
                 if (this.player && this.mapCfg && this.mapCfg.hasSchool) {
                   const px = this.player.position.x;
                   const pz = this.player.position.z;
-                  if (px <= 15 && px >= -140 && Math.abs(pz) <= 14) {
+                  // Zone follows the level's real school (L5: boulevard x=436, flasher z=380, gate z=600).
+                  // Legacy levels (no schoolZ) keep the exact original box around (-65, 0).
+                  let inside = false;
+                  if (this.mapCfg.schoolZ !== undefined) {
+                    const sx = (this.mapCfg.schoolX !== undefined) ? this.mapCfg.schoolX : -65;
+                    const sz = this.mapCfg.schoolZ;
+                    const fz = (this.mapCfg.flasherZ !== undefined) ? this.mapCfg.flasherZ : (sz - 220);
+                    inside = (Math.abs(px - sx) <= 30 && pz >= Math.min(fz, sz) - 20 && pz <= Math.max(fz, sz) + 20);
+                  } else {
+                    inside = (px <= 15 && px >= -140 && Math.abs(pz) <= 14);
+                  }
+                  if (inside) {
                     if (Math.abs(this.speed) > 0.22) {
                       if (!this._warnedSchoolSpeed) {
                         toast('⚠️ School Zone Speeding! Stay under 20 km/h', '#ef4444', 2500);
                         this._warnedSchoolSpeed = true;
                       }
-                    } else if (px <= -20 && !this._warnedSchoolSpeed) {
-                      complete = true;
+                      this._schoolSlowDwell = 0;
+                    } else {
+                      this._schoolSlowDwell = (this._schoolSlowDwell || 0) + 1;
+                      if (this._schoolSlowDwell > 150 && !this._warnedSchoolSpeed) complete = true;
                     }
+                  } else {
+                    this._schoolSlowDwell = 0;
                   }
                 }
               }
@@ -4211,7 +4307,18 @@ class Game {
               else if (t.target === 'pedestrian') {
                 if (this.player && this.mapCfg && this.mapCfg.hasSchool) {
                   const px = this.player.position.x;
-                  if (px <= -35 && px >= -95) {
+                  const pz = this.player.position.z;
+                  // Yield box follows the level's real school zebra (L5: x=436, zebra z=540).
+                  // Legacy levels (no schoolZ) keep the original box.
+                  let inYieldBox;
+                  if (this.mapCfg.schoolZ !== undefined) {
+                    const sx = (this.mapCfg.schoolX !== undefined) ? this.mapCfg.schoolX : -65;
+                    const zz = (this.mapCfg.zebraZ !== undefined) ? this.mapCfg.zebraZ : this.mapCfg.schoolZ;
+                    inYieldBox = (Math.abs(px - sx) <= 60 && Math.abs(pz - zz) <= 60);
+                  } else {
+                    inYieldBox = (px <= -35 && px >= -95);
+                  }
+                  if (inYieldBox) {
                     if (!this._collidedThisFrame && Math.abs(this.speed) <= 0.22) {
                       complete = true;
                     }
@@ -4353,18 +4460,78 @@ class Game {
           if (cr) cr.textContent = reason || "Structural Failure";
           if (ci) ci.textContent = rLife;
 
-          document.getElementById('crash-screen').style.display = 'flex';
+          const _cs = document.getElementById('crash-screen'); if (_cs) _cs.style.display = 'flex';
         }, 500);
       }
       retryLevel() {
-        document.getElementById('crash-screen').style.display = 'none';
+        const _cs2 = document.getElementById('crash-screen'); if (_cs2) _cs2.style.display = 'none';
         this.retries = (this.retries || 0) + 1;
+        try { this._clearRun(); } catch (e) {}
         this._actualStart(ui._sylLv || ui.cur);
       }
+      // F4 fail-fast: back at the last cleared checkpoint (+3s), mission intact.
+      // Falls back to a full restart when no checkpoint has been cleared yet.
+      respawnAtCheckpoint() {
+        const el = document.getElementById('crash-screen');
+        if (el) el.style.display = 'none';
+        if (!this._lastCpPos) { this.retryLevel(); return; }
+        const p = this._lastCpPos;
+        if (this.player) {
+          this.player.position.set(p.x, 0, p.z);
+          this.player.rotation.y = p.rotY || 0;
+        }
+        if (this.playerVehicle) {
+          this.playerVehicle.position.set(p.x, 0, p.z);
+          this.playerVehicle.rotation.y = p.rotY || 0;
+        }
+        this.speed = 0;
+        this.timer = (this.timer || 0) + 3;
+        this.hp = Math.max(this.hp || 0, 40);
+        this._collidedThisFrame = false;
+        this._hitstopTimer = 0;
+        this.playing = true; this.pause = false;
+        toast('↩️ Back at the last checkpoint (+3s)', '#5ed4f5');
+      }
       completeLevel() {
-        if (!this.playing) return;
+        if (!this.playing || this._completing) return;
+        this._completing = true;
+        // Victory beat first: 450ms of quarter-speed celebration, then the
+        // normal completion flow (rewards, overlay, quiz).
+        if (!this._victoryPrimed) {
+          this._victoryPrimed = true;
+          this._victorySlow = 0.45;
+          this._fovKick = Math.min(9, (this._fovKick || 0) + 7);
+          const _tok = this._completeToken = (this._completeToken || 0) + 1;
+          setTimeout(() => { try { if (this._completeToken === _tok) this.completeLevel(); } catch (e) {} }, 450);
+          return;
+        }
+        this._victoryPrimed = false;
         this.reachedGoal = true;
         this.levelCompleted = true;
+        // F2 rival verdict: if the named rival hasn't finished its route yet,
+        // you beat it (+500). Ghost of YOUR best line is saved below.
+        try {
+          const rv = this.trafficManager && this.trafficManager._rival;
+          if (rv && rv.active && rv.npcAI) {
+            if (!rv._rivalFinished) {
+              this.score = (this.score || 0) + 500;
+              setTimeout(() => { try { toast('🏆 RIVAL BEATEN +' + 500 + ' (' + (rv.rivalName || 'Rival') + ')', '#f2b84b'); } catch (e) {} }, 1200);
+              if (window.TrafficAudio && window.TrafficAudio.playVictory) { try { window.TrafficAudio.playVictory(); } catch (e) {} }
+            } else {
+              setTimeout(() => { try { toast('😤 ' + (rv.rivalName || 'Rival') + ' finished first — rematch?', '#94a3b8'); } catch (e) {} }, 1200);
+            }
+          }
+        } catch (e) {}
+        // Save ghost (best-line replay) when this run beats the stored score
+        try { this._saveGhost(); } catch (e) {}
+        // Telemetry: completion + p95 frame time + draw calls + violations
+        try {
+          const _fd = (this._frameDts || []).slice().sort((a, b) => a - b);
+          const _p95 = _fd.length ? _fd[Math.min(_fd.length - 1, Math.floor(_fd.length * 0.95))] : 0;
+          let _calls = 0;
+          try { _calls = this.renderCore && this.renderCore.renderer && this.renderCore.renderer.info ? this.renderCore.renderer.info.render.calls : 0; } catch (e) {}
+          this._recordTelemetry('complete', { ms: Math.round((this.timer || 0) * 1000), p95: Math.round(_p95 * 10) / 10, calls: _calls, violations: this.violationsLog || [] });
+        } catch (e) {}
         let finalBase = this.score + 500;
         if (this.retries > 0) {
           if (this.vio > 0) {
@@ -4385,6 +4552,12 @@ class Game {
         const _baseRew = _rewards[Math.min(_lvId - 1, 14)];
         const _noViolBonus = this.vio === 0 ? 800 : this.vio <= 2 ? 300 : 0;
         const _reward = _baseRew + _noViolBonus;
+        const _mm = this.missionManager;
+        const _stars = this.vio === 0 ? 3 : this.vio <= 2 ? 2 : 1;
+        const _starsStr = '★'.repeat(_stars) + '☆'.repeat(3 - _stars);
+        const _collN = (_mm && _mm.totalCollected) || 0;
+        const _collV = (_mm && _mm.totalReward) || 0;
+        const _tokEarn = Math.max(0, (S.missionTokens || 0) - ((_mm && _mm._runTokensStart) || 0));
         S.wallet += _reward;
         if (window.WalletHistory) WalletHistory.earn('level_reward', _reward, { levelId: _lvId, levelName: (ui.cur ? ui.cur.name : ''), violations: this.vio });
         this._syncWalletToSupabase(_reward, 'earn', 'level_reward');
@@ -4397,16 +4570,108 @@ class Game {
         this._syncCivicToSupabase();
         this._syncSessionToSupabase(true);
         save();
+        try { this._clearRun(); } catch (e) {}
         const _hw = document.getElementById('hwallet');
         if (_hw) _hw.textContent = '₹' + S.wallet.toLocaleString('en-IN');
         this.fst = { fin: this.fine ? '₹' + this.fine : '', vio: this.vio, reward: _reward };
+        // Best-run tracking for checkpoint pace fanfare (F1 juice)
+        try {
+          const bk = 'traffic_best_' + (_lvId || 1);
+          let best = null;
+          try { best = JSON.parse(localStorage.getItem(bk) || 'null'); } catch (e) {}
+          if (!best || (this.fs || 0) > (best.score || 0)) {
+            localStorage.setItem(bk, JSON.stringify({ score: this.fs, splits: this._splitTimes || [] }));
+          }
+        } catch (e) {}
+        // Persist Academy completion HERE (Driving has no ui.js — without this,
+        // finishing a level recorded nothing: no comp tick, no stars, no history).
+        // Totals/civic/badges stay with the quiz (Academy) to avoid double-counting.
+        try {
+          if (!S.comp) S.comp = {};
+          const _prev = S.comp[_lvId] || {};
+          const _prevModes = (_prev.modes && typeof _prev.modes === 'object') ? _prev.modes : {};
+          S.comp[_lvId] = {
+            score: Math.max(_prev.score || 0, this.fs),
+            time: Date.now(),
+            violations: this.vio,
+            stars: _stars,
+            completed: true,
+            modes: Object.assign({}, _prevModes, { practice: true })
+          };
+          if (!S.violationHistory) S.violationHistory = {};
+          (this.violationsLog || []).forEach((v) => {
+            S.violationHistory[v] = (S.violationHistory[v] || 0) + 1;
+          });
+        } catch (e) {}
         this.stopPlay();
         toast('🏁 Run Evaluated!', '#00c851');
-        // Show Mission Complete overlay first
+        // Show full Reward Screen first (earnings breakdown), then quiz on Continue
         const _mco = document.createElement('div');
-        _mco.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9998;display:flex;flex-direction:column;align-items:center;justify-content:center;backdrop-filter:blur(8px);animation:missionCompleteBg 0.4s ease-out;';
-        _mco.innerHTML = '<div style="text-align:center;animation:missionCompleteCard 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;"><div style="font-size:4rem;margin-bottom:16px;animation:missionCompleteStar 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;">🏆</div><h1 style="color:#ffd54a;font-size:2.5rem;font-family:Bebas Neue,sans-serif;letter-spacing:0.05em;margin-bottom:8px;text-shadow:0 4px 20px rgba(255,213,74,0.4);animation:scoreCountUp 0.4s ease-out 0.4s both;">MISSION COMPLETE!</h1><div style="color:white;font-size:1.5rem;font-weight:700;margin-bottom:12px;animation:scoreCountUp 0.4s ease-out 0.5s both;">Score: ' + game.fs + '</div><div style="color:rgba(255,255,255,0.6);font-size:0.95rem;animation:scoreCountUp 0.4s ease-out 0.6s both;">Proceeding to quiz...</div></div>';
+        _mco.id = 'reward-screen';
+        _mco.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.72);z-index:9998;display:flex;flex-direction:column;align-items:center;justify-content:center;backdrop-filter:blur(8px);animation:missionCompleteBg 0.4s ease-out;padding:16px;overflow-y:auto;';
+        const _fmtT = (s) => { s = Math.max(0, Math.floor(s || 0)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+        const _row = (label, val, color) => `<div style="display:flex;justify-content:space-between;gap:16px;padding:7px 2px;border-bottom:1px solid rgba(255,255,255,0.07);font-size:0.9rem;"><span style="color:rgba(255,255,255,0.65);">${label}</span><span style="font-weight:800;color:${color || '#fff'};">${val}</span></div>`;
+        _mco.innerHTML = `<div style="width:100%;max-width:430px;background:linear-gradient(160deg,#101827 0%,#0b1220 100%);border:1px solid rgba(255,213,74,0.35);border-radius:20px;padding:26px 24px;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,0.7),0 0 40px rgba(255,213,74,0.12);animation:missionCompleteCard 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;max-height:92vh;overflow-y:auto;">
+          <div style="font-size:3.2rem;animation:missionCompleteStar 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;">🏆</div>
+          <h1 style="color:#ffd54a;font-size:1.7rem;font-family:'Bebas Neue',sans-serif;letter-spacing:0.05em;margin:6px 0 2px;text-shadow:0 4px 20px rgba(255,213,74,0.4);">LEVEL COMPLETE!</h1>
+          <div style="color:#ffd54a;font-size:1.3rem;letter-spacing:0.2em;margin-bottom:2px;">${_starsStr}</div>
+          <div style="color:rgba(255,255,255,0.55);font-size:0.8rem;margin-bottom:12px;">${(ui.cur && ui.cur.name) || ('Lesson ' + _lvId)} · ⏱ ${_fmtT(this.timer)} · ${this.vio === 0 ? 'Perfect drive — zero violations!' : this.vio + ' violation' + (this.vio > 1 ? 's' : '')}</div>
+          <div style="text-align:left;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:6px 14px;margin-bottom:12px;">
+            ${_row('🎯 Final Score', this.fs.toLocaleString('en-IN'), '#5ed4f5')}
+            ${_row('💰 Level Reward', '+₹' + _baseRew.toLocaleString('en-IN'), '#34d399')}
+            ${_row('✨ Clean-Driving Bonus', '+' + (_noViolBonus ? '₹' + _noViolBonus.toLocaleString('en-IN') : '—'), '#34d399')}
+            ${_row('⭐ Collectibles (' + _collN + ')', '+' + (_collV ? '₹' + _collV.toLocaleString('en-IN') : '—'), '#f2b84b')}
+            ${_row('🎖️ Mission Tokens', '+' + _tokEarn, '#b89bff')}
+            ${_row('🧾 Challan Fines', (this.fine > 0 ? '−₹' + this.fine.toLocaleString('en-IN') : 'None 🎉'), this.fine > 0 ? '#ef4444' : '#34d399')}
+            ${_row('👛 Wallet Balance', '₹' + S.wallet.toLocaleString('en-IN'), '#ffd54a')}
+          </div>
+          <button id="reward-continue-btn" style="width:100%;padding:14px;border:none;border-radius:12px;background:linear-gradient(135deg,#f2b84b,#f97316);color:#1a1005;font-size:1rem;font-weight:800;letter-spacing:0.04em;cursor:pointer;box-shadow:0 8px 24px rgba(242,184,75,0.35);">Continue to Quiz →</button>
+          <div style="display:flex;gap:10px;margin-top:10px;">
+            <button id="reward-replay-btn" style="flex:1;padding:10px;border:1px solid rgba(255,255,255,0.2);border-radius:10px;background:rgba(255,255,255,0.06);color:#fff;font-weight:700;cursor:pointer;">↻ Replay</button>
+            <button id="reward-menu-btn" style="flex:1;padding:10px;border:1px solid rgba(255,255,255,0.2);border-radius:10px;background:rgba(255,255,255,0.06);color:#fff;font-weight:700;cursor:pointer;">☰ Levels</button>
+          </div>
+        </div>`;
         document.body.appendChild(_mco);
+        const _goQuiz = () => {
+          const _ov = document.getElementById('reward-screen');
+          if (_ov && _ov.parentNode) _ov.remove();
+          window._rewardContinue = null;
+          // Academy context (real ui.js): in-page review → quiz.
+          // Driving context (stub ui object): deep-link to the Academy exam for this level.
+          if (typeof ui !== 'undefined' && ui.showQuiz) {
+            try {
+              if (window.GameplayRecorder && typeof window.GameplayRecorder.showReview === 'function') {
+                GameplayRecorder.showReview(() => {
+                  try {
+                    ui.showQuiz(this.vehMode || ui.curMode || 'car', { violations: this.violationsLog || [] });
+                  } catch (qe) { console.error('[CompleteLevel] Error in ui.showQuiz:', qe); }
+                });
+              } else {
+                ui.showQuiz(this.vehMode || ui.curMode || 'car', { violations: this.violationsLog || [] });
+              }
+            } catch (err) {
+              console.error('[CompleteLevel] Error showing review/quiz:', err);
+              try { ui.showQuiz(this.vehMode || ui.curMode || 'car', { violations: this.violationsLog || [] }); } catch (e2) {}
+            }
+          } else {
+            window.location.href = 'Academy.html?screen=levels&lv=' + _lvId + '&quiz=1';
+          }
+        };
+        window._rewardContinue = _goQuiz;
+        document.getElementById('reward-continue-btn').onclick = () => { if (window._rewardContinue) window._rewardContinue(); };
+        document.getElementById('reward-replay-btn').onclick = () => {
+          const _ov = document.getElementById('reward-screen');
+          if (_ov && _ov.parentNode) _ov.remove();
+          window._rewardContinue = null;
+          this.retryLevel();
+        };
+        document.getElementById('reward-menu-btn').onclick = () => {
+          const _ov = document.getElementById('reward-screen');
+          if (_ov && _ov.parentNode) _ov.remove();
+          window._rewardContinue = null;
+          if (typeof quitGameToMenu === 'function') quitGameToMenu();
+          else window.location.href = 'Academy.html?screen=levels';
+        };
 
         // ── Rank Notification After Level Complete ──
         try {
@@ -4484,7 +4749,8 @@ class Game {
         } catch(e) { console.warn('Rank notification error:', e); }
 
         setTimeout(() => {
-          if (_mco && _mco.parentNode) _mco.remove();
+          // Reward screen dismissed via buttons; auto-continue only as a fallback
+          if (window._rewardContinue) window._rewardContinue();
           // Ensure ui.cur is defined
           if (typeof ui !== 'undefined') {
             if (!ui.cur) {
@@ -4498,28 +4764,7 @@ class Game {
             }
             ui.curMode = this.vehMode || ui.curMode || 'car';
           }
-          // Show driving review before quiz
-          try {
-            if (window.GameplayRecorder && typeof window.GameplayRecorder.showReview === 'function') {
-              GameplayRecorder.showReview(() => {
-                try {
-                  if (typeof ui !== 'undefined' && ui.showQuiz) {
-                    ui.showQuiz(this.vehMode || ui.curMode || 'car', { violations: this.violationsLog || [] });
-                  }
-                } catch(qe) {
-                  console.error('[CompleteLevel] Error in ui.showQuiz:', qe);
-                }
-              });
-            } else if (typeof ui !== 'undefined' && ui.showQuiz) {
-              ui.showQuiz(this.vehMode || ui.curMode || 'car', { violations: this.violationsLog || [] });
-            }
-          } catch(err) {
-            console.error('[CompleteLevel] Error showing review/quiz:', err);
-            if (typeof ui !== 'undefined' && ui.showQuiz) {
-              ui.showQuiz(this.vehMode || ui.curMode || 'car', { violations: this.violationsLog || [] });
-            }
-          }
-        }, 3500);
+        }, 25000);
       }
 
       // 🚦 MAP CONFIGURATIONS FOR ALL MUMBAI LEVELS 🚦
@@ -4812,9 +5057,28 @@ class Game {
             vStartZ = 0;
             vRotY = 0;
           }
-          pStartX = vStartX;
-          pStartZ = vStartZ;
-          pRot = vRotY;
+          // Level-authored garage spawn: the car starts parked INSIDE the garage
+          // (playerStart{x,z,heading} is accepted as an alias for older custom levels)
+          if (this.mapCfg && this.mapCfg.playerStart && !this.mapCfg.garageSpawn) {
+            this.mapCfg.garageSpawn = { x: this.mapCfg.playerStart.x, z: this.mapCfg.playerStart.z, rotY: this.mapCfg.playerStart.heading || 0 };
+          }
+          if (this.mapCfg && this.mapCfg.garageSpawn) {
+            vStartX = this.mapCfg.garageSpawn.x;
+            vStartZ = this.mapCfg.garageSpawn.z;
+            if (this.mapCfg.garageSpawn.rotY !== undefined) vRotY = this.mapCfg.garageSpawn.rotY;
+            this._garageX = vStartX;
+            this._garageZ = vStartZ;
+          }
+          // Level-authored on-foot start (house porch) when beginning outside
+          if (this.mapCfg && this.mapCfg.startOutside && this.mapCfg.playerSpawn) {
+            pStartX = this.mapCfg.playerSpawn.x;
+            pStartZ = this.mapCfg.playerSpawn.z;
+            pRot = this.mapCfg.playerSpawn.rotY || 0;
+          } else {
+            pStartX = vStartX;
+            pStartZ = vStartZ;
+            pRot = vRotY;
+          }
         }
 
         if (vt === 'pedestrian') {
@@ -4846,7 +5110,8 @@ class Game {
             console.warn('[game_core] Could not read traffic_player_car:', e);
           }
 
-          this.playerVehicle = _buildVehicle(vt, playerColor);
+          const _bv0 = (typeof window !== 'undefined' && typeof window._buildVehicle === 'function') ? window._buildVehicle : (typeof _buildVehicle === 'function' ? _buildVehicle : null);
+          this.playerVehicle = _bv0 ? _bv0(vt, playerColor) : null;
           this._spawnPos = { x: vStartX, z: vStartZ };
           this.playerVehicle.position.set(vStartX, 0, vStartZ);
           this.playerVehicle.rotation.y = vRotY;
@@ -4907,9 +5172,18 @@ class Game {
           this._headlightCones = [coneL, coneR];
           let profileStr = localStorage.getItem('traffic_profile');
           let profile = profileStr ? JSON.parse(profileStr) : {};
-          let username = profile.username || (window.colUser && window.colUser.user_metadata && window.colUser.user_metadata.username) || 'Anonymous';
-          
-          // Nametag removed because createNametagSprite is undefined
+          let username = profile.username || (window.colUser && window.colUser.user_metadata && window.colUser.user_metadata.username) || ((window.S && window.S.name && !/^(traffic hero|driver|anonymous)$/i.test(window.S.name)) ? window.S.name : null) || 'You';
+          username = this._titleCase(username);
+
+          // Player nametag above the vehicle (also marks YOUR parked car on foot)
+          try {
+            const pTag = this._makeNametag('🚗 ' + username, { border: 'rgba(94,212,245,0.6)' });
+            if (pTag) {
+              pTag.position.set(0, 3.4, 0);
+              this.playerVehicle.add(pTag);
+              this.playerVehicle.userData.nametag = pTag;
+            }
+          } catch (e) {}
 
           this.scene.add(this.playerVehicle);
 
@@ -4918,6 +5192,15 @@ class Game {
             this.playerCharacter = _buildHuman(true);
             this.playerCharacter.position.set(pStartX, 0, pStartZ);
             this.playerCharacter.rotation.y = pRot;
+            try {
+              const cTag = this._makeNametag(username, { border: 'rgba(94,212,245,0.6)' });
+              if (cTag) {
+                cTag.position.set(0, 2.6, 0);
+                this.playerCharacter.add(cTag);
+                this.playerCharacter.userData.nametag = cTag;
+                this.playerCharacter.userData.isPlayer = true;
+              }
+            } catch (e) {}
             this.scene.add(this.playerCharacter);
             this.player = this.playerCharacter;
             this.camYaw = pRot;
@@ -4941,7 +5224,8 @@ class Game {
       }
 
       _makeNPC(type, col) {
-        const v = _buildVehicle(type, col);
+        const bv = (typeof window !== 'undefined' && typeof window._buildVehicle === 'function') ? window._buildVehicle : (typeof _buildVehicle === 'function' ? _buildVehicle : null);
+        const v = bv ? bv(type, col) : null;
         if (v) v.stats = VEHICLE_STATS[type] || VEHICLE_STATS.car;
         return v;
       }
@@ -4991,8 +5275,686 @@ class Game {
       }
 
 
-      _buildRouteCheckpoints(cfg) {
-        this.cps = [];
+      // ── Generic Road-Problem Zones (potholes, barricades, parked trucks, puddles) ──
+      // Driven purely by level config, works on every map path (suburban + generic):
+      // roadProblems: [{ kind:'potholes'|'barricade'|'parked_truck'|'puddle', x, z, ... }]
+      // Map dressing lives here too: zebra, signboard, streetlight (visual only).
+      _titleCase(s) {
+        return String(s == null ? '' : s).split(' ').map(w => w ? (w.charAt(0).toUpperCase() + w.slice(1)) : w).join(' ');
+      }
+      // Floating name sprite (player, rivals, guards). Tiny count — always safe.
+      _makeNametag(text, opts) {
+        opts = opts || {};
+        try {
+          const label = String(text || '').slice(0, 20);
+          if (!label) return null;
+          const fs = opts.size || 44;
+          const pad = 26;
+          const meas = document.createElement('canvas').getContext('2d');
+          meas.font = `800 ${fs}px Inter, sans-serif`;
+          const w = Math.ceil(meas.measureText(label).width) + pad * 2;
+          const h = fs + 40;
+          const cvs = document.createElement('canvas');
+          cvs.width = w; cvs.height = h;
+          const ctx = cvs.getContext('2d');
+          const r = 22;
+          ctx.beginPath();
+          ctx.moveTo(r, 2); ctx.lineTo(w - r, 2); ctx.quadraticCurveTo(w - 2, 2, w - 2, r);
+          ctx.lineTo(w - 2, h - r); ctx.quadraticCurveTo(w - 2, h - 2, w - r, h - 2);
+          ctx.lineTo(r, h - 2); ctx.quadraticCurveTo(2, h - 2, 2, h - r);
+          ctx.lineTo(2, r); ctx.quadraticCurveTo(2, 2, r, 2); ctx.closePath();
+          ctx.fillStyle = opts.bg || 'rgba(7,10,20,0.72)';
+          ctx.fill();
+          ctx.lineWidth = 3;
+          ctx.strokeStyle = opts.border || 'rgba(255,255,255,0.25)';
+          ctx.stroke();
+          ctx.font = `800 ${fs}px Inter, sans-serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillStyle = opts.fg || '#ffffff';
+          ctx.fillText(label, w / 2, h / 2 + 2);
+          const tex = new THREE.CanvasTexture(cvs);
+          const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false }));
+          // Small-world scale (~2m wide): readable at 6m+, never a billboard
+          sp.scale.set(w / 170, h / 170, 1);
+          sp.renderOrder = 999;
+          sp.userData.baseX = w / 170;
+          sp.userData.baseY = h / 170;
+          try {
+            window._namedTags = window._namedTags || [];
+            window._namedTags.push(sp);
+          } catch (e) {}
+          return sp;
+        } catch (e) { return null; }
+      }
+      // Per-frame nametag director: hide when the camera is on top of the
+      // tag (on-foot close-ups), hide when far, gentle grow with distance.
+      _updateNametags() {
+        try {
+          const cam = this.camera;
+          if (!cam || !cam.position) return;
+          this._nametagV1 = this._nametagV1 || new THREE.Vector3();
+          const list = window._namedTags || [];
+          for (let i = list.length - 1; i >= 0; i--) {
+            const sp = list[i];
+            if (!sp || !sp.parent) { list.splice(i, 1); continue; }
+            const wp = sp.getWorldPosition(this._nametagV1);
+            const d = cam.position.distanceTo(wp);
+            if (d < 4 || d > 70) { sp.visible = false; continue; }
+            sp.visible = true;
+            const f = Math.max(0.75, Math.min(1.5, d / 16));
+            sp.scale.set(sp.userData.baseX * f, sp.userData.baseY * f, 1);
+          }
+        } catch (e) {}
+      }
+      _buildRoadProblems(cfg) {
+        if (this._roadProblemGroup) { this.scene.remove(this._roadProblemGroup); this._roadProblemGroup = null; }
+        this._roadProblems = [];
+        const list = (cfg && cfg.roadProblems) || [];
+        if (!list.length) return;
+        const grp = new THREE.Group();
+        grp.name = 'road-problems';
+        list.forEach((p) => {
+          if (!p || typeof p.x !== 'number' || typeof p.z !== 'number') return;
+          if (p.kind === 'potholes') {
+            const n = Math.max(1, Math.min(12, p.count || 5));
+            for (let i = 0; i < n; i++) {
+              const r = 0.7 + Math.random() * 0.7;
+              const disc = new THREE.Mesh(new THREE.CircleGeometry(r, 10), new THREE.MeshLambertMaterial({ color: 0x1a1a1a }));
+              disc.rotation.x = -Math.PI / 2;
+              const ox = (Math.random() - 0.5) * (p.spread || 8);
+              const oz = (Math.random() - 0.5) * (p.spread || 8);
+              disc.position.set(p.x + ox, 0.02, p.z + oz);
+              grp.add(disc);
+            }
+            this._roadProblems.push({ kind: 'potholes', x: p.x, z: p.z, r: (p.spread || 8) / 2 + 1 });
+          } else if (p.kind === 'barricade') {
+            const bar = new THREE.Group();
+            const board = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.7, 0.25), new THREE.MeshLambertMaterial({ color: 0xff6600 }));
+            board.position.y = 1.0; bar.add(board);
+            const stripe = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.22, 0.27), new THREE.MeshLambertMaterial({ color: 0xffffff }));
+            stripe.position.y = 1.0; bar.add(stripe);
+            [-1.4, 1.4].forEach((lx) => {
+              const leg = new THREE.Mesh(new THREE.BoxGeometry(0.25, 1.0, 0.6), new THREE.MeshLambertMaterial({ color: 0x333333 }));
+              leg.position.set(lx, 0.5, 0); bar.add(leg);
+              const cone = new THREE.Mesh(new THREE.ConeGeometry(0.35, 0.9, 8), new THREE.MeshLambertMaterial({ color: 0xff4400 }));
+              cone.position.set(lx * 1.6, 0.45, 1.2); bar.add(cone);
+            });
+            bar.position.set(p.x, 0, p.z);
+            bar.rotation.y = p.rotY || 0;
+            this.scene.add(bar);
+            bar.userData = { halfW: 1.8, halfD: 1.0, isObstacle: true };
+            this.obstacles.push(bar);
+            this._roadProblems.push({ kind: 'barricade', x: p.x, z: p.z, r: 3 });
+          } else if (p.kind === 'parked_truck') {
+            const truck = (typeof _buildVehicle === 'function') ? _buildVehicle('truck', 0x8a6d2b) : null;
+            if (truck) {
+              truck.position.set(p.x, 0, p.z);
+              truck.rotation.y = (p.rotY !== undefined) ? p.rotY : Math.PI / 2;
+              truck.userData = { halfW: 4.6, halfD: 1.5, isObstacle: true, isVehicle: true, parked: true };
+              this.scene.add(truck);
+              this.obstacles.push(truck);
+              this._roadProblems.push({ kind: 'parked_truck', x: p.x, z: p.z, r: 6 });
+            }
+          } else if (p.kind === 'puddle') {
+            const r = p.r || 5;
+            const pad = new THREE.Mesh(new THREE.CircleGeometry(r, 20), new THREE.MeshLambertMaterial({ color: 0x3b82f6, transparent: true, opacity: 0.45 }));
+            pad.rotation.x = -Math.PI / 2;
+            pad.position.set(p.x, 0.02, p.z);
+            grp.add(pad);
+            this._roadProblems.push({ kind: 'puddle', x: p.x, z: p.z, r });
+          } else if (p.kind === 'zebra') {
+            // Painted crosswalk stripes (visual only): 5 bars across the road
+            const w = p.w || 13;
+            const zg = new THREE.Group();
+            const stripeMat = new THREE.MeshBasicMaterial({ color: 0xf8fafc });
+            for (let s = 0; s < 5; s++) {
+              const st = new THREE.Mesh(new THREE.PlaneGeometry(w / 7, 2.2), stripeMat);
+              st.rotation.x = -Math.PI / 2;
+              st.position.set(-w / 2 + (s + 0.5) * (w / 5), 0.025, 0);
+              zg.add(st);
+            }
+            zg.position.set(p.x, 0, p.z);
+            zg.rotation.y = p.rotY || 0;
+            grp.add(zg);
+          } else if (p.kind === 'signboard') {
+            // Roadside name board (canvas texture): shops, streets, landmarks
+            const sg = new THREE.Group();
+            const poleMat = new THREE.MeshLambertMaterial({ color: 0x475569 });
+            [-3.4, 3.4].forEach(lx => {
+              const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 3.4, 8), poleMat);
+              pole.position.set(lx, 1.7, 0);
+              sg.add(pole);
+            });
+            const sc = document.createElement('canvas');
+            sc.width = 512; sc.height = 160;
+            const sx = sc.getContext('2d');
+            sx.fillStyle = '#0f172a'; sx.fillRect(0, 0, 512, 160);
+            sx.strokeStyle = '#f2b84b'; sx.lineWidth = 6; sx.strokeRect(6, 6, 500, 148);
+            sx.fillStyle = '#f8fafc'; sx.font = '800 44px Inter, sans-serif';
+            sx.textAlign = 'center'; sx.textBaseline = 'middle';
+            const title = String(p.text || 'Mumbai').slice(0, 22).toUpperCase();
+            sx.fillText(title, 256, p.sub ? 62 : 80);
+            if (p.sub) {
+              sx.fillStyle = '#f2b84b'; sx.font = '700 30px Inter, sans-serif';
+              sx.fillText(String(p.sub).slice(0, 28), 256, 116);
+            }
+            const signTex = new THREE.CanvasTexture(sc);
+            const board = new THREE.Mesh(new THREE.BoxGeometry(8, 2.5, 0.25), new THREE.MeshLambertMaterial({ map: signTex }));
+            board.position.y = 4.4;
+            sg.add(board);
+            sg.position.set(p.x, 0, p.z);
+            sg.rotation.y = p.rotY || 0;
+            grp.add(sg);
+          } else if (p.kind === 'streetlight') {
+            // Lamp post with warm emissive head (no real light: perf-safe at any count)
+            const lg = new THREE.Group();
+            const poleMat = new THREE.MeshLambertMaterial({ color: 0x334155 });
+            const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.16, 7, 8), poleMat);
+            pole.position.y = 3.5;
+            lg.add(pole);
+            const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 2.2, 8), poleMat);
+            arm.rotation.z = Math.PI / 2;
+            arm.position.set(1.0, 6.9, 0);
+            lg.add(arm);
+            const head = new THREE.Mesh(
+              new THREE.SphereGeometry(0.32, 12, 12),
+              new THREE.MeshBasicMaterial({ color: 0xffd9a0 })
+            );
+            head.position.set(2.0, 6.8, 0);
+            lg.add(head);
+            const halo = new THREE.Mesh(
+              new THREE.SphereGeometry(0.55, 12, 12),
+              new THREE.MeshBasicMaterial({ color: 0xffbe5c, transparent: true, opacity: 0.25, depthWrite: false })
+            );
+            halo.position.copy(head.position);
+            lg.add(halo);
+            lg.position.set(p.x, 0, p.z);
+            lg.rotation.y = p.rotY || 0;
+            grp.add(lg);
+          }
+        });
+        this.scene.add(grp);
+        this._roadProblemGroup = grp;
+      }
+
+      // Per-frame: pothole jolts (feeds mission hitPothole) + puddle water drag
+      _updateRoadProblems() {
+        if (!this._roadProblems || !this._roadProblems.length || !this.player) return false;
+        const px = this.player.position.x, pz = this.player.position.z;
+        let hit = false;
+        for (const q of this._roadProblems) {
+          const d = Math.hypot(px - q.x, pz - q.z);
+          if (d < q.r) {
+            if (q.kind === 'potholes' && !this.isPedestrian && Math.abs(this.speed || 0) > 2) {
+              hit = true;
+              if (window.TrafficAudio && !this._potholeSfxCd) {
+                window.TrafficAudio.playCrash(0.25);
+                this._potholeSfxCd = true;
+                setTimeout(() => { this._potholeSfxCd = false; }, 900);
+              }
+            } else if (q.kind === 'puddle' && !this.isPedestrian) {
+              this.speed *= 0.985;
+            }
+          }
+        }
+        if (hit) this._hitPotholeThisFrame = true;
+        return hit;
+      }
+
+      // ── Level-authored hero buildings (houses, shops, apartments) ──
+      // cfg.plots: [{ kind:'house'|'shop'|'apartment', x, z, rotY, w, d, h, color, text, sub }]
+      // Generic map path only — suburban levels dress themselves.
+      _buildPlotBuildings(cfg) {
+        if (this._plotGroup) { this.scene.remove(this._plotGroup); this._plotGroup = null; }
+        const plots = (cfg && cfg.plots) || [];
+        if (!plots.length || !this.scene) return;
+        const grp = new THREE.Group();
+        grp.name = 'plot-buildings';
+        const glassMat = new THREE.MeshBasicMaterial({ color: 0x1e293b });
+        const glassLit = new THREE.MeshBasicMaterial({ color: 0xfde68a });
+        const doorMat = new THREE.MeshLambertMaterial({ color: 0x78350f });
+        const signTex = (title, sub) => {
+          const sc = document.createElement('canvas');
+          sc.width = 512; sc.height = sub ? 160 : 128;
+          const c = sc.getContext('2d');
+          c.fillStyle = '#0f172a'; c.fillRect(0, 0, 512, sc.height);
+          c.strokeStyle = '#f2b84b'; c.lineWidth = 6; c.strokeRect(6, 6, 500, sc.height - 12);
+          c.fillStyle = '#f8fafc'; c.font = '800 42px Inter, sans-serif';
+          c.textAlign = 'center'; c.textBaseline = 'middle';
+          c.fillText(String(title || '').slice(0, 22).toUpperCase(), 256, sub ? 58 : sc.height / 2);
+          if (sub) {
+            c.fillStyle = '#f2b84b'; c.font = '700 28px Inter, sans-serif';
+            c.fillText(String(sub).slice(0, 30), 256, 116);
+          }
+          return new THREE.CanvasTexture(sc);
+        };
+        plots.forEach(p => {
+          if (!p || typeof p.x !== 'number' || typeof p.z !== 'number') return;
+          const g = new THREE.Group();
+          const w = p.w || 12, d = p.d || 10;
+          const wallCol = (p.color !== undefined) ? p.color : 0xf5e6d3;
+          const wallMat = new THREE.MeshLambertMaterial({ color: wallCol });
+          if (p.kind === 'house') {
+            const h = p.h || 4.5;
+            const body = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), wallMat);
+            body.position.y = h / 2;
+            g.add(body);
+            const roof = new THREE.Mesh(
+              new THREE.ConeGeometry(Math.hypot(w, d) / 2 * 0.72, 2.6, 4),
+              new THREE.MeshLambertMaterial({ color: 0x8B4513 })
+            );
+            roof.position.y = h + 1.3;
+            roof.rotation.y = Math.PI / 4;
+            g.add(roof);
+            const door = new THREE.Mesh(new THREE.BoxGeometry(1.4, 2.6, 0.2), doorMat);
+            door.position.set(0, 1.3, d / 2 + 0.05);
+            g.add(door);
+            [-w / 4, w / 4].forEach(wx => {
+              const win = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 1.5), (wx > 0 ? glassLit : glassMat));
+              win.position.set(wx, h * 0.6, d / 2 + 0.05);
+              g.add(win);
+            });
+          } else if (p.kind === 'shop') {
+            const h = p.h || 5;
+            const body = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), wallMat);
+            body.position.y = h / 2;
+            g.add(body);
+            const glass = new THREE.Mesh(new THREE.PlaneGeometry(w * 0.7, 2.2), glassMat);
+            glass.position.set(0, 1.6, d / 2 + 0.05);
+            g.add(glass);
+            const awn = new THREE.Mesh(new THREE.BoxGeometry(w * 0.9, 0.25, 2.4), new THREE.MeshLambertMaterial({ color: p.awning || 0x166534 }));
+            awn.position.set(0, 3.4, d / 2 + 1.1);
+            awn.rotation.x = 0.25;
+            g.add(awn);
+            if (p.text) {
+              const board = new THREE.Mesh(
+                new THREE.BoxGeometry(Math.min(w * 0.85, 9), 1.8, 0.25),
+                new THREE.MeshLambertMaterial({ map: signTex(p.text, p.sub) })
+              );
+              board.position.set(0, h + 0.4, d / 2 + 0.2);
+              g.add(board);
+            }
+          } else if (p.kind === 'apartment') {            const h = p.h || 18;
+            const body = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), wallMat);
+            body.position.y = h / 2;
+            g.add(body);
+            // Window grids on all four faces (blank slabs look dead from any angle)
+            const floors = Math.max(2, Math.floor(h / 3.4));
+            const cols = Math.max(2, Math.floor(w / 3));
+            const rows = [
+              { n: cols, alongX: true, fixed: d / 2 + 0.05, rotY: 0 },
+              { n: cols, alongX: true, fixed: -d / 2 - 0.05, rotY: Math.PI },
+              { n: Math.max(2, Math.floor(d / 3)), alongX: false, fixed: w / 2 + 0.05, rotY: Math.PI / 2 },
+              { n: Math.max(2, Math.floor(d / 3)), alongX: false, fixed: -w / 2 - 0.05, rotY: -Math.PI / 2 }
+            ];
+            rows.forEach(row => {
+              for (let f = 0; f < floors; f++) {
+                for (let k = 0; k < row.n; k++) {
+                  const span = row.alongX ? w : d;
+                  const win = new THREE.Mesh(
+                    new THREE.PlaneGeometry(1.2, 1.4),
+                    ((f + k) % 3 === 0 ? glassLit : glassMat)
+                  );
+                  const off = -span / 2 + 1.8 + k * 3;
+                  if (row.alongX) win.position.set(off, 2.6 + f * 3.2, row.fixed);
+                  else win.position.set(row.fixed, 2.6 + f * 3.2, off);
+                  win.rotation.y = row.rotY;
+                  g.add(win);
+                }
+              }
+            });
+            const roof = new THREE.Mesh(new THREE.BoxGeometry(w + 0.6, 0.5, d + 0.6), new THREE.MeshLambertMaterial({ color: 0x475569 }));
+            roof.position.y = h + 0.25;
+            g.add(roof);
+          } else if (p.kind === 'garage') {
+            // Open-front home garage (front = +x local): floor, 3 walls, roof,
+            // rolled shutter drum, tool board, tire stack, hanging bulb.
+            // Collision = walls only, so cars/people drive in and out freely.
+            const w = p.w || 7, d = p.d || 8, wh = 3.2;
+            const wallMat = new THREE.MeshLambertMaterial({ color: (p.color !== undefined) ? p.color : 0xe2e8f0 });
+            const trimMat = new THREE.MeshLambertMaterial({ color: 0x166534 });
+            const floor = new THREE.Mesh(new THREE.BoxGeometry(w + 1, 0.14, d + 1), new THREE.MeshLambertMaterial({ color: 0x64748b }));
+            floor.position.y = 0.07;
+            g.add(floor);
+            const oil = new THREE.Mesh(new THREE.CircleGeometry(0.9, 12), new THREE.MeshBasicMaterial({ color: 0x111111, transparent: true, opacity: 0.55 }));
+            oil.rotation.x = -Math.PI / 2;
+            oil.position.set(0.3, 0.16, 0.4);
+            g.add(oil);
+            const mkWall = (bw, bh, bd, lx, lz) => {
+              // World-space walls (collision reads obj.position directly, so
+              // walls live in the unrotated plot group, not the rotated garage).
+              // Opening faces +x local: back wall west, sides north/south.
+              const ca = Math.cos(p.rotY || 0), sa = Math.sin(p.rotY || 0);
+              const m = new THREE.Mesh(new THREE.BoxGeometry(bw, bh, bd), wallMat);
+              m.position.set(p.x + lx * ca + lz * sa, bh / 2, p.z - lx * sa + lz * ca);
+              m.rotation.y = p.rotY || 0;
+              grp.add(m);
+              m.userData = { halfW: bw / 2 + 0.1, halfD: bd / 2 + 0.1, isObstacle: true, isBuilding: true };
+              this.obstacles.push(m);
+              return m;
+            };
+            mkWall(0.3, wh, d, -w / 2, 0);                // back wall
+            mkWall(w, wh, 0.3, 0, -d / 2);                // left wall
+            mkWall(w, wh, 0.3, 0, d / 2);                 // right wall
+            const roof = new THREE.Mesh(new THREE.BoxGeometry(w + 0.4, 0.35, d + 0.4), trimMat);
+            roof.position.y = wh + 0.17;
+            g.add(roof);
+            // Door frame + rolled-up shutter drum above the opening
+            [-d / 2, d / 2].forEach(pz => {
+              const pillar = new THREE.Mesh(new THREE.BoxGeometry(0.35, wh, 0.35), trimMat);
+              pillar.position.set(w / 2, wh / 2, pz);
+              g.add(pillar);
+            });
+            const beam = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.5, d + 0.3), trimMat);
+            beam.position.set(w / 2, wh - 0.25, 0);
+            g.add(beam);
+            const drum = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, d - 1, 12), new THREE.MeshLambertMaterial({ color: 0x94a3b8 }));
+            drum.rotation.x = Math.PI / 2;
+            drum.position.set(w / 2 - 0.2, wh - 0.75, 0);
+            g.add(drum);
+            // Tool board + shelf + tire stack + hanging bulb (interior dressing)
+            const board = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.2, 2.2), new THREE.MeshLambertMaterial({ color: 0x92400e }));
+            board.position.set(-w / 2 + 0.25, 1.7, -1);
+            g.add(board);
+            const shelf = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.12, 2.0), new THREE.MeshLambertMaterial({ color: 0x78350f }));
+            shelf.position.set(-w / 2 + 0.8, 1.1, 1.6);
+            g.add(shelf);
+            const crate = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.9, 0.9), new THREE.MeshLambertMaterial({ color: 0xa16207 }));
+            crate.position.set(-w / 2 + 0.7, 0.45, 1.6);
+            g.add(crate);
+            [0.35, 0.95].forEach(ty => {
+              const tire = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 0.3, 14), new THREE.MeshLambertMaterial({ color: 0x1f2937 }));
+              tire.rotation.x = Math.PI / 2;
+              tire.position.set(-w / 2 + 0.7, ty, -2.4);
+              g.add(tire);
+            });
+            const cord = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 1.0, 6), new THREE.MeshBasicMaterial({ color: 0x111111 }));
+            cord.position.set(0, wh - 0.5, 0);
+            g.add(cord);
+            const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.16, 10, 10), new THREE.MeshBasicMaterial({ color: 0xffe9b0 }));
+            bulb.position.set(0, wh - 1.1, 0);
+            g.add(bulb);
+            const bulbHalo = new THREE.Mesh(new THREE.SphereGeometry(0.4, 10, 10), new THREE.MeshBasicMaterial({ color: 0xffdf8a, transparent: true, opacity: 0.22, depthWrite: false }));
+            bulbHalo.position.copy(bulb.position);
+            g.add(bulbHalo);
+          } else {
+            return;
+          }
+          g.position.set(p.x, 0, p.z);
+          g.rotation.y = p.rotY || 0;
+          grp.add(g);
+          if (p.kind !== 'garage') {
+            // Collision box follows 90° rotations (axis-aligned physics).
+            // Garages skip this: their 3 walls collide individually so the
+            // interior + opening stay drivable/walkable.
+            const _rq = Math.abs((p.rotY || 0) % Math.PI);
+            const _swap = Math.abs(_rq - Math.PI / 2) < 0.1;
+            g.userData = { halfW: (_swap ? d : w) / 2 + 0.5, halfD: (_swap ? w : d) / 2 + 0.5, isObstacle: true, isBuilding: true };
+            this.obstacles.push(g);
+          }
+        });
+        this.scene.add(grp);
+        this._plotGroup = grp;
+      }
+
+      // ── Driving autosave / resume: same spot, mission + task state ──
+      // Saves every ~5s while playing; resume with T when a fresh save exists.
+      _telemetryKey() {
+        const lv = this.lvId || (this.mapCfg && this.mapCfg.id) || 1;
+        return 'traffic_telemetry_' + lv;
+      }
+      // Phase 5 telemetry: attempts, completions, quit points, violations,
+      // p95 frame time + draw calls. Local-first, Supabase when online.
+      // Never blocks gameplay on failure.
+      _recordTelemetry(event, extra) {
+        try {
+          const k = this._telemetryKey();
+          let rec = null;
+          try { rec = JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) {}
+          if (!rec) rec = { attempts: 0, completions: 0, quits: [], bestMs: 0, violations: {}, frames: [] };
+          extra = extra || {};
+          if (event === 'attempt') rec.attempts++;
+          if (event === 'complete') {
+            rec.completions++;
+            if (!rec.bestMs || (extra.ms && extra.ms < rec.bestMs)) rec.bestMs = extra.ms;
+          }
+          if (event === 'quit') {
+            rec.quits.push({ cp: extra.cp || 0, timer: Math.round(extra.timer || 0), ts: Date.now() });
+            if (rec.quits.length > 20) rec.quits = rec.quits.slice(-20);
+          }
+          if (extra.violations) {
+            for (const v of extra.violations) rec.violations[v] = (rec.violations[v] || 0) + 1;
+          }
+          if (extra.p95 !== undefined) rec.p95ms = extra.p95;
+          if (extra.calls !== undefined) rec.calls = extra.calls;
+          localStorage.setItem(k, JSON.stringify(rec));
+        } catch (e) {}
+      }
+      _telemetryFrames() {
+        this._frameDts = this._frameDts || [];
+        return this._frameDts;
+      }
+      // God-mode debug overlay: fps, p95 frame ms, draw calls, tris, NPCs.
+      // Behind the cheat gate (window._trafficGodMode / traffic_god_mode).
+      _updateTelemetryOverlay() {
+        try {
+          const on = window._trafficGodMode || (typeof localStorage !== 'undefined' && localStorage.getItem('traffic_god_mode') === 'true');
+          let el = document.getElementById('telemetry-overlay');
+          if (!on) { if (el) el.style.display = 'none'; return; }
+          if (!el) {
+            el = document.createElement('div');
+            el.id = 'telemetry-overlay';
+            el.style.cssText = 'position:fixed;top:64px;left:8px;z-index:9500;background:rgba(0,0,0,0.72);color:#5ed4f5;font:11px/1.5 monospace;padding:8px 10px;border-radius:8px;pointer-events:none;white-space:pre;';
+            document.body.appendChild(el);
+          }
+          el.style.display = 'block';
+          const fd = (this._frameDts || []).slice().sort((a, b) => a - b);
+          const avg = fd.length ? fd.reduce((a, b) => a + b, 0) / fd.length : 0;
+          const p95 = fd.length ? fd[Math.min(fd.length - 1, Math.floor(fd.length * 0.95))] : 0;
+          let calls = 0, tris = 0;
+          try {
+            const info = this.renderCore && this.renderCore.renderer && this.renderCore.renderer.info;
+            if (info) { calls = info.render.calls; tris = info.render.triangles; }
+          } catch (e) {}
+          const npcs = (this.npcs || []).length;
+          const q = (this.trafficManager && this.trafficManager._spawnQueue) || 0;
+          el.textContent = `fps ${(1000 / Math.max(1, avg)).toFixed(0)}  p95 ${p95.toFixed(1)}ms\ncalls ${calls}  tris ${(tris / 1000).toFixed(0)}k\nnpcs ${npcs}  spawnQ ${q}\n${this.playing ? 'PLAYING' : 'idle'} lv${this.lvId || '?'}`;
+        } catch (e) {}
+      }
+      _runSaveKey() {
+        const lv = this.lvId || (this.mapCfg && this.mapCfg.id) || 1;
+        return 'traffic_run_' + lv;
+      }
+      _saveRun() {
+        try {
+          if (!this.playing || !this.player || this.levelCompleted) return;
+          const done = {};
+          (this.tasks || []).forEach(t => { if (t.done) done[t.id] = 1; });
+          localStorage.setItem(this._runSaveKey(), JSON.stringify({
+            x: this.player.position.x, z: this.player.position.z, rotY: this.player.rotation.y,
+            isPed: !!this.isPedestrian, tasksDone: done, hits: this.hits || 0,
+            timer: this.timer || 0, vio: this.vio || 0, score: this.score || 0, fine: this.fine || 0,
+            ts: Date.now()
+          }));
+        } catch (e) {}
+      }
+      _loadRun() {
+        try {
+          const raw = localStorage.getItem(this._runSaveKey());
+          if (!raw) return null;
+          const s = JSON.parse(raw);
+          if (!s || !s.ts || (Date.now() - s.ts) > 30 * 60 * 1000) return null;
+          return s;
+        } catch (e) { return null; }
+      }
+      _clearRun() { try { localStorage.removeItem(this._runSaveKey()); } catch (e) {} }
+      _applyRun(s) {
+        if (!s || !this.player) return false;
+        this.player.position.set(s.x, 0, s.z);
+        this.player.rotation.y = s.rotY || 0;
+        if (this.playerVehicle) {
+          this.playerVehicle.position.set(s.x, 0, s.z);
+          this.playerVehicle.rotation.y = s.rotY || 0;
+        }
+        (this.tasks || []).forEach(t => { if (s.tasksDone && s.tasksDone[t.id]) t.done = true; });
+        this.hits = s.hits || 0;
+        this.timer = s.timer || 0; this.vio = s.vio || 0; this.score = s.score || 0; this.fine = s.fine || 0;
+        // Resuming mid-run invalidates the from-start ghost replay for this attempt
+        this._ghostActive = false;
+        if (this._ghostMesh) this._ghostMesh.visible = false;
+        this._renderTasks();
+        return true;
+      }
+      _resumeRunOffer() {
+        if (this._pendingResume) {
+          if (this._applyRun(this._pendingResume)) {
+            toast('💾 Run restored — same spot, same mission!', '#34d399');
+          }
+          this._pendingResume = null;
+        }
+      }
+
+      // ── F2 Ghost: best-line replay (translucent rival-you) ──
+      _ghostKey() {
+        const lv = this.lvId || (this.mapCfg && this.mapCfg.id) || 1;
+        return 'traffic_ghost_' + lv;
+      }
+      _loadGhost() {
+        try {
+          const raw = localStorage.getItem(this._ghostKey());
+          if (!raw) return null;
+          const g = JSON.parse(raw);
+          if (!g || !g.pts || g.pts.length < 4) return null;
+          return g;
+        } catch (e) { return null; }
+      }
+      _saveGhost() {
+        try {
+          if (!this._ghostPts || this._ghostPts.length < 8) return;
+          const prev = this._loadGhost();
+          if (prev && (prev.score || 0) >= (this.fs || 0)) return;
+          localStorage.setItem(this._ghostKey(), JSON.stringify({ score: this.fs, pts: this._ghostPts.slice(-2400) }));
+        } catch (e) {}
+      }
+      _buildGhostMesh() {
+        try {
+          this._destroyGhostMesh();
+          const data = this._loadGhost();
+          const _bvg = (typeof window !== 'undefined' && typeof window._buildVehicle === 'function') ? window._buildVehicle : (typeof _buildVehicle === 'function' ? _buildVehicle : null);
+          if (!data || !_bvg || !this.scene) return;
+          const mesh = _bvg(this.vehMode || 'car', 0x5ed4f5);
+          if (!mesh) return;
+          mesh.traverse(o => {
+            if (o.isMesh) {
+              o.material = o.material.clone();
+              o.material.transparent = true;
+              o.material.opacity = 0.35;
+              o.material.depthWrite = false;
+              o.castShadow = false;
+            }
+          });
+          mesh.visible = false;
+          this.scene.add(mesh);
+          this._ghostMesh = mesh;
+          this._ghostPtsRef = data.pts;
+          this._ghostIdx = 0;
+          this._ghostActive = true;
+        } catch (e) {}
+      }
+      _destroyGhostMesh() {
+        try {
+          if (this._ghostMesh) {
+            if (this._ghostMesh.parent) this._ghostMesh.parent.remove(this._ghostMesh);
+            this._ghostMesh.traverse(o => { if (o.isMesh && o.material && o.material.dispose) o.material.dispose(); });
+          }
+        } catch (e) {}
+        this._ghostMesh = null; this._ghostActive = false;
+      }
+      _stepGhost() {
+        const m = this._ghostMesh;
+        if (!m || !this._ghostActive || !this._ghostPtsRef || !this.playing) { if (m) m.visible = false; return; }
+        const t = this.timer || 0;
+        const pts = this._ghostPtsRef;
+        if (t < pts[0].t || t > pts[pts.length - 1].t + 2) { m.visible = false; return; }
+        let i = this._ghostIdx || 0;
+        while (i < pts.length - 2 && pts[i + 1].t <= t) i++;
+        while (i > 0 && pts[i].t > t) i--;
+        this._ghostIdx = i;
+        const a = pts[i], b = pts[i + 1];
+        const f = Math.max(0, Math.min(1, (t - a.t) / Math.max(0.001, b.t - a.t)));
+        m.position.set(a.x + (b.x - a.x) * f, 0.05, a.z + (b.z - a.z) * f);
+        m.rotation.y = a.r + (b.r - a.r) * f;
+        m.visible = true;
+      }
+
+      // ── F1 Juice: near-miss payouts, drift ticker, FOV-kick decay ──
+      _updateJuice(dt) {
+        if (!this.playing || this.isPedestrian || !this.player || !this.player.position) return;
+        const spd = Math.abs(this.speed || 0);
+        // F3 HUD diet: above ~25 km/h only speed + next instruction stay;
+        // everything else collapses until you slow down or stop.
+        try {
+          document.body.classList.toggle('hud-focus-drive', spd > 0.32 && this.playing);
+        } catch (e) {}
+        // Ghost recorder: sample the racing line every 0.5s of run timer
+        if ((this.timer || 0) - (this._ghostLastT === undefined ? -1 : this._ghostLastT) >= 0.5) {
+          this._ghostLastT = this.timer || 0;
+          this._ghostPts = this._ghostPts || [];
+          if (this._ghostPts.length < 2400) {
+            this._ghostPts.push({ t: this.timer || 0, x: +this.player.position.x.toFixed(2), z: +this.player.position.z.toFixed(2), r: +this.player.rotation.y.toFixed(3) });
+          }
+        }
+        // Ghost playback mesh, built lazily once the scene exists
+        if (!this._ghostMesh && !this._ghostTried) {
+          this._ghostTried = true;
+          try { this._buildGhostMesh(); } catch (e) {}
+        }
+        try { this._stepGhost(); } catch (e) {}
+        if (this._fovKick > 0) this._fovKick = Math.max(0, this._fovKick - dt * 16);
+        // Drift ticker (same slip formula as the tire-smoke system)
+        const slip = Math.abs(this._lateralAccel || 0);
+        if (slip > 0.35 && spd > 0.2) {
+          this._driftScore = (this._driftScore || 0) + slip * spd * dt * 40;
+          this._driftQuiet = 0;
+        } else if (this._driftScore > 0) {
+          this._driftQuiet = (this._driftQuiet || 0) + dt;
+          if (this._driftQuiet > 1.0) {
+            const pts = Math.round(this._driftScore);
+            if (pts >= 15) {
+              this.score = (this.score || 0) + pts;
+              toast('🏁 DRIFT +' + pts, '#5ed4f5');
+            }
+            this._driftScore = 0; this._driftQuiet = 0;
+          }
+        }
+        // Near-miss: fast pass within 1.4–3.1m lateral, throttled to every 3rd frame
+        this._nmTick = (this._nmTick || 0) + 1;
+        if (this._nmTick % 3 !== 0 || spd < 0.55 || !this.npcs) return;
+        if (this._nmCooldown > 0) this._nmCooldown -= dt * 3;
+        const px = this.player.position.x, pz = this.player.position.z;
+        const fx = Math.sin(this.player.rotation.y), fz = Math.cos(this.player.rotation.y);
+        for (const n of this.npcs) {
+          if (!n || !n.position || n.visible === false) continue;
+          const rx = n.position.x - px, rz = n.position.z - pz;
+          const dz = rx * fx + rz * fz;
+          const dx = Math.abs(rx * fz - rz * fx);
+          if (dz > 18 || dz < -12) { if (n.userData) n.userData._nmDone = false; continue; }
+          if (n.userData && n.userData._nmDone) continue;
+          if (dz > -2 && dz < 9 && dx > 1.4 && dx < 3.1 && this._nmCooldown <= 0) {
+            if (n.userData) n.userData._nmDone = true;
+            this._nmCooldown = 1.2;
+            const pts = Math.round((20 + spd * 60) / 5) * 5;
+            this.score = (this.score || 0) + pts;
+            this._fovKick = Math.min(9, (this._fovKick || 0) + 6);
+            toast('😱 NEAR MISS +' + pts, '#f2b84b');
+            if (window.TrafficAudio && window.TrafficAudio.playWhoosh) window.TrafficAudio.playWhoosh();
+            break;
+          }
+        }
+      }
+
+      _buildRouteCheckpoints(cfg) {        this.cps = [];
         const isPed = this.isPedestrian || (cfg && cfg.isPedestrian) || (this.vehMode === 'pedestrian');
         const rawRoute = (cfg && cfg.route && cfg.route.length > 1) ? cfg.route : [
           { x: 0, z: 0, desc: 'Start Position' },
@@ -5312,7 +6274,9 @@ class Game {
         // NEW: Graph-based road and building generation
         if (!window._toonGrad) {
           const gc = new Uint8Array([40, 130, 255]);
-          window._toonGrad = new THREE.DataTexture(gc, 3, 1, THREE.RedFormat);
+          window._toonGrad = new THREE.DataTexture(gc, 3, 1, THREE.RedFormat || THREE.LuminanceFormat);
+          window._toonGrad.generateMipmaps = false;
+          try { window._toonGrad.unpackAlignment = 1; } catch (e) {}
           window._toonGrad.minFilter = THREE.NearestFilter;
           window._toonGrad.magFilter = THREE.NearestFilter;
           window._toonGrad.needsUpdate = true;
@@ -5355,10 +6319,13 @@ class Game {
         // Initialize missions and collectibles for this level
         if (this.missionManager) {
           this.playerScore = 0;
-          this.rupees = (S.wallet || 50000);
-          this.missionTokens = (S.missionTokens || 0);
+          this.rupees = ((typeof S !== 'undefined' && S && S.wallet) || 50000);
+          this.missionTokens = ((typeof S !== 'undefined' && S && S.missionTokens) || 0);
           this.missionManager.generateMissions(cfg);
         }
+
+        // Generic road-problem zones for this level (potholes, barricades, parked trucks, puddles)
+        this._buildRoadProblems(cfg);
 
         // ── Low-Poly Suburban Residential Avenue Generator ──
         if (cfg.isSuburbanNeighborhood || cfg.themeType === 'suburban_neighborhood') {
@@ -5382,6 +6349,7 @@ class Game {
               this._buildBarriers(cfg, RW);
               this._buildTrafficSignals(cfg, RW);
               this._buildBuildingsFromGraph();
+              this._buildPlotBuildings(cfg);
               this._buildParksAndTrees();
               this._buildBusStops();
             }
@@ -6088,7 +7056,10 @@ class Game {
           }
         }
 
-        if (cfg.hasSchool) {
+        // Legacy generic school (levels 18/40/50). Skipped for suburban levels:
+        // createSuburbanNeighborhood already builds the campus at cfg.schoolZ (L5: z=600).
+        // Without this gate, Level 5 spawned TWO schools — one at the route, one at (-60,-32).
+        if (cfg.hasSchool && !(cfg.isSuburbanNeighborhood || cfg.themeType === 'suburban_neighborhood')) {
           const sGrp = new THREE.Group();
           const schoolX = -60, schoolZ = -32;
 
@@ -6171,7 +7142,8 @@ class Game {
           this.obstacles.push(schoolCol);
 
           // 3. Parked Yellow School Bus outside school gate along North curb shoulder
-          const schoolBus = typeof window.IndianVehicles !== 'undefined' ? window.IndianVehicles.buildVehicle('bus', 0xfacc15) : _buildVehicle('bus', 0xfacc15);
+          const _bv1 = (typeof window !== 'undefined' && typeof window._buildVehicle === 'function') ? window._buildVehicle : (typeof _buildVehicle === 'function' ? _buildVehicle : null);
+          const schoolBus = typeof window.IndianVehicles !== 'undefined' ? window.IndianVehicles.buildVehicle('bus', 0xfacc15) : (_bv1 ? _bv1('bus', 0xfacc15) : null);
           if (schoolBus) {
             schoolBus.position.set(-38, 0, -9.2); // North curb shoulder, parallel to road
             schoolBus.rotation.y = Math.PI / 2; // Facing West
@@ -6370,7 +7342,7 @@ class Game {
           const dome = new THREE.Mesh(new THREE.SphereGeometry(6, 16, 8, 0, Math.PI*2, 0, Math.PI/2), new THREE.MeshToonMaterial({ color: 0xffd700 }));
           dome.position.set(-35, 10, -70); this.scene.add(dome);
           // Aarti lamp glow
-          const lamp = new THREE.PointLight(0xffaa00, 1.5, 20);
+          const lamp = new THREE.PointLight(0xffaa00, 1.5, 14);
           lamp.position.set(-35, 8, -65); this.scene.add(lamp);
         }
 
@@ -8528,7 +9500,8 @@ class Game {
           if (Math.random() > 0.15) {
             const carColors = [0x2563eb, 0xdc2626, 0x059669, 0xf59e0b, 0x7c3aed, 0xffffff];
             const pCarCol = carColors[Math.floor(Math.random() * carColors.length)];
-            const parkedCar = _buildVehicle('car', pCarCol);
+            const _bv2 = (typeof window !== 'undefined' && typeof window._buildVehicle === 'function') ? window._buildVehicle : (typeof _buildVehicle === 'function' ? _buildVehicle : null);
+            const parkedCar = _bv2 ? _bv2('car', pCarCol) : null;
             if (parkedCar) {
               parkedCar.scale.set(0.88, 0.88, 0.88);
               parkedCar.position.set(driveX, 0.08, -lawnD / 2 + 4.5);
@@ -9424,15 +10397,29 @@ class Game {
           if (this.renderCore && this.scene && this.camera) this.renderCore.render(this.scene, this.camera);
           return;
         }
-        const dt = Math.min(this.clock.getDelta(), .033);
+        const rawDt = Math.min(this.clock.getDelta(), .033);
+        // Victory beat: quarter-speed celebration window before the reward screen
+        let dt = rawDt;
+        if (this._victorySlow > 0) {
+          this._victorySlow -= rawDt;
+          dt = rawDt * 0.25;
+        }
+        // Phase 5 frame-time ring (p95 source for telemetry + debug overlay)
+        try {
+          const _fd = this._telemetryFrames();
+          _fd.push(rawDt * 1000);
+          if (_fd.length > 120) _fd.shift();
+        } catch (e) {}
         this.timer += dt;
         if (this._spawnInvulnerable > 0) this._spawnInvulnerable -= dt;
         this._honkedThisFrame = false;
         // ── Hitstop: freeze physics on hard impact ──
+        // Ease curve (not a binary freeze): near-stop on impact, smooth ramp back.
+        // The loop-end render covers the frame, so no extra render here.
         if (this._hitstopTimer > 0) {
           this._hitstopTimer -= dt;
-          if (this.renderCore && this.scene && this.camera) this.renderCore.render(this.scene, this.camera);
-          return;
+          const k = Math.max(0, this._hitstopTimer / 0.17); // 1 → 0 over the stop
+          dt *= (k > 0.6) ? 0.05 : (0.05 + 0.95 * (0.6 - k) / 0.6);
         }
         this._collidedThisFrame = false;
         
@@ -9543,7 +10530,14 @@ class Game {
           ex.speed = Math.abs(this.speed);
           ex.lateralG = this._lateralAccel || 0;
           ex.longitudinalG = this._longitudinalAccel || 0;
+          if (typeof this._updateRoadProblems === 'function') this._updateRoadProblems();
           ex.hitPothole = this._hitPotholeThisFrame || false;
+          // Autosave the run every ~5s (300 frames) so a refresh resumes mid-mission
+          this._saveTick = (this._saveTick || 0) + 1;
+          if (this._saveTick % 300 === 0) { try { this._saveRun(); } catch (e) {} }
+          if (this._saveTick % 30 === 0) { try { this._updateTelemetryOverlay(); } catch (e) {} }
+          if (this.playing && !this.isPedestrian) { try { this._updateJuice(dt); } catch (e) {} }
+          if (this.playing) { try { this._updateNametags(); } catch (e) {} }
           ex.lastPos = this._lastPlayerPos || null;
           ex.leadVehiclePos = this._leadVehiclePos || null;
           ex.targetVehiclePos = this._targetVehiclePos || null;
@@ -9609,7 +10603,7 @@ class Game {
                 const _lvId = (ui.cur ? ui.cur.id : 1);
                 const cumCheck = this.checkCumulativeViolation('wear_safety', _lvId);
                 if (cumCheck.enforce) {
-                  this._triggerPoliceStrobe(); ui.issueChallan((this.vehMode === 'bike' || this.vehMode === 'cycle') ? 'Riding without Helmet' : 'Driving without Seatbelt', 'Sec 194D MV Act', '₹1,000', 'Safety Violation');
+                  this._triggerPoliceStrobe(); (window.ui&&typeof window.ui.issueChallan==="function"?window.ui.issueChallan:function(){})(( this.vehMode === 'bike' || this.vehMode === 'cycle') ? 'Riding without Helmet' : 'Driving without Seatbelt', 'Sec 194D MV Act', '₹1,000', 'Safety Violation');
                   this.vio++; this.violationsLog.push('SAFETY_VIOLATION'); this.score -= 20; this.fine += 1000;
                 } else {
                   this.violationsLog.push('SAFETY_WARNING');
@@ -9619,8 +10613,11 @@ class Game {
             }
         }
 
-        if (this.keys['f']) {
-          if (!this._fPressed && this._enterState === 'IDLE') {
+        // F-tap input buffer: a tap during a transition fires once IDLE goes free
+        const fTapFresh = (this.timer - (this._fTapT ?? -9)) < 0.15 && !this._fTapConsumed;
+        if ((this.keys['f'] && !this._fPressed) || fTapFresh) {
+          if (this._enterState === 'IDLE') {
+            this._fTapConsumed = true;
             if (this.playerVehicle && this.playerCharacter) {
               if (this.isPedestrian) {
                 const dist = this.player.position.distanceTo(this.playerVehicle.position);
@@ -9847,7 +10844,7 @@ class Game {
             if (this._turnAccum > 1.5 && this.turnSignal === 0 && !this.challanFired.has('no_indicator')) {
               this.challanFired.add('no_indicator');
               if (window.GameplayRecorder) GameplayRecorder.record('NO_INDICATOR', { speed: Math.round(Math.abs(this.speed) * 100), score: this.score });
-              this._triggerPoliceStrobe(); ui.issueChallan('Turning without Indicator', 'Sec 125 MV Act', '₹500', 'Signal Violation');
+              this._triggerPoliceStrobe(); (window.ui&&typeof window.ui.issueChallan==="function"?window.ui.issueChallan:function(){})('Turning without Indicator', 'Sec 125 MV Act', '₹500', 'Signal Violation');
             toast('💡 TIP: Always use indicators 30 meters before turning. It prevents 40% of lane-change accidents.', '#ffd54a');
               this.vio++; this.violationsLog.push('NO_INDICATOR'); this.score -= 30; this.fine += 500;
               toast('⚠️ Use turn signals! ₹500 fine', '#ff9500');
@@ -9978,7 +10975,7 @@ class Game {
                     if (!this.player.userData.wwCooldown) this.player.userData.wwCooldown = 5;
                     this.player.userData.wwCooldown -= dt;
                     if (this.player.userData.wwCooldown <= 0 && this.player.userData.wwTimer >= 2.5 && window.ui && window.ui.issueChallan) {
-                        if (this._triggerPoliceStrobe) this._triggerPoliceStrobe(); ui.issueChallan('Wrong Side Driving', 'Sec 119 MV Act', '₹1,500', 'Lane Discipline');
+                        if (this._triggerPoliceStrobe) this._triggerPoliceStrobe(); (window.ui&&typeof window.ui.issueChallan==="function"?window.ui.issueChallan:function(){})('Wrong Side Driving', 'Sec 119 MV Act', '₹1,500', 'Lane Discipline');
                         this.player.userData.wwCooldown = 5;
                         this.player.userData.wwTimer = 0;
                     }
@@ -9998,10 +10995,10 @@ class Game {
                     const _lvId = (ui.cur ? ui.cur.id : 1);
                     const cumCheck = this.checkCumulativeViolation('speed_limit_adherence', _lvId);
                     if (cumCheck.enforce) {
-                      if (this._triggerPoliceStrobe) this._triggerPoliceStrobe(); ui.issueChallan('Overspeeding (repeat offense)', 'Sec 112 MV Act', 'Rs. 1,000', 'Limit: ' + this.mapCfg.speedLimit + ' km/h');
+                      if (this._triggerPoliceStrobe) this._triggerPoliceStrobe(); (window.ui&&typeof window.ui.issueChallan==="function"?window.ui.issueChallan:function(){})('Overspeeding (repeat offense)', 'Sec 112 MV Act', 'Rs. 1,000', 'Limit: ' + this.mapCfg.speedLimit + ' km/h');
                       this.vio++; this.violationsLog.push('SPEED_VIOLATION'); this.fine += 1000;
                     } else {
-                      if (this._triggerPoliceStrobe) this._triggerPoliceStrobe(); ui.issueChallan('Overspeeding', 'Sec 112 MV Act', 'Rs. 1,000', 'Limit: ' + this.mapCfg.speedLimit + ' km/h');
+                      if (this._triggerPoliceStrobe) this._triggerPoliceStrobe(); (window.ui&&typeof window.ui.issueChallan==="function"?window.ui.issueChallan:function(){})('Overspeeding', 'Sec 112 MV Act', 'Rs. 1,000', 'Limit: ' + this.mapCfg.speedLimit + ' km/h');
                       this.violationsLog.push('SPEED_WARNING');
                     }
                     
@@ -10030,7 +11027,7 @@ class Game {
                 if (!this.player.userData.bikeSpdCooldown) this.player.userData.bikeSpdCooldown = 0;
                 this.player.userData.bikeSpdCooldown -= dt;
                 if (this.player.userData.bikeSpdCooldown <= 0 && window.ui && window.ui.issueChallan) {
-                  if (this._triggerPoliceStrobe) this._triggerPoliceStrobe(); ui.issueChallan('Two-Wheeler Overspeeding', 'Sec 112 MV Act', 'Rs. 1,000', 'Safe limit: ' + bikeSafeLimit + ' km/h');
+                  if (this._triggerPoliceStrobe) this._triggerPoliceStrobe(); (window.ui&&typeof window.ui.issueChallan==="function"?window.ui.issueChallan:function(){})('Two-Wheeler Overspeeding', 'Sec 112 MV Act', 'Rs. 1,000', 'Safe limit: ' + bikeSafeLimit + ' km/h');
                   this.player.userData.bikeSpdCooldown = 5;
                 }
               }
@@ -10103,7 +11100,7 @@ class Game {
                     const _lvId = (ui.cur ? ui.cur.id : 1);
                     const cumCheck = this.checkCumulativeViolation('mobile_use', _lvId);
                     if (cumCheck.enforce) {
-                      if (this._triggerPoliceStrobe) this._triggerPoliceStrobe(); ui.issueChallan('Distracted Driving - Phone', 'Sec 184 MV Act', '₹1,000', 'Mobile Use');
+                      if (this._triggerPoliceStrobe) this._triggerPoliceStrobe(); (window.ui&&typeof window.ui.issueChallan==="function"?window.ui.issueChallan:function(){})('Distracted Driving - Phone', 'Sec 184 MV Act', '₹1,000', 'Mobile Use');
                       this.score -= 25; this.fine += 1000; this.vio++; this.violationsLog.push('MOBILE_USE');
                     } else {
                       this.violationsLog.push('MOBILE_USE_WARNING');
@@ -10323,7 +11320,7 @@ class Game {
                 this._policeStopActive = false;
                 this._policeStopTimer = 0;
                 if (window.ui && window.ui.issueChallan) {
-                  if (this._triggerPoliceStrobe) this._triggerPoliceStrobe(); ui.issueChallan('Fleeing Police Checkpoint', 'Sec 186 MV Act', '₹2,000', 'Checkpoint Evasion');
+                  if (this._triggerPoliceStrobe) this._triggerPoliceStrobe(); (window.ui&&typeof window.ui.issueChallan==="function"?window.ui.issueChallan:function(){})('Fleeing Police Checkpoint', 'Sec 186 MV Act', '₹2,000', 'Checkpoint Evasion');
                   this.score -= 50; this.fine += 2000; this.vio++; this.violationsLog.push('CHECKPOINT_EVASION');
                 }
                 toast('🚨 You fled the checkpoint! ₹2,000 fine!', '#ef4444');
@@ -10375,7 +11372,7 @@ class Game {
             const cumCheck = this.checkCumulativeViolation('red_light_stop', _lvId);
             if (cumCheck.enforce) {
               this.vio++; this.violationsLog.push('RED_LIGHT_VIOLATION'); this.fine += 500;
-              this._triggerPoliceStrobe(); ui.issueChallan('Jumping red signal (repeat offense)', 'Section 119, MV Act', '₹500', 'Junction Sensor');
+              this._triggerPoliceStrobe(); (window.ui&&typeof window.ui.issueChallan==="function"?window.ui.issueChallan:function(){})('Jumping red signal (repeat offense)', 'Section 119, MV Act', '₹500', 'Junction Sensor');
             } else {
               // First offense - warning
               this.violationsLog.push('RED_LIGHT_WARNING');
@@ -11299,7 +12296,7 @@ class Game {
                n.userData.blockTimer += dt;
                if (n.userData.blockTimer > 3) {
                  if (window.ui && window.ui.issueChallan) {
-                   if (this._triggerPoliceStrobe) this._triggerPoliceStrobe(); ui.issueChallan('Blocking Emergency Vehicle', 'Sec 194E MV Act', '₹10,000', 'Emergency Priority');
+                   if (this._triggerPoliceStrobe) this._triggerPoliceStrobe(); (window.ui&&typeof window.ui.issueChallan==="function"?window.ui.issueChallan:function(){})('Blocking Emergency Vehicle', 'Sec 194E MV Act', '₹10,000', 'Emergency Priority');
                  }
                  n.userData.blockTimer = -10; // Prevent spamming
                }
@@ -11630,7 +12627,7 @@ class Game {
               this.violationsLog.push('HONKED_AT_ANIMAL');
               this.score -= 40;
               this.fine += 1000;
-              this._triggerPoliceStrobe(); ui.issueChallan('Honking at an animal on the road', 'Civic Sense', '₹1,000', 'Animals have the right of way — never honk at them');
+              this._triggerPoliceStrobe(); (window.ui&&typeof window.ui.issueChallan==="function"?window.ui.issueChallan:function(){})('Honking at an animal on the road', 'Civic Sense', '₹1,000', 'Animals have the right of way — never honk at them');
             }
           }
         }
@@ -11703,7 +12700,7 @@ class Game {
                     p.userData.splashed = true;
                     this.score -= 50;
                     this.fine += 500;
-                    this._triggerPoliceStrobe(); ui.issueChallan('Splashed water on pedestrians', 'Sec 184 MV Act', '₹500', 'Reckless Driving');
+                    this._triggerPoliceStrobe(); (window.ui&&typeof window.ui.issueChallan==="function"?window.ui.issueChallan:function(){})('Splashed water on pedestrians', 'Sec 184 MV Act', '₹500', 'Reckless Driving');
             toast('💦 Splashed Water! Too Fast!', '#ff3b30');
             sfx.play('error');
             if (window.GameplayRecorder) GameplayRecorder.record('SPLASH', { score: this.score, fine: this.fine });
@@ -11811,8 +12808,25 @@ class Game {
             cp.visible = false;
             this.score += 100;
             hits++;
+            // F4 respawn anchor: last cleared checkpoint (heading preserved)
+            this._lastCpPos = { x: cp.position.x, z: cp.position.z, rotY: this.player ? this.player.rotation.y : 0 };
             const toastMsg = (cp.userData && cp.userData.isFinish) ? '🏁 DESTINATION REACHED!' : `✅ ${cp.userData.desc || 'Checkpoint Passed!'}`;
             toast(toastMsg, '#00e676');
+            // F1 pace fanfare: split time vs your best run on this level
+            try {
+              this._splitTimes = this._splitTimes || [];
+              this._splitTimes.push(this.timer || 0);
+              const bk = 'traffic_best_' + (this.lvId || 1);
+              let best = null;
+              try { best = JSON.parse(localStorage.getItem(bk) || 'null'); } catch (e) {}
+              const si = this._splitTimes.length - 1;
+              if (best && best.splits && best.splits[si] !== undefined && !cp.userData.isFinish) {
+                const d = (this.timer || 0) - best.splits[si];
+                const sign = d <= 0 ? '−' : '+';
+                const mag = Math.abs(d).toFixed(1);
+                toast((d <= 0 ? '⚡ ' : '🐢 ') + sign + mag + 's vs best pace', d <= 0 ? '#00e676' : '#f2b84b');
+              }
+            } catch (e) {}
             if (window.TrafficAudio && window.TrafficAudio.playCheckpoint) {
               window.TrafficAudio.playCheckpoint();
             } else if (typeof sfx !== 'undefined' && sfx.play) {
@@ -12016,6 +13030,7 @@ class Game {
             _vehBounce(veh, this._enterDoorSide, (1 - p) * 1.0);
             if (p >= 1) {
               this.isPedestrian = false;
+              this._everEnteredVehicle = true; // latch for enter_vehicle tasks (Lessons 1/5/54)
               char.position.set(0, 0.6, 0.2);
               char.scale.set(0.55, 0.55, 0.55);
               _animPose(char, char.userData, 'reset', 1);
@@ -12438,7 +13453,7 @@ class Game {
           if (this.camera.fov !== undefined) {
             if (!this.isPedestrian) {
               const speedRatio = Math.min(Math.abs(this.speed) / (this.maxSpd || 1.1), 1);
-              this._camFovTarget = _vcam.baseFov + speedRatio * _vcam.fovRange + (this.boosting ? 5 : 0);
+              this._camFovTarget = _vcam.baseFov + speedRatio * _vcam.fovRange + (this.boosting ? 5 : 0) + (this._fovKick || 0);
             } else {
               this._camFovTarget = 65;
             }

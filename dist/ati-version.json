@@ -1,14 +1,14 @@
 {
   "version": "3.2.1",
   "versionCode": 321,
-  "releaseDate": "2026-09-20",
+  "releaseDate": "2026-09-21",
   "downloadUrl": "https://github.com/NeelAniGamer/Vercel/releases/download/Projects/AdvancedTypingInstructor_Setup.exe",
   "exeUrl": "https://advancedlogiclabs.dpdns.org/AdvancedTypingInstructor.exe",
-  "sha256": "CA320DA755AFB3DB71EEB92D4254183AF762948CEE5B03379C2C243F92A08002",
-  "setupSha256": "51460C50134172755244FE34DB85B3E3739994AD1F7ABA28633CD93A1D72EE9B",
-  "fileSize": 63785318,
-  "setupSize": 62253608,
-  "changelog": "v3.2.1: Matiks-inspired Esports & Psychological Retention Update — 1v1 Instant Duels with zero matchmaking wait against active rooms or calibrated Shadow Rivals; Elo Competitive Division ladder (Bronze to Apex Grandmaster) with dynamic lead telemetry and instant rematches; Sudden Death Focus Gauntlet (1 typo = instant failure, survive for 3x Emeralds); Daily Quests Board with 3 rotating missions + Master Daily Crate; Uncapped Continuous Streaks with loss-aversion Streak Shields; Flow State Combo Multipliers (x1.2 to x3.0) with acoustic pentatonic chimes; and Variable-Ratio Lucky Chest unboxing.",
+  "sha256": "E70A20BC0EAB3F9E20C6316AEA24EAEB87C8EBD7F000175B5B75BE10345952D0",
+  "setupSha256": "7A791FC593A8F9C91639E45E0F60B08A645E6836ACBB126562192D9CC561F642",
+  "fileSize": 191406762,
+  "setupSize": 183248121,
+  "changelog": "v3.2.1: Custom TitleBar with native Windows Aero Snap (top maximize, side split) and Taskbar protection; Unified Touch Typing Practice header; Renamed Campaign to Level Select & Level Progress; 100% Real English dictionary words strictly adhering to level word limits (20 down to 5); Organic Dark theme polish across HUD and popovers; Full Inno Setup installer.",
   "mandatory": false,
   "minRequiredVersion": "1.0.0"
 }

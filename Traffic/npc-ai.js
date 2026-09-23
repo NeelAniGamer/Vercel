@@ -321,6 +321,46 @@ const NPC_PROFILES = {
     overtakeThreshold: 0.7,
     sidewalkProbability: 0.0,
     parkingSkill: 0.3
+  },
+  impatient_taxi: {
+    name: 'Impatient Taxi Driver',
+    weight: 7,
+    aggression: 0.85,
+    patience: 0.12,
+    signalCompliance: 0.55,
+    laneDiscipline: 0.6,
+    speedVariance: 0.3,
+    overtakeThreshold: 0.2,
+    sidewalkProbability: 0.0,
+    parkingSkill: 0.45,
+    honkHappy: true
+  },
+  school_parent: {
+    name: 'Cautious School Parent',
+    weight: 6,
+    aggression: 0.15,
+    patience: 0.9,
+    signalCompliance: 0.98,
+    laneDiscipline: 0.95,
+    speedVariance: 0.1,
+    overtakeThreshold: 0.9,
+    sidewalkProbability: 0.0,
+    parkingSkill: 0.85,
+    schoolCareful: true
+  },
+  school_bus: {
+    name: 'School Bus Driver',
+    weight: 4,
+    aggression: 0.1,
+    patience: 0.95,
+    signalCompliance: 1.0,
+    laneDiscipline: 0.97,
+    speedVariance: 0.05,
+    overtakeThreshold: 1.0,
+    sidewalkProbability: 0.0,
+    parkingSkill: 0.9,
+    schoolCareful: true,
+    neverHonks: true
   }
 };
 
@@ -429,6 +469,9 @@ class NPCAI {
     let s0Mod = 1.0;
     let pMod = 1.0;
     if (this.profileKey === 'aggressive') { aMod = 1.2; TMod = 0.8; s0Mod = 0.85; pMod = 0.3; }
+    else if (this.profileKey === 'impatient_taxi') { aMod = 1.25; TMod = 0.75; s0Mod = 0.8; pMod = 0.25; }
+    else if (this.profileKey === 'school_parent') { aMod = 0.85; TMod = 1.3; s0Mod = 1.25; pMod = 1.4; }
+    else if (this.profileKey === 'school_bus') { aMod = 0.8; TMod = 1.5; s0Mod = 1.4; pMod = 1.6; }
     else if (this.profileKey === 'cautious') { aMod = 0.85; TMod = 1.25; s0Mod = 1.2; pMod = 1.4; }
     else if (this.profileKey === 'reckless_bike') { aMod = 1.3; TMod = 0.7; s0Mod = 0.75; pMod = 0.1; }
     else if (this.profileKey === 'elderly') { aMod = 0.8; TMod = 1.3; s0Mod = 1.25; pMod = 1.3; }
@@ -1695,6 +1738,18 @@ class NPCAI {
   }
 
   triggerHorn(reason = 'HORN_ALERT') {
+    // Silence-zone law: no honking near schools/hospitals (MV Act). Flash lights instead.
+    try {
+      const cfg = this.trafficManager?.game?.mapCfg || this.trafficManager?.levelConfig;
+      if (cfg && (cfg.isSilenceZone || cfg.hasSchool) && this.vehicle?.position) {
+        const sz = cfg.schoolZ !== undefined ? cfg.schoolZ : 0;
+        if (Math.abs(this.vehicle.position.z - sz) < 150) {
+          if (typeof this._flashLights === 'function') this._flashLights();
+          return;
+        }
+      }
+    } catch (e) {}
+    if (this.profile?.neverHonks) return;
     if (this.trafficManager?.audio && this.vehicle?.hornSound) {
       this.trafficManager.audio.playHorn(this.vehicle.hornSound, this.vehicle.position);
     } else if (typeof window !== 'undefined' && window.sfx && window.sfx.play) {
@@ -2124,6 +2179,14 @@ class NPCAI {
       if (cfg) {
         if (cfg.hasRain || cfg.hasPuddles) speed *= 0.75;
         if (cfg.isNight) speed *= 0.85;
+        // School-zone caution: every NPC slows near the school gate (MV Act Sec 183).
+        // schoolCareful profiles (parents, buses) slow earlier and harder.
+        if ((cfg.hasSchool || cfg.isSilenceZone) && cfg.schoolZ !== undefined && this.vehicle?.position) {
+          const dz = Math.abs(this.vehicle.position.z - cfg.schoolZ);
+          const limit = (cfg.schoolSpeedLimit || 20) / 3.6;
+          const careful = this.profile?.schoolCareful ? 1.6 : 1.0;
+          if (dz < 130 * careful) speed = Math.min(speed, limit * (this.profile?.schoolCareful ? 0.9 : 1.0));
+        }
       }
     }
     return speed;
@@ -2195,7 +2258,8 @@ const PED_PROFILES = {
   cautious: { speed: 1.8, jaywalkChance: 0.02, waitPatience: 0.95, groupBehavior: 0.5, ttcThreshold: 5.5 },
   child: { speed: 2.0, jaywalkChance: 0.30, waitPatience: 0.4, groupBehavior: 0.7, ttcThreshold: 4.5 },
   elderly_ped: { speed: 1.2, jaywalkChance: 0.05, waitPatience: 0.9, groupBehavior: 0.4, ttcThreshold: 5.5 },
-  phone_user: { speed: 1.5, jaywalkChance: 0.35, waitPatience: 0.3, groupBehavior: 0.1, ttcThreshold: 3.5 }
+  phone_user: { speed: 1.5, jaywalkChance: 0.35, waitPatience: 0.3, groupBehavior: 0.1, ttcThreshold: 3.5 },
+  kid_dasher: { speed: 4.5, jaywalkChance: 0.75, waitPatience: 0.1, groupBehavior: 0.2, ttcThreshold: 2.5 }
 };
 
 const PED_PROFILE_KEYS = Object.keys(PED_PROFILES);
@@ -2204,11 +2268,24 @@ function pickRandomPedProfile() {
   return PED_PROFILE_KEYS[Math.floor(Math.random() * PED_PROFILE_KEYS.length)];
 }
 
+// Level-driven pedestrian mix, e.g. pedMix: { child: 50, kid_dasher: 10, normal: 30 }
+function pickLevelPedProfile(mix) {
+  if (!mix) return null;
+  const entries = Object.entries(mix).filter(([k, w]) => PED_PROFILES[k] && w > 0);
+  if (!entries.length) return null;
+  const total = entries.reduce((a, [, w]) => a + w, 0);
+  let r = Math.random() * total;
+  for (const [k, w] of entries) { r -= w; if (r <= 0) return k; }
+  return entries[0][0];
+}
+
 class PedestrianAI {
   constructor(pedMesh, trafficManager) {
     this.ped = pedMesh;
     this.tm = trafficManager;
-    this.profileKey = pedMesh?.profileKey || (pedMesh?.userData && pedMesh.userData.profileKey) || pickRandomPedProfile();
+    const forced = pedMesh?.profileKey || (pedMesh?.userData && pedMesh.userData.profileKey);
+    const mixed = (!forced && trafficManager) ? pickLevelPedProfile(trafficManager.levelConfig?.pedMix || trafficManager.game?.mapCfg?.pedMix) : null;
+    this.profileKey = forced || mixed || pickRandomPedProfile();
     this.profile = PED_PROFILES[this.profileKey] || PED_PROFILES.normal;
     this.state = PED_STATE.WALKING;
     this.target = null;

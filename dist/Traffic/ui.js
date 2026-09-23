@@ -274,12 +274,23 @@ var ui = window.ui = Object.assign(window.ui || {}, {
     const urlParams = new URLSearchParams(window.location.search)
     const screenParam = urlParams.get('screen')
     const lvParam = urlParams.get('lv')
+    const quizParam = urlParams.get('quiz')
     if (screenParam === 'levels') {
       this.showLevels()
       if (lvParam) {
         const targetLid = parseInt(lvParam, 10) || lvParam
         setTimeout(() => {
           if (this.showBriefing) this.showBriefing(targetLid)
+          // Deep-link from the Driving reward screen: land straight in the exam quiz
+          if (quizParam === '1') {
+            setTimeout(() => {
+              try {
+                const examTab = document.querySelector('.mode-tab[data-mode="exam"]')
+                if (examTab) examTab.click()
+                if (this.showQuiz) this.showQuiz('exam')
+              } catch (e) {}
+            }, 700)
+          }
         }, 120)
       }
     } else if (window.location.pathname.toLowerCase().includes('driving') && lvParam) {
@@ -794,19 +805,20 @@ var ui = window.ui = Object.assign(window.ui || {}, {
   showNamePrompt() {
     const dlg = document.getElementById('name-prompt-dlg')
     if (dlg) {
-      document.getElementById('prompt-name').value = S.name && S.name !== 'Traffic Hero' ? S.name : ''
+      const _pn = document.getElementById('prompt-name'); if (_pn) _pn.value = S.name && S.name !== 'Traffic Hero' ? S.name : ''
       dlg.style.display = 'flex'
     }
   },
   saveNamePrompt() {
-    const n = document.getElementById('prompt-name').value.trim()
+    const _pn2 = document.getElementById('prompt-name'); if (!_pn2) return
+    const n = _pn2.value.trim()
     if (n.length > 0 && n.length < 3) {
       toast('Please enter a valid name', 'darkred')
       return
     }
     S.name = n || 'Traffic Hero'
     save()
-    document.getElementById('name-prompt-dlg').style.display = 'none'
+    const _npd = document.getElementById('name-prompt-dlg'); if (_npd) _npd.style.display = 'none'
     toast('Welcome, ' + S.name + '!', '#3b8c66')
     const cnameEl = document.getElementById('cname')
     if (cnameEl) {
@@ -822,8 +834,9 @@ var ui = window.ui = Object.assign(window.ui || {}, {
     window.location.href = 'TrafficDashboard.html'
   },
   saveProfile() {
-    const n = document.getElementById('prof-name').value.trim()
-    const v = document.getElementById('prof-veh').value
+    const _pn3 = document.getElementById('prof-name'); const _pv3 = document.getElementById('prof-veh'); if (!_pn3 || !_pv3) return
+    const n = _pn3.value.trim()
+    const v = _pv3.value
     const ageEl = document.getElementById('prof-age')
     const gradeEl = document.getElementById('prof-grade')
     const langEl = document.getElementById('prof-lang')
@@ -1781,8 +1794,8 @@ if (un) {
           <input type="text" id="pledge-then" value="Not creep forward or rush through" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:0.9rem;">
         </div>
         <div style="display:flex;gap:8px;">
-          <button class="btn" style="flex:1;background:var(--signal);color:#000;font-weight:700;" onclick="ui.savePledge(${levelId}, document.getElementById('pledge-if').value, document.getElementById('pledge-then').value); this.closest('.modal').remove()">Save Pledge</button>
-          <button class="btn btn-s" style="flex:1;" onclick="this.closest('.modal').remove()">Cancel</button>
+          <button class="btn" style="flex:1;background:var(--signal);color:#000;font-weight:700;" onclick="ui.savePledge(${levelId}, document.getElementById('pledge-if').value, document.getElementById('pledge-then').value); this.closest('.modal')?this.closest('.modal').remove():this.remove()">Save Pledge</button>
+          <button class="btn btn-s" style="flex:1;" onclick="this.closest('.modal')?this.closest('.modal').remove():this.remove()">Cancel</button>
         </div>
       </div>
     `
@@ -3938,7 +3951,13 @@ if (un) {
         const prevScore = S.comp[lv.id].score || 0
         S.comp[lv.id].score = Math.max(finalScore, prevScore)
         S.comp[lv.id].time = Date.now()
-        S.total = (S.total || 0) + finalScore
+        // Idempotent accrual: showResults() runs right after this block and used to
+        // add score + civic a SECOND time. Count once per (level, score).
+        const _countKey = lv.id + ':' + finalScore
+        if (S._counted !== _countKey) {
+          S._counted = _countKey
+          S.total = (S.total || 0) + finalScore
+        }
         if (lv.badge && !S.badges.includes(lv.badge.id)) S.badges.push(lv.badge.id)
 
         const completedCount = Object.keys(S.comp).length
@@ -3997,11 +4016,20 @@ if (un) {
       if (!S.comp[lv.id].modes) S.comp[lv.id].modes = {}
       S.comp[lv.id].modes.learn = true
       S.comp[lv.id].modes.practice = true
-      S.total = (S.total || 0) + score
+      // Skip if the quiz-pass block just counted this exact (level, score)
+      const _countKey = lv.id + ':' + score
+      if (S._counted !== _countKey) {
+        S._counted = _countKey
+        S.total = (S.total || 0) + score
+        const vioCount = stats?.vio || 0
+        const civicGain = vioCount === 0 ? 25 : vioCount <= 2 ? 10 : vioCount <= 4 ? 3 : 0
+        S.civicScore = (S.civicScore || 0) + civicGain
+      }
+    } else {
+      const vioCount = stats?.vio || 0
+      const civicGain = vioCount === 0 ? 25 : vioCount <= 2 ? 10 : vioCount <= 4 ? 3 : 0
+      S.civicScore = (S.civicScore || 0) + civicGain
     }
-    const vioCount = stats?.vio || 0
-    const civicGain = vioCount === 0 ? 25 : vioCount <= 2 ? 10 : vioCount <= 4 ? 3 : 0
-    S.civicScore = (S.civicScore || 0) + civicGain
     if (!S.violationHistory) S.violationHistory = {}
     ;(stats?.violations || window.game?.violationsLog || []).forEach((v) => {
       S.violationHistory[v] = (S.violationHistory[v] || 0) + 1
@@ -6080,7 +6108,7 @@ function showMysteryRewardModal(reward) {
       <h2 style="font-family:'Instrument Serif',serif;font-size:1.8rem;margin:0 0 8px;">MYSTERY REWARD!</h2>
       <div style="font-size:1.5rem;font-weight:800;color:var(--signal);margin-bottom:8px;">${reward.label}</div>
       <p style="color:var(--muted);margin-bottom:24px;">${reward.desc}</p>
-      <button class="btn" onclick="this.closest('.modal').remove()" style="background:var(--signal);color:#000;font-weight:700;padding:12px 32px;border-radius:10px;">Claim</button>
+      <button class="btn" onclick="this.closest('.modal')?this.closest('.modal').remove():this.remove()" style="background:var(--signal);color:#000;font-weight:700;padding:12px 32px;border-radius:10px;">Claim</button>
     </div>
   `
   modal.className = 'modal'
@@ -6150,8 +6178,8 @@ function showConsequenceModal(violationType, severity = 'normal') {
         </div>
       ` : ''}
       <div style="display:flex;gap:8px;">
-        <button class="btn" onclick="this.closest('.modal').remove()" style="flex:1;background:var(--signal);color:#000;font-weight:700;padding:12px;border-radius:10px;">Understood</button>
-        <button class="btn btn-s" onclick="this.closest('.modal').remove(); if(typeof ui!=='undefined') ui.showQuiz('car')" style="flex:1;padding:12px;border-radius:10px;">Practice Safe</button>
+        <button class="btn" onclick="this.closest('.modal')?this.closest('.modal').remove():this.remove()" style="flex:1;background:var(--signal);color:#000;font-weight:700;padding:12px;border-radius:10px;">Understood</button>
+        <button class="btn btn-s" onclick="this.closest('.modal')?this.closest('.modal').remove():this.remove(); if(typeof ui!=='undefined') ui.showQuiz('car')" style="flex:1;padding:12px;border-radius:10px;">Practice Safe</button>
       </div>
     </div>
   `
@@ -7025,9 +7053,9 @@ function showConsequenceModal(violationType, severity = 'normal') {
           { id: 'skin_police', name: 'Police Livery', desc: 'White with blue/red stripes', price: 800, preview: '🚓', rarity: 'rare' },
           { id: 'skin_ambulance', name: 'Ambulance', desc: 'White with red cross & sirens', price: 800, preview: '🚑', rarity: 'rare' },
           { id: 'skin_best_bus', name: 'BEST Bus Red', desc: 'Iconic Mumbai red double-decker', price: 1200, preview: '🚌', rarity: 'epic' },
-          { id: 'skin_gold', name: 'Gold Chrome', desc: 'Shiny 24k gold finish', price: 2500, preview: '✨', rarity: 'legendary' },
+          { id: 'skin_gold', name: 'Gold Chrome', desc: 'Shiny 24k gold finish', price: 2500, preview: '✨', rarity: 'legendary', stars: 10 },
           { id: 'skin_carbon', name: 'Carbon Fiber', desc: 'Matte carbon fiber weave', price: 2000, preview: '🖤', rarity: 'epic' },
-          { id: 'skin_neon', name: 'Neon Glow', desc: 'Cyberpunk neon underglow', price: 3000, preview: '🌈', rarity: 'legendary' },
+          { id: 'skin_neon', name: 'Neon Glow', desc: 'Cyberpunk neon underglow', price: 3000, preview: '🌈', rarity: 'legendary', stars: 15 },
           { id: 'skin_camouflage', name: 'Urban Camo', desc: 'Grey-green urban camouflage', price: 1500, preview: '🌿', rarity: 'rare' },
         ]
       },
@@ -7067,7 +7095,7 @@ function showConsequenceModal(violationType, severity = 'normal') {
           { id: 'title_speed', name: 'Speed Demon', desc: 'Loves the fast lane', price: 800, preview: '🏎️', rarity: 'rare' },
           { id: 'title_night', name: 'Night Owl', desc: 'Owns the night roads', price: 1000, preview: '🌙', rarity: 'epic' },
           { id: 'title_chaos', name: 'Chaos Walker', desc: 'Survived max difficulty', price: 1500, preview: '🌪️', rarity: 'epic' },
-          { id: 'title_legend', name: 'Mumbai Legend', desc: 'Completed all campaigns', price: 5000, preview: '👑', rarity: 'legendary' },
+          { id: 'title_legend', name: 'Mumbai Legend', desc: 'Completed all campaigns', price: 5000, preview: '👑', rarity: 'legendary', stars: 30 },
         ]
       }
     },
@@ -7093,11 +7121,28 @@ function showConsequenceModal(violationType, severity = 'normal') {
       return (S.missionTokens || 0) >= price;
     },
 
+    // Total stars across completed levels (quiz completions count 1★ w/o Driving stars)
+    starTotal() {
+      let total = 0;
+      const comp = S.comp || {};
+      for (const k of Object.keys(comp)) {
+        const c = comp[k] || {};
+        total += c.stars || (c.completed || c.finalQuiz || c.score > 0 ? 1 : 0);
+      }
+      return total;
+    },
+
+    starsMet(item) {
+      return !item.stars || this.starTotal() >= item.stars;
+    },
+
     purchase(itemId) {
       const item = this.findItem(itemId);
       if (!item) return { success: false, reason: 'Item not found' };
 
       if (this.isOwned(itemId)) return { success: false, reason: 'Already owned' };
+
+      if (!this.starsMet(item)) return { success: false, reason: `Needs ${item.stars}★ total (you have ${this.starTotal()}★) — earn stars by finishing levels` };
 
       if (!this.canAfford(item.price)) return { success: false, reason: 'Insufficient tokens' };
 
@@ -7191,6 +7236,8 @@ function showConsequenceModal(violationType, severity = 'normal') {
           const isOwned = owned[item.id];
           const isEquipped = equipped[catKey] === item.id;
           const canAfford = this.canAfford(item.price);
+          const starsOk = this.starsMet(item);
+          const buyable = canAfford && starsOk;
 
           const rarityColors = {
             common: 'var(--muted)',
@@ -7200,10 +7247,10 @@ function showConsequenceModal(violationType, severity = 'normal') {
           };
 
           html += `
-            <div style="background: var(--card); border: 1px solid ${isEquipped ? 'var(--signal)' : (isOwned ? 'var(--border)' : (canAfford ? 'rgba(94,212,245,0.3)' : 'rgba(239,68,68,0.3)'))}; border-radius: 12px; padding: 16px; position: relative; transition: all 0.2s;">
+            <div style="background: var(--card); border: 1px solid ${isEquipped ? 'var(--signal)' : (isOwned ? 'var(--border)' : (buyable ? 'rgba(94,212,245,0.3)' : 'rgba(239,68,68,0.3)'))}; border-radius: 12px; padding: 16px; position: relative; transition: all 0.2s;">
               <div style="font-size: 2.5rem; text-align: center; margin-bottom: 8px;">${item.preview}</div>
               <div style="font-size: 0.8rem; font-weight: 700; color: var(--text); text-align: center; margin-bottom: 4px;">${item.name}</div>
-              <div style="font-size: 0.65rem; color: var(--muted); text-align: center; margin-bottom: 8px; min-height: 2.5rem;">${item.desc}</div>
+              <div style="font-size: 0.65rem; color: var(--muted); text-align: center; margin-bottom: 8px; min-height: 2.5rem;">${item.desc}${item.stars ? `<br><span style="color:#ffd54a;font-weight:700;">🔒 Requires ${item.stars}★ total</span>` : ''}</div>
               <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 8px; border-top: 1px solid var(--border);">
                 <span style="font-size: 0.7rem; font-weight: 700; color: ${rarityColors[item.rarity]}; text-transform: uppercase;">${item.rarity}</span>
                 <span style="font-size: 0.85rem; font-weight: 800; color: #b89bff; font-family: 'Bebas Neue', sans-serif;">${item.price}</span>
@@ -7213,10 +7260,10 @@ function showConsequenceModal(violationType, severity = 'normal') {
 
           if (!isOwned) {
             html += `
-                <button class="btn ${canAfford ? '' : 'btn-s'}" style="flex: 1; padding: 8px; font-size: 0.7rem; ${!canAfford ? 'opacity: 0.5; cursor: not-allowed;' : ''}" 
+                <button class="btn ${buyable ? '' : 'btn-s'}" style="flex: 1; padding: 8px; font-size: 0.7rem; ${!buyable ? 'opacity: 0.5; cursor: not-allowed;' : ''}" 
                         onclick="TOKEN_SHOP.purchase('${item.id}'); TOKEN_SHOP.renderShop()" 
-                        ${!canAfford ? 'disabled' : ''}>
-                  ${canAfford ? 'BUY' : 'TOKENS'}
+                        ${!buyable ? 'disabled' : ''}>
+                  ${!starsOk ? '🔒 ' + item.stars + '★' : (canAfford ? 'BUY' : 'TOKENS')}
                 </button>
             `;
           } else if (!isEquipped) {
@@ -7275,7 +7322,7 @@ function showConsequenceModal(violationType, severity = 'normal') {
                 <div style="font-size:0.75rem;color:var(--muted);">Spend Mission Tokens on cosmetics</div>
               </div>
             </div>
-            <button onclick="this.closest('.modal').remove()" style="background:none;border:none;color:var(--muted);font-size:1.5rem;cursor:pointer;padding:8px;">✕</button>
+            <button onclick="this.closest('.modal')?this.closest('.modal').remove():this.remove()" style="background:none;border:none;color:var(--muted);font-size:1.5rem;cursor:pointer;padding:8px;">✕</button>
           </div>
           <div id="token-shop-container">${this.renderShop()}</div>
         </div>

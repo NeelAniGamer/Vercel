@@ -5,6 +5,12 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Exo+2:wght@300;400;600;800&display=swap');
 
+/* Fullscreen app shell: off-canvas panels (hidden by transform) and projected
+   3D labels must never widen the page — clip horizontal overflow at the root. */
+html, body {
+  overflow-x: clip;
+}
+
 :root {
   --acc:          #ff9e58;
   --acc-glow:     rgba(255, 158, 88, 0.45);
@@ -106,7 +112,8 @@ input        { font-family: var(--mono); }
 .lb-icon { font-size: 0.9rem; }
 .lb-arrow { margin-left: auto; opacity: 0.6; }
 
-#home-keys { display: flex; gap: 10px; align-items: center; font-size: 0.7rem; color: var(--muted); letter-spacing: 1px; animation: home-reveal 1s 0.7s both; }
+#home-keys { display: flex; gap: 8px 10px; align-items: center; flex-wrap: wrap; max-width: 100%; font-size: 0.7rem; color: var(--muted); letter-spacing: 1px; animation: home-reveal 1s 0.7s both; }
+#home-keys .tab-btn { background: none; border: none; padding: 0; margin: 0; font: inherit; color: var(--acc); letter-spacing: 2px; cursor: pointer; white-space: nowrap; }
 .hk-dot { color: rgba(255,255,255,0.2); }
 
 #home-credits { position: absolute; bottom: 16px; right: 24px; font-family: var(--mono); font-size: 0.62rem; letter-spacing: 2px; color: rgba(255,255,255,0.12); text-transform: uppercase; }
@@ -169,8 +176,8 @@ input        { font-family: var(--mono); }
 #scale-bar-fill { height: 100%; background: linear-gradient(90deg, var(--acc2), var(--acc3)); border-radius: 2px; transition: width 0.6s ease; width: 20%; }
 
 /* ── SETTINGS PANEL ───────────────────────────────────────────────────────── */
-#settings-panel { position: absolute; top: calc(var(--bar-h) + 12px); right: 20px; width: 340px; background: rgba(6,8,18,0.96); backdrop-filter: blur(32px); border: 1px solid var(--border); border-radius: 12px; z-index: 350; transform: translateX(380px) scale(0.96); opacity: 0; transition: transform 0.4s var(--ease-out), opacity 0.35s ease; pointer-events: none; overflow: hidden; }
-#settings-panel.active { transform: translateX(0) scale(1); opacity: 1; pointer-events: all; }
+#settings-panel { position: fixed; top: calc(var(--bar-h) + 12px); right: 20px; width: 340px; background: rgba(6,8,18,0.96); backdrop-filter: blur(32px); border: 1px solid var(--border); border-radius: 12px; z-index: 350; transform: translateX(380px) scale(0.96); opacity: 0; visibility: hidden; transition: transform 0.4s var(--ease-out), opacity 0.35s ease, visibility 0s 0.4s; pointer-events: none; overflow: hidden; }
+#settings-panel.active { transform: translateX(0) scale(1); opacity: 1; visibility: visible; transition: transform 0.4s var(--ease-out), opacity 0.35s ease, visibility 0s 0s; pointer-events: all; }
 
 #sp-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 18px 14px; border-bottom: 1px solid rgba(255,255,255,0.07); }
 .sp-title { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 2px; color: var(--acc); }
@@ -219,7 +226,7 @@ kbd { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1
 
 /* ── HUD PANEL ────────────────────────────────────────────────────────────── */
 #hud {
-  position: absolute;
+  position: fixed;
   right: 18px;
   top: calc(var(--bar-h) + 28px);
   bottom: calc(var(--status-h) + 16px);
@@ -233,12 +240,13 @@ kbd { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1
   flex-direction: column;
   overflow: hidden;
   transform: translateX(calc(var(--panel-w) + 40px));
-  transition: transform 0.48s var(--ease-out);
+  transition: transform 0.48s var(--ease-out), visibility 0s 0.48s;
+  visibility: hidden;
   z-index: 200;
   box-shadow: -14px 0 60px rgba(0,0,0,0.85), inset 0 0 0 1px rgba(255,158,88,0.12), inset 0 1px 0 rgba(255,255,255,0.12);
   will-change: transform;
 }
-#hud.active { transform: translateX(0); }
+#hud.active { transform: translateX(0); visibility: visible; transition: transform 0.48s var(--ease-out), visibility 0s 0s; }
 
 #hud-header { display: flex; justify-content: space-between; align-items: flex-start; padding: 20px 20px 12px; border-bottom: 1px solid rgba(255,255,255,0.06); flex-shrink: 0; }
 #hud-type-badge { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 3px; color: var(--acc); opacity: 0.8; margin-bottom: 4px; }
@@ -322,7 +330,24 @@ kbd { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1
 
 /* ── RESPONSIVE ────────────────────────────────────────────────────────────── */
 @media (max-width: 900px) { :root { --panel-w: calc(100vw - 40px); } #hud { right: 20px; left: 20px; } #home-solar-rings { display: none; } #home-content { max-width: 100%; padding: 24px; } }
-@media (max-width: 480px) { .tab-btn { font-size: 0.56rem; letter-spacing: 1px; padding: 10px 2px; } }
+@media (max-width: 480px) { .tab-btn { font-size: 0.56rem; letter-spacing: 1px; padding: 10px 2px; } #home-credits { right: 16px; max-width: calc(100vw - 32px); white-space: normal; text-align: right; letter-spacing: 1px; line-height: 1.8; } }
+
+/* ── 360px top toolbar: wrap into two rows so content never exceeds viewport ── */
+@media (max-width: 640px) {
+  #top-bar { flex-wrap: wrap; height: auto; min-height: var(--bar-h); padding: 10px 12px; gap: 8px; }
+  .brand-text { font-size: 0.66rem; letter-spacing: 1px; white-space: nowrap; }
+  #search-wrap { order: 5; flex: 1 1 100%; max-width: none; min-width: 0; }
+  #search-input { min-width: 0; }
+  #time-controls { flex-shrink: 1; min-width: 0; }
+  #speed-display { min-width: 0; }
+  #top-right-btns { margin-left: 0; flex-wrap: wrap; max-width: 100%; }
+  /* Home hero stats + credits must fit 360px: tighter type, no nowrap spill */
+  #home-stats { gap: 4px; max-width: 100%; }
+  .hs-item { padding: 0 10px; min-width: 0; }
+  .hs-num { font-size: 1.4rem; }
+  .hs-label { letter-spacing: 1px; font-size: 0.55rem; }
+  #home-credits { white-space: normal; letter-spacing: 1px; max-width: 100%; }
+}
 
 /* ── FAVORITES BAR ──────────────────────────────────────────────────────── */
 #favorites-bar { position: absolute; top: var(--bar-h); left: 0; right: 0; height: 32px; background: rgba(4,6,14,0.88); border-bottom: 1px solid rgba(255,153,85,0.18); backdrop-filter: blur(16px); display: flex; align-items: center; gap: 6px; padding: 0 18px; z-index: 290; overflow-x: auto; scrollbar-width: none; }

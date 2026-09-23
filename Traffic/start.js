@@ -18,7 +18,7 @@ window.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('keydown', (e) => {
   if (e.ctrlKey && e.shiftKey && e.key === 'D') {
     e.preventDefault()
-    ui.adminUnlock()
+    if (window.ui && typeof window.ui.adminUnlock === 'function') window.ui.adminUnlock()
   }
 })
 
@@ -278,8 +278,7 @@ window.CORE_ASSETS = [
 ]
 
 
-window._expandAssets = function (assets) {
-  if (!assets || !assets.length) return [];
+window._expandAssets = function (assets) {  if (!assets || !assets.length) return [];
   const out = new Set();
   assets.forEach(a => {
     if (window.ASSET_GROUPS[a]) window.ASSET_GROUPS[a].forEach(k => out.add(k));
@@ -294,6 +293,27 @@ window._expandAssets = function (assets) {
 };
 
 
+
+// Shared DRACO decoder (downloads ~1MB WASM once, only when a Draco file loads).
+// Lets future .glb/.drc models ship 5–10× smaller; existing files load unchanged.
+window._dracoLoader = null;
+window._getDracoLoader = function () {
+  if (window._dracoLoader) return window._dracoLoader;
+  if (typeof THREE === 'undefined' || typeof THREE.DRACOLoader === 'undefined') return null;
+  try {
+    const dl = new THREE.DRACOLoader();
+    dl.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/draco/');
+    window._dracoLoader = dl;
+    return dl;
+  } catch (e) { return null; }
+};
+window._attachDraco = function (gltfLoader) {
+  try {
+    const dl = window._getDracoLoader();
+    if (gltfLoader && dl && typeof gltfLoader.setDRACOLoader === 'function') gltfLoader.setDRACOLoader(dl);
+  } catch (e) {}
+  return gltfLoader;
+};
 
 window.loadLevelAssets = function (keys, callback) {
   if (typeof THREE === 'undefined') { callback(); return }
@@ -327,7 +347,8 @@ window.loadLevelAssets = function (keys, callback) {
         child.receiveShadow = true
         if (child.material) {
           if (child.material.map) { child.material.map.magFilter = THREE.NearestFilter; child.material.map.minFilter = THREE.NearestFilter; child.material.map.needsUpdate = true }
-          child.material.roughness = 0.8; child.material.metalness = 0.1
+          if ('roughness' in child.material) child.material.roughness = 0.8
+          if ('metalness' in child.material) child.material.metalness = 0.1
         }
       }
     })
@@ -349,7 +370,7 @@ window.loadLevelAssets = function (keys, callback) {
     callback()
   }
 
-  const gltfLoader = (typeof THREE.GLTFLoader !== 'undefined') ? new THREE.GLTFLoader() : null
+  const gltfLoader = (typeof THREE.GLTFLoader !== 'undefined') ? window._attachDraco(new THREE.GLTFLoader()) : null
   const fbxLoader = (typeof THREE.FBXLoader !== 'undefined') ? new THREE.FBXLoader() : null
   const objLoader = (typeof THREE.OBJLoader !== 'undefined') ? new THREE.OBJLoader() : null
 
@@ -436,7 +457,7 @@ function preloadModels(callback) {
   window.loadLevelAssets(window.CORE_ASSETS, () => {
 
     if (window.MODELS) {
-      const loader = new THREE.GLTFLoader()
+      const loader = window._attachDraco(new THREE.GLTFLoader())
       Object.keys(window.MODELS).forEach((key) => {
         if (window.MODELS[key] && !window.PRELOADED_MODELS[key]) {
           try {
@@ -616,7 +637,7 @@ preloadModels(() => {
   const urlParams = new URLSearchParams(window.location.search)
   let lvId = urlParams.get('level') || urlParams.get('lv') || localStorage.getItem('traffic_lv') || '1'
   let mode = urlParams.get('mode') || localStorage.getItem('traffic_mode') || 'car'
-  let veh = urlParams.get('veh') || localStorage.getItem('traffic_veh') || (mode === 'pedestrian' ? 'pedestrian' : (S.vehicle?.toLowerCase() || 'car'))
+  let veh = urlParams.get('veh') || localStorage.getItem('traffic_veh') || (mode === 'pedestrian' ? 'pedestrian' : (((typeof S !== 'undefined' && S && S.vehicle) ? String(S.vehicle).toLowerCase() : null) || 'car'))
 
   const isLevelsScreen = urlParams.get('screen') === 'levels'
 
@@ -645,6 +666,18 @@ preloadModels(() => {
         levelObj = window.LVS[0]
       }
       if (levelObj) {
+        // Weekly challenge modifiers (?rain=1&night=1&weekly=N): clone first so the
+        // shared LVS entry is never polluted, then override weather/night.
+        const _wq = new URLSearchParams(window.location.search);
+        if (_wq.get('rain') === '1' || _wq.get('night') === '1' || _wq.get('weekly')) {
+          levelObj = Object.assign({}, levelObj);
+          if (_wq.get('rain') === '1') { levelObj.hasRain = true; levelObj.hasPuddles = true; }
+          if (_wq.get('night') === '1') { levelObj.isNight = true; }
+          if (_wq.get('weekly')) {
+            try { localStorage.setItem('traffic_weekly', JSON.stringify({ lv: String(levelObj.id), week: _wq.get('weekly') })); } catch (e) {}
+            levelObj.weeklyBonus = true;
+          }
+        }
         ui.cur = levelObj
         ui.curMode = mode || 'car'
         ui.cur.vehMode = (mode === 'pedestrian' ? 'pedestrian' : (veh || ui.curMode))

@@ -24,6 +24,6 @@ window.LVS.push({
   themeType: 'urban_grid',
   noTimer: true,
   noScore: true,
-  tasks: [{ type: 'free_roam', text: 'Drive around and explore' }],
+  tasks: [{ id: 'explore', type: 'reach', target: 'destination', text: 'Drive around and explore' }],
   assets: ['cars', 'suburban', 'industrial']
 })

@@ -135,6 +135,10 @@ class RenderCore {
         this._autoQualityEnabled = enabled;
     }
 
+    getQuality() {
+        return this.currentPreset || 'MED';
+    }
+
     
     autoDetectQuality() {
         console.log("RenderCore: Auto-detecting hardware capabilities...");

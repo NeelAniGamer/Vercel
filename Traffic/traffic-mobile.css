@@ -792,6 +792,18 @@ button:active,
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
   }
 }
+@media (max-width: 480px) {
+  /* Full-viewport modal layers: no fullscreen blur on phones (fillrate) */
+  #level-preview-overlay,
+  #challan-history-modal,
+  #ai-scene-synth-modal,
+  .top-bar,
+  .hero-license {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  .mobile-bottom-nav { z-index: 9000 !important; }
+}
 
 /* ─────────────────────────────────────────────────────────────────
    11. PRINT & PWA STANDALONE
@@ -826,6 +838,120 @@ h3,
 .st {
   overflow-wrap: break-word;
   word-break: break-word;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   13. DECONGEST — small-phone HUD stacking (360–480px)
+   The top stack (hud + hudbar + objective + task-tracker + top-bar)
+   and the bottom cluster (gp + compass + civic + gps + gauges) collide
+   on narrow screens. This layer enforces a strict vertical rhythm.
+   ───────────────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  /* Objective: title only — full description lives in the tracker/task list */
+  #objective-desc {
+    display: none !important;
+  }
+  #objective-overlay {
+    max-width: min(94vw, 420px) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  /* Task tracker drops below the hudbar row, never over it */
+  #task-tracker {
+    top: calc(env(safe-area-inset-top, 0px) + clamp(84px, 22vw, 104px)) !important;
+    max-width: min(94vw, 380px) !important;
+    max-height: min(18vh, 132px) !important;
+  }
+  /* hudbar wraps in a narrow column instead of spilling center */
+  #hudbar {
+    max-width: 46vw !important;
+    flex-wrap: wrap !important;
+  }
+  /* Top-right cluster shrinks so the center stays clear */
+  #top-bar-container {
+    scale: 0.85 !important;
+    transform-origin: top right !important;
+  }
+  /* Gear indicator is informational in an automatic — reclaim its slot */
+  #gp {
+    display: none !important;
+  }
+  /* Gear slot now free: lift compass clear of the controls bar */
+  #compass-strip {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(104px, 24vw, 124px)) !important;
+  }
+  /* Civic pill + GPS button: pin to opposite sides, never center */
+  #civic-controls {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(158px, 36vw, 180px)) !important;
+  }
+  #phone-gps-btn {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(158px, 36vw, 180px)) !important;
+  }
+  /* Gauges tuck above the pedals, clear of compass + civic rows */
+  #spgauge {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(100px, 24vw, 118px)) !important;
+  }
+  #boostgauge {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(216px, 50vw, 240px)) !important;
+  }
+  /* Minimap: smaller, top-left under the HUD pills */
+  #mmc {
+    width: clamp(48px, 14vw, 64px) !important;
+    height: clamp(48px, 14vw, 64px) !important;
+  }
+  /* Pause + reward overlays: full-bleed cards, thumb-size buttons */
+  #reward-screen > div {
+    max-width: 94vw !important;
+    padding: 20px 16px !important;
+  }
+  #reward-screen button {
+    min-height: 48px !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   14. DECONGEST — Academy / Dashboard / Setup pages (all pages)
+   ───────────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  /* Mode tabs + leaderboard tabs: 2×2 grid instead of crushed 4-across */
+  .mode-tabs,
+  .lb-tabs {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 6px !important;
+  }
+  .mode-tab,
+  .lb-tab {
+    min-height: 44px !important;
+    font-size: 0.72rem !important;
+  }
+  /* Briefing content full width, no side squeeze */
+  #br-content {
+    min-width: 0 !important;
+  }
+  /* Dashboard hero stacks */
+  .hero-license {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  /* Quick-stats pills: 2 per row */
+  #quick-stats {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  /* Podium fits 360px: smaller bases */
+  .podium-spot.first .podium-base {
+    width: 76px !important;
+  }
+  .podium-spot.second .podium-base {
+    width: 66px !important;
+  }
+  .podium-spot.third .podium-base {
+    width: 62px !important;
+  }
+  .podium-name {
+    max-width: 64px !important;
+  }
 }
 pre,
 code {

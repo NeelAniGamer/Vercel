@@ -480,6 +480,60 @@
         .modal-body {
           padding: 30px;
         }
+        /* Shared mobile bottom nav (injected by col-ui.js): page-local theme */
+        body {
+          padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px)) !important;
+        }
+        .col-bottom-bar {
+          position: fixed !important;
+          left: 12px !important;
+          right: 12px !important;
+          bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+          z-index: 9000 !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-around !important;
+          background: rgba(3, 3, 5, 0.96) !important;
+          border: 1px solid rgba(0, 255, 204, 0.25) !important;
+          border-radius: 20px !important;
+          padding: 8px 6px !important;
+          box-shadow: 0 10px 32px rgba(0, 0, 0, 0.5) !important;
+        }
+        .col-bottom-bar .bbar-item {
+          flex: 1;
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: center !important;
+          justify-content: center !important;
+          gap: 3px;
+          min-height: 48px;
+          min-width: 44px;
+          padding: 4px 2px;
+          border-radius: 14px;
+          color: #8b949e !important;
+          font-size: 0.62rem;
+          font-weight: 700;
+          letter-spacing: 0.04em;
+          text-transform: capitalize;
+          text-decoration: none !important;
+          background: none !important;
+          border: none !important;
+          font-family: inherit;
+        }
+        .col-bottom-bar .bbar-item svg {
+          width: 20px !important;
+          height: 20px !important;
+          stroke: currentColor;
+          fill: none;
+          stroke-width: 1.8;
+        }
+        .col-bottom-bar .bbar-item.act {
+          background: rgba(0, 255, 204, 0.14) !important;
+          color: #00ffcc !important;
+        }
+        .col-bottom-bar .bbar-item.act svg {
+          stroke: #00ffcc;
+        }
       }
     </style>
     <link rel="manifest" href="manifest.json" />
@@ -625,9 +679,9 @@
         // Generate robust content (The "500+ pages" effect via deep summaries and links)
         const contentHTML = `
                 <img loading="lazy" class="modal-hero-img" src="https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=800&q=80" alt="Tech Background">
-                <p>Welcome to <strong>Module ${modId}: ${topic.title}</strong>. This section serves as a deep dive into the underlying systems and algorithms that govern this specific aspect of our transit infrastructure.</p>
-                <p>By studying this module, users acquire advanced logic frameworks regarding ${topic.desc.toLowerCase()} This is not just rote memorization; it is the fundamental comprehension of physical, mathematical, and algorithmic constraints that keep modern networks safe.</p>
-                <p>To achieve mastery, review the extensive database references below. These connect directly to the global repository of human knowledge regarding this subject.</p>
+                <p>Welcome to <strong>Module ${modId}: ${topic.title}</strong>. This section breaks down how these systems and algorithms actually work across our transit infrastructure.</p>
+                <p>Working through this module will help you understand ${topic.desc.toLowerCase()} Instead of just memorizing rules, you'll see the practical engineering constraints that keep transit systems running safely.</p>
+                <p>Explore the reference links below to learn more about the research, math, and engineering behind this topic.</p>
                 
                 <div class="db-link-section" style="border-color: ${color}">
                     <h4 style="color: ${color}">Further Reading Database</h4>
@@ -728,5 +782,9 @@
         })
       })
     </script>
+    <script defer src="col-router.js"></script>
+    <script defer src="pull-refresh.js"></script>
+    <script defer src="col-ui.js"></script>
+    <script defer src="col-auth.js"></script>
   </body>
 </html>

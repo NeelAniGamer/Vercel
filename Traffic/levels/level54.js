@@ -43,7 +43,7 @@ window.LVS.push({
   ],
   tasks: [
     { id: 'enter_car', text: 'Walk to garage & enter your vehicle', type: 'enter_vehicle', done: false },
-    { id: 'drive_suburban', text: 'Cruise down Suburban Avenue under 30 km/h', type: 'speed_limit', limit: 30, done: false },
+    { id: 'drive_suburban', text: 'Cruise down Suburban Avenue under 30 km/h', type: 'avoid', target: 'speed_zone', done: false },
     { id: 'reach_cp1', text: 'Reach Timber Cottage Checkpoint', type: 'reach', target: 'checkpoint_1', done: false },
     { id: 'reach_finish', text: 'Reach Suburban Avenue Finish Gate', type: 'reach', target: 'finish', done: false }
   ],

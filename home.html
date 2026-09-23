@@ -1245,6 +1245,15 @@
         opacity: 1;
         transform: translateY(0);
       }
+      /* Hero load choreography (plays once; stagger via delay) */
+      @keyframes heroRise {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: none; }
+      }
+      .hc > .hey { animation: heroRise 0.8s var(--ease) 0.05s backwards; }
+      .hc > h1 { animation: heroRise 0.8s var(--ease) 0.16s backwards; }
+      .hc > .hlede { animation: heroRise 0.8s var(--ease) 0.28s backwards; }
+      .hc > .hcta { animation: heroRise 0.8s var(--ease) 0.40s backwards; }
       .vp-section {
         max-width: 1360px;
         margin: 0 auto;
@@ -2255,17 +2264,8 @@
     <div class="cd" id="cDot"></div>
     <div class="cr" id="cRing"></div>
 
-    <!-- Hover tooltip for 3D nodes -->
-    <div id="ntip">
-      <div id="ntip-inner">
-        <div id="ntip-dot"></div>
-        <span id="ntip-name"></span>
-      </div>
-    </div>
+    <!-- Hover tooltip for 3D nodes (single instance; see #ntip below near stage) -->
 
-    <button class="mmb" id="mmb" aria-label="Toggle menu">
-      <svg viewBox="0 0 24 24" fill="none"><path d="M3 6H21M3 12H21M3 18H21" stroke-width="1.5" stroke-linecap="round" /></svg>
-    </button>
     <nav class="top-nav" id="topNav">
       <a href="/" class="nav-brand"><img src="Class.png" alt="Class Of Learners" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" /><span class="brand-name">Class Of Learners</span></a>
       <div class="nav-links" id="navLinks">
@@ -2358,6 +2358,8 @@
             </div>
           </div>
         </div>
+      </div>
+      <div class="nav-actions">
         <div class="hz-toggle" onclick="hzToggle()"><div class="hz-clouds"></div><div class="hz-stars"></div><div class="hz-orb"></div></div>
         <button class="nav-login-btn" id="navLoginBtn" onclick="openLogin()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -2369,21 +2371,11 @@
           <div class="nav-user-avatar" id="navUserAv">?</div>
           <span class="nun" id="navUserName">User</span>
         </div>
-        <a href="download" class="nav-dl-btn mobile-dl"
-          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
-            <polyline points="7 10 12 15 17 10" />
-            <line x1="12" y1="15" x2="12" y2="3" /></svg
-          >Downloads</a
-        >
+        <a href="download" class="nav-dl-btn desktop-dl">Downloads Hub</a>
+        <button class="mmb" id="mmb" aria-label="Toggle menu">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M3 6H21M3 12H21M3 18H21" stroke-width="1.5" stroke-linecap="round" /></svg>
+        </button>
       </div>
-      <button class="mobile-close" id="mobileClose" aria-label="Close menu">
-        <svg viewBox="0 0 24 24" fill="none">
-          <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-          <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-        </svg>
-      </button>
-      <a href="download" class="nav-dl-btn desktop-dl">Downloads Hub</a>
     </nav>
 
     <section class="hero" id="heroSection">
@@ -3496,7 +3488,7 @@
       <div class="fi">
         <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
         <div class="fl"><a href="making">Making</a><a href="privacy">Privacy</a><a href="terms">Terms</a><a href="feedback">Feedback</a><a href="download">Downloads</a></div>
-        <div class="fc">&copy; 2026 Neel, Ansh, Aarush & Yash Raj.</div>
+        <div class="fc">&copy; 2026 Neel, Ansh, Aarush &amp; Yash Raj.</div>
       </div>
     </footer>
 
@@ -3986,9 +3978,9 @@
       })()
     </script>
     <script>
-    function hzInit(){var t=localStorage.getItem('theme');if(t==='light'){document.body.classList.add('lm')}else{document.body.classList.remove('lm')}hzSync()}
-    function hzSync(){var el=document.querySelector('.hz-toggle');if(!el)return;if(document.body.classList.contains('lm')){el.classList.remove('night')}else{el.classList.add('night')}}
-    function hzToggle(){if(navigator.vibrate)navigator.vibrate(8);requestAnimationFrame(function(){document.body.classList.toggle('lm');localStorage.setItem('theme',document.body.classList.contains('lm')?'light':'dark');hzSync()})}
+    function hzInit(){var t;try{t=localStorage.getItem('theme')}catch(e){t=null}if(t==='light'){document.body.classList.add('lm')}else{document.body.classList.remove('lm')}hzSync()}
+    function hzSync(){var els=document.querySelectorAll('.hz-toggle');if(!els.length)return;var isLight=document.body.classList.contains('lm');els.forEach(function(el){if(isLight){el.classList.remove('night')}else{el.classList.add('night')}});var desc=document.getElementById('cmdThemeDesc');if(desc)desc.textContent=isLight?'Light Mica':'Dark VisionOS'}
+    function hzToggle(){if(navigator.vibrate)try{navigator.vibrate(8)}catch(e){}document.body.classList.toggle('lm');var isLight=document.body.classList.contains('lm');try{localStorage.setItem('theme',isLight?'light':'dark')}catch(e){}hzSync()}
     hzInit()
     </script>
   </body>

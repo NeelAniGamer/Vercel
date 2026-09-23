@@ -32,7 +32,8 @@ function resolvePath(urlPath) {
   let clean = decodeURIComponent(urlPath.split('?')[0]);
   if (clean === '/' || clean === '') clean = '/home.html';
 
-  let directPath = path.join(ROOT_DIR, clean);
+  let directPath = path.normalize(path.join(ROOT_DIR, clean));
+  if (!directPath.startsWith(ROOT_DIR)) return null;
 
   // If file exists directly
   if (fs.existsSync(directPath) && fs.statSync(directPath).isFile()) {

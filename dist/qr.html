@@ -130,43 +130,22 @@
       }
 
       /* Top bar: layout/blur/drawer owned by shared col-ui.css; page only sets accent */
-    <link rel="stylesheet" href="liquid-glass.css" />
-    <link rel="stylesheet" href="mobile-perf.css" />
-    <script defer src="pull-refresh.js"></script>
       .top-nav {
         --page-theme: var(--pri);
         --primary: var(--pri);
       }
 
       /* .nav-brand + .brand-logo: inherited from col-ui.css (circular signal logo + glow) */
-    <link rel="stylesheet" href="liquid-glass.css" />
-    <link rel="stylesheet" href="mobile-perf.css" />
-    <script defer src="pull-refresh.js"></script>
 
       /* .nav-links/.nav-link/.nav-dl-btn: inherited from col-ui.css (themed via --page-theme) */
-    <link rel="stylesheet" href="liquid-glass.css" />
-    <link rel="stylesheet" href="mobile-perf.css" />
-    <script defer src="pull-refresh.js"></script>
 
       /* .dropdown family: inherited from col-ui.css (desktop hover + mobile accordion) */
-    <link rel="stylesheet" href="liquid-glass.css" />
-    <link rel="stylesheet" href="mobile-perf.css" />
-    <script defer src="pull-refresh.js"></script>
 
       /* Theme toggle: shared .tw/.tsb/.tst in col-ui.css (uses body.lm + #tsck/#tLabel) */
-    <link rel="stylesheet" href="liquid-glass.css" />
-    <link rel="stylesheet" href="mobile-perf.css" />
-    <script defer src="pull-refresh.js"></script>
 
       /* Account UI (.nav-login-btn/.nav-user-profile): inherited from col-ui.css */
-    <link rel="stylesheet" href="liquid-glass.css" />
-    <link rel="stylesheet" href="mobile-perf.css" />
-    <script defer src="pull-refresh.js"></script>
 
       /* Mobile menu (.mmb/.m-line) + .mobile-dl: owned by col-ui.css + col-mobile.css */
-    <link rel="stylesheet" href="liquid-glass.css" />
-    <link rel="stylesheet" href="mobile-perf.css" />
-    <script defer src="pull-refresh.js"></script>
 
       /* SIDEBAR */
       .app-sb {
@@ -926,9 +905,6 @@
           margin-top: 5px;
         }
         /* Top bar responsive: owned by shared col-ui.css (@media max-width:900px). No page overrides. */
-    <link rel="stylesheet" href="liquid-glass.css" />
-    <link rel="stylesheet" href="mobile-perf.css" />
-    <script defer src="pull-refresh.js"></script>
         .db-hd {
           flex-direction: column;
           align-items: flex-start;
@@ -968,49 +944,130 @@
   <body>
     <a href="#qrMainContent" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:9999;padding:8px 16px;background:var(--pri);color:#000;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;" onfocus="this.style.cssText='position:fixed;left:0;top:0;width:auto;height:auto;z-index:9999;padding:8px 16px;background:var(--pri);color:#000;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;'" onblur="this.style.cssText='position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:9999;padding:8px 16px;background:var(--pri);color:#000;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;'">Skip to main content</a>
 
-    <nav class="top-nav">
+    <nav class="top-nav" id="topNav">
       <a href="/" class="nav-brand">
         <img src="Class.png" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" />
-        <span>Class Of Learners</span>
+        <span class="brand-name">Class Of Learners</span>
       </a>
-      <button class="mmb" id="mmb" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navLinks"></button>
       <div class="nav-links" id="navLinks">
-        <a href="/" class="nav-link">Home</a>
-        <a href="about" class="nav-link">About</a>
-        <a href="school" class="nav-link">School</a>
-        <a href="sneh-asha" class="nav-link">Sneh Asha</a>
-        <div class="dropdown" id="projectsDropdown">
-          <button class="dropdown-btn act" aria-haspopup="true" aria-expanded="false">Projects <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-left:4px;"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <a href="/" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
+          </svg>Home
+        </a>
+        <a href="about" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 16v-4" />
+            <path d="M12 8h.01" />
+          </svg>About
+        </a>
+        <a href="school" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" />
+            <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />
+          </svg>School
+        </a>
+        <a href="sneh-asha" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+          </svg>Sneh Asha
+        </a>
+        <a href="making" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+          </svg>Making
+        </a>
+        <div class="dropdown" id="projDD" onclick="this.classList.toggle('active')">
+          <button class="dropdown-btn act">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+              <line x1="8" y1="21" x2="16" y2="21" />
+              <line x1="12" y1="17" x2="12" y2="21" />
+            </svg>Projects <span class="darr">&#9660;</span>
+          </button>
           <div class="dropdown-content">
             <div class="dropdown-content-inner">
-              <a href="ati"><span>Typing Instructor</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"/></svg></a>
-              <a href="solar"><span>Solar Engine</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></a>
-              <a href="gesture"><span>Perceptus Flow</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg></a>
-              <a href="rpg"><span>RPG Universe</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></a>
-              <a href="qr"><span>QR Studio Matrix</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></a>
+              <a href="ati">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="4 7 4 4 20 4 20 7" />
+                  <line x1="9" y1="20" x2="15" y2="20" />
+                  <line x1="12" y1="4" x2="12" y2="20" />
+                </svg>Typing Instructor
+              </a>
+              <a href="solar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="5" />
+                  <line x1="12" y1="1" x2="12" y2="3" />
+                  <line x1="12" y1="21" x2="12" y2="23" />
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                  <line x1="1" y1="12" x2="3" y2="12" />
+                  <line x1="21" y1="12" x2="23" y2="12" />
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                </svg>Solar Engine
+              </a>
+              <a href="gesture">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 8h1a4 4 0 010 8h-1" />
+                  <path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z" />
+                  <line x1="6" y1="1" x2="6" y2="4" />
+                  <line x1="10" y1="1" x2="10" y2="4" />
+                  <line x1="14" y1="1" x2="14" y2="4" />
+                </svg>Perceptus Flow
+              </a>
+              <a href="rpg">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                </svg>RPG Game
+              </a>
+              <a href="qr" class="act">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="2" width="8" height="8" rx="1" />
+                  <rect x="14" y="2" width="8" height="8" rx="1" />
+                  <rect x="2" y="14" width="8" height="8" rx="1" />
+                  <rect x="14" y="14" width="4" height="4" />
+                  <rect x="20" y="14" width="2" height="2" />
+                  <rect x="14" y="20" width="2" height="2" />
+                  <rect x="20" y="20" width="2" height="2" />
+                </svg>QR Studio Matrix
+              </a>
+              <a href="Terra3D/">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="2" y1="12" x2="22" y2="12" />
+                  <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+                </svg>Terra3D Atlas
+              </a>
             </div>
           </div>
         </div>
-
-        <div class="tw">
-          <span class="tl" id="tLabel">Dark Mode</span>
-          <label class="tsb">
-            <input type="checkbox" id="tsck" onchange="window.toggleTheme(this)" />
-            <div class="tst"><div class="tsth"></div></div>
-          </label>
+      </div>
+      <div class="nav-actions">
+        <div class="hz-toggle" onclick="hzToggle()">
+          <div class="hz-clouds"></div>
+          <div class="hz-stars"></div>
+          <div class="hz-orb"></div>
         </div>
-        <button class="nav-login-btn" id="navLoginBtn" onclick="openLogin()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          Sign In
+        <button class="nav-login-btn" id="navLoginBtn" onclick="if (window.openGlobalLogin) window.openGlobalLogin(); else if (window.openLogin) window.openLogin();">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>Sign In
         </button>
-        <div class="nav-user-profile" id="navUserProfile" onclick="openLogin()">
-          <div class="nav-user-avatar" id="navUserAv"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+        <div class="nav-user-profile" id="navUserProfile" onclick="if (window.openGlobalLogin) window.openGlobalLogin(); else if (window.openLogin) window.openLogin();">
+          <div class="nav-user-avatar" id="navUserAv">?</div>
           <span class="nun" id="navUserName">User</span>
         </div>
-
-        <a href="download" class="nav-dl-btn mobile-dl">Downloads Hub</a>
+        <a href="download" class="nav-dl-btn desktop-dl">Downloads Hub</a>
+        <button class="mmb" id="mmb" aria-label="Toggle menu">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M3 6H21M3 12H21M3 18H21" stroke-width="1.5" stroke-linecap="round" />
+          </svg>
+        </button>
       </div>
-      <a href="download" class="nav-dl-btn desktop-dl">Downloads Hub</a>
     </nav>
 
     <div class="cd" id="cDot"></div><div class="cr" id="cRing"></div>
@@ -1283,7 +1340,7 @@
         v.innerHTML = `
         <div class="db-hd" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
           <div><h1 style="font-size:2.2rem; margin:0;">Stats</h1></div>
-          <button class="dbf" style="border:1px solid var(--pri); color:var(--pri); background:transparent;">Export information</button>
+          <button class="dbf" onclick="downloadAnalyticsCSV()" style="border:1px solid var(--pri); color:var(--pri); background:transparent;">Export information</button>
         </div>
         
         <div style="background: rgba(37,99,235,0.05); border: 1px solid rgba(37,99,235,0.2); border-radius: 8px; padding: 12px 20px; display:flex; justify-content:space-between; align-items:center; margin-bottom: 25px; flex-wrap:wrap; gap:10px;">
@@ -1292,8 +1349,8 @@
                 You can set your time zone. <span style="font-weight:400; opacity:0.8;">Current time zone: Asia/Calcutta</span>
             </div>
             <div style="display:flex; gap:10px;">
-                <button style="background:transparent; border:none; color:#3b82f6; font-weight:700; cursor:pointer;">Change</button>
-                <button style="background:#3b82f6; border:none; color:#fff; padding:6px 16px; border-radius:20px; font-weight:600; cursor:pointer; transition:0.2s;">Accept</button>
+                <button onclick="_qrStub('Timezone Picker Coming Soon')" style="background:transparent; border:none; color:#3b82f6; font-weight:700; cursor:pointer;">Change</button>
+                <button onclick="_qrStub('Timezone Saved')" style="background:#3b82f6; border:none; color:#fff; padding:6px 16px; border-radius:20px; font-weight:600; cursor:pointer; transition:0.2s;">Accept</button>
             </div>
         </div>
         
@@ -1312,7 +1369,7 @@
                     Time zone: Asia/Calcutta <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-left:4px;"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
                 </div>
             </div>
-            <button class="dbf" style="display:flex; align-items:center; gap:8px;">
+            <button class="dbf" onclick="_qrStub('Filters Coming Soon')" title="Coming soon" style="display:flex; align-items:center; gap:8px;">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
                 Filter
             </button>
@@ -1339,9 +1396,9 @@
                 </div>
                 <div style="display:flex; gap:15px; align-items:center;">
                     <div style="display:flex; background:var(--bg); border:1px solid var(--border); border-radius:8px; overflow:hidden;">
-                        <button style="padding:8px 16px; border:none; background:rgba(37,99,235,0.1); color:#3b82f6; font-weight:600; cursor:pointer;">Day</button>
-                        <button style="padding:8px 16px; border:none; border-left:1px solid var(--border); background:transparent; color:var(--txt-m); font-weight:600; cursor:pointer;">Month</button>
-                        <button style="padding:8px 16px; border:none; border-left:1px solid var(--border); background:transparent; color:var(--txt-m); font-weight:600; cursor:pointer;">Year</button>
+                        <button style="padding:8px 16px; border:none; background:rgba(37,99,235,0.1); color:#3b82f6; font-weight:600; cursor:pointer;" onclick="_qrRange('Day')">Day</button>
+                        <button style="padding:8px 16px; border:none; border-left:1px solid var(--border); background:transparent; color:var(--txt-m); font-weight:600; cursor:pointer;" onclick="_qrRange('Month')">Month</button>
+                        <button style="padding:8px 16px; border:none; border-left:1px solid var(--border); background:transparent; color:var(--txt-m); font-weight:600; cursor:pointer;" onclick="_qrRange('Year')">Year</button>
                     </div>
                     <div style="display:flex; gap:8px;">
                         <button style="width:36px; height:36px; border-radius:8px; border:none; background:var(--bg); color:var(--txt-m); display:flex; align-items:center; justify-content:center; cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg></button>
@@ -1363,7 +1420,7 @@
         let sb = window.supabaseClient
         if (!sb) {
           try {
-            const res = await fetch('config.json')
+            const res = await fetch('/config.json')
             const config = await res.json()
             if (config.auth && config.auth.url) {
               if (typeof window.supabase === 'undefined') {
@@ -1982,6 +2039,7 @@
       <div class="fi">
         <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
         <div class="fl">
+          <a href="making">Making</a>
           <a href="privacy">Privacy</a>
           <a href="terms">Terms</a>
           <a href="feedback">Feedback</a>
@@ -1991,5 +2049,6 @@
       </div>
     </footer>
     <script defer src="col-ui.js"></script>
-  </body>
+  <script>window._qrStub=function(m){try{toast(m||"Coming Soon")}catch(e){alert(m||"Coming Soon")}};window._qrRange=function(r){try{toast("Range: "+r)}catch(e){}}</script>
+</body>
 </html>

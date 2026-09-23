@@ -22,8 +22,8 @@
 .is-iphone .mo .md,
 .is-iphone .hud-group {
   background: rgba(18, 24, 38, 0.68) !important;
-  backdrop-filter: blur(28px) saturate(190%) contrast(102%) brightness(1.08) !important;
-  -webkit-backdrop-filter: blur(28px) saturate(190%) contrast(102%) brightness(1.08) !important;
+  backdrop-filter: blur(16px) saturate(190%) contrast(102%) brightness(1.08) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(190%) contrast(102%) brightness(1.08) !important;
   border: 0.5px solid rgba(255, 255, 255, 0.26) !important;
   box-shadow:
     0 12px 40px rgba(0, 0, 0, 0.32),
@@ -169,8 +169,8 @@
 /* ── Dropdown Menu — Apple Glass Sheet ──────────────────────────────────── */
 .is-iphone .dropdown-content-inner {
   background: rgba(16, 22, 36, 0.76) !important;
-  backdrop-filter: blur(36px) saturate(190%) !important;
-  -webkit-backdrop-filter: blur(36px) saturate(190%) !important;
+  backdrop-filter: blur(20px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(190%) !important;
   border: 0.5px solid rgba(255, 255, 255, 0.18) !important;
   box-shadow:
     0 24px 60px rgba(0, 0, 0, 0.45),
@@ -191,8 +191,8 @@
 .is-iphone .col-bottom-bar {
   border-radius: 32px !important;
   background: rgba(16, 22, 36, 0.72) !important;
-  backdrop-filter: blur(32px) saturate(200%) contrast(105%) !important;
-  -webkit-backdrop-filter: blur(32px) saturate(200%) contrast(105%) !important;
+  backdrop-filter: blur(18px) saturate(200%) contrast(105%) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(200%) contrast(105%) !important;
   border: 0.5px solid rgba(255, 255, 255, 0.24) !important;
   box-shadow:
     0 14px 44px rgba(0, 0, 0, 0.38),
@@ -268,8 +268,8 @@
 /* ── Apple iOS Sheet Navigation Drawer ───────────────────────────────────── */
 .is-iphone .nav-links {
   background: rgba(10, 15, 26, 0.88) !important;
-  backdrop-filter: blur(36px) saturate(190%) !important;
-  -webkit-backdrop-filter: blur(36px) saturate(190%) !important;
+  backdrop-filter: blur(20px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(190%) !important;
   border-left: 0.5px solid rgba(255, 255, 255, 0.16) !important;
   transition:
     transform 0.42s cubic-bezier(0.32, 0.72, 0, 1),
@@ -327,8 +327,8 @@
 .is-iphone body.lm .mo .md,
 .is-iphone body.lm .hud-group {
   background: rgba(255, 255, 255, 0.72) !important;
-  backdrop-filter: blur(30px) saturate(190%) brightness(1.06) !important;
-  -webkit-backdrop-filter: blur(30px) saturate(190%) brightness(1.06) !important;
+  backdrop-filter: blur(16px) saturate(190%) brightness(1.06) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(190%) brightness(1.06) !important;
   border: 0.5px solid rgba(0, 0, 0, 0.1) !important;
   box-shadow:
     0 12px 36px rgba(0, 0, 0, 0.08),
@@ -370,8 +370,8 @@
 
 .is-iphone body.lm .dropdown-content-inner {
   background: rgba(255, 255, 255, 0.8) !important;
-  backdrop-filter: blur(36px) saturate(190%) !important;
-  -webkit-backdrop-filter: blur(36px) saturate(190%) !important;
+  backdrop-filter: blur(20px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(190%) !important;
   border: 0.5px solid rgba(0, 0, 0, 0.1) !important;
   box-shadow:
     0 24px 60px rgba(0, 0, 0, 0.12),

@@ -104,6 +104,12 @@ class TrafficManager {
   }
 
   update(dt, playerVehicle, signals) {
+    // Drain the staggered spawn queue first (keeps frame time flat at level start)
+    if (this._spawnQueue > 0) {
+      const n = Math.min(this._spawnQueue, 4);
+      for (let i = 0; i < n; i++) this._spawnSingleVehicle();
+      this._spawnQueue -= n;
+    }
     this._updateDensity(dt);
     this._updatePlatoons(dt);
     this._updateSignalAccumulation(dt, signals);
@@ -121,9 +127,16 @@ class TrafficManager {
     this.vehicles.slice().forEach(vehicle => {
       if (!vehicle.active || !vehicle.npcAI) return;
 
-      if (vehicle.npcAI.state === COMPLETE && !this._assignRoute(vehicle)) {
-        this._despawnVehicle(vehicle);
-        return;
+      if (vehicle.npcAI.state === COMPLETE) {
+        // F2 rival loops its scripted route forever (never wanders off / despawns).
+        // First completion is latched: finishing ahead of it beats it.
+        if (vehicle.isRival && vehicle._rivalRoute && vehicle._rivalRoute.length >= 2) {
+          vehicle._rivalFinished = true;
+          vehicle.npcAI.setRoute(vehicle._rivalRoute.slice());
+        } else if (!this._assignRoute(vehicle)) {
+          this._despawnVehicle(vehicle);
+          return;
+        }
       }
 
       // ── Simulation LOD & GPU Mesh Culling ──
@@ -168,7 +181,7 @@ class TrafficManager {
       
       if (currentCount < targetDensity) {
         this.densityMultiplier = Math.min(2.0, this.densityMultiplier + DENSITY_INCREASE_PER_MIN);
-        this._spawnBatch(Math.ceil((targetDensity - currentCount) * 0.6));
+        this._spawnQueue = (this._spawnQueue || 0) + Math.ceil((targetDensity - currentCount) * 0.6);
       } else if (currentCount > targetDensity * 1.2) {
         this.densityMultiplier = Math.max(0.5, this.densityMultiplier - DENSITY_INCREASE_PER_MIN);
       }
@@ -257,7 +270,9 @@ class TrafficManager {
     this.levelNpcTypes = levelConfig.npcTypes || [];
     this.levelNpcs = levelConfig.npcs || [];
     this.levelNpcIndex = 0;
-    this._spawnBatch(count);
+    // AAA-style staggered spawn: queue instead of bursting `count` NPCs in one
+    // frame (each build + NPCAI-init hitches). update() drains a few per frame.
+    this._spawnQueue = (this._spawnQueue || 0) + count;
   }
 
 
@@ -293,9 +308,12 @@ class TrafficManager {
       color = npcConfig.color;
 
       isRuleBreaker = ['reckless_bike', 'rulebreaker', 'aggressive'].includes(type) || Math.random() < RULE_BREAKER_PROBABILITY;
-      profileKey = isRuleBreaker
-        ? this._pickProfileKey('reckless_bike', 'rulebreaker', 'aggressive')
-        : this._pickProfileKey('normal', 'cautious', 'delivery', 'elderly');
+      // Scripted NPCs may force an exact driver personality (e.g. the impatient taxi in Lesson 1)
+      profileKey = (npcConfig.profileKey && (window.NPC_PROFILES || {})[npcConfig.profileKey])
+        ? npcConfig.profileKey
+        : (isRuleBreaker
+          ? this._pickProfileKey('reckless_bike', 'rulebreaker', 'aggressive')
+          : this._pickProfileKey('normal', 'cautious', 'delivery', 'elderly'));
       this.levelNpcIndex++;
     } else {
 
@@ -305,9 +323,15 @@ class TrafficManager {
         type = this._pickVehicleType();
       }
       isRuleBreaker = Math.random() < RULE_BREAKER_PROBABILITY && this.ruleBreakerCount / Math.max(1, this.totalSpawned) < RULE_BREAKER_PROBABILITY;
-      profileKey = isRuleBreaker
-        ? this._pickProfileKey('reckless_bike', 'rulebreaker', 'aggressive')
-        : this._pickProfileKey('normal', 'cautious', 'delivery', 'elderly');
+      const mixed = this._pickMixedProfile();
+      if (mixed) {
+        profileKey = mixed;
+        if (['reckless_bike', 'rulebreaker', 'aggressive'].includes(mixed)) isRuleBreaker = true;
+      } else {
+        profileKey = isRuleBreaker
+          ? this._pickProfileKey('reckless_bike', 'rulebreaker', 'aggressive')
+          : this._pickProfileKey('normal', 'cautious', 'delivery', 'elderly');
+      }
       color = this._pickColorForType(type);
     }
 
@@ -337,6 +361,28 @@ class TrafficManager {
     vehicle.npcAI.trafficManager = this;
     vehicle.profile = vehicle.npcAI.profile;
     vehicle.isRuleBreaker = isRuleBreaker;
+    // F2 rival: scripted `rival: true` in level npcs[] — faster cruise, never
+    // despawns into random traffic, taunts via the level's story dialogue.
+    // (npcConfig only exists on the scripted branch — guard with typeof.)
+    if (typeof npcConfig !== 'undefined' && npcConfig && npcConfig.rival) {
+      vehicle.isRival = true;
+      vehicle.rivalName = npcConfig.name || 'Rival Driver';
+      if (vehicle.npcAI && vehicle.npcAI.idmParams) {
+        vehicle.npcAI.idmParams.v0 *= 1.3;
+        vehicle.npcAI.idmParams.T = Math.max(0.5, vehicle.npcAI.idmParams.T * 0.7);
+      }
+      this._rival = vehicle;
+      // Floating rival nametag (Title Case per house rules)
+      try {
+        if (this.game && typeof this.game._makeNametag === 'function' && typeof this.game._titleCase === 'function') {
+          const tag = this.game._makeNametag('🏁 ' + this.game._titleCase(vehicle.rivalName), { border: 'rgba(239,68,68,0.65)' });
+          if (tag && vehicle.mesh) {
+            tag.position.set(0, 3.6, 0);
+            vehicle.mesh.add(tag);
+          }
+        }
+      } catch (e) {}
+    }
     if (this.levelConfig && (this.levelConfig.id === 5 || this.levelConfig.isSuburbanNeighborhood)) {
       vehicle.npcAI.isRandomWanderer = true;
     }
@@ -345,6 +391,7 @@ class TrafficManager {
       const resolvedRoute = this._resolveRouteNodes(route);
       if (resolvedRoute.length >= 2) {
         vehicle.npcAI.setRoute(resolvedRoute.slice(1));
+        if (vehicle.isRival) vehicle._rivalRoute = resolvedRoute.slice(1);
       } else {
         this._assignRoute(vehicle);
       }
@@ -408,6 +455,19 @@ class TrafficManager {
     const keys = (allowedKeys.length ? allowedKeys : Object.keys(profiles)).filter(k => profiles[k]);
     if (!keys.length) return 'normal';
     return keys[Math.floor(Math.random() * keys.length)];
+  }
+
+  // Level-driven profile mix, e.g. npcMix: { school_parent: 40, cautious: 25, school_bus: 10 }
+  _pickMixedProfile() {
+    const mix = this.levelConfig && this.levelConfig.npcMix;
+    if (!mix) return null;
+    const profiles = window.NPC_PROFILES || {};
+    const entries = Object.entries(mix).filter(([k, w]) => profiles[k] && w > 0);
+    if (!entries.length) return null;
+    const total = entries.reduce((a, [, w]) => a + w, 0);
+    let r = Math.random() * total;
+    for (const [k, w] of entries) { r -= w; if (r <= 0) return k; }
+    return entries[0][0];
   }
 
   _pickVehicleType() {

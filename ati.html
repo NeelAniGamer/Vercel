@@ -1,11 +1,10 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995"
-     crossorigin="anonymous"></script>
     <meta name="description" content="Class of Learners - Ati. An educational tool and resource." />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#020617" />
     <title>ATI | Advanced Typing Instructor</title>
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" /></noscript>
@@ -788,6 +787,15 @@
         animation: blink 1s step-end infinite;
         color: var(--primary);
       }
+      /* Keep content visible when motion is reduced or JS never runs */
+      @media (prefers-reduced-motion: reduce) {
+        .anim-target {
+          opacity: 1 !important;
+          transform: none !important;
+          transition: none !important;
+        }
+        .cursor-blink { animation: none; }
+      }
       @keyframes blink {
         0%,
         100% {
@@ -1023,11 +1031,6 @@
       }
 
       /* ──── COMPLETE MOBILE RESPONSIVENESS FIXES ──── */
-      /* ──── MOBILE CLOSE BUTTON ──── */
-      .mobile-close {
-        display: none;
-      }
-
       @media (max-width: 900px) {
         .mmb {
           display: flex !important;
@@ -1070,27 +1073,6 @@
           transform: translateY(-7px) rotate(-45deg);
           background: var(--primary);
         }
-        .mobile-close {
-          display: flex !important;
-          position: fixed;
-          top: calc(env(safe-area-inset-top, 0px) + 16px);
-          right: 20px;
-          width: 44px;
-          height: 44px;
-          align-items: center;
-          justify-content: center;
-          background: rgba(255, 255, 255, 0.08);
-          border: 1px solid var(--border-light);
-          border-radius: 50%;
-          color: var(--text-main);
-          cursor: pointer;
-          z-index: 1005;
-        }
-        .mobile-close svg {
-          width: 20px;
-          height: 20px;
-          stroke: currentColor;
-        }
         .top-nav {
           position: fixed;
           top: 15px;
@@ -1103,9 +1085,6 @@
           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
           background: var(--nav-bg);
           z-index: 1000;
-        }
-        .nav-brand {
-          order: 1;
         }
         .nav-brand span {
           font-size: 0.85rem !important;
@@ -1170,6 +1149,19 @@
           margin: 100px auto 60px;
           padding: 0 16px;
         }
+        /* Gallery becomes a single swipeable row instead of many wrapped rows */
+        .thumbnail-track {
+          flex-wrap: nowrap;
+          justify-content: flex-start;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          scroll-snap-type: x proximity;
+          padding-bottom: 8px;
+        }
+        .thumb-card {
+          flex: 0 0 auto;
+          scroll-snap-align: center;
+        }
         /* Disable 3D tilt on mobile */
         .feature-card:hover {
           transform: none !important;
@@ -1180,9 +1172,7 @@
         .top-nav { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background: rgba(2,6,23,0.95) !important; }
         .feature-card { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important; }
         .main-display { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
-        .site-footer { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
-        .mo { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
-        .md { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+        .site-footer { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; padding-bottom: calc(30px + 76px) !important; }
         .feature-card::before { display: none !important; }
         .feature-card:hover { transform: none !important; box-shadow: 0 8px 24px rgba(0,0,0,0.3) !important; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important; }
@@ -1207,55 +1197,119 @@
     <div class="cd" id="cDot"></div>
     <div class="cr" id="cRing"></div>
 
-    <nav class="top-nav">
+    <nav class="top-nav" id="topNav">
       <a href="/" class="nav-brand">
         <img src="Class.png" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" />
         <span class="brand-name">Class Of Learners</span>
       </a>
-      <button class="mmb" id="mmb" aria-label="Toggle menu">
-        <span class="m-line"></span><span class="m-line"></span><span class="m-line"></span>
-      </button>
       <div class="nav-links" id="navLinks">
-        <a href="/" class="nav-link">Home</a>
-        <a href="about" class="nav-link">About</a>
-        <a href="school" class="nav-link">School</a>
-        <a href="sneh-asha" class="nav-link">Sneh Asha</a>
-        <div class="dropdown" onclick="this.classList.toggle('active')">
-          <button class="dropdown-btn act">Projects <span class="darr">▼</span></button>
+        <a href="/" class="nav-link"
+          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+            <polyline points="9 22 9 12 15 12 15 22" /></svg
+          >Home</a
+        >
+        <a href="about" class="nav-link"
+          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 16v-4" />
+            <path d="M12 8h.01" /></svg
+          >About</a
+        >
+        <a href="school" class="nav-link"
+          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" />
+            <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" /></svg
+          >School</a
+        >
+        <a href="sneh-asha" class="nav-link"
+          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" /></svg
+          >Sneh Asha</a
+        >
+        <a href="making" class="nav-link"
+          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg
+          >Making</a
+        >
+        <div class="dropdown" id="projDD" onclick="this.classList.toggle('active')">
+          <button class="dropdown-btn act">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+              <line x1="8" y1="21" x2="16" y2="21" />
+              <line x1="12" y1="17" x2="12" y2="21" /></svg
+            >Projects <span class="darr">&#9660;</span>
+          </button>
           <div class="dropdown-content">
             <div class="dropdown-content-inner">
-              <a href="ati">Typing Instructor <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg></a>
-              <a href="solar">Solar Engine <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg></a>
-              <a href="gesture">Perceptus Flow <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg></a>
-              <a href="rpg">RPG Game <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></a>
-              <a href="qr">QR Studio Matrix <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></a>
+              <a href="ati"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="4 7 4 4 20 4 20 7" />
+                  <line x1="9" y1="20" x2="15" y2="20" />
+                  <line x1="12" y1="4" x2="12" y2="20" /></svg
+                >Typing Instructor</a
+              ><a href="solar"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="5" />
+                  <line x1="12" y1="1" x2="12" y2="3" />
+                  <line x1="12" y1="21" x2="12" y2="23" />
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                  <line x1="1" y1="12" x2="3" y2="12" />
+                  <line x1="21" y1="12" x2="23" y2="12" />
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" /></svg
+                >Solar Engine</a
+              ><a href="gesture"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 8h1a4 4 0 010 8h-1" />
+                  <path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z" />
+                  <line x1="6" y1="1" x2="6" y2="4" />
+                  <line x1="10" y1="1" x2="10" y2="4" />
+                  <line x1="14" y1="1" x2="14" y2="4" /></svg
+                >Perceptus Flow</a
+              ><a href="rpg"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg
+                >RPG Game</a
+              ><a href="qr"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="2" width="8" height="8" rx="1" />
+                  <rect x="14" y="2" width="8" height="8" rx="1" />
+                  <rect x="2" y="14" width="8" height="8" rx="1" />
+                  <rect x="14" y="14" width="4" height="4" />
+                  <rect x="20" y="14" width="2" height="2" />
+                  <rect x="14" y="20" width="2" height="2" />
+                  <rect x="20" y="20" width="2" height="2" /></svg
+                >QR Studio Matrix</a
+              ><a href="Terra3D/"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="2" y1="12" x2="22" y2="12" />
+                  <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" /></svg
+                >Terra3D Atlas</a
+              >
             </div>
           </div>
         </div>
-        <div class="tw">
-          <span class="tl" id="tLabel">Light</span>
-          <label class="tsb">
-            <input type="checkbox" id="tsck" onchange="window.toggleTheme(this)" />
-            <div class="tst"><div class="tsth"></div></div>
-          </label>
-        </div>
-        <button class="nav-login-btn" id="navLoginBtn" onclick="if (window.openGlobalLogin) window.openGlobalLogin()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
-          Sign In
+      </div>
+      <div class="nav-actions">
+        <div class="hz-toggle" onclick="hzToggle()"><div class="hz-clouds"></div><div class="hz-stars"></div><div class="hz-orb"></div></div>
+        <button class="nav-login-btn" id="navLoginBtn" onclick="if(window.openGlobalLogin)window.openGlobalLogin();else if(window.openLogin)window.openLogin();">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+            <circle cx="12" cy="7" r="4" /></svg
+          >Sign In
         </button>
-        <div class="nav-user-profile" id="navUserProfile" onclick="if (window.openGlobalLogin) window.openGlobalLogin()">
+        <div class="nav-user-profile" id="navUserProfile" onclick="if(window.openGlobalLogin)window.openGlobalLogin();else if(window.openLogin)window.openLogin();">
           <div class="nav-user-avatar" id="navUserAv">?</div>
           <span class="nun" id="navUserName">User</span>
         </div>
-        <a href="download" class="nav-dl-btn mobile-dl">Download Hub</a>
+        <a href="download" class="nav-dl-btn desktop-dl">Downloads Hub</a>
+        <button class="mmb" id="mmb" aria-label="Toggle menu">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M3 6H21M3 12H21M3 18H21" stroke-width="1.5" stroke-linecap="round" /></svg>
+        </button>
       </div>
-      <button class="mobile-close" id="mobileClose" aria-label="Close menu">
-        <svg viewBox="0 0 24 24" fill="none"><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" /><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
-      </button>
-      <a href="download" class="nav-dl-btn desktop-dl">Download Hub</a>
     </nav>
 
     <script>
@@ -1270,7 +1324,7 @@
 
     <header class="game-hero" style="position: relative;">
       <div class="hero-badge anim-target">ATI v3.2.0 &bull; Cyber-Mechanical Edition</div>
-      <h1><span id="typewriter-text"></span><span class="cursor-blink">_</span></h1>
+      <h1><span id="typewriter-text">&gt; ADVANCED TYPING INSTRUCTOR_ /</span><span class="cursor-blink">_</span></h1>
       <div class="hero-reveal" id="heroReveal">
         <p>Deploying high-fidelity syntax mastery module. Train your muscle memory for complex coding languages.</p>
         <div class="hero-cta">
@@ -1316,7 +1370,7 @@
         <div class="display-corner tr"></div>
         <div class="display-corner bl"></div>
         <div class="display-corner br"></div>
-        <img id="mainShowcaseImg" src="ATI 1.png" alt="ATI Main Interface View" width="1705" height="1066" loading="lazy" decoding="async" />
+        <img id="mainShowcaseImg" src="ATI 1.png" alt="ATI Main Interface View" width="1280" height="800" loading="lazy" decoding="async" />
         <div class="scanline"></div>
       </div>
       <div class="thumbnail-track">
@@ -1399,11 +1453,11 @@
         if (typeIndex < textToType.length) {
           typeTarget.innerHTML += textToType.charAt(typeIndex)
           typeIndex++
-          setTimeout(typeWriter, 60)
+          setTimeout(typeWriter, 40)
         } else {
           setTimeout(() => {
             revealTarget.classList.add('visible')
-          }, 300)
+          }, 200)
         }
       }
 
@@ -1429,10 +1483,15 @@
       }
 
       window.addEventListener('load', () => {
-        // Initialize Tilt animations (particle canvas removed)
-        initTiltEffect()
+        // Tilt only where a real pointer exists (skips touch devices)
+        if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+          initTiltEffect()
+        }
 
-        setTimeout(typeWriter, 400)
+        setTimeout(() => {
+          typeTarget.innerHTML = '' // clear the static fallback text before typing
+          typeWriter()
+        }, 250)
         setTimeout(triggerAnimations, 100)
       })
     </script>
@@ -1441,6 +1500,7 @@
       <div class="fi">
         <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
         <div class="fl">
+          <a href="making">Making</a>
           <a href="privacy">Privacy</a>
           <a href="terms">Terms</a>
           <a href="feedback">Feedback</a>

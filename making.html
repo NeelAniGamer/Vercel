@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="The Making Of Class Of Learners — Discover The AIs, Local LLMs, Agentic Tools, Cloud Platforms, And Step-By-Step Playbooks Used To Build Our Studio." />
     <meta property="og:title" content="The Making | Class Of Learners" />
-    <meta property="og:description" content="See The Full Stack: Claude Code By Ollama, Antigravity, OpenCode, Freebuff, Gemini, Lovable, Supabase, Android Studio, Vercel, GitHub, Digitalplat, ClouDNS, And How Anyone Can Replicate It." />
+    <meta property="og:description" content="See The Full Stack: Claude Code By Ollama, Antigravity, OpenCode, Freebuff, Gemini, Lovable, Supabase, Android Studio, Vercel, GitHub, Digitalplat, ClouDNS, Wispr Flow, And How Anyone Can Replicate It." />
     <meta property="og:url" content="https://advancedlogiclabs.dpdns.org/making" />
     <meta property="og:type" content="website" />
     <title>The Making | Class Of Learners</title>
@@ -323,8 +323,8 @@
       }
       .stat-card {
         background: var(--panel-glass);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
         border: 1px solid var(--line);
         border-radius: 18px;
         padding: 22px;
@@ -358,8 +358,8 @@
         margin-bottom: 40px;
         padding: 16px 22px;
         background: var(--panel-glass);
-        backdrop-filter: blur(24px);
-        -webkit-backdrop-filter: blur(24px);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
         border: 1px solid var(--line);
         border-radius: 20px;
       }
@@ -420,6 +420,132 @@
         height: 16px;
         color: var(--dim);
       }
+      .result-count {
+        font-family: var(--mono);
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--dim);
+        white-space: nowrap;
+      }
+      .empty-state {
+        text-align: center;
+        padding: 56px 24px;
+        border: 1px dashed var(--lineb);
+        border-radius: var(--r);
+        color: var(--dim);
+      }
+      .empty-state h3 {
+        font-size: 1.15rem;
+        color: var(--ink);
+        margin-bottom: 8px;
+      }
+      .empty-state p {
+        font-size: 0.92rem;
+        margin-bottom: 18px;
+      }
+      .empty-reset {
+        padding: 10px 22px;
+        border-radius: 12px;
+        background: var(--signal);
+        color: #070a14;
+        font-weight: 700;
+        font-size: 0.88rem;
+      }
+
+      /* Projects Doubt Solver */
+      .mk-doubt {
+        margin-top: 56px;
+        background: var(--panel-glass);
+        border: 1px solid var(--line);
+        border-radius: var(--r);
+        padding: 32px 28px;
+      }
+      .mk-doubt-head {
+        text-align: center;
+        font-family: var(--serif);
+        font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+        margin-bottom: 10px;
+      }
+      .mk-doubt-note {
+        text-align: center;
+        font-size: 0.88rem;
+        color: var(--dim);
+        margin-bottom: 18px;
+      }
+      .mk-doubt .doubt-chips {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+      .mk-doubt .doubt-chip {
+        padding: 7px 14px;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--dim);
+        background: rgba(242, 184, 75, 0.08);
+        border: 1px solid var(--line);
+        cursor: pointer;
+      }
+      .mk-doubt .doubt-chip:hover {
+        color: #070a14;
+        background: var(--signal);
+      }
+      .mk-doubt .doubt-row {
+        display: flex;
+        gap: 10px;
+      }
+      .mk-doubt .doubt-input {
+        flex: 1;
+        min-width: 0;
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: 1px solid var(--lineb);
+        background: rgba(0, 0, 0, 0.2);
+        color: var(--ink);
+        font-size: 16px;
+        outline: none;
+      }
+      body.lm .mk-doubt .doubt-input {
+        background: rgba(255, 255, 255, 0.7);
+      }
+      .mk-doubt .doubt-input:focus {
+        border-color: var(--signal);
+      }
+      .mk-doubt .doubt-ask {
+        padding: 12px 24px;
+        border-radius: 12px;
+        background: var(--signal);
+        color: #070a14;
+        font-weight: 700;
+        font-size: 0.88rem;
+        white-space: nowrap;
+      }
+      .mk-doubt .doubt-answer {
+        margin-top: 16px;
+        padding: 16px 18px;
+        border-radius: 12px;
+        background: rgba(0, 0, 0, 0.2);
+        border-left: 3px solid var(--signal);
+        font-size: 0.92rem;
+        line-height: 1.65;
+      }
+      body.lm .mk-doubt .doubt-answer {
+        background: rgba(0, 0, 0, 0.04);
+      }
+      .mk-doubt .doubt-answer strong {
+        color: var(--signal);
+      }
+      @media (max-width: 640px) {
+        .mk-doubt .doubt-row {
+          flex-direction: column;
+        }
+        .mk-doubt .doubt-ask {
+          width: 100%;
+        }
+      }
 
       /* Bento Cards Grid */
       .bento-grid {
@@ -430,8 +556,8 @@
       .bento-card {
         grid-column: span 6;
         background: var(--panel-glass);
-        backdrop-filter: blur(28px);
-        -webkit-backdrop-filter: blur(28px);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
         border: 1px solid var(--line);
         border-radius: var(--r);
         padding: 32px;
@@ -497,6 +623,12 @@
       body.lm .card-icon img.invert-on-light,
       body.lm .card-icon svg.invert-on-light {
         filter: invert(1);
+      }
+      .card-icon img.invert-on-dark {
+        filter: invert(1);
+      }
+      body.lm .card-icon img.invert-on-dark {
+        filter: none;
       }
       .card-title-group h2 {
         font-size: 1.4rem;
@@ -678,6 +810,10 @@
         .main-wrapper { padding-top: 96px; padding-bottom: 120px; }
         .control-bar { flex-direction: column; align-items: stretch; }
         .search-box { max-width: 100%; }
+        .stat-card, .control-bar, .bento-card {
+          backdrop-filter: none;
+          -webkit-backdrop-filter: none;
+        }
       }
     </style>
 
@@ -757,7 +893,9 @@
       </div>
 
       <div class="nav-actions">
-        <div class="hz-toggle" onclick="toggleLocalTheme()" title="Toggle Appearance">
+        <div class="hz-toggle" onclick="hzToggle()" title="Toggle Appearance">
+          <div class="hz-clouds"></div>
+          <div class="hz-stars"></div>
           <div class="hz-orb"></div>
         </div>
         <a href="download" class="nav-dl-btn">Downloads Hub</a>
@@ -781,7 +919,7 @@
       <!-- Stats Overview Deck -->
       <section class="stats-deck">
         <div class="stat-card">
-          <div class="stat-num">13</div>
+          <div class="stat-num">14</div>
           <div class="stat-label">Production Platforms &amp; AIs</div>
         </div>
         <div class="stat-card">
@@ -800,18 +938,20 @@
 
       <!-- Filter & Search Controls -->
       <div class="control-bar">
-        <div class="filter-pills" id="filterPills">
-          <button class="filter-pill active" data-filter="all">All 13 Systems</button>
-          <button class="filter-pill" data-filter="agentic">Agentic Coding</button>
-          <button class="filter-pill" data-filter="intelligence">AI Intelligence</button>
-          <button class="filter-pill" data-filter="cloud">Cloud &amp; DNS</button>
-          <button class="filter-pill" data-filter="tools">Developer Tools</button>
+        <div class="filter-pills" id="filterPills" role="group" aria-label="Filter Systems By Category">
+          <button class="filter-pill active" data-filter="all" aria-pressed="true">All 14 Systems</button>
+          <button class="filter-pill" data-filter="agentic" aria-pressed="false">Agentic Coding</button>
+          <button class="filter-pill" data-filter="intelligence" aria-pressed="false">AI Intelligence</button>
+          <button class="filter-pill" data-filter="cloud" aria-pressed="false">Cloud &amp; DNS</button>
+          <button class="filter-pill" data-filter="tools" aria-pressed="false">Developer Tools</button>
         </div>
 
         <div class="search-box">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" id="searchInput" placeholder="Search Technologies Or Playbooks..." />
+          <input type="text" id="searchInput" placeholder="Search Technologies Or Playbooks..." aria-label="Search Technologies Or Playbooks" />
         </div>
+
+        <div class="result-count" id="resultCount" role="status" aria-live="polite">Showing 14 Of 14 Systems</div>
       </div>
 
       <!-- Bento Grid Of All 13 Technologies -->
@@ -823,7 +963,7 @@
           <div>
             <div class="card-header">
               <div class="card-identity">
-                <div class="card-icon"><img src="assets/logos/ollama.svg" alt="Ollama" class="invert-on-light" width="28" height="28" /></div>
+                <div class="card-icon"><img src="assets/logos/ollama.svg" alt="Ollama" class="invert-on-light" width="28" height="28" fetchpriority="high" decoding="async" /></div>
                 <div class="card-title-group">
                   <h2>Claude Code Powered By Ollama</h2>
                   <span class="card-badge">Local Agentic Terminal Intelligence</span>
@@ -931,7 +1071,7 @@ litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
           <div>
             <div class="card-header">
               <div class="card-identity">
-                <div class="card-icon"><img src="assets/logos/google.svg" alt="Google" width="28" height="28" /></div>
+                <div class="card-icon"><img src="assets/logos/google.svg" alt="Google" width="28" height="28" loading="lazy" decoding="async" /></div>
                 <div class="card-title-group">
                   <h2>Google Antigravity</h2>
                   <span class="card-badge">Autonomous Multi-Step Pair Programmer</span>
@@ -993,7 +1133,7 @@ litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
           <div>
             <div class="card-header">
               <div class="card-identity">
-                <div class="card-icon"><img src="assets/logos/opencode.svg" alt="OpenCode" width="28" height="28" /></div>
+                <div class="card-icon"><img src="assets/logos/opencode.svg" alt="OpenCode" class="invert-on-light" width="28" height="28" loading="lazy" decoding="async" /></div>
                 <div class="card-title-group">
                   <h2>OpenCode</h2>
                   <span class="card-badge">AI-Native Developer Terminal Environment</span>
@@ -1060,7 +1200,7 @@ litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
           <div>
             <div class="card-header">
               <div class="card-identity">
-                <div class="card-icon"><img src="assets/logos/freebuff.svg" alt="Freebuff" width="28" height="28" /></div>
+                <div class="card-icon"><img src="assets/logos/freebuff.svg" alt="Freebuff" width="28" height="28" loading="lazy" decoding="async" /></div>
                 <div class="card-title-group">
                   <h2>Freebuff</h2>
                   <span class="card-badge">Sandbox Testing &amp; Network Proxy Environment</span>
@@ -1122,7 +1262,7 @@ litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
           <div>
             <div class="card-header">
               <div class="card-identity">
-                <div class="card-icon"><img src="assets/logos/claude.svg" alt="Claude" width="28" height="28" /></div>
+                <div class="card-icon"><img src="assets/logos/claude.svg" alt="Claude" width="28" height="28" loading="lazy" decoding="async" /></div>
                 <div class="card-title-group">
                   <h2>Claude Web (Anthropic)</h2>
                   <span class="card-badge">Deep Architectural Reasoning &amp; Design Taste</span>
@@ -1184,7 +1324,7 @@ litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
           <div>
             <div class="card-header">
               <div class="card-identity">
-                <div class="card-icon"><img src="assets/logos/gemini.svg" alt="Gemini" width="28" height="28" /></div>
+                <div class="card-icon"><img src="assets/logos/gemini.svg" alt="Gemini" width="28" height="28" loading="lazy" decoding="async" /></div>
                 <div class="card-title-group">
                   <h2>Gemini Web (Google DeepMind)</h2>
                   <span class="card-badge">Multimodal Vision &amp; Massive Context Synthesis</span>
@@ -1246,7 +1386,7 @@ litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
           <div>
             <div class="card-header">
               <div class="card-identity">
-                <div class="card-icon"><img src="assets/logos/lovable.svg" alt="Lovable" width="28" height="28" /></div>
+                <div class="card-icon"><img src="assets/logos/lovable.svg" alt="Lovable" width="28" height="28" loading="lazy" decoding="async" /></div>
                 <div class="card-title-group">
                   <h2>Lovable</h2>
                   <span class="card-badge">Full-Stack Prototyping &amp; Reactive Component Scaffolds</span>
@@ -1308,7 +1448,7 @@ litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
           <div>
             <div class="card-header">
               <div class="card-identity">
-                <div class="card-icon"><img src="assets/logos/supabase.svg" alt="Supabase" width="28" height="28" /></div>
+                <div class="card-icon"><img src="assets/logos/supabase.svg" alt="Supabase" width="28" height="28" loading="lazy" decoding="async" /></div>
                 <div class="card-title-group">
                   <h2>Supabase</h2>
                   <span class="card-badge">PostgreSQL Database, Auth &amp; Cloud Sync</span>
@@ -1408,7 +1548,7 @@ create policy "Users Can Manage Own Records"
           <div>
             <div class="card-header">
               <div class="card-identity">
-                <div class="card-icon"><img src="assets/logos/androidstudio.svg" alt="Android Studio" width="28" height="28" /></div>
+                <div class="card-icon"><img src="assets/logos/androidstudio.svg" alt="Android Studio" width="28" height="28" loading="lazy" decoding="async" /></div>
                 <div class="card-title-group">
                   <h2>Android Studio</h2>
                   <span class="card-badge">Native Android WebView &amp; APK Compilation</span>
@@ -1513,7 +1653,7 @@ webView.loadUrl("https://advancedlogiclabs.dpdns.org");</code>
           <div>
             <div class="card-header">
               <div class="card-identity">
-                <div class="card-icon"><img src="assets/logos/vercel.svg" alt="Vercel" class="invert-on-light" width="28" height="28" /></div>
+                <div class="card-icon"><img src="assets/logos/vercel.svg" alt="Vercel" class="invert-on-light" width="28" height="28" loading="lazy" decoding="async" /></div>
                 <div class="card-title-group">
                   <h2>Vercel</h2>
                   <span class="card-badge">Global Edge CDN, Clean URLs &amp; Git CI/CD</span>
@@ -1587,7 +1727,7 @@ webView.loadUrl("https://advancedlogiclabs.dpdns.org");</code>
           <div>
             <div class="card-header">
               <div class="card-identity">
-                <div class="card-icon"><img src="assets/logos/github.svg" alt="GitHub" class="invert-on-light" width="28" height="28" /></div>
+                <div class="card-icon"><img src="assets/logos/github.svg" alt="GitHub" class="invert-on-light" width="28" height="28" loading="lazy" decoding="async" /></div>
                 <div class="card-title-group">
                   <h2>GitHub</h2>
                   <span class="card-badge">Version Control, Actions CI/CD &amp; Releases</span>
@@ -1653,7 +1793,7 @@ git push -u origin main</code>
           <div>
             <div class="card-header">
               <div class="card-identity">
-                <div class="card-icon" style="overflow: hidden;"><img src="assets/logos/digitalplat.jpg" alt="DigitalPlat" width="40" height="40" style="border-radius: 8px;" /></div>
+                <div class="card-icon" style="overflow: hidden;"><img src="assets/logos/digitalplat.jpg" alt="DigitalPlat" width="40" height="40" style="border-radius: 8px;" loading="lazy" decoding="async" /></div>
                 <div class="card-title-group">
                   <h2>Digitalplat</h2>
                   <span class="card-badge">Infrastructure Hosting &amp; Dynamic Subdomain Routing</span>
@@ -1715,7 +1855,7 @@ git push -u origin main</code>
           <div>
             <div class="card-header">
               <div class="card-identity">
-                <div class="card-icon"><img src="assets/logos/cloudns.png" alt="ClouDNS" width="34" height="24" /></div>
+                <div class="card-icon"><img src="assets/logos/cloudns.png" alt="ClouDNS" width="34" height="24" loading="lazy" decoding="async" /></div>
                 <div class="card-title-group">
                   <h2>ClouDNS</h2>
                   <span class="card-badge">Anycast Geo-Distributed Managed DNS &amp; DDoS Protection</span>
@@ -1771,48 +1911,246 @@ TXT    @  google-site-verification=bWaer2b60VA1y3...  TTL=300</code>
           </div>
         </article>
 
+        <!-- 14. Wispr Flow -->
+        <article class="bento-card" data-category="tools" style="--card-accent: #fb7185;">
+          <div class="card-accent-bar"></div>
+          <div>
+            <div class="card-header">
+              <div class="card-identity">
+                <div class="card-icon"><img src="assets/logos/wisprflow.svg" alt="Wispr Flow" class="invert-on-dark" width="42" height="12" loading="lazy" decoding="async" /></div>
+                <div class="card-title-group">
+                  <h2>Wispr Flow</h2>
+                  <span class="card-badge">Voice Dictation &amp; AI Writing</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-block">
+              <div class="section-heading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                How We Used It In Class Of Learners
+              </div>
+              <div class="section-body">
+                <p>
+                  Wispr Flow Turned Speech Into Polished Writing Across Every App At Roughly Four Times Typing Speed. We Dictated Player Feedback Notes, Typing Lesson Drafts, Store Copy, And Code Comments Hands-Free, While Its AI Automatically Removed Filler Words And Fixed Grammar On The Fly.
+                </p>
+              </div>
+            </div>
+
+            <div class="section-block">
+              <div class="section-heading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                How Anyone Can Do That Too (The Playbook)
+              </div>
+              <ul class="playbook-steps">
+                <li class="playbook-step">
+                  <div class="step-num">1</div>
+                  <div class="step-text">
+                    <strong>Download Flow For Free:</strong> Install Wispr Flow On macOS, Windows, iPhone, Or Android And Grant Microphone Access.
+                  </div>
+                </li>
+                <li class="playbook-step">
+                  <div class="step-num">2</div>
+                  <div class="step-text">
+                    <strong>Hold The Hotkey And Speak:</strong> Press The Dictation Hotkey In Any Text Field And Speak Naturally, Including Punctuation And Formatting Commands.
+                  </div>
+                </li>
+                <li class="playbook-step">
+                  <div class="step-num">3</div>
+                  <div class="step-text">
+                    <strong>Let AI Polish The Output:</strong> Flow Strips Filler Words, Applies Context-Aware Corrections, And Drops Clean Text Where Your Cursor Sits.
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card-tags">
+            <span class="card-tag">Voice Dictation</span>
+            <span class="card-tag">4x Typing Speed</span>
+            <span class="card-tag">Auto Cleanup</span>
+            <span class="card-tag">Every App</span>
+          </div>
+        </article>
+
       </section>
+
+      <div class="empty-state" id="emptyState" hidden>
+        <h3>No Systems Match Your Search</h3>
+        <p>Try A Different Keyword Or Category Filter.</p>
+        <button class="empty-reset" id="emptyReset" type="button">Reset Filters</button>
+      </div>
+
+      <section class="mk-doubt" aria-label="Projects Doubt Solver">
+        <div class="mk-doubt-head">Projects Doubt Solver</div>
+        <p class="mk-doubt-note">Ask Any Doubt About Our Studio, Tools, Or Shipped Projects. Answers Come From Built-In Studio Notes.</p>
+        <div class="doubt-chips" id="siteChips"></div>
+        <div class="doubt-row">
+          <input type="text" class="doubt-input" id="siteInput" placeholder="Ask Anything, For Example: How Do I Deploy Like You?" aria-label="Ask A Studio Or Projects Doubt" autocomplete="off" />
+          <button class="doubt-ask" id="siteAsk" type="button">Ask</button>
+        </div>
+        <div class="doubt-answer" id="siteAnswer" role="status" aria-live="polite" hidden></div>
+      </section>
+
+      <script>
+        ;(function () {
+          var SITE_KB = [
+            { keys: ['studio', 'class of learners', 'team', 'who built', 'about'], title: 'The Studio', answer: '<strong>Class Of Learners:</strong> A Student Studio Run By Neel, Ansh, Aarush, And Yash Raj. Everything Ships As Static HTML Plus Vanilla JavaScript On Vercel, With Zero-Cost Local AI Tooling.' },
+            { keys: ['ollama', 'qwen', 'deepseek', 'local llm', 'claude code'], title: 'Claude Code Plus Ollama', answer: '<strong>Claude Code Plus Ollama:</strong> A Terminal Coding Agent Driving Local Open-Weight Models Like Qwen 2.5 Coder 32B. Start With <strong>ollama run qwen2.5-coder:32b</strong> For Private, Zero-Cost Refactoring.' },
+            { keys: ['antigravity', 'google'], title: 'Antigravity', answer: '<strong>Google Antigravity:</strong> The Senior Pair-Programmer Behind The Studio Planning Discipline. Always Draft An Implementation Plan Before Touching Code, Then Verify With Headless Browser Screenshots.' },
+            { keys: ['opencode', 'terminal', 'cli'], title: 'OpenCode', answer: '<strong>OpenCode:</strong> The Terminal-First Agent Used For Subprojects. Install With NPM, Add An <strong>opencode.json</strong> In The Project Root, And Run <strong>opencode</strong> To Start.' },
+            { keys: ['freebuff', 'sandbox', 'proxy', 'mock'], title: 'Freebuff', answer: '<strong>Freebuff:</strong> The Local Staging Sandbox And Proxy. It Mocks Auth Responses And Simulates 503, Offline, And Slow-Network Cases Before Anything Goes Live.' },
+            { keys: ['claude', 'anthropic', 'sonnet', 'artifact'], title: 'Claude Web', answer: '<strong>Claude Web:</strong> Shaped The Studio Visual Taste And Design Tokens. Group Brand Guides Inside A Claude Project And Prototype Motion As Interactive Artifacts.' },
+            { keys: ['gemini', 'deepmind', 'vision'], title: 'Gemini Web', answer: '<strong>Gemini Web:</strong> The Visual Auditor With A 2-Million-Token Window. Drop In Full Screenshots To Catch Contrast, Hierarchy, And Alignment Flaws.' },
+            { keys: ['lovable', 'prototype'], title: 'Lovable', answer: '<strong>Lovable:</strong> Turns Plain-English Prompts Into React Plus Tailwind Prototypes In Minutes. Iterate Visually, Then Export Clean Snippets Into The Vanilla Codebase.' },
+            { keys: ['supabase', 'database', 'postgres', 'auth', 'login'], title: 'Supabase', answer: '<strong>Supabase:</strong> Powers Auth (Google OAuth With PKCE Via col-auth.js) And PostgreSQL With Row Level Security For Progress, Leaderboards, And Certificates. Protect Every Table With Owner-Only Policies.' },
+            { keys: ['android', 'apk', 'webview', 'app', 'mobile app'], title: 'Android Studio', answer: '<strong>Android Studio:</strong> Compiles The Web Suite Into A Signed APK With Hardware-Accelerated WebView. Enable JavaScript Plus DOM Storage, Then Build With <strong>./gradlew assembleRelease</strong>.' },
+            { keys: ['vercel', 'deploy', 'hosting', 'host', 'domain live'], title: 'Vercel', answer: '<strong>Vercel:</strong> The Production Edge Host With Clean URLs And Git Deploys. Ship With <strong>vercel deploy --prod</strong> And Cache Static Assets With Long Max-Age Plus Stale-While-Revalidate.' },
+            { keys: ['github', 'git', 'version', 'ci'], title: 'GitHub', answer: '<strong>GitHub:</strong> Holds All Source Control, Release Binaries, And CI Checks. Push Main To Trigger A Fresh Vercel Deployment Automatically.' },
+            { keys: ['digitalplat', 'dpdns', 'dynamic dns', 'reverse proxy'], title: 'Digitalplat', answer: '<strong>Digitalplat:</strong> Routes The Custom Domain advancedlogiclabs.dpdns.org Over Dynamic DNS, With A Caddy Or Nginx Reverse Proxy Terminating SSL On Port 443.' },
+            { keys: ['cloudns', 'dns', 'nameserver', 'txt'], title: 'ClouDNS', answer: '<strong>ClouDNS:</strong> Authoritative Anycast DNS With Fast TXT Propagation. Point Nameservers To ClouDNS Nodes And Keep TTL At 300 Seconds While Iterating.' },
+            { keys: ['wispr', 'flow', 'voice', 'dictation', 'speak'], title: 'Wispr Flow', answer: '<strong>Wispr Flow:</strong> Voice Dictation At About 4x Typing Speed In Every App. Hold The Hotkey, Speak Naturally, And Its AI Strips Filler Words Automatically.' },
+            { keys: ['typing', 'ati', 'instructor', 'wpm', 'type'], title: 'Typing Instructor', answer: '<strong>Typing Instructor:</strong> The Demo On The ATI Page Tests Words, JavaScript, Python, Rust, And Literature At 15, 30, Or 60 Seconds With Grades From F To S And A Saved Personal Best.' },
+            { keys: ['solar', 'space', 'orbit', 'kepler', 'planet'], title: 'Solar Engine', answer: '<strong>Solar Engine:</strong> A Keplerian 3D Simulator On The Solar Page. Drag To Pan, Scroll Or Pinch To Zoom, And Click Any Body For Live Telemetry, Plus A Planetary Database Below.' },
+            { keys: ['terra', 'atlas', 'globe', 'earth 3d'], title: 'Terra3D Atlas', answer: '<strong>Terra3D Atlas:</strong> The Interactive 3D Globe Project In The Projects Menu, Built For Exploring Geography In Real Time.' },
+            { keys: ['qr', 'matrix', 'code'], title: 'QR Studio', answer: '<strong>QR Studio Matrix:</strong> The In-Browser QR Creator And Scanner Found Under Projects, With A Studio Editor For Custom Designs.' },
+            { keys: ['rpg', 'game'], title: 'RPG Game', answer: '<strong>RPG Game:</strong> The Browser Role-Playing Game Listed Under Projects, Built With The Same Vanilla Stack As Everything Else Here.' },
+            { keys: ['perceptus', 'gesture', 'flow'], title: 'Perceptus Flow', answer: '<strong>Perceptus Flow:</strong> The Gesture-Driven Experience Under Projects, Pairing Hand-Tracking Ideas With Real-Time Visuals.' },
+            { keys: ['download', 'apk', 'installer', 'exe'], title: 'Downloads', answer: '<strong>Downloads Hub:</strong> The Download Page Hosts Release Builds Like The Typing Instructor Windows Installer And The Android APK.' },
+            { keys: ['hello', 'hi', 'hey', 'namaste'], title: 'Greeting', answer: '<strong>Hello.</strong> Ask Me About Any Studio Tool Or Shipped Project. Try A Topic Chip Above To Start.' },
+            { keys: ['thank', 'thanks', 'shukriya'], title: 'Thanks', answer: '<strong>You Are Welcome.</strong> The Full Playbook For Every Tool Lives On The Cards Above.' },
+            { keys: ['who are you', 'your name', 'what are you'], title: 'About Me', answer: '<strong>I Am The Projects Doubt Solver,</strong> A Built-In Studio Notes Assistant. I Answer Questions About The Team Stack And Every Shipped Project.' },
+            { keys: ['help', 'what can you', 'how to ask', 'topics'], title: 'Help', answer: '<strong>I Can Answer:</strong> Studio Setup, All 14 Systems, Downloads, And Deploy Steps. Mix Two Topics In One Question And I Answer Both.' },
+            { keys: ['bye', 'alvida', 'see you'], title: 'Farewell', answer: '<strong>Goodbye For Now.</strong> Replicate Any Card Above And Ship Something Of Your Own.' }
+          ]
+          var CHIP_TOPICS = ['Deploy Like You', 'Supabase Auth', 'Zero Cost AI', 'Wispr Flow', 'Typing Instructor', 'Solar Engine']
+          var STOPWORDS = ['what', 'why', 'how', 'when', 'where', 'which', 'is', 'are', 'was', 'were', 'do', 'does', 'did', 'tell', 'me', 'about', 'the', 'a', 'an', 'of', 'in', 'on', 'and', 'or', 'for', 'to', 'it', 'its', 'please', 'something', 'anything', 'question', 'doubt', 'know', 'my', 'like', 'you']
+
+          function stem(w) {
+            if (w.length > 4) {
+              if (w.slice(-3) === 'ies') return w.slice(0, -3) + 'y'
+              if (w.slice(-3) === 'ing') return w.slice(0, -3)
+              if (w.slice(-2) === 'ed') return w.slice(0, -2)
+              if (w.slice(-1) === 's') return w.slice(0, -1)
+            }
+            return w
+          }
+          function queryWords(q) {
+            return (q || '').toLowerCase().replace(/[^a-z0-9 ]/g, ' ').split(/\s+/)
+              .filter(function (w) { return w.length > 2 && STOPWORDS.indexOf(w) === -1 })
+              .map(stem)
+          }
+          function findAnswers(q) {
+            var words = queryWords(q)
+            if (!words.length) return []
+            var ranked = SITE_KB.map(function (entry) {
+              var score = 0
+              for (var k = 0; k < entry.keys.length; k++) {
+                var key = stem(entry.keys[k])
+                if (words.indexOf(key) !== -1) score += 2
+                else {
+                  for (var w = 0; w < words.length; w++) {
+                    if (key.indexOf(words[w]) === 0 || words[w].indexOf(key) === 0) { score += 1; break }
+                  }
+                }
+              }
+              return { entry: entry, score: score }
+            }).filter(function (r) { return r.score > 0 })
+            ranked.sort(function (a, b) { return b.score - a.score })
+            var hits = ranked.slice(0, 2)
+            if (hits.length === 2 && hits[1].score < 2) hits = [hits[0]]
+            return hits.map(function (h) { return h.entry })
+          }
+
+          var input = document.getElementById('siteInput')
+          var askBtn = document.getElementById('siteAsk')
+          var answerBox = document.getElementById('siteAnswer')
+          var chipsBox = document.getElementById('siteChips')
+          if (!input || !askBtn || !answerBox || !chipsBox) return
+
+          CHIP_TOPICS.forEach(function (topic) {
+            var chip = document.createElement('button')
+            chip.type = 'button'
+            chip.className = 'doubt-chip'
+            chip.textContent = topic
+            chip.addEventListener('click', function () {
+              input.value = topic
+              renderSite(topic)
+            })
+            chipsBox.appendChild(chip)
+          })
+
+          function renderSite(rawQuery) {
+            var hits = findAnswers(rawQuery)
+            answerBox.hidden = false
+            if (hits.length === 2) {
+              answerBox.innerHTML = hits[0].answer + '<br><br><strong>Also Related:</strong><br>' + hits[1].answer
+            } else if (hits.length === 1) {
+              answerBox.innerHTML = hits[0].answer
+            } else {
+              answerBox.innerHTML = '<strong>That Is Outside My Studio Notes.</strong> Try Topics Like Deploy, Supabase Auth, Zero Cost AI, Or Any Card Title Above.'
+            }
+          }
+          function askNow() {
+            var q = input.value.trim()
+            if (!q) {
+              answerBox.hidden = false
+              answerBox.innerHTML = '<strong>Type Your Doubt First,</strong> Or Tap Any Topic Chip Above.'
+              return
+            }
+            renderSite(q)
+          }
+          askBtn.addEventListener('click', askNow)
+          input.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') askNow()
+          })
+        })()
+      </script>
     </main>
 
     <!-- Site Footer -->
     <footer class="sf">
       <div class="fi">
-        <div class="fb">Class Of Learners &middot; Studio Hub</div>
-        <div class="fl">
-          <a href="/">Home</a>
-          <a href="about">About</a>
-          <a href="making">The Making</a>
-          <a href="privacy">Privacy</a>
-          <a href="terms">Terms</a>
-          <a href="download">Downloads</a>
-        </div>
+        <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
+        <div class="fl"><a href="making">Making</a><a href="privacy">Privacy</a><a href="terms">Terms</a><a href="feedback">Feedback</a><a href="download">Downloads</a></div>
         <div class="fc">&copy; 2026 Neel, Ansh, Aarush &amp; Yash Raj. Built With Local Intelligence &amp; Precision.</div>
       </div>
     </footer>
 
     <!-- Interactive Filtering & Copy Scripts -->
     <script>
-      // Local Theme Toggle
-      function toggleLocalTheme() {
-        if (typeof window.hzToggle === 'function') {
+      // Theme Toggle
+      function hzToggle() {
+        if (window.hzToggle && window.hzToggle !== hzToggle) {
           window.hzToggle()
         } else {
           document.body.classList.toggle('lm')
-          try {
-            localStorage.setItem('theme', document.body.classList.contains('lm') ? 'light' : 'dark')
-          } catch(e) {}
+          var isLight = document.body.classList.contains('lm')
+          try { localStorage.setItem('theme', isLight ? 'light' : 'dark') } catch(e) {}
+          if (window.hzSync) window.hzSync()
         }
+      }
+      function toggleLocalTheme() {
+        hzToggle()
       }
 
       // Filter Pills Logic
       var filterButtons = document.querySelectorAll('.filter-pill')
       var techCards = document.querySelectorAll('.bento-card')
       var searchInput = document.getElementById('searchInput')
+      var resultCount = document.getElementById('resultCount')
+      var emptyState = document.getElementById('emptyState')
+      var emptyReset = document.getElementById('emptyReset')
+      var totalCards = techCards.length
 
       filterButtons.forEach(function(btn) {
         btn.addEventListener('click', function() {
-          filterButtons.forEach(function(b) { b.classList.remove('active') })
+          filterButtons.forEach(function(b) {
+            b.classList.remove('active')
+            b.setAttribute('aria-pressed', 'false')
+          })
           btn.classList.add('active')
+          btn.setAttribute('aria-pressed', 'true')
           applyFilters()
         })
       })
@@ -1821,10 +2159,24 @@ TXT    @  google-site-verification=bWaer2b60VA1y3...  TTL=300</code>
         searchInput.addEventListener('input', applyFilters)
       }
 
+      if (emptyReset) {
+        emptyReset.addEventListener('click', function() {
+          if (searchInput) searchInput.value = ''
+          filterButtons.forEach(function(b) {
+            var isAll = b.dataset.filter === 'all'
+            b.classList.toggle('active', isAll)
+            b.setAttribute('aria-pressed', isAll ? 'true' : 'false')
+          })
+          applyFilters()
+          if (searchInput) searchInput.focus()
+        })
+      }
+
       function applyFilters() {
         var activeBtn = document.querySelector('.filter-pill.active')
         var activeFilter = activeBtn ? activeBtn.dataset.filter : 'all'
         var query = searchInput ? searchInput.value.toLowerCase().trim() : ''
+        var visible = 0
 
         techCards.forEach(function(card) {
           var cat = card.dataset.category || ''
@@ -1835,11 +2187,21 @@ TXT    @  google-site-verification=bWaer2b60VA1y3...  TTL=300</code>
 
           if (matchesCategory && matchesSearch) {
             card.style.display = 'flex'
+            visible += 1
           } else {
             card.style.display = 'none'
           }
         })
+
+        if (resultCount) {
+          resultCount.textContent = 'Showing ' + visible + ' Of ' + totalCards + ' Systems'
+        }
+        if (emptyState) {
+          emptyState.hidden = visible !== 0
+        }
       }
+
+      applyFilters()
 
       // Copy Code Utility
       function copyCode(btn) {

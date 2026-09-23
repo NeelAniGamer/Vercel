@@ -356,6 +356,14 @@
       armGroup.add(paddleGroup);
       guardGroup.add(armGroup);
 
+      // Floating guard nametag (Mr. Shinde on duty)
+      try {
+        if (this.game && typeof this.game._makeNametag === 'function') {
+          const tag = this.game._makeNametag('🚸 Shinde', { border: 'rgba(250,204,21,0.6)' });
+          if (tag) { tag.position.set(0, 2.6, 0); guardGroup.add(tag); }
+        }
+      } catch (e) {}
+
       scene.add(guardGroup);
       this.guard = { group: guardGroup, arm: armGroup, isRaised: false };
       this.logCoT(`Placed Crossing Guard Mr. Shinde at Z=${zebraZ}m with articulated STOP paddle.`);

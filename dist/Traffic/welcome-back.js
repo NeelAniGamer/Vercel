@@ -42,8 +42,14 @@
   function _computeNextStreak(bonus) {
     const now = Date.now();
     const elapsed = now - bonus.lastClaim;
-    if (bonus.lastClaim === 0 || elapsed > 48 * 60 * 60 * 1000) return 1;
-    return bonus.streak + 1 > 7 ? 1 : bonus.streak + 1;
+    if (bonus.lastClaim === 0 || elapsed > 72 * 60 * 60 * 1000) return { streak: 1, forgiven: false };
+    if (elapsed > 48 * 60 * 60 * 1000) {
+      // One miss forgiven per streak: keep the streak alive once, then it resets next miss
+      if (!bonus.forgiven) return { streak: bonus.streak, forgiven: true };
+      return { streak: 1, forgiven: false };
+    }
+    const next = bonus.streak + 1 > 7 ? 1 : bonus.streak + 1;
+    return { streak: next, forgiven: false };
   }
 
   function checkDailyBonus() {
@@ -59,9 +65,9 @@
       return { streak: 1, amount: tier.amount, tier, isNew: true };
     }
     if (elapsed < TWENTY_FOUR_HOURS) return null;
-    const nextStreak = _computeNextStreak(bonus);
-    const tier = DAILY_BONUS_TIERS[Math.min(nextStreak - 1, DAILY_BONUS_TIERS.length - 1)];
-    return { streak: nextStreak, amount: tier.amount, tier, isNew: false };
+    const next = _computeNextStreak(bonus);
+    const tier = DAILY_BONUS_TIERS[Math.min(next.streak - 1, DAILY_BONUS_TIERS.length - 1)];
+    return { streak: next.streak, forgiven: next.forgiven, amount: tier.amount, tier, isNew: false };
   }
 
   function claimDailyBonus() {
@@ -70,7 +76,7 @@
     const now = Date.now();
 
 
-    saveDailyBonusData({ lastClaim: now, streak: info.streak });
+    saveDailyBonusData({ lastClaim: now, streak: info.streak, forgiven: !!info.forgiven });
 
     try {
       if (window.S) {
@@ -114,7 +120,7 @@
         <div style="position:absolute;top:-40px;right:-40px;width:120px;height:120px;background:radial-gradient(circle,rgba(242,184,75,0.15) 0%,transparent 70%);border-radius:50%;pointer-events:none;"></div>
         <div style="font-size:3.5rem;margin-bottom:8px;animation:dbBounce 0.6s ease;">${bonusInfo.tier.emoji}</div>
         <div id="db-title" style="font-family:'Lora',serif;font-size:1.6rem;font-weight:700;color:#f2b84b;margin-bottom:4px;">Daily Bonus!</div>
-        <div style="font-size:0.85rem;color:rgba(255,255,255,0.6);margin-bottom:20px;">${bonusInfo.tier.label} — ${bonusInfo.streak}/7 day streak</div>
+        <div style="font-size:0.85rem;color:rgba(255,255,255,0.6);margin-bottom:20px;">${bonusInfo.tier.label} — ${bonusInfo.streak}/7 day streak${bonusInfo.forgiven ? ' · ✨ Miss Forgiven!' : ''}</div>
         <div style="font-size:2.5rem;font-weight:800;color:#34d399;font-family:'Lora',serif;margin-bottom:4px;">+₹${bonusInfo.amount.toLocaleString('en-IN')}</div>
         <div style="font-size:0.75rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:20px;">Added to wallet</div>
         <div style="display:flex;gap:8px;justify-content:center;margin-bottom:24px;">${streakDots}</div>
@@ -257,15 +263,29 @@
     const session = loadSessionState();
     if (!session) return null;
 
+    // Just clicked Continue on another page — don't bounce the prompt straight back
+    try {
+      if (sessionStorage.getItem('wb_just_continued') === '1') {
+        sessionStorage.removeItem('wb_just_continued');
+        return null;
+      }
+    } catch (e) {}
+
     const hasProfile = !!localStorage.getItem(STORAGE_KEYS.USER_PROFILE);
     const hasProgress = !!localStorage.getItem(STORAGE_KEYS.GAME_PROGRESS);
-    const dismissed = localStorage.getItem(STORAGE_KEYS.WELCOME_DISMISSED);
-
     if (!hasProfile && !hasProgress) return null;
-    if (dismissed === 'true') return null;
+
+    // Dismiss = 24h snooze (not forever): a week-old dismissal may prompt again
+    const dismissedAt = parseInt(localStorage.getItem(STORAGE_KEYS.WELCOME_DISMISSED) || '0', 10);
+    if (dismissedAt && Date.now() - dismissedAt < 24 * 60 * 60 * 1000) return null;
 
     const currentPage = getCurrentPageKey();
     if (currentPage === session.page) return null;
+
+    // Fresh navigation (came straight from the other page seconds ago) is NOT
+    // "welcome back" — only prompt when the last session is 10+ minutes old.
+    const SESSION_MIN_AGE = 10 * 60 * 1000;
+    if (Date.now() - (session.timestamp || 0) < SESSION_MIN_AGE) return null;
 
     const timeLabel = formatTimeAgo(session.timestamp);
     const screenLabel = session.screen ? SCREEN_LABELS[session.screen] : SCREEN_LABELS[session.page] || 'the app';
@@ -419,13 +439,14 @@
     };
 
     const dismiss = () => {
-      localStorage.setItem(STORAGE_KEYS.WELCOME_DISMISSED, 'true');
+      try { localStorage.setItem(STORAGE_KEYS.WELCOME_DISMISSED, Date.now().toString()); } catch (e) {}
       hide();
     };
 
     const doContinue = () => {
       hide();
       if (data.canContinue && data.route) {
+        try { sessionStorage.setItem('wb_just_continued', '1'); } catch (e) {}
         window.location.href = data.route;
       }
     };

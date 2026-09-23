@@ -415,6 +415,8 @@
         halfRoad,
         sidewalkWidth,
         schoolZ: schoolZ || 2320,
+        flasherZ: (cfg.flasherZ !== undefined) ? cfg.flasherZ : null,
+        hasAIDirector: !!cfg.hasAIDirector,
         mRoad,
         mSidewalk
       });
@@ -1156,6 +1158,10 @@
       lineEl.textContent = d.line || '';
       hud.style.opacity = '1';
       hud.style.transform = 'translateX(-50%) translateY(0)';
+      // Duck engine/wind under the voice line so radio stays intelligible
+      try {
+        if (window.TrafficAudio && window.TrafficAudio.duckWorld) window.TrafficAudio.duckWorld(0.5, 7800);
+      } catch (e) {}
 
       if (activeTimeout) clearTimeout(activeTimeout);
       activeTimeout = setTimeout(() => {
@@ -1192,6 +1198,11 @@
    */
   function buildSchoolZoneOverlay(parentGroup, opts) {
     const { halfRoad, sidewalkWidth, schoolZ } = opts;
+    // AI Director levels get the ANIMATED guard + dismissal swarm from TrafficMapAI —
+    // skip the static duplicates here (they used to spawn on top of each other).
+    const directorActive = !!opts.hasAIDirector;
+    // Warning flasher follows the level's flasherZ (L5: 380), not a hardcoded 2050.
+    const flasherZ = (opts.flasherZ !== undefined && opts.flasherZ !== null) ? opts.flasherZ : 2050;
     const schoolGrp = new THREE.Group();
     schoolGrp.name = 'SchoolZoneOverlay';
     schoolGrp.userData = { noLod: true, isGround: true };
@@ -1408,6 +1419,8 @@
     schoolGrp.add(bus);
 
     // ── 6. School Crossing Guard Mr. Shinde with Handheld STOP Sign ──────────
+    // (skipped when the AI Director is active — it spawns the animated guard)
+    if (!directorActive) {
     const guard = new THREE.Group();
     const guardBody = new THREE.Mesh(
       new THREE.CylinderGeometry(0.3, 0.35, 1.4, 8),
@@ -1440,8 +1453,11 @@
 
     guard.position.set(halfRoad + 0.8, 0.16, schoolZ + 2.2);
     schoolGrp.add(guard);
+    } // end static guard (AI Director levels use the animated one)
 
     // ── 7. Crossing School Children (Uniformed Students on Zebra Crossing) ──
+    // (skipped when the AI Director is active — it runs the 10-student dismissal swarm)
+    if (!directorActive) {
     const studentPositions = [
       { x: 2.0, z: schoolZ - 0.4, col: 0x0984e3 },
       { x: -1.2, z: schoolZ + 0.6, col: 0xffffff },
@@ -1462,6 +1478,7 @@
       student.rotation.y = Math.PI / 2;
       schoolGrp.add(student);
     });
+    } // end static students (AI Director levels use the dismissal swarm)
 
     // ── 8. Amber Flasher School Zone Warning Beacon (at Z = 2050m) ───────────
     const flasherPost = new THREE.Group();
@@ -1477,8 +1494,8 @@
     flasherBeacon.position.set(0, 4.15, 0);
     flasherPost.add(flasherBeacon);
 
-    // Place warning flasher at Z = 2050 (270m before school zebra)
-    flasherPost.position.set(halfRoad + 0.8, 0.16, 2050);
+    // Place warning flasher at the level's flasherZ (L5: 380m before the zebra)
+    flasherPost.position.set(halfRoad + 0.8, 0.16, flasherZ);
     schoolGrp.add(flasherPost);
 
     parentGroup.add(schoolGrp);

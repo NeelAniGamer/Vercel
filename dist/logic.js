@@ -47,20 +47,20 @@ try {
 // ════════════════════════════════════════════════════════════════════════════
 const scene  = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, 0.05, 20000000);
-camera.position.set(0, 800, 1800);
+camera.position.set(0, 1100, 2500);
 
-const renderer = new THREE.WebGLRenderer({ antialias:true, powerPreference:'high-performance', alpha:false, stencil:false, depth:true });
-let currentPixelRatio = Math.min(window.devicePixelRatio, 1.8);
+const renderer = new THREE.WebGLRenderer({ antialias: window.devicePixelRatio < 2, powerPreference:'high-performance', alpha:false, stencil:false, depth:true });
+let currentPixelRatio = Math.min(window.devicePixelRatio, 1.4);
 renderer.setPixelRatio(currentPixelRatio);
 renderer.setSize(innerWidth, innerHeight);
 renderer.toneMapping         = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.2;
+renderer.toneMappingExposure = 1.05;
 renderer.shadowMap.enabled   = false;
 document.body.appendChild(renderer.domElement);
 
 const labelRenderer = new CSS2DRenderer();
 labelRenderer.setSize(innerWidth, innerHeight);
-Object.assign(labelRenderer.domElement.style, { position:'absolute', top:'0', left:'0', pointerEvents:'none' });
+Object.assign(labelRenderer.domElement.style, { position: 'fixed', top: '0', left: '0', width: '100vw', height: '100vh', pointerEvents: 'none', overflow: 'hidden' });
 document.body.appendChild(labelRenderer.domElement);
 
 // ── OrbitControls ─────────────────────────────────────────────────────────────
@@ -74,6 +74,10 @@ controls.panSpeed           = 0.8;
 controls.rotateSpeed        = 0.6;
 controls.screenSpacePanning = false;
 controls.enablePan          = true;
+// Explicit touch map (one finger orbits, two finger pinch zooms) +
+// touch-action none so mobile browsers never hijack drags for scroll.
+controls.touches = { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_PAN };
+renderer.domElement.style.touchAction = 'none';
 
 // ── Sensitivity API ───────────────────────────────────────────────────────────
 // ── Distance Fog (Atmospheric depth haze for far bodies) ───────────────────────
@@ -87,7 +91,7 @@ class VisionAndChunkManager {
         this.visionCullingEnabled = true;
         this.chunkLoadingEnabled  = true;
         this.distanceFadeEnabled  = true;
-        this.distanceBlurEnabled  = true;
+        this.distanceBlurEnabled  = true;   // capped ≤2.5px, throttled — cheap depth cue
         this.userRenderDistMode   = 'auto'; // 'auto', 'near', 'med', 'far', 'ultra'
         this.activeRenderDistance = 120000;
         
@@ -246,6 +250,7 @@ class VisionAndChunkManager {
             const isMajor = majorBodies.has(data.name) || data.type === 'planet' || data.type === 'star' || data.type === 'dwarf';
 
             // Major planets and stars are ALWAYS preserved so the solar system is never empty!
+            // (meshes stay; labels now fade + vanish with distance like everything else)
             if (isMajor) {
                 activeCount++;
                 if (!mesh.visible) {
@@ -253,8 +258,17 @@ class VisionAndChunkManager {
                     mesh.matrixAutoUpdate = true;
                 }
                 if (data._labelDiv) {
-                    data._labelDiv.style.opacity = (1.0 * labelOpacity).toFixed(2);
-                    data._labelDiv.style.filter = 'none';
+                    mesh.getWorldPosition(this.tempVec3);
+                    const md = this.tempVec3.distanceTo(this.camPos);
+                    const tooFar = md > 5500 && camDist < 3200;   // zoomed-in declutter
+                    const mFade = tooFar ? 0 : Math.max(0, 1 - md / (this.activeRenderDistance * 0.9));
+                    data._labelDiv.style.opacity = (mFade * labelOpacity).toFixed(2);
+                    data._labelDiv.style.visibility = mFade <= 0.02 ? 'hidden' : 'visible';
+                    if (this.distanceBlurEnabled && mFade < 0.55 && mFade > 0.02) {
+                        data._labelDiv.style.filter = `blur(${Math.min(2.5, (0.55 - mFade) * 4).toFixed(1)}px)`;
+                    } else {
+                        data._labelDiv.style.filter = 'none';
+                    }
                 }
                 continue;
             }
@@ -284,17 +298,19 @@ class VisionAndChunkManager {
                     mesh.matrixAutoUpdate = true;
                 }
                 
-                // 3. Distance-Based Blur & Progressive Depth Fade
+                // 3. Distance-Based Blur & Progressive Depth Fade (labels vanish far away)
                 if (this.distanceFadeEnabled) {
                     const normDist = Math.min(1, Math.max(0, d / this.activeRenderDistance));
-                    // Smooth exponential fade factor
-                    const fade = Math.max(0.12, 1 - Math.pow(normDist, 2.2));
-                    
+                    // Smooth exponential fade factor (0 at range limit → visibility:hidden skips compositing)
+                    const tooFar = d > 5500 && camDist < 3200;   // zoomed-in declutter
+                    const fade = tooFar ? 0 : Math.max(0, 1 - Math.pow(normDist, 2.2));
+
                     // Attenuate label opacity & distance blur
                     if (data._labelDiv) {
                         data._labelDiv.style.opacity = (fade * labelOpacity).toFixed(2);
+                        data._labelDiv.style.visibility = fade <= 0.02 ? 'hidden' : 'visible';
                         if (this.distanceBlurEnabled) {
-                            const blurPx = Math.max(0, (normDist - 0.35) * 4.5);
+                            const blurPx = Math.min(2.5, Math.max(0, (normDist - 0.35) * 4.5));
                             data._labelDiv.style.filter = blurPx > 0.25 ? `blur(${blurPx.toFixed(1)}px)` : 'none';
                         }
                     }
@@ -307,6 +323,7 @@ class VisionAndChunkManager {
                 }
                 if (data._labelDiv) {
                     data._labelDiv.style.opacity = '0';
+                    data._labelDiv.style.visibility = 'hidden';
                     data._labelDiv.style.filter = 'blur(4px)';
                 }
             }
@@ -363,7 +380,8 @@ let starPoints = null, simClock = 0;
 // ── Hook callbacks ────────────────────────────────────────────────────────────
 window._resetCamera = function() {
     flyToActive = false; flyToTarget = null; controls.enabled = true;
-    camera.position.set(0, 800, 1800); controls.target.set(0,0,0); controls.update();
+    controls.minDistance = 8;
+    camera.position.set(0, 1100, 2500); controls.target.set(0,0,0); controls.update();
 };
 window._setOrbitsVisible = function(v) { orbitLines.forEach(l => l.visible = v); };
 window._screenshotCallback = function() {
@@ -378,7 +396,7 @@ window._screenshotCallback = function() {
 //  STAR FIELD
 // ════════════════════════════════════════════════════════════════════════════
 (function buildStarField() {
-    const COUNT = 22000, pos = new Float32Array(COUNT*3), col = new Float32Array(COUNT*3), c = new THREE.Color();
+    const COUNT = 12000, pos = new Float32Array(COUNT*3), col = new Float32Array(COUNT*3), c = new THREE.Color();
     for(let i = 0; i < COUNT; i++) {
         let x,y,z;
         if(Math.random() < 0.65) {
@@ -411,7 +429,7 @@ window._screenshotCallback = function() {
 let milkyWayMesh, milkyWayOpacity = 0;
 
 function buildMilkyWayTexture() {
-    const S=2048, cvs=document.createElement('canvas'); cvs.width=cvs.height=S;
+    const S=1024, cvs=document.createElement('canvas'); cvs.width=cvs.height=S;
     const ctx=cvs.getContext('2d'), cx=S>>1, cy=S>>1;
     ctx.fillStyle='#000003'; ctx.fillRect(0,0,S,S);
 
@@ -553,7 +571,7 @@ function makeRockyTexture(baseH=0.07,baseS=0.18,baseL=0.32,craters=30){
     const S=512,cvs=document.createElement('canvas'); cvs.width=cvs.height=S;
     const ctx=cvs.getContext('2d'),c=new THREE.Color().setHSL(baseH,baseS,baseL);
     ctx.fillStyle=`rgb(${c.r*255|0},${c.g*255|0},${c.b*255|0})`; ctx.fillRect(0,0,S,S);
-    for(let i=0;i<8000;i++){const x=Math.random()*S,y=Math.random()*S,v=(Math.random()-0.5)*0.06,cc=new THREE.Color().setHSL(baseH,baseS,Math.max(0.05,baseL+v)); ctx.fillStyle=`rgba(${cc.r*255|0},${cc.g*255|0},${cc.b*255|0},0.5)`; ctx.fillRect(x|0,y|0,2,2);}
+    for(let i=0;i<4000;i++){const x=Math.random()*S,y=Math.random()*S,v=(Math.random()-0.5)*0.06,cc=new THREE.Color().setHSL(baseH,baseS,Math.max(0.05,baseL+v)); ctx.fillStyle=`rgba(${cc.r*255|0},${cc.g*255|0},${cc.b*255|0},0.5)`; ctx.fillRect(x|0,y|0,2,2);}
     for(let i=0;i<craters;i++){const x=Math.random()*S,y=Math.random()*S,r=5+Math.random()*30,g=ctx.createRadialGradient(x,y,r*0.2,x,y,r),dk=new THREE.Color().setHSL(baseH,baseS,baseL*0.65),lk=new THREE.Color().setHSL(baseH,baseS*0.8,Math.min(1,baseL*1.35));
         g.addColorStop(0,`rgba(${dk.r*255|0},${dk.g*255|0},${dk.b*255|0},0.5)`); g.addColorStop(0.8,`rgba(${dk.r*255|0},${dk.g*255|0},${dk.b*255|0},0.18)`); g.addColorStop(0.9,`rgba(${lk.r*255|0},${lk.g*255|0},${lk.b*255|0},0.35)`); g.addColorStop(1,'rgba(0,0,0,0)');
         ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();}
@@ -652,8 +670,8 @@ function makeMoonTexture(baseH=0.09,baseS=0.08,baseL=0.42){
     return makeRockyTexture(baseH,baseS,baseL,55);
 }
 
-function makeGasGiantTexture(baseColor, bandVariance=0.12, bands=22){
-    const W=1024,H=512,cvs=document.createElement('canvas'); cvs.width=W; cvs.height=H;
+function makeGasGiantTexture(baseColor, bandVariance=0.12, bands=14){
+    const W=512,H=256,cvs=document.createElement('canvas'); cvs.width=W; cvs.height=H;
     const ctx=cvs.getContext('2d'),c=new THREE.Color(baseColor||0xddaa77);
     // Base fill
     ctx.fillStyle=`hsl(${(c.getHSL({}).h*360).toFixed(0)},${(c.s*100).toFixed(0)}%,${(c.l*100).toFixed(0)}%)`;
@@ -767,8 +785,8 @@ function createChunkedBelt(inner, outer, count, bH, bL, numSectors = 16, beltNam
     return chunkMeshes;
 }
 
-const asteroidBelt = createChunkedBelt(380, 480, 4000, 0.07, 0.30, 16, 'Asteroid Belt');
-const kuiperBelt   = createChunkedBelt(1400, 1800, 5000, 0.55, 0.35, 16, 'Kuiper Belt');
+const asteroidBelt = createChunkedBelt(370, 470, 2200, 0.07, 0.30, 12, 'Asteroid Belt');
+const kuiperBelt   = createChunkedBelt(1600, 2150, 2600, 0.55, 0.35, 12, 'Kuiper Belt');
 
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -940,12 +958,14 @@ function buildGalaxy3D(data) {
     const gPos = [], gCol = []; // HII Nebulae
     const dPos = [], dCol = []; // Dust Lanes
 
-    // Extreme density for photorealism
-    const totalParticles = name === 'IC 1101' ? 80000 : 50000;
+    // Extreme density for photorealism (kept modest: 50k particles × 15 galaxies was the top startup+VRAM cost)
+    const totalParticles = name === 'IC 1101' ? 20000 : 12000;
+    const _tmpC = new THREE.Color();
+    const _white = new THREE.Color(0xffffff);
 
     for (let i = 0; i < totalParticles; i++) {
         let x, y, z;
-        let pCol = new THREE.Color();
+        const pCol = _tmpC;
         let type = 'star';
 
         // Physics variables
@@ -1086,7 +1106,7 @@ function buildGalaxy3D(data) {
             dPos.push(x, y, z); dCol.push(dustColor.r, dustColor.g, dustColor.b);
         } else if (type === 'gas') {
             // Neon pinks/cyans for ionized gases
-            pCol.copy(gasColor).lerp(new THREE.Color(0xffffff), Math.random() * 0.3);
+            pCol.copy(gasColor).lerp(_white, Math.random() * 0.3);
             gPos.push(x, y, z); gCol.push(pCol.r, pCol.g, pCol.b);
         } else {
             // Stars: Add natural optical variance (some brighter, some dimmer)
@@ -2250,9 +2270,7 @@ function buildSpacecraft3D(data) {
 function updateSpacecraftPhysics(simClock) {
     if(_solarTrackers.length === 0 && _antennaTrackers.length === 0) return;
 
-    const sunPos = new THREE.Vector3(0, 0, 0); // Sun at origin
-    const worldPos = new THREE.Vector3();
-    const toSun = new THREE.Vector3();
+    const sunPos = _scSun, worldPos = _scW, toSun = _scT;
 
     _solarTrackers.forEach(pivot => {
         pivot.getWorldPosition(worldPos);
@@ -2294,6 +2312,10 @@ function getProbeTumbleRate(name) {
 // ── Blinking status lights registry ──────────────────────────────────────
 const _blinkingLights = [];
 const _lightTimer = { t: 0 };
+// Shared temps for per-frame spacecraft math (zero per-frame allocation)
+const _scSun = new THREE.Vector3(0, 0, 0);
+const _scW = new THREE.Vector3();
+const _scT = new THREE.Vector3();
 
 function addStatusLight(parent, x, y, z, color=0x00ff88) {
     const led = new THREE.Mesh(
@@ -2573,12 +2595,12 @@ const textureLoader=new THREE.TextureLoader(),texCache={};
 const allMoons=[],allBlackHoleDisk=[],allBlackHoleJets=[],allPulsarBeams=[],allFlares=[];
 const planets=[],clickableHitboxes=[],allGalaxies=[],orbitLines=[];
 
-function loadTex(url){if(!url)return null; if(!texCache[url])texCache[url]=textureLoader.load(url); return texCache[url];}
+function loadTex(url){if(!url)return null; if(!texCache[url]){const t=textureLoader.load(url); t.colorSpace=THREE.SRGBColorSpace; t.anisotropy=4; texCache[url]=t;} return texCache[url];}
 
 function drawOrbit(radius,color,parentObj){
-    const pts=[]; for(let i=0;i<=200;i++){const t=(i/200)*Math.PI*2; pts.push(new THREE.Vector3(Math.cos(t)*radius,0,Math.sin(t)*radius));}
+    const segs=radius>3000?160:(radius>500?128:64),pts=[]; for(let i=0;i<=segs;i++){const t=(i/segs)*Math.PI*2; pts.push(new THREE.Vector3(Math.cos(t)*radius,0,Math.sin(t)*radius));}
     const geo=new THREE.BufferGeometry().setFromPoints(pts),mat=new THREE.LineBasicMaterial({color,transparent:true,opacity:0.35}),line=new THREE.Line(geo,mat);
-    orbitLines.push(line); if(parentObj){line.rotation.x=Math.PI/2; parentObj.add(line);} else scene.add(line); return line;
+    orbitLines.push(line); if(parentObj){parentObj.add(line);} else scene.add(line); return line;
 }
 function addAtmosphereGlow(mesh,size,glowColor){
     mesh.add(new THREE.Mesh(new THREE.SphereGeometry(size*1.08,24,24),new THREE.MeshBasicMaterial({color:glowColor,transparent:true,opacity:0.13,blending:THREE.AdditiveBlending,side:THREE.BackSide,depthWrite:false})));
@@ -2587,7 +2609,7 @@ function addAtmosphereGlow(mesh,size,glowColor){
 function createPlanet(data){
     let mesh;
     if(data.type==='star'){
-        const segs=data.size>100?52:40, tex=loadTex(data.texture)||makeRockyTexture(0.09,0.4,0.65,0);
+        const segs=data.size>100?32:24, tex=loadTex(data.texture)||makeRockyTexture(0.09,0.4,0.65,0);
         mesh=new THREE.Mesh(new THREE.SphereGeometry(data.size,segs,segs),new THREE.MeshBasicMaterial({map:tex,color:data.color}));
         const c1=data.color===0xff3300?'rgba(255,120,40,0.82)':'rgba(255,235,150,0.82)', c2=data.color===0xff3300?'rgba(200,40,0,0.35)':'rgba(255,140,0,0.38)';
         const glow=new THREE.Sprite(new THREE.SpriteMaterial({map:makeSunGlow(c1,c2),transparent:true,blending:THREE.AdditiveBlending,depthWrite:false}));
@@ -2602,7 +2624,7 @@ function createPlanet(data){
 
         // 1. Event horizon (absolute black sphere)
         const ehMesh = new THREE.Mesh(
-            new THREE.SphereGeometry(R, 64, 64),
+            new THREE.SphereGeometry(R, 48, 48),
             new THREE.MeshBasicMaterial({ color: 0x000000 })
         );
         BH.add(ehMesh);
@@ -2610,7 +2632,7 @@ function createPlanet(data){
         // 2. Gravitational lensing halo — thin bright Einstein ring
         // Represented by a very fine torus at the photon sphere radius (~1.5 Rs)
         const photonTorus = new THREE.Mesh(
-            new THREE.TorusGeometry(R * 1.52, R * 0.028, 24, 160),
+            new THREE.TorusGeometry(R * 1.52, R * 0.028, 16, 80),
             new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending, depthWrite: false })
         );
         photonTorus.rotation.x = Math.PI / 2;
@@ -2618,7 +2640,7 @@ function createPlanet(data){
 
         // 3. Lensing glow — wide soft ring showing light bending
         const lensGlow = new THREE.Mesh(
-            new THREE.RingGeometry(R * 1.1, R * 2.2, 128),
+            new THREE.RingGeometry(R * 1.1, R * 2.2, 64),
             new THREE.MeshBasicMaterial({ color: 0xff8844, transparent: true, opacity: 0.12, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false })
         );
         lensGlow.rotation.x = Math.PI / 2;
@@ -2634,7 +2656,7 @@ function createPlanet(data){
         ];
         diskParams.forEach(({ inner, outer, tiltDeg, op }) => {
             const d = new THREE.Mesh(
-                new THREE.RingGeometry(R * inner, R * outer, 256),
+                new THREE.RingGeometry(R * inner, R * outer, 128),
                 new THREE.MeshBasicMaterial({ map: diskTex, side: THREE.DoubleSide, transparent: true, opacity: op, blending: THREE.AdditiveBlending, depthWrite: false })
             );
             d.rotation.x = THREE.MathUtils.degToRad(tiltDeg);
@@ -2644,7 +2666,7 @@ function createPlanet(data){
 
         // 5. Under-disk glow (hot corona above/below event horizon)
         const coronaMat = new THREE.MeshBasicMaterial({ color: 0xff6600, transparent: true, opacity: 0.08, blending: THREE.AdditiveBlending, side: THREE.BackSide, depthWrite: false });
-        BH.add(new THREE.Mesh(new THREE.SphereGeometry(R * 2.2, 32, 32), coronaMat));
+        BH.add(new THREE.Mesh(new THREE.SphereGeometry(R * 2.2, 24, 24), coronaMat));
 
         // 6. Relativistic jets — bi-directional with multiple cone shells
         const jetConfigs = [
@@ -2703,7 +2725,7 @@ function createPlanet(data){
         mesh = buildGalaxy3D(data);
 
     } else {
-        const segs=data.size>20?52:(data.size>8?44:30),geo=new THREE.SphereGeometry(data.size,segs,segs);
+        const segs=data.size>20?32:(data.size>8?24:16),geo=new THREE.SphereGeometry(data.size,segs,segs);
         let texMap=loadTex(data.texture);
         if(!texMap){
             if(data.subtype==='io') texMap=makeIoTexture();
@@ -2727,15 +2749,27 @@ function createPlanet(data){
         if(data.name==='Jupiter') addJupiterGRS(mesh, data.size);
     }
 
-    // Saturn rings (multi-band)
+    // Saturn rings (multi-band, procedural — avoids dead external ref)
     if(data.name==='Saturn'){
-        const rt=loadTex('./assets/saturn_rings.jpg')||makeSaturnRingTexture();
-        const ring=new THREE.Mesh(new THREE.RingGeometry(data.size*1.25,data.size*2.55,128),new THREE.MeshBasicMaterial({map:rt,side:THREE.DoubleSide,transparent:true,opacity:0.94,depthWrite:false})); ring.rotation.x=Math.PI/2; ring.rotation.y=0.06; mesh.add(ring);
-        const inR=new THREE.Mesh(new THREE.RingGeometry(data.size*1.00,data.size*1.25,128),new THREE.MeshBasicMaterial({map:makeSaturnRingTexture(),side:THREE.DoubleSide,transparent:true,opacity:0.38,depthWrite:false})); inR.rotation.x=Math.PI/2; inR.rotation.y=0.06; mesh.add(inR);
+        const rt=makeSaturnRingTexture();
+        const ring=new THREE.Mesh(new THREE.RingGeometry(data.size*1.25,data.size*2.55,64),new THREE.MeshBasicMaterial({map:rt,side:THREE.DoubleSide,transparent:true,opacity:0.94,depthWrite:false})); ring.rotation.x=Math.PI/2; ring.rotation.y=0.06; mesh.add(ring);
+        const inR=new THREE.Mesh(new THREE.RingGeometry(data.size*1.00,data.size*1.25,64),new THREE.MeshBasicMaterial({map:makeSaturnRingTexture(),side:THREE.DoubleSide,transparent:true,opacity:0.38,depthWrite:false})); inR.rotation.x=Math.PI/2; inR.rotation.y=0.06; mesh.add(inR);
     }
-    if(data.name==='Uranus'){mesh.add(new THREE.Mesh(new THREE.RingGeometry(data.size*1.4,data.size*1.9,64),new THREE.MeshBasicMaterial({color:0x88aacc,side:THREE.DoubleSide,transparent:true,opacity:0.28})));}
+    if(data.name==='Uranus'){const uRing=new THREE.Mesh(new THREE.RingGeometry(data.size*1.4,data.size*1.9,32),new THREE.MeshBasicMaterial({color:0x88aacc,side:THREE.DoubleSide,transparent:true,opacity:0.28})); uRing.rotation.x=Math.PI/2; mesh.add(uRing);}
+    if(data.name==='Neptune'){const nRing=new THREE.Mesh(new THREE.RingGeometry(data.size*1.9,data.size*2.3,48),new THREE.MeshBasicMaterial({color:0x4466aa,side:THREE.DoubleSide,transparent:true,opacity:0.12})); nRing.rotation.x=Math.PI/2; mesh.add(nRing);}
+    if(data.name==='Mars'){
+        // Polar ice caps (cheap detail: two small discs, tilt with planet)
+        const capMat=new THREE.MeshBasicMaterial({color:0xf4f8ff,transparent:true,opacity:0.92});
+        const capN=new THREE.Mesh(new THREE.CircleGeometry(data.size*0.28,20),capMat);
+        capN.position.y=data.size*0.94; capN.rotation.x=-Math.PI/2; mesh.add(capN);
+        const capS=new THREE.Mesh(new THREE.CircleGeometry(data.size*0.22,20),capMat);
+        capS.position.y=-data.size*0.94; capS.rotation.x=Math.PI/2; mesh.add(capS);
+    }
 
-    const hScale=Math.max(14 / Math.max(data.size, 0.3), 2.2);
+    // Real axial tilt — rings, caps, moons and labels inherit it (Uranus rolls on its side)
+    if(data.tilt && (data.type==='planet'||data.type==='dwarf')) mesh.rotateZ(THREE.MathUtils.degToRad(data.tilt));
+
+    const hScale=data.size>40?1.12:Math.max(14 / Math.max(data.size, 0.3), 2.2);
     const hitBox=new THREE.Mesh(new THREE.SphereGeometry(data.size*hScale,8,8),new THREE.MeshBasicMaterial({visible:false})); hitBox.userData=data; mesh.add(hitBox); clickableHitboxes.push(hitBox);
 
     if(data.name!=='Sun'&&data.type!=='darkmatter'){
@@ -2753,9 +2787,10 @@ function createPlanet(data){
         });
         const lbl=new CSS2DObject(div); lbl.position.set(0,Math.max(data.size * 1.6, 3.2) + 2.8,0); mesh.add(lbl); data._labelDiv=div; allLabelDivs.push(div);
     }
-    const moonCount=Math.min(parseInt(data.moons)||0,4), moonTex=loadTex('./assets/moon.jpg')||makeRockyTexture(0.06,0.1,0.35,25);
+    // Generic filler moons only when no named moons exist (avoids duplicates piling on one orbit)
+    const moonCount=_hasExplicitMoons.has(data.name)?0:Math.min(parseInt(data.moons)||0,4), moonTex=loadTex('./assets/moon.jpg')||makeRockyTexture(0.06,0.1,0.35,25);
     // phase stored so absolute-position animation is jitter-free
-    for(let i=0;i<moonCount;i++){const pivot=new THREE.Object3D(),mPhase=Math.random()*Math.PI*2,mSize=data.size*(Math.random()*0.14+0.09),mDist=data.size*(Math.random()*1.4+1.5)+i*8,mPer=Math.random()*22+4,mm=new THREE.Mesh(new THREE.SphereGeometry(mSize,16,16),new THREE.MeshStandardMaterial({map:moonTex,roughness:1.0})); mm.position.x=mDist; pivot.rotation.set(Math.random()*0.5,mPhase,Math.random()*0.5); pivot.add(mm); mesh.add(pivot); allMoons.push({pivot,period:mPer,phase:mPhase}); drawOrbit(mDist,0xffffff,pivot);}
+    for(let i=0;i<moonCount;i++){const pivot=new THREE.Object3D(),mPhase=Math.random()*Math.PI*2,mSize=data.size*(Math.random()*0.14+0.09),mDist=data.size*(Math.random()*1.4+1.5)+i*8,mPer=Math.random()*22+4,mm=new THREE.Mesh(new THREE.SphereGeometry(mSize,12,12),new THREE.MeshStandardMaterial({map:moonTex,roughness:1.0})); mm.position.x=mDist; pivot.rotation.set(Math.random()*0.5,mPhase,Math.random()*0.5); pivot.add(mm); mesh.add(pivot); allMoons.push({pivot,period:mPer,phase:mPhase}); drawOrbit(mDist,0xffffff,pivot);}
     return mesh;
 }
 
@@ -2763,7 +2798,7 @@ function createPlanet(data){
 //  PLANET DATABANK  v3.3
 // ════════════════════════════════════════════════════════════════════════════
 const planetData = {
-"Sun":{type:'star',typeBadge:'G-TYPE MAIN SEQUENCE STAR',size:18.0,dist:0,period:0,color:0xffaa00,texture:'/assets/sun.jpg',moons:'0',
+"Sun":{type:'star',typeBadge:'G-TYPE MAIN SEQUENCE STAR',size:26.0,dist:0,period:0,color:0xffaa00,texture:'./assets/sun.jpg',moons:'0',
 overview:'Our parent star — a nearly perfect sphere of superheated plasma sustained by nuclear fusion. 1.4 million km across, it contains 99.86% of the solar system\'s total mass.',
 stats:{'Diameter':'1,392,700 km (109× Earth)','Mass':'1.989 × 10³⁰ kg','Surface Temp':'5,505 °C','Core Temp':'15,000,000 °C','Luminosity':'3.828 × 10²⁶ W','Rotation':'25 days (equator)','Age':'~4.6 Billion Years','Spectral Class':'G2V'},
 atmosphere:{'Photosphere':'H: 73.46%, He: 24.85%','Chromosphere':'~2,000 km thick; 20,000 °C','Corona':'Up to 3,000,000 °C'},
@@ -2771,23 +2806,23 @@ exploration:{'Parker Solar Probe':'2018–Present','Solar Orbiter':'ESA/NASA 202
 discoveries:{'Solar Wind':'Eugene Parker predicted 1958, confirmed 1962 by Luna 1','Coronal Heating':'Corona hotter than photosphere — magnetic wave heating (still studied)','Solar Switchbacks':'Rapid field reversals discovered by Parker Probe (2019)','Heliosphere Edge':'Voyager 1 confirmed crossing 2012'},
 funFact:'The Sun will exhaust its hydrogen fuel in ~5 billion years, expanding into a red giant that may engulf Earth.'},
 
-"Mercury":{type:'planet',typeBadge:'TERRESTRIAL PLANET',size:1.25,dist:140,period:88,color:0x888888,texture:'./assets/mercury.jpg',moons:'0',atmosphereColor:null,
+"Mercury":{type:'planet',typeBadge:'TERRESTRIAL PLANET',size:2.0,dist:175,period:88,tilt:0.03,color:0x888888,texture:'./assets/mercury.jpg',moons:'0',atmosphereColor:null,
 overview:'The smallest planet and innermost in our solar system. A heavily cratered world with extreme temperature swings of 600°C and a surprisingly large iron core making up 85% of its radius.',
-stats:{'Diameter':'4,879 km','Mass':'3.285 × 10²³ kg','Surface Gravity':'3.7 m/s²','Density':'5.43 g/cm³','Distance from Sun':'57.9 million km (0.39 AU)','Day Length':'59 Earth days','Year Length':'88 Earth days'},
+stats:{'Diameter':'4,879 km','Mass':'3.285 × 10²³ kg','Surface Gravity':'3.7 m/s²','Density':'5.43 g/cm³','Distance from Sun':'57.9 million km (0.39 AU)','Day Length':'59 Earth days','Year Length':'88 Earth days','Axial Tilt':'0.03° (upright)'},
 atmosphere:{'Composition':'Negligible exosphere: O₂, Na, H₂','Surface Pressure':'~10⁻¹⁴ bar','Temp Range':'-180 °C to 430 °C'},
 exploration:{'Mariner 10':'1974–75 (three flybys)','MESSENGER':'2011–2015 (first orbiter)','BepiColombo':'ESA/JAXA en route, 2025'},
 discoveries:{'Polar Ice':'Water ice in permanently shadowed craters (MESSENGER 2012)','Hollows':'Unique volatile-loss surface depressions','Core Size':'Enormous iron core 85% of radius — poorly understood','Shrinkage':'Planet contracted ~7 km as core cooled'},
 funFact:'Mercury has no atmosphere to retain heat, so it experiences the largest temperature swings of any planet — over 600°C between the sunlit day side and the frozen night side.'},
 
-"Venus":{type:'planet',typeBadge:'TERRESTRIAL PLANET',size:3.0,dist:190,period:225,color:0xffaa55,texture:'./assets/venus.jpg',moons:'0',atmosphereColor:0xff8833,
+"Venus":{type:'planet',typeBadge:'TERRESTRIAL PLANET',size:3.1,dist:225,period:225,tilt:177.4,color:0xffaa55,texture:'./assets/venus.jpg',moons:'0',atmosphereColor:0xff8833,
 overview:'The second planet and hottest in the solar system despite not being closest to the Sun. A hellish world with crushing 92-bar pressure, sulfuric acid clouds, and surface temperatures hot enough to melt lead.',
-stats:{'Diameter':'12,104 km','Mass':'4.867 × 10²⁴ kg','Surface Gravity':'8.87 m/s²','Distance from Sun':'108.2 million km (0.72 AU)','Day Length':'243 Earth days (retrograde)','Year Length':'225 Earth days'},
+stats:{'Diameter':'12,104 km','Mass':'4.867 × 10²⁴ kg','Surface Gravity':'8.87 m/s²','Distance from Sun':'108.2 million km (0.72 AU)','Day Length':'243 Earth days (retrograde)','Year Length':'225 Earth days','Axial Tilt':'177.4° (upside down)'},
 atmosphere:{'Composition':'CO₂: 96.5%, N₂: 3.5%, SO₂ traces','Surface Pressure':'92 bar','Temperature':'465 °C constant'},
 exploration:{'Venera Program':'USSR 1970–85 (images from surface)','Magellan':'NASA radar mapping 1990–94','DAVINCI+':'NASA planned 2031'},
 discoveries:{'Retrograde Rotation':'Day longer than year; Sun rises in the west','Active Volcanism':'Fresh lava flows confirmed by ESA/Magellan data (2023)','Phosphine Signal':'Possible life signature in clouds (2020, contested)','Lightning':'Radio waves suggest cloud lightning'},
 funFact:'A day on Venus (243 Earth days) is longer than its year (225 Earth days). The Sun rises in the west and sets in the east on Venus — it rotates backwards.'},
 
-"Earth":{type:'planet',typeBadge:'TERRESTRIAL PLANET',size:3.2,dist:260,period:365.25,color:0x4b90ff,texture:'./assets/earth.jpg',moons:'0',atmosphereColor:0x4488ff,
+"Earth":{type:'planet',typeBadge:'TERRESTRIAL PLANET',size:3.2,dist:260,period:365.25,tilt:23.44,color:0x4b90ff,texture:'./assets/earth.jpg',moons:'0',atmosphereColor:0x4488ff,
 overview:'The third planet and only known world to harbour life. A geologically active world with plate tectonics, a global magnetic field, liquid oceans, breathable atmosphere, and 8.7 million known species.',
 stats:{'Diameter':'12,742 km','Mass':'5.972 × 10²⁴ kg','Surface Gravity':'9.807 m/s²','Density':'5.51 g/cm³ (densest planet)','Distance from Sun':'149.6 million km (1 AU)','Day Length':'24 hours','Year Length':'365.25 days','Axial Tilt':'23.5°'},
 atmosphere:{'Composition':'N₂: 78.09%, O₂: 20.95%, Ar: 0.93%, CO₂: 0.04%','Surface Pressure':'1.013 bar','Temp Range':'-88 °C to 58 °C'},
@@ -2819,7 +2854,7 @@ exploration:{'Deepest Image':'Most distant galaxies ever imaged (Jul 2022)','Exo
 discoveries:{'Earliest Galaxies':'Observed just 300M years after Big Bang','CO₂ in Exoplanet':'First atmospheric chemistry detection (2022)','JuMBOs':'Free-floating Jupiter-mass object pairs in Orion — unexplained (2023)','Rogue Planet Pairs':'Most unexpected JWST discovery'},
 funFact:'JWST\'s gold-plated mirror must stay at -233°C — colder than Pluto. Its five-layer sunshield is the size of a tennis court and blocks sunlight 1 million times, allowing the ultra-sensitive infrared detectors to function.'},
 
-"Voyager 1":{type:'probe',typeBadge:'INTERSTELLAR PROBE',size:0.32,dist:1900,period:0,color:0xffffff,texture:'',moons:'0',
+"Voyager 1":{type:'probe',typeBadge:'INTERSTELLAR PROBE',size:0.32,dist:4340,period:0,color:0xffffff,texture:'',moons:'0',
 overview:'The most distant human-made object — Voyager 1 entered interstellar space in 2012 and still transmits scientific data after 47+ years of flight.',
 stats:{'Launch':'Sep 5, 1977','Distance from Sun':'Over 165 AU and increasing at 17 km/s','Signal Delay':'23+ hours one way','Power':'RTGs (plutonium-238)','Status':'Still transmitting'},
 atmosphere:{'Environment':'Confirmed interstellar medium (plasma density jump Aug 25, 2012)'},
@@ -2827,7 +2862,7 @@ exploration:{'Jupiter Flyby':'1979 — discovered Io volcanism','Saturn Flyby':'
 discoveries:{'Interstellar Plasma':'Denser and more uniform than expected','Heliosphere Shape':'Data suggests bullet-shaped (not spherical)','Galactic Cosmic Rays':'Dramatically different particle environment beyond heliopause'},
 funFact:'Voyager 1 carries the Golden Record — a 12-inch gold-plated disc with 115 images, greetings in 55 languages, 90 min of music, and sounds of Earth.'},
 
-"Voyager 2":{type:'probe',typeBadge:'INTERSTELLAR PROBE',size:0.3,dist:1920,period:0,color:0xeeeeff,texture:'',moons:'0',
+"Voyager 2":{type:'probe',typeBadge:'INTERSTELLAR PROBE',size:0.3,dist:3890,period:0,color:0xeeeeff,texture:'',moons:'0',
 overview:'The only spacecraft to visit all four giant planets — Jupiter, Saturn, Uranus, and Neptune. Now in interstellar space, still returning data after 47+ years.',
 stats:{'Launch':'Aug 20, 1977','Planets Visited':'Jupiter, Saturn, Uranus, Neptune','Distance':'Over 137 AU','Status':'Still transmitting'},
 atmosphere:{'Environment':'Interstellar medium (crossed Nov 5, 2018)'},
@@ -2835,14 +2870,14 @@ exploration:{'Grand Tour':'Only mission to visit all four ice/gas giants','Neptu
 discoveries:{'Neptune Rings':'Discovered ring arcs during 1989 flyby','Triton Geysers':'Nitrogen geysers on Neptune\'s largest moon','Interstellar Medium':'First direct measurements of plasma beyond heliopause'},
 funFact:'Voyager 2 is the only spacecraft ever to visit Uranus and Neptune. Its Grand Tour was made possible by a once-every-175-year planetary alignment.'},
 
-"New Horizons":{type:'probe',typeBadge:'KBO EXPLORER',size:0.28,dist:1700,period:0,color:0xddddff,texture:'',moons:'0',
+"New Horizons":{type:'probe',typeBadge:'KBO EXPLORER',size:0.28,dist:2370,period:0,color:0xddddff,texture:'',moons:'0',
 overview:'The spacecraft that gave humanity its first close look at Pluto in 2015, then flew past Arrokoth — the most distant object ever visited.',
 stats:{'Launch':'Jan 19, 2006','Pluto Flyby':'Jul 14, 2015','Arrokoth Flyby':'Jan 1, 2019 (6.6 billion km from Sun)','Speed':'~14 km/s (still active, outer Kuiper Belt)'},
 exploration:{'Pluto System':'First close-up images Jul 14, 2015','Arrokoth':'Most distant object ever visited — Jan 1, 2019'},
 discoveries:{'Heart of Pluto':'Tombaugh Regio — nitrogen ice heart-plain 1,000 km wide','Blue Haze':'Unexpected multi-layer blue atmospheric haze','Arrokoth Shape':'Contact binary formed by gentle accretion — rewrites planetesimal formation models'},
 funFact:'New Horizons is the fastest spacecraft ever launched, departing Earth at 58,536 km/h. It reached the Moon\'s orbit in 9 hours — a trip that took Apollo astronauts 3 days.'},
 
-"Cassini":{type:'probe',typeBadge:'SATURN ORBITER',size:0.32,dist:810,period:0,color:0xeedd88,texture:'',moons:'0',
+"Cassini":{type:'probe',typeBadge:'SATURN ORBITER',size:0.32,dist:840,period:0,color:0xeedd88,texture:'',moons:'0',
 overview:'The Cassini-Huygens mission — 13 years in orbit around Saturn, discovering geysers on Enceladus, lakes on Titan, and revealing the ring system in unprecedented detail before its Grand Finale dive in 2017.',
 stats:{'Launch':'Oct 15, 1997','Saturn Arrival':'Jul 1, 2004','Huygens Landing':'Jan 14, 2005 (Titan surface)','Grand Finale':'Sep 15, 2017 (deliberate atmospheric entry)','Orbits':'294 around Saturn'},
 atmosphere:{'Ring Rain':'Rings raining into Saturn at ~10,000 kg/s','Hexagonal Storm':'Persistent 30,000 km vortex at north pole'},
@@ -2850,7 +2885,7 @@ exploration:{'Huygens':'First landing on a moon of an outer planet (Titan 2005)'
 discoveries:{'Enceladus Ocean':'Sub-surface global ocean confirmed by gravity data','Titan Lakes':'First liquid bodies found beyond Earth — methane/ethane seas','Ring Moonlets':'Propeller-shaped small moons in the rings','Hexagonal Storm':'Discovered by Voyager, studied in detail by Cassini'},
 funFact:'Cassini\'s Grand Finale — 22 orbits between Saturn and its rings — was one of the most daring mission endings ever. Scientists deliberately destroyed it to prevent contaminating Enceladus and Titan, which could harbour life.'},
 
-"Galileo":{type:'probe',typeBadge:'JUPITER ORBITER',size:0.28,dist:595,period:0,color:0xccbb99,texture:'',moons:'0',
+"Galileo":{type:'probe',typeBadge:'JUPITER ORBITER',size:0.28,dist:594,period:0,color:0xccbb99,texture:'',moons:'0',
 overview:'The first spacecraft to orbit Jupiter — Galileo studied the gas giant and its moons for 8 years (1995-2003), dropping a probe into the atmosphere and discovering evidence for oceans on Europa, Ganymede, and Callisto.',
 stats:{'Launch':'Oct 18, 1989','Jupiter Arrival':'Dec 7, 1995','Atmospheric Probe':'Dec 7, 1995 — descended 150 km into Jupiter','End of Mission':'Sep 21, 2003 (deliberate atmospheric entry)'},
 atmosphere:{'Jupiter Atmosphere':'Probe measured wind, temperature, composition before crushing pressure ended signal'},
@@ -2858,7 +2893,7 @@ exploration:{'Atmospheric Probe':'First direct sampling of Jupiter\'s atmosphere
 discoveries:{'Europa Ocean':'Magnetic induction proves global sub-surface saltwater ocean','Ganymede Magnetic Field':'Only moon with self-generated magnetic field','Jupiter Ring System':'Discovered dusty rings fed by moon impacts'},
 funFact:'Galileo\'s high-gain antenna failed to deploy properly — forcing engineers to rely on a tiny low-gain antenna and innovative data compression to send back 30 GB of science data over 8 years.'},
 
-"Juno":{type:'probe',typeBadge:'JUPITER ORBITER',size:0.26,dist:620,period:0,color:0xddcc88,texture:'',moons:'0',
+"Juno":{type:'probe',typeBadge:'JUPITER ORBITER',size:0.26,dist:606,period:0,color:0xddcc88,texture:'',moons:'0',
 overview:'Juno has been orbiting Jupiter since 2016, peering beneath the cloud tops with its microwave radiometer and discovering polar cyclones, a fuzzy core, and water deep in the atmosphere.',
 stats:{'Launch':'Aug 5, 2011','Jupiter Arrival':'Jul 5, 2016','Orbits Completed':'50+ close flybys (as of 2024)','Power':'Solar — farthest solar-powered spacecraft'},
 atmosphere:{'Polar Cyclones':'Stable octagon of cyclones at north pole','Water':'0.25% water by mass in equatorial region'},
@@ -2866,7 +2901,7 @@ exploration:{'J closest approach':'Perijove at ~4,000 km above cloud tops','Exte
 discoveries:{'Fuzzy Core':'Jupiter has no solid core — heavy elements distributed diffusely','Polar Cyclones':'8 cyclones in octagon pattern at north pole — stable since 2017','Atmospheric Depth':'Jet streams extend 3,000 km deep','Water Abundance':'More water than previously thought — key to formation models'},
 funFact:'Juno is the farthest spacecraft ever powered by solar panels. Its three 9-meter wings generate just 500 watts at Jupiter — enough to run five light bulbs.'},
 
-"Parker Solar Probe":{type:'probe',typeBadge:'SOLAR PROBE',size:0.26,dist:85,period:88,color:0xffffff,texture:'',moons:'0',
+"Parker Solar Probe":{type:'probe',typeBadge:'SOLAR PROBE',size:0.26,dist:92,period:88,color:0xffffff,texture:'',moons:'0',
 overview:'The closest human-made object to the Sun — Parker Solar Probe flies through the corona at 690,000 km/h, enduring temperatures of 1,400°C behind its revolutionary carbon-composite heat shield.',
 stats:{'Launch':'Aug 12, 2017','Closest Approach':'6.2 million km from Sun surface','Max Speed':'690,000 km/h (fastest human object)','Heat Shield':'1,400 °C rated, 12 cm thick carbon composite'},
 atmosphere:{'Corona':'First direct sampling of solar corona plasma','Solar Wind':'Measured origin of slow solar wind'},
@@ -2874,7 +2909,7 @@ exploration:{'24 Perihelion Passes':'Gradually getting closer via Venus gravity 
 discoveries:{'Switchbacks':'Magnetic field zig-zags in solar wind — origin confirmed','Dust-Free Zone':'Possible dust depletion zone near Sun detected','Solar Wind Origin':'Identified source regions of slow solar wind on the Sun'},
 funFact:'Parker Solar Probe\'s heat shield is made of carbon-carbon composite — the same material used in missile nose cones. While the shield faces 1,400°C, the instruments behind it stay at room temperature.'},
 
-"OSIRIS-REx":{type:'probe',typeBadge:'ASTEROID SAMPLER',size:0.24,dist:310,period:1.3,color:0xddcc88,texture:'',moons:'0',
+"OSIRIS-REx":{type:'probe',typeBadge:'ASTEROID SAMPLER',size:0.24,dist:275,period:1.3,color:0xddcc88,texture:'',moons:'0',
 overview:'NASA\'s first asteroid sample return mission — collected material from near-Earth asteroid Bennu and delivered a capsule to Earth in 2023.',
 stats:{'Launch':'Sep 8, 2016','Bennu Arrival':'Dec 3, 2018','Sample Collection':'Oct 20, 2020 (TAGSAM touch, 6 sec)','Sample Return':'Sep 24, 2023 — Utah desert','Sample Mass':'~70 g (exceeded 60 g target)'},
 exploration:{'TAGSAM':'Touch-And-Go Sample Acquisition Mechanism','OSIRIS-APEX':'Renamed; en route to 99942 Apophis for 2029 close-approach rendezvous'},
@@ -2904,7 +2939,7 @@ exploration:{'Jezero Delta':'Exploring ancient river delta — prime biosignatur
 discoveries:{'Organics in Jezero':'Organic molecules found in every rock studied (2023)','Firefights':'First oxygen production on another planet (MOXIE 2021)','Ingenuity Success':'72 flights proved powered flight possible in thin Martian air'},
 funFact:'Perseverance carries 43 sample tubes and has already filled 23 with carefully selected rock cores. A future Mars Sample Return mission will fetch these tubes and bring them back to Earth — the first-ever samples from another planet.'},
 
-"DART":{type:'probe',typeBadge:'ASTEROID DEFLECTOR',size:0.22,dist:345,period:0,color:0xccccdd,texture:'',moons:'0',
+"DART":{type:'probe',typeBadge:'ASTEROID DEFLECTOR',size:0.22,dist:330,period:0,color:0xccccdd,texture:'',moons:'0',
 overview:'The Double Asteroid Redirection Test — humanity\'s first planetary defense mission — successfully slammed into asteroid Dimorphos in 2022, shortening its orbit by 33 minutes and proving we can deflect dangerous asteroids.',
 stats:{'Launch':'Nov 24, 2021','Impact':'Sep 26, 2022','Target':'Dimorphos (160m asteroid)','Speed':'24,000 km/h at impact','Orbit Change':'33-minute shortening of Dimorphos orbit'},
 atmosphere:{'Debris':'Ejecta tail extended thousands of km — key to momentum transfer'},
@@ -2912,7 +2947,7 @@ exploration:{'Planetary Defense':'First test of kinetic impactor technique','ICU
 discoveries:{'Momentum Transfer':'Ejecta provided 3.6× more momentum than direct impact alone','Orbit Change':'Largest intentional change ever made to a celestial body\'s orbit','Surface Properties':'Dimorphos was a rubble pile — affected cratering dynamics'},
 funFact:'DART hit a moving target 11 million km from Earth using autonomous navigation. The spacecraft saw Dimorphos as a single pixel just minutes before impact — and still nailed the center.'},
 
-"Europa Clipper":{type:'probe',typeBadge:'EUROPA EXPLORER',size:0.32,dist:585,period:0,color:0xccddee,texture:'',moons:'0',
+"Europa Clipper":{type:'probe',typeBadge:'EUROPA EXPLORER',size:0.32,dist:646,period:0,color:0xccddee,texture:'',moons:'0',
 overview:'Europa Clipper — launched October 2024 — will conduct 49 close flybys of Jupiter\'s moon Europa to determine if its sub-surface ocean could support life.',
 stats:{'Launch':'Oct 14, 2024','Jupiter Arrival':'2030','Flybys':'49 close Europa flybys planned','Instruments':'9 including ice-penetrating radar, mass spectrometer','Solar Arrays':'Largest ever on a planetary spacecraft'},
 atmosphere:{'Ocean':'Global saltwater ocean with 2× Earth\'s liquid water','Ice Shell':'15-25 km thick, possibly with water pockets'},
@@ -2928,7 +2963,7 @@ exploration:{'Grand Tour of Trojans':'Visiting both leading (Greek camp) and tra
 discoveries:{'TBD':'First flyby 2025 — first close look at Trojan asteroids','Pre-launch Goal':'Understand diversity and origins of primitive asteroids'},
 funFact:'Lucy is named after the 3-million-year-old fossil that revealed human evolution. Just as the fossil transformed our understanding of human origins, Lucy the spacecraft will transform our understanding of solar system origins.'},
 
-"Ice Giant Pathfinder":{type:'probe',typeBadge:'ICE GIANT CONCEPT',size:0.3,dist:1000,period:0,color:0xaabbdd,texture:'',moons:'0',
+"Ice Giant Pathfinder":{type:'probe',typeBadge:'ICE GIANT CONCEPT',size:0.3,dist:1035,period:0,color:0xaabbdd,texture:'',moons:'0',
 overview:'A proposed flagship mission to orbit Uranus and explore its moons — identified as the highest priority by the 2023 Planetary Science Decadal Survey. Would launch in the early 2030s.',
 stats:{'Status':'Proposed — highest priority flagship for 2030s','Target':'Uranus orbiter + atmospheric probe','Key Moons':'Miranda, Ariel, Umbriel, Titania, Oberon','Launch Window':'Early 2030s, arrival mid-2040s'},
 atmosphere:{'Atmosphere Probe':'Would descend into Uranus atmosphere — first since Voyager 2 radio occultation (1986)'},
@@ -2936,7 +2971,7 @@ exploration:{'Ice Giant Science':'First dedicated orbiter of an ice giant','Moon
 discoveries:{'TBD':'Mission not yet approved — would answer why ice giants are so different from gas giants','Decadal Priority':'2023 Planetary Science Decadal Survey top flagship recommendation'},
 funFact:'No spacecraft has orbited an ice giant. The only close data comes from Voyager 2\'s single flyby of Uranus (1986) and Neptune (1989) — over 35 years ago. A dedicated orbiter would revolutionize our understanding.'},
 
-"JWST-Ice Observer":{type:'probe',typeBadge:'NEPTUNE CONCEPT',size:0.28,dist:1150,period:0,color:0xaaccdd,texture:'',moons:'0',
+"JWST-Ice Observer":{type:'probe',typeBadge:'NEPTUNE CONCEPT',size:0.28,dist:1240,period:0,color:0xaaccdd,texture:'',moons:'0',
 overview:'A proposed infrared space telescope positioned at Neptune-Triton L2 — would provide continuous observation of the ice giant and its captured Kuiper Belt moon Triton.',
 stats:{'Status':'Concept study phase','Target':'Neptune-Triton system','Instruments':'High-resolution IR telescope + atmospheric probe','Advantage':'L2 point provides stable, continuous viewing'},
 atmosphere:{'Triton Geysers':'Continuous monitoring of Triton\'s active nitrogen geysers','Neptune Atmosphere':'Track seasonal changes over decades'},
@@ -2944,7 +2979,7 @@ exploration:{'Triton Ocean':'Search for evidence of sub-surface ocean','Kuiper B
 discoveries:{'TBD':'Concept phase — would study ice giant weather, ring dynamics, Triton geology'},
 funFact:'A Neptune L2 telescope would be the farthest operational spacecraft from Earth — 4.5 billion km away. Signals would take over 4 hours each way, requiring full autonomous operation.'},
 
-"New Horizons-II":{type:'probe',typeBadge:'KUIPER BELT CONCEPT',size:0.28,dist:1500,period:0,color:0xccddee,texture:'',moons:'0',
+"New Horizons-II":{type:'probe',typeBadge:'KUIPER BELT CONCEPT',size:0.28,dist:2100,period:0,color:0xccddee,texture:'',moons:'0',
 overview:'A proposed extended New Horizons mission — using the existing spacecraft to explore additional Kuiper Belt Objects beyond Arrokoth, revealing the diversity of these primitive bodies.',
 stats:{'Spacecraft':'New Horizons (extended mission)','Targets':'Additional KBOs beyond Arrokoth','Current Location':'~58 AU and receding','Power':'RTG declining — operations possible until ~2040s'},
 atmosphere:{'Kuiper Belt':'Icy debris field — remains of solar system formation beyond Neptune'},
@@ -2952,7 +2987,7 @@ exploration:{'KBO Encounters':'Flybys of diverse Kuiper Belt Objects','Heliosphe
 discoveries:{'Arrokoth':'Contact binary — gentle accretion confirmed (2019)','Future':'Potential additional KBO flybys with remaining fuel'},
 funFact:'New Horizons has enough hydrazine fuel for 2-3 more KBO flybys. Finding suitable targets requires precise telescope searches — like finding a dark mountain 7 billion km away while moving at 14 km/s.'},
 
-"Europa Lander":{type:'probe',typeBadge:'EUROPA LANDER CONCEPT',size:0.25,dist:590,period:0,color:0xbbccdd,texture:'',moons:'0',
+"Europa Lander":{type:'probe',typeBadge:'EUROPA LANDER CONCEPT',size:0.25,dist:650,period:0,color:0xbbccdd,texture:'',moons:'0',
 overview:'A proposed Europa lander — the first spacecraft to touch down on Jupiter\'s ocean moon — would search for biosignatures on the surface and assess the ice shell\'s habitability.',
 stats:{'Status':'Concept — not yet approved','Landing Site':'Smooth ice near active crack','Instruments':'Mass spectrometer, microscope, seismometer, sample drill','Power':'RTGs for 20+ day surface operation'},
 atmosphere:{'Radiation':'Europa\'s surface receives 540 rem/day — limits lander lifetime to ~20 days'},
@@ -2960,7 +2995,7 @@ exploration:{'Biosignatures':'Search for organic molecules and potential biomark
 discoveries:{'TBD':'Would be first landing on an ocean world','Pre-launch Goal':'Assess habitability and search for signs of life'},
 funFact:'A Europa lander would face the harshest radiation environment of any surface mission — 540 rem/day vs 0.3 rem/day on Mars. The electronics would need heavy shielding, and the lander would survive just 20 days.'},
 
-"Titan Dragonfly":{type:'probe',typeBadge:'TITAN ROTORCRAFT',size:0.25,dist:795,period:0,color:0xddaa44,texture:'',moons:'0',
+"Titan Dragonfly":{type:'probe',typeBadge:'TITAN ROTORCRAFT',size:0.25,dist:910,period:0,color:0xddaa44,texture:'',moons:'0',
 overview:'Dragonfly — launching 2028 — will fly a rotorcraft across Titan\'s surface, hopping between dunes, craters, and potential cryovolcanic sites to study prebiotic chemistry and habitability.',
 stats:{'Launch':'2028 (planned)','Titan Arrival':'Mid-2030s','Range':'Flies 175 km over 8 years','Power':'MMRTG charges batteries for 8-hour flights','Instruments':'Mass spectrometer, gamma-ray spectrometer, cameras, drills'},
 atmosphere:{'Thick Atmosphere':'1.5× Earth pressure + 1/7 gravity = easy flight','Methane Lakes':'Will avoid landing in hydrocarbon lakes'},
@@ -2968,7 +3003,7 @@ exploration:{'Selk Crater':'Primary target — possible past liquid water + orga
 discoveries:{'TBD':'Launch 2028 — first aircraft on another world','Pre-launch Goal':'Determine steps toward life on a world with methane cycle'},
 funFact:'On Titan, a 900g drone weighs just 130g, and the thick atmosphere generates 4× more lift than Earth. Dragonfly can fly 12 km in a single charge — faster than any Mars rover drives in a year.'},
 
-"Enceladus Orbilander":{type:'probe',typeBadge:'ENCELADUS LIFE SEEKER',size:0.25,dist:786,period:0,color:0xccddee,texture:'',moons:'0',
+"Enceladus Orbilander":{type:'probe',typeBadge:'ENCELADUS LIFE SEEKER',size:0.25,dist:882,period:0,color:0xccddee,texture:'',moons:'0',
 overview:'A proposed flagship mission to orbit Enceladus, then land near its south pole — directly sampling the plume material and surface to search for evidence of life in its sub-surface ocean.',
 stats:{'Status':'Proposed — flagship mission concept','Target':'Enceladus orbit + landing','Plume Sampling':'Fly through geysers to capture fresh ocean material','Instruments':'Mass spectrometer, microscope, seismometer, drill'},
 atmosphere:{'Plume Contents':'H₂O, CO₂, CH₄, H₂, salts, complex organics, silica — ocean ingredients sampled from orbit'},
@@ -3016,15 +3051,15 @@ exploration:{'Hubble':'Deployed and serviced the Hubble Space Station (1990-2009
 discoveries:{'Reusability':'Proved that reusable spacecraft were possible','Satellite Servicing':'Hubble repair missions demonstrated in-orbit maintenance','Microgravity Research':'Thousands of experiments across 30 years of flight'},
 funFact:'The Space Shuttle\'s main engines were the most efficient rocket engines ever built — operating at over 99% combustion efficiency. They could throttle from 65% to 109% of rated thrust, burning 500 gallons of propellant per second at full power.'},
 
-"Mars":{type:'planet',typeBadge:'TERRESTRIAL PLANET',size:1.7,dist:330,period:687,color:0xff5533,texture:'./assets/mars.jpg',moons:'2',atmosphereColor:0xff4422,
+"Mars":{type:'planet',typeBadge:'TERRESTRIAL PLANET',size:2.3,dist:318,period:687,tilt:25.19,color:0xff5533,texture:'./assets/mars.jpg',moons:'2',atmosphereColor:0xff4422,
 overview:'The Red Planet — a cold desert world with the largest volcano and longest canyon in the solar system. Clear evidence of ancient liquid water and prime target for human exploration.',
-stats:{'Diameter':'6,779 km','Mass':'6.39 × 10²³ kg','Surface Gravity':'3.72 m/s² (38% of Earth)','Distance from Sun':'227.9 million km (1.52 AU)','Day Length':'24h 37m','Year Length':'687 Earth days','Moons':'Phobos & Deimos'},
+stats:{'Diameter':'6,779 km','Mass':'6.39 × 10²³ kg','Surface Gravity':'3.72 m/s² (38% of Earth)','Distance from Sun':'227.9 million km (1.52 AU)','Day Length':'24h 37m','Year Length':'687 Earth days','Axial Tilt':'25.19° (Earth-like seasons)','Moons':'Phobos & Deimos'},
 atmosphere:{'Composition':'CO₂: 95.3%, N₂: 2.6%, Ar: 1.9%','Surface Pressure':'0.006 bar','Temp Range':'-125 °C to 20 °C'},
 exploration:{'Viking 1&2':'First landers (1976)','Curiosity':'Active since 2012 (Gale Crater)','Perseverance':'Active since 2021 (Jezero Crater)','Ingenuity':'First powered flight on another world (19+ flights)'},
 discoveries:{'Ancient Water':'River delta in Jezero Crater confirms ancient lake (2021)','Organics':'Complex organics in Gale Crater (Curiosity 2018)','Subsurface Lake':'Possible liquid water under south pole (MARSIS 2018)','Marsquakes':'1,300+ seismic events (InSight 2019–22)','Oxygen Production':'MOXIE experiment made O₂ from CO₂ (2021)'},
 funFact:'Olympus Mons is the tallest volcano in the solar system at 22 km. It is so wide (600 km) that a person standing at its base cannot see the summit — it is beyond the Martian horizon.'},
 
-"Ceres":{type:'dwarf',typeBadge:'DWARF PLANET',size:0.5,dist:420,period:1682,color:0xaaaaaa,texture:'./assets/moon.jpg',moons:'0',
+"Ceres":{type:'dwarf',typeBadge:'DWARF PLANET',size:0.85,dist:429,period:1682,tilt:4,color:0xaaaaaa,texture:'./assets/moon.jpg',moons:'0',
 overview:'The largest object in the asteroid belt and only dwarf planet in the inner solar system. Its bright salt spots in Occator Crater puzzled scientists for years.',
 stats:{'Diameter':'939 km','Surface Gravity':'0.28 m/s²','Distance from Sun':'413.7 million km (2.77 AU)','Orbital Period':'1,682 Earth days','Rotation':'9 hours 4 min'},
 atmosphere:{'Exosphere':'Water vapour near bright spots'},
@@ -3032,15 +3067,15 @@ exploration:{'Dawn':'NASA orbiter 2015–2018'},
 discoveries:{'Bright Faculae':'Sodium carbonate from sub-surface brine (Dawn 2015)','Organics':'Complex organic material (Dawn 2017)','Sub-surface Activity':'Geological activity in last few million years','Temporary Atmosphere':'Thin water vapour near bright spots'},
 funFact:'Ceres may harbour a sub-surface ocean of liquid brine — making it a candidate for astrobiology in the inner solar system despite being just 939 km across.'},
 
-"Jupiter":{type:'planet',typeBadge:'GAS GIANT',size:11.0,dist:580,period:4333,color:0xddaa77,texture:'./assets/jupiter.jpg',moons:'95',atmosphereColor:0xddaa44,
+"Jupiter":{type:'planet',typeBadge:'GAS GIANT',size:10.6,dist:600,period:4333,tilt:3.13,color:0xddaa77,texture:'./assets/jupiter.jpg',moons:'95',atmosphereColor:0xddaa44,
 overview:'The king of planets — more massive than all other planets combined. Its magnetic field extends to Saturn\'s orbit, and it hosts the most volcanically active body in the solar system.',
-stats:{'Diameter':'139,820 km (11× Earth)','Mass':'1.898 × 10²⁷ kg (318× Earth)','Surface Gravity':'24.79 m/s²','Distance from Sun':'778.5 million km (5.2 AU)','Day Length':'9h 56m','Year Length':'4,333 Earth days'},
+stats:{'Diameter':'139,820 km (11× Earth)','Mass':'1.898 × 10²⁷ kg (318× Earth)','Surface Gravity':'24.79 m/s²','Distance from Sun':'778.5 million km (5.2 AU)','Day Length':'9h 56m','Year Length':'4,333 Earth days','Axial Tilt':'3.13° (no seasons)'},
 atmosphere:{'Composition':'H₂: 89.8%, He: 10.2%','Great Red Spot':'1.3× Earth-wide storm, 350+ years old','Magnetic Field':'20,000× Earth\'s'},
 exploration:{'Pioneer 10&11':'First flybys 1973–74','Galileo':'Orbiter+probe 1995–2003','Juno':'Active since 2016','Europa Clipper':'NASA, launched Oct 2024'},
 discoveries:{'Io Volcanism':'Voyager 1 (1979) — first volcanism found outside Earth','Europa Ocean':'Sub-surface ocean evidence (Galileo 1995)','Polar Cyclones':'Stable cyclone clusters at poles (Juno 2017)','Fuzzy Core':'No solid core — diffuse heavy element region (Juno)','Atmospheric Depth':'Jet streams penetrate thousands of km deep (Juno 2021)'},
 funFact:'Jupiter\'s moon Ganymede is larger than Mercury. The Great Red Spot is a storm larger than Earth that has raged for at least 350 years — though it\'s slowly shrinking.'},
 
-"Europa":{type:'planet',typeBadge:'MOON OF JUPITER',size:0.82,dist:592,period:3.55,color:0xd0e8f0,texture:'',moons:'0',parent:'Jupiter',subtype:'europa',
+"Europa":{type:'planet',typeBadge:'MOON OF JUPITER',size:1.6,dist:642,period:3.55,color:0xd0e8f0,texture:'',moons:'0',parent:'Jupiter',subtype:'europa',
 overview:'The most exciting moon in the solar system. Europa\'s smooth icy crust hides a global sub-surface ocean with twice the volume of all Earth\'s oceans. A prime candidate for life.',
 stats:{'Diameter':'3,121 km','Orbital Period':'3.55 Earth days','Ocean Depth':'~100 km estimated','Ice Shell':'15–25 km thick','Distance from Jupiter':'671,100 km'},
 atmosphere:{'Exosphere':'Thin O₂ from ice splitting by radiation'},
@@ -3048,7 +3083,7 @@ exploration:{'Galileo':'Confirmed sub-surface ocean (1990s)','Europa Clipper':'N
 discoveries:{'Water Plumes':'Possible vapour plumes (Hubble 2013, 2016)','Salty Ocean':'Magnetic induction confirms conductive (salty) liquid','Chaos Terrain':'Surface disruption shows ocean-ice interaction','Habitable Chemistry':'Ocean may be in contact with rocky seafloor — enabling hydrothermal chemistry'},
 funFact:'Europa\'s sub-surface ocean has existed for billions of years in contact with a rocky seafloor — potentially hosting hydrothermal vents like those that sustain life in Earth\'s deepest oceans.'},
 
-"Io":{type:'planet',typeBadge:'MOON OF JUPITER',size:0.92,dist:597,period:1.77,color:0xffcc44,texture:'',moons:'0',parent:'Jupiter',subtype:'io',
+"Io":{type:'planet',typeBadge:'MOON OF JUPITER',size:1.7,dist:634,period:1.77,color:0xffcc44,texture:'',moons:'0',parent:'Jupiter',subtype:'io',
 overview:'The most volcanically active body in the solar system, with 400+ active volcanoes. Io is squeezed by Jupiter\'s tidal forces, generating extraordinary internal heat.',
 stats:{'Diameter':'3,643 km','Orbital Period':'1.77 Earth days','Active Volcanoes':'400+','Largest Lava Lake':'Loki Patera (200 km wide)','Distance from Jupiter':'421,800 km'},
 atmosphere:{'Composition':'SO₂ from volcanic outgassing'},
@@ -3056,7 +3091,7 @@ exploration:{'Voyager 1':'Discovered volcanism (1979)','Galileo':'Extended study
 discoveries:{'First Extraterrestrial Volcanism':'Voyager 1 (Linda Morabito\'s discovery, 1979)','Plasma Torus':'Io generates a plasma donut around Jupiter\'s orbit','Tidal Heating':'Orbital resonance with Europa/Ganymede drives all the heat','Mountains':'Compression from subsidence creates peaks up to 18 km'},
 funFact:'Io\'s volcanic activity is powered entirely by tidal heating — Jupiter\'s gravity kneads Io\'s interior like bread dough, generating more heat than Earth\'s entire radioactive interior.'},
 
-"Ganymede":{type:'planet',typeBadge:'MOON OF JUPITER',size:1.35,dist:606,period:7.15,color:0xaabbcc,texture:'',moons:'0',parent:'Jupiter',
+"Ganymede":{type:'planet',typeBadge:'MOON OF JUPITER',size:2.05,dist:652,period:7.15,color:0xaabbcc,texture:'',moons:'0',parent:'Jupiter',
 overview:'The largest moon in the solar system — bigger than Mercury. The only moon known to generate its own magnetic field, and likely hosts a sub-surface saltwater ocean.',
 stats:{'Diameter':'5,268 km (larger than Mercury)','Orbital Period':'7.15 Earth days','Distance from Jupiter':'1,070,400 km'},
 atmosphere:{'Thin Oxygen Exosphere':'Detected by Hubble (1996)'},
@@ -3064,15 +3099,15 @@ exploration:{'Galileo':'Found magnetic field (1996)','JUICE':'ESA will orbit Gan
 discoveries:{'Self-Generated Magnetic Field':'Only moon with its own dynamo field (Galileo 1996)','Sub-surface Ocean':'Hubble aurora oscillations reveal salty ocean (2015)','JUICE Target':'Will be the most studied moon outside our own from 2034'},
 funFact:'If Ganymede orbited the Sun instead of Jupiter, it would be classified as a planet. At 5,268 km, it outclasses Mercury and is only slightly smaller than Mars.'},
 
-"Saturn":{type:'planet',typeBadge:'GAS GIANT',size:9.2,dist:780,period:10759,color:0xe3d599,texture:'./assets/saturn.jpg',moons:'146',atmosphereColor:0xddcc77,
+"Saturn":{type:'planet',typeBadge:'GAS GIANT',size:9.7,dist:835,period:10759,tilt:26.73,color:0xe3d599,texture:'./assets/saturn.jpg',moons:'146',atmosphereColor:0xddcc77,
 overview:'The jewel of the solar system, famous for its spectacular ring system. The least dense planet — less dense than water — it would float in a large enough ocean.',
-stats:{'Diameter':'116,460 km (9.5× Earth)','Mass':'5.68 × 10²⁶ kg','Density':'0.687 g/cm³ (less than water!)','Distance from Sun':'1.43 billion km (9.58 AU)','Day Length':'10h 42m','Year Length':'10,759 Earth days'},
+stats:{'Diameter':'116,460 km (9.5× Earth)','Mass':'5.68 × 10²⁶ kg','Density':'0.687 g/cm³ (less than water!)','Distance from Sun':'1.43 billion km (9.58 AU)','Day Length':'10h 42m','Year Length':'10,759 Earth days','Axial Tilt':'26.73° (ring seasons)'},
 atmosphere:{'Composition':'H₂: 96.3%, He: 3.25%','Wind Speeds':'Up to 1,800 km/h','Hexagonal Storm':'30,000 km-wide vortex at north pole','Rings':'Mostly water ice, extend 282,000 km'},
 exploration:{'Pioneer 11':'First flyby 1979','Voyager 1&2':'Flybys 1980–81','Cassini–Huygens':'13-year orbit 2004–17','Dragonfly':'NASA rotorcraft to Titan, 2034'},
 discoveries:{'Ring Age':'Geologically young — ~100 million years old (Cassini)','Ring Rain':'Raining into Saturn at ~10,000 kg/s — rings disappear in ~100M years','Hexagonal Storm':'Discovered by Voyager 2 (1981); still ongoing','Moonlets':'Propeller-shaped moonlets in A ring (Cassini)'},
 funFact:'Saturn\'s rings are up to 282,000 km wide but only 10–100 metres thick in places. Scaled to a sheet of paper\'s thickness, they would be far thinner than the paper itself.'},
 
-"Titan":{type:'planet',typeBadge:'MOON OF SATURN',size:1.32,dist:793,period:15.9,color:0xdd8833,texture:'',moons:'0',parent:'Saturn',subtype:'titan',
+"Titan":{type:'planet',typeBadge:'MOON OF SATURN',size:2.05,dist:917,period:15.9,color:0xdd8833,texture:'',moons:'0',parent:'Saturn',subtype:'titan',
 overview:'Saturn\'s largest moon — the only moon with a dense atmosphere and liquid bodies on its surface (methane/ethane seas, not water). A chemical analogue of early Earth.',
 stats:{'Diameter':'5,151 km','Orbital Period':'15.95 Earth days','Atmospheric Pressure':'1.5× Earth','Surface Temp':'-179 °C','Methane Seas':'Kraken Mare (490,000 km²)'},
 atmosphere:{'Composition':'N₂: 98.4%, CH₄: 1.4%','Haze':'Orange organic tholins','Hydrocarbon Cycle':'Methane rain, rivers, and seas'},
@@ -3080,7 +3115,7 @@ exploration:{'Cassini':'Radar mapping through haze','Huygens':'Landed Jan 14, 20
 discoveries:{'Liquid Lakes':'Confirmed hydrocarbon lakes at poles (Cassini 2006)','Sub-surface Ocean':'Evidence for liquid water under ice (Cassini 2012)','Dunes':'Global organic dune fields at equator','Pre-biotic Chemistry':'Most chemically complex moon known'},
 funFact:'On Titan you could strap wings to your arms and fly — atmosphere 4× denser than Earth\'s, gravity 1/7th Earth\'s. Human-powered flight would be completely achievable.'},
 
-"Enceladus":{type:'planet',typeBadge:'MOON OF SATURN',size:0.45,dist:785,period:1.37,color:0xeef8ff,texture:'',moons:'0',parent:'Saturn',subtype:'enceladus',
+"Enceladus":{type:'planet',typeBadge:'MOON OF SATURN',size:0.65,dist:877,period:1.37,color:0xeef8ff,texture:'',moons:'0',parent:'Saturn',subtype:'enceladus',
 overview:'One of the most exciting moons — Enceladus fires geysers of water, organics, and hydrogen from its south pole, directly sampling its sub-surface ocean for passing spacecraft.',
 stats:{'Diameter':'504 km','Orbital Period':'1.37 Earth days','Albedo':'0.99 (most reflective body in solar system)','Plume Speed':'~1,400 km/h'},
 atmosphere:{'Plume Contents':'H₂O, CO₂, CH₄, H₂, N₂, salts, complex organics, silica'},
@@ -3088,23 +3123,23 @@ exploration:{'Cassini':'Discovered plumes 2005; flew through 23 times'},
 discoveries:{'Hydrothermal Vents':'Silica nanoparticles prove active seafloor reactions (2015)','Molecular Hydrogen':'H₂ in plumes = ongoing water-rock chemistry, potential energy for life (2017)','Complex Organics':'High-mass organic molecules (2018)'},
 funFact:'Cassini flew through Enceladus\'s plumes and directly "tasted" the ocean spray. Salt, organics, silica, and hydrogen — nearly every ingredient thought necessary for life — were present.'},
 
-"Uranus":{type:'planet',typeBadge:'ICE GIANT',size:5.5,dist:960,period:30687,color:0x66ccff,texture:'./assets/uranus.jpg',moons:'28',atmosphereColor:0x55bbff,
+"Uranus":{type:'planet',typeBadge:'ICE GIANT',size:6.4,dist:1235,period:30687,tilt:97.77,color:0x66ccff,texture:'./assets/uranus.jpg',moons:'28',atmosphereColor:0x55bbff,
 overview:'The seventh planet — a unique ice giant that rolls along its orbital path on its side (97.77° axial tilt) and has the coldest planetary atmosphere in the solar system.',
-stats:{'Diameter':'50,724 km (4× Earth)','Distance from Sun':'2.87 billion km (19.2 AU)','Day Length':'17h 14m (retrograde)','Year Length':'84 Earth years','Rings':'13 distinct narrow rings'},
+stats:{'Diameter':'50,724 km (4× Earth)','Distance from Sun':'2.87 billion km (19.2 AU)','Day Length':'17h 14m (retrograde)','Year Length':'84 Earth years','Axial Tilt':'97.77° (rolls on its side)','Rings':'13 distinct narrow rings'},
 atmosphere:{'Composition':'H₂: 82.5%, He: 15.2%, CH₄: 2.3%','Temperature':'-224 °C (coldest atmosphere in solar system)'},
 exploration:{'Voyager 2':'Only flyby Jan 24, 1986','Uranus Orbiter':'NASA flagship mission planned 2030s'},
 discoveries:{'Ring Discovery':'1977 via stellar occultation (before Voyager)','Extreme Tilt':'Likely from giant ancient collision','No Internal Heat':'Unlike Neptune, emits almost no internal heat','Diamond Rain':'Methane converted to diamonds predicted in deep interior'},
 funFact:'Uranus was the first planet discovered with a telescope (William Herschel, 1781). All 27 of its known moons are named after Shakespeare and Alexander Pope characters.'},
 
-"Neptune":{type:'planet',typeBadge:'ICE GIANT',size:5.3,dist:1120,period:60190,color:0x3366ff,texture:'./assets/neptune.jpg',moons:'16',atmosphereColor:0x2255ff,
+"Neptune":{type:'planet',typeBadge:'ICE GIANT',size:6.3,dist:1600,period:60190,tilt:28.32,color:0x3366ff,texture:'./assets/neptune.jpg',moons:'16',atmosphereColor:0x2255ff,
 overview:'The most distant planet with the fastest winds in the solar system (2,100 km/h). Its moon Triton orbits backwards — a captured Kuiper Belt Object heading for eventual destruction.',
-stats:{'Diameter':'49,244 km','Distance from Sun':'4.50 billion km (30.1 AU)','Day Length':'16h 6m','Year Length':'165 Earth years','Wind Speed':'Up to 2,100 km/h (fastest in solar system)'},
+stats:{'Diameter':'49,244 km','Distance from Sun':'4.50 billion km (30.1 AU)','Day Length':'16h 6m','Year Length':'165 Earth years','Axial Tilt':'28.32°','Wind Speed':'Up to 2,100 km/h (fastest in solar system)'},
 atmosphere:{'Composition':'H₂: 80%, He: 19%, CH₄: 1.5%','Temperature':'-218 °C'},
 exploration:{'Voyager 2':'Only flyby Aug 25, 1989'},
 discoveries:{'Triton Retrograde':'Captured from Kuiper Belt — only large retrograde moon','Active Geysers':'Nitrogen geysers on Triton (Voyager 2 1989)','Ring Arcs':'Bright arcs in rings caused by shepherd moon Galatea','Great Dark Spot':'Storm Earth-sized but disappeared between 1989 and 1994'},
 funFact:'Neptune was predicted mathematically before anyone saw it. Le Verrier calculated its position from Uranus\'s orbital wobbles in 1846 — and observers found it within 1° of the prediction the first night they looked.'},
 
-"Triton":{type:'planet',typeBadge:'MOON OF NEPTUNE',size:0.72,dist:1128,period:5.88,color:0xddccbb,texture:'',moons:'0',parent:'Neptune',
+"Triton":{type:'planet',typeBadge:'MOON OF NEPTUNE',size:1.45,dist:1630,period:5.88,color:0xddccbb,texture:'',moons:'0',parent:'Neptune',
 overview:'Neptune\'s largest moon — a captured Kuiper Belt Object orbiting backwards. Geologically active despite being -235°C, and destined to be torn apart by tidal forces in ~3.6 billion years.',
 stats:{'Diameter':'2,706 km','Orbital Period':'5.88 days (retrograde)','Surface Temp':'-235 °C (coldest measured surface in solar system)','Albedo':'0.76 (bright nitrogen frost)'},
 atmosphere:{'Thin N₂ Exosphere':'Pressure 0.000014 bar','Geysers':'Active nitrogen geysers 8+ km high'},
@@ -3112,7 +3147,7 @@ exploration:{'Voyager 2':'Only flyby Aug 25, 1989'},
 discoveries:{'Retrograde Orbit':'Proof of captured origin from Kuiper Belt','Active Geysers':'Dark streaks from geyser deposits (Voyager 2)','Tidal Doom':'Will spiral inside Neptune\'s Roche limit in ~3.6 billion years','Polar Ice Cap':'Seasonal nitrogen frost cap'},
 funFact:'In ~3.6 billion years, Triton will spiral inside Neptune\'s Roche limit and disintegrate into a spectacular ring system that may rival Saturn\'s in grandeur.'},
 
-"Pluto":{type:'dwarf',typeBadge:'DWARF PLANET / KBO',size:0.65,dist:1300,period:90560,color:0xaaaaaa,texture:'./assets/pluto.jpg',moons:'5',
+"Pluto":{type:'dwarf',typeBadge:'DWARF PLANET / KBO',size:1.35,dist:1875,period:90560,tilt:122.5,color:0xaaaaaa,texture:'./assets/pluto.jpg',moons:'5',
 overview:'Once the ninth planet, now the most famous dwarf planet. New Horizons revealed a geologically active world with nitrogen ice mountains, a heart-shaped plain, and surprising complexity.',
 stats:{'Diameter':'2,377 km (18.6% of Earth)','Surface Gravity':'0.62 m/s²','Distance from Sun':'5.9 billion km (39.5 AU)','Orbital Period':'248 Earth years','Largest Moon':'Charon (51% of Pluto\'s diameter)'},
 atmosphere:{'Composition':'N₂: 98%, CH₄, CO','Surface Pressure':'~10 µbar','Haze':'Multiple blue haze layers (unexpected)'},
@@ -3120,7 +3155,7 @@ exploration:{'New Horizons':'First and only flyby Jul 14, 2015','Discovery':'Cly
 discoveries:{'Tombaugh Regio':'Heart-shaped nitrogen ice plain 1,000 km across','Water Ice Mountains':'Peaks up to 3,500 m','Cryovolcanoes':'Possible ice volcanoes Wright Mons and Piccard Mons','Haze':'Multi-layer nitrogen haze — surprisingly blue','Binary System':'Pluto-Charon orbit a point in space between them'},
 funFact:'Pluto and Charon orbit a common center of gravity (barycenter) located in the empty space between them — not inside Pluto. They are sometimes called a binary dwarf planet system.'},
 
-"Haumea":{type:'dwarf',typeBadge:'DWARF PLANET',size:0.55,dist:1360,period:103774,color:0xcccccc,texture:'./assets/moon.jpg',moons:'2',
+"Haumea":{type:'dwarf',typeBadge:'DWARF PLANET',size:1.1,dist:1975,period:103774,tilt:0,color:0xcccccc,texture:'./assets/moon.jpg',moons:'2',
 overview:'A unique dwarf planet with an extreme elongated shape from its incredibly fast 3.9-hour rotation — the fastest spin rate of any large body in the solar system.',
 stats:{'Longest Axis':'~2,322 km','Shortest Axis':'~996 km','Rotation':'3.9 hours (fastest large KBO)','Orbital Period':'283 Earth years','Ring':'Yes — discovered 2017'},
 atmosphere:{'Surface':'Crystalline water ice','Temperature':'-241 °C'},
@@ -3128,7 +3163,7 @@ exploration:{'Discovery':'Mike Brown (USA) / José Ortiz (Spain), 2004–05'},
 discoveries:{'Ring System':'Discovered via stellar occultation 2017','Collision Family':'Debris from ancient collision forms KBO family','Crystalline Ice':'Unexpectedly fresh water ice surface'},
 funFact:'Haumea is stretched into an extreme egg shape — 2.5× longer than wide — by its 3.9-hour day. If it spun just 15% faster, it would fly apart.'},
 
-"Makemake":{type:'dwarf',typeBadge:'DWARF PLANET',size:0.55,dist:1420,period:112897,color:0xbb9988,texture:'./assets/moon.jpg',moons:'1',
+"Makemake":{type:'dwarf',typeBadge:'DWARF PLANET',size:1.05,dist:2040,period:112897,color:0xbb9988,texture:'./assets/moon.jpg',moons:'1',
 overview:'A classical Kuiper Belt Object and one of the largest dwarf planets, named after the creation deity of Easter Island\'s Rapa Nui people.',
 stats:{'Diameter':'~1,430 km','Orbital Period':'309 Earth years','Moon':'MK2 — extremely dark (Hubble 2016)'},
 atmosphere:{'Evidence':'Thin local methane atmosphere possible seasonally'},
@@ -3136,7 +3171,7 @@ exploration:{'Discovery':'Mike Brown et al., March 31, 2005 (Easter weekend)'},
 discoveries:{'Dark Moon':'MK2 is extremely dark — stark contrast with bright Makemake','No Global Atmosphere':'Unlike Pluto, lacks global atmosphere','Tholins':'Organic compounds from radiation processing of surface ices'},
 funFact:'Makemake was discovered around Easter 2005 and informally called "Easter Bunny" — leading to its naming after the Easter Island creation deity.'},
 
-"Eris":{type:'dwarf',typeBadge:'DWARF PLANET',size:0.68,dist:1550,period:203830,color:0xdddddd,texture:'./assets/moon.jpg',moons:'1',
+"Eris":{type:'dwarf',typeBadge:'DWARF PLANET',size:1.35,dist:2570,period:203830,tilt:78,color:0xdddddd,texture:'./assets/moon.jpg',moons:'1',
 overview:'The most massive known dwarf planet — heavier than Pluto. Eris\'s 2005 discovery directly forced the IAU to define "planet" for the first time, demoting Pluto.',
 stats:{'Diameter':'2,326 km','Mass':'1.66 × 10²² kg (27% more than Pluto)','Distance from Sun':'Up to 97.7 AU','Orbital Period':'557 Earth years','Moon':'Dysnomia'},
 atmosphere:{'Surface':'Methane frost (albedo 0.96 — almost mirrors sunlight)','Temperature':'-231 °C'},
@@ -3144,7 +3179,55 @@ exploration:{'Discovery':'Mike Brown, Chad Trujillo, David Rabinowitz, 2005'},
 discoveries:{'Planet Definition':'Discovery forced IAU to create dwarf planet category (August 2006)','Methane Frost':'Fresh reflective methane ice preserved by distance'},
 funFact:'Eris was nicknamed "Xena" after the TV warrior princess. Its discovery proved that if Pluto is a planet, so is Eris — and possibly dozens more KBOs. The IAU created the dwarf planet category specifically in response.'},
 
-"Halley's Comet":{type:'comet',typeBadge:'SHORT-PERIOD COMET',size:0.38,dist:450,period:27484,color:0x88bbff,texture:'./assets/moon.jpg',moons:'0',
+"Vesta":{type:'planet',typeBadge:'MAIN-BELT ASTEROID',size:0.65,dist:395,period:1326,color:0x998866,texture:'',moons:'0',
+overview:'The brightest asteroid and the source of 6% of all meteorites on Earth. Dawn found a world with a mountain twice Everest\'s height and a crater spanning its south pole.',
+stats:{'Diameter':'525 km','Orbital Period':'3.63 Earth years','Distance from Sun':'2.36 AU','Peak':'Central mound of Rheasilvia — ~22 km high'},
+atmosphere:{'Surface':'Basaltic lava flows — a failed planet\'s crust','Air':'None — airless rock'},
+exploration:{'Discovery':'Heinrich Olbers, Mar 29, 1807','Dawn':'NASA orbiter Jul 2011 – Sep 2012'},
+discoveries:{'HED Meteorites':'Howadites-Eucrites-Diogenites all proven to come from Vesta','Rheasilvia Basin':'505-km impact basin with 22-km central mound','Differentiated':'Iron core + basalt crust — a protoplanet frozen mid-formation'},
+funFact:'On a clear dark night Vesta is visible to the naked eye — the only asteroid you can see without a telescope — and chips of it (HED meteorites) are sitting in museums worldwide.'},
+
+"Pallas":{type:'planet',typeBadge:'MAIN-BELT ASTEROID',size:0.64,dist:440,period:1686,color:0x887788,texture:'',moons:'0',
+overview:'The rebel asteroid — tilted 34.8° out of the ecliptic plane, Pallas takes the road no other large asteroid travels, and may be a surviving protoplanet.',
+stats:{'Diameter':'512 km','Orbital Period':'4.62 Earth years','Distance from Sun':'2.77 AU','Inclination':'34.8° (highest of any large asteroid)'},
+atmosphere:{'Surface':'B-type carbonaceous; hydrated minerals','Air':'None — airless rock'},
+exploration:{'Discovery':'Heinrich Olbers, Mar 28, 1802 (2nd asteroid ever found)'},
+discoveries:{'Protoplanet Candidate':'Density and shape suggest incomplete differentiation','Hydrated Surface':'Water-bearing minerals — a wet building block of Earth','Cratered Like Ceres':'SPHERE imaging shows a violent collisional history'},
+funFact:'Pallas was briefly classified as a planet in 1802 — then the second asteroid ever discovered forced astronomers to invent the entire concept of "asteroids".'},
+
+"Bennu":{type:'planet',typeBadge:'NEAR-EARTH ASTEROID',size:0.22,dist:272,period:438,color:0x554433,texture:'',moons:'0',
+overview:'The spinning-top rubble pile that spat rocks at its visitor. OSIRIS-REx grabbed 121.6 grams of carbon-rich gravel — the largest asteroid sample ever returned.',
+stats:{'Diameter':'0.49 km','Orbital Period':'1.2 Earth years','Distance from Sun':'1.13 AU (Apollo NEO)','Sample Returned':'121.6 g (Sep 24, 2023)'},
+atmosphere:{'Surface':'Rubble pile; 40% empty space','Activity':'Active particle ejection (2019)'},
+exploration:{'Discovery':'LINEAR survey, Sep 11, 1999','OSIRIS-REx':'NASA sample return 2016–2023; now OSIRIS-APEX to Apophis'},
+discoveries:{'Particle Ejection':'First asteroid seen actively shedding rocks','Carbon Rich':'4.7% carbon; water-bearing clays; amino-acid precursors','Yarkovsky Drift':'Sunlight measurably alters its orbit — key for impact prediction'},
+funFact:'Bennu has a 1-in-2,700 chance of hitting Earth in 2182 — and thanks to OSIRIS-REx we know its orbit precisely enough to plan a deflection if we ever must.'},
+
+"Ryugu":{type:'planet',typeBadge:'NEAR-EARTH ASTEROID',size:0.24,dist:282,period:474,color:0x665544,texture:'',moons:'0',
+overview:'Japan\'s spinning-top asteroid — Hayabusa2 bombed it, hopped rovers across it, and brought pieces home that predate the Sun\'s birth.',
+stats:{'Diameter':'0.90 km','Orbital Period':'1.3 Earth years','Distance from Sun':'1.19 AU','Sample Returned':'5.4 g (Dec 5, 2020)'},
+atmosphere:{'Surface':'C-type; spinning-top shape; equatorial ridge','Density':'1.19 g/cm³ (rubble pile)'},
+exploration:{'Hayabusa2':'JAXA 2014–2020; impactor + 3 rovers + 2 touchdowns'},
+discoveries:{'Artificial Crater':'SCI impactor exposed pristine subsurface','Pre-solar Grains':'Sample contains stardust older than the solar system','Amino Acids':'20+ amino acids including protein building blocks'},
+funFact:'Hayabusa2 fired a copper cannonball into Ryugu to dig an artificial crater — then landed inside it to steal the freshest, most unaltered rock ever collected in space.'},
+
+"Hale-Bopp":{type:'comet',typeBadge:'GREAT COMET OF 1997',size:0.4,dist:4660,period:0,color:0xaaccdd,texture:'',moons:'0',
+overview:'The Great Comet of 1997 — visible to the naked eye for a record 18 months, with a nucleus 30 times bigger than Halley\'s and a sodium tail never seen before.',
+stats:{'Nucleus':'~60 km (giant)','Orbital Period':'~2,533 years','Last Perihelion':'Apr 1, 1997','Next Return':'~4385','Naked-eye Duration':'18 months (record)'},
+atmosphere:{'Coma':'Dust + CN, C₂; third sodium tail discovered','Tails':'Ion (blue) + dust (white) + sodium (1997 discovery)'},
+exploration:{'Discovery':'Alan Hale & Thomas Bopp, Jul 23, 1995 (independent, same night)','Hubble':'Resolved the 60-km rotating nucleus'},
+discoveries:{'Sodium Tail':'First neutral-sodium tail ever seen on a comet','Deuterium Ratio':'Water D/H twice Earth\'s — comets like this did NOT fill our oceans','Pristine Oort Body':'First apparition in 4,200 years — nearly unaltered since formation'},
+funFact:'Hale-Bopp was discovered two years before it arrived — amateurs Hale (New Mexico) and Bopp (Arizona) spotted it independently on the same night, 1,000× fainter than the naked-eye limit.'},
+
+"67P":{type:'comet',typeBadge:'ROSETTA TARGET COMET',size:0.3,dist:481,period:2356,color:0x776655,texture:'',moons:'0',
+overview:'The rubber-duck comet — first ever orbited and landed on. Rosetta watched 67P wake up as it rounded the Sun, while Philae bounced into a cliff crevice.',
+stats:{'Dimensions':'4.1 × 3.3 × 1.8 km','Orbital Period':'6.45 Earth years','Distance from Sun':'3.46 AU','Mass':'10 billion tonnes'},
+atmosphere:{'Coma':'Seasonal outbursts; 19 distinct active regions','Composition':'Water, CO₂, CO, O₂ (!), glycine'},
+exploration:{'Rosetta':'ESA orbiter Aug 2014 – Sep 2016 (first comet rendezvous)','Philae':'First comet landing Nov 12, 2014 (triple bounce)'},
+discoveries:{'Molecular Oxygen':'O₂ in the coma — impossible by old models; primordial trapped gas','Duck Shape':'Contact binary from a gentle ancient merger','Sinking Surface':'Active pits collapse as ice sublimates beneath'},
+funFact:'Philae\'s harpoons failed, so it bounced twice across the comet for two hours before wedging into a dark crack — then still completed 80% of its science on battery power.'},
+
+"Halley's Comet":{type:'comet',typeBadge:'SHORT-PERIOD COMET',size:0.38,dist:520,period:27484,color:0x88bbff,texture:'./assets/moon.jpg',moons:'0',
 overview:'The most famous comet — observed and recorded by humans for over 2,000 years. It appears every 75–76 years and is the source of two annual meteor showers.',
 stats:{'Nucleus':'15 × 8 km, blacker than coal','Period':'~75–76 Earth years','Last Perihelion':'Feb 9, 1986','Next Perihelion':'~Jul 2061'},
 atmosphere:{'Coma':'Up to 100,000 km wide','Tail':'Up to 100 million km','Composition':'Water ice, CO, CO₂, dust'},
@@ -3160,7 +3243,7 @@ exploration:{'No Missions':'Detected too late; no spacecraft intercept possible'
 discoveries:{'No Outgassing':'No coma despite solar approach — unlike any comet','Excess Acceleration':'Cannot be explained by gravity or standard outgassing','Extreme Elongation':'Most elongated natural object ever observed'},
 funFact:'\'Oumuamua\'s unexplained acceleration has been attributed to hydrogen ice, fractal dust, or even an alien light sail. As of today, no single hypothesis fully satisfies all observations.'},
 
-"Borisov":{type:'comet',typeBadge:'INTERSTELLAR COMET',size:1.2,dist:720,period:0,color:0x99aacc,texture:'',moons:'0',
+"Borisov":{type:'comet',typeBadge:'INTERSTELLAR COMET',size:0.3,dist:720,period:0,color:0x99aacc,texture:'',moons:'0',
 overview:'The first confirmed interstellar comet — discovered in 2019. Unlike the mysterious \'Oumuamua, Borisov behaved exactly like a normal comet, implying universal cometary chemistry across stars.',
 stats:{'Nucleus Diameter':'~0.5 km','Discovered':'Aug 30, 2019 (Gennady Borisov, Ukraine)','Origin':'Confirmed interstellar (hyperbolic orbit)'},
 atmosphere:{'Coma':'CO, H₂O detected — normal comet composition'},
@@ -3211,7 +3294,7 @@ discoveries:{'Fermi Bubbles':'Discovered 2010 — remnants of past AGN activity 
 funFact:'The Arches Cluster near the Galactic Center packs 150 of the Milky Way\'s most massive stars into a region smaller than the distance between the Sun and Alpha Centauri — making it the most star-packed place in the Galaxy.'},
 
 // ── MOONS OF EARTH ────────────────────────────────────────────────────────────
-"Luna":{type:'planet',typeBadge:'EARTH\'S MOON',size:0.85,dist:210,period:27.3,color:0xaaaaaa,texture:'./assets/moon.jpg',moons:'0',parent:'Earth',subtype:'luna',
+"Luna":{type:'planet',typeBadge:'EARTH\'S MOON',size:1.65,dist:288,period:27.3,color:0xaaaaaa,texture:'./assets/moon.jpg',moons:'0',parent:'Earth',subtype:'luna',
 overview:'Earth\'s only natural satellite — the fifth largest moon in the solar system and the only extraterrestrial body humans have walked on. Twelve Apollo astronauts explored its surface between 1969 and 1972.',
 stats:{'Diameter':'3,474 km (27% of Earth)','Distance from Earth':'384,400 km average','Orbital Period':'27.3 Earth days','Surface Gravity':'1.62 m/s² (16.6% Earth)','Axial Tilt':'Tidally locked — same face always toward Earth','Age':'~4.51 billion years'},
 atmosphere:{'Exosphere':'Sodium, potassium, water vapour — essentially a vacuum','Surface Temp':'-173°C (night) to +127°C (day)','Radiation':'No magnetic field — direct solar wind exposure'},
@@ -3220,7 +3303,7 @@ discoveries:{'Water Ice':'Confirmed in permanently shadowed polar craters (LCROS
 funFact:'The Moon is the reason Earth has stable seasons. Its gravitational pull keeps Earth\'s axial tilt locked near 23.5°. Without the Moon, Earth\'s tilt could chaotically vary between 0° and 85° over millions of years, making life as we know it impossible.'},
 
 // ── MOONS OF MARS ─────────────────────────────────────────────────────────────
-"Phobos":{type:'planet',typeBadge:'MOON OF MARS',size:0.32,dist:332,period:0.32,color:0x998877,texture:'',moons:'0',parent:'Mars',subtype:'phobos',
+"Phobos":{type:'planet',typeBadge:'MOON OF MARS',size:0.28,dist:334,period:0.32,color:0x998877,texture:'',moons:'0',parent:'Mars',subtype:'phobos',
 overview:'The larger of Mars\'s two tiny moons — orbiting Mars faster than Mars rotates. Heavily cratered and doomed: tidal forces are pulling it steadily inward toward certain destruction.',
 stats:{'Dimensions':'26 × 22 × 18 km','Orbital Period':'7.65 hours — rises in west, sets in east','Distance from Mars':'9,376 km (closest moon to planet in solar system)','Albedo':'0.07 (blacker than coal)'},
 atmosphere:{'Surface':'No atmosphere; pulverized regolith ~100 m deep'},
@@ -3228,7 +3311,7 @@ exploration:{'Mariner 9':'First detailed images 1971','Mars Express':'High-res i
 discoveries:{'Stickney Crater':'9.4 km-wide impact nearly shattered Phobos','Tidal Decay':'Spiraling inward ~1.8 m/century — will crash or disintegrate in ~50 million years','Grooves':'Parallel grooves across surface — tidal stress fractures from Mars\'s gravity','Interior':'~30% empty space — possibly a rubble pile held together by loose regolith'},
 funFact:'Phobos orbits so low and fast that from Mars\'s surface it rises in the west, crosses the sky in just 4 hours, and sets in the east — twice per Martian day. Jonathan Swift predicted two Martian moons in 1726, 151 years before their actual discovery.'},
 
-"Deimos":{type:'planet',typeBadge:'MOON OF MARS',size:0.25,dist:334,period:1.26,color:0x887766,texture:'',moons:'0',parent:'Mars',subtype:'deimos',
+"Deimos":{type:'planet',typeBadge:'MOON OF MARS',size:0.25,dist:342,period:1.26,color:0x887766,texture:'',moons:'0',parent:'Mars',subtype:'deimos',
 overview:'The smaller, more distant of Mars\'s two moons — a smooth, dark body slowly drifting away from Mars. Deimos is so small that from Mars it appears as nothing more than a bright star.',
 stats:{'Dimensions':'15 × 12 × 11 km','Orbital Period':'30.3 hours','Distance from Mars':'23,460 km','Named Craters':'Swift and Voltaire'},
 atmosphere:{'Surface':'Extremely smooth — thick regolith blanket from ancient impacts'},
@@ -3237,7 +3320,7 @@ discoveries:{'Smooth Surface':'Unlike Phobos, ejecta falls back and fills crater
 funFact:'In 1726 Jonathan Swift\'s "Gulliver\'s Travels" described two Martian moons with orbital periods of 10 and 21.5 hours. Phobos and Deimos, discovered 151 years later in 1877, have periods of 7.7 and 30.3 hours. Swift\'s prescience remains unexplained.'},
 
 // ── ADDITIONAL JUPITER MOONS ──────────────────────────────────────────────────
-"Callisto":{type:'planet',typeBadge:'MOON OF JUPITER',size:1.25,dist:612,period:16.69,color:0x887766,texture:'',moons:'0',parent:'Jupiter',subtype:'callisto',
+"Callisto":{type:'planet',typeBadge:'MOON OF JUPITER',size:1.95,dist:664,period:16.69,color:0x887766,texture:'',moons:'0',parent:'Jupiter',subtype:'callisto',
 overview:'Jupiter\'s second-largest moon and the most heavily cratered body in the solar system. A frozen, ancient world unchanged for 4 billion years — and surprisingly, a possible sub-surface ocean candidate.',
 stats:{'Diameter':'4,821 km (slightly smaller than Mercury)','Orbital Period':'16.69 Earth days','Distance from Jupiter':'1,882,700 km','Surface Gravity':'1.24 m/s²','Age':'Surface ~4.0–4.5 billion years'},
 atmosphere:{'Thin CO₂ Exosphere':'Detected by Galileo','Surface Temp':'-139°C average'},
@@ -3246,7 +3329,7 @@ discoveries:{'Ancient Surface':'No tectonic activity — most primordial large s
 funFact:'Callisto is so heavily cratered that every patch of its surface has been struck multiple times. It has not changed significantly since the Late Heavy Bombardment ended 3.8 billion years ago — making it essentially a frozen photograph of the early solar system.'},
 
 // ── ADDITIONAL SATURN MOONS ───────────────────────────────────────────────────
-"Mimas":{type:'planet',typeBadge:'MOON OF SATURN',size:0.38,dist:787,period:0.94,color:0xccbbaa,texture:'',moons:'0',parent:'Saturn',subtype:'mimas',
+"Mimas":{type:'planet',typeBadge:'MOON OF SATURN',size:0.55,dist:869,period:0.94,color:0xccbbaa,texture:'',moons:'0',parent:'Saturn',subtype:'mimas',
 overview:'Saturn\'s innermost major moon — famous for its enormous Herschel Crater that makes it resemble the Death Star. A 2023 re-analysis of Cassini data suggested a liquid water ocean lurking beneath its icy shell.',
 stats:{'Diameter':'396 km','Orbital Period':'22.6 hours','Distance from Saturn':'185,520 km','Herschel Crater':'139 km wide — 35% of Mimas\'s own radius'},
 atmosphere:{'Surface':'Pure water ice; negligible atmosphere','Temperature':'-209°C'},
@@ -3254,7 +3337,7 @@ exploration:{'Voyager 1':'Discovery of Herschel Crater, 1980','Cassini':'Thermal
 discoveries:{'Ocean Evidence':'Cassini thermal data re-analysed 2023: liquid water ocean 20–30 km beneath the ice shell','Pac-Man Thermal Map':'Cassini 2010 revealed a bizarre Pac-Man-shaped warm thermal region','Herschel Impact':'The Herschel impact nearly shattered Mimas entirely','Resonance':'Maintains orbital resonances with Tethys and other moons'},
 funFact:'Mimas was dismissed for decades as geologically dead. Then in 2023 astronomers re-examined old Cassini data and found its subtle wobble implies a liquid ocean barely 20 km beneath the ice — making it the most unexpected ocean world in the solar system.'},
 
-"Dione":{type:'planet',typeBadge:'MOON OF SATURN',size:0.55,dist:788,period:2.74,color:0xddddd0,texture:'',moons:'0',parent:'Saturn',subtype:'dione',
+"Dione":{type:'planet',typeBadge:'MOON OF SATURN',size:0.95,dist:893,period:2.74,color:0xddddd0,texture:'',moons:'0',parent:'Saturn',subtype:'dione',
 overview:'Saturn\'s fourth-largest moon — geologically active with dramatic ice cliffs, tectonic fractures, and one of the thinnest oxygen atmospheres in the solar system. Evidence hints at a sub-surface ocean.',
 stats:{'Diameter':'1,123 km','Orbital Period':'2.74 Earth days','Distance from Saturn':'377,396 km','Density':'1.48 g/cm³ (rock-ice mixture)'},
 atmosphere:{'Thin O₂ Exosphere':'Detected by Cassini CAPS instrument, 2012'},
@@ -3262,7 +3345,7 @@ exploration:{'Cassini':'5 targeted close flybys; detected exosphere and photogra
 discoveries:{'Ice Cliffs':'Bright ice scarps (wispy terrain) up to 500 m tall from ancient tectonic fracturing','Oxygen Exosphere':'One of only a handful of moons with detectable molecular oxygen','Sub-surface Ocean':'Gravity field suggests internal liquid water layer','Tectonic Activity':'Linear fracture networks indicate geologic forces still operating'},
 funFact:'Dione\'s trailing hemisphere is laced with bright "wispy" streaks that puzzled astronomers for decades. Cassini revealed they are towering ice cliffs — hundreds of metres tall — exposed by ancient faulting, like a frozen, airless Grand Canyon stretched across a moon.'},
 
-"Rhea":{type:'planet',typeBadge:'MOON OF SATURN',size:0.65,dist:789,period:4.52,color:0xddcccc,texture:'',moons:'0',parent:'Saturn',subtype:'rhea',
+"Rhea":{type:'planet',typeBadge:'MOON OF SATURN',size:1.1,dist:903,period:4.52,color:0xddcccc,texture:'',moons:'0',parent:'Saturn',subtype:'rhea',
 overview:'Saturn\'s second-largest moon — an icy body with a heavily cratered surface. In 2008 Cassini detected particle signatures hinting Rhea might be the only moon in the solar system with its own ring system.',
 stats:{'Diameter':'1,527 km','Orbital Period':'4.52 Earth days','Distance from Saturn':'527,040 km','Surface Gravity':'0.264 m/s²'},
 atmosphere:{'Thin O₂/CO₂ Exosphere':'Detected by Cassini'},
@@ -3270,7 +3353,7 @@ exploration:{'Voyager 1 & 2':'Flybys 1980–81','Cassini':'Multiple targeted fly
 discoveries:{'Possible Ring System':'Cassini detected electron depletions consistent with rings in 2008 — never visually confirmed','Asymmetric Cratering':'Leading hemisphere significantly more cratered from incoming debris','Wispy Terrain':'Similar ice cliff features to Dione','Two-Toned':'Bright rayed craters on dark background resemble Iapetus on smaller scale'},
 funFact:'If confirmed, Rhea would be the only moon in the solar system with its own ring — a miniature mirror of what Saturn itself has. Cassini detected electron and ion patterns around Rhea in 2008 consistent with a debris disk, but no image has ever captured it directly.'},
 
-"Iapetus":{type:'planet',typeBadge:'MOON OF SATURN',size:0.62,dist:791,period:79.3,color:0x997744,texture:'',moons:'0',parent:'Saturn',subtype:'iapetus',
+"Iapetus":{type:'planet',typeBadge:'MOON OF SATURN',size:1.1,dist:933,period:79.3,color:0x997744,texture:'',moons:'0',parent:'Saturn',subtype:'iapetus',
 overview:'Saturn\'s most enigmatic moon — half pitch-black, half brilliant white. Giovanni Cassini noted in 1671 that it was only visible from one side of Saturn. Three hundred years passed before the mystery was solved.',
 stats:{'Diameter':'1,469 km','Orbital Period':'79.3 Earth days (tidally locked)','Distance from Saturn':'3,560,820 km','Dark Region Albedo':'0.03–0.05 (darker than coal)','Bright Region Albedo':'0.5–0.6 (bright as snow)'},
 atmosphere:{'No Atmosphere':'Temperature ranges from -143°C (bright) to -173°C (dark side)'},
@@ -3279,7 +3362,7 @@ discoveries:{'Two-Toned Cause':'Dark material swept up from outer moons + therma
 funFact:'Giovanni Cassini discovered in 1671 that Iapetus was only visible on one side of its orbit around Saturn. The mystery took 300+ years to solve: the dark hemisphere sweeps up dark dust from outer moons, which solar heating then darkens further. The contrast between hemispheres is greater than any other body in the solar system.'},
 
 // ── MOON OF URANUS ────────────────────────────────────────────────────────────
-"Miranda":{type:'planet',typeBadge:'MOON OF URANUS',size:0.38,dist:961,period:1.41,color:0xaabbcc,texture:'',moons:'0',parent:'Uranus',subtype:'miranda',
+"Miranda":{type:'planet',typeBadge:'MOON OF URANUS',size:0.6,dist:1257,period:1.41,color:0xaabbcc,texture:'',moons:'0',parent:'Uranus',subtype:'miranda',
 overview:'Uranus\'s smallest major moon — but the most geologically tormented body in the solar system. Its surface looks shattered and reassembled, with the highest known cliff face in the solar system.',
 stats:{'Diameter':'472 km','Orbital Period':'1.41 Earth days','Distance from Uranus':'129,390 km','Verona Rupes':'~20 km cliff — solar system\'s tallest known scarp'},
 atmosphere:{'Surface':'Water ice, CO₂ ice, complex organics; essentially no atmosphere'},
@@ -3288,7 +3371,55 @@ discoveries:{'Verona Rupes':'~20 km vertical cliff — free-fall from the top ta
 funFact:'If you stepped off Miranda\'s Verona Rupes — the tallest cliff in the solar system at ~20 km — the fall would take about 12 minutes before you hit the bottom, because Miranda\'s gravity is so weak. On Earth, the same height would take just 64 seconds.'},
 
 // ── MOON OF PLUTO ─────────────────────────────────────────────────────────────
-"Charon":{type:'planet',typeBadge:'MOON OF PLUTO',size:0.38,dist:1302,period:6.39,color:0xaaaaaa,texture:'./assets/moon.jpg',moons:'0',parent:'Pluto',subtype:'charon',
+"Ariel":{type:'planet',typeBadge:'MOON OF URANUS',size:0.95,dist:1263,period:2.52,color:0xdde8ee,texture:'',moons:'0',parent:'Uranus',
+overview:'The brightest and youngest-surfaced of Uranus\'s major moons. Ariel\'s grooved valleys and smooth plains suggest recent cryovolcanic resurfacing — possibly still active.',
+stats:{'Diameter':'1,162 km','Orbital Period':'2.52 Earth days','Distance from Uranus':'191,020 km','Surface Gravity':'0.27 m/s²','Albedo':'0.53 (brightest Uranian moon)'},
+atmosphere:{'Surface':'Water ice with CO₂ frost in graben floors','Temperature':'-213 °C','Features':'12-km-deep grabens; possible cryovolcanic flows'},
+exploration:{'Voyager 2':'Only flyby Jan 24, 1986 (35% of surface imaged)','Uranus Orbiter':'Flagship concept would map the unseen hemisphere'},
+discoveries:{'CO₂ Ice':'Concentrated in trailing hemisphere grooves','Youngest Surface':'Fewest craters of the five majors — resurfaced <2 billion years ago','Possible Ocean':'Tidal models allow a subsurface liquid layer'},
+funFact:'Ariel\'s canyon floors are the brightest features on any Uranian moon — fresh ice that welled up from below and never had time to darken under radiation.'},
+
+"Umbriel":{type:'planet',typeBadge:'MOON OF URANUS',size:0.95,dist:1269,period:4.14,color:0x8899aa,texture:'',moons:'0',parent:'Uranus',
+overview:'The darkest of Uranus\'s major moons — an ancient, battered world whose surface has sat unchanged for billions of years, save one mysterious glowing ring.',
+stats:{'Diameter':'1,170 km','Orbital Period':'4.14 Earth days','Distance from Uranus':'266,000 km','Albedo':'0.10 (darker than coal)'},
+atmosphere:{'Surface':'Water ice darkened by radiation-processed organics','Temperature':'-213 °C','Feature':'Wunda crater — 131 km wide with a bright central ring'},
+exploration:{'Voyager 2':'Only flyby Jan 24, 1986'},
+discoveries:{'Wunda Ring':'Bright CO₂-ice annulus on Wunda\'s floor — origin unexplained','Ancient Surface':'Most heavily cratered Uranian moon; no resurfacing','Dark Coating':'Leading hemisphere darker — dust from retrograde irregular moons'},
+funFact:'Umbriel reflects only 10% of the light that hits it, yet inside its 131-km Wunda crater sits a glowing ring of fresh carbon-dioxide ice nobody can fully explain.'},
+
+"Titania":{type:'planet',typeBadge:'MOON OF URANUS',size:1.15,dist:1277,period:8.71,color:0xbb9988,texture:'',moons:'0',parent:'Uranus',
+overview:'The largest moon of Uranus — a world split by some of the longest canyons in the solar system, including the 1,500-km Messina Chasmata.',
+stats:{'Diameter':'1,578 km','Orbital Period':'8.71 Earth days','Distance from Uranus':'435,910 km','Surface Gravity':'0.38 m/s²','Density':'1.71 g/cm³ (rock-ice mix)'},
+atmosphere:{'Surface':'Water ice + CO₂; reddish leading hemisphere','Temperature':'-203 °C','Canyons':'Messina Chasmata — 1,500 km long, 100 km wide'},
+exploration:{'Discovery':'William Herschel, Jan 11, 1787 (same night as Oberon)','Voyager 2':'Only flyby Jan 24, 1986 (~40% imaged)'},
+discoveries:{'Giant Canyons':'Tectonic rifts wider than the Grand Canyon by 50×','Possible Ocean':'Induced-field hints from Voyager magnetometer re-analysis','Red Staining':'Leading side redder — CO₂ and dust accumulation'},
+funFact:'Titania and Oberon were discovered on the same January night in 1787 — the first moons ever found with a telescope Herschel built himself, from his garden in Bath.'},
+
+"Oberon":{type:'planet',typeBadge:'MOON OF URANUS',size:1.1,dist:1285,period:13.46,color:0xaa8866,texture:'',moons:'0',parent:'Uranus',
+overview:'The outermost major moon of Uranus — an ancient red-tinted world with a 6-km mountain on its limb and a mysterious dark-floored crater.',
+stats:{'Diameter':'1,523 km','Orbital Period':'13.46 Earth days','Distance from Uranus':'583,520 km','Density':'1.63 g/cm³'},
+atmosphere:{'Surface':'Old cratered ice with red organic tint','Temperature':'-203 °C','Feature':'Hamlet crater — 206 km wide with dark floor'},
+exploration:{'Discovery':'William Herschel, Jan 11, 1787','Voyager 2':'Only flyby Jan 24, 1986'},
+discoveries:{'Limb Mountain':'~6 km peak silhouetted on the limb — likely a central-peak crater rim','Red Material':'Unknown dark-red coating, strongest on leading hemisphere','Ancient Crust':'Crater densities imply a 4-billion-year-old surface'},
+funFact:'Oberon is so far from Uranus that the planet\'s magnetosphere barely reaches it — it sits in the solar wind half its orbit, unlike every other major Uranian moon.'},
+
+"Tethys":{type:'planet',typeBadge:'MOON OF SATURN',size:0.9,dist:885,period:1.89,color:0xe8e0d0,texture:'',moons:'0',parent:'Saturn',
+overview:'Saturn\'s bright ice moon, split by Ithaca Chasma — a 2,000-km canyon that would stretch across North America — and scarred by the giant Odysseus impact.',
+stats:{'Diameter':'1,062 km','Orbital Period':'1.89 Earth days','Distance from Saturn':'294,700 km','Density':'0.98 g/cm³ (nearly pure water ice)'},
+atmosphere:{'Surface':'Brilliant water ice, albedo 1.23','Temperature':'-187 °C','Canyon':'Ithaca Chasma — 2,000 km long, up to 100 km wide'},
+exploration:{'Discovery':'Giovanni Cassini, Mar 21, 1684','Cassini':'Multiple flybys; co-orbitals Telesto and Calypso imaged'},
+discoveries:{'Odysseus Basin':'450-km crater — impact nearly shattered the moon','Ithaca Origin':'Global expansion crack from freezing interior ocean','Co-orbitals':'Shares orbit with Telesto (leading) and Calypso (trailing) Trojans'},
+funFact:'Tethys is so icy it reflects more light than it receives in some wavelengths — and its Ithaca Chasma is proportionally one of the longest canyons relative to body size anywhere in the solar system.'},
+
+"Proteus":{type:'planet',typeBadge:'MOON OF NEPTUNE',size:0.6,dist:1620,period:1.12,color:0x666677,texture:'',moons:'0',parent:'Neptune',
+overview:'Neptune\'s largest inner moon — a dark, box-shaped world just below the size where gravity forces a sphere, dominated by the 250-km Pharos crater.',
+stats:{'Diameter':'420 km','Orbital Period':'1.12 Earth days','Distance from Neptune':'117,600 km','Albedo':'0.10','Shape':'Irregular — 440 × 416 × 404 km'},
+atmosphere:{'Surface':'Dark, cratered, no atmosphere','Temperature':'-220 °C'},
+exploration:{'Discovery':'Voyager 2, Jun 16, 1989 (Stephen Synnott)','No Return':'Never visited since'},
+discoveries:{'Near-Sphere Limit':'Largest body in the solar system that is NOT round','Pharos Basin':'250-km crater with grooved Valhalla-like rings','Tidal Doom':'Spiraling inward; will become a ring or impact Neptune'},
+funFact:'Proteus is the largest irregularly shaped moon known — add just a little more mass and gravity would crush it into a ball. It is darkness made world: blacker than coal dust.'},
+
+"Charon":{type:'planet',typeBadge:'MOON OF PLUTO',size:1.0,dist:1890,period:6.39,color:0xaaaaaa,texture:'./assets/moon.jpg',moons:'0',parent:'Pluto',subtype:'charon',
 overview:'Pluto\'s enormous moon — half the size of Pluto, making the pair a true binary dwarf planet system. Both orbit a gravitational center located in empty space between them. New Horizons revealed a world of canyons, cliffs, and a mysterious dark red pole.',
 stats:{'Diameter':'1,212 km (51% of Pluto)','Orbital Period':'6.39 Earth days (mutually tidally locked)','Distance from Pluto':'19,571 km','Density':'1.70 g/cm³'},
 atmosphere:{'Surface':'Water ice with ammonia hydrates; thin tenuous atmosphere seasonally'},
@@ -3373,7 +3504,31 @@ discoveries:{'Flat Universe':'CMB confirms universe has zero curvature — total
 funFact:'The static on old analog televisions — the "snow" when no channel is tuned — was partly the Cosmic Microwave Background. A few percent of that electromagnetic noise was photons from the Big Bang, 13.8 billion years old, arriving at your TV antenna from the edge of the observable universe.'},
 
 // ── DISTANT SOLAR SYSTEM BODIES ───────────────────────────────────────────────
-"Sedna":{type:'dwarf',typeBadge:'EXTREME DWARF PLANET',size:0.52,dist:1750,period:4404000,color:0xff4422,texture:'./assets/moon.jpg',moons:'0',
+"Quaoar":{type:'dwarf',typeBadge:'DWARF PLANET / KBO',size:0.95,dist:1985,period:104025,color:0x996655,texture:'',moons:'1',
+overview:'A large Kuiper Belt dwarf planet with the most shocking ring known — orbiting FAR outside its Roche limit, where rings should be impossible.',
+stats:{'Diameter':'1,110 km','Orbital Period':'285 Earth years','Distance from Sun':'43.7 AU','Ring':'Yes — 4,100 km radius (beyond Roche limit)','Moon':'Weywot (170 km)'},
+atmosphere:{'Surface':'Methane + water ice; reddish tholins','Temperature':'-233 °C'},
+exploration:{'Discovery':'Chad Trujillo & Mike Brown, Jun 4, 2002','Occultations':'Stellar occultation campaigns 2022–2024'},
+discoveries:{'Impossible Ring':'Dense ring at 7.4 radii — twice the Roche limit; ring particles should have clumped into a moon','Weywot':'Small moon enabling the first KBO mass measurement','Methane Retention':'Too small to hold methane — yet methane detected (2022 JWST)'},
+funFact:'Quaoar\'s ring breaks the textbook rule every astronomy student learns: rings cannot survive outside the Roche limit. Its ring sits at more than twice that distance — and nobody knows why it hasn\'t become a moon.'},
+
+"Orcus":{type:'dwarf',typeBadge:'PLUTINO DWARF PLANET',size:0.85,dist:1910,period:90200,color:0x778899,texture:'',moons:'1',
+overview:'The "anti-Pluto" — a Plutino locked in the same 2:3 resonance with Neptune, perpetually opposite Pluto in its orbit, with matching composition.',
+stats:{'Diameter':'910 km','Orbital Period':'247 Earth years','Distance from Sun':'39.4 AU (2:3 resonance)','Moon':'Vanth (443 km — unusually large)'},
+atmosphere:{'Surface':'Water ice + methane; neutral gray','Temperature':'-231 °C'},
+exploration:{'Discovery':'Mike Brown et al., Feb 17, 2004'},
+discoveries:{'Anti-Pluto':'Same size, orbit and composition as Pluto, but phase-shifted ~180° — they never approach','Vanth':'Huge moon (half Orcus\'s diameter) — likely a binary like Pluto-Charon','Fresh Ice':'Crystalline water ice that should have degraded — resurfaced recently?'},
+funFact:'Orcus and Pluto are gravitational mirror twins: same resonance, opposite sides of the Sun. When Pluto is at perihelion, Orcus is near aphelion — they will never meet.'},
+
+"Gonggong":{type:'dwarf',typeBadge:'SCATTERED-DISC DWARF',size:1.0,dist:2560,period:202000,color:0xaa4433,texture:'',moons:'1',
+overview:'One of the reddest large bodies in the solar system — a scattered-disc dwarf on a wildly tilted orbit, with a slow wobble betraying its moon.',
+stats:{'Diameter':'1,230 km','Orbital Period':'553 Earth years','Distance from Sun':'67.4 AU','Axial Tilt':'~60°+','Moon':'Xiangliu (300 km)'},
+atmosphere:{'Surface':'Methane frost over red tholins — among the reddest KBOs','Temperature':'-230 °C'},
+exploration:{'Discovery':'Schwamb, Brown & Rabinowitz, Jul 17, 2007','Named':'2020, after a Chinese water god'},
+discoveries:{'Extreme Red':'Color rivals the reddest Centaurs — irradiation chemistry lab','Slow Rotation':'22-hour day measured via moon\'s orbit','Methane Frost':'JWST-confirmed surface methane despite weak gravity'},
+funFact:'Gonggong is named for a Chinese water god who, legend says, tilted the Earth by smashing a mountain — fitting for a dwarf planet tipped on its side at the solar system\'s edge.'},
+
+"Sedna":{type:'dwarf',typeBadge:'EXTREME DWARF PLANET',size:0.9,dist:2900,period:4404000,color:0xff4422,texture:'./assets/moon.jpg',moons:'0',
 overview:'The most distant known dwarf planet — blood-red and extreme, orbiting the Sun so far out that its existence defies current solar system models. Its orbit is the primary clue pointing to a possible undiscovered Planet Nine.',
 stats:{'Diameter':'~995 km','Perihelion':'76 AU (closest point — next in 2076)','Aphelion':'~937 AU (farthest — recedes beyond Neptune for 11,400 years)','Color':'Reddest large body in the solar system','Period':'~11,400 Earth years'},
 atmosphere:{'Surface':'Methane, nitrogen, water ice; darkened by tholin organic coatings','Temperature':'-240°C'},
@@ -3381,7 +3536,7 @@ exploration:{'Discovery':'Mike Brown, Chad Trujillo, David Rabinowitz — Nov 14
 discoveries:{'Anomalous Orbit':'Far too distant to be perturbed by Neptune — original orbit mechanism unknown','Planet Nine Clue':'Orbit clusters with other extreme TNOs — strongest statistical evidence for unseen massive planet','Inner Oort Cloud':'First confirmed object potentially from the Inner Oort Cloud','No Satellite':'Unexpectedly no moon despite careful searches — no tidal deceleration'},
 funFact:'From Sedna at perihelion, the Sun — despite being the brightest object in the sky — is so distant that you could completely cover it with the head of a pin held at arm\'s length. At aphelion, 937 AU away, the Sun is merely the brightest star in a sky full of stars.'},
 
-"Arrokoth":{type:'dwarf',typeBadge:'KUIPER BELT OBJECT',size:0.3,dist:1720,period:297620,color:0xcc9966,texture:'',moons:'0',
+"Arrokoth":{type:'dwarf',typeBadge:'KUIPER BELT OBJECT',size:0.3,dist:1995,period:297620,color:0xcc9966,texture:'',moons:'0',
 overview:'The most distant object ever visited by a spacecraft — a pristine contact binary nicknamed "Snowman" that overturned our understanding of how planets first form. New Horizons flew past on January 1, 2019.',
 stats:{'Dimensions':'36 × 20 × 10 km','Distance at Flyby':'~44 AU from Sun','Flyby Date':'Jan 1, 2019 (New Horizons; 3,500 km closest approach)','Color':'Uniformly red-orange (tholins throughout)','Age':'4.5 billion years — essentially pristine'},
 atmosphere:{'Surface':'Organic tholin compounds over water ice','Temperature':'-230°C'},
@@ -3806,7 +3961,7 @@ const SPEEDS = [
     0, 0.25, 0.5, 1, 2, 5, 10, 50, 100, 200, 500, 1000, 2000,
     5000, 10000, 50000, 100000, 250000, 500000
 ];
-let speedIdx  = 0;   // starts at ×
+let speedIdx  = 11;   // starts at 1000x (was 0 = frozen sim on load)
 let paused    = false;
 let flyToTarget = null; // used by _resetCamera (already in existing code)
 
@@ -3833,19 +3988,19 @@ _updSpeed();
 
 // ── LOD: Dynamic pixel-ratio based on camera distance ──────────────────────
 const LOD_THRESHOLDS = [
-    { dist: 200,      pr: 2.0  },
-    { dist: 600,      pr: 1.6  },
-    { dist: 2000,     pr: 1.2  },
-    { dist: 8000,     pr: 1.0  },
-    { dist: 40000,    pr: 0.85 },
-    { dist: 200000,   pr: 0.7  },
-    { dist: Infinity, pr: 0.5  },
+    { dist: 200,      pr: 1.4  },
+    { dist: 600,      pr: 1.2  },
+    { dist: 2000,     pr: 1.0  },
+    { dist: 8000,     pr: 0.9  },
+    { dist: 40000,    pr: 0.75 },
+    { dist: 200000,   pr: 0.6  },
+    { dist: Infinity, pr: 0.45  },
 ];
 let _lastLodPr = -1;
 function updateLOD(camDist) {
     if (perfMode) return;
     const pr = LOD_THRESHOLDS.find(t => camDist <= t.dist)?.pr ?? 0.5;
-    const finalPr = Math.min(pr, window.devicePixelRatio);
+    const finalPr = Math.min(pr, window.devicePixelRatio, _prCap);
     if (Math.abs(finalPr - _lastLodPr) > 0.05) {
         renderer.setPixelRatio(finalPr);
         _lastLodPr = finalPr;
@@ -3854,7 +4009,7 @@ function updateLOD(camDist) {
 
 // ── Galaxy sprite factory ──────────────────────────────────────────────────
 function makeGalaxySprite(type, r, g, b, scale, pos, opacity) {
-    const S = 256, cvs = document.createElement('canvas');
+    const S = 128, cvs = document.createElement('canvas');
     cvs.width = cvs.height = S;
     const ctx = cvs.getContext('2d');
     const cx = S / 2, cy = S / 2;
@@ -3870,7 +4025,7 @@ function makeGalaxySprite(type, r, g, b, scale, pos, opacity) {
     if (type === 'spiral') {
         ctx.save(); ctx.translate(cx, cy); ctx.scale(1, 0.35);
         for (let arm = 0; arm < 2; arm++) {
-            for (let i = 0; i < 1200; i++) {
+            for (let i = 0; i < 500; i++) {
                 const t   = Math.pow(Math.random(), 0.6);
                 const ang = arm * Math.PI + t * Math.PI * 2.8 + (Math.random()-0.5)*0.5;
                 const rad = t * S * 0.44;
@@ -3883,14 +4038,14 @@ function makeGalaxySprite(type, r, g, b, scale, pos, opacity) {
         ctx.restore();
     } else if (type === 'elliptical') {
         ctx.save(); ctx.translate(cx, cy); ctx.scale(1, 0.55);
-        for (let i = 0; i < 600; i++) {
+        for (let i = 0; i < 260; i++) {
             const rad = Math.random() * S * 0.38, ang = Math.random() * Math.PI * 2;
             ctx.fillStyle = `rgba(${r},${g},${b},${(Math.random()*0.35+0.05).toFixed(2)})`;
             ctx.fillRect((rad*Math.cos(ang)+cx)|0,(rad*Math.sin(ang)+cy)|0,1,1);
         }
         ctx.restore();
     } else {
-        for (let i = 0; i < 500; i++) {
+        for (let i = 0; i < 200; i++) {
             const px = (Math.random()-0.5)*S*0.75+cx, py = (Math.random()-0.5)*S*0.4+cy;
             ctx.fillStyle = `rgba(${r},${g},${b},${(Math.random()*0.3+0.04).toFixed(2)})`;
             ctx.fillRect(px|0,py|0,1,1);
@@ -3921,7 +4076,7 @@ const cosmicLayers = {
         {col:[200,220,255],t:'elliptical'},{col:[255,180,100],t:'elliptical'},
         {col:[140,190,255],t:'irregular'},{col:[255,240,200],t:'spiral'},
     ];
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 18; i++) {
         const p=nearPal[i%nearPal.length],[r,g,b]=p.col;
         const dist=18000+Math.random()*22000, ay=Math.random()*Math.PI*2;
         const pos=new THREE.Vector3(Math.cos(ay)*dist,(Math.random()-0.5)*8000,Math.sin(ay)*dist);
@@ -3932,7 +4087,7 @@ const cosmicLayers = {
     // ── Local Group ───────────────────────────────────────────────────────
     const lgCols=[[255,210,150],[255,195,120],[180,210,255],[255,240,210],[130,180,255],[255,160,90],[220,200,180]];
     const lgTypes=['spiral','elliptical','irregular'];
-    for (let i = 0; i < 55; i++) {
+    for (let i = 0; i < 22; i++) {
         const [r,g,b]=lgCols[i%lgCols.length], t=lgTypes[i%3];
         const dist=55000+Math.random()*120000, ay=Math.random()*Math.PI*2;
         const pos=new THREE.Vector3(Math.cos(ay)*dist,(Math.random()-0.5)*35000,Math.sin(ay)*dist);
@@ -3943,7 +4098,7 @@ const cosmicLayers = {
 
     // ── Virgo Supercluster ────────────────────────────────────────────────
     const scCols=[[255,200,140],[200,215,255],[255,180,100],[170,200,255],[255,240,190],[255,160,80]];
-    for (let i = 0; i < 120; i++) {
+    for (let i = 0; i < 42; i++) {
         const [r,g,b]=scCols[i%scCols.length], t=i%3===0?'spiral':i%3===1?'elliptical':'irregular';
         const dist=180000+Math.random()*500000, ay=Math.random()*Math.PI*2;
         const pos=new THREE.Vector3(Math.cos(ay)*dist,(Math.random()-0.5)*120000,Math.sin(ay)*dist);
@@ -3953,9 +4108,9 @@ const cosmicLayers = {
 
     // ── Cosmic Web filaments ──────────────────────────────────────────────
     const cwCols=[[255,210,160],[180,210,255],[255,190,120],[200,225,255],[255,230,170]];
-    for (let f = 0; f < 8; f++) {
-        const filAng=(f/8)*Math.PI*2, filLen=1500000+Math.random()*2000000;
-        for (let i = 0; i < 30; i++) {
+    for (let f = 0; f < 5; f++) {
+        const filAng=(f/5)*Math.PI*2, filLen=1500000+Math.random()*2000000;
+        for (let i = 0; i < 18; i++) {
             const [r,g,b]=cwCols[f%cwCols.length], t=i%2===0?'elliptical':'spiral';
             const frac=Math.random(), spread=150000+Math.random()*250000;
             const pos=new THREE.Vector3(
@@ -3966,7 +4121,7 @@ const cosmicLayers = {
             spr.visible=false; scene.add(spr); cosmicLayers.cosmicWeb.meshes.push(spr);
         }
     }
-    for (let i = 0; i < 80; i++) {
+    for (let i = 0; i < 32; i++) {
         const [r,g,b]=cwCols[i%cwCols.length], t=['spiral','elliptical','irregular'][i%3];
         const dist=600000+Math.random()*3000000, ay=Math.random()*Math.PI*2;
         const pos=new THREE.Vector3(Math.cos(ay)*dist,(Math.random()-0.5)*600000,Math.sin(ay)*dist);
@@ -3976,7 +4131,7 @@ const cosmicLayers = {
 
     // ── Observable Universe ───────────────────────────────────────────────
     const uCols=[[255,200,140],[160,200,255],[255,170,100],[200,220,255],[255,215,150]];
-    for (let i = 0; i < 200; i++) {
+    for (let i = 0; i < 60; i++) {
         const [r,g,b]=uCols[i%uCols.length], t=i%2===0?'elliptical':'spiral';
         const dist=3000000+Math.random()*8000000, ay=Math.random()*Math.PI*2;
         const pos=new THREE.Vector3(Math.cos(ay)*dist,(Math.random()-0.5)*3000000,Math.sin(ay)*dist);
@@ -3985,7 +4140,7 @@ const cosmicLayers = {
     }
 
     // CMB boundary glow
-    const cmbGeo=new THREE.SphereGeometry(10000000,32,32);
+    const cmbGeo=new THREE.SphereGeometry(10000000,24,24);
     const cmbMat=new THREE.MeshBasicMaterial({color:0xff8844,transparent:true,opacity:0,
         side:THREE.BackSide,blending:THREE.AdditiveBlending,depthWrite:false});
     const cmbSphere=new THREE.Mesh(cmbGeo,cmbMat);
@@ -4084,7 +4239,10 @@ animHooks.push(dt => {
 // ════════════════════════════════════════════════════════════════════════════
 //  PLANET INSTANTIATION  (v3.2 — moons orbit parent, absolute phases)
 // ════════════════════════════════════════════════════════════════════════════
-const _pendingMoons = [];   
+const _pendingMoons = [];
+// Moons that have named entries must not ALSO get random filler moons (prevents 8-moon pileups)
+const _hasExplicitMoons = new Set(Object.values(planetData).map(d => d.parent).filter(Boolean));
+const _moonIdxByParent = {};   // (reserved) sibling stagger counters
 
 Object.entries(planetData).forEach(([name, data]) => {
     try {
@@ -4138,7 +4296,8 @@ Object.entries(planetData).forEach(([name, data]) => {
             const trueObj = extragalacticObjects[data.name];
             
             // Blow up their sizes so the camera can actually click them at billions of light-years
-            data.size *= trueObj.sizeMult;
+            // (clamped: unclamped values reached 300k+ units and swallowed the scene + raycaster)
+            data.size = Math.min(data.size * trueObj.sizeMult, 40);
             
             // Use the exact same logarithmic distance formula as galaxies so they spawn correctly
             const logDist = Math.log10(trueObj.dist);
@@ -4184,9 +4343,13 @@ Object.entries(planetData).forEach(([name, data]) => {
             pivot.rotation.y = initAngle;
             data._phase = initAngle;
             const par = planetData[data.parent];
-            const relDist = par
-                ? Math.max(Math.abs(data.dist - par.dist), (par.size||10)*2.0 + data.size*3 + 12)
-                : Math.max(data.size * 5, 20);
+            // Signed offset preserves authorial moon ORDER (abs() inverted outer moons inward).
+            // Final separation is assigned in the attach pass (sorted by base radius).
+            const signedGap = par ? (data.dist - par.dist) : Math.max(data.size * 5, 20);
+            const minGap = par ? ((par.size || 10) * 1.8 + data.size * 2.5 + 10) : 20;
+            data._moonBase = signedGap;
+            data._moonMin = minGap;
+            const relDist = Math.max(signedGap, minGap);
             data._relDist = relDist;
             mesh.position.x = relDist;
             pivot.add(mesh);
@@ -4214,16 +4377,28 @@ Object.entries(planetData).forEach(([name, data]) => {
 });
 
 
-_pendingMoons.forEach(moonData => {
-    const parentData = planetData[moonData.parent];
-    if (parentData?._mesh) {
-        parentData._mesh.add(moonData._pivot);
-        drawOrbit(moonData._relDist, moonData.color || 0xffffff, moonData._pivot);
-    } else {
-        moonData._pivot.position.x = moonData.dist;
-        scene.add(moonData._pivot);
-    }
-});
+{
+ // Attach moons grouped by parent, sorted by base radius: guarantees correct
+ // orbital ORDER (inner→outer) with >=3u separation even when clamping fires.
+ const _byParent = {};
+ _pendingMoons.forEach(m => { (_byParent[m.parent] = _byParent[m.parent] || []).push(m); });
+ Object.values(_byParent).forEach(sibs => {
+   sibs.sort((a, b) => (a._moonBase ?? 0) - (b._moonBase ?? 0));
+   sibs.forEach((moonData, rank) => {
+     const relDist = Math.max(moonData._moonBase ?? 20, moonData._moonMin ?? 20) + rank * 3;
+     moonData._relDist = relDist;
+     if (moonData._mesh) moonData._mesh.position.x = relDist;
+     const parentData = planetData[moonData.parent];
+     if (parentData?._mesh) {
+       parentData._mesh.add(moonData._pivot);
+       drawOrbit(relDist, moonData.color || 0xffffff, moonData._pivot);
+     } else {
+       moonData._pivot.position.x = moonData.dist;
+       scene.add(moonData._pivot);
+     }
+   });
+ });
+}
 
 // ════════════════════════════════════════════════════════════════════════════
 //  MEASURE MODE  (press M → click two objects → distance shown)
@@ -4309,6 +4484,9 @@ function flyTo(data) {
     const d   = Math.max(data.size * 5.8, 16);
     const off = camera.position.clone().sub(wp).normalize().multiplyScalar(d);
     flyToPos.copy(wp).add(off.lengthSq() > 0.5 ? off : new THREE.Vector3(d, d * 0.4, d));
+
+    // Keep the camera out of the body but allow close inspection of tiny moons
+    controls.minDistance = Math.max(1.5, data.size * 2.0);
 
     flyToProgress    = 0;
     flyToActive      = true;
@@ -4501,19 +4679,37 @@ function updateScaleIndicator(cd) {
 //  MAIN RENDER LOOP
 // ════════════════════════════════════════════════════════════════════════════
 const clock = new THREE.Clock();
+let _frameId = 0;
+let visT = 0;   // visual-effects clock: frozen on pause so EVERY object stops
+const _Y_AXIS = new THREE.Vector3(0, 1, 0);
+let _prCap = Infinity;        // adaptive-quality ceiling (auto-lowers on weak GPUs)
+let _adaptCooldown = 0;
 
 function animate() {
     requestAnimationFrame(animate);
+    _frameId++;
 
     const rawDt = clock.getDelta();
     const dt    = Math.min(rawDt, 0.1);        // cap delta to avoid spiral
+    const mdt   = paused ? 0 : dt;             // movement delta: 0 on pause stops ALL object motion
+    visT += mdt;
 
-    // ── FPS counter ───────────────────────────────────────────────────────
+    // ── FPS counter + adaptive quality (steps pixel-ratio down if struggling)
     fpsAcc += 1 / (dt || 0.016);
     fpsN++;
     if (fpsN >= 20) {
-        EL_FPS.textContent = (fpsAcc / fpsN).toFixed(0) + ' FPS';
+        const avgFps = fpsAcc / fpsN;
+        EL_FPS.textContent = avgFps.toFixed(0) + ' FPS';
         fpsAcc = 0; fpsN = 0;
+        if (!perfMode && _frameId - _adaptCooldown > 900 && avgFps < 32) {
+            const cur = renderer.getPixelRatio();
+            const next = cur > 1.01 ? 1.0 : (cur > 0.76 ? 0.75 : 0.6);
+            if (next < cur) {
+                _prCap = next; _lastLodPr = next;
+                renderer.setPixelRatio(Math.min(next, window.devicePixelRatio));
+                _adaptCooldown = _frameId;
+            }
+        }
     }
 
     // ── Advance simulation clock ──────────────────────────────────────────
@@ -4521,35 +4717,49 @@ function animate() {
     const simDt    = simSpeed * dt;           // simulated days this frame
     simClock      += simDt;
 
-    // Simulation date display
-    const simDate = new Date(EPOCH_MS + simClock * 86400000);
-    EL_DATE.textContent = simDate.toISOString().slice(0, 10);
+    // Simulation date display (throttled: string alloc + DOM write every 10th frame)
+    if (_frameId % 10 === 0) {
+        const simDate = new Date(EPOCH_MS + simClock * 86400000);
+        EL_DATE.textContent = simDate.toISOString().slice(0, 10);
+    }
 
-    // Camera distance display
+    // Camera distance display + dynamic depth range.
+    // near=0.05/far=20M (ratio 400M) caused z-fighting on probes & moons;
+    // rescaling to the current viewing distance is the standard space-game fix
+    // (cheaper than a logarithmic depth buffer, no shader cost).
     const camDist = camera.position.length();
     EL_CAM.textContent = 'CAM ' +
         (camDist < 1000 ? camDist.toFixed(0) : (camDist / 1000).toFixed(1) + 'k') + ' u';
+    if (_frameId % 10 === 0) {
+        const nn = Math.max(0.5, camDist / 5000);
+        const ff = Math.max(60000, camDist * 60 + 200000);
+        if (Math.abs(camera.near - nn) / nn > 0.25) {
+            camera.near = nn; camera.far = ff; camera.updateProjectionMatrix();
+        }
+    }
 
-    // ── Milky Way galaxy fade ─────────────────────────────────────────────
-    updateMilkyWay(camDist);        // also calls updateScaleIndicator(camDist)
+    // ── Milky Way galaxy fade (throttled 2 frames) ────────────────────────
+    if (_frameId % 2 === 0) updateMilkyWay(camDist);        // also calls updateScaleIndicator(camDist)
+    else if (_frameId % 6 === 0) updateScaleIndicator(camDist);
 
-    // ── LOD: adjust render quality by distance ────────────────────────────
-    updateLOD(camDist);
+    // ── LOD: adjust render quality by distance (throttled) ────────────────
+    if (_frameId % 3 === 0) updateLOD(camDist);
 
     // ── Cosmic zoom layers: local group → supercluster → universe ─────────
-    updateCosmicLayers(camDist);
+    if (_frameId % 4 === 0) updateCosmicLayers(camDist);
 
-    // ── Active Vision Culling & Spatial Chunk Streamer ────────────────────
-    visionManager.update(camDist, dt, fpsN === 0);
+    // ── Active Vision Culling & Spatial Chunk Streamer (throttled 3f) ─────
+    if (_frameId % 3 === 0) visionManager.update(camDist, dt, fpsN === 0);
 
     // ── Planet orbits & self-rotation ─────────────────────────────────────
     planets.forEach(({ data, mesh, pivot }) => {
-        // Spin rates: stars slow, galaxies ultra-slow (they're huge), probes tumble at probe-specific rates, planets normal
+        // Spin rates: stars slow, galaxies ultra-slow (they're huge), probes tumble at probe-specific rates, planets normal.
+        // rotateOnAxis (object space) preserves the axial tilt applied at build time.
         const spin = data.type === 'star'    ? 0.04
                    : data.type === 'galaxy'  ? 0.004   // galaxies rotate very slowly
                    : mesh.userData.isTumbler ? getProbeTumbleRate(data.name) // per-probe realistic tumble
                    : 0.12;
-        mesh.rotation.y += spin * dt;
+        mesh.rotateOnAxis(_Y_AXIS, spin * mdt);
 
         // ABSOLUTE position from simClock — eliminates all twitching/drift
         if (pivot && data.period > 0) {
@@ -4563,17 +4773,19 @@ function animate() {
     });
 
     // ── Spacecraft physics: solar panel sun-tracking + antenna pointing ───
-    updateSpacecraftPhysics(simClock);
-
     // ── Blinking status lights on spacecraft ──────────────────────────────
-    updateBlinkingLights(dt);
+    // (both frozen on pause — only the camera keeps moving)
+    if (!paused) {
+        updateSpacecraftPhysics(simClock);
+        updateBlinkingLights(dt);
+    }
 
-    // ── Special object animations ──────────────────────────────────────────
-    const t = performance.now() * 0.001;
+    // ── Special object animations (driven by visT: frozen solid on pause) ──
+    const t = visT;
 
     allBlackHoleDisk.forEach((disk, i) => {
         // Inner disk rotates faster (Keplerian — closer = faster)
-        disk.rotation.z += dt * (0.18 - i * 0.035);
+        disk.rotation.z += mdt * (0.18 - i * 0.035);
     });
     allBlackHoleJets.forEach((jet, ji) => {
         // Each jet shell has a slightly different flicker frequency — realistic variability
@@ -4581,7 +4793,7 @@ function animate() {
         jet.material.opacity = Math.max(0, baseOp * (0.7 + 0.3 * Math.sin(t * (2.1 + ji * 0.4) + ji)));
     });
     allPulsarBeams.forEach(beam => {
-        beam.rotation.z      += dt * 2.8;
+        beam.rotation.z      += mdt * 2.8;
         beam.material.opacity = 0.38 + Math.sin(t * 12) * 0.35;
     });
     allFlares.forEach(f => {
@@ -4607,17 +4819,8 @@ function animate() {
     // ── Live measure line ─────────────────────────────────────────────────
     if (measureMode && measureA && measureB) updateMeasureLine();
 
-    // ── Label culling by distance ─────────────────────────────────────────
-    planets.forEach(({ data, mesh }) => {
-        if (!data._labelDiv) return;
-        const wp = new THREE.Vector3();
-        mesh.getWorldPosition(wp);
-        const tooFar = wp.distanceTo(camera.position) > 5500 && camDist < 3200;
-        data._labelDiv.classList.toggle('hidden', tooFar);
-    });
-
-    // ── Animation hooks (star field, shooting stars, etc.) ────────────────
-    animHooks.forEach(fn => fn(dt));
+    // ── Animation hooks (star field, shooting stars, clouds — frozen on pause)
+    animHooks.forEach(fn => fn(mdt));
 
     // ── Final render ──────────────────────────────────────────────────────
     controls.update();
@@ -4636,6 +4839,6 @@ window.addEventListener('resize', () => {
     camera.updateProjectionMatrix();
     renderer.setSize(innerWidth, innerHeight);
     labelRenderer.setSize(innerWidth, innerHeight);
-    currentPixelRatio = Math.min(window.devicePixelRatio, 1.8);
+    currentPixelRatio = Math.min(window.devicePixelRatio, 1.4);
     if (!perfMode) renderer.setPixelRatio(currentPixelRatio);
 });

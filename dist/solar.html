@@ -300,17 +300,19 @@
       /* ──── STARRY BACKGROUND ──── */
       .stars-bg {
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
+        top: -400px;
+        left: -400px;
+        width: calc(100vw + 800px);
+        height: calc(100vh + 800px);
         z-index: -1;
         pointer-events: none;
         /* Layer 1: Slower, smaller stars */
         background: transparent
           url('data:image/svg+xml;utf8,<svg width="400" height="400" xmlns="http://www.w3.org/2000/svg"><circle cx="25" cy="45" r="1" fill="%23fff" opacity="0.6"/><circle cx="112" cy="88" r="1.5" fill="%23fff" opacity="0.4"/><circle cx="180" cy="21" r="1" fill="%23fff" opacity="0.8"/><circle cx="275" cy="220" r="2" fill="%23fff" opacity="0.3"/><circle cx="340" cy="90" r="1" fill="%23fff" opacity="0.7"/><circle cx="120" cy="320" r="1.5" fill="%23fff" opacity="0.5"/><circle cx="380" cy="350" r="1" fill="%23fff" opacity="0.8"/><circle cx="210" cy="180" r="1" fill="%23fff" opacity="0.9"/><circle cx="60" cy="270" r="1" fill="%23fff" opacity="0.6"/><circle cx="310" cy="280" r="1.5" fill="%23fff" opacity="0.5"/></svg>')
           repeat;
-        animation: starDrift 100s linear infinite;
+        /* GPU-composited drift (was background-position: full-viewport repaint every frame) */
+        animation: starDriftT1 100s linear infinite;
+        will-change: transform;
         opacity: 0.8;
       }
       .stars-bg::after {
@@ -324,7 +326,17 @@
         background: transparent
           url('data:image/svg+xml;utf8,<svg width="300" height="300" xmlns="http://www.w3.org/2000/svg"><circle cx="40" cy="60" r="1.5" fill="%23fff" opacity="0.5"/><circle cx="150" cy="120" r="1" fill="%23fff" opacity="0.7"/><circle cx="220" cy="40" r="1" fill="%23fff" opacity="0.4"/><circle cx="90" cy="210" r="2" fill="%23fff" opacity="0.6"/><circle cx="260" cy="250" r="1" fill="%23fff" opacity="0.5"/></svg>')
           repeat;
-        animation: starDrift 150s linear infinite reverse;
+        animation: starDriftT2 150s linear infinite reverse;
+        will-change: transform;
+      }
+      /* Tile-matched translate loops: 400px/400px and 300px/300px tiles = seamless, zero repaint */
+      @keyframes starDriftT1 {
+        from { transform: translate3d(0, 0, 0); }
+        to { transform: translate3d(-400px, 400px, 0); }
+      }
+      @keyframes starDriftT2 {
+        from { transform: translate3d(0, 0, 0); }
+        to { transform: translate3d(-300px, 300px, 0); }
       }
       @keyframes starDrift {
         from {
@@ -684,6 +696,150 @@
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
       }
 
+      /* ──── PLANETARY DATABASE (SOLAR) ──── */
+      .db-section {
+        width: 90%;
+        max-width: 1200px;
+        margin: 0 auto 80px;
+      }
+      .planet-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 24px;
+      }
+      .planet-card {
+        border-radius: 16px;
+        background: rgba(10, 5, 2, 0.6);
+        border: 1px solid rgba(255, 153, 85, 0.2);
+        padding: 24px;
+        transition: transform 0.3s, border-color 0.3s;
+      }
+      .planet-card:hover {
+        transform: translateY(-4px);
+        border-color: var(--primary);
+      }
+      .planet-name {
+        font-family: 'Space Mono', monospace;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 4px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+      .planet-tag {
+        display: inline-block;
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 6px;
+        background: rgba(255, 153, 85, 0.1);
+        border: 1px solid rgba(255, 153, 85, 0.3);
+        color: var(--primary);
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .planet-facts {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        line-height: 1.55;
+      }
+      .planet-facts strong {
+        color: var(--text-main);
+      }
+
+      /* ──── DOUBT SOLVER (SOLAR) ──── */
+      .doubt-section {
+        width: 90%;
+        max-width: 860px;
+        margin: 0 auto 100px;
+        border-radius: 16px;
+        background: rgba(10, 5, 2, 0.6);
+        border: 1px solid rgba(255, 153, 85, 0.2);
+        padding: 32px 28px;
+      }
+      .doubt-note {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        margin-bottom: 16px;
+      }
+      .doubt-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+      .doubt-chip {
+        padding: 7px 14px;
+        border-radius: 20px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        background: rgba(255, 153, 85, 0.06);
+        border: 1px solid rgba(255, 153, 85, 0.25);
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      .doubt-chip:hover {
+        color: #000;
+        background: var(--primary);
+      }
+      .doubt-row {
+        display: flex;
+        gap: 10px;
+      }
+      .doubt-input {
+        flex: 1;
+        min-width: 0;
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 153, 85, 0.3);
+        background: rgba(0, 0, 0, 0.4);
+        color: var(--text-main);
+        font-size: 0.95rem;
+        outline: none;
+      }
+      .doubt-input:focus {
+        border-color: var(--primary);
+      }
+      .doubt-ask {
+        padding: 12px 24px;
+        border-radius: 12px;
+        border: none;
+        background: var(--primary);
+        color: #000;
+        font-weight: 800;
+        font-size: 0.9rem;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .doubt-answer {
+        margin-top: 16px;
+        padding: 16px 18px;
+        border-radius: 12px;
+        background: rgba(0, 0, 0, 0.35);
+        border-left: 3px solid var(--primary);
+        font-size: 0.93rem;
+        line-height: 1.65;
+        color: var(--text-main);
+      }
+      .doubt-answer strong {
+        color: var(--primary);
+      }
+      @media (max-width: 640px) {
+        .doubt-row {
+          flex-direction: column;
+        }
+        .doubt-ask {
+          width: 100%;
+        }
+      }
+
       /* ──── UPGRADED ENGINE CONTAINER BOX (SOLAR) ──── */
       .engine-container {
         width: 95%;
@@ -972,6 +1128,8 @@
         display: none;
         z-index: 5;
         position: relative;
+        /* Vertical page scroll passes through; horizontal drags orbit the sim */
+        touch-action: pan-y;
       }
 
       /* ──── ANIMATION TRIGGERS ──── */
@@ -1337,56 +1495,130 @@
     <div class="cd" id="cDot"></div>
     <div class="cr" id="cRing"></div>
 
-    <nav class="top-nav">
+    <nav class="top-nav" id="topNav">
       <a href="/" class="nav-brand">
         <img src="Class.png" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" />
         <span class="brand-name">Class Of Learners</span>
       </a>
-      <button class="mmb" id="mmb">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="3" y1="12" x2="21" y2="12"></line>
-          <line x1="3" y1="6" x2="21" y2="6"></line>
-          <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
-      </button>
       <div class="nav-links" id="navLinks">
-        <a href="/" class="nav-link">Home</a>
-        <a href="about" class="nav-link">About</a>
-        <a href="school" class="nav-link">School</a>
-        <a href="sneh-asha" class="nav-link">Sneh Asha</a>
-        <div class="dropdown" onclick="this.classList.toggle('active')">
-          <button class="dropdown-btn act">Projects <span class="darr">▼</span></button>
+        <a href="/" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
+          </svg>Home
+        </a>
+        <a href="about" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 16v-4" />
+            <path d="M12 8h.01" />
+          </svg>About
+        </a>
+        <a href="school" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" />
+            <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />
+          </svg>School
+        </a>
+        <a href="sneh-asha" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+          </svg>Sneh Asha
+        </a>
+        <a href="making" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+          </svg>Making
+        </a>
+        <div class="dropdown" id="projDD" onclick="this.classList.toggle('active')">
+          <button class="dropdown-btn act">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+              <line x1="8" y1="21" x2="16" y2="21" />
+              <line x1="12" y1="17" x2="12" y2="21" />
+            </svg>Projects <span class="darr">&#9660;</span>
+          </button>
           <div class="dropdown-content">
             <div class="dropdown-content-inner">
-              <a href="ati">Typing Instructor <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg></a>
-              <a href="solar">Solar Engine <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg></a>
-              <a href="gesture">Perceptus Flow <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg></a>
-              <a href="rpg">RPG Game <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></a>
-              <a href="qr">QR Studio Matrix <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></a>
+              <a href="ati">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="4 7 4 4 20 4 20 7" />
+                  <line x1="9" y1="20" x2="15" y2="20" />
+                  <line x1="12" y1="4" x2="12" y2="20" />
+                </svg>Typing Instructor
+              </a>
+              <a href="solar" class="act">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="5" />
+                  <line x1="12" y1="1" x2="12" y2="3" />
+                  <line x1="12" y1="21" x2="12" y2="23" />
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                  <line x1="1" y1="12" x2="3" y2="12" />
+                  <line x1="21" y1="12" x2="23" y2="12" />
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                </svg>Solar Engine
+              </a>
+              <a href="gesture">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 8h1a4 4 0 010 8h-1" />
+                  <path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z" />
+                  <line x1="6" y1="1" x2="6" y2="4" />
+                  <line x1="10" y1="1" x2="10" y2="4" />
+                  <line x1="14" y1="1" x2="14" y2="4" />
+                </svg>Perceptus Flow
+              </a>
+              <a href="rpg">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                </svg>RPG Game
+              </a>
+              <a href="qr">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="2" width="8" height="8" rx="1" />
+                  <rect x="14" y="2" width="8" height="8" rx="1" />
+                  <rect x="2" y="14" width="8" height="8" rx="1" />
+                  <rect x="14" y="14" width="4" height="4" />
+                  <rect x="20" y="14" width="2" height="2" />
+                  <rect x="14" y="20" width="2" height="2" />
+                  <rect x="20" y="20" width="2" height="2" />
+                </svg>QR Studio Matrix
+              </a>
+              <a href="Terra3D/">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="2" y1="12" x2="22" y2="12" />
+                  <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+                </svg>Terra3D Atlas
+              </a>
             </div>
           </div>
         </div>
-        <div class="tw">
-          <span class="tl" id="tLabel">Light</span>
-          <label class="tsb">
-            <input type="checkbox" id="tsck" onchange="window.toggleTheme(this)" />
-            <div class="tst"><div class="tsth"></div></div>
-          </label>
+      </div>
+      <div class="nav-actions">
+        <div class="hz-toggle" onclick="hzToggle()">
+          <div class="hz-clouds"></div>
+          <div class="hz-stars"></div>
+          <div class="hz-orb"></div>
         </div>
-        <button class="nav-login-btn" id="navLoginBtn" onclick="if (window.openGlobalLogin) window.openGlobalLogin()">
+        <button class="nav-login-btn" id="navLoginBtn" onclick="if (window.openGlobalLogin) window.openGlobalLogin(); else if (window.openLogin) window.openLogin();">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
-          Sign In
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>Sign In
         </button>
-        <div class="nav-user-profile" id="navUserProfile" onclick="if (window.openGlobalLogin) window.openGlobalLogin()">
+        <div class="nav-user-profile" id="navUserProfile" onclick="if (window.openGlobalLogin) window.openGlobalLogin(); else if (window.openLogin) window.openLogin();">
           <div class="nav-user-avatar" id="navUserAv">?</div>
           <span class="nun" id="navUserName">User</span>
         </div>
-        <a href="download" class="nav-dl-btn mobile-dl">Download Hub</a>
+        <a href="download" class="nav-dl-btn desktop-dl">Downloads Hub</a>
+        <button class="mmb" id="mmb" aria-label="Toggle menu">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M3 6H21M3 12H21M3 18H21" stroke-width="1.5" stroke-linecap="round" />
+          </svg>
+        </button>
       </div>
-      <a href="download" class="nav-dl-btn desktop-dl">Download Hub</a>
     </nav>
 
     <script>
@@ -1408,7 +1640,7 @@
 
       <div class="hero-reveal" id="heroReveal">
         <p>
-          A deep-space simulation utilizing accurate Keplerian orbital physics. Interact with the celestial bodies in the browser below, or download the compiled executable for maximum performance.
+          A deep-space simulation using accurate Keplerian orbital physics. Interact with the celestial bodies in the browser below, or download the compiled executable for maximum performance.
         </p>
         <div class="hero-cta">
           <a href="download" class="btn-download">Initialize Download</a>
@@ -1469,6 +1701,93 @@
       </div>
     </div>
 
+    <div class="gallery-title anim-target">Planetary Database</div>
+    <div class="db-section">
+      <div class="planet-grid">
+        <div class="planet-card anim-target">
+          <div class="planet-name">Sun</div>
+          <span class="planet-tag">Star</span>
+          <ul class="planet-facts">
+            <li><strong>Type:</strong> G-Type Main-Sequence Star Holding 99.86% Of All Solar System Mass.</li>
+            <li><strong>Size:</strong> About 1.39 Million Km Wide; Surface Near 5,505°C, Core Near 15 Million °C.</li>
+            <li><strong>Light Time:</strong> Sunlight Reaches Earth In About 8 Minutes 20 Seconds.</li>
+          </ul>
+        </div>
+        <div class="planet-card anim-target">
+          <div class="planet-name">Mercury</div>
+          <span class="planet-tag">Rocky Planet</span>
+          <ul class="planet-facts">
+            <li><strong>Distance:</strong> 57.9 Million Km From The Sun; One Year Lasts Only 88 Earth Days.</li>
+            <li><strong>Temperature:</strong> Swings From -180°C At Night To 430°C By Day.</li>
+            <li><strong>Moons:</strong> None. Its Thin Exosphere Cannot Trap Heat.</li>
+          </ul>
+        </div>
+        <div class="planet-card anim-target">
+          <div class="planet-name">Venus</div>
+          <span class="planet-tag">Rocky Planet</span>
+          <ul class="planet-facts">
+            <li><strong>Heat:</strong> Hottest Planet At 465°C From Runaway CO2 Greenhouse Effect.</li>
+            <li><strong>Spin:</strong> Rotates Backward; One Day (243 Earth Days) Outlasts Its Year (225 Days).</li>
+            <li><strong>Moons:</strong> None. Crushing Air Pressure, About 92 Times Earth.</li>
+          </ul>
+        </div>
+        <div class="planet-card anim-target">
+          <div class="planet-name">Earth</div>
+          <span class="planet-tag">Rocky Planet</span>
+          <ul class="planet-facts">
+            <li><strong>Life:</strong> Only Known World With Life; Oceans Cover About 71% Of The Surface.</li>
+            <li><strong>Year:</strong> 365.25 Days; 23.5° Axial Tilt Causes The Seasons.</li>
+            <li><strong>Moons:</strong> One, The Moon, Which Stabilizes Our Axial Tilt.</li>
+          </ul>
+        </div>
+        <div class="planet-card anim-target">
+          <div class="planet-name">Mars</div>
+          <span class="planet-tag">Rocky Planet</span>
+          <ul class="planet-facts">
+            <li><strong>Color:</strong> Red From Iron Oxide Dust; Thin CO2 Atmosphere.</li>
+            <li><strong>Olympus Mons:</strong> Tallest Volcano In The Solar System At About 22 Km.</li>
+            <li><strong>Moons:</strong> Two Small Moons, Phobos And Deimos; Day Lasts 24.6 Hours.</li>
+          </ul>
+        </div>
+        <div class="planet-card anim-target">
+          <div class="planet-name">Jupiter</div>
+          <span class="planet-tag">Gas Giant</span>
+          <ul class="planet-facts">
+            <li><strong>Size:</strong> Largest Planet; Over 1,300 Earths Could Fit Inside.</li>
+            <li><strong>Great Red Spot:</strong> A Storm Wider Than Earth Raging For Centuries.</li>
+            <li><strong>Moons:</strong> 95 Known Moons; Ganymede Is The Largest Moon Of Any Planet.</li>
+          </ul>
+        </div>
+        <div class="planet-card anim-target">
+          <div class="planet-name">Saturn</div>
+          <span class="planet-tag">Gas Giant</span>
+          <ul class="planet-facts">
+            <li><strong>Rings:</strong> Iconic Rings Made Of Ice And Rock, Yet Only About 10 Meters Thick.</li>
+            <li><strong>Density:</strong> Least Dense Planet; It Would Float In Water.</li>
+            <li><strong>Moons:</strong> 146 Confirmed Moons; Titan Has A Thick Nitrogen Atmosphere.</li>
+          </ul>
+        </div>
+        <div class="planet-card anim-target">
+          <div class="planet-name">Uranus</div>
+          <span class="planet-tag">Ice Giant</span>
+          <ul class="planet-facts">
+            <li><strong>Tilt:</strong> Knocked On Its Side At 98°, So It Rolls Around The Sun.</li>
+            <li><strong>Cold:</strong> Coldest Planetary Atmosphere At -224°C; Methane Gives Blue-Green Color.</li>
+            <li><strong>Moons:</strong> 28 Known Moons And Faint Dark Rings.</li>
+          </ul>
+        </div>
+        <div class="planet-card anim-target">
+          <div class="planet-name">Neptune</div>
+          <span class="planet-tag">Ice Giant</span>
+          <ul class="planet-facts">
+            <li><strong>Winds:</strong> Fastest Winds In The Solar System At About 2,100 Km Per Hour.</li>
+            <li><strong>Discovery:</strong> Found By Mathematics In 1846 Before Any Telescope Saw It.</li>
+            <li><strong>Moons:</strong> 16 Known Moons; Triton Orbits Backward Around The Planet.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
     <div class="engine-container anim-target" id="engine-container">
       <div class="engine-hud-header">
         <div class="hud-title">
@@ -1498,21 +1817,21 @@
               <div class="g-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="3" width="12" height="18" rx="6"/><line x1="12" y1="7" x2="12" y2="11"/></svg></div>
               <div class="g-text">
                 <span class="g-title">Pan Camera</span>
-                <span class="g-desc">Left Click + Drag</span>
+                <span class="g-desc">Drag / One Finger</span>
               </div>
             </div>
             <div class="gesture-card zoom-cam">
               <div class="g-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 10 12 15 17 10"/><polyline points="7 14 12 9 17 14"/></svg></div>
               <div class="g-text">
                 <span class="g-title">Zoom</span>
-                <span class="g-desc">Scroll Wheel</span>
+                <span class="g-desc">Scroll / Pinch</span>
               </div>
             </div>
             <div class="gesture-card select-body">
               <div class="g-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></div>
               <div class="g-text">
                 <span class="g-title">Focus Target</span>
-                <span class="g-desc">Double Click Body</span>
+                <span class="g-desc">Click / Tap Body</span>
               </div>
             </div>
           </div>
@@ -1521,6 +1840,145 @@
 
       <iframe data-src="engine.html" class="engine-frame" id="engine-frame" title="Solar System Engine"></iframe>
     </div>
+
+    <div class="gallery-title anim-target">Doubt Solver</div>
+    <div class="doubt-section anim-target">
+      <p class="doubt-note">Ask Any Doubt About The Sun, Planets, Orbits, Or The Simulator Controls. Answers Come From Built-In Study Notes.</p>
+      <div class="doubt-chips" id="solarChips"></div>
+      <div class="doubt-row">
+        <input type="text" class="doubt-input" id="solarInput" placeholder="Ask Anything, For Example: Why Is Venus So Hot?" aria-label="Ask A Solar System Doubt" autocomplete="off" />
+        <button class="doubt-ask" id="solarAsk" type="button">Ask</button>
+      </div>
+      <div class="doubt-answer" id="solarAnswer" role="status" aria-live="polite" hidden></div>
+    </div>
+
+    <script>
+      ;(function () {
+        var SOLAR_KB = [
+          { keys: ['sun', 'star', 'solar'], title: 'The Sun', answer: '<strong>The Sun:</strong> A G-Type Star Holding 99.86% Of All Solar System Mass. It Is About 1.39 Million Km Wide, Burns Near 5,505°C At The Surface, And Its Light Reaches Earth In About 8 Minutes 20 Seconds.' },
+          { keys: ['mercury', 'closest', 'smallest'], title: 'Mercury', answer: '<strong>Mercury:</strong> The Closest And Smallest Planet, 57.9 Million Km Out, Racing Around The Sun In 88 Days. With Almost No Atmosphere, It Swings From -180°C At Night To 430°C By Day And Has No Moons.' },
+          { keys: ['venus', 'hottest', 'hot'], title: 'Venus', answer: '<strong>Venus:</strong> The Hottest Planet At 465°C Because Thick CO2 Clouds Trap Heat In A Runaway Greenhouse Effect. It Spins Backward, So One Venus Day (243 Earth Days) Lasts Longer Than Its Year (225 Days).' },
+          { keys: ['earth', 'life', 'home', 'water', 'seasons'], title: 'Earth', answer: '<strong>Earth:</strong> The Only Known World With Life. Oceans Cover 71% Of The Surface, One Year Lasts 365.25 Days, And A 23.5° Axial Tilt Causes The Seasons. Our Single Moon Steadies That Tilt.' },
+          { keys: ['mars', 'red', 'olympus', 'phobos', 'deimos'], title: 'Mars', answer: '<strong>Mars:</strong> The Red Planet, Colored By Iron Oxide Dust Under A Thin CO2 Sky. It Hosts Olympus Mons, A 22 Km Volcano, Has Two Tiny Moons (Phobos And Deimos), And A Day Of 24.6 Hours.' },
+          { keys: ['jupiter', 'largest', 'biggest', 'red spot', 'ganymede'], title: 'Jupiter', answer: '<strong>Jupiter:</strong> The Largest Planet; Over 1,300 Earths Fit Inside. Its Great Red Spot Is A Centuries-Old Storm Wider Than Earth. It Has 95 Known Moons, Including Ganymede, The Biggest Moon Of Any Planet.' },
+          { keys: ['saturn', 'rings', 'titan', 'float'], title: 'Saturn', answer: '<strong>Saturn:</strong> Famous For Rings Of Ice And Rock Only Meters Thick. It Is The Least Dense Planet And Would Float In Water. Of Its 146 Moons, Titan Stands Out With A Thick Nitrogen Atmosphere.' },
+          { keys: ['uranus', 'tilt', 'sideways', 'coldest', 'cold'], title: 'Uranus', answer: '<strong>Uranus:</strong> An Ice Giant Knocked Sideways At A 98° Tilt, So It Rolls Around The Sun. Methane Gives Its Blue-Green Color, And Its Atmosphere At -224°C Is The Coldest Of Any Planet.' },
+          { keys: ['neptune', 'wind', 'farthest', 'triton', 'blue'], title: 'Neptune', answer: '<strong>Neptune:</strong> The Farthest Planet With Supersonic Winds Near 2,100 Km Per Hour. Astronomers Found It By Mathematics In 1846. It Takes 164.8 Years Per Orbit, And Its Moon Triton Circles Backward.' },
+          { keys: ['kepler', 'orbit', 'ellipse', 'laws', 'gravity'], title: 'Orbits And Kepler', answer: '<strong>Orbits:</strong> Planets Follow Ellipses With The Sun At One Focus (Kepler First Law), Sweep Equal Areas In Equal Times (Second Law), And Outer Planets Move Slower By The Harmonic Law (Third Law). Try It Live In The Simulator Above.' },
+          { keys: ['control', 'drag', 'zoom', 'click', 'move', 'camera', 'use', 'simulator'], title: 'Simulator Controls', answer: '<strong>Simulator Controls:</strong> Left Click Plus Drag To Pan The Camera, Scroll To Zoom, Double Click Any Body To Focus It, And Single Click A Planet To Open Its Live Telemetry Panel.' },
+          { keys: ['light', 'minute', 'travel', 'sunlight'], title: 'Light Travel Time', answer: '<strong>Light Travel Time:</strong> Sunlight Needs About 8 Minutes 20 Seconds To Reach Earth, 43 Minutes To Reach Jupiter, And Over 4 Hours To Reach Neptune.' },
+          { keys: ['pluto', 'dwarf', 'planet count', 'how many planets'], title: 'Dwarf Planets', answer: '<strong>Dwarf Planets:</strong> The Solar System Has 8 Planets. Pluto Was Reclassified As A Dwarf Planet In 2006 Because It Has Not Cleared Its Orbit Of Debris.' },
+          { keys: ['moon', 'moons', 'satellite', 'most moons'], title: 'Moons', answer: '<strong>Moons:</strong> Saturn Leads With 146 Confirmed Moons, Jupiter Has 95, And Mercury Plus Venus Have None. Ganymede (Jupiter) Is The Largest Moon In The Solar System.' },
+          { keys: ['hello', 'hi', 'hey', 'namaste'], title: 'Greeting', answer: '<strong>Hello, Space Explorer.</strong> Ask Me About Any Planet, The Sun, Orbits, Or The Simulator Controls. Try A Topic Chip Above To Start.' },
+          { keys: ['thank', 'thanks', 'shukriya'], title: 'Thanks', answer: '<strong>You Are Welcome.</strong> Keep Exploring The Planets Above, And Ask Anytime A New Doubt Appears.' },
+          { keys: ['who are you', 'your name', 'what are you'], title: 'About Me', answer: '<strong>I Am The Solar Doubt Solver,</strong> A Built-In Study Notes Assistant For This Page. I Answer Questions About The Sun, Planets, Orbits, And Simulator Controls.' },
+          { keys: ['help', 'what can you', 'how to ask', 'topics'], title: 'Help', answer: '<strong>I Can Answer:</strong> Facts On The Sun And All 8 Planets, Orbit Basics, Light Travel Times, Moon Counts, And Simulator Controls. Mix Two Topics In One Question And I Answer Both.' },
+          { keys: ['bye', 'alvida', 'see you'], title: 'Farewell', answer: '<strong>Goodbye For Now.</strong> The Planets Will Keep Orbiting; Come Back With More Doubts Anytime.' }
+        ]
+        var FUN_FACTS = [
+          'Saturn Would Float In Water Because It Is The Least Dense Planet.',
+          'One Day On Venus Outlasts Its Entire Year.',
+          'Jupiter Great Red Spot Is A Storm Wider Than Earth.',
+          'Sunlight Reaching You Right Now Left The Sun 8 Minutes Ago.',
+          'Olympus Mons On Mars Stands Nearly Three Times Everest Height.'
+        ]
+        var STOPWORDS = ['what', 'why', 'how', 'when', 'where', 'which', 'is', 'are', 'was', 'were', 'do', 'does', 'did', 'tell', 'me', 'about', 'the', 'a', 'an', 'of', 'in', 'on', 'and', 'or', 'for', 'to', 'it', 'its', 'please', 'something', 'anything', 'question', 'doubt', 'know']
+        var CHIP_TOPICS = ['Sun', 'Black Spots On Jupiter', 'Saturn Rings', 'Simulator Controls', 'Coldest Planet', 'How Many Moons']
+
+        function stem(w) {
+          if (w.length > 4) {
+            if (w.slice(-3) === 'ies') return w.slice(0, -3) + 'y'
+            if (w.slice(-3) === 'ing') return w.slice(0, -3)
+            if (w.slice(-2) === 'ed') return w.slice(0, -2)
+            if (w.slice(-1) === 's') return w.slice(0, -1)
+          }
+          return w
+        }
+        function norm(s) {
+          return (s || '').toLowerCase().replace(/[^a-z0-9 ]/g, ' ')
+        }
+        function queryWords(q) {
+          return norm(q).split(/\s+/)
+            .filter(function (w) { return w.length > 2 && STOPWORDS.indexOf(w) === -1 })
+            .map(stem)
+        }
+        function scoreEntry(entry, words) {
+          var score = 0
+          for (var k = 0; k < entry.keys.length; k++) {
+            var key = stem(entry.keys[k])
+            if (words.indexOf(key) !== -1) score += 2
+            else {
+              for (var w = 0; w < words.length; w++) {
+                if (key.indexOf(words[w]) === 0 || words[w].indexOf(key) === 0) { score += 1; break }
+              }
+            }
+          }
+          return score
+        }
+        // Returns up to two best matches so mixed questions get both answers.
+        function findAnswers(q) {
+          var words = queryWords(q)
+          if (!words.length) return []
+          var ranked = SOLAR_KB.map(function (entry) {
+            return { entry: entry, score: scoreEntry(entry, words) }
+          }).filter(function (r) { return r.score > 0 })
+          ranked.sort(function (a, b) { return b.score - a.score })
+          var hits = ranked.slice(0, 2)
+          if (hits.length === 2 && hits[1].score < 2) hits = [hits[0]]
+          return hits.map(function (h) { return h.entry })
+        }
+        function findAnswer(q) {
+          var hits = findAnswers(q)
+          return hits.length ? hits[0] : null
+        }
+        function renderAnswer(box, entry, rawQuery) {
+          box.hidden = false
+          if (entry) {
+            var hits = findAnswers(rawQuery)
+            if (hits.length === 2) {
+              box.innerHTML = hits[0].answer + '<br><br><strong>Also Related:</strong><br>' + hits[1].answer
+            } else {
+              box.innerHTML = entry.answer
+            }
+          } else {
+            var fact = FUN_FACTS[(rawQuery || '').length % FUN_FACTS.length]
+            box.innerHTML = '<strong>That Is Outside My Study Notes,</strong> But Here Is A Space Fact: ' + fact + ' Try Topics Like Sun, Jupiter, Saturn Rings, Or Simulator Controls.'
+          }
+        }
+
+        var input = document.getElementById('solarInput')
+        var askBtn = document.getElementById('solarAsk')
+        var answerBox = document.getElementById('solarAnswer')
+        var chipsBox = document.getElementById('solarChips')
+        if (!input || !askBtn || !answerBox) return
+
+        CHIP_TOPICS.forEach(function (topic) {
+          var chip = document.createElement('button')
+          chip.type = 'button'
+          chip.className = 'doubt-chip'
+          chip.textContent = topic
+          chip.addEventListener('click', function () {
+            input.value = topic
+            renderAnswer(answerBox, findAnswer(topic), topic)
+          })
+          chipsBox.appendChild(chip)
+        })
+
+        function askNow() {
+          var q = input.value.trim()
+          if (!q) {
+            answerBox.hidden = false
+            answerBox.innerHTML = '<strong>Type Your Doubt First,</strong> Or Tap Any Topic Chip Above.'
+            return
+          }
+          renderAnswer(answerBox, findAnswer(q), q)
+        }
+        askBtn.addEventListener('click', askNow)
+        input.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') askNow()
+        })
+      })()
+    </script>
 
     <script defer src="global-gesture.js"></script>
 
@@ -1589,6 +2047,7 @@
       <div class="fi">
         <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
         <div class="fl">
+          <a href="making">Making</a>
           <a href="privacy">Privacy</a>
           <a href="terms">Terms</a>
           <a href="feedback">Feedback</a>

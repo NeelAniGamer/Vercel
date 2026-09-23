@@ -3,902 +3,819 @@
 <head>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995"
      crossorigin="anonymous"></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CastFlow — Your Phone. Any Screen.</title>
-    <meta name="description" content="CastFlow lets you cast your Android screen, share files, and use desktop mode — all from your browser. No cables. No installs on the receiver.">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#070a14" />
+    <title>CastFlow — Your Phone. Any Screen. | Class Of Learners</title>
+    <meta name="description" content="CastFlow lets you cast your Android screen, share files, and use desktop mode — all from your browser. No cables. No installs on the receiver." />
+    <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
+    <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/CastFlow" />
+    <meta property="og:title" content="CastFlow — Your Phone. Any Screen." />
+    <meta property="og:description" content="Cast your Android screen, share files, and use desktop mode — all from your browser. Free and open source." />
+    <meta property="og:type" content="website" />
+    <link rel="icon" type="image/png" href="Icon.png" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="col-mobile.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="col-mobile.css" />
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"SoftwareApplication","name":"CastFlow","applicationCategory":"UtilitiesApplication","operatingSystem":"Android","offers":{"@type":"Offer","price":"0"},"description":"Cast your Android screen, share files, and use desktop mode — all from your browser."}
+    </script>
 
     <style>
-        /* ── Reset & Base ─────────────────────────────────────────── */
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            --bg: #ffffff;
-            --bg-secondary: #f5f5f5;
-            --text: #0a0a0a;
-            --text-muted: #6b6b6b;
-            --accent: #ff6b35;
-            --accent-hover: #e55a28;
-            --border: #e5e5e5;
-            --font: 'Space Grotesk', sans-serif;
-            --container: min(90%, 1200px);
+            --void: #070a14;
+            --void-2: #0b0f1e;
+            --panel: rgba(255, 255, 255, 0.035);
+            --line: rgba(255, 255, 255, 0.09);
+            --ink: #e8e3d8;
+            --dim: #9aa3b8;
+            --signal: #f2b84b;
+            --signal-ink: #1a1206;
+            --teal: #00f0cc;
+            --font: 'Space Grotesk', -apple-system, 'Segoe UI', system-ui, sans-serif;
+            --wrap: min(1120px, 100% - 40px);
+            --r-lg: 22px;
+            --r-md: 14px;
         }
 
         html { scroll-behavior: smooth; }
 
         body {
             font-family: var(--font);
-            color: var(--text);
-            background: var(--bg);
+            background: var(--void);
+            color: var(--ink);
             line-height: 1.6;
-            overflow-x: hidden;
+            overflow-x: clip;
             -webkit-font-smoothing: antialiased;
         }
 
-        img { max-width: 100%; height: auto; display: block; }
-        a { text-decoration: none; color: inherit; }
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(560px 380px at 12% -4%, rgba(242, 184, 75, 0.10), transparent 65%),
+                radial-gradient(640px 440px at 88% 22%, rgba(0, 240, 204, 0.07), transparent 65%),
+                radial-gradient(700px 500px at 50% 110%, rgba(99, 102, 241, 0.08), transparent 65%);
+        }
 
-        .container { width: var(--container); margin: 0 auto; }
+        main, header, footer { position: relative; z-index: 1; }
 
-        /* ── Announcement Bar ─────────────────────────────────────── */
+        img, svg { display: block; }
+        a { color: inherit; }
+        .wrap { width: var(--wrap); margin: 0 auto; }
+
+        .skip-link {
+            position: absolute; left: 12px; top: -60px; z-index: 2000;
+            background: var(--signal); color: var(--signal-ink);
+            padding: 10px 18px; border-radius: 10px; font-weight: 700;
+            transition: top 0.2s;
+        }
+        .skip-link:focus { top: 12px; }
+
+        :focus-visible { outline: 2px solid var(--signal); outline-offset: 3px; border-radius: 6px; }
+
+        /* ── Announcement ─────────────────────────────────────── */
         .announcement {
-            background: var(--accent);
-            color: var(--bg);
+            background: linear-gradient(90deg, rgba(242,184,75,0.16), rgba(0,240,204,0.12));
+            border-bottom: 1px solid var(--line);
+            color: var(--ink);
             text-align: center;
-            padding: 8px 20px;
-            font-size: 0.75rem;
+            padding: 9px 16px;
+            font-size: 0.72rem;
             font-weight: 700;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.14em;
             text-transform: uppercase;
         }
 
-        /* ── Header / Nav ──────────────────────────────────────────── */
-        header {
-            position: fixed;
+        /* ── Header ───────────────────────────────────────────── */
+        header.site-head {
+            position: sticky;
             top: 0;
-            left: 0;
-            right: 0;
-            background: rgba(255, 255, 255, 0.92);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border);
-            z-index: 1000;
-            padding: 0 2rem;
+            z-index: 900;
+            background: rgba(7, 10, 20, 0.82);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--line);
         }
 
-        .header-inner {
+        .head-inner {
+            width: var(--wrap);
+            margin: 0 auto;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            height: 64px;
-            width: 100%;
-            max-width: 1400px;
-            margin: 0 auto;
+            gap: 12px;
+            min-height: 64px;
         }
 
-        .logo {
-            font-size: 1.25rem;
-            font-weight: 700;
-            letter-spacing: -0.03em;
+        .brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 700; font-size: 1.15rem; letter-spacing: -0.01em; }
+        .brand-mark {
+            width: 34px; height: 34px; border-radius: 10px; flex: none;
+            display: grid; place-items: center;
+            background: linear-gradient(135deg, var(--signal), #ff8a3d);
+            color: var(--signal-ink);
+        }
+        .brand-mark svg { width: 20px; height: 20px; }
+
+        nav.primary ul { display: flex; align-items: center; gap: 4px; list-style: none; }
+        nav.primary a {
+            text-decoration: none; font-size: 0.85rem; font-weight: 600;
+            color: var(--dim); padding: 10px 14px; border-radius: 10px;
+            transition: color 0.2s, background 0.2s;
+        }
+        nav.primary a:hover { color: var(--ink); background: rgba(255, 255, 255, 0.05); }
+
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+            text-decoration: none; font-weight: 700; cursor: pointer; border: none;
+            min-height: 48px; padding: 13px 26px; border-radius: 14px; font-size: 0.95rem;
+            font-family: inherit; transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+        .btn:active { transform: scale(0.98); }
+        .btn-solid { background: var(--signal); color: var(--signal-ink); box-shadow: 0 10px 30px rgba(242, 184, 75, 0.25); }
+        .btn-solid:hover { background: #ffc95e; box-shadow: 0 14px 36px rgba(242, 184, 75, 0.35); }
+        .btn-ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+        .btn-ghost:hover { border-color: var(--signal); color: var(--signal); }
+        .btn-sm { min-height: 44px; padding: 10px 20px; font-size: 0.85rem; border-radius: 12px; }
+
+        .menu-btn {
+            display: none; background: none; border: 1px solid var(--line);
+            border-radius: 12px; width: 48px; height: 48px; cursor: pointer; color: var(--ink);
+        }
+        .menu-btn svg { width: 22px; height: 22px; margin: auto; }
+
+        /* ── Hero ─────────────────────────────────────────────── */
+        .hero { padding: 72px 0 40px; overflow: clip; }
+        .hero-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 48px; align-items: center; }
+
+        .eyebrow {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+            color: var(--signal); border: 1px solid rgba(242, 184, 75, 0.35);
+            background: rgba(242, 184, 75, 0.08);
+            padding: 8px 16px; border-radius: 999px; margin-bottom: 22px;
+        }
+        .eyebrow .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 10px var(--teal); }
+
+        h1.hero-title { font-size: clamp(2.5rem, 7vw, 4.3rem); line-height: 1.04; letter-spacing: -0.02em; margin-bottom: 18px; }
+        h1.hero-title .grad {
+            background: linear-gradient(92deg, var(--signal) 10%, #ff8a3d 55%, var(--teal) 100%);
+            -webkit-background-clip: text; background-clip: text; color: transparent;
         }
 
-        nav ul {
-            display: flex;
-            list-style: none;
-            gap: 0.5rem;
-        }
+        .hero-sub { color: var(--dim); font-size: clamp(1rem, 2.4vw, 1.15rem); max-width: 34rem; margin-bottom: 30px; }
 
-        nav a {
-            font-size: 0.8125rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            padding: 8px 16px;
-            border: 1px solid transparent;
-            transition: all 0.2s;
-        }
+        .hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 30px; }
 
-        nav a:hover {
-            color: var(--text);
-            border-color: var(--border);
-        }
+        .hero-points { display: flex; gap: 20px; flex-wrap: wrap; list-style: none; }
+        .hero-points li { display: inline-flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600; color: var(--dim); }
+        .hero-points svg { width: 16px; height: 16px; color: var(--teal); flex: none; }
 
-        .nav-cta {
-            background: var(--accent);
-            color: var(--bg) !important;
-            border-radius: 4px;
-        }
+        /* Phone mockup */
+        .hero-visual { display: flex; justify-content: center; }
+        .phone-stage { position: relative; width: min(300px, 78vw); }
 
-        .nav-cta:hover {
-            background: var(--accent-hover);
-            border-color: var(--accent-hover) !important;
+        .phone {
+            position: relative; z-index: 2;
+            width: 100%; aspect-ratio: 9 / 17;
+            background: #0d1222;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 44px;
+            padding: 12px;
+            box-shadow: 0 40px 90px rgba(0, 0, 0, 0.55), 0 0 0 8px rgba(255, 255, 255, 0.02), 0 0 70px rgba(242, 184, 75, 0.10);
         }
-
-        /* ── Hero Section ─────────────────────────────────────────── */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            padding: 120px 0 80px;
-            position: relative;
-            overflow: hidden;
+        .phone-screen {
+            width: 100%; height: 100%; border-radius: 34px; overflow: hidden;
+            background: linear-gradient(180deg, #101830 0%, #0a0f20 60%, #070a14 100%);
+            display: flex; flex-direction: column; padding: 16px 14px 14px; gap: 10px;
         }
+        .notch { width: 96px; height: 22px; background: #04060c; border-radius: 999px; margin: 2px auto 6px; flex: none; }
+        .cast-card {
+            border: 1px solid rgba(0, 240, 204, 0.3); border-radius: 16px;
+            background: rgba(0, 240, 204, 0.06); padding: 12px; flex: none;
+        }
+        .cast-card .row { display: flex; align-items: center; gap: 9px; }
+        .cast-pulse { position: relative; width: 34px; height: 34px; flex: none; display: grid; place-items: center; color: var(--teal); }
+        .cast-pulse svg { width: 20px; height: 20px; z-index: 1; }
+        .cast-pulse::before, .cast-pulse::after {
+            content: ""; position: absolute; inset: 0; border-radius: 50%;
+            border: 1.5px solid var(--teal); opacity: 0;
+            animation: ring 2.6s ease-out infinite;
+        }
+        .cast-pulse::after { animation-delay: 1.3s; }
+        @keyframes ring { 0% { transform: scale(0.55); opacity: 0.9; } 100% { transform: scale(1.5); opacity: 0; } }
+        .cast-meta { font-size: 0.72rem; font-weight: 700; }
+        .cast-meta small { display: block; font-weight: 600; color: var(--teal); font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; }
+        .screen-list { display: flex; flex-direction: column; gap: 8px; }
+        .screen-row {
+            display: flex; align-items: center; gap: 10px;
+            background: rgba(255, 255, 255, 0.04); border: 1px solid var(--line);
+            border-radius: 12px; padding: 10px 12px; font-size: 0.7rem; font-weight: 600;
+        }
+        .screen-row .bar { height: 6px; border-radius: 4px; background: rgba(255, 255, 255, 0.12); flex: 1; overflow: hidden; }
+        .screen-row .bar i { display: block; height: 100%; width: 64%; border-radius: 4px; background: linear-gradient(90deg, var(--signal), var(--teal)); }
+        .screen-row .pct { color: var(--signal); font-variant-numeric: tabular-nums; }
+        .screen-home { margin-top: auto; width: 110px; height: 5px; border-radius: 4px; background: rgba(255, 255, 255, 0.22); align-self: center; flex: none; }
 
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: -30%;
-            right: -10%;
-            width: 700px;
-            height: 700px;
-            background: radial-gradient(circle, rgba(0, 0, 0, 0.04) 0%, transparent 70%);
+        .float-chip {
+            position: absolute; z-index: 3;
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(13, 18, 34, 0.92); border: 1px solid var(--line);
+            border-radius: 14px; padding: 10px 14px;
+            font-size: 0.72rem; font-weight: 700; white-space: nowrap;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+            animation: floaty 5s ease-in-out infinite;
+        }
+        .float-chip .ok { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 10px var(--teal); }
+        .chip-a { top: 16%; left: -34px; }
+        .chip-b { bottom: 22%; right: -30px; animation-delay: -2.5s; }
+        @keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+
+        /* ── Sections ─────────────────────────────────────────── */
+        section.block { padding: 72px 0; }
+        .sec-head { max-width: 640px; margin-bottom: 40px; }
+        .sec-head.center { margin-left: auto; margin-right: auto; text-align: center; }
+        .kicker { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--teal); margin-bottom: 12px; }
+        h2.sec-title { font-size: clamp(1.7rem, 4.6vw, 2.5rem); letter-spacing: -0.01em; line-height: 1.12; margin-bottom: 12px; }
+        .sec-sub { color: var(--dim); }
+
+        .feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+        .feat {
+            background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-lg);
+            padding: 28px 24px; transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+        }
+        .feat:hover { transform: translateY(-5px); border-color: rgba(242, 184, 75, 0.4); box-shadow: 0 24px 50px rgba(0, 0, 0, 0.4); }
+        .feat-ic {
+            width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center;
+            background: rgba(242, 184, 75, 0.1); border: 1px solid rgba(242, 184, 75, 0.3);
+            color: var(--signal); margin-bottom: 18px;
+        }
+        .feat-ic svg { width: 22px; height: 22px; }
+        .feat h3 { font-size: 1.08rem; margin-bottom: 8px; }
+        .feat p { color: var(--dim); font-size: 0.92rem; }
+
+        /* Steps */
+        .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; counter-reset: step; }
+        .step {
+            position: relative; background: var(--panel); border: 1px solid var(--line);
+            border-radius: var(--r-lg); padding: 30px 24px 26px; overflow: clip;
+        }
+        .step-num {
+            font-size: 2.6rem; font-weight: 700; line-height: 1;
+            background: linear-gradient(180deg, rgba(242,184,75,0.85), rgba(242,184,75,0.08));
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+            margin-bottom: 14px;
+        }
+        .step h3 { font-size: 1.1rem; margin-bottom: 8px; }
+        .step p { color: var(--dim); font-size: 0.92rem; }
+
+        /* Showcase */
+        .show-grid { display: grid; grid-template-columns: 0.95fr 1.05fr; gap: 48px; align-items: center; }
+        .check-list { list-style: none; display: flex; flex-direction: column; gap: 16px; margin-top: 24px; }
+        .check-list li { display: flex; gap: 12px; align-items: flex-start; }
+        .check-list svg { width: 20px; height: 20px; color: var(--teal); flex: none; margin-top: 3px; }
+        .check-list strong { display: block; font-size: 0.98rem; }
+        .check-list span { color: var(--dim); font-size: 0.88rem; }
+
+        .browser {
+            background: #0d1222; border: 1px solid var(--line); border-radius: 18px;
+            overflow: clip; box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5);
+        }
+        .browser-bar { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+        .browser-bar i { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.14); }
+        .browser-bar i:first-child { background: rgba(255, 94, 126, 0.7); }
+        .browser-bar i:nth-child(2) { background: rgba(242, 184, 75, 0.7); }
+        .browser-bar i:nth-child(3) { background: rgba(0, 240, 204, 0.6); }
+        .browser-url {
+            flex: 1; margin-left: 8px; font-size: 0.72rem; color: var(--dim);
+            background: rgba(255,255,255,0.05); border-radius: 8px; padding: 6px 12px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
+        }
+        .browser-body { padding: 18px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .file-card {
+            background: rgba(255,255,255,0.035); border: 1px solid var(--line);
+            border-radius: 12px; padding: 14px 10px; text-align: center; font-size: 0.68rem; font-weight: 700;
+        }
+        .file-card svg { width: 22px; height: 22px; margin: 0 auto 8px; color: var(--signal); }
+        .file-card small { display: block; color: var(--dim); font-weight: 600; margin-top: 2px; }
+
+        /* Stats band */
+        .stats-band {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;
+            background: linear-gradient(135deg, rgba(242,184,75,0.08), rgba(0,240,204,0.05));
+            border: 1px solid var(--line); border-radius: var(--r-lg); padding: 38px 24px;
+            text-align: center;
+        }
+        .stat b { display: block; font-size: clamp(1.9rem, 5vw, 2.6rem); letter-spacing: -0.02em; }
+        .stat span { color: var(--dim); font-size: 0.85rem; font-weight: 600; }
+
+        /* Download */
+        .dl-card {
+            background: var(--panel); border: 1px solid rgba(242, 184, 75, 0.3);
+            border-radius: 26px; padding: clamp(28px, 5vw, 56px); text-align: center;
+            position: relative; overflow: clip;
+        }
+        .dl-card::before {
+            content: ""; position: absolute; inset: -40% -20% auto; height: 70%;
+            background: radial-gradient(50% 100% at 50% 0%, rgba(242, 184, 75, 0.14), transparent 70%);
             pointer-events: none;
         }
+        .ver-pill {
+            display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+            color: var(--signal); border: 1px solid rgba(242,184,75,0.4); border-radius: 999px; padding: 7px 16px; margin-bottom: 18px;
+        }
+        .dl-card h2 { font-size: clamp(1.8rem, 5vw, 2.6rem); margin-bottom: 10px; }
+        .dl-card > p { color: var(--dim); margin-bottom: 26px; }
+        .req-list {
+            list-style: none; display: flex; justify-content: center; gap: 10px 22px; flex-wrap: wrap;
+            margin-bottom: 30px; color: var(--dim); font-size: 0.86rem; font-weight: 600;
+        }
+        .req-list li { display: inline-flex; align-items: center; gap: 8px; }
+        .req-list svg { width: 15px; height: 15px; color: var(--teal); flex: none; }
+        .dl-ctas { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; position: relative; }
 
-        .hero-content {
-            max-width: 680px;
+        /* FAQ */
+        .faq-list { display: flex; flex-direction: column; gap: 12px; max-width: 760px; }
+        .faq-list.center { margin: 0 auto; }
+        details.faq {
+            background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-md);
+            padding: 0 22px; transition: border-color 0.2s;
+        }
+        details.faq[open] { border-color: rgba(242, 184, 75, 0.4); }
+        details.faq summary {
+            list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 14px;
+            padding: 20px 0; font-weight: 700; font-size: 0.98rem; min-height: 48px;
+        }
+        details.faq summary::-webkit-details-marker { display: none; }
+        details.faq summary::after {
+            content: "+"; flex: none; width: 30px; height: 30px; border-radius: 50%;
+            display: grid; place-items: center; font-size: 1.1rem; font-weight: 400;
+            border: 1px solid var(--line); color: var(--signal); transition: transform 0.25s;
+        }
+        details.faq[open] summary::after { transform: rotate(45deg); }
+        details.faq .faq-a { color: var(--dim); font-size: 0.92rem; padding-bottom: 22px; max-width: 60ch; }
+        details.faq .faq-a a { color: var(--signal); }
+
+        /* Newsletter */
+        .news-card {
+            background: linear-gradient(135deg, rgba(242,184,75,0.10), rgba(0,240,204,0.06));
+            border: 1px solid var(--line); border-radius: 26px;
+            padding: clamp(30px, 5vw, 54px); text-align: center;
+        }
+        .news-card h2 { font-size: clamp(1.6rem, 4.4vw, 2.2rem); margin-bottom: 10px; }
+        .news-card > p { color: var(--dim); margin-bottom: 26px; }
+        .news-form { display: flex; gap: 10px; max-width: 480px; margin: 0 auto; }
+        .news-form input {
+            flex: 1; min-width: 0; min-height: 52px; border-radius: 14px; font: inherit;
+            background: rgba(0, 0, 0, 0.35); border: 1px solid var(--line); color: var(--ink);
+            padding: 12px 18px; font-size: 0.95rem;
+        }
+        .news-form input::placeholder { color: var(--dim); }
+        .news-status { margin-top: 14px; font-size: 0.88rem; font-weight: 600; min-height: 1.4em; }
+        .news-status.ok { color: var(--teal); }
+        .news-status.err { color: #ff8a8a; }
+
+        /* Footer */
+        footer.site-foot { border-top: 1px solid var(--line); padding: 44px 0 34px; margin-top: 20px; }
+        .foot-grid { display: flex; justify-content: space-between; gap: 28px; flex-wrap: wrap; align-items: flex-start; }
+        .foot-brand { display: flex; align-items: center; gap: 10px; font-weight: 700; margin-bottom: 10px; text-decoration: none; }
+        .foot-tag { color: var(--dim); font-size: 0.85rem; max-width: 300px; }
+        .foot-links { display: flex; gap: 26px; flex-wrap: wrap; list-style: none; }
+        .foot-links a { color: var(--dim); text-decoration: none; font-size: 0.88rem; font-weight: 600; padding: 6px 0; }
+        .foot-links a:hover { color: var(--signal); }
+        .foot-base { margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--dim); font-size: 0.8rem; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+        /* Reveal */
+        .rv { opacity: 0; transform: translateY(26px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
+        .rv.vis { opacity: 1; transform: none; }
+
+        /* ── Responsive ───────────────────────────────────────── */
+        @media (max-width: 960px) {
+            .hero-grid { grid-template-columns: 1fr; gap: 56px; }
+            .hero-visual { order: 2; }
+            .feat-grid { grid-template-columns: repeat(2, 1fr); }
+            .show-grid { grid-template-columns: 1fr; gap: 40px; }
+            .chip-a { left: -8px; }
+            .chip-b { right: -8px; }
         }
 
-        .hero h1 {
-            font-size: clamp(2.75rem, 7vw, 4.5rem);
-            font-weight: 700;
-            line-height: 1.05;
-            letter-spacing: -0.04em;
-            margin-bottom: 1.5rem;
-        }
-
-        .hero h1 .highlight {
-            display: block;
-            color: var(--accent);
-            font-style: italic;
-        }
-
-        .hero p {
-            font-size: 1.125rem;
-            color: var(--text-muted);
-            max-width: 460px;
-            margin-bottom: 2rem;
-        }
-
-        .hero-cta {
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            background: var(--accent);
-            color: var(--bg);
-            font-weight: 600;
-            font-size: 0.9375rem;
-            padding: 14px 28px;
-            border-radius: 6px;
-            transition: all 0.25s;
-        }
-
-        .hero-cta:hover {
-            background: var(--accent-hover);
-            transform: translateY(-2px);
-        }
-
-        .hero-cta svg {
-            width: 18px;
-            height: 18px;
-        }
-
-        /* ── Features Grid ─────────────────────────────────────────── */
-        .features {
-            padding: 100px 0;
-            border-top: 1px solid var(--border);
-        }
-
-        .section-header {
-            margin-bottom: 60px;
-        }
-
-        .section-header h2 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            letter-spacing: -0.03em;
-            margin-bottom: 12px;
-        }
-
-        .section-header p {
-            color: var(--text-muted);
-            max-width: 500px;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
-        }
-
-        .feature-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            padding: 32px;
-            border-radius: 12px;
-            transition: all 0.3s;
-        }
-
-        .feature-card:hover {
-            border-color: var(--accent);
-            transform: translateY(-4px);
-        }
-
-        .feature-icon {
-            width: 48px;
-            height: 48px;
-            background: var(--accent);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            color: var(--bg);
-        }
-
-        .feature-icon svg {
-            width: 24px;
-            height: 24px;
-        }
-
-        .feature-card h3 {
-            font-size: 1.125rem;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .feature-card p {
-            font-size: 0.875rem;
-            color: var(--text-muted);
-            line-height: 1.6;
-        }
-
-        /* ── How It Works ─────────────────────────────────────────── */
-        .how-it-works {
-            padding: 100px 0;
-            background: var(--bg-secondary);
-        }
-
-        .steps {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 40px;
-            margin-top: 60px;
-        }
-
-        .step {
-            text-align: center;
-        }
-
-        .step-number {
-            font-size: 3rem;
-            font-weight: 700;
-            color: var(--accent);
-            opacity: 0.3;
-            margin-bottom: 16px;
-        }
-
-        .step h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
-
-        .step p {
-            font-size: 0.875rem;
-            color: var(--text-muted);
-        }
-
-        /* ── Download Section ───────────────────────────────────── */
-        .download {
-            padding: 100px 0;
-            text-align: center;
-            border-top: 1px solid var(--border);
-        }
-
-        .download h2 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            letter-spacing: -0.03em;
-            margin-bottom: 16px;
-        }
-
-        .download p {
-            color: var(--text-muted);
-            margin-bottom: 32px;
-            max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .download-buttons {
-            display: flex;
-            gap: 16px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .download-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            background: var(--accent);
-            color: var(--bg);
-            padding: 14px 24px;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: all 0.25s;
-        }
-
-        .download-btn:hover {
-            background: var(--accent-hover);
-            transform: translateY(-2px);
-        }
-
-        .download-btn svg {
-            width: 20px;
-            height: 20px;
-        }
-
-        /* ── About Section ───────────────────────────────────────── */
-        .about {
-            padding: 100px 0;
-            border-top: 1px solid var(--border);
-        }
-
-        .about-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 80px;
-            align-items: center;
-        }
-
-        .about h2 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            letter-spacing: -0.03em;
-            margin-bottom: 20px;
-        }
-
-        .about p {
-            color: var(--text-muted);
-            margin-bottom: 20px;
-            font-size: 1rem;
-        }
-
-        .about-stats {
-            display: flex;
-            gap: 40px;
-            margin-top: 30px;
-        }
-
-        .stat h3 {
-            font-size: 2rem;
-            font-weight: 700;
-        }
-
-        .stat p {
-            font-size: 0.8125rem;
-            color: var(--text-muted);
-            margin: 0;
-        }
-
-        /* ── Newsletter ─────────────────────────────────────────── */
-        .newsletter {
-            padding: 80px 0;
-            border-top: 1px solid var(--border);
-        }
-
-        .newsletter-inner {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            padding: 60px;
-            border-radius: 16px;
-            text-align: center;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .newsletter h2 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin-bottom: 12px;
-        }
-
-        .newsletter p {
-            color: var(--text-muted);
-            margin-bottom: 32px;
-        }
-
-        .newsletter-form {
-            display: flex;
-            gap: 12px;
-            max-width: 440px;
-            margin: 0 auto;
-        }
-
-        .newsletter-form input {
-            flex: 1;
-            background: var(--bg);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 14px 18px;
-            border-radius: 6px;
-            font-size: 0.9375rem;
-            font-family: var(--font);
-        }
-
-        .newsletter-form input:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-
-        .newsletter-form input::placeholder {
-            color: var(--text-muted);
-        }
-
-        .newsletter-form button {
-            background: var(--accent);
-            color: var(--bg);
-            border: none;
-            padding: 14px 28px;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.9375rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            white-space: nowrap;
-        }
-
-        .newsletter-form button:hover {
-            background: var(--accent-hover);
-        }
-
-        /* ── Footer ──────────────────────────────────────────────── */
-        footer {
-            padding: 60px 0 30px;
-            background: var(--text);
-            color: var(--bg);
-        }
-
-        .footer-grid {
-            display: grid;
-            grid-template-columns: 2fr repeat(3, 1fr);
-            gap: 40px;
-            margin-bottom: 60px;
-        }
-
-        .footer-brand p {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 0.875rem;
-            max-width: 280px;
-            margin-top: 16px;
-        }
-
-        .footer-col h4 {
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: rgba(255, 255, 255, 0.5);
-            margin-bottom: 20px;
-        }
-
-        .footer-col ul {
-            list-style: none;
-        }
-
-        .footer-col li {
-            margin-bottom: 12px;
-        }
-
-        .footer-col a {
-            font-size: 0.875rem;
-            color: var(--bg);
-            transition: opacity 0.2s;
-        }
-
-        .footer-col a:hover {
-            color: var(--accent);
-        }
-
-        .footer-bottom {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 30px;
-            border-top: 1px solid rgba(255, 255, 255, 0.15);
-            font-size: 0.8125rem;
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        .social-links {
-            display: flex;
-            gap: 16px;
-        }
-
-        .social-links a {
-            color: var(--bg);
-            transition: opacity 0.2s;
-        }
-
-        .social-links a:hover {
-            opacity: 0.7;
-        }
-
-        /* ── Responsive ─────────────────────────────────────────── */
-        @media (max-width: 768px) {
-            .header-inner {
-                padding: 0;
+        @media (max-width: 860px) {
+            nav.primary {
+                position: fixed; top: 64px; left: 12px; right: 12px; z-index: 950;
+                background: rgba(11, 15, 30, 0.98); border: 1px solid var(--line);
+                border-radius: 18px; padding: 10px; display: none;
+                box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
             }
-
-            nav {
-                display: none;
-            }
-
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-
-            .hero p {
-                font-size: 1rem;
-            }
-
-            .steps {
-                grid-template-columns: 1fr;
-                gap: 40px;
-            }
-
-            .about-grid {
-                grid-template-columns: 1fr;
-                gap: 40px;
-            }
-
-            .footer-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .footer-brand {
-                grid-column: 1 / -1;
-            }
-
-            .newsletter-inner {
-                padding: 40px 24px;
-            }
-
-            .newsletter-form {
-                flex-direction: column;
-            }
-
-            .about-stats {
-                gap: 24px;
-            }
+            nav.primary.open { display: block; }
+            nav.primary ul { flex-direction: column; align-items: stretch; }
+            nav.primary a { padding: 14px 16px; font-size: 0.95rem; }
+            nav.primary .head-cta { display: inline-flex; justify-content: center; margin-top: 8px; }
+            .menu-btn { display: inline-flex; }
+            .head-cta { display: none; }
         }
 
-        /* ── Animations ─────────────────────────────────────────── */
-        .fade-up {
-            opacity: 0;
-            transform: translateY(30px);
+        @media (max-width: 640px) {
+            .hero { padding: 52px 0 24px; }
+            .phone-stage { margin: 26px 0; }
+            .chip-a { top: -24px; left: 4px; }
+            .chip-b { bottom: -24px; right: 4px; }
+            section.block { padding: 54px 0; }
+            .feat-grid, .steps { grid-template-columns: 1fr; }
+            .stats-band { grid-template-columns: 1fr; gap: 26px; padding: 30px 20px; }
+            .news-form { flex-direction: column; }
+            .news-form .btn { width: 100%; }
+            .browser-body { grid-template-columns: repeat(2, 1fr); }
+            .float-chip { font-size: 0.66rem; padding: 8px 12px; }
+            .foot-grid { flex-direction: column; }
         }
 
-        .fade-up.visible {
-            opacity: 1;
-            transform: translateY(0);
-            transition: all 0.6s ease-out;
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+            .rv { opacity: 1; transform: none; }
+        }
+
+        @media (max-width: 900px) {
+            body { padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px)); }
         }
     </style>
-    <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
-      <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/CastFlow" />
-      <link rel="icon" type="image/png" href="Icon.png" />
-    <link rel="stylesheet" href="liquid-glass.css">
-    <script defer src="pull-refresh.js"></script>
-  </head>
+</head>
 <body>
-    <!-- Announcement Bar -->
-    <div class="announcement">
-        Open Source — No Tracking — No Ads
-    </div>
+    <a class="skip-link" href="#main">Skip To Content</a>
 
-    <!-- Header -->
-    <header>
-        <div class="header-inner">
-            <a href="#" class="logo">CastFlow</a>
-            <nav>
+    <div class="announcement">Open Source — No Tracking — No Ads</div>
+
+    <header class="site-head">
+        <div class="head-inner">
+            <a class="brand" href="#top" aria-label="CastFlow Home">
+                <span class="brand-mark" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/></svg>
+                </span>
+                CastFlow
+            </a>
+            <nav class="primary" id="primaryNav" aria-label="Primary">
                 <ul>
                     <li><a href="#features">Features</a></li>
                     <li><a href="#how-it-works">How It Works</a></li>
                     <li><a href="#about">About</a></li>
-                    <li><a href="#download" class="nav-cta">Download APK</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                    <li><a href="/download" class="btn btn-solid btn-sm head-cta">Get The App</a></li>
                 </ul>
             </nav>
+            <button class="menu-btn" id="menuBtn" aria-label="Open Menu" aria-expanded="false" aria-controls="primaryNav">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+            </button>
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container">
-            <div class="hero-content">
-                <h1>
-                    Your Phone.
-                    <span class="highlight">Any Screen.</span>
-                </h1>
-                <p>
-                    CastFlow lets you cast your Android screen, share files, and use desktop mode — all from your browser. No cables. No installs needed on the TV or PC.
-                </p>
-                <a href="#download" class="hero-cta">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                    Download APK
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Features Section -->
-    <section class="features" id="features">
-        <div class="container">
-            <div class="section-header fade-up">
-                <h2>What can CastFlow do?</h2>
-                <p>Powerful features that transform how you use your phone on any display.</p>
-            </div>
-            <div class="features-grid">
-                <div class="feature-card fade-up">
-                    <div class="feature-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                            <line x1="8" y1="21" x2="16" y2="21"></line>
-                            <line x1="12" y1="17" x2="12" y2="21"></line>
-                        </svg>
+    <main id="main">
+        <!-- Hero -->
+        <section class="hero" id="top">
+            <div class="wrap hero-grid">
+                <div>
+                    <span class="eyebrow"><span class="dot"></span>v3.2.0 · Cyber-Mechanical Edition</span>
+                    <h1 class="hero-title">Your Phone.<br /><span class="grad">Any Screen.</span></h1>
+                    <p class="hero-sub">CastFlow lets you cast your Android screen, share files, and use desktop mode — all from your browser. No cables. No installs needed on the TV or PC.</p>
+                    <div class="hero-ctas">
+                        <a class="btn btn-solid" href="/download">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Download APK
+                        </a>
+                        <a class="btn btn-ghost" href="#how-it-works">See How It Works</a>
                     </div>
-                    <h3>Screen Casting</h3>
-                    <p>Stream your phone's screen to any browser in real-time. Perfect for presentations, gaming, or sharing content on bigger screens.</p>
-                </div>
-                <div class="feature-card fade-up">
-                    <div class="feature-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                            <line x1="16" y1="13" x2="8" y2="13"></line>
-                            <line x1="16" y1="17" x2="8" y2="17"></line>
-                        </svg>
-                    </div>
-                    <h3>File Sharing</h3>
-                    <p>Share any file instantly. Photos, videos, documents — anyone can download directly from their browser without installing anything.</p>
-                </div>
-                <div class="feature-card fade-up">
-                    <div class="feature-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                            <line x1="8" y1="21" x2="16" y2="21"></line>
-                            <line x1="12" y1="17" x2="12" y2="21"></line>
-                            <rect x="8" y="7" width="8" height="6" rx="1"></rect>
-                        </svg>
-                    </div>
-                    <h3>Custom DeX</h3>
-                    <p>Turn your phone into a desktop computer. Browser, file manager, calculator — all accessible from any screen.</p>
-                </div>
-                <div class="feature-card fade-up">
-                    <div class="feature-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <path d="M12 8v8"></path>
-                            <path d="M8 12h8"></path>
-                        </svg>
-                    </div>
-                    <h3>Remote Control</h3>
-                    <p>Control your phone from the browser. Touch gestures, keyboard input, and remote navigation — all supported.</p>
-                </div>
-                <div class="feature-card fade-up">
-                    <div class="feature-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="9" cy="7" r="4"></circle>
-                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                        </svg>
-                    </div>
-                    <h3>Multi-Viewer</h3>
-                    <p>Multiple people can view the same screen simultaneously. Great for collaborative work or sharing with friends.</p>
-                </div>
-                <div class="feature-card fade-up">
-                    <div class="feature-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="4" y1="9" x2="20" y2="9"></line>
-                            <line x1="4" y1="15" x2="20" y2="15"></line>
-                            <line x1="10" y1="3" x2="8" y2="21"></line>
-                            <line x1="16" y1="3" x2="14" y2="21"></line>
-                        </svg>
-                    </div>
-                    <h3>PDF Support</h3>
-                    <p>View PDFs with page navigation, zoom, and rotation. Perfect for documents on the big screen.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- How It Works -->
-    <section class="how-it-works" id="how-it-works">
-        <div class="container">
-            <div class="section-header" style="text-align: center;">
-                <h2>How it works</h2>
-                <p style="margin: 0 auto;">Three simple steps to cast your screen anywhere.</p>
-            </div>
-            <div class="steps">
-                <div class="step fade-up">
-                    <div class="step-number">01</div>
-                    <h3>Install CastFlow</h3>
-                    <p>Download the APK and install it on your Android device.</p>
-                </div>
-                <div class="step fade-up">
-                    <div class="step-number">02</div>
-                    <h3>Start the Server</h3>
-                    <p>Tap to start the web server. CastFlow shows you a URL to open in your browser.</p>
-                </div>
-                <div class="step fade-up">
-                    <div class="step-number">03</div>
-                    <h3>Cast Anywhere</h3>
-                    <p>Open the URL on any device with a browser. No installation needed on the receiver.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- About Section -->
-    <section class="about" id="about">
-        <div class="container">
-            <div class="about-grid">
-                <div class="fade-up">
-                    <h2>Built for the curious.</h2>
-                    <p>CastFlow was born from a simple idea: your phone is already powerful enough to be your desktop. Why buy extra hardware?</p>
-                    <p>We believe in software that respects your privacy. No accounts, no tracking, no ads. Just pure functionality.</p>
-                    <div class="about-stats">
-                        <div class="stat">
-                            <h3>100%</h3>
-                            <p>Free & Open Source</p>
-                        </div>
-                        <div class="stat">
-                            <h3>0</h3>
-                            <p>Trackers</p>
-                        </div>
-                        <div class="stat">
-                            <h3>∞</h3>
-                            <p>Possibilities</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="fade-up">
-                    <!-- Placeholder for image -->
-                    <div style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; height: 400px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.875rem;">
-                        [ CastFlow Preview Image ]
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Download Section -->
-    <section class="download" id="download">
-        <div class="container">
-            <h2 class="fade-up">Get CastFlow</h2>
-            <p class="fade-up">Free and open source. No subscriptions. No hidden fees.</p>
-            <div class="download-buttons fade-up">
-                <a href="#" class="download-btn">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M5 20.5v-17c0-.59.34-1.11.85-1.41L13.69 12l-9.89 10.44a1.19 1.19 0 0 0-.8 1.41v.15z"/>
-                        <path d="M14.33 12l-4.33-4.36v3h8v1.36z"/>
-                    </svg>
-                    Download APK
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Newsletter -->
-    <section class="newsletter" id="newsletter">
-        <div class="container">
-            <div class="newsletter-inner fade-up">
-                <h2>Join the experiment</h2>
-                <p>Get early access to new features and help shape the future of CastFlow.</p>
-                <form class="newsletter-form" onsubmit="return false;">
-                    <input type="email" placeholder="Enter your email" required>
-                    <button type="submit">Count me in</button>
-                </form>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-brand">
-                    <a href="#" class="logo" style="color: var(--accent);">CastFlow</a>
-                    <p>Transform your phone into a powerful casting device. No cables. No limits.</p>
-                </div>
-                <div class="footer-col">
-                    <h4>Product</h4>
-                    <ul>
-                        <li><a href="#features">Features</a></li>
-                        <li><a href="#download">Download</a></li>
-                        <li><a href="#">Source Code</a></li>
+                    <ul class="hero-points">
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>No Cables</li>
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>No Receiver Installs</li>
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>100% Free</li>
                     </ul>
                 </div>
-                <div class="footer-col">
-                    <h4>Support</h4>
-                    <ul>
-                        <li><a href="#">Documentation</a></li>
-                        <li><a href="#">FAQ</a></li>
-                        <li><a href="#">Report Bug</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h4>Community</h4>
-                    <ul>
-                        <li><a href="#">GitHub</a></li>
-                        <li><a href="#">Discord</a></li>
-                        <li><a href="#">Twitter</a></li>
-                    </ul>
+                <div class="hero-visual" aria-hidden="true">
+                    <div class="phone-stage">
+                        <span class="float-chip chip-a"><span class="ok"></span>1080p · 60fps Live</span>
+                        <div class="phone">
+                            <div class="phone-screen">
+                                <div class="notch"></div>
+                                <div class="cast-card">
+                                    <div class="row">
+                                        <span class="cast-pulse"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/></svg></span>
+                                        <div class="cast-meta">Living Room TV<small>Connected · 12ms</small></div>
+                                    </div>
+                                </div>
+                                <div class="screen-list">
+                                    <div class="screen-row"><span>Screen</span><span class="bar"><i></i></span><span class="pct">60fps</span></div>
+                                    <div class="screen-row"><span>Files</span><span class="bar"><i style="width:82%"></i></span><span class="pct">2.1GB</span></div>
+                                    <div class="screen-row"><span>DeX</span><span class="bar"><i style="width:45%"></i></span><span class="pct">Active</span></div>
+                                </div>
+                                <div class="screen-home"></div>
+                            </div>
+                        </div>
+                        <span class="float-chip chip-b"><span class="ok"></span>Zero Cables Needed</span>
+                    </div>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <span>© 2024 CastFlow. Open source.</span>
-                <div class="social-links">
-                    <a href="#">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                        </svg>
-                    </a>
-                    <a href="#">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
-                        </svg>
-                    </a>
-                    <a href="#">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
-                        </svg>
-                    </a>
+        </section>
+
+        <!-- Features -->
+        <section class="block" id="features">
+            <div class="wrap">
+                <div class="sec-head rv">
+                    <div class="kicker">Capabilities</div>
+                    <h2 class="sec-title">What Can CastFlow Do?</h2>
+                    <p class="sec-sub">Simple tools to put your phone on any display.</p>
                 </div>
+                <div class="feat-grid">
+                    <div class="feat rv">
+                        <div class="feat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+                        <h3>Screen Casting</h3>
+                        <p>Stream your phone screen to any browser in real time. Perfect for presentations, gaming, or sharing content on bigger screens.</p>
+                    </div>
+                    <div class="feat rv">
+                        <div class="feat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+                        <h3>File Sharing</h3>
+                        <p>Share any file instantly. Photos, videos, documents — anyone can download directly from their browser without installing anything.</p>
+                    </div>
+                    <div class="feat rv">
+                        <div class="feat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/><rect x="8" y="7" width="8" height="6" rx="1"/></svg></div>
+                        <h3>Custom DeX</h3>
+                        <p>Turn your phone into a desktop computer. Browser, file manager, calculator — all accessible from any screen.</p>
+                    </div>
+                    <div class="feat rv">
+                        <div class="feat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg></div>
+                        <h3>Remote Control</h3>
+                        <p>Control your phone from the browser. Touch gestures, keyboard input, and remote navigation — all supported.</p>
+                    </div>
+                    <div class="feat rv">
+                        <div class="feat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+                        <h3>Multi-Viewer</h3>
+                        <p>Multiple people can view the same screen simultaneously. Great for collaborative work or sharing with friends.</p>
+                    </div>
+                    <div class="feat rv">
+                        <div class="feat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg></div>
+                        <h3>PDF Support</h3>
+                        <p>View PDFs with page navigation, zoom, and rotation. Perfect for documents on the big screen.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works -->
+        <section class="block" id="how-it-works">
+            <div class="wrap">
+                <div class="sec-head center rv">
+                    <div class="kicker">Setup In Minutes</div>
+                    <h2 class="sec-title">How It Works</h2>
+                    <p class="sec-sub">Three simple steps to cast your screen anywhere.</p>
+                </div>
+                <div class="steps">
+                    <div class="step rv">
+                        <div class="step-num">01</div>
+                        <h3>Install CastFlow</h3>
+                        <p>Download the APK and install it on your Android device.</p>
+                    </div>
+                    <div class="step rv">
+                        <div class="step-num">02</div>
+                        <h3>Start The Server</h3>
+                        <p>Tap to start the web server. CastFlow shows you a URL to open in your browser.</p>
+                    </div>
+                    <div class="step rv">
+                        <div class="step-num">03</div>
+                        <h3>Cast Anywhere</h3>
+                        <p>Open the URL on any device with a browser. No installation needed on the receiver.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Showcase -->
+        <section class="block" id="showcase">
+            <div class="wrap show-grid">
+                <div class="rv">
+                    <div class="kicker">Desktop Mode</div>
+                    <h2 class="sec-title">One Phone.<br />Every Screen.</h2>
+                    <p class="sec-sub">Your phone is already powerful enough to be your desktop. CastFlow exposes it through any browser on the same network.</p>
+                    <ul class="check-list">
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><div><strong>Receiver Needs Nothing</strong><span>Any TV, PC, or tablet with a modern browser joins instantly.</span></div></li>
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><div><strong>Stays On Your Network</strong><span>Streams never leave your Wi-Fi. No cloud, no accounts, no tracking.</span></div></li>
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><div><strong>Built For Sharing</strong><span>Present slides, demo apps, or watch together — up to 1080p at 60fps.</span></div></li>
+                    </ul>
+                </div>
+                <div class="browser rv" role="img" aria-label="Preview of the CastFlow receiver running in a desktop browser">
+                    <div class="browser-bar"><i></i><i></i><i></i><span class="browser-url">castflow.local — Living Room TV</span></div>
+                    <div class="browser-body">
+                        <div class="file-card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>Screen<small>Mirrored Live</small></div>
+                        <div class="file-card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Files<small>Drag To Pull</small></div>
+                        <div class="file-card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg>DeX<small>Desktop Mode</small></div>
+                        <div class="file-card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>Media<small>Shared Queue</small></div>
+                        <div class="file-card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Guests<small>3 Watching</small></div>
+                        <div class="file-card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>Stats<small>12ms Local</small></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About + Stats -->
+        <section class="block" id="about">
+            <div class="wrap">
+                <div class="sec-head rv">
+                    <div class="kicker">Why CastFlow</div>
+                    <h2 class="sec-title">Built For The Curious.</h2>
+                    <p class="sec-sub">CastFlow was born from a simple idea: your phone is already powerful enough to be your desktop. Why buy extra hardware? Software that respects your privacy — no accounts, no tracking, no ads. Just pure functionality.</p>
+                </div>
+                <div class="stats-band rv">
+                    <div class="stat"><b>100%</b><span>Free &amp; Open Source</span></div>
+                    <div class="stat"><b>0</b><span>Trackers Or Ads</span></div>
+                    <div class="stat"><b>∞</b><span>Possibilities</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Download -->
+        <section class="block" id="download">
+            <div class="wrap">
+                <div class="dl-card rv">
+                    <span class="ver-pill">v3.2.0 · Stable</span>
+                    <h2>Get CastFlow</h2>
+                    <p>Free and open source. No subscriptions. No hidden fees.</p>
+                    <ul class="req-list">
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Android 8.0+</li>
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Same Wi-Fi Network</li>
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>25MB Free Space</li>
+                    </ul>
+                    <div class="dl-ctas">
+                        <a class="btn btn-solid" href="/download">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Download APK
+                        </a>
+                        <a class="btn btn-ghost" href="#faq">Read The FAQ</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section class="block" id="faq">
+            <div class="wrap">
+                <div class="sec-head center rv">
+                    <div class="kicker">Questions</div>
+                    <h2 class="sec-title">Frequently Asked</h2>
+                </div>
+                <div class="faq-list center">
+                    <details class="faq rv">
+                        <summary>Is CastFlow Really Free?</summary>
+                        <p class="faq-a">Yes — completely free and open source. No subscriptions, no premium tiers, no hidden fees, and no ads. Ever.</p>
+                    </details>
+                    <details class="faq rv">
+                        <summary>What Do I Need To Run It?</summary>
+                        <p class="faq-a">Any Android phone running Android 8.0 or newer, plus a shared Wi-Fi network between your phone and the receiving screen. About 25MB of free space for the install.</p>
+                    </details>
+                    <details class="faq rv">
+                        <summary>Does The TV Or PC Need An App?</summary>
+                        <p class="faq-a">No. The receiver only needs a modern web browser. Open the URL CastFlow shows you and the screen, files, and desktop mode appear instantly.</p>
+                    </details>
+                    <details class="faq rv">
+                        <summary>Is My Screen Data Private?</summary>
+                        <p class="faq-a">Yes. Streams travel directly over your local Wi-Fi and never touch a cloud server. There are no accounts and nothing is tracked or stored.</p>
+                    </details>
+                    <details class="faq rv">
+                        <summary>Where Can I Report A Bug?</summary>
+                        <p class="faq-a">Head to the <a href="/feedback">Feedback Page</a> and send a report with your device model and Android version. Every report is read by the team.</p>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+        <!-- Newsletter -->
+        <section class="block" id="newsletter">
+            <div class="wrap">
+                <div class="news-card rv">
+                    <h2>Join The Experiment</h2>
+                    <p>Get early access to new features and help shape the future of CastFlow.</p>
+                    <form class="news-form" id="castFlowForm" novalidate>
+                        <input type="email" id="castFlowEmail" name="email" placeholder="Enter your email" autocomplete="email" aria-label="Email address" required />
+                        <button class="btn btn-solid" type="submit">Count Me In</button>
+                    </form>
+                    <p class="news-status" id="castFlowStatus" role="status" aria-live="polite"></p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-foot">
+        <div class="wrap">
+            <div class="foot-grid">
+                <div>
+                    <a class="foot-brand" href="#top" aria-label="Back to top">
+                        <span class="brand-mark" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/></svg>
+                        </span>
+                        CastFlow
+                    </a>
+                    <p class="foot-tag">Your phone on any screen. Free, open source, and private by design.</p>
+                </div>
+                <ul class="foot-links">
+                    <li><a href="/making">Making</a></li>
+                    <li><a href="/feedback">Feedback</a></li>
+                    <li><a href="/download">Downloads</a></li>
+                    <li><a href="/privacy">Privacy</a></li>
+                    <li><a href="/terms">Terms</a></li>
+                </ul>
+            </div>
+            <div class="foot-base">
+                <span>© 2026 Class Of Learners. All Rights Reserved.</span>
+                <span>Built With Local Intelligence &amp; Precision.</span>
             </div>
         </div>
     </footer>
 
+    <script defer src="col-router.js"></script>
+    <script defer src="pull-refresh.js"></script>
+    <script defer src="col-ui.js"></script>
+    <script defer src="col-auth.js"></script>
     <script>
-        // GSAP Animations
-        gsap.registerPlugin(ScrollTrigger);
-
-        // Fade up elements
-        gsap.utils.toArray('.fade-up').forEach(el => {
-            gsap.to(el, {
-                scrollTrigger: {
-                    trigger: el,
-                    start: 'top 85%',
-                    toggleActions: 'play none none reverse'
-                },
-                opacity: 1,
-                y: 0,
-                duration: 0.6,
-                ease: 'power2.out'
-            });
-        });
-
-        // Header scroll effect
-        window.addEventListener('scroll', () => {
-            const header = document.querySelector('header');
-            if (window.scrollY > 50) {
-                header.style.background = 'rgba(255, 255, 255, 0.98)';
-            } else {
-                header.style.background = 'rgba(255, 255, 255, 0.92)';
+        (function () {
+            // Mobile menu
+            var menuBtn = document.getElementById('menuBtn');
+            var nav = document.getElementById('primaryNav');
+            function closeMenu() {
+                if (!nav || !menuBtn) return;
+                nav.classList.remove('open');
+                menuBtn.setAttribute('aria-expanded', 'false');
+                menuBtn.setAttribute('aria-label', 'Open Menu');
             }
-        });
+            if (menuBtn && nav) {
+                menuBtn.addEventListener('click', function () {
+                    var open = nav.classList.toggle('open');
+                    menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+                    menuBtn.setAttribute('aria-label', open ? 'Close Menu' : 'Open Menu');
+                });
+                nav.querySelectorAll('a').forEach(function (a) {
+                    a.addEventListener('click', closeMenu);
+                });
+                document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape') closeMenu();
+                });
+            }
+
+            // Scroll reveals (no library dependency)
+            try {
+                var els = document.querySelectorAll('.rv');
+                if ('IntersectionObserver' in window && els.length) {
+                    var io = new IntersectionObserver(function (entries) {
+                        entries.forEach(function (en) {
+                            if (en.isIntersecting) { en.target.classList.add('vis'); io.unobserve(en.target); }
+                        });
+                    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+                    els.forEach(function (el) { io.observe(el); });
+                } else {
+                    els.forEach(function (el) { el.classList.add('vis'); });
+                }
+            } catch (e) {}
+
+            // Newsletter: validated, local-only, inline status (no popups)
+            var form = document.getElementById('castFlowForm');
+            var input = document.getElementById('castFlowEmail');
+            var status = document.getElementById('castFlowStatus');
+            function setStatus(msg, ok) {
+                if (!status) return;
+                status.textContent = msg;
+                status.className = 'news-status ' + (ok ? 'ok' : 'err');
+            }
+            if (form && input) {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    var v = (input.value || '').trim();
+                    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) {
+                        setStatus('Please Enter A Valid Email Address.', false);
+                        input.focus();
+                        return;
+                    }
+                    try {
+                        var key = 'castflow_subs';
+                        var arr = JSON.parse(localStorage.getItem(key) || '[]');
+                        if (arr.indexOf(v) === -1) arr.push(v);
+                        localStorage.setItem(key, JSON.stringify(arr));
+                    } catch (err) {}
+                    input.value = '';
+                    setStatus('Subscribed! Watch Your Inbox For Early Access.', true);
+                });
+                input.addEventListener('input', function () {
+                    if (status) { status.textContent = ''; status.className = 'news-status'; }
+                });
+            }
+            // Legacy alias for any retained inline handlers
+            window.castFlowSubscribe = function (e) {
+                if (form) form.requestSubmit();
+                return false;
+            };
+        })();
     </script>
 </body>
 </html>
