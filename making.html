@@ -105,6 +105,19 @@
         z-index: 0;
         overflow: hidden;
       }
+      .bg-grid {
+        position: absolute;
+        inset: 0;
+        background-image: linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+        background-size: 40px 40px;
+        mask-image: radial-gradient(circle at 50% 25%, black 45%, transparent 85%);
+        -webkit-mask-image: radial-gradient(circle at 50% 25%, black 45%, transparent 85%);
+      }
+      body.lm .bg-grid {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.035) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(0, 0, 0, 0.035) 1px, transparent 1px);
+      }
       .bg-orb {
         position: absolute;
         border-radius: 50%;
@@ -292,6 +305,18 @@
         margin-bottom: 20px;
         text-transform: uppercase;
       }
+      .pulse-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--signal);
+        box-shadow: 0 0 10px var(--signal);
+        animation: pulseGlow 2s infinite ease-in-out;
+      }
+      @keyframes pulseGlow {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.35); opacity: 0.55; }
+      }
       .hero-title {
         font-family: var(--serif);
         font-size: clamp(2.4rem, 5.5vw, 4.2rem);
@@ -317,7 +342,7 @@
       /* Stats Deck */
       .stats-deck {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        grid-template-columns: repeat(4, 1fr);
         gap: 16px;
         margin-bottom: 56px;
       }
@@ -327,25 +352,57 @@
         -webkit-backdrop-filter: blur(16px);
         border: 1px solid var(--line);
         border-radius: 18px;
-        padding: 22px;
+        padding: 24px 20px;
         text-align: center;
-        transition: transform 0.3s var(--ease), border-color 0.3s;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.3s var(--ease), border-color 0.3s, box-shadow 0.3s;
+      }
+      .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(242, 184, 75, 0.4), transparent);
       }
       .stat-card:hover {
         transform: translateY(-4px);
         border-color: var(--lineb);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
       }
+      .stat-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        background: rgba(242, 184, 75, 0.1);
+        border: 1px solid rgba(242, 184, 75, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--signal);
+        margin-bottom: 12px;
+      }
+      .stat-icon svg { width: 17px; height: 17px; }
       .stat-num {
         font-family: var(--mono);
-        font-size: 2rem;
+        font-size: 2.1rem;
         font-weight: 700;
         color: var(--signal);
-        margin-bottom: 4px;
+        margin-bottom: 6px;
+        line-height: 1.1;
       }
       .stat-label {
         font-size: 0.88rem;
         color: var(--dim);
         font-weight: 500;
+        line-height: 1.4;
       }
 
       /* Filter & Search Bar */
@@ -362,6 +419,7 @@
         -webkit-backdrop-filter: blur(16px);
         border: 1px solid var(--line);
         border-radius: 20px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
       }
       .filter-pills {
         display: flex;
@@ -387,29 +445,31 @@
         background: var(--signal);
         color: #070a14;
         border-color: var(--signal);
+        box-shadow: 0 2px 10px rgba(242, 184, 75, 0.25);
       }
       .search-box {
         position: relative;
         flex: 1;
         min-width: 240px;
-        max-width: 340px;
+        max-width: 360px;
       }
       .search-box input {
         width: 100%;
-        padding: 10px 16px 10px 38px;
-        background: rgba(0, 0, 0, 0.2);
+        padding: 10px 36px 10px 38px;
+        background: rgba(0, 0, 0, 0.25);
         border: 1px solid var(--line);
         border-radius: 12px;
         color: var(--ink);
         font-size: 0.88rem;
         outline: none;
-        transition: border-color 0.2s;
+        transition: border-color 0.2s, box-shadow 0.2s;
       }
       body.lm .search-box input {
         background: rgba(255, 255, 255, 0.7);
       }
       .search-box input:focus {
         border-color: var(--signal);
+        box-shadow: 0 0 0 3px rgba(242, 184, 75, 0.15);
       }
       .search-box svg {
         position: absolute;
@@ -419,6 +479,32 @@
         width: 16px;
         height: 16px;
         color: var(--dim);
+        pointer-events: none;
+      }
+      .search-clear-btn {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.12);
+        color: var(--dim);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        line-height: 1;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .search-clear-btn:hover {
+        background: rgba(255, 255, 255, 0.25);
+        color: var(--ink);
+      }
+      .search-clear-btn.visible {
+        display: flex;
       }
       .result-count {
         font-family: var(--mono);
@@ -426,6 +512,16 @@
         font-weight: 700;
         color: var(--dim);
         white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .count-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--em);
+        display: inline-block;
       }
       .empty-state {
         text-align: center;
@@ -456,28 +552,57 @@
       .mk-doubt {
         margin-top: 56px;
         background: var(--panel-glass);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
         border: 1px solid var(--line);
         border-radius: var(--r);
-        padding: 32px 28px;
+        padding: 36px 32px;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+        position: relative;
+        overflow: hidden;
+      }
+      .mk-doubt::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--signal), transparent);
+      }
+      .mk-doubt-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 12px;
+        border-radius: 999px;
+        background: rgba(242, 184, 75, 0.1);
+        border: 1px solid rgba(242, 184, 75, 0.25);
+        color: var(--signal);
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
       }
       .mk-doubt-head {
-        text-align: center;
         font-family: var(--serif);
-        font-size: clamp(1.6rem, 3.5vw, 2.2rem);
-        margin-bottom: 10px;
+        font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+        margin-bottom: 8px;
+        color: var(--ink);
       }
       .mk-doubt-note {
-        text-align: center;
-        font-size: 0.88rem;
+        font-size: 0.92rem;
         color: var(--dim);
-        margin-bottom: 18px;
+        margin-bottom: 22px;
+        max-width: 600px;
       }
       .mk-doubt .doubt-chips {
         display: flex;
         flex-wrap: wrap;
-        justify-content: center;
         gap: 8px;
-        margin-bottom: 16px;
+        margin-bottom: 20px;
       }
       .mk-doubt .doubt-chip {
         padding: 7px 14px;
@@ -485,13 +610,16 @@
         font-size: 0.82rem;
         font-weight: 600;
         color: var(--dim);
-        background: rgba(242, 184, 75, 0.08);
+        background: rgba(255, 255, 255, 0.04);
         border: 1px solid var(--line);
         cursor: pointer;
+        transition: all 0.2s var(--ease);
       }
       .mk-doubt .doubt-chip:hover {
-        color: #070a14;
-        background: var(--signal);
+        color: var(--ink);
+        background: rgba(255, 255, 255, 0.1);
+        border-color: var(--lineb);
+        transform: translateY(-1px);
       }
       .mk-doubt .doubt-row {
         display: flex;
@@ -500,37 +628,50 @@
       .mk-doubt .doubt-input {
         flex: 1;
         min-width: 0;
-        padding: 12px 16px;
+        padding: 13px 18px;
         border-radius: 12px;
         border: 1px solid var(--lineb);
-        background: rgba(0, 0, 0, 0.2);
+        background: rgba(0, 0, 0, 0.25);
         color: var(--ink);
         font-size: 16px;
         outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
       }
       body.lm .mk-doubt .doubt-input {
         background: rgba(255, 255, 255, 0.7);
       }
       .mk-doubt .doubt-input:focus {
         border-color: var(--signal);
+        box-shadow: 0 0 0 3px rgba(242, 184, 75, 0.15);
       }
       .mk-doubt .doubt-ask {
-        padding: 12px 24px;
+        padding: 13px 26px;
         border-radius: 12px;
         background: var(--signal);
         color: #070a14;
         font-weight: 700;
-        font-size: 0.88rem;
+        font-size: 0.9rem;
         white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s var(--ease);
+      }
+      .mk-doubt .doubt-ask:hover {
+        background: #f7c96a;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 14px rgba(242, 184, 75, 0.35);
       }
       .mk-doubt .doubt-answer {
-        margin-top: 16px;
-        padding: 16px 18px;
-        border-radius: 12px;
-        background: rgba(0, 0, 0, 0.2);
+        margin-top: 20px;
+        padding: 18px 20px;
+        border-radius: 14px;
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--line);
         border-left: 3px solid var(--signal);
-        font-size: 0.92rem;
-        line-height: 1.65;
+        font-size: 0.94rem;
+        line-height: 1.7;
+        color: var(--ink);
       }
       body.lm .mk-doubt .doubt-answer {
         background: rgba(0, 0, 0, 0.04);
@@ -538,20 +679,12 @@
       .mk-doubt .doubt-answer strong {
         color: var(--signal);
       }
-      @media (max-width: 640px) {
-        .mk-doubt .doubt-row {
-          flex-direction: column;
-        }
-        .mk-doubt .doubt-ask {
-          width: 100%;
-        }
-      }
 
       /* Bento Cards Grid */
       .bento-grid {
         display: grid;
         grid-template-columns: repeat(12, 1fr);
-        gap: 24px;
+        gap: 28px;
       }
       .bento-card {
         grid-column: span 6;
@@ -559,8 +692,8 @@
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
         border: 1px solid var(--line);
-        border-radius: var(--r);
-        padding: 32px;
+        border-radius: 22px;
+        padding: 36px 32px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -568,10 +701,22 @@
         overflow: hidden;
         transition: transform 0.35s var(--ease), border-color 0.3s var(--ease), box-shadow 0.35s;
       }
+      .bento-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(450px circle at top left, color-mix(in srgb, var(--card-accent, var(--signal)) 8%, transparent), transparent 70%);
+        pointer-events: none;
+        z-index: 0;
+      }
+      .bento-card > * {
+        position: relative;
+        z-index: 1;
+      }
       .bento-card:hover {
-        transform: translateY(-6px);
-        border-color: var(--lineb);
-        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+        transform: translateY(-4px);
+        border-color: rgba(255, 255, 255, 0.18);
+        box-shadow: 0 20px 48px -10px rgba(0, 0, 0, 0.5), 0 0 24px -8px color-mix(in srgb, var(--card-accent, var(--signal)) 18%, transparent);
       }
       .bento-card.wide {
         grid-column: span 12;
@@ -581,8 +726,9 @@
         top: 0;
         left: 0;
         right: 0;
-        height: 4px;
-        background: var(--card-accent, var(--signal));
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--card-accent, var(--signal)), transparent);
+        opacity: 0.85;
       }
 
       /* Card Header */
@@ -602,13 +748,17 @@
         width: 48px;
         height: 48px;
         border-radius: 14px;
-        background: rgba(255, 255, 255, 0.06);
-        border: 1px solid var(--lineb);
+        background: color-mix(in srgb, var(--card-accent, #ffffff) 10%, rgba(255, 255, 255, 0.04));
+        border: 1px solid color-mix(in srgb, var(--card-accent, #ffffff) 22%, rgba(255, 255, 255, 0.1));
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
         overflow: hidden;
+        transition: transform 0.25s var(--ease);
+      }
+      .bento-card:hover .card-icon {
+        transform: scale(1.05);
       }
       .card-icon img, .card-icon svg {
         width: 28px;
@@ -645,24 +795,24 @@
         border-radius: 6px;
         text-transform: uppercase;
         letter-spacing: 0.06em;
-        background: rgba(255, 255, 255, 0.08);
+        background: color-mix(in srgb, var(--card-accent, var(--signal)) 10%, rgba(255, 255, 255, 0.06));
         color: var(--card-accent, var(--signal));
-        border: 1px solid var(--line);
+        border: 1px solid color-mix(in srgb, var(--card-accent, var(--signal)) 25%, var(--line));
         margin-top: 4px;
       }
 
       /* Section Blocks */
       .section-block {
-        margin-top: 20px;
+        margin-top: 26px;
       }
       .section-heading {
         display: flex;
         align-items: center;
         gap: 8px;
-        font-size: 0.95rem;
+        font-size: 0.92rem;
         font-weight: 700;
         color: var(--card-accent, var(--signal));
-        margin-bottom: 10px;
+        margin-bottom: 12px;
         text-transform: uppercase;
         letter-spacing: 0.04em;
       }
@@ -670,10 +820,10 @@
       .section-body {
         font-size: 0.94rem;
         color: var(--ink);
-        line-height: 1.68;
+        line-height: 1.7;
       }
       .section-body p {
-        margin-bottom: 12px;
+        margin-bottom: 14px;
       }
 
       /* Steps List */
@@ -681,80 +831,183 @@
         list-style: none;
         display: flex;
         flex-direction: column;
-        gap: 14px;
-        margin-top: 14px;
+        gap: 16px;
+        margin-top: 16px;
       }
       .playbook-step {
         display: flex;
         align-items: flex-start;
-        gap: 12px;
+        gap: 14px;
         font-size: 0.92rem;
         color: var(--ink);
       }
       .step-num {
-        width: 24px;
-        height: 24px;
+        width: 26px;
+        height: 26px;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid var(--lineb);
+        background: color-mix(in srgb, var(--card-accent, var(--signal)) 12%, rgba(255, 255, 255, 0.05));
+        border: 1px solid color-mix(in srgb, var(--card-accent, var(--signal)) 35%, rgba(255, 255, 255, 0.15));
         color: var(--card-accent, var(--signal));
         font-family: var(--mono);
-        font-size: 0.75rem;
+        font-size: 0.76rem;
         font-weight: 700;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        margin-top: 2px;
+        margin-top: 1px;
       }
       .step-text {
         flex: 1;
-        line-height: 1.55;
+        line-height: 1.62;
       }
       .step-text strong {
         color: var(--card-accent, var(--signal));
       }
 
-      /* Code Snippet Box */
+      /* Code Snippet Box (Clean Developer Tooling - Spacious & Un-Congested) */
       .code-box {
         position: relative;
-        background: #04060d;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: #090d16;
+        border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 12px;
-        padding: 38px 16px 14px 16px;
-        margin-top: 12px;
-        overflow-x: auto;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+        overflow: hidden;
       }
       body.lm .code-box {
-        background: #1e2433;
+        background: #111827;
+        border-color: rgba(0, 0, 0, 0.12);
         color: #f1f5f9;
       }
-      .code-box code {
-        display: block;
-        white-space: pre;
+
+      /* Single-line Command Bar */
+      .code-box.code-single {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 9px 12px 9px 14px;
+        min-height: 44px;
+        margin: 12px 0 20px;
+      }
+      .code-box.code-single .code-content {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        overflow-x: auto;
+        white-space: nowrap;
+        flex: 1;
+        min-width: 0;
+      }
+      .code-prompt {
+        color: var(--card-accent, var(--signal));
         font-family: var(--mono);
-        font-size: 0.82rem;
-        line-height: 1.6;
+        font-size: 0.85rem;
+        font-weight: 700;
+        user-select: none;
+        opacity: 0.85;
+        flex-shrink: 0;
+      }
+      .code-box.code-single code {
+        display: inline;
+        font-family: var(--mono);
+        font-size: 0.84rem;
         color: #e2e8f0;
+        white-space: nowrap;
+      }
+
+      /* Multi-line Code Block */
+      .code-box.code-multi {
+        display: flex;
+        flex-direction: column;
+        margin: 14px 0 22px;
+      }
+      .code-box-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 12px 8px 14px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        background: rgba(255, 255, 255, 0.02);
+      }
+      .code-lang {
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--card-accent, var(--signal));
+        opacity: 0.9;
+      }
+      .code-box-content {
+        padding: 14px 16px;
+        overflow-x: auto;
+      }
+      .code-box-content code {
+        display: block;
+        font-family: var(--mono);
+        font-size: 0.83rem;
+        line-height: 1.68;
+        color: #e2e8f0;
+        white-space: pre;
         min-width: fit-content;
       }
+
+      /* Scrollbars */
+      .code-box::-webkit-scrollbar,
+      .code-box-content::-webkit-scrollbar,
+      .code-content::-webkit-scrollbar {
+        height: 6px;
+      }
+      .code-box::-webkit-scrollbar-track,
+      .code-box-content::-webkit-scrollbar-track,
+      .code-content::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .code-box::-webkit-scrollbar-thumb,
+      .code-box-content::-webkit-scrollbar-thumb,
+      .code-content::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 3px;
+      }
+      .code-box::-webkit-scrollbar-thumb:hover,
+      .code-box-content::-webkit-scrollbar-thumb:hover,
+      .code-content::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      /* Copy Button */
       .code-copy-btn {
-        position: absolute;
-        top: 8px;
-        right: 10px;
-        z-index: 5;
-        padding: 4px 10px;
-        border-radius: 6px;
-        background: rgba(255, 255, 255, 0.1);
+        position: static;
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 9px;
+        border-radius: 7px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         color: #cbd5e1;
         font-family: var(--mono);
         font-size: 0.72rem;
         font-weight: 600;
-        transition: all 0.2s;
+        cursor: pointer;
+        transition: all 0.2s var(--ease);
       }
       .code-copy-btn:hover {
-        background: var(--signal);
-        color: #070a14;
+        background: rgba(255, 255, 255, 0.16);
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, 0.25);
+      }
+      .code-copy-btn.copied {
+        background: rgba(52, 211, 153, 0.18) !important;
+        border-color: rgba(52, 211, 153, 0.4) !important;
+        color: #34d399 !important;
+      }
+      .code-copy-btn svg {
+        width: 12px;
+        height: 12px;
+        stroke: currentColor;
       }
 
       /* Card Footer Tags */
@@ -762,8 +1015,8 @@
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
-        margin-top: 24px;
-        padding-top: 18px;
+        margin-top: 28px;
+        padding-top: 20px;
         border-top: 1px solid var(--line);
       }
       .card-tag {
@@ -774,6 +1027,11 @@
         background: rgba(255, 255, 255, 0.04);
         color: var(--dim);
         border: 1px solid var(--line);
+        transition: all 0.2s;
+      }
+      .card-tag:hover {
+        color: var(--ink);
+        border-color: var(--lineb);
       }
 
       /* Footer */
@@ -802,6 +1060,7 @@
       @media (max-width: 992px) {
         .bento-card { grid-column: span 12; }
         .hero-title { font-size: 2.5rem; }
+        .stats-deck { grid-template-columns: repeat(2, 1fr); }
       }
       @media (max-width: 900px) {
         .top-nav .nav-links { display: none !important; }
@@ -810,15 +1069,103 @@
         .main-wrapper { padding-top: 96px; padding-bottom: 120px; }
         .control-bar { flex-direction: column; align-items: stretch; }
         .search-box { max-width: 100%; }
-        .stat-card, .control-bar, .bento-card {
+        .stat-card, .control-bar, .bento-card, .mk-doubt {
           backdrop-filter: none;
           -webkit-backdrop-filter: none;
+        }
+      }
+      @media (max-width: 640px) {
+        .main-wrapper { padding: 90px 16px 80px; }
+        .hero-header { margin-bottom: 36px; }
+        .hero-eyebrow { font-size: 0.72rem; padding: 5px 12px; }
+        .hero-subtitle { font-size: 0.95rem; }
+        .stats-deck {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 10px;
+          margin-bottom: 36px;
+        }
+        .stat-card {
+          padding: 16px 12px;
+          border-radius: 14px;
+        }
+        .stat-icon {
+          width: 28px;
+          height: 28px;
+          margin-bottom: 8px;
+          border-radius: 8px;
+        }
+        .stat-icon svg { width: 14px; height: 14px; }
+        .stat-num {
+          font-size: 1.55rem;
+          margin-bottom: 4px;
+        }
+        .stat-label {
+          font-size: 0.75rem;
+          line-height: 1.35;
+        }
+        .control-bar {
+          padding: 14px 16px;
+          border-radius: 16px;
+          margin-bottom: 28px;
+        }
+        .filter-pills {
+          gap: 6px;
+        }
+        .filter-pill {
+          padding: 6px 12px;
+          font-size: 0.78rem;
+          border-radius: 10px;
+        }
+        .bento-card {
+          padding: 24px 18px;
+          border-radius: 18px;
+        }
+        .card-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 12px;
+        }
+        .card-title-group h2 {
+          font-size: 1.25rem;
+        }
+        .code-box.code-single {
+          padding: 7px 10px 7px 12px;
+          min-height: 40px;
+          margin: 10px 0 16px;
+        }
+        .code-box.code-single code {
+          font-size: 0.78rem;
+        }
+        .code-box-header {
+          padding: 6px 10px 6px 12px;
+        }
+        .code-box-content {
+          padding: 12px 14px;
+        }
+        .code-box-content code {
+          font-size: 0.78rem;
+          line-height: 1.6;
+        }
+        .mk-doubt {
+          padding: 24px 18px;
+          border-radius: 16px;
+          margin-top: 40px;
+        }
+        .mk-doubt-head {
+          font-size: 1.5rem;
+        }
+        .mk-doubt .doubt-row {
+          flex-direction: column;
+        }
+        .mk-doubt .doubt-ask {
+          width: 100%;
+          justify-content: center;
         }
       }
     </style>
 
     <script defer src="col-router.js"></script>
-    <link rel="stylesheet" href="col-ui.css?v=1782446126.5715783" />
+    <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
     <link rel="stylesheet" href="col-mobile.css" />
     <link rel="stylesheet" href="liquid-glass.css" />
     <link rel="stylesheet" href="mobile-perf.css" />
@@ -840,6 +1187,7 @@
 
     <!-- Ambient Aurora -->
     <div class="bg-aurora">
+      <div class="bg-grid"></div>
       <div class="bg-orb bg-orb-1"></div>
       <div class="bg-orb bg-orb-2"></div>
       <div class="bg-orb bg-orb-3"></div>
@@ -898,8 +1246,18 @@
           <div class="hz-stars"></div>
           <div class="hz-orb"></div>
         </div>
-        <a href="download" class="nav-dl-btn">Downloads Hub</a>
-        <button class="mmb" id="mmb" aria-label="Toggle Mobile Menu" onclick="window.openMobileDrawer && window.openMobileDrawer()">
+        <button class="nav-login-btn" id="navLoginBtn" onclick="if (window.openGlobalLogin) window.openGlobalLogin(); else if (window.openLogin) window.openLogin();">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>Sign In
+        </button>
+        <div class="nav-user-profile" id="navUserProfile" onclick="if (window.openGlobalLogin) window.openGlobalLogin(); else if (window.openLogin) window.openLogin();">
+          <div class="nav-user-avatar" id="navUserAv">?</div>
+          <span class="nun" id="navUserName">User</span>
+        </div>
+        <a href="download" class="nav-dl-btn desktop-dl">Downloads Hub</a>
+        <button class="mmb" id="mmb" aria-label="Toggle Mobile Menu">
           <svg viewBox="0 0 24 24" fill="none"><path d="M3 6H21M3 12H21M3 18H21" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
       </div>
@@ -909,7 +1267,7 @@
     <main class="main-wrapper">
       <!-- Hero Header -->
       <header class="hero-header">
-        <div class="hero-eyebrow">Studio Engineering &amp; Architecture</div>
+        <div class="hero-eyebrow"><span class="pulse-dot"></span>Studio Engineering &amp; Architecture</div>
         <h1 class="hero-title">The Making Of Class Of Learners: <span>Built &amp; Orchestrated</span></h1>
         <p class="hero-subtitle">
           From Local Agentic Terminal Coding Powered By Ollama To Planetary 3D Shaders On Vercel Edge — Here Is The Transparent Breakdown Of Every Tool We Used And Exactly How You Can Do It Too.
@@ -919,18 +1277,30 @@
       <!-- Stats Overview Deck -->
       <section class="stats-deck">
         <div class="stat-card">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+          </div>
           <div class="stat-num">14</div>
           <div class="stat-label">Production Platforms &amp; AIs</div>
         </div>
         <div class="stat-card">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          </div>
           <div class="stat-num">100%</div>
           <div class="stat-label">Local Data Privacy With Ollama</div>
         </div>
         <div class="stat-card">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+          </div>
           <div class="stat-num">$0.00</div>
           <div class="stat-label">API Cost For Local Terminal Agents</div>
         </div>
         <div class="stat-card">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+          </div>
           <div class="stat-num">6</div>
           <div class="stat-label">Shipped Real-Time Apps</div>
         </div>
@@ -949,9 +1319,10 @@
         <div class="search-box">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           <input type="text" id="searchInput" placeholder="Search Technologies Or Playbooks..." aria-label="Search Technologies Or Playbooks" />
+          <button class="search-clear-btn" id="searchClearBtn" aria-label="Clear Search Input" type="button">&times;</button>
         </div>
 
-        <div class="result-count" id="resultCount" role="status" aria-live="polite">Showing 14 Of 14 Systems</div>
+        <div class="result-count" id="resultCount" role="status" aria-live="polite"><span class="count-dot"></span>Showing 14 Of 14 Systems</div>
       </div>
 
       <!-- Bento Grid Of All 13 Technologies -->
@@ -1006,9 +1377,15 @@
                 </li>
               </ul>
 
-              <div class="code-box">
-                <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
-                <code>ollama run qwen2.5-coder:32b</code>
+              <div class="code-box code-single">
+                <div class="code-content">
+                  <span class="code-prompt">$</span>
+                  <code>ollama run qwen2.5-coder:32b</code>
+                </div>
+                <button class="code-copy-btn" onclick="copyCode(this)" aria-label="Copy Code">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  <span class="copy-text">Copy</span>
+                </button>
               </div>
 
               <ul class="playbook-steps">
@@ -1020,9 +1397,15 @@
                 </li>
               </ul>
 
-              <div class="code-box">
-                <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
-                <code>npm install -g @anthropic-ai/claude-code</code>
+              <div class="code-box code-single">
+                <div class="code-content">
+                  <span class="code-prompt">$</span>
+                  <code>npm install -g @anthropic-ai/claude-code</code>
+                </div>
+                <button class="code-copy-btn" onclick="copyCode(this)" aria-label="Copy Code">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  <span class="copy-text">Copy</span>
+                </button>
               </div>
 
               <ul class="playbook-steps">
@@ -1034,15 +1417,23 @@
                 </li>
               </ul>
 
-              <div class="code-box">
-                <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
-                <code># Point Directly To Local Ollama OpenAI-Compatible Endpoint:
+              <div class="code-box code-multi">
+                <div class="code-box-header">
+                  <span class="code-lang">BASH</span>
+                  <button class="code-copy-btn" onclick="copyCode(this)" aria-label="Copy Code">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    <span class="copy-text">Copy</span>
+                  </button>
+                </div>
+                <div class="code-box-content">
+                  <code># Point Directly To Local Ollama OpenAI-Compatible Endpoint:
 export ANTHROPIC_BASE_URL="http://localhost:11434/v1"
 export ANTHROPIC_API_KEY="ollama"
 
 # Or Launch An OpenAI-To-Anthropic Adapter Via LiteLLM:
 pip install litellm
 litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
+                </div>
               </div>
 
               <ul class="playbook-steps">
@@ -1166,9 +1557,15 @@ litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
                   </div>
                 </li>
               </ul>
-              <div class="code-box">
-                <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
-                <code>npm install -g opencode-ai</code>
+              <div class="code-box code-single">
+                <div class="code-content">
+                  <span class="code-prompt">$</span>
+                  <code>npm install -g opencode-ai</code>
+                </div>
+                <button class="code-copy-btn" onclick="copyCode(this)" aria-label="Copy Code">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  <span class="copy-text">Copy</span>
+                </button>
               </div>
               <ul class="playbook-steps">
                 <li class="playbook-step">
@@ -1497,9 +1894,16 @@ litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
                 </li>
               </ul>
 
-              <div class="code-box">
-                <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
-                <code>// Import Supabase SDK In Any Browser Or App
+              <div class="code-box code-multi">
+                <div class="code-box-header">
+                  <span class="code-lang">JAVASCRIPT</span>
+                  <button class="code-copy-btn" onclick="copyCode(this)" aria-label="Copy Code">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    <span class="copy-text">Copy</span>
+                  </button>
+                </div>
+                <div class="code-box-content">
+                  <code>// Import Supabase SDK In Any Browser Or App
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const supabase = createClient('https://xyz.supabase.co', 'YOUR_ANON_KEY')
@@ -1509,6 +1913,7 @@ await supabase.auth.signInWithOAuth({
   provider: 'google',
   options: { redirectTo: window.location.origin }
 })</code>
+                </div>
               </div>
 
               <ul class="playbook-steps">
@@ -1520,15 +1925,23 @@ await supabase.auth.signInWithOAuth({
                 </li>
               </ul>
 
-              <div class="code-box">
-                <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
-                <code>-- Enable RLS On Student Profiles Table
+              <div class="code-box code-multi">
+                <div class="code-box-header">
+                  <span class="code-lang">SQL</span>
+                  <button class="code-copy-btn" onclick="copyCode(this)" aria-label="Copy Code">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    <span class="copy-text">Copy</span>
+                  </button>
+                </div>
+                <div class="code-box-content">
+                  <code>-- Enable RLS On Student Profiles Table
 alter table student_profiles enable row level security;
 
 -- Only Allow Users To Read And Update Their Own Data
 create policy "Users Can Manage Own Records"
   on student_profiles for all
   using (auth.uid() = user_id);</code>
+                </div>
               </div>
             </div>
           </div>
@@ -1591,9 +2004,16 @@ create policy "Users Can Manage Own Records"
                 </li>
               </ul>
 
-              <div class="code-box">
-                <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
-                <code>&lt;manifest xmlns:android="http://schemas.android.com/apk/res/android"&gt;
+              <div class="code-box code-multi">
+                <div class="code-box-header">
+                  <span class="code-lang">XML</span>
+                  <button class="code-copy-btn" onclick="copyCode(this)" aria-label="Copy Code">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    <span class="copy-text">Copy</span>
+                  </button>
+                </div>
+                <div class="code-box-content">
+                  <code>&lt;manifest xmlns:android="http://schemas.android.com/apk/res/android"&gt;
   &lt;uses-permission android:name="android.permission.INTERNET" /&gt;
   &lt;application
     android:hardwareAccelerated="true"
@@ -1601,6 +2021,7 @@ create policy "Users Can Manage Own Records"
     ...
   &lt;/application&gt;
 &lt;/manifest&gt;</code>
+                </div>
               </div>
 
               <ul class="playbook-steps">
@@ -1612,14 +2033,22 @@ create policy "Users Can Manage Own Records"
                 </li>
               </ul>
 
-              <div class="code-box">
-                <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
-                <code>WebView webView = findViewById(R.id.webView);
+              <div class="code-box code-multi">
+                <div class="code-box-header">
+                  <span class="code-lang">JAVA</span>
+                  <button class="code-copy-btn" onclick="copyCode(this)" aria-label="Copy Code">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    <span class="copy-text">Copy</span>
+                  </button>
+                </div>
+                <div class="code-box-content">
+                  <code>WebView webView = findViewById(R.id.webView);
 WebSettings settings = webView.getSettings();
 settings.setJavaScriptEnabled(true);
 settings.setDomStorageEnabled(true);
 settings.setDatabaseEnabled(true);
 webView.loadUrl("https://advancedlogiclabs.dpdns.org");</code>
+                </div>
               </div>
 
               <ul class="playbook-steps">
@@ -1631,9 +2060,15 @@ webView.loadUrl("https://advancedlogiclabs.dpdns.org");</code>
                 </li>
               </ul>
 
-              <div class="code-box">
-                <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
-                <code>./gradlew assembleRelease</code>
+              <div class="code-box code-single">
+                <div class="code-content">
+                  <span class="code-prompt">$</span>
+                  <code>./gradlew assembleRelease</code>
+                </div>
+                <button class="code-copy-btn" onclick="copyCode(this)" aria-label="Copy Code">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  <span class="copy-text">Copy</span>
+                </button>
               </div>
             </div>
           </div>
@@ -1686,9 +2121,15 @@ webView.loadUrl("https://advancedlogiclabs.dpdns.org");</code>
                   </div>
                 </li>
               </ul>
-              <div class="code-box">
-                <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
-                <code>npm i -g vercel && vercel deploy --prod</code>
+              <div class="code-box code-single">
+                <div class="code-content">
+                  <span class="code-prompt">$</span>
+                  <code>npm i -g vercel && vercel deploy --prod</code>
+                </div>
+                <button class="code-copy-btn" onclick="copyCode(this)" aria-label="Copy Code">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  <span class="copy-text">Copy</span>
+                </button>
               </div>
               <ul class="playbook-steps">
                 <li class="playbook-step">
@@ -1698,9 +2139,16 @@ webView.loadUrl("https://advancedlogiclabs.dpdns.org");</code>
                   </div>
                 </li>
               </ul>
-              <div class="code-box">
-                <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
-                <code>{
+              <div class="code-box code-multi">
+                <div class="code-box-header">
+                  <span class="code-lang">JSON</span>
+                  <button class="code-copy-btn" onclick="copyCode(this)" aria-label="Copy Code">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    <span class="copy-text">Copy</span>
+                  </button>
+                </div>
+                <div class="code-box-content">
+                  <code>{
   "cleanUrls": true,
   "headers": [
     {
@@ -1709,6 +2157,7 @@ webView.loadUrl("https://advancedlogiclabs.dpdns.org");</code>
     }
   ]
 }</code>
+                </div>
               </div>
             </div>
           </div>
@@ -1760,13 +2209,21 @@ webView.loadUrl("https://advancedlogiclabs.dpdns.org");</code>
                   </div>
                 </li>
               </ul>
-              <div class="code-box">
-                <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
-                <code>git init
+              <div class="code-box code-multi">
+                <div class="code-box-header">
+                  <span class="code-lang">BASH</span>
+                  <button class="code-copy-btn" onclick="copyCode(this)" aria-label="Copy Code">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    <span class="copy-text">Copy</span>
+                  </button>
+                </div>
+                <div class="code-box-content">
+                  <code>git init
 git add .
 git commit -m "feat: initial release"
 git remote add origin https://github.com/YourUser/YourRepo.git
 git push -u origin main</code>
+                </div>
               </div>
               <ul class="playbook-steps">
                 <li class="playbook-step">
@@ -1832,11 +2289,19 @@ git push -u origin main</code>
                   </div>
                 </li>
               </ul>
-              <div class="code-box">
-                <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
-                <code>advancedlogiclabs.dpdns.org {
+              <div class="code-box code-multi">
+                <div class="code-box-header">
+                  <span class="code-lang">CONFIG</span>
+                  <button class="code-copy-btn" onclick="copyCode(this)" aria-label="Copy Code">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    <span class="copy-text">Copy</span>
+                  </button>
+                </div>
+                <div class="code-box-content">
+                  <code>advancedlogiclabs.dpdns.org {
   reverse_proxy localhost:3000
 }</code>
+                </div>
               </div>
             </div>
           </div>
@@ -1894,11 +2359,19 @@ git push -u origin main</code>
                   </div>
                 </li>
               </ul>
-              <div class="code-box">
-                <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
-                <code># Example ClouDNS Record Configuration
+              <div class="code-box code-multi">
+                <div class="code-box-header">
+                  <span class="code-lang">DNS</span>
+                  <button class="code-copy-btn" onclick="copyCode(this)" aria-label="Copy Code">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    <span class="copy-text">Copy</span>
+                  </button>
+                </div>
+                <div class="code-box-content">
+                  <code># Example ClouDNS Record Configuration
 CNAME  @  cname.vercel-dns.com.  TTL=300
 TXT    @  google-site-verification=bWaer2b60VA1y3...  TTL=300</code>
+                </div>
               </div>
             </div>
           </div>
@@ -1982,12 +2455,19 @@ TXT    @  google-site-verification=bWaer2b60VA1y3...  TTL=300</code>
       </div>
 
       <section class="mk-doubt" aria-label="Projects Doubt Solver">
-        <div class="mk-doubt-head">Projects Doubt Solver</div>
+        <div class="mk-doubt-badge">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Studio Knowledge Base
+        </div>
+        <h2 class="mk-doubt-head">Projects Doubt Solver</h2>
         <p class="mk-doubt-note">Ask Any Doubt About Our Studio, Tools, Or Shipped Projects. Answers Come From Built-In Studio Notes.</p>
         <div class="doubt-chips" id="siteChips"></div>
         <div class="doubt-row">
           <input type="text" class="doubt-input" id="siteInput" placeholder="Ask Anything, For Example: How Do I Deploy Like You?" aria-label="Ask A Studio Or Projects Doubt" autocomplete="off" />
-          <button class="doubt-ask" id="siteAsk" type="button">Ask</button>
+          <button class="doubt-ask" id="siteAsk" type="button">
+            <span>Ask</span>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </button>
         </div>
         <div class="doubt-answer" id="siteAnswer" role="status" aria-live="polite" hidden></div>
       </section>
@@ -2155,13 +2635,29 @@ TXT    @  google-site-verification=bWaer2b60VA1y3...  TTL=300</code>
         })
       })
 
+      var searchClearBtn = document.getElementById('searchClearBtn')
       if (searchInput) {
-        searchInput.addEventListener('input', applyFilters)
+        searchInput.addEventListener('input', function() {
+          if (searchClearBtn) searchClearBtn.classList.toggle('visible', searchInput.value.length > 0)
+          applyFilters()
+        })
+      }
+
+      if (searchClearBtn) {
+        searchClearBtn.addEventListener('click', function() {
+          if (searchInput) searchInput.value = ''
+          searchClearBtn.classList.remove('visible')
+          applyFilters()
+          if (searchInput) searchInput.focus()
+        })
       }
 
       if (emptyReset) {
         emptyReset.addEventListener('click', function() {
-          if (searchInput) searchInput.value = ''
+          if (searchInput) {
+            searchInput.value = ''
+            if (searchClearBtn) searchClearBtn.classList.remove('visible')
+          }
           filterButtons.forEach(function(b) {
             var isAll = b.dataset.filter === 'all'
             b.classList.toggle('active', isAll)
@@ -2194,7 +2690,7 @@ TXT    @  google-site-verification=bWaer2b60VA1y3...  TTL=300</code>
         })
 
         if (resultCount) {
-          resultCount.textContent = 'Showing ' + visible + ' Of ' + totalCards + ' Systems'
+          resultCount.innerHTML = '<span class="count-dot"></span>Showing ' + visible + ' Of ' + totalCards + ' Systems'
         }
         if (emptyState) {
           emptyState.hidden = visible !== 0
@@ -2203,26 +2699,49 @@ TXT    @  google-site-verification=bWaer2b60VA1y3...  TTL=300</code>
 
       applyFilters()
 
-      // Copy Code Utility
+      // Copy Code Utility (Clean Developer Tooling - No Unjust Gimmicks)
       function copyCode(btn) {
         var codeBox = btn.closest('.code-box')
         var codeEl = codeBox ? codeBox.querySelector('code') : null
         if (!codeEl) return
 
         var textToCopy = codeEl.innerText
-        navigator.clipboard.writeText(textToCopy).then(function() {
-          var originalText = btn.textContent
-          btn.textContent = 'Copied!'
-          btn.style.background = '#34d399'
-          btn.style.color = '#070a14'
+
+        function showSuccess() {
+          var label = btn.querySelector('.copy-text') || btn
+          var originalText = label.textContent
+          btn.classList.add('copied')
+          label.textContent = 'Copied!'
           setTimeout(function() {
-            btn.textContent = originalText
-            btn.style.background = ''
-            btn.style.color = ''
+            btn.classList.remove('copied')
+            label.textContent = originalText
           }, 2000)
-        }).catch(function() {
-          btn.textContent = 'Failed'
-        })
+        }
+
+        function fallbackCopy() {
+          try {
+            var ta = document.createElement('textarea')
+            ta.value = textToCopy
+            ta.style.position = 'fixed'
+            ta.style.opacity = '0'
+            document.body.appendChild(ta)
+            ta.select()
+            document.execCommand('copy')
+            document.body.removeChild(ta)
+            showSuccess()
+          } catch (e) {
+            var label = btn.querySelector('.copy-text') || btn
+            label.textContent = 'Failed'
+          }
+        }
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(textToCopy).then(showSuccess).catch(function() {
+            fallbackCopy()
+          })
+        } else {
+          fallbackCopy()
+        }
       }
     </script>
   </body>

@@ -82,9 +82,9 @@ code {
 }
 
 /* ─────────────────────────────────────────────────────────────────
-   2. MOBILE NAVIGATION & DRAWER (<= 900px)
+   2. MOBILE NAVIGATION & DRAWER (<= 1100px)
    ───────────────────────────────────────────────────────────────── */
-@media (max-width: 900px) {
+@media (max-width: 1100px) {
   /* Hamburger button */
   .mmb {
     display: flex !important;

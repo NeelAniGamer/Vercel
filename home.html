@@ -454,6 +454,13 @@
         font-size: 0.8rem;
         overflow: hidden;
       }
+      .nav-user-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+        display: block;
+      }
       .nun {
         font-size: 0.82rem;
         font-weight: 700;
@@ -1250,10 +1257,10 @@
         from { opacity: 0; transform: translateY(30px); }
         to { opacity: 1; transform: none; }
       }
-      .hc > .hey { animation: heroRise 0.8s var(--ease) 0.05s backwards; }
-      .hc > h1 { animation: heroRise 0.8s var(--ease) 0.16s backwards; }
-      .hc > .hlede { animation: heroRise 0.8s var(--ease) 0.28s backwards; }
-      .hc > .hcta { animation: heroRise 0.8s var(--ease) 0.40s backwards; }
+      .hc > .hey { animation: heroRise 0.8s var(--ease) 0.05s both; }
+      .hc > h1 { animation: heroRise 0.8s var(--ease) 0.16s both; }
+      .hc > .hlede { animation: heroRise 0.8s var(--ease) 0.28s both; }
+      .hc > .hcta { animation: heroRise 0.8s var(--ease) 0.40s both; }
       .vp-section {
         max-width: 1360px;
         margin: 0 auto;
@@ -2238,7 +2245,7 @@
       }
     </style>
     <script defer src="col-router.js"></script>
-    <link rel="stylesheet" href="col-ui.css?v=1782446126.5715783" />
+    <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
     <link rel="stylesheet" href="col-mobile.css" />
     <link rel="stylesheet" href="liquid-glass.css" />
     <link rel="stylesheet" href="mobile-perf.css" />
@@ -2400,33 +2407,7 @@
         </div>
       </div>
 
-      <!-- Planetary Quick-Focus Dock -->
-      <nav class="orrery-dock" id="orreryDock" aria-label="Quick Focus Project Dock">
-        <div class="dock-label">Engines</div>
-        <div class="dock-chips">
-          <button class="dock-chip active" data-node="core" style="--chip-glow: var(--signal)">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10"/></svg><span class="dock-name">Core</span>
-          </button>
-          <button class="dock-chip" data-node="Traffic" style="--chip-glow: var(--signal)">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg><span class="dock-name">Traffic Hero</span>
-          </button>
-          <button class="dock-chip" data-node="Solar" style="--chip-glow: var(--teal)">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg><span class="dock-name">Solar Engine</span>
-          </button>
-          <button class="dock-chip" data-node="ATI" style="--chip-glow: var(--ion)">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg><span class="dock-name">ATI Typing</span>
-          </button>
-          <button class="dock-chip" data-node="Gesture" style="--chip-glow: var(--plasma)">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg><span class="dock-name">Perceptus Flow</span>
-          </button>
-          <button class="dock-chip" data-node="RPG" style="--chip-glow: var(--em)">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span class="dock-name">RPG Game</span>
-          </button>
-          <button class="dock-chip" data-node="QR" style="--chip-glow: var(--dim)">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span class="dock-name">QR Matrix</span>
-          </button>
-        </div>
-      </nav>
+
 
       <!-- Holographic In-Place Node Inspector Card -->
       <div class="node-inspector" id="nodeInspector" aria-hidden="true">

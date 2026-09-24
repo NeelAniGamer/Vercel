@@ -175,11 +175,16 @@ if (!window.closeMo) {
     } catch (e) {}
   }
 
-  // Pre-seed local user if present
-  const initialLocal = getActiveLocalUser()
-  if (initialLocal && !window.colUser) {
-    window.colUser = initialLocal
-  }
+  // Hydrate only from verified live session cache if present
+  try {
+    const cachedLive = localStorage.getItem('col_user')
+    if (cachedLive) {
+      const parsed = JSON.parse(cachedLive)
+      if (parsed && parsed.id && parsed.email) {
+        window.colUser = parsed
+      }
+    }
+  } catch (e) {}
 
   // Expose local auth utilities for sub-apps
   window.colGetLocalAccounts = getLocalAccounts
@@ -287,38 +292,73 @@ if (!window.closeMo) {
     supabaseClient.auth.onAuthStateChange(async (event, session) => {
       if (session && session.user) {
         const meta = session.user.user_metadata || {}
-        const userId = session.user.id;
-        const email = session.user.email;
+        const identities = session.user.identities || []
+        const googleIdentity = identities.find(id => id.provider === 'google')
+        const googleData = (googleIdentity && googleIdentity.identity_data) || {}
+        const userId = session.user.id
+        const email = session.user.email
+        const photo = meta.avatar_url || meta.picture || googleData.avatar_url || googleData.picture || null
+        const displayName = meta.full_name || meta.name || googleData.full_name || googleData.name || (email ? email.split('@')[0] : 'User')
 
         window.colUser = {
           id: userId,
           email: email,
-          name: meta.full_name || meta.name || email.split('@')[0],
-          picture: meta.avatar_url || meta.picture || null,
+          name: displayName,
+          picture: photo,
           session: session,
           uid: null // Default until profile is fetched
         }
 
         try {
-          const { data: profile, error } = await supabaseClient
-            .from('profiles')
+          const { data: upProfile } = await supabaseClient
+            .from('user_profiles')
             .select('*')
-            .eq('id', userId)
-            .maybeSingle();
+            .eq('user_id', userId)
+            .maybeSingle()
 
-          if (error && error.code !== 'PGRST116') throw error;
-
-          if (profile) {
-            window.colUser.uid = profile.id;
+          if (upProfile) {
+            window.colUser.uid = upProfile.id || upProfile.user_id
+            if (upProfile.display_name) window.colUser.name = upProfile.display_name
+            if (upProfile.avatar_url && !window.colUser.picture) {
+              window.colUser.picture = upProfile.avatar_url
+            }
           } else {
-            promptForUsername();
+            const { data: profile, error } = await supabaseClient
+              .from('profiles')
+              .select('*')
+              .eq('id', userId)
+              .maybeSingle()
+
+            if (error && error.code !== 'PGRST116') throw error
+
+            if (profile) {
+              window.colUser.uid = profile.id
+              if (profile.username && !meta.full_name) window.colUser.name = profile.username
+              if (profile.avatar_url && !window.colUser.picture) {
+                window.colUser.picture = profile.avatar_url
+              }
+            } else {
+              promptForUsername()
+            }
           }
         } catch (e) {
-          console.error('[col-auth] Profile sync error:', e);
+          console.error('[col-auth] Profile sync error:', e)
         }
+
+        try {
+          localStorage.setItem('col_user', JSON.stringify({
+            id: window.colUser.id,
+            email: window.colUser.email,
+            name: window.colUser.name,
+            picture: window.colUser.picture,
+            uid: window.colUser.uid
+          }))
+        } catch (e) {}
       } else {
-        const localUser = getActiveLocalUser()
-        window.colUser = localUser || null
+        try {
+          localStorage.removeItem('col_user')
+        } catch (e) {}
+        window.colUser = null
       }
       dispatchAuthEvent()
       updateAuthUI()
@@ -450,6 +490,7 @@ if (!window.closeMo) {
             .nav-user-profile { display: none; align-items: center; gap: 10px; padding: 5px 15px 5px 5px; background: transparent; border: 1px solid var(--lineb, rgba(255,255,255,.16)); border-radius: 30px; cursor: pointer; transition: 0.3s; }
             .nav-user-profile:hover { border-color: var(--page-theme, var(--signal, #F2B84B)); }
             .nav-user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--page-theme, var(--signal, #F2B84B)); color: var(--void, #070A14); display: flex; justify-content: center; align-items: center; font-weight: 800; overflow: hidden; }
+            .nav-user-avatar img, .pav img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
         `
     document.head.appendChild(style)
   }
@@ -1035,11 +1076,12 @@ if (!window.closeMo) {
         emailEls.forEach((el) => (el.textContent = window.colUser.email))
 
         avEls.forEach((av) => {
+          const initial = (window.colUser.name || 'U').charAt(0).toUpperCase()
           if (window.colUser.picture) {
-            av.innerHTML = `<img src="${window.colUser.picture}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+            av.innerHTML = `<img src="${window.colUser.picture}" alt="${window.colUser.name || 'User'}" referrerpolicy="no-referrer" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;" onerror="this.style.display='none'; this.parentElement.textContent='${initial}';">`
           } else {
             av.innerHTML = ''
-            av.textContent = window.colUser.name.charAt(0).toUpperCase()
+            av.textContent = initial
           }
         })
       })

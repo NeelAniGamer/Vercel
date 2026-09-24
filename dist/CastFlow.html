@@ -394,8 +394,23 @@
         .foot-base { margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--dim); font-size: 0.8rem; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 
         /* Reveal */
-        .rv { opacity: 0; transform: translateY(26px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
+        .rv { opacity: 0; transform: translateY(26px); transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
         .rv.vis { opacity: 1; transform: none; }
+
+        /* Hero load choreography (plays once on page load) */
+        @keyframes heroRise {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: none; }
+        }
+        .boot { opacity: 0; animation: heroRise 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .boot-1 { animation-delay: 0.05s; }
+        .boot-2 { animation-delay: 0.16s; }
+        .boot-3 { animation-delay: 0.28s; }
+        .boot-4 { animation-delay: 0.40s; }
+        .boot-5 { animation-delay: 0.52s; }
+        .boot-6 { animation-delay: 0.66s; }
+        .phone-stage { animation: heroRise 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.45s backwards, heroFloat 7s ease-in-out 1.6s infinite; }
+        @keyframes heroFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
         /* ── Responsive ───────────────────────────────────────── */
         @media (max-width: 960px) {
@@ -481,17 +496,17 @@
         <section class="hero" id="top">
             <div class="wrap hero-grid">
                 <div>
-                    <span class="eyebrow"><span class="dot"></span>v3.2.0 · Cyber-Mechanical Edition</span>
-                    <h1 class="hero-title">Your Phone.<br /><span class="grad">Any Screen.</span></h1>
-                    <p class="hero-sub">CastFlow lets you cast your Android screen, share files, and use desktop mode — all from your browser. No cables. No installs needed on the TV or PC.</p>
-                    <div class="hero-ctas">
+                    <span class="eyebrow boot boot-1"><span class="dot"></span>v3.2.0 · Cyber-Mechanical Edition</span>
+                    <h1 class="hero-title boot boot-2">Your Phone.<br /><span class="grad">Any Screen.</span></h1>
+                    <p class="hero-sub boot boot-3">CastFlow lets you cast your Android screen, share files, and use desktop mode — all from your browser. No cables. No installs needed on the TV or PC.</p>
+                    <div class="hero-ctas boot boot-4">
                         <a class="btn btn-solid" href="/download">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                             Download APK
                         </a>
                         <a class="btn btn-ghost" href="#how-it-works">See How It Works</a>
                     </div>
-                    <ul class="hero-points">
+                    <ul class="hero-points boot boot-5">
                         <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>No Cables</li>
                         <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>No Receiver Installs</li>
                         <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>100% Free</li>
@@ -711,7 +726,7 @@
     <footer class="site-foot">
         <div class="wrap">
             <div class="foot-grid">
-                <div>
+                <div class="rv">
                     <a class="foot-brand" href="#top" aria-label="Back to top">
                         <span class="brand-mark" aria-hidden="true">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/></svg>
@@ -764,8 +779,14 @@
                 });
             }
 
-            // Scroll reveals (no library dependency)
+            // Scroll reveals with cascade stagger (no library dependency)
             try {
+                // Cascade: siblings inside grids/steps/lists reveal one after another
+                document.querySelectorAll('.feat-grid, .steps, .stats-band, .check-list, .faq-list, .hero-points').forEach(function (group) {
+                    Array.prototype.forEach.call(group.querySelectorAll(':scope > *'), function (child, i) {
+                        child.style.transitionDelay = Math.min(i * 90, 540) + 'ms';
+                    });
+                });
                 var els = document.querySelectorAll('.rv');
                 if ('IntersectionObserver' in window && els.length) {
                     var io = new IntersectionObserver(function (entries) {

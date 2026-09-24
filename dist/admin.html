@@ -1945,9 +1945,9 @@
         }
 
         try {
-          toast('Loading visual builder...', 'green');
+          toast('Loading Visual Builder...', 'green');
           toolbar.style.display = 'flex';
-          iframe.srcdoc = '<html><body style="background:#0b101d;color:#fff;font-family:sans-serif;padding:30px"><h2>Loading visual canvas...</h2></body></html>';
+          iframe.srcdoc = '<html><body style="background:#0b101d;color:#fff;font-family:sans-serif;padding:30px"><h2>Loading Visual Canvas...</h2></body></html>';
 
           const data = await fetchGh(`contents/${path}`);
           currentFileSha = data.sha;

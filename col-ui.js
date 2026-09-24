@@ -3,13 +3,16 @@
   // Haptic feedback helper — silent on desktop, uses navigator.vibrate on mobile
   function haptic(style) {
     if (!navigator.vibrate) return
-    switch (style) {
-      case 'light': navigator.vibrate(8); break
-      case 'medium': navigator.vibrate(15); break
-      case 'heavy': navigator.vibrate(25); break
-      case 'success': navigator.vibrate([10, 50, 15]); break
-      default: navigator.vibrate(10)
-    }
+    if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return
+    try {
+      switch (style) {
+        case 'light': navigator.vibrate(8); break
+        case 'medium': navigator.vibrate(15); break
+        case 'heavy': navigator.vibrate(25); break
+        case 'success': navigator.vibrate([10, 50, 15]); break
+        default: navigator.vibrate(10)
+      }
+    } catch (e) {}
   }
 
   // 0. Ambient Visual System Auto-Injector (Aurora Mesh & Cyber Grid)
@@ -356,12 +359,13 @@
       }
 
       function closeDrawer() {
+        var wasOpen = _drawer && _drawer.classList.contains('active')
         if (_drawer) _drawer.classList.remove('active')
         unlockNav()
         if (mmb) mmb.classList.remove('active')
         var bbarMenu = document.querySelector('.bbar-menu')
         if (bbarMenu) bbarMenu.classList.remove('act')
-        haptic('medium')
+        if (wasOpen) haptic('medium')
       }
 
       window.openMobileDrawer = openDrawer
