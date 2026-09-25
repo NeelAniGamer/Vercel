@@ -37,7 +37,7 @@ license: mit
 | **React / TS Bundle** | `npm run build` → esbuild → `dist/Traffic/simulator-bundle.js` |
 | **Auth Engine** | Dual auth: Supabase OAuth & Email (`col-auth.js`) + Legacy QR auth |
 | **3D Rendering** | Three.js r128 / 0.185 + WebGL procedural backgrounds (`col-3d.js`) |
-| **Service Worker** | `sw.js` cache-first architecture (`col-cache-v6`) |
+| **Service Worker** | `sw.js` stale-while-revalidate architecture (`col-cache-v10`) |
 | **Mobile App (APK)** | Self-hosted Android APK v1.6 (Build 7) at `/COL.apk` |
 | **Design System** | Dark obsidian design tokens & typography in `col-ui.css` |
 
@@ -149,7 +149,7 @@ Vercel/
 ├── sitemap.xml                # SEO XML Sitemap with verified timestamps
 ├── robots.txt                 # Search engine crawler permissions
 ├── manifest.json              # PWA Manifest ("Class Of Learners")
-├── sw.js                      # Service Worker (col-cache-v6 cache-first)
+├── sw.js                      # Service Worker (col-cache-v10 stale-while-revalidate)
 ├── COL.apk                    # Official compiled Android APK (Build 7, v1.6)
 ├── version.json               # APK version telemetry for in-app updates
 ├── cast-version.json          # CastFlow version telemetry
@@ -212,6 +212,11 @@ npm run electron:portable# Electron portable build
 * **Direct Android APK:** Download directly from [`https://advancedlogiclabs.dpdns.org/COL.apk`](https://advancedlogiclabs.dpdns.org/COL.apk).
 
 ---
+
+## 🔐 Security
+
+Please review the [Security Policy](SECURITY.md) before reporting a vulnerability.
+Do not include credentials or private user data in a report.
 
 ## 📄 License
 

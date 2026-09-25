@@ -1,9 +1,19 @@
 // Shared UI Logic: Cursor, Ambient Background, Theme Toggle, Mobile Menu
 ;(function () {
+  // Vercel Speed Insights for legacy/static pages. The React GamePage uses
+  // the package component directly; this covers the other HTML entrypoints.
+  if (!window.si) {
+    window.si = function () { (window.siq = window.siq || []).push(arguments); };
+    const speedInsightsScript = document.createElement('script');
+    speedInsightsScript.defer = true;
+    speedInsightsScript.src = '/_vercel/speed-insights/script.js';
+    document.head.appendChild(speedInsightsScript);
+  }
+
   // Haptic feedback helper — silent on desktop, uses navigator.vibrate on mobile
   function haptic(style) {
-    if (!navigator.vibrate) return
-    if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return
+    if (!navigator.vibrate) {return}
+    if (navigator.userActivation && !navigator.userActivation.hasBeenActive) {return}
     try {
       switch (style) {
         case 'light': navigator.vibrate(8); break
@@ -19,17 +29,17 @@
   // Mobile: 2 orbs instead of 3 (cut GPU layer cost ~33%). Layers pause via
   // .col-perf-pause when scrolled out of view or the tab is hidden.
   function initAmbientVisuals() {
-    if (document.querySelector('.col-ambient-bg')) return;
-    var isCoarse = window.matchMedia('(pointer: coarse)').matches;
+    if (document.querySelector('.col-ambient-bg')) {return;}
+    const isCoarse = window.matchMedia('(pointer: coarse)').matches;
     // SKIP ambient orbs entirely on mobile — 3 constant CSS animations
     // burn GPU for near-zero visual gain on small screens.
-    if (isCoarse) return;
-    var isLowEnd = navigator.hardwareConcurrency <= 4;
-    var bg = document.createElement('div');
+    if (isCoarse) {return;}
+    const isLowEnd = navigator.hardwareConcurrency <= 4;
+    const bg = document.createElement('div');
     bg.className = 'col-ambient-bg';
     bg.setAttribute('aria-hidden', 'true');
-    var orbs = '<div class="col-ambient-orb col-orb-1"></div><div class="col-ambient-orb col-orb-2"></div>';
-    if (!isLowEnd) orbs += '<div class="col-ambient-orb col-orb-3"></div>';
+    let orbs = '<div class="col-ambient-orb col-orb-1"></div><div class="col-ambient-orb col-orb-2"></div>';
+    if (!isLowEnd) {orbs += '<div class="col-ambient-orb col-orb-3"></div>';}
     bg.innerHTML = orbs + (isCoarse ? '' : '<div class="col-ambient-spotlight"></div>');
     if (document.body) {
       document.body.insertBefore(bg, document.body.firstChild);
@@ -45,9 +55,9 @@
   // or the tab is hidden — stops ~3 constant composited animations per page.
   // Also pauses on low-end devices (<=4 cores) to save battery.
   function setupAmbientPause(bg) {
-    var hasIO = 'IntersectionObserver' in window;
-    var onScreen = true;
-    var lowEnd = (navigator.hardwareConcurrency || 4) <= 4;
+    const hasIO = 'IntersectionObserver' in window;
+    let onScreen = true;
+    const lowEnd = (navigator.hardwareConcurrency || 4) <= 4;
     function apply() {
       bg.classList.toggle('col-perf-pause', !onScreen || document.hidden || lowEnd);
     }
@@ -58,7 +68,7 @@
       }, { threshold: 0 }).observe(bg);
     }
     document.addEventListener('visibilitychange', apply);
-    if (lowEnd) apply();
+    if (lowEnd) {apply();}
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initAmbientVisuals);
@@ -67,25 +77,25 @@
   }
 
   // 1. Cursor & Mouse Spotlight Tracking (Desktop pointer only — zero mobile CPU overhead)
-  var isTouch = window.matchMedia('(pointer: coarse)').matches
-  var isGamePage = /Driving|Academy|solar|gesture|rpg/i.test(location.pathname)
+  const isTouch = window.matchMedia('(pointer: coarse)').matches
+  const isGamePage = /Driving|Academy|solar|gesture|rpg/i.test(location.pathname)
 
   if (!isTouch && !isGamePage) {
-    var dot = document.getElementById('cDot'),
+    const dot = document.getElementById('cDot'),
       ring = document.getElementById('cRing')
-    var spot = document.querySelector('.col-ambient-spotlight')
-    var mx = window.innerWidth / 2,
+    const spot = document.querySelector('.col-ambient-spotlight')
+    let mx = window.innerWidth / 2,
       my = window.innerHeight / 3,
       rx = mx,
       ry = my
-    var rafPending = false
+    let rafPending = false
 
     document.addEventListener(
       'mousemove',
       function (e) {
         mx = e.clientX
         my = e.clientY
-        if (dot) dot.style.transform = 'translate(' + mx + 'px,' + my + 'px) translate(-50%,-50%)'
+        if (dot) {dot.style.transform = 'translate(' + mx + 'px,' + my + 'px) translate(-50%,-50%)'}
         if (!rafPending) {
           rafPending = true
           requestAnimationFrame(function () {
@@ -102,7 +112,7 @@
     )
 
     if (dot && ring) {
-      var _cursorFrame = 0
+      let _cursorFrame = 0
       ;(function draw() {
         if (document.hidden) {
           requestAnimationFrame(draw)
@@ -130,20 +140,20 @@
   }
 
   // 2. Mobile Menu & In-App Updater — Engineered for 720p→2K
-  var mmb = document.getElementById('mmb'),
+  const mmb = document.getElementById('mmb'),
     nl = document.getElementById('navLinks')
-  var isGamePage2 = /Driving|Academy|solar|gesture|rpg/i.test(location.pathname)
+  const isGamePage2 = /Driving|Academy|solar|gesture|rpg/i.test(location.pathname)
   if (mmb) {
     mmb.innerHTML = '<span class="m-line"></span><span class="m-line"></span><span class="m-line"></span>'
     mmb.setAttribute('aria-label', 'Toggle navigation menu')
     mmb.setAttribute('aria-expanded', 'false')
     if (nl) {
       // — Helper: lock body scroll without layout shift —
-      var _lockY = 0
+      let _lockY = 0
       function lockNav() {
         _lockY = window.scrollY
-        var sb = window.innerWidth - document.documentElement.clientWidth
-        if (sb > 0) document.documentElement.style.setProperty('--scrollbar-comp', sb + 'px')
+        const sb = window.innerWidth - document.documentElement.clientWidth
+        if (sb > 0) {document.documentElement.style.setProperty('--scrollbar-comp', sb + 'px')}
         document.body.classList.add('nav-lock')
         document.body.style.top = '-' + _lockY + 'px'
         document.body.style.position = 'fixed'
@@ -166,24 +176,24 @@
       }
 
       // Dedicated, Isolated Centered Mobile Drawer
-      var _drawer = null
+      let _drawer = null
       function getOrCreateMobileDrawer() {
-        if (_drawer) return _drawer
-        var existing = document.getElementById('colMobileDrawer')
+        if (_drawer) {return _drawer}
+        const existing = document.getElementById('colMobileDrawer')
         if (existing) {
           _drawer = existing
           return _drawer
         }
 
-        var d = document.createElement('div')
+        const d = document.createElement('div')
         d.id = 'colMobileDrawer'
         d.className = 'col-mobile-drawer'
         d.setAttribute('aria-modal', 'true')
         d.setAttribute('role', 'dialog')
         d.setAttribute('aria-label', 'Mobile Navigation')
 
-        var curPath = (location.pathname.split('/').pop() || 'home').replace('.html', '').toLowerCase()
-        if (curPath === '' || curPath === 'index') curPath = 'home'
+        let curPath = (location.pathname.split('/').pop() || 'home').replace('.html', '').toLowerCase()
+        if (curPath === '' || curPath === 'index') {curPath = 'home'}
 
         function isActLink(target) {
           return curPath === target ? ' act' : ''
@@ -299,14 +309,14 @@
         _drawer = d
 
         // Close handlers
-        var closeBtn = d.querySelector('#cmdCloseBtn')
-        if (closeBtn) closeBtn.addEventListener('click', closeDrawer)
-        var backdrop = d.querySelector('#cmdBackdrop')
-        if (backdrop) backdrop.addEventListener('click', closeDrawer)
+        const closeBtn = d.querySelector('#cmdCloseBtn')
+        if (closeBtn) {closeBtn.addEventListener('click', closeDrawer)}
+        const backdrop = d.querySelector('#cmdBackdrop')
+        if (backdrop) {backdrop.addEventListener('click', closeDrawer)}
 
         // Accordion toggle
-        var accBtn = d.querySelector('#cmdAccBtn')
-        var acc = d.querySelector('#cmdAccordion')
+        const accBtn = d.querySelector('#cmdAccBtn')
+        const acc = d.querySelector('#cmdAccordion')
         if (accBtn && acc) {
           accBtn.addEventListener('click', function () {
             acc.classList.toggle('active')
@@ -314,7 +324,7 @@
         }
 
         // Theme toggle
-        var cmdHz = d.querySelector('#cmdHzToggle')
+        const cmdHz = d.querySelector('#cmdHzToggle')
         if (cmdHz) {
           cmdHz.addEventListener('click', function () {
             if (typeof window.hzToggle === 'function') {
@@ -324,19 +334,19 @@
               try { localStorage.setItem('theme', document.body.classList.contains('lm') ? 'light' : 'dark') } catch (e) {}
             }
             setTimeout(function () {
-              var desc = document.getElementById('cmdThemeDesc')
-              if (desc) desc.textContent = document.body.classList.contains('lm') ? 'Light Mica' : 'Dark VisionOS'
+              const desc = document.getElementById('cmdThemeDesc')
+              if (desc) {desc.textContent = document.body.classList.contains('lm') ? 'Light Mica' : 'Dark VisionOS'}
             }, 60)
           })
         }
 
         // Login button
-        var loginBtn = d.querySelector('#cmdLoginBtn')
+        const loginBtn = d.querySelector('#cmdLoginBtn')
         if (loginBtn) {
           loginBtn.addEventListener('click', function () {
             closeDrawer()
-            if (typeof window.openLogin === 'function') window.openLogin()
-            else location.href = '/dashboard'
+            if (typeof window.openLogin === 'function') {window.openLogin()}
+            else {location.href = '/dashboard'}
           })
         }
 
@@ -349,32 +359,32 @@
       }
 
       function openDrawer() {
-        var d = getOrCreateMobileDrawer()
+        const d = getOrCreateMobileDrawer()
         d.classList.add('active')
         lockNav()
-        if (mmb) mmb.classList.add('active')
-        var bbarMenu = document.querySelector('.bbar-menu')
-        if (bbarMenu) bbarMenu.classList.add('act')
+        if (mmb) {mmb.classList.add('active')}
+        const bbarMenu = document.querySelector('.bbar-menu')
+        if (bbarMenu) {bbarMenu.classList.add('act')}
         haptic('light')
       }
 
       function closeDrawer() {
-        var wasOpen = _drawer && _drawer.classList.contains('active')
-        if (_drawer) _drawer.classList.remove('active')
+        const wasOpen = _drawer && _drawer.classList.contains('active')
+        if (_drawer) {_drawer.classList.remove('active')}
         unlockNav()
-        if (mmb) mmb.classList.remove('active')
-        var bbarMenu = document.querySelector('.bbar-menu')
-        if (bbarMenu) bbarMenu.classList.remove('act')
-        if (wasOpen) haptic('medium')
+        if (mmb) {mmb.classList.remove('active')}
+        const bbarMenu = document.querySelector('.bbar-menu')
+        if (bbarMenu) {bbarMenu.classList.remove('act')}
+        if (wasOpen) {haptic('medium')}
       }
 
       window.openMobileDrawer = openDrawer
       window.closeMobileDrawer = closeDrawer
 
       mmb.addEventListener('click', function () {
-        var d = getOrCreateMobileDrawer()
-        if (d.classList.contains('active')) closeDrawer()
-        else openDrawer()
+        const d = getOrCreateMobileDrawer()
+        if (d.classList.contains('active')) {closeDrawer()}
+        else {openDrawer()}
       })
 
       // Android Native App detection
@@ -393,7 +403,7 @@
       })
 
       // Swipe to close (left swipe)
-      var _sx = 0
+      let _sx = 0
       nl.addEventListener(
         'touchstart',
         function (e) {
@@ -404,7 +414,7 @@
       nl.addEventListener(
         'touchend',
         function (e) {
-          var dx = e.changedTouches[0].clientX - _sx
+          const dx = e.changedTouches[0].clientX - _sx
           if (dx > 80 && isNavOpen()) {
             nl.classList.remove('active')
             mmb.classList.remove('active')
@@ -415,21 +425,21 @@
       )
 
       // Mobile dropdown toggle (accordion, no propagation to drawer close)
-      var dropdowns = nl.querySelectorAll('.dropdown')
+      const dropdowns = nl.querySelectorAll('.dropdown')
       dropdowns.forEach(function (dd) {
-        var btn = dd.querySelector('.dropdown-btn')
+        const btn = dd.querySelector('.dropdown-btn')
         if (btn) {
           btn.setAttribute('aria-expanded', 'false')
           btn.addEventListener('click', function (e) {
             e.preventDefault()
             e.stopPropagation()
-            var willOpen = !dd.classList.contains('active')
+            const willOpen = !dd.classList.contains('active')
             // close others (accordion)
             dropdowns.forEach(function (o) {
               if (o !== dd) {
                 o.classList.remove('active')
-                var b = o.querySelector('.dropdown-btn')
-                if (b) b.setAttribute('aria-expanded', 'false')
+                const b = o.querySelector('.dropdown-btn')
+                if (b) {b.setAttribute('aria-expanded', 'false')}
               }
             })
             dd.classList.toggle('active')
@@ -442,16 +452,16 @@
 
       // In-App Update Button (Version Aware)
       try {
-        var isWebView = /wv/i.test(navigator.userAgent) || /Build\//i.test(navigator.userAgent)
+        const isWebView = /wv/i.test(navigator.userAgent) || /Build\//i.test(navigator.userAgent)
         if (isWebView) {
           fetch('/version.json?t=' + Date.now())
             .then((r) => r.json())
             .then((data) => {
-              var currentV = localStorage.getItem('col_apk_version') || '0'
+              const currentV = localStorage.getItem('col_apk_version') || '0'
               if (parseInt(data.versionCode) > parseInt(currentV)) {
-                var nl = document.querySelector('.nav-links')
+                const nl = document.querySelector('.nav-links')
                 if (nl && !document.getElementById('apkUpdateBtn')) {
-                  var updBtn = document.createElement('a')
+                  const updBtn = document.createElement('a')
                   updBtn.id = 'apkUpdateBtn'
                   updBtn.href = data.apkUrl || '/COL.apk'
                   updBtn.className = 'nav-dl-btn mobile-dl'
@@ -482,19 +492,19 @@
   // 3. Setup initial theme based on Storage if Storage exists (from col-auth.js or inline)
   // Actually, col-router.js or home.html defines Storage, but if it doesn't, we fallback to localStorage directly.
   try {
-    var savedTheme = localStorage.getItem('theme')
-    var tl = document.getElementById('tLabel')
-    var tsck = document.getElementById('tsck')
+    const savedTheme = localStorage.getItem('theme')
+    const tl = document.getElementById('tLabel')
+    const tsck = document.getElementById('tsck')
 
     if (savedTheme === 'light') {
       document.body.classList.add('lm')
-      if (tsck) tsck.checked = true
-      if (tl) tl.textContent = 'Light Mode'
+      if (tsck) {tsck.checked = true}
+      if (tl) {tl.textContent = 'Light Mode'}
     } else {
       // Explicitly enforce Dark Mode
       document.body.classList.remove('lm')
-      if (tsck) tsck.checked = false
-      if (tl) tl.textContent = 'Dark Mode'
+      if (tsck) {tsck.checked = false}
+      if (tl) {tl.textContent = 'Dark Mode'}
       localStorage.setItem('theme', 'dark')
     }
   } catch (e) {}
@@ -502,22 +512,22 @@
 
 window.toggleTheme = function (el) {
   // rAF-deferred so the checkbox click event completes instantly (fixes INP)
-  var isChecked = el && el.checked;
-  try { if (navigator.vibrate) navigator.vibrate(10); } catch (e) {}
+  const isChecked = el && el.checked;
+  try { if (navigator.vibrate) {navigator.vibrate(10);} } catch (e) {}
   requestAnimationFrame(function () {
-    var tl = document.getElementById('tLabel')
+    const tl = document.getElementById('tLabel')
     if (isChecked) {
       document.body.classList.add('lm')
       try {
         localStorage.setItem('theme', 'light')
       } catch (e) {}
-      if (tl) tl.textContent = 'Light Mode'
+      if (tl) {tl.textContent = 'Light Mode'}
     } else {
       document.body.classList.remove('lm')
       try {
         localStorage.setItem('theme', 'dark')
       } catch (e) {}
-      if (tl) tl.textContent = 'Dark Mode'
+      if (tl) {tl.textContent = 'Dark Mode'}
     }
   })
 }
@@ -539,10 +549,10 @@ if ('serviceWorker' in navigator) {
 // 4. APK Verification Badge (shown in-app after cert check)
 window.addEventListener('col-apk-verified', function (e) {
   try {
-    var existing = document.getElementById('colApkBadge')
-    if (existing) existing.remove()
-    if (!e.detail || !e.detail.verified) return
-    var badge = document.createElement('div')
+    const existing = document.getElementById('colApkBadge')
+    if (existing) {existing.remove()}
+    if (!e.detail || !e.detail.verified) {return}
+    const badge = document.createElement('div')
     badge.id = 'colApkBadge'
     badge.textContent = 'Verified APK'
     badge.style.cssText =
@@ -562,16 +572,16 @@ window.addEventListener('col-apk-verified', function (e) {
   // Popup is suppressed inside the Android WebView (in-app users already have the app)
   // and on non-Android devices (was a dead no-op branch before).
   try {
-    var isAndroid = /Android/i.test(navigator.userAgent)
-    var isWebView = /wv/i.test(navigator.userAgent) || /Build\//i.test(navigator.userAgent)
-    var hasPrompted = sessionStorage.getItem('col_app_prompted')
+    const isAndroid = /Android/i.test(navigator.userAgent)
+    const isWebView = /wv/i.test(navigator.userAgent) || /Build\//i.test(navigator.userAgent)
+    const hasPrompted = sessionStorage.getItem('col_app_prompted')
 
     if (isAndroid && !isWebView && !hasPrompted) {
     sessionStorage.setItem('col_app_prompted', 'true')
 
-    var popup = document.createElement('div')
+    const popup = document.createElement('div')
     popup.id = 'colAppPopup'
-    var hasBotNav = document.querySelector('.col-bottom-bar') || document.querySelector('.mobile-bottom-nav')
+    const hasBotNav = document.querySelector('.col-bottom-bar') || document.querySelector('.mobile-bottom-nav')
     popup.style.position = 'fixed'
     popup.style.bottom = hasBotNav ? '75px' : '20px'
     popup.style.left = '20px'
@@ -606,28 +616,28 @@ window.addEventListener('col-apk-verified', function (e) {
 
 // 6. Mobile Bottom Menu Bar (5-item thumb navigation, smooth scroll, haptics, safe-area aware)
 function initBottomBar() {
-  var isGame = /Driving|Academy|TrafficSetup/i.test(location.pathname)
-  if (isGame) return
+  const isGame = /Driving|Academy|TrafficSetup/i.test(location.pathname)
+  if (isGame) {return}
 
   function createOrUpdateBar() {
     if (window.innerWidth > 900) {
-      var existing = document.querySelector('.col-bottom-bar')
-      if (existing) existing.remove()
+      const existing = document.querySelector('.col-bottom-bar')
+      if (existing) {existing.remove()}
       document.body.classList.remove('nav-lock')
-      if (typeof window.closeMobileDrawer === 'function') window.closeMobileDrawer()
-      var mmb = document.getElementById('mmb')
-      if (mmb) mmb.classList.remove('active')
+      if (typeof window.closeMobileDrawer === 'function') {window.closeMobileDrawer()}
+      const mmb = document.getElementById('mmb')
+      if (mmb) {mmb.classList.remove('active')}
       return
     }
-    if (document.querySelector('.col-bottom-bar')) return
+    if (document.querySelector('.col-bottom-bar')) {return}
 
-    var bar = document.createElement('nav')
+    const bar = document.createElement('nav')
     bar.className = 'col-bottom-bar'
     bar.setAttribute('aria-label', 'Primary Mobile Navigation')
 
-    var curPath = (location.pathname.split('/').pop() || 'home').replace('.html', '').toLowerCase()
-    if (curPath === '' || curPath === 'index') curPath = 'home'
-    var curHash = location.hash || ''
+    let curPath = (location.pathname.split('/').pop() || 'home').replace('.html', '').toLowerCase()
+    if (curPath === '' || curPath === 'index') {curPath = 'home'}
+    const curHash = location.hash || ''
 
     function isAct(target) {
       if (target === 'home') {
@@ -666,11 +676,11 @@ function initBottomBar() {
     // Event handlers with haptic feedback
     bar.querySelectorAll('.bbar-item').forEach(function (btn) {
       btn.addEventListener('click', function (e) {
-        if (navigator.vibrate) navigator.vibrate(10)
-        var tab = btn.getAttribute('data-tab')
+        if (navigator.vibrate) {navigator.vibrate(10)}
+        const tab = btn.getAttribute('data-tab')
 
         if (tab === 'projects' && (curPath === 'home' || curPath === '')) {
-          var pTarget = document.getElementById('projects')
+          const pTarget = document.getElementById('projects')
           if (pTarget) {
             e.preventDefault()
             pTarget.scrollIntoView({ behavior: 'smooth' })
@@ -681,29 +691,29 @@ function initBottomBar() {
         } else if (tab === 'menu') {
           e.preventDefault()
           if (typeof window.openMobileDrawer === 'function') {
-            var d = document.getElementById('colMobileDrawer')
+            const d = document.getElementById('colMobileDrawer')
             if (d && d.classList.contains('active')) {
               window.closeMobileDrawer()
             } else {
               window.openMobileDrawer()
             }
           } else {
-            var mmb = document.getElementById('mmb')
-            if (mmb) mmb.click()
+            const mmb = document.getElementById('mmb')
+            if (mmb) {mmb.click()}
           }
         }
       })
     })
 
     // Sync menu button active state with drawer state
-    var menuBtn = bar.querySelector('.bbar-menu')
+    const menuBtn = bar.querySelector('.bbar-menu')
     var checkDrawerInterval = setInterval(function () {
-      var d = document.getElementById('colMobileDrawer')
+      const d = document.getElementById('colMobileDrawer')
       if (d && menuBtn) {
         clearInterval(checkDrawerInterval)
         if ('MutationObserver' in window) {
-          var obs = new MutationObserver(function () {
-            var isOpen = d.classList.contains('active')
+          const obs = new MutationObserver(function () {
+            const isOpen = d.classList.contains('active')
             menuBtn.classList.toggle('act', isOpen)
           })
           obs.observe(d, { attributes: true, attributeFilter: ['class'] })
@@ -738,14 +748,14 @@ window.safeThemeSet = function (val) {
 }
 
 window.hzSync = function () {
-  var isLight = document.body.classList.contains('lm')
-  var toggles = document.querySelectorAll('.hz-toggle')
+  const isLight = document.body.classList.contains('lm')
+  const toggles = document.querySelectorAll('.hz-toggle')
   toggles.forEach(function (el) {
-    if (isLight) el.classList.remove('night')
-    else el.classList.add('night')
+    if (isLight) {el.classList.remove('night')}
+    else {el.classList.add('night')}
   })
-  var desc = document.getElementById('cmdThemeDesc')
-  if (desc) desc.textContent = isLight ? 'Light Mica' : 'Dark VisionOS'
+  const desc = document.getElementById('cmdThemeDesc')
+  if (desc) {desc.textContent = isLight ? 'Light Mica' : 'Dark VisionOS'}
 }
 
 window.hzToggle = function () {
@@ -753,21 +763,21 @@ window.hzToggle = function () {
     try { navigator.vibrate(8) } catch (e) {}
   }
   document.body.classList.toggle('lm')
-  var isLight = document.body.classList.contains('lm')
+  const isLight = document.body.classList.contains('lm')
   window.safeThemeSet(isLight ? 'light' : 'dark')
   window.hzSync()
 }
 
 // Immediately restore theme on script load
 ;(function () {
-  var saved = window.safeThemeGet()
+  const saved = window.safeThemeGet()
   if (saved === 'light') {
     document.documentElement.classList.add('lm')
-    if (document.body) document.body.classList.add('lm')
-    else document.addEventListener('DOMContentLoaded', function () { document.body.classList.add('lm') })
+    if (document.body) {document.body.classList.add('lm')}
+    else {document.addEventListener('DOMContentLoaded', function () { document.body.classList.add('lm') })}
   } else if (saved === 'dark') {
     document.documentElement.classList.remove('lm')
-    if (document.body) document.body.classList.remove('lm')
+    if (document.body) {document.body.classList.remove('lm')}
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', window.hzSync)

@@ -1,0 +1,75 @@
+# Vercel source-upload exclusions. The build regenerates dist/ from the
+# filtered tree; these paths must never be uploaded or publicly served.
+
+# Version control and local agent state
+.git
+.github
+.agent
+.agents
+.codex
+.freebuff
+.impeccable
+.kilo
+.opencode
+.playwright-mcp
+.superpowers
+.vercel
+
+# Dependencies and local build output
+node_modules
+**/node_modules
+dist
+dist-electron
+dist-web
+Traffic/dist
+Traffic/dist-electron
+Traffic/dist-web
+android
+.gradle
+
+# Credentials, local databases, and generated desktop artifacts
+**/.env
+**/.env.*
+**/*.db
+**/*.sqlite
+**/*.sqlite3
+**/*.exe
+**/*.msi
+**/*.dmg
+**/*.AppImage
+**/*.pkg
+AdvancedTypingInstructor_1.4.0_all.deb
+AdvancedTypingInstructor-Linux.tar.gz
+Traffic/electron
+Cyberpunk/**
+Traffic/Cyberpunk/**
+**/scratch/**
+Traffic/Models/sofa
+Traffic/Models/kenney_platformer-pack-remastered
+Traffic/Models/uploads_files_3963923_Metal+and+Concrete+Barrier+Textures
+Traffic/Models/uploads_files_6809232_bollard
+Traffic/Models/low_poly_city.glb
+Traffic/Models/low_poly_city_game-ready.glb
+Traffic/Models/New folder
+Traffic/New folder
+Traffic/Models/parking_garage.glb
+Terra3D/build
+Terra3D/dist
+
+# Development-only metadata and tooling
+AGENTS.md
+SECURITY.md
+README.md
+PLAN.md
+PROJECTS.md
+findings.md
+progress.md
+task_plan.md
+app.json
+opencode.json
+skills-lock.json
+eslint.config.js
+**/eslint.config.js
+.trajectory
+.prettierignore
+.prettierrc

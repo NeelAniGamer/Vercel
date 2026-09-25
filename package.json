@@ -1,6 +1,17 @@
 {
   "scripts": {
-    "build": "node build.js"
+    "build": "node build.js",
+    "postbuild": "node scripts/production-check.js",
+    "verify:production": "node scripts/production-check.js",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "security:audit": "npm audit --audit-level=high",
+    "security:fix": "npm audit fix",
+    "test": "playwright test",
+    "test:smoke": "playwright test --project=chromium"
   },
   "devDependencies": {
     "@types/react": "^19.2.17",
@@ -8,7 +19,10 @@
     "@types/three": "^0.185.0",
     "esbuild": "^0.28.1",
     "prettier": "3.9.3",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "eslint": "^9.0.0",
+    "@eslint/js": "^9.0.0",
+    "globals": "^15.0.0"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

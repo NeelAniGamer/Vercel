@@ -78,6 +78,7 @@ const GamePage = () => {
 
   return (
     <div className="relative h-screen w-screen">
+      <Analytics />
       <SpeedInsights />
       <Analytics />
       <DrivingSimulator onScoreChange={syncScore} onAchievementTrigger={triggerAchievement} />

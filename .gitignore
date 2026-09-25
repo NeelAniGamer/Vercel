@@ -12,3 +12,14 @@ android/app/build/
 android/build/
 .gradle/
 temp_rec/
+.freebuff/
+.opencode/
+.codex/
+.agent/
+.impeccable/
+.kilo/
+.superpowers/
+*.sqlite
+*.sqlite3
+*.db
+node_modules/

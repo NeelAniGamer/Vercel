@@ -1,5 +1,0 @@
-file 'c:/Users/neelg/OneDrive/Desktop/Vercel/recordings/01_solar_crisis.mp4'
-file 'c:/Users/neelg/OneDrive/Desktop/Vercel/recordings/02_gesture_takeover.mp4'
-file 'c:/Users/neelg/OneDrive/Desktop/Vercel/recordings/03_terra3d_scan.mp4'
-file 'c:/Users/neelg/OneDrive/Desktop/Vercel/recordings/04_qr_cipher.mp4'
-file 'c:/Users/neelg/OneDrive/Desktop/Vercel/recordings/05_ati_terminal.mp4'
