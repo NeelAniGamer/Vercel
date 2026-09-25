@@ -36,6 +36,16 @@ function captureAll(html, pattern) {
   return Array.from(html.matchAll(pattern)).map((match) => match[1].trim())
 }
 
+function stripNonContent(html) {
+  return html
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, '')
+}
+
+function visibleText(html) {
+  return decodeHtml(html.replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim()
+}
+
 function captureMetaContent(html, attribute, value) {
   const tags = html.match(/<meta\b[^>]*>/gi) || []
   const namePattern = new RegExp(`\\b${attribute}\\s*=\\s*["']${value}["']`, 'i')
@@ -122,6 +132,8 @@ if (!fs.existsSync(distRoot)) {
 
       const html = fs.readFileSync(htmlFile, 'utf8')
       const head = html.match(/<head\b[^>]*>([\s\S]*?)<\/head>/i)?.[1] || html
+      const body = html.match(/<body\b[^>]*>([\s\S]*?)<\/body>/i)?.[1] || html
+      const h1Texts = captureAll(stripNonContent(body), /<h1\b[^>]*>([\s\S]*?)<\/h1>/gi).map(visibleText)
       const titles = captureAll(head, /<title\b[^>]*>([\s\S]*?)<\/title>/gi).map(decodeHtml)
       const descriptions = captureMetaContent(head, 'name', 'description').map(decodeHtml)
       const canonicals = captureAll(head, canonicalPattern())
@@ -174,7 +186,13 @@ if (!fs.existsSync(distRoot)) {
         addError(`${label} needs one complete Twitter card title, description, and image tag.`)
       }
       if (twitterImages[0] && !productionAssetExists(twitterImages[0])) addError(`${label} twitter:image must be an existing absolute production URL.`)
-      if (!/<h1\b/i.test(html)) addWarning(`${label} has no static H1 heading.`)
+      if (h1Texts.length === 0) {
+        addWarning(`${label} has no static H1 heading.`)
+      } else {
+        if (h1Texts.length > 1) addWarning(`${label} has ${h1Texts.length} H1 headings; keep one primary page heading.`)
+        const placeholderH1 = h1Texts.find((text) => /^(?:loading(?:\.{3}|…)?|level name|_+|coming soon)$/i.test(text))
+        if (placeholderH1) addError(`${label} has a non-semantic H1: ${placeholderH1}`)
+      }
       if (!/application\/ld\+json/i.test(html)) addWarning(`${label} has no JSON-LD structured data.`)
     })
   }

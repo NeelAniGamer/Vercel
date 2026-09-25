@@ -4,6 +4,7 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995"
      crossorigin="anonymous"></script>
     <meta name="description" content="Explore a realistic 3D solar system with orbital motion, planet data, planetary flybys, and an interactive deep-space learning experience built for the browser." />
+    <meta name="keywords" content="solar system simulator, 3D solar system, interactive planets, space simulator, orbital mechanics, planet exploration, astronomy education, solar system 3D model, WebGL space, planetary physics, interactive astronomy, browser space simulator, learn astronomy online, 3D planet viewer, solar system visualization">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta property="og:site_name" content="Class Of Learners" />
@@ -38,6 +39,20 @@
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
       }
     </script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Course",
+  "name": "Interactive Solar System Exploration",
+  "description": "Explore a realistic 3D solar system with orbital mechanics, planet data, and interactive space learning.",
+  "provider": {"@type": "Organization", "name": "Class Of Learners", "url": "https://advancedlogiclabs.dpdns.org/"},
+  "educationalLevel": "All Levels",
+  "isAccessibleForFree": true,
+  "inLanguage": "en",
+  "teaches": ["Solar System", "Orbital Mechanics", "Planetary Science", "Astronomy"]
+}
+</script>
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
     <style>
       /* ──── FORCE DEEP SPACE THEME FOR SOLAR ──── */
@@ -411,6 +426,17 @@
         letter-spacing: -2px;
         font-family: 'Space Mono', monospace;
         text-transform: none;
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
       }
       .game-hero p {
         font-size: 1.25rem;
@@ -1876,11 +1902,14 @@
     <header class="game-hero" style="position: relative;">
       <div class="hero-badge anim-target">Orbital Physics Online</div>
 
-      <h1><span id="typewriter-text"></span><span class="cursor-blink">_</span></h1>
+      <h1>
+        <span class="sr-only">Interactive 3D Solar System | Solar Engine</span>
+        <span id="typewriter-text" aria-hidden="true"></span><span class="cursor-blink" aria-hidden="true">_</span>
+      </h1>
 
       <div class="hero-reveal" id="heroReveal">
         <p>
-          A deep-space simulation using accurate Keplerian orbital physics. Interact with the celestial bodies in the browser below, or download the compiled executable for maximum performance.
+          Explore an interactive 3D solar system with accurate Keplerian orbital physics. Interact with planets, orbital motion, and live telemetry in the browser, or download the compiled Solar Engine for maximum performance.
         </p>
         <div class="hero-cta">
           <a href="download" class="btn-download">Initialize Download</a>

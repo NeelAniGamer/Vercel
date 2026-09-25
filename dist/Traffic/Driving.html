@@ -12,6 +12,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
   <meta name="description" content="Learn Mumbai traffic rules through a realistic 3D driving simulator with guided missions, road safety scenarios, quizzes, licenses, and progress tracking." />
+  <meta name="keywords" content="traffic driving simulator, 3D driving game, Mumbai driving simulator, learn to drive online, road safety game, traffic rules game, browser driving game, Three.js driving game, Indian traffic simulator, virtual driving practice, driving simulation game, learn traffic rules, road safety education, free driving simulator, practice driving online">
   <meta property="og:site_name" content="Class Of Learners" />
   <meta property="og:title" content="Mumbai Traffic Driving Simulator | Rules Academy" />
   <meta property="og:description" content="Learn Mumbai traffic rules through a realistic 3D driving simulator with guided missions, road safety scenarios, quizzes, licenses, and progress tracking." />
@@ -47,6 +48,22 @@
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
     }
   </script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "VideoGame",
+  "name": "Mumbai Traffic Driving Simulator",
+  "description": "A 3D browser-based driving simulator set in Mumbai. Practice road safety, learn Indian traffic rules, and navigate realistic city environments.",
+  "genre": ["Simulation", "Educational", "Driving"],
+  "gamePlatform": "Web Browser",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Any (WebGL)",
+  "offers": {"@type": "Offer", "price": "0", "priceCurrency": "INR"},
+  "author": {"@type": "Organization", "name": "Class Of Learners"},
+  "inLanguage": "en"
+}
+</script>
+
 
   
   <script>
@@ -706,7 +723,7 @@
       margin-bottom: 8px;
     }
 
-    #loading-screen h1 {
+    #loading-level-name {
       font-family: 'Lora', serif;
       font-size: clamp(2rem, 5vw, 3.5rem);
       color: #f2b84b;
@@ -716,6 +733,17 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+    }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
     }
 
     .ls-level-badge {
@@ -7317,6 +7345,8 @@
 </head>
 
 <body class="lm">
+    <h1 class="sr-only">Mumbai Traffic Driving Simulator | Learn Mumbai Traffic Rules</h1>
+    <p class="sr-only">Practice Mumbai traffic rules, road signs, intersections, speed limits, pedestrian safety, and traffic law in a guided 3D driving simulator.</p>
   
 
   <style>
@@ -7434,7 +7464,7 @@
   
   <div id="loading-screen" style="display:none;">
     <div class="ls-logo">Mumbai Traffic Hero</div>
-    <h1 id="loading-level-name">Loading...</h1>
+    <h2 id="loading-level-name">Loading...</h2>
     <div class="ls-level-badge" id="loading-level-badge">🏁 Driving Level</div>
     <div class="ls-progress-wrap">
       <div class="ls-progress-header">

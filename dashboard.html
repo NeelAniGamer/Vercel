@@ -6,9 +6,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="View your student progress, achievements, trophy case, and global leaderboard rankings on Class Of Learners." />
+    <meta name="robots" content="noindex, nofollow" />
     <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
     <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/dashboard" />
     <title>User Dashboard | Class Of Learners</title>
+    <link rel="icon" type="image/png" href="Icon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
@@ -783,7 +785,7 @@
         
         const av = document.getElementById('user-avatar');
         if (window.colUser.picture) {
-          av.innerHTML = `<img src="${window.colUser.picture}" style="width:100%; height:100%; object-fit:cover;">`;
+          av.innerHTML = `<img src="${window.colUser.picture}" alt="User Avatar" style="width:100%; height:100%; object-fit:cover;">`;
         } else {
           av.textContent = (window.colUser.name || 'U').charAt(0).toUpperCase();
         }
@@ -1020,7 +1022,7 @@
             <td class="lb-rank">${idx + 1}</td>
             <td>
               <div class="lb-user">
-                <div class="lb-avatar">${entry.avatar_url ? `<img src="${entry.avatar_url}" style="width:100%; height:100%; object-fit:cover;">` : ''}</div>
+                <div class="lb-avatar">${entry.avatar_url ? `<img src="${entry.avatar_url}" alt="Leaderboard Player Avatar" style="width:100%; height:100%; object-fit:cover;">` : ''}</div>
                 <span>${entry.username || entry.name || entry.full_name || 'Anonymous'}</span>
               </div>
             </td>

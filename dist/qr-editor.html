@@ -4,6 +4,7 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995"
      crossorigin="anonymous"></script>
     <meta name="description" content="Create custom QR codes for links, text, contact details, payments, events, and files with editable colors, logos, sizes, and high-resolution downloads.">
+    <meta name="keywords" content="QR code generator, custom QR code, QR code maker, create QR code free, QR code with logo, QR code editor, dynamic QR code, QR code design, browser QR generator, free QR code maker, QR code creator online, custom QR code generator">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta property="og:site_name" content="Class Of Learners">
@@ -38,9 +39,22 @@
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
       }
     </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How To Create A Custom QR Code",
+  "description": "Create custom QR codes for links, text, contact details, payments, events, and files with editable colors, logos, and high-resolution downloads.",
+  "step": [
+    {"@type": "HowToStep", "name": "Choose Content Type", "text": "Select the type of QR code content — URL, text, contact, payment, or event."},
+    {"@type": "HowToStep", "name": "Enter Your Data", "text": "Enter the content data for your QR code."},
+    {"@type": "HowToStep", "name": "Customize Design", "text": "Choose colors, add a logo, and adjust size."},
+    {"@type": "HowToStep", "name": "Download", "text": "Download your custom QR code in high resolution."}
+  ]
+}
+</script>
+
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <script defer src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -330,7 +344,7 @@ select.fi { cursor: pointer; appearance: none; background-image: url('data:image
   .prev-p { order: -1; width: 100%; border-left: none; border-bottom: 2px solid var(--border); min-height: unset; box-shadow: 0 10px 25px rgba(0,0,0,0.4); z-index: 10; padding-bottom: 15px; }
   .prev-hd { padding: 15px 15px 10px; }
   .prev-cw { padding: 10px 15px; }
-  #qrWrap { max-width: 200px; margin: 0 auto; padding: 10px; } 
+  #qrWrap { width: 200px; min-height: 204px; max-width: 200px; margin: 0 auto; padding: 10px; display: grid; place-items: center; align-content: center; } 
   #qrWrap canvas, #qrWrap svg { max-width: 100% !important; height: auto !important; }
   .prev-inf { padding: 0 15px 10px; }
   .prev-act { padding: 0 15px 10px; gap: 10px; }

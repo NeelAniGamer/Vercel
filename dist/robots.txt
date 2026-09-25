@@ -1,5 +1,34 @@
 User-agent: *
 Allow: /
 
+# Explicit Search Engine & AI Crawlers
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
 # Private, duplicate, unfinished, and internal routes are served with a noindex X-Robots-Tag header.
 Sitemap: https://advancedlogiclabs.dpdns.org/sitemap.xml
+Host: https://advancedlogiclabs.dpdns.org

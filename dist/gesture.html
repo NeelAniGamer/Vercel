@@ -3,6 +3,7 @@
   <head>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995" crossorigin="anonymous"></script>
     <meta name="description" content="Control your computer with webcam hand gestures, pinch-to-click, air drawing, voice tasks, and multimodal AI in the Perceptus Flow desktop assistant." />
+    <meta name="keywords" content="gesture control, hand tracking, webcam gesture control, touchless control, MediaPipe hands, computer vision, hand gesture recognition, air mouse, touchless desktop control, Perceptus Flow, webcam mouse control, gesture based interface, hand tracking software, contactless computer control">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Perceptus Flow | Touchless Gesture Control</title>
@@ -40,6 +41,22 @@
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
       }
     </script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How To Control Your Computer With Hand Gestures",
+  "description": "Use Perceptus Flow to control your desktop computer with webcam hand gestures — pinch to click, scroll with two fingers, and draw in the air.",
+  "step": [
+    {"@type": "HowToStep", "name": "Open Perceptus Flow", "text": "Open Perceptus Flow in your browser and allow camera access."},
+    {"@type": "HowToStep", "name": "Point To Move", "text": "Extend your index finger to move the cursor across the screen."},
+    {"@type": "HowToStep", "name": "Click With Three Fingers", "text": "Raise index, middle, and ring fingers to perform a left click."},
+    {"@type": "HowToStep", "name": "Scroll With Two Fingers", "text": "Raise index and middle fingers and move up or down to scroll."}
+  ],
+  "tool": {"@type": "HowToTool", "name": "Webcam"}
+}
+</script>
+
     <link rel="manifest" href="manifest.json" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -443,6 +460,17 @@
         letter-spacing: -2px;
         font-family: 'Space Mono', monospace;
         text-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
       }
       .cursor-blink {
         animation: blink 1s step-end infinite;
@@ -2051,9 +2079,12 @@
     <header class="game-hero">
       <canvas id="cyberCanvas"></canvas>
       <div class="hero-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>INTRODUCING PERCEPTUS FLOW &bull; Autonomous AI Vision &amp; Spatial Co-Pilot</div>
-      <h1><span id="typewriter-text"></span><span class="cursor-blink">_</span></h1>
+      <h1>
+        <span class="sr-only">Touchless Gesture Control | Webcam Hand Gesture Virtual Mouse</span>
+        <span id="typewriter-text" aria-hidden="true"></span><span class="cursor-blink" aria-hidden="true">_</span>
+      </h1>
       <div class="hero-reveal" id="heroReveal">
-        <p>Introducing Perceptus Flow: Touchless computing redefined. Control Windows, navigate pages, and air-draw in mid-air using live AI spatial machine vision. Zero extra hardware required — your standard webcam turns into an intelligent spatial gesture sensor.</p>
+        <p>Introducing Perceptus Flow: touchless computer control with webcam hand gestures, pinch-to-click, air drawing, and virtual mouse control. Live AI spatial machine vision turns your standard webcam into a gesture sensor, with no extra hardware required.</p>
         <div class="hero-cta">
           <a href="download" class="btn-download">Download Perceptus</a>
           <button class="btn-demo" onclick="startCameraEngine()"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:6px"><polygon points="5 3 19 12 5 21 5 3"/></svg>Launch Vision Engine</button>

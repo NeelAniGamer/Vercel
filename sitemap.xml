@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Core Pages -->
+  <!-- Core Studio & Educational Hub -->
   <url>
     <loc>https://advancedlogiclabs.dpdns.org/</loc>
     <lastmod>2026-09-25</lastmod>
@@ -32,7 +32,7 @@
     <priority>0.8</priority>
   </url>
 
-  <!-- Interactive Learning Products -->
+  <!-- Interactive Learning & 3D Simulations -->
   <url>
     <loc>https://advancedlogiclabs.dpdns.org/Traffic/Driving</loc>
     <lastmod>2026-09-25</lastmod>
@@ -82,7 +82,7 @@
     <priority>0.8</priority>
   </url>
 
-  <!-- Downloads And Legal -->
+  <!-- Downloads, Guidance & Legal -->
   <url>
     <loc>https://advancedlogiclabs.dpdns.org/download</loc>
     <lastmod>2026-09-25</lastmod>
