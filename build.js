@@ -46,8 +46,14 @@ const excludedPaths = new Set([
   'Traffic/Models/New folder',
   'Traffic/New folder',
   'Traffic/Models/parking_garage.glb',
+  // Traffic pages load these shared modules from the parent directory
+  // (../col-ui.js), so the Traffic-local copies are never requested and would
+  // only ship a second, divergent version of the same file.
   'Traffic/col-auth.js',
-  'Traffic/col-ui.css'
+  'Traffic/col-ui.css',
+  'Traffic/col-ui.js',
+  'Traffic/col-router.js',
+  'Traffic/config.json'
 ]);
 
 function shouldExclude(name, isDirectory, relativePath = '') {

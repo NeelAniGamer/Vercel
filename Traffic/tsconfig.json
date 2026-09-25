@@ -14,14 +14,13 @@
     "noEmit": true,
     "allowJs": true,
     "checkJs": false,
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@engine/*": ["src/engine/*"],
-      "@systems/*": ["src/systems/*"],
-      "@game/*": ["src/game/*"],
-      "@ui/*": ["src/ui/*"],
-      "@state/*": ["src/state/*"]
+      "@/*": ["./src/*"],
+      "@engine/*": ["./src/engine/*"],
+      "@systems/*": ["./src/systems/*"],
+      "@game/*": ["./src/game/*"],
+      "@ui/*": ["./src/ui/*"],
+      "@state/*": ["./src/state/*"]
     },
     "types": ["node", "vite/client"]
   },
