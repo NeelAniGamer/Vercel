@@ -36,14 +36,14 @@ jobs:
       security-events: write
 
     steps:
-    - uses: actions/checkout@v6
-    - uses: actions/setup-dotnet@v5
+    - uses: actions/checkout@v7
+    - uses: actions/setup-dotnet@v6
       with:
         dotnet-version: |
           8.0.x
           9.0.x
     - name: Run Microsoft Security DevOps
-      uses: microsoft/security-devops-action@v1.6.0
+      uses: microsoft/security-devops-action@v1.12.0
       id: msdo
       # Preview action. It can fail to complete on this repository because the
       # tool auto-selection walks a very large tree of model packs and local
