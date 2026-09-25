@@ -647,7 +647,7 @@
         <div class="user-avatar" id="user-avatar">?</div>
         <div class="user-info">
           <h1 id="user-name">Loading...</h1>
-          <p id="user-email">...</p>
+          <p id="user-email" class="user-email" style="text-transform: none !important;">...</p>
           <div class="user-role-badge" id="user-role-badge">Student</div>
         </div>
       </header>
@@ -772,7 +772,7 @@
         ui.style.display = 'block';
 
         document.getElementById('user-name').textContent = window.colUser.name || 'User';
-        document.getElementById('user-email').textContent = window.colUser.email || window.colUser.username || '';
+        document.getElementById('user-email').textContent = window.colUser.email ? window.colUser.email.toLowerCase() : (window.colUser.username || '');
         
         const role = window.colUser.user_metadata?.role || 'student';
         const roleBadge = document.getElementById('user-role-badge');

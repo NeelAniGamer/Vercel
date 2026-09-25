@@ -1199,7 +1199,7 @@
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
               </div>
               <h2 style="color:var(--danger)">Access Denied</h2>
-              <p>The account <b style="color:var(--text-main)">${window.colUser.email}</b> lacks administrative privileges.</p>
+              <p>The account <b class="col-auth-email" style="color:var(--text-main); text-transform:none !important;">${window.colUser.email ? window.colUser.email.toLowerCase() : ''}</b> lacks administrative privileges.</p>
               <button class="btn-danger-outline" style="width: 100%; justify-content: center; padding: 12px; margin-top: 10px" onclick="doLogoutAdmin()">Sign Out &amp; Retry</button>
             `;
           }

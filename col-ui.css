@@ -95,7 +95,21 @@ code *,
 .typing-area,
 .typing-area *,
 #textDisplay,
-#textDisplay * {
+#textDisplay *,
+/* Email addresses, mail links, and user handles keep normal lowercase format */
+.col-auth-email,
+.col-auth-email *,
+.user-email,
+.user-email *,
+#user-email,
+.pemail,
+.pemail *,
+#pEmail,
+.email-text,
+.user-handle,
+[data-email],
+a[href^="mailto:"],
+input[type="email"] {
   text-transform: none !important;
 }
 input,

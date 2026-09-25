@@ -135,6 +135,7 @@ if (!window.closeMo) {
         name: acc.name || acc.username,
         username: acc.username || ('@' + (acc.name || 'user').toLowerCase().replace(/\s+/g, '')),
         email: acc.email || '',
+        picture: acc.picture || acc.avatar || null,
         pin: acc.pin || acc.password || '',
         password: acc.pin || acc.password || '',
         role: acc.role || 'student',
@@ -158,7 +159,9 @@ if (!window.closeMo) {
           full_name: fullAcc.name,
           name: fullAcc.name,
           role: fullAcc.role,
-          preferred_vehicle: fullAcc.vehicle
+          preferred_vehicle: fullAcc.vehicle,
+          avatar_url: fullAcc.picture || null,
+          picture: fullAcc.picture || null
         }
       }
     } catch (e) {
@@ -383,6 +386,64 @@ if (!window.closeMo) {
     window.dispatchEvent(event)
   }
 
+  function formatUserFriendlyAuthError(err, context = 'general') {
+    if (!err) return 'An Unexpected Error Occurred. Please Try Again.'
+    const raw = typeof err === 'string' ? err : (err.message || '')
+    const msg = raw.toLowerCase()
+    const code = err.code || ''
+
+    // Duplicate key / unique constraint
+    if (code === '23505' || msg.includes('unique') || msg.includes('duplicate') || msg.includes('profiles_username_key') || msg.includes('already exists') || msg.includes('already in use') || msg.includes('already registered')) {
+      if (context === 'username' || context === 'profile' || context === 'settings') {
+        return 'This Username Is Already Taken By Another Player. Please Choose A Different Username Or Pick A Suggestion Below.'
+      }
+      if (msg.includes('user already registered') || context === 'register') {
+        return 'An Account With This Email Already Exists. Please Sign In Instead.'
+      }
+      return 'This Handle Or Email Is Already Registered. Please Choose Another.'
+    }
+    // Invalid credentials
+    if (msg.includes('invalid login credentials') || msg.includes('invalid credentials')) {
+      return 'Incorrect Email Or Password. Please Check Your Details And Try Again.'
+    }
+    // Invalid email format
+    if (msg.includes('invalid email') || msg.includes('email format') || msg.includes('valid email')) {
+      return 'Please Enter A Valid Email Address.'
+    }
+    // OTP verification
+    if (context === 'otp_verify' || msg.includes('otp') || msg.includes('token') || msg.includes('verification code')) {
+      if (msg.includes('expired')) {
+        return 'Verification Code Has Expired. Please Request A New Code.'
+      }
+      return 'Invalid Verification Code. Please Check The 6-Digit Code And Try Again.'
+    }
+    // Rate limit
+    if (msg.includes('rate limit') || msg.includes('too many requests') || msg.includes('security purposes')) {
+      return 'Too Many Attempts. Please Wait A Minute Before Trying Again.'
+    }
+    // Network / connection
+    if (msg.includes('failed to fetch') || msg.includes('network') || msg.includes('offline') || msg.includes('timeout') || msg.includes('connection')) {
+      return 'Network Connection Error. Please Check Your Internet Connection And Try Again.'
+    }
+    // Row level security / permission
+    if (msg.includes('row-level security') || msg.includes('permission denied')) {
+      return 'Session Expired Or Permission Denied. Please Sign In Again.'
+    }
+    // Password constraints
+    if (msg.includes('password') && (msg.includes('least 6') || msg.includes('short'))) {
+      return 'Password Must Be At Least 6 Characters Long.'
+    }
+    // Username / profile context fallback
+    if (context === 'profile' || context === 'username') {
+      return 'This Username Is Unavailable. Please Pick A Different Handle Or Choose A Suggestion.'
+    }
+    if (context === 'otp_send') {
+      return 'Failed To Send Verification Code. Please Verify Your Email And Try Again.'
+    }
+    // Default fallback (Title Case, friendly)
+    return 'Action Could Not Be Completed. Please Try Again.'
+  }
+
   async function checkUsernameAvailability(rawUsername, currentUserId) {
     if (!rawUsername) return { available: false, error: 'Please Enter A Username.' }
     let clean = rawUsername.trim()
@@ -402,11 +463,11 @@ if (!window.closeMo) {
     }
 
     try {
-      // 1. Check profiles table
+      // 1. Check profiles table (checks both @handle and handle)
       const { data: profs, error: pErr } = await supabaseClient
         .from('profiles')
         .select('id, username')
-        .ilike('username', clean)
+        .or(`username.ilike.${clean},username.ilike.${namePart}`)
 
       if (pErr) console.warn('[col-auth] profiles check notice:', pErr)
       const takenInProfiles = (profs || []).some(p => p.id !== currentUserId)
@@ -414,17 +475,17 @@ if (!window.closeMo) {
       if (takenInProfiles) {
         return {
           available: false,
-          error: 'This Username Is Already Taken.',
+          error: 'This Username Is Already Taken By Another Player.',
           suggestions: generateUsernameSuggestions(namePart),
           username: clean
         }
       }
 
-      // 2. Check user_profiles table
+      // 2. Check user_profiles table (checks both @handle and handle)
       const { data: upProfs, error: upErr } = await supabaseClient
         .from('user_profiles')
         .select('user_id, username')
-        .ilike('username', clean)
+        .or(`username.ilike.${clean},username.ilike.${namePart}`)
 
       if (upErr) console.warn('[col-auth] user_profiles check notice:', upErr)
       const takenInUp = (upProfs || []).some(p => p.user_id !== currentUserId)
@@ -432,7 +493,7 @@ if (!window.closeMo) {
       if (takenInUp) {
         return {
           available: false,
-          error: 'This Username Is Already Taken.',
+          error: 'This Username Is Already Taken By Another Player.',
           suggestions: generateUsernameSuggestions(namePart),
           username: clean
         }
@@ -689,14 +750,17 @@ if (!window.closeMo) {
       if (typeof toast === 'function') toast('Profile Created Successfully! Welcome, ' + username, '#10b981')
     } catch (error) {
       console.error('[col-auth] Profile creation error:', error)
+      const friendlyMsg = formatUserFriendlyAuthError(error, 'profile')
+      const errMsg = (error.message || '').toLowerCase()
       const isDuplicate = error.code === '23505' || 
-        (error.message && (error.message.includes('unique') || error.message.includes('duplicate key') || error.message.includes('profiles_username_key')))
+        errMsg.includes('unique') || errMsg.includes('duplicate') || errMsg.includes('profiles_username_key') || errMsg.includes('already exists')
       
+      if (errDiv) {
+        errDiv.textContent = friendlyMsg
+        errDiv.style.display = 'block'
+      }
+
       if (isDuplicate) {
-        if (errDiv) {
-          errDiv.textContent = 'This Username Is Already In Use. Please Pick A Different Handle Or Choose A Suggestion Below.'
-          errDiv.style.display = 'block'
-        }
         const namePart = username.slice(1)
         const suggestions = generateUsernameSuggestions(namePart)
         if (suggBox && suggList) {
@@ -704,11 +768,6 @@ if (!window.closeMo) {
             <button type="button" class="col-uname-chip" onclick="window._pickUsernameSuggestion('${s}')">${s}</button>
           `).join('')
           suggBox.style.display = 'block'
-        }
-      } else {
-        if (errDiv) {
-          errDiv.textContent = error.message || 'Failed To Create Profile. Please Try Again.'
-          errDiv.style.display = 'block'
         }
       }
     } finally {
@@ -792,8 +851,28 @@ if (!window.closeMo) {
             }
             .col-auth-mo.open .col-auth-md { transform: translateY(0) scale(1); }
             .col-auth-hd { padding: 32px 28px 20px; border-bottom: 1px solid var(--line, rgba(255,255,255,0.06)); background: transparent; text-align: center; position: relative;}
-            .col-auth-close { position: absolute; top: 18px; right: 18px; background: transparent; border: 1px solid var(--lineb, rgba(255,255,255,0.1)); color: var(--dim, #8891AA); font-size: 1.2rem; cursor: pointer; transition: transform 0.15s ease, background-color 0.15s ease; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;}
+            .col-auth-hd::before {
+                content: '';
+                position: absolute;
+                top: -1px;
+                left: -1px;
+                right: -1px;
+                height: 48px;
+                border-top: 2.5px solid var(--page-theme, var(--signal, #F2B84B));
+                border-left: 2.5px solid var(--page-theme, var(--signal, #F2B84B));
+                border-right: 2.5px solid var(--page-theme, var(--signal, #F2B84B));
+                border-radius: 28px 28px 0 0;
+                -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.75) 45%, rgba(0, 0, 0, 0) 100%);
+                mask-image: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.75) 45%, rgba(0, 0, 0, 0) 100%);
+                pointer-events: none;
+                z-index: 1;
+            }
+            .col-auth-close { position: absolute; top: 18px; right: 18px; background: transparent; border: 1px solid var(--lineb, rgba(255,255,255,0.1)); color: var(--dim, #8891AA); font-size: 1.2rem; cursor: pointer; transition: transform 0.15s ease, background-color 0.15s ease; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; touch-action: manipulation; will-change: transform; z-index: 2;}
             .col-auth-close:hover { color: var(--ink, #E8E3D8); background: var(--line, rgba(255,255,255,0.1)); border-color: var(--lineb, rgba(255,255,255,0.2)); transform: scale(1.05); }
+            .col-av-chip { padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; cursor: pointer; border: 1px solid var(--lineb, rgba(255,255,255,0.15)); background: rgba(255,255,255,0.05); color: var(--ink, #E8E3D8); display: inline-flex; align-items: center; gap: 6px; transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease; font-family: inherit;}
+            .col-av-chip:hover { transform: translateY(-1px); background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); }
+            .col-av-preset { width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid var(--lineb, rgba(255,255,255,0.15)); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; cursor: pointer; transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease; background: var(--void2, rgba(255,255,255,0.04)); padding: 0;}
+            .col-av-preset:hover { transform: scale(1.12); border-color: var(--signal, #F2B84B); box-shadow: 0 4px 12px rgba(242,184,75,0.3); }
             .col-auth-hd h2 { font-size: 2.3rem; font-weight: 400; font-family: var(--serif, 'Instrument Serif'); font-style: italic; margin:0; color: var(--page-theme, var(--signal, #F2B84B)); letter-spacing: 0.5px;}
             .col-auth-hd p { font-size: 0.9rem; color: var(--dim, #8891AA); margin-top: 6px; }
             .col-auth-body { padding: 24px 28px 28px; }
@@ -915,7 +994,7 @@ if (!window.closeMo) {
     modal.innerHTML = `
             <div class="col-auth-md">
                 <div class="col-auth-hd">
-                    <button class="col-auth-close" onclick="window.closeGlobalAuth()" aria-label="Close login dialog">&times;</button>
+                    <button type="button" class="col-auth-close" onclick="window.closeGlobalAuth()" aria-label="Close login dialog">&times;</button>
                     <h2 id="colAuthTitle">Authenticate</h2>
                     <p id="colAuthSub">Unlock Dashboard Storage And Cloud Sync.</p>
                 </div>
@@ -1000,6 +1079,9 @@ if (!window.closeMo) {
         if (hdTitle) hdTitle.textContent = 'Account Settings'
         if (hdSub) hdSub.textContent = 'Customize Profile Details, Avatar, Vehicle, And Security.'
 
+        const curPic = window.colUser.picture || ''
+        const userInitial = escapeColHtml(((window.colUser.name || window.colUser.username || '?').replace(/^@/,'').charAt(0) || '?').toUpperCase())
+
         body.innerHTML = `
           <div style="text-align:left;">
             <button type="button" onclick="window._renderAuthTab('profile')" style="background:transparent; border:none; color:var(--dim, #8891AA); cursor:pointer; font-size:0.85rem; font-weight:600; padding:0; margin-bottom:16px; display:inline-flex; align-items:center; gap:6px;">
@@ -1007,6 +1089,64 @@ if (!window.closeMo) {
             </button>
             <div id="colSettingsFeedback" style="display:none; font-size:0.85rem; padding:10px 14px; border-radius:12px; margin-bottom:14px; text-align:center; font-weight:600;"></div>
             <form id="colSettingsForm" onsubmit="window._handleSaveAccountSettings(event)">
+              
+              <!-- Avatar Customizer Section -->
+              <div style="margin-bottom: 18px; padding: 14px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--lineb, rgba(255, 255, 255, 0.1)); border-radius: 16px;">
+                <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 14px;">
+                  <div id="colSettingAvatarPreview" style="width: 72px; height: 72px; border-radius: 50%; background: var(--signal, #F2B84B); display: flex; justify-content: center; align-items: center; font-size: 1.8rem; overflow: hidden; border: 2.5px solid var(--signal, #F2B84B); color: var(--void, #070A14); font-weight: 800; flex-shrink: 0; box-shadow: 0 4px 14px rgba(0,0,0,0.3);">
+                    ${curPic ? `<img src="${curPic}" alt="Avatar Preview" style="width:100%; height:100%; object-fit:cover; display:block;" onerror="this.style.display='none'; this.parentElement.textContent='${userInitial}';">` : userInitial}
+                  </div>
+                  <div style="flex: 1; min-width: 0;">
+                    <div style="font-size: 0.85rem; font-weight: 700; color: var(--ink, #E8E3D8); margin-bottom: 4px;">Profile Avatar</div>
+                    <div style="font-size: 0.75rem; color: var(--dim, #8891AA); margin-bottom: 8px;">Upload Photo, Pick Annotation Letter, Or Choose A Badge.</div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                      <label for="colSettingPicFile" class="col-av-chip" style="cursor: pointer; background: rgba(94, 212, 245, 0.15); color: var(--ion, #5ED4F5); border-color: rgba(94, 212, 245, 0.3);">
+                        📷 Choose Device Pic
+                        <input type="file" id="colSettingPicFile" accept="image/*" style="display: none;" onchange="window._handleAvatarUpload(this)">
+                      </label>
+                      <button type="button" class="col-av-chip" onclick="window._resetToDefaultAvatar()">Reset</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Annotation Letter Theme Options -->
+                <div style="margin-bottom: 12px;">
+                  <label class="col-auth-lbl" style="font-size: 0.78rem; margin-bottom: 6px;">Annotation Letter (Initial Color Theme)</label>
+                  <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                    <button type="button" class="col-av-chip" onclick="window._pickLetterAvatar('#F2B84B','#E65100','#070A14','Gold')" style="background: linear-gradient(135deg, #F2B84B, #E65100); color: #070A14; border: none;">● Gold</button>
+                    <button type="button" class="col-av-chip" onclick="window._pickLetterAvatar('#5ED4F5','#0284C7','#070A14','Cyan')" style="background: linear-gradient(135deg, #5ED4F5, #0284C7); color: #070A14; border: none;">● Cyan</button>
+                    <button type="button" class="col-av-chip" onclick="window._pickLetterAvatar('#10B981','#047857','#ffffff','Emerald')" style="background: linear-gradient(135deg, #10B981, #047857); color: #fff; border: none;">● Emerald</button>
+                    <button type="button" class="col-av-chip" onclick="window._pickLetterAvatar('#A855F7','#6B21A8','#ffffff','Purple')" style="background: linear-gradient(135deg, #A855F7, #6B21A8); color: #fff; border: none;">● Purple</button>
+                    <button type="button" class="col-av-chip" onclick="window._pickLetterAvatar('#F43F5E','#BE123C','#ffffff','Coral')" style="background: linear-gradient(135deg, #F43F5E, #BE123C); color: #fff; border: none;">● Coral</button>
+                    <button type="button" class="col-av-chip" onclick="window._pickLetterAvatar('#334155','#0F172A','#E8E3D8','Midnight')" style="background: linear-gradient(135deg, #334155, #0F172A); color: #E8E3D8; border: none;">● Midnight</button>
+                  </div>
+                </div>
+
+                <!-- Preset Character Badges -->
+                <div>
+                  <label class="col-auth-lbl" style="font-size: 0.78rem; margin-bottom: 6px;">Preset Character Badges</label>
+                  <div style="display: flex; gap: 7px; flex-wrap: wrap;">
+                    <button type="button" class="col-av-preset" title="Speed Racer" onclick="window._pickPresetAvatar('🏎️','#EF4444','#991B1B','Racer')">🏎️</button>
+                    <button type="button" class="col-av-preset" title="City Cruiser" onclick="window._pickPresetAvatar('🚗','#3B82F6','#1E40AF','Cruiser')">🚗</button>
+                    <button type="button" class="col-av-preset" title="Mumbai Auto" onclick="window._pickPresetAvatar('🛺','#F59E0B','#B45309','Auto')">🛺</button>
+                    <button type="button" class="col-av-preset" title="BEST Bus" onclick="window._pickPresetAvatar('🚌','#10B981','#047857','Bus')">🚌</button>
+                    <button type="button" class="col-av-preset" title="Royal Tiger" onclick="window._pickPresetAvatar('🐯','#F97316','#C2410C','Tiger')">🐯</button>
+                    <button type="button" class="col-av-preset" title="Cyber Fox" onclick="window._pickPresetAvatar('🦊','#FB923C','#EA580C','Fox')">🦊</button>
+                    <button type="button" class="col-av-preset" title="AI Android" onclick="window._pickPresetAvatar('🤖','#06B6D4','#0E7490','Android')">🤖</button>
+                    <button type="button" class="col-av-preset" title="Rocket Pilot" onclick="window._pickPresetAvatar('🚀','#8B5CF6','#6D28D9','Rocket')">🚀</button>
+                    <button type="button" class="col-av-preset" title="Master Gamer" onclick="window._pickPresetAvatar('🎮','#EC4899','#BE185D','Gamer')">🎮</button>
+                    <button type="button" class="col-av-preset" title="Golden Star" onclick="window._pickPresetAvatar('🌟','#EAB308','#CA8A04','Star')">🌟</button>
+                  </div>
+                </div>
+
+                <details style="margin-top: 12px; font-size: 0.78rem; color: var(--dim, #8891AA);">
+                  <summary style="cursor: pointer; font-weight: 600; margin-bottom: 6px;">Or Paste Custom Image URL</summary>
+                  <input type="url" id="colSettingAvatar" class="col-auth-inp" style="margin-bottom:0;" placeholder="https://example.com/photo.jpg" value="${escapeColHtml(curPic)}" oninput="window._onSettingAvatarUrlInput(this)">
+                </details>
+              </div>
+
+              <input type="hidden" id="colSettingAvatarVal" value="${escapeColHtml(curPic)}">
+
               <div>
                 <label class="col-auth-lbl" for="colSettingName">Display Name</label>
                 <input type="text" id="colSettingName" class="col-auth-inp" placeholder="Display Name" value="${escapeColHtml(window.colUser.name || '')}" required maxlength="40">
@@ -1025,10 +1165,6 @@ if (!window.closeMo) {
                   <option value="Bike" ${currentVeh === 'Bike' ? 'selected' : ''}>Motorcycle</option>
                   <option value="Truck" ${currentVeh === 'Truck' ? 'selected' : ''}>Heavy Truck</option>
                 </select>
-              </div>
-              <div>
-                <label class="col-auth-lbl" for="colSettingAvatar">Profile Photo URL (Optional)</label>
-                <input type="url" id="colSettingAvatar" class="col-auth-inp" placeholder="https://example.com/photo.jpg" value="${escapeColHtml(window.colUser.picture || '')}">
               </div>
               <div>
                 <label class="col-auth-lbl" for="colSettingPassword">New Password / PIN (Optional)</label>
@@ -1052,7 +1188,7 @@ if (!window.closeMo) {
                 ${window.colUser.picture ? `<img src="${window.colUser.picture}" alt="${escapeColHtml(window.colUser.name || 'User')}" referrerpolicy="no-referrer" style="width:100%; height:100%; object-fit:cover; display:block;" onerror="this.style.display='none'; this.parentElement.textContent='${escapeColHtml((window.colUser.name || '?').charAt(0).toUpperCase())}';">` : escapeColHtml((window.colUser.name || '?').charAt(0).toUpperCase())}
             </div>
             <h3 style="margin-bottom: 4px; font-size: 1.25rem; color: var(--ink, #E8E3D8); font-weight: 700;">${escapeColHtml(window.colUser.name || 'User')}</h3>
-            <p style="color: var(--dim, #8891AA); font-size: 0.9rem; margin-bottom: 8px;">${escapeColHtml(window.colUser.email || window.colUser.username || 'Local Profile')}</p>
+            <p class="col-auth-email" style="color: var(--dim, #8891AA); font-size: 0.9rem; margin-bottom: 8px; text-transform: none !important;">${escapeColHtml(window.colUser.email ? window.colUser.email.toLowerCase() : (window.colUser.username || 'Local Profile'))}</p>
             <div style="display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin-top:8px;">
                 ${isLocal ? `<span style="padding:4px 10px; background:rgba(94,212,245,0.15); color:var(--ion,#5ED4F5); border-radius:20px; font-size:0.75rem; font-weight:700; border:1px solid rgba(94,212,245,0.3);">💾 Local Account</span>` : `<span style="padding:4px 10px; background:rgba(242,184,75,0.15); color:var(--signal,#F2B84B); border-radius:20px; font-size:0.75rem; font-weight:700; border:1px solid rgba(242,184,75,0.3);">⚡ Cloud Account</span>`}
                 ${currentVeh ? `<span style="padding:4px 10px; background:rgba(255,255,255,0.06); color:var(--ink,#E8E3D8); border-radius:20px; font-size:0.75rem; font-weight:600; border:1px solid rgba(255,255,255,0.1);">🚗 ${escapeColHtml(currentVeh)}</span>` : ''}
@@ -1095,7 +1231,7 @@ if (!window.closeMo) {
                   ? `
                 <form id="colAuthOtpVerifyForm" onsubmit="window._handleColOtpVerify(event)">
                     <p style="font-size: 0.85rem; color: var(--dim, #8891AA); margin-bottom: 14px; text-align: center; line-height: 1.4;">
-                        Enter The 6-Digit Code Sent To <br><strong style="color:var(--ink,#E8E3D8);">${escapeColHtml(colOtpState.email)}</strong>
+                        Enter The 6-Digit Code Sent To <br><strong class="col-auth-email" style="color:var(--ink,#E8E3D8); text-transform:none !important; display:inline-block;">${escapeColHtml((colOtpState.email || '').toLowerCase())}</strong>
                     </p>
                     <input type="text" id="colOtpToken" class="col-auth-inp" placeholder="• • • • • •" maxlength="8" required autofocus style="font-size: 1.5rem; text-align: center; letter-spacing: 8px; font-family: monospace; font-weight: 700;">
                     <button type="submit" class="col-auth-btn" id="colOtpVerifyBtn">Verify & Sign In</button>
@@ -1183,6 +1319,82 @@ if (!window.closeMo) {
     }, 280)
   }
 
+  window._handleAvatarUpload = function (input) {
+    if (!input || !input.files || !input.files[0]) return
+    const file = input.files[0]
+    if (!file.type.startsWith('image/')) {
+      alert('Please Select An Image File (JPEG, PNG, WebP).')
+      return
+    }
+    const reader = new FileReader()
+    reader.onload = function (e) {
+      const img = new Image()
+      img.onload = function () {
+        const canvas = document.createElement('canvas')
+        canvas.width = 160
+        canvas.height = 160
+        const ctx = canvas.getContext('2d')
+        const minDim = Math.min(img.width, img.height)
+        const sx = (img.width - minDim) / 2
+        const sy = (img.height - minDim) / 2
+        ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, 160, 160)
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.88)
+        window._setAvatarValue(dataUrl, 'Custom Photo')
+      }
+      img.src = e.target.result
+    }
+    reader.readAsDataURL(file)
+  }
+
+  window._setAvatarValue = function (dataUrl, label) {
+    const valInp = document.getElementById('colSettingAvatarVal')
+    const urlInp = document.getElementById('colSettingAvatar')
+    const preview = document.getElementById('colSettingAvatarPreview')
+    if (valInp) valInp.value = dataUrl || ''
+    if (urlInp) urlInp.value = dataUrl && dataUrl.startsWith('http') ? dataUrl : ''
+    if (preview) {
+      if (dataUrl) {
+        preview.innerHTML = `<img src="${dataUrl}" alt="Avatar Preview" style="width:100%; height:100%; object-fit:cover; display:block;">`
+      } else {
+        const name = (document.getElementById('colSettingName')?.value || (window.colUser && window.colUser.name) || '?').trim()
+        preview.innerHTML = escapeColHtml((name.charAt(0) || '?').toUpperCase())
+      }
+    }
+  }
+
+  window._generateLetterSvg = function (letter, c1, c2, textColor) {
+    const safeLetter = (letter || '?').charAt(0).toUpperCase()
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="${c1}"/><stop offset="100%" stop-color="${c2}"/></linearGradient></defs><rect width="120" height="120" rx="60" fill="url(#g)"/><text x="50%" y="54%" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="54" fill="${textColor}" dominant-baseline="middle" text-anchor="middle">${safeLetter}</text></svg>`
+    return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg)
+  }
+
+  window._generateEmojiSvg = function (emoji, c1, c2) {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="${c1}"/><stop offset="100%" stop-color="${c2}"/></linearGradient></defs><rect width="120" height="120" rx="60" fill="url(#g)"/><text x="50%" y="54%" font-family="system-ui, -apple-system, sans-serif" font-size="52" dominant-baseline="middle" text-anchor="middle">${emoji}</text></svg>`
+    return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg)
+  }
+
+  window._pickLetterAvatar = function (c1, c2, textColor, name) {
+    const nameInp = document.getElementById('colSettingName')
+    const letter = (nameInp?.value || (window.colUser && window.colUser.name) || '?').trim().charAt(0) || 'U'
+    const dataUrl = window._generateLetterSvg(letter, c1, c2, textColor)
+    window._setAvatarValue(dataUrl, name)
+  }
+
+  window._pickPresetAvatar = function (emoji, c1, c2, name) {
+    const dataUrl = window._generateEmojiSvg(emoji, c1, c2)
+    window._setAvatarValue(dataUrl, name)
+  }
+
+  window._onSettingAvatarUrlInput = function (inp) {
+    if (!inp) return
+    const url = inp.value.trim()
+    window._setAvatarValue(url, 'URL')
+  }
+
+  window._resetToDefaultAvatar = function () {
+    window._setAvatarValue('', 'Default')
+  }
+
   window._handleSaveAccountSettings = async (e) => {
     if (e) e.preventDefault()
     if (!window.colUser) return
@@ -1190,7 +1402,8 @@ if (!window.closeMo) {
     const nameInp = document.getElementById('colSettingName')
     const unameInp = document.getElementById('colSettingUsername')
     const vehInp = document.getElementById('colSettingVehicle')
-    const avInp = document.getElementById('colSettingAvatar')
+    const avValInp = document.getElementById('colSettingAvatarVal')
+    const avUrlInp = document.getElementById('colSettingAvatar')
     const passInp = document.getElementById('colSettingPassword')
     const btn = document.getElementById('colSaveSettingsBtn')
     const fb = document.getElementById('colSettingsFeedback')
@@ -1198,7 +1411,7 @@ if (!window.closeMo) {
     const newName = nameInp ? nameInp.value.trim() : ''
     let newUname = unameInp ? unameInp.value.trim() : ''
     const newVeh = vehInp ? vehInp.value : 'Car'
-    const newAv = avInp ? avInp.value.trim() : ''
+    const newAv = (avValInp ? avValInp.value.trim() : '') || (avUrlInp ? avUrlInp.value.trim() : '')
     const newPass = passInp ? passInp.value.trim() : ''
 
     if (!newName) {
@@ -1261,8 +1474,18 @@ if (!window.closeMo) {
     if (fb) fb.style.display = 'none'
 
     try {
-      // 1. If Supabase cloud session is active
-      if (supabaseClient && window.colUser.session) {
+      // 1. Resolve live Supabase session if available
+      let activeSession = null
+      if (supabaseClient) {
+        try {
+          const { data: sData } = await supabaseClient.auth.getSession()
+          activeSession = sData?.session || window.colUser.session || null
+        } catch (e) {
+          activeSession = window.colUser.session || null
+        }
+      }
+
+      if (supabaseClient && activeSession) {
         if (newPass) {
           const { error: passErr } = await supabaseClient.auth.updateUser({ password: newPass })
           if (passErr) throw passErr
@@ -1273,9 +1496,9 @@ if (!window.closeMo) {
           name: newName,
           preferred_vehicle: newVeh
         }
-        if (newAv) {
-          metaUpdate.avatar_url = newAv
-          metaUpdate.picture = newAv
+        if (newAv !== undefined) {
+          metaUpdate.avatar_url = newAv || null
+          metaUpdate.picture = newAv || null
         }
         const { error: metaErr } = await supabaseClient.auth.updateUser({ data: metaUpdate })
         if (metaErr) console.warn('[col-auth] User metadata update warning:', metaErr)
@@ -1285,45 +1508,49 @@ if (!window.closeMo) {
           display_name: newName,
           full_name: newName,
           preferred_vehicle: newVeh,
+          avatar_url: newAv || null,
           updated_at: new Date().toISOString()
         }
         if (newUname) upPayload.username = newUname
-        if (newAv) upPayload.avatar_url = newAv
         const { error: upErr } = await supabaseClient.from('user_profiles').upsert(upPayload, { onConflict: 'user_id' })
-        if (upErr) console.warn('[col-auth] user_profiles update warning:', upErr)
+        if (upErr) console.warn('[col-auth] user_profiles upsert warning:', upErr)
 
-        const profPayload = { full_name: newName }
+        const profPayload = {
+          id: window.colUser.id,
+          full_name: newName,
+          avatar_url: newAv || null,
+          updated_at: new Date().toISOString()
+        }
         if (newUname) profPayload.username = newUname
-        const { error: pErr } = await supabaseClient.from('profiles').update(profPayload).eq('id', window.colUser.id)
+        const { error: pErr } = await supabaseClient.from('profiles').upsert(profPayload, { onConflict: 'id' })
         if (pErr) {
           if (pErr.code === '23505' || (pErr.message && pErr.message.includes('unique'))) {
             throw new Error('This Username Is Already Taken By Another User.')
           }
-          console.warn('[col-auth] profiles update warning:', pErr)
+          console.warn('[col-auth] profiles upsert warning:', pErr)
         }
       }
 
-      // 2. Update local session state
+      // 2. Update live window.colUser in memory
       window.colUser.name = newName
       if (newUname) window.colUser.username = newUname
       window.colUser.vehicle = newVeh
-      if (newAv) window.colUser.picture = newAv
+      window.colUser.picture = newAv || null
       if (!window.colUser.user_metadata) window.colUser.user_metadata = {}
       window.colUser.user_metadata.full_name = newName
       window.colUser.user_metadata.name = newName
       window.colUser.user_metadata.preferred_vehicle = newVeh
-      if (newAv) {
-        window.colUser.user_metadata.avatar_url = newAv
-        window.colUser.user_metadata.picture = newAv
-      }
+      window.colUser.user_metadata.avatar_url = newAv || null
+      window.colUser.user_metadata.picture = newAv || null
 
+      // 3. Persist to storage
       const storedUser = {
         id: window.colUser.id,
         name: newName,
         username: newUname || window.colUser.username,
         email: window.colUser.email,
         vehicle: newVeh,
-        picture: window.colUser.picture || null,
+        picture: newAv || null,
         uid: window.colUser.uid,
         updatedAt: new Date().toISOString()
       }
@@ -1331,12 +1558,12 @@ if (!window.closeMo) {
         storedUser.pin = newPass
         storedUser.password = newPass
       }
+
       if (window.colUser.isLocal || typeof setActiveLocalUser === 'function') {
         setActiveLocalUser(storedUser)
-      } else {
-        localStorage.setItem('col_user', JSON.stringify(storedUser))
-        localStorage.setItem('traffic_local_user', JSON.stringify(storedUser))
       }
+      localStorage.setItem('col_user', JSON.stringify(storedUser))
+      localStorage.setItem('traffic_local_user', JSON.stringify(storedUser))
 
       try {
         const trProfRaw = localStorage.getItem('traffic_profile')
@@ -1344,6 +1571,7 @@ if (!window.closeMo) {
         trProf.name = newName
         trProf.preferred_vehicle = newVeh
         trProf.vehicle = newVeh
+        if (newAv) trProf.avatar = newAv
         localStorage.setItem('traffic_profile', JSON.stringify(trProf))
       } catch (e) {}
 
@@ -1363,10 +1591,10 @@ if (!window.closeMo) {
 
       setTimeout(() => {
         renderAuthPanel('profile')
-      }, 800)
+      }, 900)
     } catch (err) {
       if (fb) {
-        fb.textContent = err.message || 'Failed To Update Account Settings.'
+        fb.textContent = formatUserFriendlyAuthError(err, 'settings')
         fb.style.background = 'rgba(239, 68, 68, 0.15)'
         fb.style.color = '#ef4444'
         fb.style.display = 'block'
@@ -1381,7 +1609,7 @@ if (!window.closeMo) {
   window._handleColOtpSend = async (e) => {
     if (e) e.preventDefault()
     const inp = document.getElementById('colOtpEmail')
-    const emailInput = (inp ? inp.value : colOtpState.email || '').trim()
+    const emailInput = (inp ? inp.value : colOtpState.email || '').trim().toLowerCase()
     const btn = document.getElementById('colOtpSendBtn')
     const errDiv = document.getElementById('colAuthError')
 
@@ -1413,7 +1641,7 @@ if (!window.closeMo) {
       renderAuthPanel('otp')
     } catch (err) {
       if (errDiv) {
-        errDiv.textContent = err.message || 'Failed to send OTP code.'
+        errDiv.textContent = formatUserFriendlyAuthError(err, 'otp_send')
         errDiv.style.display = 'block'
       }
       if (btn) {
@@ -1462,7 +1690,7 @@ if (!window.closeMo) {
       updateAuthUI()
     } catch (err) {
       if (errDiv) {
-        errDiv.textContent = err.message || 'Invalid or expired verification code.'
+        errDiv.textContent = formatUserFriendlyAuthError(err, 'otp_verify')
         errDiv.style.display = 'block'
       }
       if (btn) {
@@ -1671,7 +1899,7 @@ if (!window.closeMo) {
         }
       }
     } catch (error) {
-      errDiv.textContent = error.message
+      errDiv.textContent = formatUserFriendlyAuthError(error, mode)
       errDiv.style.color = '#ef4444'
       errDiv.style.display = 'block'
     }
@@ -1823,7 +2051,10 @@ if (!window.closeMo) {
         const emailEls = prof.querySelectorAll('.pemail')
 
         nameEls.forEach((el) => (el.textContent = window.colUser.name.split(' ')[0]))
-        emailEls.forEach((el) => (el.textContent = window.colUser.email))
+        emailEls.forEach((el) => {
+          el.textContent = window.colUser.email ? window.colUser.email.toLowerCase() : ''
+          el.style.setProperty('text-transform', 'none', 'important')
+        })
 
         avEls.forEach((av) => {
           const initial = (window.colUser.name || 'U').charAt(0).toUpperCase()

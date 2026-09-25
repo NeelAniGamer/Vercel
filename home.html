@@ -1399,32 +1399,35 @@
       .pc::before {
         content: '';
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 2px;
+        top: -1px;
+        left: -1px;
+        right: -1px;
+        height: 48px;
+        border-top: 2.5px solid var(--pc-accent, var(--ion));
+        border-left: 2.5px solid var(--pc-accent, var(--ion));
+        border-right: 2.5px solid var(--pc-accent, var(--ion));
+        border-radius: calc(var(--r) + 1px) calc(var(--r) + 1px) 0 0;
+        -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.75) 45%, rgba(0, 0, 0, 0) 100%);
+        mask-image: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.75) 45%, rgba(0, 0, 0, 0) 100%);
         opacity: 0;
-        transition: opacity 0.4s;
+        transition: opacity 0.4s var(--ease), filter 0.4s var(--ease);
         z-index: 5;
+        pointer-events: none;
       }
       .pc:hover::before {
         opacity: 1;
+        filter: drop-shadow(0 0 12px var(--pc-accent, var(--ion)));
       }
-      .pc.ci::before {
-        background: var(--ion);
-      }
-      .pc.cs::before {
-        background: var(--signal);
-      }
-      .pc.ct::before {
-        background: var(--teal);
-      }
-      .pc.ce::before {
-        background: var(--em);
-      }
-      .pc.cp::before {
-        background: var(--plasma);
-      }
+      .pc.ci { --pc-accent: var(--ion); }
+      .pc.cs { --pc-accent: var(--signal); }
+      .pc.ct { --pc-accent: var(--teal); }
+      .pc.ce { --pc-accent: var(--em); }
+      .pc.cp { --pc-accent: var(--plasma); }
+      .pc.ci::before { border-color: var(--ion); }
+      .pc.cs::before { border-color: var(--signal); }
+      .pc.ct::before { border-color: var(--teal); }
+      .pc.ce::before { border-color: var(--em); }
+      .pc.cp::before { border-color: var(--plasma); }
       .pc:hover {
         border-color: var(--lineb);
         transform: translateY(-11px);
