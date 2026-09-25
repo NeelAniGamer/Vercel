@@ -1905,11 +1905,9 @@
             }
 
             const uname = username.startsWith('@') ? username : '@' + username
-            const { data: upData } = await window.supabaseClient
-              .from('user_profiles')
-              .select('user_id')
-              .ilike('username', uname)
-              .maybeSingle()
+            const { data: takenRows } = await window.supabaseClient
+              .rpc('public_profile_directory', { p_search: uname, p_limit: 25 })
+            const upData = (takenRows || []).find(r => r.username && r.username.toLowerCase() === uname.toLowerCase())
             if (upData) {
 
               if (window.colUser && upData.user_id === window.colUser.id) {
@@ -2107,12 +2105,12 @@
           if (window.supabaseClient && window.colUser) {
             try {
 
-              const { data: upExisting } = await window.supabaseClient
-                .from('user_profiles')
-                .select('user_id')
-                .ilike('username', username)
-                .neq('user_id', window.colUser.id)
-                .maybeSingle()
+              const { data: takenRows2 } = await window.supabaseClient
+                .rpc('public_profile_directory', { p_search: username, p_limit: 25 })
+              const upExisting = (takenRows2 || []).find(
+                r => r.user_id !== (window.colUser && window.colUser.id) &&
+                     r.username && r.username.toLowerCase() === username.toLowerCase()
+              )
               if (upExisting) {
                 alert('That username is already taken. Please choose another.')
                 return

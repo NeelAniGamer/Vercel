@@ -1841,16 +1841,15 @@
         if (!client) return null
         try {
           if (_studentIdParam) {
-            const { data } = await client.from('user_profiles').select('user_id').eq('student_id', _studentIdParam).maybeSingle()
-            if (data && data.user_id) { _resolvedUserId = data.user_id; return data.user_id }
+            // Resolved by a narrow RPC: student_id is not selectable by API roles.
+            const { data: sid } = await client.rpc('resolve_user_id_by_student_id', { p_student_id: String(_studentIdParam) })
+            if (sid) { _resolvedUserId = sid; return sid }
           }
           if (_userParam) {
             const uname = _userParam.startsWith('@') ? _userParam : '@' + _userParam
-            const { data } = await client.from('user_profiles').select('user_id').eq('username', uname).maybeSingle()
-            if (data && data.user_id) { _resolvedUserId = data.user_id; return data.user_id }
-
-            const { data: pdata } = await client.from('profiles').select('id').eq('username', uname).maybeSingle()
-            if (pdata && pdata.id) { _resolvedUserId = pdata.id; return pdata.id }
+            const { data: dirRows } = await client.rpc('public_profile_directory', { p_search: uname, p_limit: 20 })
+            const dirHit = (dirRows || []).find(r => r.username && r.username.toLowerCase() === uname.toLowerCase())
+            if (dirHit && dirHit.user_id) { _resolvedUserId = dirHit.user_id; return dirHit.user_id }
           }
         } catch (e) { console.warn('Profile URL resolve failed:', e) }
         return null
@@ -1864,20 +1863,28 @@
             const client = await _initSupabase();
             if (client && targetId) {
 
-              const { data: upData } = await client.from('user_profiles').select('*').eq('user_id', targetId).maybeSingle()
-              if (upData) {
-                tUser.name = upData.display_name || 'Driver';
-                tUser.username = upData.username || '';
-                tUser.vehicle = upData.preferred_vehicle || 'Car';
-                tUser.age = upData.age || 18;
-                tUser.language = upData.language || 'en';
-                S.total = upData.total_score || 0
-                S.studentId = upData.student_id || null
+              // Another learner's row is only readable through the
+              // leaderboard-safe projection. Age, role, student_id and email
+              // are not exposed to other accounts.
+              const { data: upData } = await client.rpc('public_profile_directory', { p_search: null, p_limit: 500 })
+              const row = (upData || []).find(r => r.user_id === targetId)
+              if (row) {
+                tUser.name = row.display_name || 'Driver';
+                tUser.username = row.username || '';
+                tUser.vehicle = row.preferred_vehicle || 'Car';
+                if (!_isReadOnlyMode) {tUser.age = tUser.age || 18;}
+                tUser.language = row.language || 'en';
+                S.total = row.total_score || 0
+                if (!_isReadOnlyMode) {S.studentId = window.colUser && window.colUser.studentId}
               }
-              const { data } = await client.from('profiles').select('username, full_name').eq('id', targetId).maybeSingle();
-              if (data) {
-                 if (!tUser.name || tUser.name === 'Driver') tUser.name = data.full_name || 'Driver';
-                 if (!tUser.username) tUser.username = data.username || '';
+              if (!tUser.name || tUser.name === 'Driver' || !tUser.username) {
+                // `profiles` is own-row only now, so this is just a fallback for
+                // the caller's own legacy profile row.
+                const { data } = await client.from('profiles').select('username, full_name').eq('id', targetId).maybeSingle();
+                if (data) {
+                  if (!tUser.name || tUser.name === 'Driver') tUser.name = data.full_name || 'Driver';
+                  if (!tUser.username) tUser.username = data.username || '';
+                }
               }
             }
 
@@ -1932,14 +1939,18 @@
           try {
             const client = await _initSupabase()
             if (client) {
-              await client.rpc('increment_profile_views', { target_user_id: _resolvedUserId }).catch(() => {})
-
-              const { data: vp } = await client.from('user_profiles').select('profile_views').eq('user_id', _resolvedUserId).maybeSingle()
-              if (vp && vp.profile_views) {
-                const viewBadge = document.createElement('div')
-                viewBadge.style.cssText = 'margin-top:8px;font-size:0.8rem;color:var(--muted);font-weight:600;'
-                viewBadge.textContent = '👁️ ' + vp.profile_views + ' profile view' + (vp.profile_views !== 1 ? 's' : '')
-                document.getElementById('h-id').after(viewBadge)
+              // The view counter is the owner's private metric; the increment
+              // still runs, but the total is only read for one's own row.
+              if (window.colUser && window.colUser.id === _resolvedUserId) {
+                const { data: vp } = await client.from('user_profiles').select('profile_views').eq('user_id', _resolvedUserId).maybeSingle()
+                if (vp && vp.profile_views) {
+                  const viewBadge = document.createElement('div')
+                  viewBadge.style.cssText = 'margin-top:8px;font-size:0.8rem;color:var(--muted);font-weight:600;'
+                  viewBadge.textContent = '👁️ ' + vp.profile_views + ' profile view' + (vp.profile_views !== 1 ? 's' : '')
+                  document.getElementById('h-id').after(viewBadge)
+                }
+              } else {
+                await client.rpc('increment_profile_views', { target_user_id: _resolvedUserId }).catch(() => {})
               }
             }
           } catch (e) {}
@@ -2167,31 +2178,15 @@
         try {
           if (!window.supabaseClient) throw new Error('Not connected')
 
-          const searchPattern = '%' + uname + '%'
-          const { data, error: searchErr } = await window.supabaseClient
-            .from('user_profiles')
-            .select('user_id, display_name, username, total_score, modules_completed, badges_count')
-            .ilike('username', searchPattern)
-            .order('total_score', { ascending: false })
-            .limit(1)
+          const { data: searchRows, error: searchErr } = await window.supabaseClient
+            .rpc('public_profile_directory', { p_search: uname, p_limit: 25 })
           if (searchErr) console.warn('Player search error:', searchErr)
-          const result = data && data[0]
+          const exact = (searchRows || []).find(r => r.username && r.username.toLowerCase() === uname.toLowerCase())
+          const result = exact || (searchRows || [])[0]
           if (!result) {
-
-            const { data: pData } = await window.supabaseClient
-              .from('profiles')
-              .select('id, username, full_name')
-              .eq('username', uname)
-              .maybeSingle()
-            if (!pData) {
-              resultsEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted);background:rgba(255,255,255,0.03);border-radius:12px;">Player not found. Try a different username.</div>'
-              return
-            }
-            resultsEl.innerHTML = `<div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;align-items:center;gap:16px;cursor:pointer;" onclick="window.open('TrafficDashboard.html?uid=${pData.id}','_blank')">
-              <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--signal),var(--accent));display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;">${(pData.full_name||'U')[0]}</div>
-              <div style="flex:1;"><div style="font-weight:700;">${pData.full_name||'Unknown'}</div><div style="color:var(--signal);font-size:0.85rem;">${uname}</div></div>
-              <div style="text-align:right;"><div style="font-size:0.85rem;font-weight:600;color:var(--dim);">Profile</div><div style="font-size:0.7rem;color:var(--muted);">VIEW &rarr;</div></div>
-            </div>`
+            // The directory is the only cross-user lookup. `profiles` is now
+            // own-row only, so there is no second source to fall back to.
+            resultsEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted);background:rgba(255,255,255,0.03);border-radius:12px;">Player not found. Try a different username.</div>'
             return
           }
           const baseUrl = 'TrafficDashboard.html?user=' + encodeURIComponent(uname)
@@ -2288,11 +2283,8 @@
               return
             }
             const uname = username.startsWith('@') ? username : '@' + username
-            const { data: upData } = await window.supabaseClient
-              .from('user_profiles')
-              .select('user_id')
-              .ilike('username', uname)
-              .maybeSingle()
+            const { data: takenRows } = await window.supabaseClient.rpc('public_profile_directory', { p_search: uname, p_limit: 25 })
+            const upData = (takenRows || []).find(r => r.username && r.username.toLowerCase() === uname.toLowerCase())
             if (upData && window.colUser && upData.user_id !== window.colUser.id) {
               statusEl.textContent = '✕ Already taken'
               statusEl.style.color = 'var(--red)'
@@ -2309,8 +2301,7 @@
               return
             }
             statusEl.textContent = '✓ Available!'
-            statusEl.style.color = 'var(--green)'
-          } catch (e) {
+            statusEl.style.color = 'var(--green)'          } catch (e) {
             statusEl.textContent = '✓ Accepted'
             statusEl.style.color = 'var(--green)'
           }
@@ -2925,10 +2916,7 @@
         if (!certsByScore || certsByScore.length === 0) {
           try {
             const { data: upData } = await window.supabaseClient
-              .from('user_profiles')
-              .select('user_id, display_name, username, total_score, modules_completed')
-              .order('total_score', { ascending: false })
-              .limit(500)
+              .rpc('public_profile_directory', { p_search: null, p_limit: 500 })
             if (upData && upData.length > 0) {
               certsByScore = upData.map(u => ({
                 user_id: u.user_id,
@@ -2962,10 +2950,9 @@
 
         if (allUserIds.size > 0) {
           try {
-            const { data: upProfiles } = await window.supabaseClient
-              .from('user_profiles')
-              .select('user_id, display_name, username, avatar_url')
-              .in('user_id', Array.from(allUserIds))
+            const { data: dirAll } = await window.supabaseClient
+              .rpc('public_profile_directory', { p_search: null, p_limit: 500 })
+            const upProfiles = (dirAll || []).filter(p => allUserIds.has(p.user_id))
             if (upProfiles) {
               upProfiles.forEach(p => {
                 const name = p.display_name || (p.username ? (p.username.startsWith('@') ? p.username : '@' + p.username) : null)
@@ -2974,22 +2961,6 @@
               })
             }
           } catch (e) {}
-
-          try {
-            const missingIds = Array.from(allUserIds).filter(id => !profileMap[id])
-            if (missingIds.length > 0) {
-              const { data: profiles } = await window.supabaseClient
-                .from('profiles')
-                .select('id, username, avatar_url')
-                .in('id', missingIds)
-              if (profiles) {
-                profiles.forEach(p => {
-                  if (p.username && !profileMap[p.id]) profileMap[p.id] = p.username.startsWith('@') ? p.username : '@' + p.username
-                  if (p.avatar_url && !avatarMap[p.id]) avatarMap[p.id] = p.avatar_url
-                })
-              }
-            }
-          } catch (e) { console.warn('Leaderboard profiles fetch failed:', e) }
         }
 
         if (currentUserId && window.colUser && window.colUser.picture) {

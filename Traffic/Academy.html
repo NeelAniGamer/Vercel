@@ -7089,7 +7089,8 @@
           
           try {
 
-            const { data } = await window.supabaseClient.from('user_profiles').select('username').ilike('username', val).limit(1);
+            const { data: takenRows } = await window.supabaseClient.rpc('public_profile_directory', { p_search: val, p_limit: 25 });
+            const data = (takenRows || []).filter(r => r.username && r.username.toLowerCase() === val.toLowerCase());
             if (data && data.length > 0) {
               statusMsg.textContent = '❌ Username is already taken.';
               statusMsg.style.color = 'var(--red)';
@@ -7920,23 +7921,21 @@ function _onbComplete() {
             if (!window.supabaseClient) throw new Error("Cloud database not connected.");
             
 
-            const { data, error } = await window.supabaseClient
-              .from('user_profiles')
-              .select('user_id, display_name, username, total_score, modules_completed, preferred_vehicle')
-              .ilike('username', username)
-              .maybeSingle();
-            
+            const { data: dirRows, error } = await window.supabaseClient
+              .rpc('public_profile_directory', { p_search: q, p_limit: 50 });
+            const want = String(q).toLowerCase();
+            const data = (dirRows || []).find(
+              r => r.username && (r.username.toLowerCase() === want || r.username.toLowerCase() === '@' + want)
+            );
+
             if (error || !data) {
 
-              const { data: nameData } = await window.supabaseClient
-                .from('user_profiles')
-                .select('user_id, display_name, username, total_score, modules_completed, preferred_vehicle')
-                .ilike('display_name', '%' + q + '%')
-                .limit(1)
-                .maybeSingle();
-              
+              const nameData = (dirRows || []).find(
+                r => r.display_name && r.display_name.toLowerCase().includes(want)
+              );
+
               document.getElementById('compare-loading').style.display = 'none';
-              
+
               if (!nameData) {
                 document.getElementById('compare-error').style.display = 'block';
                 document.getElementById('compare-error').textContent = 'Player not found. Try searching by @username or display name.';

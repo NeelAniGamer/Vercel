@@ -54,7 +54,7 @@ if (!window.closeMo) {
 
   function bytesToBase64(bytes) {
     let binary = ''
-    for (const byte of bytes) binary += String.fromCharCode(byte)
+    for (const byte of bytes) {binary += String.fromCharCode(byte)}
     return btoa(binary)
   }
 
@@ -64,7 +64,7 @@ if (!window.closeMo) {
   }
 
   async function createLocalCredential(secret) {
-    if (!secret || !localCrypto?.subtle || typeof TextEncoder === 'undefined') return null
+    if (!secret || !localCrypto?.subtle || typeof TextEncoder === 'undefined') {return null}
     const salt = localCrypto.getRandomValues(new Uint8Array(16))
     const key = await localCrypto.subtle.importKey(
       'raw',
@@ -86,7 +86,7 @@ if (!window.closeMo) {
   }
 
   async function verifyLocalCredential(account, secret) {
-    if (!account?.credentialHash || !account.credentialSalt || !secret || !localCrypto?.subtle) return false
+    if (!account?.credentialHash || !account.credentialSalt || !secret || !localCrypto?.subtle) {return false}
     try {
       const salt = base64ToBytes(account.credentialSalt)
       const key = await localCrypto.subtle.importKey(
@@ -104,9 +104,9 @@ if (!window.closeMo) {
       }, key, 256)
       const actual = new Uint8Array(bits)
       const expected = base64ToBytes(account.credentialHash)
-      if (actual.length !== expected.length) return false
+      if (actual.length !== expected.length) {return false}
       let difference = 0
-      for (let i = 0; i < actual.length; i++) difference |= actual[i] ^ expected[i]
+      for (let i = 0; i < actual.length; i++) {difference |= actual[i] ^ expected[i]}
       return difference === 0
     } catch (e) {
       return false
@@ -116,12 +116,12 @@ if (!window.closeMo) {
   function sanitizeLocalAccount(account = {}) {
     const safe = {}
     for (const field of ['id', 'name', 'username', 'picture', 'role', 'vehicle', 'language', 'createdAt', 'updatedAt', 'uid', 'credentialHash', 'credentialSalt']) {
-      if (typeof account[field] === 'string' && account[field]) safe[field] = account[field]
+      if (typeof account[field] === 'string' && account[field]) {safe[field] = account[field]}
     }
     for (const field of ['age', 'grade', 'total']) {
-      if (Number.isFinite(Number(account[field]))) safe[field] = Number(account[field])
+      if (Number.isFinite(Number(account[field]))) {safe[field] = Number(account[field])}
     }
-    if (Array.isArray(account.badges)) safe.badges = account.badges.slice(0, 50)
+    if (Array.isArray(account.badges)) {safe.badges = account.badges.slice(0, 50)}
     return safe
   }
 
@@ -143,7 +143,7 @@ if (!window.closeMo) {
         const tu = sanitizeLocalAccount(JSON.parse(trafficRaw))
         if (tu.name || tu.username) {
           const exists = list.some(a => (tu.username && a.username === tu.username) || (tu.name && a.name === tu.name))
-          if (!exists) list.push(tu)
+          if (!exists) {list.push(tu)}
         }
       }
       // Rewrite legacy records after stripping plaintext credentials and email.
@@ -158,8 +158,8 @@ if (!window.closeMo) {
       const list = getLocalAccounts()
       const normUname = (safe.username || '').toLowerCase()
       const idx = list.findIndex(a => (safe.id && a.id === safe.id) || (normUname && (a.username || '').toLowerCase() === normUname))
-      if (idx >= 0) list[idx] = { ...list[idx], ...safe }
-      else list.push(safe)
+      if (idx >= 0) {list[idx] = { ...list[idx], ...safe }}
+      else {list.push(safe)}
       localStorage.setItem('col_local_accounts', JSON.stringify(list))
       return safe
     } catch (e) {
@@ -171,9 +171,9 @@ if (!window.closeMo) {
   function getActiveLocalUser() {
     try {
       const raw = localStorage.getItem('col_active_local_user') || localStorage.getItem('traffic_local_user')
-      if (!raw) return null
+      if (!raw) {return null}
       const u = sanitizeLocalAccount(JSON.parse(raw))
-      if (!u.name && !u.username) return null
+      if (!u.name && !u.username) {return null}
       return {
         id: u.id || ('local_' + (u.username || u.name).replace(/[^a-zA-Z0-9_]/g, '')),
         name: u.name || u.username,
@@ -520,14 +520,16 @@ if (!window.closeMo) {
     }
 
     try {
-      // 1. Check profiles table (checks both @handle and handle)
-      const { data: profs, error: pErr } = await supabaseClient
-        .from('profiles')
-        .select('id, username')
-        .or(`username.ilike.${clean},username.ilike.${namePart}`)
+      // 1. Check the leaderboard-safe public directory (checks both @handle and handle).
+      //    `profiles` is own-row only now, so it cannot be used for availability.
+      const { data: dirRows, error: pErr } = await supabaseClient
+        .rpc('public_profile_directory', { p_search: clean, p_limit: 50 })
 
-      if (pErr) {console.warn('[col-auth] profiles check notice:', pErr)}
-      const takenInProfiles = (profs || []).some(p => p.id !== currentUserId)
+      if (pErr) {console.warn('[col-auth] username availability check notice:', pErr)}
+      const wantedHandles = [clean.toLowerCase(), namePart.toLowerCase()]
+      const takenInProfiles = (dirRows || []).some(
+        p => p.user_id !== currentUserId && p.username && wantedHandles.includes(String(p.username).toLowerCase())
+      )
 
       if (takenInProfiles) {
         return {
@@ -537,30 +539,11 @@ if (!window.closeMo) {
           username: clean
         }
       }
-
-      // 2. Check user_profiles table (checks both @handle and handle)
-      const { data: upProfs, error: upErr } = await supabaseClient
-        .from('user_profiles')
-        .select('user_id, username')
-        .or(`username.ilike.${clean},username.ilike.${namePart}`)
-
-      if (upErr) {console.warn('[col-auth] user_profiles check notice:', upErr)}
-      const takenInUp = (upProfs || []).some(p => p.user_id !== currentUserId)
-
-      if (takenInUp) {
-        return {
-          available: false,
-          error: 'This Username Is Already Taken By Another Player.',
-          suggestions: generateUsernameSuggestions(namePart),
-          username: clean
-        }
-      }
-
-      return { available: true, username: clean }
-    } catch (err) {
-      console.warn('[col-auth] Availability check failed:', err)
-      return { available: true, username: clean }
+    } catch (e) {
+      console.warn('[col-auth] username availability check failed:', e)
     }
+
+    return { available: true, username: clean }
   }
 
   function generateUsernameSuggestions(base) {
@@ -1615,7 +1598,7 @@ if (!window.closeMo) {
       if (window.colLocalUser?.isLocal) {
         if (newPass) {
           const credential = await createLocalCredential(newPass)
-          if (!credential) throw new Error('Secure browser storage is unavailable. Please use cloud authentication.')
+          if (!credential) {throw new Error('Secure browser storage is unavailable. Please use cloud authentication.')}
           Object.assign(storedUser, credential)
         }
         setActiveLocalUser(storedUser)
@@ -1801,7 +1784,7 @@ if (!window.closeMo) {
         const normUname = normInput.startsWith('@') ? normInput : '@' + normInput
 
         const matched = localAccounts.find(acc => {
-          if (!acc.credentialHash) return false
+          if (!acc.credentialHash) {return false}
           const accUname = (acc.username || '').toLowerCase()
           const accName = (acc.name || '').toLowerCase()
           return accUname === normInput || accUname === normUname || accName === normInput
@@ -1900,7 +1883,7 @@ if (!window.closeMo) {
             // Fallback: save as account
             const uname = '@' + (name.toLowerCase().replace(/\s+/g, '_') || 'driver_' + Math.floor(Math.random() * 1000))
             const credential = await createLocalCredential(pass)
-            if (!credential) throw new Error('Secure browser storage is unavailable. Please use cloud authentication.')
+            if (!credential) {throw new Error('Secure browser storage is unavailable. Please use cloud authentication.')}
             const newAcc = {
               id: 'local_' + Date.now(),
               name: name,
@@ -1936,7 +1919,7 @@ if (!window.closeMo) {
           // Offline / local only
           const uname = '@' + (name.toLowerCase().replace(/\s+/g, '_') || 'driver_' + Math.floor(Math.random() * 1000))
           const credential = await createLocalCredential(pass)
-          if (!credential) throw new Error('Secure browser storage is unavailable. Please use cloud authentication.')
+          if (!credential) {throw new Error('Secure browser storage is unavailable. Please use cloud authentication.')}
           const newAcc = {
             id: 'local_' + Date.now(),
             name: name,
