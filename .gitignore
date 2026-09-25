@@ -19,6 +19,12 @@ temp_rec/
 .impeccable/
 .kilo/
 .superpowers/
+# Local agent skill libraries. These are tooling, not application source: they
+# ship their own example apps and lockfiles, which GitHub then reports as
+# project vulnerabilities and CodeQL scans as production code. They are already
+# excluded from the deploy artifact by build.js and .vercelignore.
+/.agents/
+/Traffic/.agents/
 *.sqlite
 *.sqlite3
 *.db

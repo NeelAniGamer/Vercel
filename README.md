@@ -21,7 +21,10 @@ license: mit
 [![PWA](https://img.shields.io/badge/PWA-Installable-5A0FC8?style=for-the-badge&logo=pwa)](#pwa-and-android-apk)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](#license)
 
-[Open the production studio](https://advancedlogiclabs.dpdns.org/) · [Vercel mirror](https://classoflearners.vercel.app/)
+Production site: <https://advancedlogiclabs.dpdns.org/>
+
+This is the only public URL. The site is served from the committed `dist/`
+output, so there is no separate preview or mirror domain to keep in sync.
 
 </div>
 
