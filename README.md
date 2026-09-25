@@ -18,7 +18,7 @@ license: mit
 [![Static Build](https://img.shields.io/badge/Static%20HTML%20%2B%20Reproducible%20Build-333333?style=for-the-badge)](#getting-started)
 [![Three.js](https://img.shields.io/badge/Three.js-0.185-000000?style=for-the-badge&logo=three.js)](#technology)
 [![Supabase](https://img.shields.io/badge/Supabase-Auth%20%26%20Data-3ECF8E?style=for-the-badge&logo=supabase)](#technology)
-[![PWA](https://img.shields.io/badge/PWA-Installable-5A0FC8?style=for-the-badge&logo=pwa)](#pwa--android-apk)
+[![PWA](https://img.shields.io/badge/PWA-Installable-5A0FC8?style=for-the-badge&logo=pwa)](#pwa-and-android-apk)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](#license)
 
 [Open the production studio](https://advancedlogiclabs.dpdns.org/) · [Vercel mirror](https://classoflearners.vercel.app/)
@@ -32,6 +32,7 @@ license: mit
 - [Overview](#overview)
 - [Projects](#projects)
 - [Technology](#technology)
+- [Design System](#design-system)
 - [Architecture](#architecture)
 - [Getting Started](#getting-started)
 - [Commands](#commands)
@@ -97,6 +98,21 @@ The root application also includes the studio landing page, team and career page
 | **Quality/security**     | Prettier, CodeQL, DevSkim, Dependabot, and `scripts/security-check.js`                                   |
 | **Assets**               | Procedural scenes, GLB/model packs, textures, skins, and compressed public media                         |
 
+## Design System
+
+The shared visual language is defined in `col-ui.css` and reused across the studio pages.
+
+| Token      | Value     | Role                             |
+| ---------- | --------- | -------------------------------- |
+| `--void`   | `#070a14` | Deep space background            |
+| `--panel`  | `#111827` | Elevated panel surface           |
+| `--ink`    | `#e8e3d8` | Primary text                     |
+| `--signal` | `#f2b84b` | Gold accent and primary action   |
+| `--ion`    | `#5ed4f5` | Cyan data and interaction accent |
+| `--em`     | `#34d399` | Success and safety state         |
+
+UI changes should remain mobile-first at 360px, use title case for player-facing text, prefer `transform`/`opacity` animation, cap device pixel ratio, avoid full-viewport `background-position` animation, and lazy-load below-fold content. Keep the palette high-contrast without sacrificing the dark obsidian identity.
+
 ## Architecture
 
 ### Repository Map
@@ -142,9 +158,9 @@ Vercel
 
 - `Traffic/Driving.html` loads the level registry, `game_core.js`, the full `ui.js`, and `start.js`. The boot path waits for the `Game` class and starts the simulation.
 - `Traffic/Academy.html` loads the level/course/UI stack and initializes the Academy interface; it does not load the driving `Game` or `start.js` boot path.
-- Level files register entries in `window.LVS`. The selected entry is merged into the runtime map configuration before scene construction.
-- Task completion is implemented in `game_core.js`; the level validator mirrors the supported task types and target vocabulary.
-- Authentication identity comes from the live Supabase session. Local profiles support offline setup but must not be presented as a signed-in account.
+- Level files register entries in `window.LVS`; the current registry contains 57 objects: 54 numbered levels, two custom entries, and one free-roam entry. The selected entry is merged into the runtime map configuration before scene construction.
+- Task completion is implemented in `game_core.js`; the validator is intended to mirror its task types and target vocabulary, but the full report currently exposes legacy mismatches. Review both when changing objectives.
+- The intended identity boundary is the live Supabase session. Local profiles support offline setup but must not be presented as a signed-in account.
 - Progress, quiz, civic, badge, and completion updates are split across `game_core.js`, `ui.js`, task/mission modules, and the Supabase synchronization layer. Preserve those idempotency and ownership boundaries when changing scoring.
 - Dashboard XP/modules rows come from `certificates` and fall back to `user_profiles` when certificates are absent; profile metadata may use `user_profiles` then `profiles`, civic data uses `wallets`, and badge rankings use `badges`.
 
@@ -249,7 +265,7 @@ Run these from `Traffic/`:
 | `npm run electron:portable` | Build a portable Electron package      | Skips the TypeScript check           |
 | `npm run preview`           | Preview the Vite output                | Use after a web build                |
 
-`Traffic/npm run test:smoke` currently points to a missing `pw_test.js`; it is not a working test command.
+From `Traffic/`, `npm run test:smoke` currently points to a missing `pw_test.js`; it is not a working test command.
 
 ## Build and Deployment
 
