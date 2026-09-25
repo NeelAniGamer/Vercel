@@ -32,10 +32,13 @@ const modelsRoot = srcModels;
 // on both sides before comparison, and a decoded path is also stored so a
 // request recorded for a file that 404s can never be mistaken for a live one.
 const requested = new Set();
-for (const raw of JSON.parse(fs.readFileSync(process.argv[2], 'utf8'))) {
-  const decoded = decodeURIComponent(raw).replace(/\\/g, '/');
-  requested.add(decoded);
-  requested.add(decoded.replace(/\/+/g, '/'));
+const captureArg = process.argv[2];
+if (captureArg) {
+  for (const raw of JSON.parse(fs.readFileSync(captureArg, 'utf8'))) {
+    const decoded = decodeURIComponent(raw).replace(/\\/g, '/');
+    requested.add(decoded);
+    requested.add(decoded.replace(/\/+/g, '/'));
+  }
 }
 
 // ── Signal 2: filenames mentioned in any first-party text file ──────────────
@@ -45,6 +48,27 @@ const SKIP = /(^|[\\/])(node_modules|dist|dist-web|dist-electron|\.agents|\.git|
 
 const mentioned = new Set();          // full relative path, as written in source
 const basenames = new Map();          // lowercase basename -> Set of directories it was mentioned under
+
+// One shared pattern, so a fix to the character class cannot be applied in the
+// test and missed here. Exported for test-asset-regex.js.
+const ASSET_FILENAME_SOURCE =
+  '[A-Za-z0-9_. ()-]+' +
+  '\\.(?:glb|gltf|fbx|obj|blend|dae|bin|png|jpg|jpeg|ktx2|zip|max)' +
+  '\\b';
+const ASSET_FILENAME_RE = new RegExp(ASSET_FILENAME_SOURCE, 'gi');
+module.exports = { ASSET_FILENAME_SOURCE };
+
+// Exported for test-asset-regex.js. When required rather than run on the command
+// line there is no capture to compare against, so stop here.
+if (require.main !== module) {return;}
+
+// A run with no capture would classify every asset as unused, and --write would
+// then exclude the entire model tree from the deploy. Refuse instead.
+if (!process.argv[2]) {
+  console.error('Usage: node Traffic/tools/find-dead-models.js <requests.json> [--write]');
+  console.error('The capture must come from Traffic/tools/capture-model-requests.js.');
+  process.exit(1);
+}
 
 function scan(dir, depth) {
   if (depth > 2) return;
@@ -61,7 +85,10 @@ function scan(dir, depth) {
     if (!SCAN_EXT.has(path.extname(e.name).toLowerCase())) continue;
     let text;
     try { text = fs.readFileSync(full, 'utf8'); } catch (e) { continue; }
-    for (const m of text.matchAll(/[A-Za-z0-9_\- .()\[\]]+\.(?:glb|gltf|fbx|obj|blend|dae|bin|png|jpg|jpeg|ktx2|zip|max)\b/gi)) {
+    // Filenames as they appear in source: word characters, spaces, dots,
+    // dashes and parentheses, which covers names like `upload (1).FBX`.
+    // The pattern is exercised by test-asset-regex.js.
+    for (const m of text.matchAll(ASSET_FILENAME_RE)) {
       const raw = m[0].trim();
       if (!raw) continue;
       mentioned.add(raw);

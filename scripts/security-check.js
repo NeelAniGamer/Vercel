@@ -128,6 +128,21 @@ try {
   failures.push(`Traffic: level linter reports errors (${summary || 'see node Traffic/tools/validate-levels.js'}). A level task with no engine branch never completes.`);
 }
 
+// The dead-asset manifest decides which 3D files are omitted from the deploy.
+// Its filename pattern is the part most likely to break silently, because a
+// broken character class would start marking live assets as dead, and the
+// symptom is a missing model in one level rather than a failed build. So the
+// pattern is tested, and the manifest is checked against the observed browser
+// requests so a stale or hand-edited list cannot ship.
+try {
+  const { execFileSync } = require('child_process');
+  execFileSync(process.execPath, [path.join(root, 'Traffic/tools/test-asset-regex.js')], {
+    cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'],
+  });
+} catch (e) {
+  failures.push(`Traffic: the dead-asset filename pattern test failed. ${((e.stdout || '') + (e.stderr || '')).trim().split('\n')[0]}`);
+}
+
 if (failures.length) {
   console.error('Security regression check failed:');
   for (const failure of failures) {console.error(` - ${failure}`);}
