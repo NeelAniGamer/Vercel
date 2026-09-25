@@ -316,10 +316,10 @@ export default function DrivingSimulator({
 
     // Update HUD stats (throttled)
     if (eng.frameCount % 6 === 0) {
-      const nextStats = {
+      const nextStats: GameState = {
         ...gameStats,
         speed: Math.round(Math.abs(eng.velocity) * 3.6),
-        gear: eng.velocity > 0.1 ? "D" : eng.velocity < -0.1 ? "R" : "N",
+        gear: (eng.velocity > 0.1 ? "D" : eng.velocity < -0.1 ? "R" : "N") as GameState['gear'],
         timeOfDay: eng.timeHours,
         violationsLog: eng.violationsLog,
       };
@@ -406,13 +406,10 @@ export default function DrivingSimulator({
       renderer.toneMappingExposure = 1.2;
       renderer.shadowMap.enabled = true;
 
-      if (isMobile || isLowGPU) {
-        renderer.shadowMap.type = THREE.BasicShadowMap;
-        if (renderer.shadowMap.mapSize) renderer.shadowMap.mapSize.set(512, 512);
-      } else {
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        if (renderer.shadowMap.mapSize) renderer.shadowMap.mapSize.set(1024, 1024);
-      }
+      // Shadow map resolution lives on each light, not on renderer.shadowMap.
+      // The engine's Environment already sizes the sun's shadow map, so only the
+      // filter type is configured here.
+      renderer.shadowMap.type = (isMobile || isLowGPU) ? THREE.BasicShadowMap : THREE.PCFSoftShadowMap;
 
       mount.appendChild(renderer.domElement);
 

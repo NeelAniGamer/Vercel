@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
 
+# Private, duplicate, unfinished, and internal routes are served with a noindex X-Robots-Tag header.
 Sitemap: https://advancedlogiclabs.dpdns.org/sitemap.xml

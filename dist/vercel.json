@@ -22,6 +22,30 @@
       ]
     },
     {
+      "source": "/:page(admin|dashboard|q|rpg|qr|ati-demo|engine|Database_Logic|verify|feedback|sitemap)",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive" }
+      ]
+    },
+    {
+      "source": "/Traffic/:page(TrafficDashboard|TrafficSetup|GamePage|lod_test)",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive" }
+      ]
+    },
+    {
+      "source": "/Traffic/Models/:path*",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive" }
+      ]
+    },
+    {
+      "source": "/Traffic/research/:path*",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive" }
+      ]
+    },
+    {
       "source": "/(.*)\\.(css|js|mjs|png|jpg|jpeg|webp|gif|svg|ico|woff2?|ttf|glb|gltf|bin|mp3|mp4|webm)",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=604800, stale-while-revalidate=86400" }
@@ -76,6 +100,11 @@
     {
       "source": "/how-it-was-made",
       "destination": "/making",
+      "permanent": true
+    },
+    {
+      "source": "/engine",
+      "destination": "/solar",
       "permanent": true
     }
   ]

@@ -69,6 +69,7 @@ if (!fs.existsSync(distRoot)) {
   const requiredFiles = [
     'home.html',
     'about.html',
+    '404.html',
     'favicon.ico',
     'manifest.json',
     'sw.js',

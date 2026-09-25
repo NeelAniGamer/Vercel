@@ -1,0 +1,32 @@
+# Class Of Learners
+
+> Class Of Learners is a Mumbai student studio building interactive learning products, 3D engineering projects, browser tools, and practical AI experiments. The studio focuses on learning by doing, real-world usefulness, and accessible technology.
+
+## Primary Pages
+
+- [Studio Hub](https://advancedlogiclabs.dpdns.org/): Interactive learning and engineering projects built by students in Mumbai.
+- [About](https://advancedlogiclabs.dpdns.org/about): The team, story, and mission behind Class Of Learners.
+- [The Making](https://advancedlogiclabs.dpdns.org/making): The tools, models, platforms, and engineering practices behind the studio's work.
+- [Sneh Asha](https://advancedlogiclabs.dpdns.org/sneh-asha): The studio's technology-for-good initiative focused on the digital divide.
+
+## Learning Products
+
+- [Mumbai Traffic Academy](https://advancedlogiclabs.dpdns.org/Traffic/Academy): Interactive Mumbai traffic-rules lessons, quizzes, licenses, and certificates.
+- [Mumbai Traffic Driving Simulator](https://advancedlogiclabs.dpdns.org/Traffic/Driving): A 3D driving simulator for practicing road rules and safety.
+- [Solar Engine](https://advancedlogiclabs.dpdns.org/solar): An interactive 3D solar system with orbital motion, planet data, and planetary exploration.
+- [Advanced Typing Instructor](https://advancedlogiclabs.dpdns.org/ati): Adaptive touch typing, code syntax practice, keyboard guidance, and WPM analytics.
+- [Terra3D](https://advancedlogiclabs.dpdns.org/Terra3D/): An interactive 3D world atlas for countries, continents, landmarks, and cultures.
+
+## Tools
+
+- [Perceptus Flow](https://advancedlogiclabs.dpdns.org/gesture): Touchless computer control using webcam hand gestures, pinch-to-click, voice tasks, and multimodal AI.
+- [QR Editor](https://advancedlogiclabs.dpdns.org/qr-editor): A browser-based editor for custom QR codes with colors, logos, content types, and high-resolution downloads.
+- [CastFlow](https://advancedlogiclabs.dpdns.org/CastFlow): Android screen casting, file sharing, and desktop mode from a browser.
+- [FutureScape](https://advancedlogiclabs.dpdns.org/Career): An interactive career and education guide with pathways, roadmaps, entrance exams, salary tiers, and AI resilience ratings.
+- [Downloads](https://advancedlogiclabs.dpdns.org/download): Available Class Of Learners apps and desktop builds.
+
+## Contact And Policies
+
+- [Feedback](https://advancedlogiclabs.dpdns.org/feedback): Report bugs, suggest features, or contact the studio.
+- [Privacy Policy](https://advancedlogiclabs.dpdns.org/privacy): Data handling, authentication, analytics, and user rights.
+- [Terms Of Service](https://advancedlogiclabs.dpdns.org/terms): Usage guidelines and licensing terms.

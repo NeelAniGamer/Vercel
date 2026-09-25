@@ -3,19 +3,49 @@
 <head>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995"
      crossorigin="anonymous"></script>
-    <meta name="description" content="Class of Learners - Qr Editor. An educational tool and resource.">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>QR Editor | Class Of Learners</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<script defer src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
-<script defer src="qr-dynamic.js"></script>
-<link rel="canonical" href="https://advancedlogiclabs.dpdns.org/qr-editor" />
+    <meta name="description" content="Create custom QR codes for links, text, contact details, payments, events, and files with editable colors, logos, sizes, and high-resolution downloads.">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:site_name" content="Class Of Learners">
+    <meta property="og:title" content="QR Editor | Create Custom QR Codes In Browser">
+    <meta property="og:description" content="Create custom QR codes for links, text, contact details, payments, events, and files with editable colors, logos, sizes, and high-resolution downloads.">
+    <meta property="og:url" content="https://advancedlogiclabs.dpdns.org/qr-editor">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://advancedlogiclabs.dpdns.org/og/qr.jpg">
+    <meta property="og:image:alt" content="Custom QR code editor from Class Of Learners">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="QR Editor | Create Custom QR Codes In Browser">
+    <meta name="twitter:description" content="Create custom QR codes for links, text, contact details, payments, events, and files with editable colors, logos, sizes, and high-resolution downloads.">
+    <meta name="twitter:image" content="https://advancedlogiclabs.dpdns.org/og/qr.jpg">
+    <meta name="twitter:image:alt" content="Custom QR code editor from Class Of Learners">
+    <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/qr-editor" />
+    <title>QR Editor | Create Custom QR Codes In Browser</title>
+    <link rel="icon" type="image/png" href="Icon.png" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "QR Editor",
+        "url": "https://advancedlogiclabs.dpdns.org/qr-editor",
+        "description": "A browser-based editor for custom QR codes with colors, logos, multiple content types, and high-resolution downloads.",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Web browser",
+        "browserRequirements": "Requires JavaScript.",
+        "image": "https://advancedlogiclabs.dpdns.org/og/qr.jpg",
+        "inLanguage": "en-IN",
+        "isPartOf": { "@id": "https://advancedlogiclabs.dpdns.org/#website" },
+        "author": { "@id": "https://advancedlogiclabs.dpdns.org/#organization" },
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+      }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <script defer src="qr-dynamic.js"></script>
 
 <script>
   ;(function () {
@@ -35,8 +65,6 @@
   <link rel="manifest" href="manifest.json">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="icon" type="image/png" href="Icon.png" />
-  </head>
 <style>
 /* ──── EXACT UI THEME ──── */
 :root {
@@ -485,6 +513,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   </head>
 <body>
 
+<h1 class="sr-only">QR Editor — Create Custom QR Codes In Your Browser</h1>
 <a href="#mainContent" class="sr-only" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:9999;padding:8px 16px;background:var(--pri);color:#fff;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;" onfocus="this.style.cssText='position:fixed;left:0;top:0;width:auto;height:auto;z-index:9999;padding:8px 16px;background:var(--pri);color:#fff;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;'" onblur="this.style.cssText='position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:9999;padding:8px 16px;background:var(--pri);color:#fff;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;'">Skip to main content</a>
 
 <nav class="top-nav" id="topNav">

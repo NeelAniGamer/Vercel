@@ -1,5 +1,8 @@
 version: 2
 updates:
+  # Root application dependencies. Dependabot is given exact directories rather
+  # than `/` so it cannot discover the nested package manifests that ship with
+  # local agent skill libraries under `.agents/`.
   - package-ecosystem: npm
     directories:
       - '/'

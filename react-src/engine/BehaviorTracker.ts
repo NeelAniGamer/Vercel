@@ -1,5 +1,5 @@
 /**
- * BehaviorTracker — Observes player driving behaviour each frame and
+ * BehaviorTracker â€” Observes player driving behaviour each frame and
  * accumulates telemetry for the adaptive quiz system (CorrectiveQuiz.ts).
  *
  * Call `tracker.update(dt, frameState)` every frame with the current
@@ -7,9 +7,9 @@
  * call `tracker.snapshot()` to get a frozen summary.
  */
 
-// ──────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Types
-// ──────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export interface FrameState {
   /** Current vehicle speed (world units / sec, NOT km/h) */
@@ -24,7 +24,7 @@ export interface FrameState {
   keys: Record<string, boolean>
   /** Whether the player is currently reversing */
   isReversing: boolean
-  /** Current road bounds (optional — for off-road detection) */
+  /** Current road bounds (optional â€” for off-road detection) */
   roadBounds?: { minX: number; maxX: number; minZ: number; maxZ: number }
   /** Speed limit for the current road (world units/sec) */
   speedLimit?: number
@@ -55,9 +55,9 @@ export interface BehaviorSnapshot {
   totalTime: number
 }
 
-// ──────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Implementation
-// ──────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export class BehaviorTracker {
   private _frameCount = 0
@@ -113,26 +113,26 @@ export class BehaviorTracker {
 
     // Speeding
     const limit = state.speedLimit ?? 27.8 // default ~100 km/h in world units
-    if (absSpeed > limit + this.SPEEDING_MARGIN) {
+    if (absSpeed > limit + BehaviorTracker.SPEEDING_MARGIN) {
       this._speedingFrames++
     }
 
     // Idle
-    if (absSpeed < this.IDLE_SPEED_THRESHOLD) {
+    if (absSpeed < BehaviorTracker.IDLE_SPEED_THRESHOLD) {
       this._idleFrames++
     }
 
     // Reverse
-    if (state.isReversing || (state.speed < -this.IDLE_SPEED_THRESHOLD)) {
+    if (state.isReversing || (state.speed < -BehaviorTracker.IDLE_SPEED_THRESHOLD)) {
       this._reverseFrames++
     }
 
     // Harsh brake / accel (speed derivative)
     const speedDelta = (state.speed - this._prevSpeed) / dt
-    if (speedDelta < this.HARSH_BRAKE_THRESHOLD) {
+    if (speedDelta < BehaviorTracker.HARSH_BRAKE_THRESHOLD) {
       this._harshBrakeEvents++
     }
-    if (speedDelta > this.HARSH_ACCEL_THRESHOLD) {
+    if (speedDelta > BehaviorTracker.HARSH_ACCEL_THRESHOLD) {
       this._harshAccelEvents++
     }
 
@@ -141,14 +141,14 @@ export class BehaviorTracker {
     // Normalize to [-PI, PI]
     while (headingDelta > Math.PI) headingDelta -= 2 * Math.PI
     while (headingDelta < -Math.PI) headingDelta += 2 * Math.PI
-    if (Math.abs(headingDelta) > this.TURN_THRESHOLD) {
+    if (Math.abs(headingDelta) > BehaviorTracker.TURN_THRESHOLD) {
       this._turnEvents++
     }
 
     // Off-road detection (simple: if position is far from any axis-aligned road line)
-    // This is a lightweight heuristic — we check if the player is more than
+    // This is a lightweight heuristic â€” we check if the player is more than
     // OFF_ROAD_MARGIN units away from any road center.
-    // For a more accurate check, we'd need the full road list — but this heuristic
+    // For a more accurate check, we'd need the full road list â€” but this heuristic
     // works well for grid-based layouts.
     if (state.inVehicle && this._isLikelyOffRoad(state)) {
       this._offRoadEvents++
@@ -160,7 +160,7 @@ export class BehaviorTracker {
 
   /**
    * Simple off-road heuristic for grid-based layouts.
-   * Returns true if the position is far from a grid line (±OFF_ROAD_MARGIN).
+   * Returns true if the position is far from a grid line (Â±OFF_ROAD_MARGIN).
    */
   private _isLikelyOffRoad(state: FrameState): boolean {
     const { x, z } = state.position
