@@ -56,10 +56,31 @@ const excludedPaths = new Set([
   'Traffic/config.json'
 ]);
 
+// 3D assets the browser never requests.
+//
+// Traffic/Models is ~530 MB and only ~265 MB of it is ever loaded. This list
+// is the remainder, produced by Traffic/tools/find-dead-models.js from two
+// independent signals: a full 57-level sweep of observed browser requests, and
+// a scan of every filename mentioned in first-party source. A file must fail
+// both to appear here.
+//
+// The files stay in the repository. They are simply not copied into dist/, so
+// they cost nothing at deploy time and remain available if a level is ever
+// wired to one. Review the list with:
+//   node Traffic/tools/find-dead-models.js <requests.json>
+const deadModelFiles = new Set(
+  (() => {
+    const manifest = path.join(__dirname, 'Traffic', 'tools', 'dead-model-files.json');
+    if (!fs.existsSync(manifest)) {return [];}
+    return JSON.parse(fs.readFileSync(manifest, 'utf8')).files || [];
+  })()
+);
+
 function shouldExclude(name, isDirectory, relativePath = '') {
   const normalizedPath = relativePath.replace(/\\/g, '/');
   if (excludedPaths.has(normalizedPath)) {return true;}
   if (isDirectory) {return excludedDirectories.has(name) || name.startsWith('dist-');}
+  if (deadModelFiles.has(normalizedPath)) {return true;}
   return excludedFiles.has(name) || excludedFilePatterns.some((pattern) => pattern.test(name));
 }
 
@@ -119,6 +140,26 @@ function assertSafeOutput(dir) {
   walk(dir);
   if (forbidden.length > 0) {
     throw new Error(`Unsafe files copied to dist/: ${forbidden.join(', ')}`);
+  }
+
+  // The dead-model manifest is only safe while it is a strict subset of what
+  // was actually observed. If someone hand-edits the list and drops a live
+  // asset, that file silently disappears from the deploy and the level breaks
+  // at runtime with no build error. The browser is the only authority on what
+  // is used, so the capture is checked in alongside the manifest and any
+  // disagreement here stops the build.
+  const capture = path.join(__dirname, 'Traffic', 'tools', 'model-requests.json');
+  if (fs.existsSync(capture) && deadModelFiles.size) {
+    const observed = JSON.parse(fs.readFileSync(capture, 'utf8'))
+      .map((p) => decodeURIComponent(p).replace(/\\/g, '/'));
+    const wronglyExcluded = observed.filter((p) => deadModelFiles.has(p));
+    if (wronglyExcluded.length > 0) {
+      throw new Error(
+        `dead-model-files.json excludes ${wronglyExcluded.length} asset(s) the browser actually loads, ` +
+        `starting with: ${wronglyExcluded.slice(0, 5).join(', ')}. ` +
+        'Regenerate the manifest with Traffic/tools/find-dead-models.js.'
+      );
+    }
   }
 }
 
