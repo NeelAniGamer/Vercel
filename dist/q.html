@@ -248,6 +248,10 @@
         return;
       }
 
+      if (typeof DYNAMIC_QR !== 'undefined' && DYNAMIC_QR.ready) {
+        await DYNAMIC_QR.ready;
+      }
+
       // Initialize Supabase client
       let sbClient = null;
       try {
@@ -345,10 +349,11 @@
           window.location.href = target;
         };
 
-        // Password protection check
-        if (entry.isPasswordProtected || entry.password) {
-          const savedAuth = sessionStorage.getItem('qr_auth_' + code);
-          if (savedAuth && (savedAuth === entry.password || (typeof DYNAMIC_QR !== 'undefined' && DYNAMIC_QR.hashPassword(savedAuth) === entry.password))) {
+        // Password protection check. The entered password is never stored;
+        // only a short-lived success marker is kept for this tab.
+        if (entry.isPasswordProtected || entry.passwordHash) {
+          const savedAuth = sessionStorage.getItem('qr_auth_' + code) === 'verified';
+          if (savedAuth) {
             doRedirect();
             return;
           }
@@ -371,11 +376,12 @@
           const pwdInput = document.getElementById('pwdInput');
           const errText = document.getElementById('errText');
 
-          pwdForm.onsubmit = function(e) {
+          pwdForm.onsubmit = async function(e) {
             e.preventDefault();
             const val = pwdInput.value.trim();
-            if (val === entry.password || (typeof DYNAMIC_QR !== 'undefined' && DYNAMIC_QR.hashPassword(val) === entry.password)) {
-              sessionStorage.setItem('qr_auth_' + code, val);
+            const valid = typeof DYNAMIC_QR !== 'undefined' && await DYNAMIC_QR.checkPassword(code, val);
+            if (valid) {
+              sessionStorage.setItem('qr_auth_' + code, 'verified');
               app.innerHTML = `
                 <div class="spinner"></div>
                 <div class="title">Access Verified</div>

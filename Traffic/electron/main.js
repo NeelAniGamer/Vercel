@@ -25,8 +25,6 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 var import_electron = require("electron");
 var path = __toESM(require("path"));
 var fs = __toESM(require("fs"));
-import_electron.app.commandLine.appendSwitch("allow-file-access-from-files");
-import_electron.app.commandLine.appendSwitch("disable-web-security");
 var isDev = !import_electron.app.isPackaged;
 var mainWindow = null;
 function getStatePath() {
@@ -125,9 +123,10 @@ function createWindow() {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
       nodeIntegration: false,
+      sandbox: true,
       webgl: true,
-      webSecurity: false,
-      allowRunningInsecureContent: true
+      webSecurity: true,
+      allowRunningInsecureContent: false
     },
     backgroundColor: "#070a14",
     show: false,

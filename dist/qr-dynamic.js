@@ -10,6 +10,67 @@
   const STORAGE_KEY = 'col_dynamic_qr';
   const TEMPLATES_KEY = 'col_qr_templates';
   const PRESETS_KEY = 'qr_custom_presets';
+  const PASSWORD_ITERATIONS = 120000;
+
+  function bytesToBase64(bytes) {
+    let binary = '';
+    for (const byte of bytes) binary += String.fromCharCode(byte);
+    return btoa(binary);
+  }
+
+  function base64ToBytes(value) {
+    const binary = atob(value);
+    return Uint8Array.from(binary, char => char.charCodeAt(0));
+  }
+
+  async function derivePassword(password, salt) {
+    if (!password || !globalThis.crypto?.subtle || typeof TextEncoder === 'undefined') return null;
+    const key = await globalThis.crypto.subtle.importKey(
+      'raw',
+      new TextEncoder().encode(password),
+      'PBKDF2',
+      false,
+      ['deriveBits']
+    );
+    const bits = await globalThis.crypto.subtle.deriveBits({
+      name: 'PBKDF2',
+      salt,
+      iterations: PASSWORD_ITERATIONS,
+      hash: 'SHA-256'
+    }, key, 256);
+    return bytesToBase64(new Uint8Array(bits));
+  }
+
+  function constantTimeEqual(left, right) {
+    if (typeof left !== 'string' || typeof right !== 'string' || left.length !== right.length) return false;
+    let difference = 0;
+    for (let i = 0; i < left.length; i++) difference |= left.charCodeAt(i) ^ right.charCodeAt(i);
+    return difference === 0;
+  }
+
+  function withoutPlaintextPassword(entry) {
+    const safe = {};
+    for (const key of Object.keys(entry || {})) {
+      if (['password', 'pin', 'email', 'access_token', 'refresh_token'].includes(key)) continue;
+      safe[key] = entry[key];
+    }
+    return safe;
+  }
+
+  async function removeLegacyPlaintextPasswords() {
+    if (typeof localStorage === 'undefined') return;
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const entries = JSON.parse(raw);
+      if (!Array.isArray(entries)) return;
+      // Legacy records are discarded rather than copied with their plaintext
+      // password. A user can recreate protected QRs with the secure editor.
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries.map(withoutPlaintextPassword)));
+    } catch (e) {
+      console.warn('[DYNAMIC_QR] Could not remove legacy plaintext password data', e);
+    }
+  }
 
   const DYNAMIC_QR = {
     baseUrl: typeof window !== 'undefined' ? (window.location.origin + '/q.html') : 'https://advancedlogiclabs.dpdns.org/q.html',
@@ -26,7 +87,7 @@
     },
 
     // Create a new dynamic QR record
-    create: function (qrData) {
+    create: async function (qrData) {
       const shortCode = qrData.shortCode || this.generateShortCode();
       const id = qrData.id || Date.now();
       const entry = {
@@ -36,7 +97,6 @@
         destination: qrData.destination || qrData.content || '',
         type: qrData.type || 'url',
         title: qrData.title || qrData.typeName || 'Dynamic QR',
-        password: qrData.password || null,
         expiry: qrData.expiry || null,
         schedule: qrData.schedule || null,
         utm: qrData.utm || null,
@@ -48,15 +108,15 @@
         updated: new Date().toISOString()
       };
 
-      this.save(entry);
-      return entry;
+      return this.save(Object.assign(entry, qrData.password ? { password: qrData.password } : {}));
     },
 
     // Get all stored dynamic QR codes
     getAll: function () {
       try {
         const raw = localStorage.getItem(STORAGE_KEY);
-        return raw ? JSON.parse(raw) : [];
+        const entries = raw ? JSON.parse(raw) : [];
+        return Array.isArray(entries) ? entries.map(withoutPlaintextPassword) : [];
       } catch (e) {
         console.warn('Failed to read dynamic QR storage', e);
         return [];
@@ -66,23 +126,35 @@
     // Save all dynamic QR records
     saveAll: function (data) {
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        const safeData = Array.isArray(data) ? data.map(withoutPlaintextPassword) : [];
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(safeData));
       } catch (e) {
         console.error('Failed to save dynamic QR records', e);
       }
     },
 
     // Save or update a single entry
-    save: function (entry) {
+    save: async function (entry) {
+      if (this.ready) await this.ready;
       const all = this.getAll();
-      const idx = all.findIndex(q => q.shortCode === entry.shortCode || String(q.id) === String(entry.id));
+      const normalized = withoutPlaintextPassword(entry);
+      if (entry.password) {
+        const salt = globalThis.crypto?.getRandomValues
+          ? globalThis.crypto.getRandomValues(new Uint8Array(16))
+          : null;
+        const verifier = salt ? await derivePassword(entry.password, salt) : null;
+        if (!verifier) throw new Error('Secure password storage is unavailable in this browser.');
+        normalized.passwordHash = verifier;
+        normalized.passwordSalt = bytesToBase64(salt);
+      }
+      const idx = all.findIndex(q => q.shortCode === normalized.shortCode || String(q.id) === String(normalized.id));
       if (idx !== -1) {
-        all[idx] = Object.assign({}, all[idx], entry, { updated: new Date().toISOString() });
+        all[idx] = Object.assign({}, all[idx], normalized, { updated: new Date().toISOString() });
       } else {
-        all.unshift(entry);
+        all.unshift(normalized);
       }
       this.saveAll(all);
-      return entry;
+      return withoutPlaintextPassword(all[idx >= 0 ? idx : 0]);
     },
 
     // Lookup entry by shortCode or ID
@@ -243,21 +315,13 @@
       return [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
     },
 
-    // Password & Security Hashing
-    hashPassword: function (pwd) {
-      if (!pwd) return '';
-      let hash = 0;
-      for (let i = 0; i < pwd.length; i++) {
-        hash = (hash << 5) - hash + pwd.charCodeAt(i);
-        hash |= 0;
-      }
-      return 'pwd_' + Math.abs(hash).toString(36);
-    },
-
-    checkPassword: function (shortCode, enteredPassword) {
+    // Password verification uses the salted verifier created by save().
+    checkPassword: async function (shortCode, enteredPassword) {
+      await this.ready;
       const entry = this.getByCode(shortCode);
-      if (!entry || !entry.password) return true;
-      return entry.password === this.hashPassword(enteredPassword) || entry.password === enteredPassword;
+      if (!entry || !entry.passwordHash || !entry.passwordSalt || !enteredPassword) return false;
+      const actual = await derivePassword(enteredPassword, base64ToBytes(entry.passwordSalt));
+      return constantTimeEqual(actual, entry.passwordHash);
     },
 
     hashIP: function (ip) {
@@ -321,6 +385,8 @@
       }
     }
   };
+
+  DYNAMIC_QR.ready = removeLegacyPlaintextPasswords();
 
   // Seed default templates if not yet initialized
   if (typeof localStorage !== 'undefined' && !localStorage.getItem(TEMPLATES_KEY)) {

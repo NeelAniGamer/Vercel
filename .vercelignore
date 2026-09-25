@@ -28,6 +28,11 @@ android
 .gradle
 
 # Credentials, local databases, and generated desktop artifacts
+*.exe
+*.msi
+*.dmg
+*.AppImage
+*.pkg
 **/.env
 **/.env.*
 **/*.db
@@ -44,6 +49,8 @@ Traffic/electron
 Cyberpunk/**
 Traffic/Cyberpunk/**
 **/scratch/**
+Traffic/col-auth.js
+Traffic/col-ui.css
 Traffic/Models/sofa
 Traffic/Models/kenney_platformer-pack-remastered
 Traffic/Models/uploads_files_3963923_Metal+and+Concrete+Barrier+Textures

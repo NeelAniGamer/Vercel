@@ -11,9 +11,6 @@ const autoUpdater = {
   quitAndInstall: () => {}
 };
 
-app.commandLine.appendSwitch('allow-file-access-from-files');
-app.commandLine.appendSwitch('disable-web-security');
-
 const isDev = !app.isPackaged;
 
 let mainWindow: BrowserWindow | null = null;
@@ -150,9 +147,10 @@ function createWindow(): void {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
+      sandbox: true,
       webgl: true,
-      webSecurity: false,
-      allowRunningInsecureContent: true
+      webSecurity: true,
+      allowRunningInsecureContent: false
     },
     backgroundColor: '#070a14',
     show: false,

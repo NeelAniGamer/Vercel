@@ -29,7 +29,8 @@ const excludedFiles = new Set([
 const excludedFilePatterns = [
   /^\.env(?:\..*)?$/i,
   /\.(?:db|sqlite|sqlite3)$/i,
-  /\.(?:exe|msi|dmg|appimage|pkg)$/i
+  /\.(?:exe|msi|dmg|appimage|pkg)$/i,
+  /^vite\.config\.(?:ts|mts|cts|js|mjs|cjs)$/i
 ];
 
 // These model folders are unreferenced by the browser runtime and contain
@@ -44,7 +45,9 @@ const excludedPaths = new Set([
   'Traffic/Models/low_poly_city_game-ready.glb',
   'Traffic/Models/New folder',
   'Traffic/New folder',
-  'Traffic/Models/parking_garage.glb'
+  'Traffic/Models/parking_garage.glb',
+  'Traffic/col-auth.js',
+  'Traffic/col-ui.css'
 ]);
 
 function shouldExclude(name, isDirectory, relativePath = '') {

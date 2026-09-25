@@ -1,8 +1,12 @@
 {
+  "name": "class-of-learners",
+  "version": "1.0.0",
+  "private": true,
   "scripts": {
     "build": "node build.js",
-    "postbuild": "node scripts/production-check.js",
-    "verify:production": "node scripts/production-check.js",
+    "postbuild": "node scripts/production-check.js && node scripts/security-check.js",
+    "verify:production": "node scripts/production-check.js && node scripts/security-check.js",
+    "security:check": "node scripts/security-check.js",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "typecheck": "tsc --noEmit",
@@ -14,11 +18,11 @@
     "test:smoke": "playwright test --project=chromium"
   },
   "devDependencies": {
-    "@types/react": "^19.2.17",
-    "@types/react-dom": "^19.2.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "@types/three": "^0.185.0",
-    "esbuild": "^0.28.1",
-    "prettier": "3.9.3",
+    "esbuild": "^0.28.2",
+    "prettier": "3.9.9",
     "typescript": "^6.0.3",
     "eslint": "^9.0.0",
     "@eslint/js": "^9.0.0",
@@ -27,10 +31,10 @@
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
-    "acorn": "^8.17.0",
-    "playwright": "^1.62.1",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7",
+    "acorn": "^8.18.0",
+    "playwright": "^1.63.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
     "three": "^0.185.1"
   }
 }

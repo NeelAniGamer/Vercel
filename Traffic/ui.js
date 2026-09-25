@@ -853,8 +853,15 @@ var ui = window.ui = Object.assign(window.ui || {}, {
     
 
     const localUser = JSON.parse(localStorage.getItem('traffic_local_user') || '{}')
-    localUser.vehicle = v
-    localStorage.setItem('traffic_local_user', JSON.stringify(localUser))
+    localStorage.setItem('traffic_local_user', JSON.stringify({
+      id: localUser.id,
+      name: localUser.name,
+      username: localUser.username,
+      picture: localUser.picture,
+      vehicle: v,
+      role: localUser.role,
+      updatedAt: new Date().toISOString()
+    }))
     
 
     if (window.supabaseClient && window.colUser) {

@@ -23,3 +23,5 @@ temp_rec/
 *.sqlite3
 *.db
 node_modules/
+Traffic/col-auth.js
+Traffic/col-ui.css

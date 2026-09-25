@@ -84,6 +84,7 @@ if (!fs.existsSync(distRoot)) {
 
   const forbiddenDirectoryNames = new Set(['node_modules', '.opencode', '.freebuff', '.vercel', 'Cyberpunk', 'scripts', 'scratch'])
   const forbiddenFilePattern = /^(?:\.env(?:\..*)?|.*\.(?:db|sqlite|sqlite3))$/i
+  const forbiddenOutputPattern = /^(?:vite\.config\.(?:ts|mts|cts|js|mjs|cjs)|.*\.(?:exe|msi|dmg|appimage|pkg))$/i
   const htmlFiles = []
   let fileCount = 0
   let totalBytes = 0
@@ -95,6 +96,7 @@ if (!fs.existsSync(distRoot)) {
     const segments = relativePath.split(path.sep)
     if (segments.some((segment) => forbiddenDirectoryNames.has(segment))) {addError(`Forbidden directory in output: ${relativePath}`)}
     if (forbiddenFilePattern.test(path.basename(filePath))) {addError(`Forbidden file in output: ${relativePath}`)}
+    if (forbiddenOutputPattern.test(path.basename(filePath))) {addError(`Source or binary artifact in output: ${relativePath}`)}
     if (filePath.endsWith('.html')) {htmlFiles.push(filePath)}
   })
 

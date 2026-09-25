@@ -80,12 +80,15 @@ fix or mitigation is available.
   archive code.
 - Security headers and cache rules are defined in `vercel.json`.
 - Authentication identity is resolved from the live Supabase session; stale local
-  profiles must not be presented as signed-in accounts.
+  profiles must not be presented as signed-in accounts. Local credentials and
+  QR passcodes are never stored as plaintext.
 - Supabase access is protected by Row-Level Security and security-definer function
   reviews.
 - Service-worker caching excludes configuration, analytics, and dynamic endpoints.
-- `npm run verify:production` checks the generated output for unsafe files and
-  missing local routes.
+- `npm run verify:production` checks the generated output for unsafe files, missing
+  local routes, and security regressions.
+- CodeQL analyzes maintained JavaScript/TypeScript and Python source on pushes,
+  pull requests, and a weekly schedule; generated and local-agent paths are excluded.
 
 ## Safe Harbor
 

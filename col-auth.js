@@ -46,75 +46,140 @@ if (!window.closeMo) {
   window._colAuthRunning = true
 
   // --- Local Account Storage Utilities ---
-  function getLocalAccounts() {
+  // Local profiles are intentionally non-sensitive. Passwords are never
+  // persisted in localStorage; offline credentials are represented only by a
+  // salted PBKDF2 verifier created by the submit handlers below.
+  const LOCAL_CREDENTIAL_ITERATIONS = 120000
+  const localCrypto = globalThis.crypto
+
+  function bytesToBase64(bytes) {
+    let binary = ''
+    for (const byte of bytes) binary += String.fromCharCode(byte)
+    return btoa(binary)
+  }
+
+  function base64ToBytes(value) {
+    const binary = atob(value)
+    return Uint8Array.from(binary, char => char.charCodeAt(0))
+  }
+
+  async function createLocalCredential(secret) {
+    if (!secret || !localCrypto?.subtle || typeof TextEncoder === 'undefined') return null
+    const salt = localCrypto.getRandomValues(new Uint8Array(16))
+    const key = await localCrypto.subtle.importKey(
+      'raw',
+      new TextEncoder().encode(secret),
+      'PBKDF2',
+      false,
+      ['deriveBits']
+    )
+    const bits = await localCrypto.subtle.deriveBits({
+      name: 'PBKDF2',
+      salt,
+      iterations: LOCAL_CREDENTIAL_ITERATIONS,
+      hash: 'SHA-256'
+    }, key, 256)
+    return {
+      credentialHash: bytesToBase64(new Uint8Array(bits)),
+      credentialSalt: bytesToBase64(salt)
+    }
+  }
+
+  async function verifyLocalCredential(account, secret) {
+    if (!account?.credentialHash || !account.credentialSalt || !secret || !localCrypto?.subtle) return false
+    try {
+      const salt = base64ToBytes(account.credentialSalt)
+      const key = await localCrypto.subtle.importKey(
+        'raw',
+        new TextEncoder().encode(secret),
+        'PBKDF2',
+        false,
+        ['deriveBits']
+      )
+      const bits = await localCrypto.subtle.deriveBits({
+        name: 'PBKDF2',
+        salt,
+        iterations: LOCAL_CREDENTIAL_ITERATIONS,
+        hash: 'SHA-256'
+      }, key, 256)
+      const actual = new Uint8Array(bits)
+      const expected = base64ToBytes(account.credentialHash)
+      if (actual.length !== expected.length) return false
+      let difference = 0
+      for (let i = 0; i < actual.length; i++) difference |= actual[i] ^ expected[i]
+      return difference === 0
+    } catch (e) {
+      return false
+    }
+  }
+
+  function sanitizeLocalAccount(account = {}) {
+    const safe = {}
+    for (const field of ['id', 'name', 'username', 'picture', 'role', 'vehicle', 'language', 'createdAt', 'updatedAt', 'uid', 'credentialHash', 'credentialSalt']) {
+      if (typeof account[field] === 'string' && account[field]) safe[field] = account[field]
+    }
+    for (const field of ['age', 'grade', 'total']) {
+      if (Number.isFinite(Number(account[field]))) safe[field] = Number(account[field])
+    }
+    if (Array.isArray(account.badges)) safe.badges = account.badges.slice(0, 50)
+    return safe
+  }
+
+  function readLocalAccounts() {
     try {
       const raw = localStorage.getItem('col_local_accounts')
-      const list = raw ? JSON.parse(raw) : []
-      const trafficRaw = localStorage.getItem('traffic_local_user')
-      if (trafficRaw) {
-        const tu = JSON.parse(trafficRaw)
-        if (tu && (tu.name || tu.username)) {
-          const exists = list.some(a => (tu.username && a.username === tu.username) || (tu.name && a.name === tu.name))
-          if (!exists) {
-            list.push({
-              id: tu.id || ('local_' + Date.now()),
-              name: tu.name || tu.username,
-              username: tu.username || ('@' + (tu.name || 'driver').toLowerCase().replace(/\s+/g, '')),
-              email: tu.email || '',
-              pin: tu.pin || tu.password || '',
-              password: tu.pin || tu.password || '',
-              role: tu.role || 'student',
-              vehicle: tu.vehicle || 'Car',
-              age: tu.age || 18,
-              language: tu.language || 'en',
-              createdAt: tu.createdAt || new Date().toISOString()
-            })
-            localStorage.setItem('col_local_accounts', JSON.stringify(list))
-          }
-        }
-      }
-      return list
+      const parsed = raw ? JSON.parse(raw) : []
+      return Array.isArray(parsed) ? parsed.map(sanitizeLocalAccount).filter(a => a.id || a.username) : []
     } catch (e) {
       return []
     }
   }
 
+  function getLocalAccounts() {
+    const list = readLocalAccounts()
+    try {
+      const trafficRaw = localStorage.getItem('traffic_local_user')
+      if (trafficRaw) {
+        const tu = sanitizeLocalAccount(JSON.parse(trafficRaw))
+        if (tu.name || tu.username) {
+          const exists = list.some(a => (tu.username && a.username === tu.username) || (tu.name && a.name === tu.name))
+          if (!exists) list.push(tu)
+        }
+      }
+      // Rewrite legacy records after stripping plaintext credentials and email.
+      localStorage.setItem('col_local_accounts', JSON.stringify(list))
+    } catch (e) {}
+    return list
+  }
+
   function saveLocalAccount(acc) {
     try {
+      const safe = sanitizeLocalAccount(acc)
       const list = getLocalAccounts()
-      const normUname = (acc.username || '').toLowerCase()
-      const normEmail = (acc.email || '').toLowerCase()
-      const idx = list.findIndex(a => 
-        (normUname && (a.username || '').toLowerCase() === normUname) ||
-        (normEmail && (a.email || '').toLowerCase() === normEmail) ||
-        (acc.id && a.id === acc.id)
-      )
-      if (idx >= 0) {
-        list[idx] = { ...list[idx], ...acc }
-      } else {
-        list.push(acc)
-      }
+      const normUname = (safe.username || '').toLowerCase()
+      const idx = list.findIndex(a => (safe.id && a.id === safe.id) || (normUname && (a.username || '').toLowerCase() === normUname))
+      if (idx >= 0) list[idx] = { ...list[idx], ...safe }
+      else list.push(safe)
       localStorage.setItem('col_local_accounts', JSON.stringify(list))
+      return safe
     } catch (e) {
       console.warn('[col-auth] Could not save local account:', e)
+      return null
     }
   }
 
   function getActiveLocalUser() {
     try {
-      let raw = localStorage.getItem('col_active_local_user')
-      if (!raw) {
-        raw = localStorage.getItem('traffic_local_user')
-      }
-      if (!raw) {return null}
-      const u = JSON.parse(raw)
-      if (!u || (!u.name && !u.username)) {return null}
+      const raw = localStorage.getItem('col_active_local_user') || localStorage.getItem('traffic_local_user')
+      if (!raw) return null
+      const u = sanitizeLocalAccount(JSON.parse(raw))
+      if (!u.name && !u.username) return null
       return {
         id: u.id || ('local_' + (u.username || u.name).replace(/[^a-zA-Z0-9_]/g, '')),
         name: u.name || u.username,
-        email: u.email || (u.username ? (u.username.replace('@','') + '@local.col') : 'local@col.io'),
+        email: u.username ? (u.username.replace('@', '') + '@local.col') : 'local@col.io',
         username: u.username || ('@' + (u.name || 'user').toLowerCase().replace(/\s+/g, '')),
-        picture: u.picture || u.avatar || null,
+        picture: u.picture || null,
         isLocal: true,
         user_metadata: {
           full_name: u.name || u.username,
@@ -131,37 +196,36 @@ if (!window.closeMo) {
   function setActiveLocalUser(acc) {
     try {
       const fullAcc = {
+        ...sanitizeLocalAccount(acc),
         id: acc.id || ('local_' + Date.now()),
         name: acc.name || acc.username,
         username: acc.username || ('@' + (acc.name || 'user').toLowerCase().replace(/\s+/g, '')),
-        email: acc.email || '',
         picture: acc.picture || acc.avatar || null,
-        pin: acc.pin || acc.password || '',
-        password: acc.pin || acc.password || '',
         role: acc.role || 'student',
         vehicle: acc.vehicle || 'Car',
         age: acc.age || 18,
         language: acc.language || 'en',
         updatedAt: new Date().toISOString()
       }
-      saveLocalAccount(fullAcc)
-      localStorage.setItem('col_active_local_user', JSON.stringify(fullAcc))
-      localStorage.setItem('traffic_local_user', JSON.stringify(fullAcc))
+      const safeAcc = sanitizeLocalAccount(fullAcc)
+      saveLocalAccount(safeAcc)
+      localStorage.setItem('col_active_local_user', JSON.stringify(safeAcc))
+      localStorage.setItem('traffic_local_user', JSON.stringify(safeAcc))
       localStorage.setItem('trafficSetupComplete', 'true')
       window.colLocalUser = {
-        id: fullAcc.id,
-        name: fullAcc.name,
-        email: fullAcc.email || (fullAcc.username.replace('@','') + '@local.col'),
-        username: fullAcc.username,
-        picture: fullAcc.picture || null,
+        id: safeAcc.id,
+        name: safeAcc.name,
+        email: acc.email || (safeAcc.username.replace('@', '') + '@local.col'),
+        username: safeAcc.username,
+        picture: safeAcc.picture || null,
         isLocal: true,
         user_metadata: {
-          full_name: fullAcc.name,
-          name: fullAcc.name,
-          role: fullAcc.role,
-          preferred_vehicle: fullAcc.vehicle,
-          avatar_url: fullAcc.picture || null,
-          picture: fullAcc.picture || null
+          full_name: safeAcc.name,
+          name: safeAcc.name,
+          role: safeAcc.role,
+          preferred_vehicle: safeAcc.vehicle,
+          avatar_url: safeAcc.picture || null,
+          picture: safeAcc.picture || null
         }
       }
       // Do not populate window.colUser from local storage. Only a verified
@@ -177,6 +241,7 @@ if (!window.closeMo) {
       localStorage.removeItem('col_active_local_user')
       localStorage.removeItem('traffic_local_user')
       localStorage.removeItem('trafficSetupComplete')
+      localStorage.removeItem('col_user')
       window.colLocalUser = null
       window.colUser = null
     } catch (e) {}
@@ -347,15 +412,8 @@ if (!window.closeMo) {
           console.error('[col-auth] Profile sync error:', e)
         }
 
-        try {
-          localStorage.setItem('col_user', JSON.stringify({
-            id: window.colUser.id,
-            email: window.colUser.email,
-            name: window.colUser.name,
-            picture: window.colUser.picture,
-            uid: window.colUser.uid
-          }))
-        } catch (e) {}
+        // Session data remains in memory only. Never persist Supabase
+        // identity or access tokens to browser storage.
       } else {
         try {
           localStorage.removeItem('col_user')
@@ -724,14 +782,6 @@ if (!window.closeMo) {
       if (!window.colUser.name) {window.colUser.name = username.replace(/^@/, '')}
 
       try {
-        localStorage.setItem('col_user', JSON.stringify({
-          id: window.colUser.id,
-          email: window.colUser.email,
-          name: window.colUser.name,
-          username: username,
-          picture: window.colUser.picture,
-          uid: window.colUser.id
-        }))
         const trProfRaw = localStorage.getItem('traffic_profile')
         const trProf = trProfRaw ? JSON.parse(trProfRaw) : {}
         trProf.username = username
@@ -1551,27 +1601,25 @@ if (!window.closeMo) {
       window.colUser.user_metadata.avatar_url = newAv || null
       window.colUser.user_metadata.picture = newAv || null
 
-      // 3. Persist to storage
+      // 3. Keep live identity in memory. Only an offline profile may receive
+      // a salted verifier; plaintext credentials are never written to storage.
       const storedUser = {
         id: window.colUser.id,
         name: newName,
         username: newUname || window.colUser.username,
-        email: window.colUser.email,
         vehicle: newVeh,
         picture: newAv || null,
         uid: window.colUser.uid,
         updatedAt: new Date().toISOString()
       }
-      if (newPass) {
-        storedUser.pin = newPass
-        storedUser.password = newPass
-      }
-
-      if (window.colUser.isLocal || typeof setActiveLocalUser === 'function') {
+      if (window.colLocalUser?.isLocal) {
+        if (newPass) {
+          const credential = await createLocalCredential(newPass)
+          if (!credential) throw new Error('Secure browser storage is unavailable. Please use cloud authentication.')
+          Object.assign(storedUser, credential)
+        }
         setActiveLocalUser(storedUser)
       }
-      localStorage.setItem('col_user', JSON.stringify(storedUser))
-      localStorage.setItem('traffic_local_user', JSON.stringify(storedUser))
 
       try {
         const trProfRaw = localStorage.getItem('traffic_profile')
@@ -1745,34 +1793,36 @@ if (!window.closeMo) {
 
     try {
       if (mode === 'login') {
-        // 1. Check local accounts first (by email or username or display name)
+        // 1. Check local accounts by username or display name. Local accounts
+        // only contain a salted verifier; plaintext PINs are never accepted
+        // from or written to browser storage.
         const localAccounts = getLocalAccounts()
         const normInput = emailInput.toLowerCase()
         const normUname = normInput.startsWith('@') ? normInput : '@' + normInput
 
         const matched = localAccounts.find(acc => {
-          const accEmail = (acc.email || '').toLowerCase()
+          if (!acc.credentialHash) return false
           const accUname = (acc.username || '').toLowerCase()
           const accName = (acc.name || '').toLowerCase()
-          return accEmail === normInput || accUname === normInput || accUname === normUname || accName === normInput
+          return accUname === normInput || accUname === normUname || accName === normInput
         })
 
         if (matched) {
-          const expectedPin = (matched.pin || matched.password || '').toString().trim()
-          if (!expectedPin || expectedPin === pass) {
-            setActiveLocalUser(matched)
-            const mo = document.getElementById('colAuthModal')
-            if (mo) {mo.classList.remove('open')}
-            const loginMo = document.getElementById('loginMo')
-            if (loginMo) {loginMo.classList.remove('open')}
-            dispatchAuthEvent()
-            updateAuthUI()
-            btn.textContent = 'Sign In'
-            btn.disabled = false
-            return
-          } else {
-            throw new Error('Incorrect password or PIN for this local account.')
+          if (!await verifyLocalCredential(matched, pass)) {
+            throw new Error(matched.credentialHash
+              ? 'Incorrect password or PIN for this local account.'
+              : 'This legacy local account must be recreated with a secure password.')
           }
+          setActiveLocalUser(matched)
+          const mo = document.getElementById('colAuthModal')
+          if (mo) {mo.classList.remove('open')}
+          const loginMo = document.getElementById('loginMo')
+          if (loginMo) {loginMo.classList.remove('open')}
+          dispatchAuthEvent()
+          updateAuthUI()
+          btn.textContent = 'Sign In'
+          btn.disabled = false
+          return
         }
 
         // 2. If not found in local accounts, try Supabase account system RPC first
@@ -1788,9 +1838,6 @@ if (!window.closeMo) {
                 id: acc.id,
                 name: acc.display_name || acc.username,
                 username: acc.username,
-                email: acc.email || '',
-                pin: pass,
-                password: pass,
                 role: acc.role || 'student',
                 vehicle: acc.preferred_vehicle || 'Car',
                 age: acc.age || 18,
@@ -1852,16 +1899,16 @@ if (!window.closeMo) {
             console.warn('[col-auth] Cloud signup failed, saving to account system:', cloudErr)
             // Fallback: save as account
             const uname = '@' + (name.toLowerCase().replace(/\s+/g, '_') || 'driver_' + Math.floor(Math.random() * 1000))
+            const credential = await createLocalCredential(pass)
+            if (!credential) throw new Error('Secure browser storage is unavailable. Please use cloud authentication.')
             const newAcc = {
               id: 'local_' + Date.now(),
               name: name,
               username: uname,
-              email: emailInput,
-              pin: pass,
-              password: pass,
               role: 'student',
               vehicle: 'Car',
-              createdAt: new Date().toISOString()
+              createdAt: new Date().toISOString(),
+              ...credential
             }
             try {
               const reg = await supabaseClient.rpc('register_account', {
@@ -1888,16 +1935,16 @@ if (!window.closeMo) {
         } else {
           // Offline / local only
           const uname = '@' + (name.toLowerCase().replace(/\s+/g, '_') || 'driver_' + Math.floor(Math.random() * 1000))
+          const credential = await createLocalCredential(pass)
+          if (!credential) throw new Error('Secure browser storage is unavailable. Please use cloud authentication.')
           const newAcc = {
             id: 'local_' + Date.now(),
             name: name,
             username: uname,
-            email: emailInput,
-            pin: pass,
-            password: pass,
             role: 'student',
             vehicle: 'Car',
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            ...credential
           }
           setActiveLocalUser(newAcc)
           const mo = document.getElementById('colAuthModal')
@@ -1916,7 +1963,7 @@ if (!window.closeMo) {
   }
 
   window.colDoLogout = async () => {
-    if (window.colUser && window.colUser.isLocal) {
+    if (window.colLocalUser?.isLocal) {
       clearActiveLocalUser()
       const modal = document.getElementById('colAuthModal')
       if (modal) {modal.classList.remove('open')}

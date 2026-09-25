@@ -1906,12 +1906,6 @@
           if (!el) return;
           // Live session first (Google PFP); never stale snapshots or other accounts
           let userPhoto = (_isReadOnlyMode && tUser.picture) || (window.colUser && (window.colUser.picture || (window.colUser.user_metadata && window.colUser.user_metadata.avatar_url))) || null
-          try {
-            if (!userPhoto && !_isReadOnlyMode) {
-              const ls = localStorage.getItem('col_user')
-              if (ls) { const u = JSON.parse(ls); userPhoto = u.picture || u.avatar || u.photo || null }
-            }
-          } catch (e) {}
           if (userPhoto) {
             el.innerHTML = '<img src="' + String(userPhoto).replace(/"/g, '') + '" alt="' + String(displayName).replace(/"/g, '') + '" referrerpolicy="no-referrer" onerror="this.style.display=\'none\'; this.parentElement.textContent=\'' + userInitials + '\';" />'
           } else {
@@ -2694,15 +2688,6 @@
         const boards = ['xp', 'modules', 'civic', 'badges']
         const crowns = { xp: '🌍', modules: '✅', civic: '💰', badges: '🎖️' }
         let currentUserId = (window.colUser && window.colUser.id) ? window.colUser.id : null
-        if (!currentUserId) {
-          try {
-            const cached = localStorage.getItem('col_user')
-            if (cached) {
-              const u = JSON.parse(cached)
-              if (u && u.id) currentUserId = u.id
-            }
-          } catch (e) {}
-        }
 
         boards.forEach(board => {
           const el = document.getElementById('leaderboard-' + board)

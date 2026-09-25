@@ -1,0 +1,32 @@
+name: Class Of Learners CodeQL configuration
+
+# dist/, model packs, vendored browser libraries, and desktop build output are
+# generated or third-party artifacts. They are verified by the production
+# build, not treated as hand-maintained source by CodeQL.
+paths-ignore:
+  - '.agents/**'
+  - 'Traffic/.agents/**'
+  - 'Traffic/col-auth.js'
+  - 'Traffic/col-ui.css'
+  - '.agent/**'
+  - '.codex/**'
+  - '.opencode/**'
+  - '.superpowers/**'
+  - '.impeccable/**'
+  - '.kilo/**'
+  - 'dist/**'
+  - 'Traffic/dist/**'
+  - 'Traffic/dist-web/**'
+  - 'Traffic/Models/**'
+  - 'Traffic/textures/**'
+  - 'Traffic/skins/**'
+  - 'Cyberpunk/**'
+  - 'Terra3D/build/**'
+  - 'Terra3D/dist/**'
+  - 'assets/**'
+  - 'traffic-ts/**'
+  - 'ads-screenshots/**'
+  - 'ads-video/**'
+  - '**/node_modules/**'
+  - '**/*.min.js'
+  - '**/vendor/**'
