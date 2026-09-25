@@ -213,16 +213,19 @@ class TrafficAI {
     const v = this.vehicle;
     const currentSpeed = v.userData.speed || 0;
     const diff = this.targetSpeed - currentSpeed;
-    
+    // `currentSpeed` is a const snapshot. Accumulating into it directly was a
+    // no-op at best, so the vehicle never actually accelerated or braked.
+    let nextSpeed = currentSpeed;
+
     if (diff > 0) {
       // Accelerate
-      currentSpeed += diff * 0.5 * dt;
+      nextSpeed += diff * 0.5 * dt;
     } else {
       // Decelerate
-      currentSpeed += diff * 0.8 * dt;
+      nextSpeed += diff * 0.8 * dt;
     }
-    
-    v.userData.speed = Math.max(0, Math.min(80, currentSpeed));
+
+    v.userData.speed = Math.max(0, Math.min(80, nextSpeed));
   }
   
   getThrottleForState() {

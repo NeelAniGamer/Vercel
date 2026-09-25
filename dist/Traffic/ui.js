@@ -833,6 +833,15 @@ var ui = window.ui = Object.assign(window.ui || {}, {
     }
     window.location.href = 'TrafficDashboard.html'
   },
+  openLogin() {
+    if (typeof window.openGlobalLogin === 'function') {
+      window.openGlobalLogin()
+    } else if (typeof window.openLogin === 'function') {
+      window.openLogin()
+    } else {
+      window.location.href = 'TrafficSetup.html'
+    }
+  },
   saveProfile() {
     const _pn3 = document.getElementById('prof-name'); const _pv3 = document.getElementById('prof-veh'); if (!_pn3 || !_pv3) {return}
     const n = _pn3.value.trim()
@@ -6000,19 +6009,20 @@ window._buildHuman = _buildHuman;
 
 
 function updateTrafficAuthUI() {
-
-  const localData = localStorage.getItem('traffic_local_user')
-  let user = localData ? JSON.parse(localData) : null
-
-
-  if (!user && window.colUser) {
+  let user = null
+  if (window.colUser) {
     const uObj = window.colUser.user || window.colUser
     const meta = uObj.user_metadata || {}
     user = {
-      name: meta.full_name || meta.name || 'Driver',
+      name: window.colUser.name || meta.full_name || meta.name || 'Driver',
       email: uObj.email,
-      avatar: meta.avatar_url || meta.picture || meta.avatar
+      avatar: window.colUser.picture || meta.avatar_url || meta.picture || meta.avatar
     }
+  } else {
+    try {
+      const localData = localStorage.getItem('traffic_local_user')
+      if (localData) user = JSON.parse(localData)
+    } catch (e) {}
   }
 
   const profileDiv = document.getElementById('trafficUserProfile')
@@ -6022,9 +6032,33 @@ function updateTrafficAuthUI() {
 
   document.querySelectorAll('.dynamic-auth-btn').forEach((b) => {
     b.innerHTML = user ? '📊 Dashboard' : 'Sign In'
-    b.onclick = () => (window.location.href = user ? 'TrafficDashboard.html' : 'TrafficSetup.html')
+    b.onclick = () => {
+      if (user) {
+        window.location.href = 'TrafficDashboard.html'
+      } else {
+        if (typeof window.openGlobalLogin === 'function') {
+          window.openGlobalLogin()
+        } else if (typeof window.openLogin === 'function') {
+          window.openLogin()
+        } else {
+          window.location.href = 'TrafficSetup.html'
+        }
+      }
+    }
   })
 
+  const topProfBtn = document.getElementById('top-profile-btn')
+  const topProfLbl = document.getElementById('top-profile-label')
+  if (topProfBtn && topProfLbl) {
+    if (user) {
+      const displayName = user.name ? user.name.split(' ')[0] : 'Profile'
+      topProfLbl.textContent = displayName
+      topProfBtn.title = 'Driver Dashboard: ' + (user.name || 'Driver')
+    } else {
+      topProfLbl.textContent = 'Sign In'
+      topProfBtn.title = 'Sign In'
+    }
+  }
 
   const getStartedBtn = document.getElementById('enter-academy-btn')
   if (getStartedBtn) {
@@ -6041,7 +6075,6 @@ function updateTrafficAuthUI() {
     }
 
     if (userName) {userName.textContent = user.name || 'Driver'}
-    
 
     if (user.avatar && pfp) {
       pfp.src = user.avatar
@@ -6057,10 +6090,10 @@ function updateTrafficAuthUI() {
   }
 }
 
-
 if (typeof window !== 'undefined') {
   window.addEventListener('col-auth-changed', function() {
-    setTimeout(updateTrafficAuthUI, 500)
+    updateTrafficAuthUI()
+    setTimeout(updateTrafficAuthUI, 200)
   })
 }
 

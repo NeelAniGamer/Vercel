@@ -86,13 +86,47 @@ if (!fs.existsSync(path.join(root, 'SECURITY.md'))) {
   }
 }
 
-// No objective may be able to hang forever. The generated list is derived from
-// game_core itself, so this asserts the guard is present and still generated
-// from the same source, not that the backlog is empty.
+// No objective may be able to hang forever. Two separate guarantees:
+//   1. Every objective a level declares has a real engine branch. A target
+//      with no branch used to be auto-completed after 3 seconds, which handed
+//      the player credit for something they never did.
+//   2. If a future level introduces a target with no branch, the bounded
+//      guard still fires so the level cannot softlock, and it logs loudly.
 requireMatch('Traffic/game_core.js', /_isUnhandledTaskTarget\(t\)/, 'task completion must guard against targets the engine cannot resolve');
 requireMatch('Traffic/game_core.js', /UNHANDLED_TASK_DWELL_FRAMES/, 'the unhandled-objective guard must have a bounded dwell');
 requireMatch('Traffic/Driving.html', /unhandled-task-targets\.js/, 'Driving.html must load the generated unhandled-objective list');
-rejectMatch('Traffic/unhandled-task-targets.js', /^\s*window\.UNHANDLED_TASK_TARGETS\s*=\s*\[\s*\]/m, 'the unhandled-objective list is empty but still present; remove the guard once the backlog is cleared');
+requireMatch('Traffic/Driving.html', /task-evaluators\.js/, 'Driving.html must load the objective evaluators');
+requireMatch('Traffic/game_core.js', /COL_TASK_EVALUATORS/, 'the task loop must dispatch to the objective evaluators');
+
+// The generated backlog must be empty. Regenerating it is cheap and is the
+// only way to know the list matches the current engine, so do it here rather
+// than trusting a committed file.
+try {
+  const { execFileSync } = require('child_process');
+  const out = execFileSync(process.execPath, [path.join(root, 'Traffic/tools/gen-unhandled-task-targets.js')], {
+    cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  const m = out.match(/unhandled:\s*(\d+)/);
+  const count = m ? parseInt(m[1], 10) : -1;
+  if (count !== 0) {
+    failures.push(`Traffic: ${count} declared objective(s) still have no engine branch. Run node Traffic/tools/gen-unhandled-task-targets.js and implement them in Traffic/task-evaluators.js.`);
+  }
+} catch (e) {
+  failures.push(`Traffic: could not regenerate the unhandled-objective list: ${e.message}`);
+}
+
+// The level linter must agree. It is the check that catches a new level
+// declaring a target nobody implemented.
+try {
+  const { execFileSync } = require('child_process');
+  execFileSync(process.execPath, [path.join(root, 'Traffic/tools/validate-levels.js')], {
+    cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'],
+  });
+} catch (e) {
+  const out = (e.stdout || '') + (e.stderr || '');
+  const summary = (out.match(/(\d+) levels checked: (\d+) error\(s\)/) || []).slice(1).join(' errors, ');
+  failures.push(`Traffic: level linter reports errors (${summary || 'see node Traffic/tools/validate-levels.js'}). A level task with no engine branch never completes.`);
+}
 
 if (failures.length) {
   console.error('Security regression check failed:');

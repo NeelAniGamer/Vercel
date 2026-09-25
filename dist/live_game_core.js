@@ -5158,10 +5158,13 @@ class Game {
                     // Boost acceleration if just cleared a red light
                     n.userData.spd += (n.userData.baseSpd - n.userData.spd) * (greenBoost ? 0.25 : 0.12) * agg;
                     break;
-                  case 'FOLLOW':
+                  case 'FOLLOW': {
+                    // Braced: a `const` in a case block is a syntax error under
+                    // some parsers and leaks across cases in others.
                     const tgtSpd = Math.max(0, fsm.obstacleSpeed - 0.2);
                     n.userData.spd += (tgtSpd - n.userData.spd) * 0.15 * agg;
                     break;
+                  }
                   case 'SLOW_DOWN':
                     n.userData.spd += (n.userData.baseSpd * 0.35 - n.userData.spd) * 0.18 * agg;
                     break;

@@ -350,7 +350,7 @@
 
         // Red Fire Hydrant on sidewalk (every 3 lots)
         if (i % 3 === 0) {
-          const hydrant = buildFireHydrant(mHydrantRed);
+          const hydrant = buildHydrantFromMaterial(mHydrantRed);
           hydrant.position.set(xSign * (halfRoad + 0.6), 0.16, lotZ + 12);
           group.add(hydrant);
         }
@@ -1526,7 +1526,7 @@
   /**
    * Low-Poly Red Fire Hydrant
    */
-  function buildFireHydrant(mRed) {
+  function buildHydrantFromMaterial(mRed) {
     const fh = new THREE.Group();
     const body = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.2, 0.7, 8), mRed);
     body.position.y = 0.35;

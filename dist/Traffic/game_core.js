@@ -3504,7 +3504,7 @@ class Game {
         const cfg = this.mapCfg || {};
         ['gc', 'player-hud-card', 'hud', 'hudbar', 'hwrap', 'mobile-controls', 'objective-overlay'].forEach(id => { const el = document.getElementById(id); if (el) {el.classList.add('on');} });
         // ── HUD Entrance Animations ──
-        if (typeof IntersectionObserver === 'undefined' || true) {
+        {
           const hudAnims = [
             { id: 'hwrap', cls: 'hud-enter-left' },
             { id: 'hcp', cls: 'hud-enter-top' },
@@ -4308,10 +4308,10 @@ class Game {
                   }
                 }
               }
-              else if (t.target === 'speed_night' && Math.abs(this.speed) > 0.35) { /* fail */ }
-              else if (t.target === 'speed_puddle' && Math.abs(this.speed) > 0.25) { /* fail */ }
-              else if (t.target === 'speed_hospital' && Math.abs(this.speed) > 0.25) { /* fail */ }
-              else if (t.target === 'speed_festival' && Math.abs(this.speed) > 0.15) { /* fail */ }
+              // speed_night / speed_puddle / speed_hospital / speed_festival are
+              // handled in task-evaluators.js. They used to be fail-only
+              // branches here, which could never set `complete`, so the
+              // objective stayed pending for the whole run.
               else if (t.target === 'pedestrian') {
                 if (this.player && this.mapCfg && this.mapCfg.hasSchool) {
                   const px = this.player.position.x;
@@ -4347,6 +4347,25 @@ class Game {
               else if (t.target === 'indicator_right' && this.turnSignal === 1) {complete = true;}
               else if (t.target === 'headlights' && this.highBeamOn) {complete = true;}
               break;
+          }
+          // Objectives that need more than a one-line test live in
+          // task-evaluators.js so this switch stays readable. Each evaluator
+          // returns true only when the player has actually done the thing.
+          if (!complete && window.COL_TASK_EVALUATORS) {
+            const evaluate = window.COL_TASK_EVALUATORS[t.type + '/' + t.target];
+            if (evaluate) {
+              try {
+                if (evaluate(this, t)) {complete = true;}
+              } catch (e) {
+                // A broken evaluator must not strand the level. Report it once
+                // and let the last-resort guard below handle the objective.
+                const k = '_evalError';
+                if (!t[k]) {
+                  t[k] = true;
+                  console.warn('[game_core] Objective evaluator threw for ' + t.type + '/' + t.target + ':', e);
+                }
+              }
+            }
           }
           // Safety net for objectives that declare a target the engine has no
           // branch for. Without this the task stays pending forever and the
@@ -4512,6 +4531,7 @@ class Game {
         this.timer = (this.timer || 0) + 3;
         this.hp = Math.max(this.hp || 0, 40);
         this._collidedThisFrame = false;
+        this._lastCollisionType = '';
         this._hitstopTimer = 0;
         this.playing = true; this.pause = false;
         toast('↩️ Back at the last checkpoint (+3s)', '#5ed4f5');
@@ -10446,6 +10466,7 @@ class Game {
           dt *= (k > 0.6) ? 0.05 : (0.05 + 0.95 * (0.6 - k) / 0.6);
         }
         this._collidedThisFrame = false;
+        this._lastCollisionType = '';
         
         // Use RenderCore quality settings for dynamic budgets
         const lodMult = this.renderCore ? this.renderCore.getLODMultiplier() : 1.0;
@@ -11593,6 +11614,17 @@ class Game {
                   // Soft touch check: low speed bumper contact gently pushes without catastrophic failure
                   const isGentleTouch = relSpeed < 2.5 && !isPed;
 
+                  // Record the contact and which vehicle class caused it.
+                  // Without this, objectives like "keep distance from buses"
+                  // and "give trucks space" cannot tell what was hit, and the
+                  // per-frame collision latch the other objectives read stays
+                  // false because this path returns before the legacy check.
+                  this._collidedThisFrame = true;
+                  this._lastCollisionType = v.type
+                    || (v.userData && v.userData.npcType)
+                    || (v.mesh && v.mesh.userData && v.mesh.userData.npcType)
+                    || '';
+
                   if (isGentleTouch) {
                     // Soft bumper nudge
                     const pushAngle = Math.atan2(dx, dz);
@@ -12002,10 +12034,13 @@ class Game {
                     // Boost acceleration if just cleared a red light
                     n.userData.spd += (n.userData.baseSpd - n.userData.spd) * (greenBoost ? 0.25 : 0.12) * agg;
                     break;
-                  case 'FOLLOW':
+                  case 'FOLLOW': {
+                    // Braced: a `const` in a case block is a syntax error under
+                    // some parsers and leaks across cases in others.
                     const tgtSpd = Math.max(0, fsm.obstacleSpeed - 0.2);
                     n.userData.spd += (tgtSpd - n.userData.spd) * 0.15 * agg;
                     break;
+                  }
                   case 'SLOW_DOWN':
                     n.userData.spd += (n.userData.baseSpd * 0.35 - n.userData.spd) * 0.18 * agg;
                     break;
@@ -12348,6 +12383,7 @@ class Game {
               if (this.player) {this._spawnSkidMark(this.player.position.x, this.player.position.z, this.player.rotation.y, impactSpeed * 3);}
               toast('💥 Collision! ' + (impactSpeed > 0.6 ? 'SEVERE' : 'Minor') + ' Impact', '#ff3b30');
               this._collidedThisFrame = true;
+              this._lastCollisionType = n.userData.npcType || '';
               if (window.GameplayRecorder) {GameplayRecorder.record('COLLISION', { speed: Math.round(impactSpeed * 100), npcType: n.userData.npcType, score: this.score, impactIntensity: Math.round(impactSpeed * 100) });}
 
               // ── J. Road-rage NPC reaction ──
@@ -12682,6 +12718,9 @@ class Game {
 
           if (overlapX > 0 && overlapZ > 0) {
               this._collidedThisFrame = true;
+              // Static obstacle: record what was struck so class-specific
+              // objectives can tell a barrier from a parked truck.
+              this._lastCollisionType = ud.npcType || (ud.isVehicle ? 'truck' : 'obstacle');
               // Elastic collision response
               // Elastic bounce response
               this.speed *= -0.35;

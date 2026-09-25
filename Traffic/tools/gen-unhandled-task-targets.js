@@ -26,6 +26,25 @@ for (const line of body.split('\n')) {
   if (/t\.target\.indexOf\('checkpoint_'\)/.test(line)) pairs.add(currentType + '/checkpoint_N')
 }
 
+// Objectives that need more than a one-line test live in task-evaluators.js and
+// are dispatched by a `type/target` key rather than an inline comparison. They
+// are handled too, so they must be counted here or the runtime safety net would
+// paper over real branches with a 3-second placeholder.
+const evaluatorsPath = path.join(trafficRoot, 'task-evaluators.js')
+let evaluatorCount = 0
+if (fs.existsSync(evaluatorsPath)) {
+  const src = fs.readFileSync(evaluatorsPath, 'utf8')
+  for (const m of src.matchAll(/^\s*'([a-z_]+)\/([a-z_0-9]+)':\s*function/gm)) {
+    pairs.add(m[1] + '/' + m[2])
+    evaluatorCount++
+  }
+  // Evaluators reached through a shared helper, keyed on a variable.
+  for (const m of src.matchAll(/'(reach\/[a-z_0-9]+)':\s*function\s*\([^)]*\)\s*\{\s*return\s+([a-zA-Z]+)\(/g)) {
+    pairs.add(m[1])
+    evaluatorCount++
+  }
+}
+
 // Targets every declared level task uses.
 const levelsDir = path.join(trafficRoot, 'levels')
 const used = new Map()
@@ -61,7 +80,7 @@ ${unhandled.map(u => `  { type: '${u.type}', target: '${u.target}' }, // ${u.lev
 `
 fs.writeFileSync(path.join(trafficRoot, 'unhandled-task-targets.js'), out)
 
-console.log(`handled (type/target) pairs in game_core: ${pairs.size}`)
+console.log(`handled (type/target) pairs: ${pairs.size} (${evaluatorCount} from task-evaluators.js)`)
 console.log(`declared objectives: ${used.size}`)
 console.log(`unhandled: ${unhandled.length}`)
 for (const u of unhandled) console.log(`  ${u.type}/${u.target}  (${u.levels.length} levels)`)

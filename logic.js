@@ -3277,7 +3277,7 @@ exploration:{'Discovery':'Robert Innes, Union Observatory, 1915','Proxima b':'An
 discoveries:{'Proxima b':'~1.07 Earth masses in habitable zone — orbit 11.2 days','Proxima d':'~0.26 Earth masses, 5-day orbit inside habitable zone (2022)','Giant Superflare':'Event 10× more powerful than any solar flare recorded (May 2019)','X-ray Burst':'One flare in 2017 emitted ~100× the Sun\'s total energy in minutes'},
 funFact:'Breakthrough Starshot proposes laser-driven light sails that could reach 20% of lightspeed and arrive at Proxima in 20 years. At chemical rocket speeds today, the trip would take ~70,000 years.'},
 
-"Andromeda Galaxy":{type:'galaxy',subtype:'spiral',typeBadge:'SPIRAL GALAXY',size:32.0,dist:2500,period:0,color:0xddccbb,texture:'',moons:'0',
+"Andromeda Galaxy":{type:'galaxy',typeBadge:'SPIRAL GALAXY',size:32.0,dist:2500,period:0,color:0xddccbb,texture:'',moons:'0',
 overview:'The nearest large galaxy — 2.537 million light-years away and approaching the Milky Way at ~110 km/s. The two galaxies will begin merging in ~4.5 billion years in one of the universe\'s most spectacular long-term events.',
 stats:{'Distance':'2.537 million light-years','Diameter':'~220,000 light-years','Stars':'~1 trillion','Type':'SAb Spiral','Approach Speed':'~110 km/s toward Milky Way','Collision ETA':'~4.5 billion years'},
 atmosphere:{'Dark Matter Halo':'Extends ~2 million light-years — already overlapping ours','Central BH':'~100–140 million solar masses'},
@@ -3471,7 +3471,7 @@ discoveries:{'Cometary Knots':'~20,000 tadpole-shaped gaseous structures, each t
 funFact:'Every one of the Helix Nebula\'s ~20,000 "cometary knots" is larger than our entire solar system from the Sun to Neptune. Their tails all point directly away from the central dying star, pushed outward by radiation pressure — like a crowd of 20,000 people all pointing toward the same exit.'},
 
 // ── COSMIC SCALE OBJECTS ──────────────────────────────────────────────────────
-"Laniakea":{type:'galaxy',subtype:'elliptical',typeBadge:'SUPERCLUSTER',size:30.0,dist:7500,period:0,color:0xffddaa,texture:'',moons:'0',
+"Laniakea":{type:'galaxy',typeBadge:'SUPERCLUSTER',size:30.0,dist:7500,period:0,color:0xffddaa,texture:'',moons:'0',
 overview:'Our home supercluster — a massive cosmic structure 520 million light-years across containing over 100,000 galaxies, including the Milky Way. Named "Laniakea" (Hawaiian: immeasurable heaven) in 2014.',
 stats:{'Diameter':'520 million light-years','Mass':'~10¹⁷ solar masses','Galaxies':'~100,000 including Milky Way','Our Location':'On the outskirts, near the Virgo Cluster','Neighbors':'Perseus-Pisces and Coma Superclusters'},
 atmosphere:{'Great Attractor':'~250 million solar-mass concentration toward which all Laniakea galaxies flow','Cosmic Web Position':'Laniakea sits at intersection of large-scale filaments'},
@@ -3495,7 +3495,7 @@ exploration:{'Supernova Cosmology Project':'1998 Type Ia supernovae revealed the
 discoveries:{'Accelerating Expansion':'1998 Nobel discovery from distant Type Ia supernovae acting as standard candles','Cosmological Constant':'Einstein\'s "greatest blunder" may be correct after all','DESI 2024':'Hints that w may change over time — would require entirely new physics if confirmed','Future Universe':'If dark energy continues, distant galaxies will eventually recede faster than light — causally disconnected from us forever'},
 funFact:'In 2024 the DESI experiment — using 40 million galaxies — released early results suggesting dark energy\'s strength may not be constant, but has weakened slightly over cosmic time. If confirmed, this would overturn the standard cosmological model and require entirely new physics beyond Einstein\'s equations.'},
 
-"Cosmic Microwave Background":{type:'galaxy',subtype:'irregular',typeBadge:'RELIC RADIATION',size:20.0,dist:9800,period:0,color:0xffddbb,texture:'',moons:'0',
+"Cosmic Microwave Background":{type:'galaxy',typeBadge:'RELIC RADIATION',size:20.0,dist:9800,period:0,color:0xffddbb,texture:'',moons:'0',
 overview:'The afterglow of the Big Bang — microwave radiation released 380,000 years after the universe began, when it cooled enough for electrons and protons to combine into atoms. The oldest light in the universe, carrying a detailed snapshot of the infant cosmos.',
 stats:{'Temperature':'2.7255 K (−270.42°C) — almost perfectly uniform','Redshift':'z ≈ 1,100','Origin Time':'380,000 years after the Big Bang','Discovered':'1965 by Penzias & Wilson (Nobel 1978)','Anisotropy':'Temperature varies by only 1 part in 100,000'},
 atmosphere:{'Fluctuations':'Temperature variations encode the seeds of all galaxies and clusters','Polarization':'E-mode polarization maps baryon acoustic oscillations — a "cosmic ruler"'},
@@ -3550,7 +3550,7 @@ funFact:'Arrokoth is a contact binary — two distinct lobes gently touching eac
 //  KNOWN GALAXIES OF THE UNIVERSE — REAL ASTRONOMICAL DATA
 // ══════════════════════════════════════════════════════════════════════════
 
-"Triangulum Galaxy":{type:'galaxy',subtype:'spiral',typeBadge:'SPIRAL GALAXY M33',size:24.0,dist:2600,period:0,color:0xbbddff,moons:'0',subtype:'spiral',
+"Triangulum Galaxy":{type:'galaxy',typeBadge:'SPIRAL GALAXY M33',size:24.0,dist:2600,period:0,color:0xbbddff,moons:'0',subtype:'spiral',
 overview:'The third-largest galaxy in the Local Group — 2.73 million light-years away. Unlike our own Milky Way and Andromeda, it has no central bulge or supermassive black hole, just an open, luminous spiral arm structure.',
 stats:{'Distance':'2.73 million light-years','Diameter':'~61,000 light-years','Stars':'~40 billion','Type':'SAcd (loose spiral, no central bulge)','Radial Velocity':'−179 km/s (approaching)','Central Black Hole':'None confirmed (upper limit: <1,500 solar masses)','Satellites':'Several dwarf spheroidals'},
 atmosphere:{'Star Formation':'Active — H II regions scattered throughout arms','Notable Nebula':'NGC 604 — 1,300× more luminous than Orion Nebula; one of the largest HII regions known','Gas Fraction':'High — ideal for extended star formation'},
@@ -3558,7 +3558,7 @@ exploration:{'Earliest Record':'Guillaume Le Gentil, 1749','Distance Measured':'
 discoveries:{'Giant HII Region':'NGC 604 — one of the largest star-forming regions in the Local Group','No SMBH':'First large galaxy without a confirmed central supermassive black hole','Future Merger':'Will merge with Milky Way-Andromeda system in ~5 billion years','Closest Spiral':'Third nearest galaxy, close enough to resolve individual supergiant stars'},
 funFact:'NGC 604 inside Triangulum is a stellar nursery 1,300 times more luminous than the Orion Nebula. It could fit 200 Orion Nebulae inside it. It contains over 200 of the hottest type-O stars known, illuminating a region 40 times wider than Orion.'},
 
-"LMC":{type:'galaxy',subtype:'irregular',typeBadge:'LARGE MAGELLANIC CLOUD',size:18.0,dist:2800,period:0,color:0xffddaa,moons:'0',subtype:'irregular',
+"LMC":{type:'galaxy',typeBadge:'LARGE MAGELLANIC CLOUD',size:18.0,dist:2800,period:0,color:0xffddaa,moons:'0',subtype:'irregular',
 overview:'The largest satellite galaxy of the Milky Way — a gravitationally disturbed irregular galaxy 160,000 light-years away, visible to the naked eye from the Southern Hemisphere. Site of SN 1987A — the nearest supernova in 383 years.',
 stats:{'Distance':'160,000 light-years','Diameter':'~14,000 light-years','Stars':'~30 billion','Type':'Irregular (disturbed by SMC and MW tidal forces)','Separation from SMC':'~75,000 light-years','Orbital Period':'~1.5 billion years around Milky Way'},
 atmosphere:{'Star Formation':'30 Doradus (Tarantula Nebula) — most active star-forming region in the Local Group','Supernova':'SN 1987A — first naked-eye supernova since 1604 (detected Feb 23, 1987)','Tidal Bridge':'Magellanic Stream — a ribbon of gas 180° across the sky pulled out by tidal interaction'},
@@ -3566,7 +3566,7 @@ exploration:{'Ferdinand Magellan':'Named after, though observed since ancient ti
 discoveries:{'SN 1987A Neutron Star':'Compact object finally detected by JWST inside the expanding debris ring (2024)','Tarantula Nebula':'30 Doradus contains R136a1 — one of the most massive known stars (~200+ solar masses)','Runaway Stars':'Evidence of hypervelocity stars ejected from LMC core by ancient black hole event','Infall Confirmed':'LMC is on its first approach toward Milky Way — not in a stable orbit'},
 funFact:'SN 1987A in the LMC was the nearest supernova in almost 400 years. Neutrino detectors around the world recorded a 13-second burst of 25 antineutrinos — carrying 99% of the energy of the collapse — 3 hours BEFORE anyone saw the star brighten in visible light. This directly confirmed a half-century-old prediction from stellar physics.'},
 
-"SMC":{type:'galaxy',subtype:'irregular',typeBadge:'SMALL MAGELLANIC CLOUD',size:14.0,dist:2850,period:0,color:0xccbbff,moons:'0',subtype:'irregular',
+"SMC":{type:'galaxy',typeBadge:'SMALL MAGELLANIC CLOUD',size:14.0,dist:2850,period:0,color:0xccbbff,moons:'0',subtype:'irregular',
 overview:'The second-largest Milky Way satellite galaxy — 200,000 light-years away and tidally distorted into an irregular form by gravitational forces. The SMC was historically used to establish the cosmic distance ladder via Cepheid variables.',
 stats:{'Distance':'~200,000 light-years','Diameter':'~7,000 light-years','Stars':'~3 billion','Type':'Irregular (SB(s)m — weakly barred)','Orbital Link':'Tidally bound to both LMC and Milky Way'},
 atmosphere:{'Star Formation':'Lower metallicity than LMC — a gold mine for studying star formation at primitive chemical compositions','Wing':'Gas bridge to the LMC — actively forming stars along the bridge','Metallicity':'~0.2 solar — a proxy for early-universe star formation conditions'},
@@ -3574,7 +3574,7 @@ exploration:{'Henrietta Swan Leavitt':'1908 — discovered period-luminosity rel
 discoveries:{'Cepheid Law':'Henrietta Leavitt discovered that a star\'s period directly reveals its luminosity — the basis of extragalactic distance measurement','Low Metallicity':'A natural laboratory for studying conditions in the early universe when metals were scarce','Binary Merger':'SMC structure suggests it may itself be a merger of two smaller dwarf galaxies'},
 funFact:'Henrietta Swan Leavitt, a "human computer" at Harvard, discovered the Cepheid period-luminosity law from SMC data in 1908. Edwin Hubble applied her calibration to measure the distance to Andromeda in 1923 — proving external galaxies exist. She was never awarded the Nobel Prize, though colleagues later nominated her (she died in 1921 before it could be awarded).'},
 
-"M87 Galaxy":{type:'galaxy',subtype:'elliptical',typeBadge:'GIANT ELLIPTICAL / VIRGO A',size:30.0,dist:3200,period:0,color:0xffe8cc,moons:'0',subtype:'elliptical',
+"M87 Galaxy":{type:'galaxy',typeBadge:'GIANT ELLIPTICAL / VIRGO A',size:30.0,dist:3200,period:0,color:0xffe8cc,moons:'0',subtype:'elliptical',
 overview:'A colossal elliptical galaxy 53.5 million light-years away at the heart of the Virgo Cluster. Home to the first-ever photographed black hole (M87*) and a 5,000-light-year relativistic jet visible even in small telescopes.',
 stats:{'Distance':'53.5 million light-years','Diameter':'~120,000 light-years (but stellar halo extends 800,000 ly)','Stars':'~1 trillion','Central Black Hole':'M87* — 6.5 billion solar masses','Jet Length':'~5,000 light-years at near-light-speed','Type':'E0p — giant elliptical with active nucleus'},
 atmosphere:{'Jet':'Plasma moving at 99.9% of light speed, visible from optical to gamma-ray wavelengths','X-ray Halo':'Giant hot gas halo at 10–30 million K surrounding the galaxy','Globular Clusters':'12,000+ globular clusters — far more than the Milky Way\'s ~150'},
@@ -3582,7 +3582,7 @@ exploration:{'EHT 2019':'First direct image of a black hole shadow — M87* (Apr
 discoveries:{'First Black Hole Photo':'55 µas ring imaged by EHT — April 10, 2019 — one of humanity\'s most significant discoveries','Jet Discovery':'H.D. Curtis, 1918 — first known AGN jet, 100 years before EHT','Polarized Ring':'EHT 2021 — magnetic fields at event horizon match magnetically arrested disk model','Mass Measurement':'6.5 billion solar masses confirmed — billions of Earths converted to pure energy every year'},
 funFact:'The M87* black hole image took the combined processing power of petabytes of data recorded by radio telescopes on six continents and flown to a central location on hard drives — because the data rate was too fast to transmit over the internet. The image you can see represents humanity\'s first look at the shadow of a black hole.'},
 
-"Whirlpool Galaxy":{type:'galaxy',subtype:'merger',typeBadge:'INTERACTING SPIRAL M51',size:24.0,dist:3400,period:0,color:0xddccff,moons:'0',subtype:'merger',
+"Whirlpool Galaxy":{type:'galaxy',typeBadge:'INTERACTING SPIRAL M51',size:24.0,dist:3400,period:0,color:0xddccff,moons:'0',subtype:'merger',
 overview:'The Whirlpool Galaxy — a grand design spiral 23 million light-years away currently merging with NGC 5195. The first galaxy classified as a spiral (Lord Rosse, 1845), its collision-triggered star formation makes it one of the most photographed objects in astronomy.',
 stats:{'Distance':'23 million light-years','Diameter':'~76,000 light-years (M51a)','Companion':'NGC 5195 — irregular dwarf galaxy, already passed through once','Type':'SAbc — grand design spiral','Star Formation':'Enhanced by the interaction with NGC 5195','Supernovae':'SN 1994I, 2005cs, 2011dh — 3 supernovae in 30 years'},
 atmosphere:{'Magnetic Field':'Spiral arms trace the galactic magnetic field in perfect alignment — clearest example known','Tidal Bridge':'Bridge of gas and stars connecting M51a to NGC 5195','X-ray':'Chandra detected multiple X-ray binaries and a central AGN'},
@@ -3590,7 +3590,7 @@ exploration:{'Lord Rosse':'First observed spiral structure with 72" "Leviathan" 
 discoveries:{'First Spiral Galaxy':'Lord Rosse\'s 1845 sketch was the first recognition of spiral structure in any external system','JWST IR Void':'Infrared image showed "holes" in the spiral arms caused by supernova shockwaves blowing out gas','Magnetic Arms':'Radio maps show magnetic field perfectly traces the spiral arms','3 Supernovae':'Extraordinarily high supernova rate — one every ~decade — due to interaction-driven star formation'},
 funFact:'The Whirlpool\'s magnetic field lines follow the galaxy\'s spiral arms with extraordinary precision — making it the clearest known example of a galaxy-scale magnetic field tracing the spiral structure. JWST\'s first image of a familiar galaxy revealed dark voids in the spiral arms punched by ancient supernova shock waves — previously invisible to Hubble.'},
 
-"Sombrero Galaxy":{type:'galaxy',subtype:'edge_on',typeBadge:'EDGE-ON SPIRAL M104',size:25.0,dist:3600,period:0,color:0xffeedd,moons:'0',subtype:'edge_on',
+"Sombrero Galaxy":{type:'galaxy',typeBadge:'EDGE-ON SPIRAL M104',size:25.0,dist:3600,period:0,color:0xffeedd,moons:'0',subtype:'edge_on',
 overview:'One of the most famous galaxies in the sky — the Sombrero (M104) appears edge-on from Earth, revealing a brilliant white core surrounded by a perfect dark dust lane and a wide stellar halo. Its true nature is debated: spiral or giant lenticular?',
 stats:{'Distance':'~28–31 million light-years','Diameter':'~50,000 light-years','Stars':'~800 billion (unusually massive for its size)','Central Black Hole':'~1 billion solar masses','Type':'SA(s)a (debated — possibly S0)','Globular Clusters':'~2,000 (more than Milky Way)'},
 atmosphere:{'Dust Lane':'Sharp, equatorial dust lane bisects the bright bulge','X-ray':'Extended X-ray halo detected by Chandra — implies large dark matter halo','Dust Mass':'~13,000 solar masses of cold dust','Stellar Velocity':'Disk stars orbit at 130 km/s'},
@@ -3598,7 +3598,7 @@ exploration:{'Pierre Méchain':'1781 discovery','HST':'Famous image with dust la
 discoveries:{'Extreme Bulge':'Bulge fraction unusually high — half-spiral, half-elliptical morphology','Sombrero Debate':'May actually be an elliptical galaxy with an embedded disk — reclassified multiple times','SMBH':'~1 billion solar masses — one of the most massive central black holes in nearby universe','Multi-ring':'Infrared reveals multiple embedded stellar rings invisible in optical light'},
 funFact:'The Sombrero Galaxy\'s brilliant bulge suggests it contains up to 800 billion stars in a relatively compact disk — making it pound-for-pound one of the most star-packed galaxies in the local universe. Yet its central black hole, at 1 billion solar masses, is nearly 250 times more massive than the Milky Way\'s.'},
 
-"Pinwheel Galaxy":{type:'galaxy',subtype:'spiral',typeBadge:'FACE-ON SPIRAL M101',size:24.0,dist:3700,period:0,color:0xffd4b8,moons:'0',subtype:'spiral',
+"Pinwheel Galaxy":{type:'galaxy',typeBadge:'FACE-ON SPIRAL M101',size:24.0,dist:3700,period:0,color:0xffd4b8,moons:'0',subtype:'spiral',
 overview:'The Pinwheel Galaxy — a perfect face-on grand design spiral 21 million light-years away. One of the largest spiral galaxies known, with an asymmetric shape caused by past gravitational interactions. A powerful laboratory for studying the physics of spiral arms.',
 stats:{'Distance':'~21 million light-years','Diameter':'~170,000 light-years (one of the largest known spirals)','Stars':'~1 trillion','Type':'SAB(rs)cd — weakly barred, multi-arm spiral','Supernovae':'SN 2011fe, SN 2023ixf — notable recent supernovae','Asymmetry':'Off-center nucleus — evidence of past gravitational interaction'},
 atmosphere:{'HII Regions':'3,000+ star-forming regions identified','NGC 5461':'Giant HII region comparable to NGC 604 in Triangulum','Star Formation Rate':'High, concentrated in spiral arms','Low Surface Brightness':'Extended outer disk barely detectable'},
@@ -3606,7 +3606,7 @@ exploration:{'Méchain & Messier':'1781','Hubble':'High-resolution mosaic (2006)
 discoveries:{'Giant Spiral Arms':'Arms extend unusually far beyond the visible disk','SN 2023ixf':'Brightest supernova since SN 1987A at distance — an immediate Type II','Lopsided Core':'Nucleus offset from the geometric center — evidence for past merger or close flyby','Infrared Spirals':'JWST revealed new spiral features invisible in optical — dusty molecular arm structure'},
 funFact:'SN 2023ixf — which exploded in the Pinwheel Galaxy in May 2023 — was the closest and brightest supernova since SN 1987A. Amateur astronomers worldwide captured it within hours of the explosion. The progenitor star (now gone) had been observed for years before it exploded, allowing direct comparison of pre- and post-explosion images.'},
 
-"NGC 1300":{type:'galaxy',subtype:'barred',typeBadge:'BARRED SPIRAL GALAXY',size:28,dist:3900,period:0,color:0xffd090,moons:'0',subtype:'barred',
+"NGC 1300":{type:'galaxy',typeBadge:'BARRED SPIRAL GALAXY',size:28,dist:3900,period:0,color:0xffd090,moons:'0',subtype:'barred',
 overview:'One of the most perfect barred spiral galaxies in the sky — a Hubble Heritage showpiece 61 million light-years away. Its straight bar connects to two grand spiral arms in a textbook example of barred spiral morphology.',
 stats:{'Distance':'~61 million light-years','Diameter':'~110,000 light-years','Type':'SB(s)bc — classic barred spiral','Bar Length':'~33,000 light-years across the center','Located':'Eridanus Galaxy Cluster'},
 atmosphere:{'Bar Dynamics':'Bar channels gas efficiently into the nucleus — fueling star formation and possible AGN activity','Arm Origin':'Arms originate at bar ends, not from the nucleus','Nuclear Spiral':'Small spiral structure within the bar itself (Hubble 2004)'},
@@ -3614,7 +3614,7 @@ exploration:{'Hubble ACS':'2004 — one of the most detailed images of a barred 
 discoveries:{'Perfect Bar':'Exceptionally straight and prominent bar — used as textbook case','Nuclear Spiral':'Hubble detected a miniature spiral inside the bar — galaxy within a galaxy appearance','Arm Asymmetry':'The two arms are of different brightness and structure'},
 funFact:'NGC 1300\'s bar is so geometrically perfect that it became the textbook image of a barred spiral galaxy — appearing in nearly every introductory astronomy textbook published after 2005. Bars like this are believed to funnel gas toward the nucleus over millions of years, and more than two-thirds of all spiral galaxies (including the Milky Way) have bars.'},
 
-"Centaurus A":{type:'galaxy',subtype:'edge_on',typeBadge:'RADIO GALAXY NGC 5128',size:22.0,dist:4100,period:0,color:0xffe0b0,moons:'0',subtype:'edge_on',
+"Centaurus A":{type:'galaxy',typeBadge:'RADIO GALAXY NGC 5128',size:22.0,dist:4100,period:0,color:0xffe0b0,moons:'0',subtype:'edge_on',
 overview:'The closest radio galaxy to Earth — 13 million light-years away. NGC 5128 / Centaurus A is a giant elliptical galaxy with a prominent dark dust lane betraying a past merger with a spiral galaxy. Its active black hole fires relativistic jets spanning 1 million light-years.',
 stats:{'Distance':'~13 million light-years','Diameter':'~60,000 light-years (inner) + 2M ly jets','Central Black Hole':'~55 million solar masses','Jets':'1 million light-years total extent (radio lobes)','Type':'S0 pec / elliptical with dust lane (merger)','Radio Power':'One of the brightest radio sources in the sky'},
 atmosphere:{'X-ray Jet':'Continuous X-ray emission along kpc-scale jet (Chandra)','Gamma-ray Lobes':'Giant lobes detected by Fermi — past AGN activity','Dust Lane':'~300 light-year wide dust lane from absorbed spiral galaxy','Temperature':'Hot X-ray gas at 3×10⁷ K permeates the galaxy'},
@@ -4583,6 +4583,14 @@ function addToCompare(name) {
   renderCompare();
 }
 
+// Renders one label/value row per stat. Keys and values are escaped because
+// both come from the shared OBJECTS tables, which are content, not markup.
+function buildCompareRows(rows) {
+  return Object.entries(rows).map(([label, value]) =>
+    `<div class="cp-row"><span class="cp-k">${String(label)}</span><span class="cp-v">${String(value)}</span></div>`
+  ).join('');
+}
+
 function renderCompare() {
   const hint = document.getElementById('cp-hint');
   const filledCount = compareSlots.filter(Boolean).length;
@@ -4604,7 +4612,7 @@ function renderCompare() {
       'Moons': d.moons || '0',
       ...( d.stats || {} )
     };
-    col.querySelector('.cp-rows').innerHTML = buildRows(rows);
+    col.querySelector('.cp-rows').innerHTML = buildCompareRows(rows);
   });
 }
 

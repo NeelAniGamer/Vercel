@@ -1501,9 +1501,10 @@
             </svg>
           </button>
           <div class="dropdown" id="action-menu">
-            <div class="dropdown-item" onclick="openEditModal()">✏️ Edit Profile</div>
+            <div class="dropdown-item" id="menu-sign-in-item" onclick="handleDashSignIn()" style="display:none;">🔑 Sign In</div>
+            <div class="dropdown-item" id="menu-edit-item" onclick="openEditModal()">✏️ Edit Profile</div>
             <div class="dropdown-item" onclick="resetProgressFromDashboard()">🗑️ Reset Progress</div>
-            <div class="dropdown-item danger" onclick="logoutAndClear()">🚪 Sign Out</div>
+            <div class="dropdown-item danger" id="menu-sign-out-item" onclick="logoutAndClear()">🚪 Sign Out</div>
           </div>
         </div>
 
@@ -2274,6 +2275,7 @@
           if (acadBtn) acadBtn.style.display = 'block'
           if (acadProf) acadProf.style.display = 'none'
         }
+        updateDashboardAuthMenu()
       });
 ;(async () => {
         if (window.colUser && window.colUser.id) {
@@ -2281,7 +2283,32 @@
           await _syncCloudToLocal(window.colUser.id)
           if (JSON.stringify(S) !== oldSStr) window.location.reload()
         }
+        updateDashboardAuthMenu()
       })()
+
+      function handleDashSignIn() {
+        const menu = document.getElementById('action-menu')
+        if (menu) menu.classList.remove('show')
+        if (typeof window.openGlobalLogin === 'function') {
+          window.openGlobalLogin()
+        } else if (typeof window.openLogin === 'function') {
+          window.openLogin()
+        } else {
+          window.location.href = 'TrafficSetup.html'
+        }
+      }
+
+      function updateDashboardAuthMenu() {
+        const isAuth = !!(window.colUser && window.colUser.id)
+        const signInItem = document.getElementById('menu-sign-in-item')
+        const signOutItem = document.getElementById('menu-sign-out-item')
+        const editItem = document.getElementById('menu-edit-item')
+        if (signInItem) signInItem.style.display = isAuth ? 'none' : 'block'
+        if (signOutItem) signOutItem.style.display = isAuth ? 'block' : 'none'
+        if (editItem) editItem.style.display = isAuth ? 'block' : 'none'
+      }
+
+      window.addEventListener('DOMContentLoaded', updateDashboardAuthMenu)
 
       function toggleMenu() { document.getElementById('action-menu').classList.toggle('show') }
       window.onclick = (e) => {
@@ -2848,7 +2875,7 @@
 
         const EMPTY_MSG = '<div style="padding:32px 20px;text-align:center;color:var(--muted);font-size:0.9rem;background:rgba(255,255,255,0.02);border-radius:16px;border:1px dashed rgba(255,255,255,0.08);margin:12px 0;"><div style="font-size:2rem;margin-bottom:8px;">🚀</div><div style="font-weight:700;color:var(--text);margin-bottom:4px;">No Data Yet</div>Be The First To Earn This Spot!</div>'
         const ERROR_MSG = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:0.85rem;">Unable To Load. Check Connection.<br><button onclick="loadLeaderboard()" style="margin-top:12px;padding:8px 18px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:var(--text);font-weight:700;cursor:pointer;">↻ Retry</button></div>'
-        const AUTH_MSG  = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:0.85rem;">Sign In To View The Leaderboard.</div>'
+        const AUTH_MSG  = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:0.85rem;">Sign In To View The Leaderboard.<br><button onclick="handleDashSignIn()" style="margin-top:12px;padding:8px 18px;border-radius:8px;border:none;background:var(--signal);color:#000;font-weight:700;cursor:pointer;">Sign In</button></div>'
         const OFFLINE_MSG = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:0.85rem;">Leaderboard Service Unreachable.<br><button onclick="loadLeaderboard()" style="margin-top:12px;padding:8px 18px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:var(--text);font-weight:700;cursor:pointer;">↻ Retry</button></div>'
 
         // Escape display names (stored-XSS guard: names come from the database)
@@ -2954,7 +2981,15 @@
               yourRankEl.style.display = 'none'
             }
           } else if (yourRankEl) {
-            yourRankEl.style.display = 'none'
+            yourRankEl.innerHTML = `
+              <div class="your-rank-num" style="background:rgba(255,255,255,0.08);color:var(--text);box-shadow:none;">?</div>
+              <div class="your-rank-info">
+                <div class="your-rank-label">Your Rank</div>
+                <div class="your-rank-detail">Sign In To Track Your Standing</div>
+              </div>
+              <button onclick="handleDashSignIn()" style="font-size:0.75rem; color:#000; font-weight:700; background:var(--signal); border:none; padding:6px 14px; border-radius:20px; cursor:pointer;">Sign In</button>
+            `
+            yourRankEl.style.display = 'flex'
           }
 
 

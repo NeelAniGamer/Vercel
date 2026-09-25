@@ -57,6 +57,12 @@
     <link rel="stylesheet" href="traffic-charts.css" />
     <link rel="stylesheet" href="welcome-back.css" />
 
+    <script defer src="../col-router.js"></script>
+    <link rel="stylesheet" href="../col-ui.css" />
+    <link rel="stylesheet" href="traffic-mobile.css" />
+    <script defer src="../col-ui.js"></script>
+    <script defer src="../col-auth.js"></script>
+
 <style>
       :root {
         
@@ -953,11 +959,11 @@
                 <a href="#" style="color: var(--ion); text-decoration: none;">Forgot password?</a>
               </div>
 
-              <button class="remote-btn-primary" id="auth-submit-btn" onclick="handleEmailAuth()">Log in</button>
-              <button class="remote-btn-primary" id="auth-otp-btn" onclick="sendLoginOtp()" style="margin-top: 10px; background: transparent; border: 1px solid var(--ion); color: var(--ion);">Log in with Email Code</button>
+              <button class="remote-btn-primary" id="auth-submit-btn" onclick="handleEmailAuth()">Log In</button>
+              <button class="remote-btn-primary" id="auth-otp-btn" onclick="sendLoginOtp()" style="margin-top: 10px; background: transparent; border: 1px solid var(--ion); color: var(--ion);">Log In With Email Code</button>
               
               <div id="login-otp-section" style="display: none; margin-top: 15px;">
-                <p style="color: var(--dim); font-size: 0.9rem; margin-bottom: 10px;">Enter the 6-digit code sent to your email:</p>
+                <p style="color: var(--dim); font-size: 0.9rem; margin-bottom: 10px;">Enter The 6-Digit Code Sent To Your Email:</p>
                 <input type="text" id="login-otp-input" class="remote-input" placeholder="123456" maxlength="6" style="text-align: center; font-size: 1.5rem; letter-spacing: 4px; font-family: 'Space Mono', monospace;" />
                 <button class="remote-btn-primary" onclick="verifyLoginOtp()" style="margin-top: 10px; background: var(--signal); color: var(--void);">Verify Code</button>
                 <button type="button" onclick="cancelLoginOtp()" style="margin-top: 10px; width: 100%; background: transparent; border: 1px solid var(--line); color: var(--dim); border-radius: 24px; padding: 12px; cursor: pointer;">Cancel</button>
@@ -974,10 +980,14 @@
                 </svg>
                 Log In With Google
               </button>
+
+              <button type="button" class="remote-btn-primary" onclick="openGlobalLoginModal()" style="margin-top: 10px; background: rgba(255,255,255,0.06); border: 1px solid var(--lineb); color: var(--ink);">
+                🔑 Sign In With Main Site Modal
+              </button>
               
-              <p class="remote-auth-subtitle" style="margin-top: 24px;">Don't have an account yet? <a onclick="switchTab('signup')" style="cursor:pointer; color:var(--signal);">Sign up now</a></p>
+              <p class="remote-auth-subtitle" style="margin-top: 24px;">Don't Have An Account Yet? <a onclick="switchTab('signup')" style="cursor:pointer; color:var(--signal);">Sign Up Now</a></p>
               
-              <button class="remote-btn-primary" id="auth-dashboard-btn" style="display: none; margin-top: 15px; background: transparent; border: 1px solid var(--em); color: var(--em)" onclick="window.location.href = 'Academy.html'">Go to Academy Hub &rarr;</button>
+              <button class="remote-btn-primary" id="auth-dashboard-btn" style="display: none; margin-top: 15px; background: transparent; border: 1px solid var(--em); color: var(--em)" onclick="window.location.href = 'Academy.html'">Go To Academy Hub &rarr;</button>
             </div>
 
             
@@ -1007,7 +1017,7 @@
 
               <button class="remote-btn-primary" id="signup-submit-btn" onclick="handleEmailAuth()">Create Account</button>
               <div id="signup-otp-section" style="display: none; margin-top: 15px;">
-                <p style="color: var(--dim); font-size: 0.9rem; margin-bottom: 10px;">Enter the 6-digit code sent to your email to confirm:</p>
+                <p style="color: var(--dim); font-size: 0.9rem; margin-bottom: 10px;">Enter The 6-Digit Code Sent To Your Email To Confirm:</p>
                 <input type="text" id="signup-otp-input" class="remote-input" placeholder="123456" maxlength="6" style="text-align: center; font-size: 1.5rem; letter-spacing: 4px; font-family: 'Space Mono', monospace;" />
                 <button class="remote-btn-primary" onclick="verifySignupOtp()" style="margin-top: 10px; background: var(--signal); color: var(--void);">Verify Code</button>
               </div>
@@ -1023,14 +1033,18 @@
                 </svg>
                 Log In With Google
               </button>
+
+              <button type="button" class="remote-btn-primary" onclick="openGlobalLoginModal()" style="margin-top: 10px; background: rgba(255,255,255,0.06); border: 1px solid var(--lineb); color: var(--ink);">
+                🔑 Sign In With Main Site Modal
+              </button>
               
-              <p class="remote-auth-subtitle" style="margin-top: 24px;">Already have an account? <a onclick="switchTab('login')" style="cursor:pointer; color:var(--signal);">Log in</a></p>
+              <p class="remote-auth-subtitle" style="margin-top: 24px;">Already Have An Account? <a onclick="switchTab('login')" style="cursor:pointer; color:var(--signal);">Log In</a></p>
             </div>
           </div>
 
           <div class="remote-bottom-links" style="margin-top: 24px;">
             <button type="button" class="remote-bottom-link primary" onclick="goToStep(2); updateWizardStep(2)">🎮 Skip & Play Locally</button>
-            <button type="button" class="remote-bottom-link" onclick="window.location.href = 'Academy.html'">← Back to Academy</button>
+            <button type="button" class="remote-bottom-link" onclick="window.location.href = 'Academy.html'">← Back To Academy</button>
           </div>
         </div>
       </div>
@@ -1788,7 +1802,10 @@
       }
 
       async function handleGoogleAuth() {
-        if (!window.supabaseClient) return alert('Cloud connection not ready. Please use Local Setup.')
+        if (typeof window.colDoGoogle === 'function') {
+          return window.colDoGoogle()
+        }
+        if (!window.supabaseClient) return alert('Cloud Connection Not Ready. Please Use Local Setup.')
         try {
           var redirectTo = new URL('TrafficSetup.html', window.location.href).href
           
@@ -1800,7 +1817,15 @@
           })
           if (res.error) throw res.error
         } catch (err) {
-          alert('Google Sign-In failed: ' + err.message)
+          alert('Google Sign-In Failed: ' + err.message)
+        }
+      }
+
+      function openGlobalLoginModal() {
+        if (typeof window.openGlobalLogin === 'function') {
+          window.openGlobalLogin()
+        } else if (typeof window.openLogin === 'function') {
+          window.openLogin()
         }
       }
 

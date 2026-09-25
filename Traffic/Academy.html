@@ -6358,7 +6358,7 @@
             </button>
             <button
               class="tb-btn tb-btn-auth dynamic-auth-btn"
-              onclick="window.location.href = 'TrafficSetup.html'"
+              onclick="handleAccountClick()"
               title="Sign In / Dashboard"
             >
               <span class="auth-icon">👤</span>
@@ -6418,7 +6418,7 @@
           <div class="tb-right">
             <button
               class="btn btn-g dynamic-auth-btn"
-              onclick="window.location.href = 'TrafficSetup.html'"
+              onclick="handleAccountClick()"
               style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px"
             >
               Sign In
@@ -6442,7 +6442,7 @@
         <div class="rcard" id="rcard"></div>
         <div class="bdx" id="rbdg"></div>
         <div class="rbts">
-          <button class="btn btn-g dynamic-auth-btn" onclick="window.location.href = 'TrafficSetup.html'">Sign In</button>
+          <button class="btn btn-g dynamic-auth-btn" onclick="handleAccountClick()">Sign In</button>
           <button class="btn btn-g" onclick="ui.showLevels()">Modules</button>
           <button class="btn btn-p" id="rnxt" onclick="ui.goNext()">Next Module →</button>
         </div>
@@ -6477,7 +6477,7 @@
         <h2 style="font-size: 1.4rem; margin: 0">Driver Profile</h2>
         <button
           class="btn btn-g dynamic-auth-btn"
-          onclick="window.location.href = 'TrafficSetup.html'"
+          onclick="handleAccountClick()"
           style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px"
         >
           Sign In
@@ -6503,7 +6503,7 @@
         <div style="display: flex; gap: 12px; align-items: center">
           <button
             class="btn btn-g dynamic-auth-btn"
-            onclick="window.location.href = 'TrafficSetup.html'"
+            onclick="handleAccountClick()"
             style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px"
           >
             Sign In
@@ -6653,30 +6653,30 @@
         <div class="onb-chips" style="flex-direction: column; gap: 16px;">
           <button class="onb-chip" onclick="handleGoogleLogin()" style="padding: 20px 32px; min-height: 60px;">
             <span class="onb-chip-icon" style="font-size: 1.8rem;">🔐</span>
-            <span class="onb-chip-label" style="font-size: 1.1rem;">Continue with Google</span>
+            <span class="onb-chip-label" style="font-size: 1.1rem;">Continue With Google</span>
           </button>
           <button class="onb-chip" onclick="handleEmailLogin()" style="padding: 20px 32px; min-height: 60px;">
             <span class="onb-chip-icon" style="font-size: 1.8rem;">📧</span>
-            <span class="onb-chip-label" style="font-size: 1.1rem;">Sign Up / Login with Email</span>
+            <span class="onb-chip-label" style="font-size: 1.1rem;">Sign Up / Log In With Email</span>
           </button>
           <button class="onb-chip" onclick="showOnboardingScreen(3)" style="padding: 16px 24px;">
             <span class="onb-chip-icon" style="font-size: 1.5rem;">🎮</span>
-            <span class="onb-chip-label" style="font-size: 1rem;">Continue as Guest</span>
+            <span class="onb-chip-label" style="font-size: 1rem;">Continue As Guest</span>
           </button>
         </div>
       </div>
 
       
       <div class="onb-box" style="display:none">
-        <h2 class="onb-h">A few more details</h2>
-        <p class="onb-sub">Help us personalize your experience.</p>
-        <p style="font-size:0.85rem;color:var(--muted);margin-bottom:10px;text-align:left;font-weight:600">Your age</p>
+        <h2 class="onb-h">A Few More Details</h2>
+        <p class="onb-sub">Help Us Personalize Your Experience.</p>
+        <p style="font-size:0.85rem;color:var(--muted);margin-bottom:10px;text-align:left;font-weight:600">Your Age</p>
         <div class="onb-dots">
           <button class="onb-dot" onclick="_onbSelectDot(this,'onb-age')" data-age-tier="child">👶 Junior (5-12)</button>
           <button class="onb-dot" onclick="_onbSelectDot(this,'onb-age')" data-age-tier="teen">🧑 Teen (13-17)</button>
           <button class="onb-dot" onclick="_onbSelectDot(this,'onb-age')" data-age-tier="adult">👤 Adult (18+)</button>
         </div>
-        <p style="font-size:0.85rem;color:var(--muted);margin-bottom:10px;text-align:left;font-weight:600">Vehicle you drive most</p>
+        <p style="font-size:0.85rem;color:var(--muted);margin-bottom:10px;text-align:left;font-weight:600">Vehicle You Drive Most</p>
         <div class="onb-dots">
           <button class="onb-dot" onclick="_onbSelectDot(this,'onb-veh')" data-vehicle="car">🚗 Car</button>
           <button class="onb-dot" onclick="_onbSelectDot(this,'onb-veh')" data-vehicle="bike">🏍️ Bike</button>
@@ -6690,18 +6690,18 @@
       
       <div class="onb-box" style="display:none">
         <div style="font-size:3.5rem;margin-bottom:16px">🎉</div>
-        <h2 class="onb-h">You're all set!</h2>
-        <p class="onb-sub">Start your journey to become a certified Traffic Hero.</p>
+        <h2 class="onb-h">You're All Set!</h2>
+        <p class="onb-sub">Start Your Journey To Become A Certified Traffic Hero.</p>
         <button class="onb-btn" onclick="_onbComplete()">Start Learning</button>
       </div>
 
       
       <div class="onb-skip-popup" id="onb-skip-popup">
         <div class="onb-skip-box">
-          <h3>Are you sure?</h3>
-          <p>You might lose your progress if you skip sign-in.</p>
+          <h3>Are You Sure?</h3>
+          <p>You Might Lose Your Progress If You Skip Sign-In.</p>
           <div class="onb-skip-btns">
-            <button class="onb-stay" onclick="skipCancel()">Continue with Sign Up</button>
+            <button class="onb-stay" onclick="skipCancel()">Continue With Sign Up</button>
             <button class="onb-leave" onclick="skipConfirm()">I'll Risk It</button>
           </div>
         </div>
@@ -6984,25 +6984,55 @@
       });
 
 
+      function handleAccountClick() {
+        if (window.colUser) {
+          window.location.href = 'TrafficDashboard.html';
+        } else if (typeof window.openGlobalLogin === 'function') {
+          window.openGlobalLogin();
+        } else if (typeof window.openLogin === 'function') {
+          window.openLogin();
+        } else {
+          window.location.href = 'TrafficSetup.html';
+        }
+      }
+      window.handleAccountClick = handleAccountClick;
+
+      function updateTopProfileButton() {
+        const btn = document.getElementById('top-profile-btn');
+        const lbl = document.getElementById('top-profile-label');
+        if (!btn || !lbl) return;
+        if (window.colUser) {
+          const meta = window.colUser.user_metadata || {};
+          const name = window.colUser.name || meta.full_name || meta.name || 'Driver';
+          const fName = name.split(' ')[0];
+          lbl.textContent = fName;
+          btn.title = 'Driver Dashboard: ' + name;
+          btn.classList.add('logged-in');
+        } else {
+          lbl.textContent = 'Sign In';
+          btn.title = 'Sign In';
+          btn.classList.remove('logged-in');
+        }
+      }
+      window.addEventListener('col-auth-changed', updateTopProfileButton);
+      window.addEventListener('DOMContentLoaded', updateTopProfileButton);
+
       function handleGoogleLogin() {
-        window.location.href = 'TrafficSetup.html?returnTo=Academy.html';
+        if (typeof window.colDoGoogle === 'function') {
+          window.colDoGoogle();
+        } else if (typeof window.openGlobalLogin === 'function') {
+          window.openGlobalLogin();
+        } else if (typeof window.openLogin === 'function') {
+          window.openLogin();
+        } else {
+          window.location.href = 'TrafficSetup.html?returnTo=Academy.html';
+        }
       }
 
-
       function handleEmailLogin() {
-        if (typeof ui !== 'undefined' && ui.openLogin) {
-          ui.openLogin()
-
-          const onAuth = (e) => {
-            const user = e.detail && e.detail.user ? e.detail.user : window.colUser;
-            if (user) {
-              window.removeEventListener('col-auth-changed', onAuth);
-              showOnboardingScreen(3);
-            }
-          };
-          window.addEventListener('col-auth-changed', onAuth);
-        } else if (typeof window.openLogin === 'function') {
-          window.openLogin()
+        const triggerLogin = window.openGlobalLogin || window.openLogin || (typeof ui !== 'undefined' && ui.openLogin ? ui.openLogin : null);
+        if (triggerLogin) {
+          triggerLogin();
           const onAuth = (e) => {
             const user = e.detail && e.detail.user ? e.detail.user : window.colUser;
             if (user) {
@@ -7012,7 +7042,7 @@
           };
           window.addEventListener('col-auth-changed', onAuth);
         } else {
-          showOnboardingScreen(3)
+          showOnboardingScreen(3);
         }
       }
 

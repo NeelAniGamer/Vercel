@@ -10,8 +10,8 @@ const path = require('path');
 
 const LEVELS_DIR = path.join(__dirname, '..', 'levels');
 
-// Task targets that actually complete (must mirror _checkTasks in game_core.js)
-const TASK_TARGETS = {
+// Task targets that actually complete in the inline `_checkTasks` switch.
+const INLINE_TASK_TARGETS = {
   stop: new Set(['stationary', 'walking_speed', 'parking_zone', 'parking_spot',
     'red_light', 'red_signal', 'cow', 'cow_moved']),
   reach: new Set(['destination', 'green_light', 'parking_spot', 'market_zone',
@@ -25,6 +25,28 @@ const TASK_TARGETS = {
   enter_vehicle: null, // any target (or none) completes via the enter latch
 };
 const REACH_CHECKPOINT = /^checkpoint_(\d+)$/;
+
+// Objectives needing more than a one-line test are implemented in
+// task-evaluators.js, dispatched by a `type/target` key. They are read from
+// that file rather than duplicated here, so this linter cannot drift from the
+// engine and start reporting working objectives as dead tasks again.
+const EVALUATOR_TARGETS = (() => {
+  const p = path.join(__dirname, '..', 'task-evaluators.js');
+  const out = new Set();
+  if (!fs.existsSync(p)) return out;
+  const src = fs.readFileSync(p, 'utf8');
+  for (const m of src.matchAll(/^\s*'([a-z_]+)\/([a-z_0-9]+)':\s*function/gm)) {
+    out.add(m[1] + '/' + m[2]);
+  }
+  return out;
+})();
+
+function hasTaskBranch(type, target) {
+  if (EVALUATOR_TARGETS.has(type + '/' + target)) return true;
+  const set = INLINE_TASK_TARGETS[type];
+  if (set === null) return true;              // enter_vehicle
+  return !!set && set.has(target);
+}
 
 const NPC_PROFILES = new Set(['normal', 'aggressive', 'reckless_bike', 'rulebreaker',
   'cautious', 'teen', 'elderly', 'delivery', 'tourist',
@@ -78,14 +100,12 @@ function checkLevel(file, lv) {
 
   // 1. Tasks reference completable targets
   for (const t of lv.tasks || []) {
-    if (!TASK_TARGETS.hasOwnProperty(t.type)) {
+    if (!INLINE_TASK_TARGETS.hasOwnProperty(t.type)) {
       E(id, `task '${t.id}' has unknown type '${t.type}' (never completes)`);
       continue;
     }
-    const allowed = TASK_TARGETS[t.type];
-    if (allowed === null) {continue;}
     if (t.type === 'reach' && REACH_CHECKPOINT.test(t.target || '')) {continue;}
-    if (!allowed.has(t.target)) {
+    if (!hasTaskBranch(t.type, t.target)) {
       E(id, `task '${t.id}' target '${t.target}' has no engine branch (never completes)`);
     }
   }

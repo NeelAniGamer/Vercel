@@ -18,27 +18,31 @@ function injectLoginModal() {
   })
 }
 
-// Compatibility bridge: expose openLogin/closeMo globally so page onclick handlers work
-// even before the page's own inline scripts define them.
-if (!window.openLogin) {
-  window.openLogin = function () {
-    // Redirect to TrafficSetup for global authentication
-    const path = window.location.pathname;
-    if (path.includes('TrafficSetup.html')) {
-      const authArea = document.getElementById('authArea');
-      if (authArea) {authArea.scrollIntoView({ behavior: 'smooth' });}
-    } else if (path.includes('/Traffic/')) {
-      window.location.href = 'TrafficSetup.html';
+// Unified global authentication bridge: expose openLogin and closeMo globally
+window.openLogin = function () {
+  if (typeof window.openGlobalLogin === 'function') {
+    window.openGlobalLogin()
+  } else {
+    if (typeof injectAuthStyles === 'function') {injectAuthStyles()}
+    if (typeof injectAuthUI === 'function') {injectAuthUI()}
+    if (typeof window.openGlobalLogin === 'function') {
+      window.openGlobalLogin()
     } else {
-      window.location.href = 'Traffic/TrafficSetup.html';
+      const mo = document.getElementById('colAuthModal') || document.getElementById('loginMo')
+      if (mo) {
+        mo.classList.add('open')
+        mo.removeAttribute('aria-hidden')
+        mo.removeAttribute('inert')
+      }
     }
   }
 }
-if (!window.closeMo) {
-  window.closeMo = function () {
-    const mo = document.getElementById('loginMo')
-    if (mo) {mo.classList.remove('open')}
+window.closeMo = function () {
+  if (typeof window.closeGlobalAuth === 'function') {
+    window.closeGlobalAuth()
   }
+  const mo = document.getElementById('loginMo')
+  if (mo) {mo.classList.remove('open')}
 }
 
 ;(async function () {
@@ -257,6 +261,19 @@ if (!window.closeMo) {
   window.colGetActiveLocalUser = getActiveLocalUser
   window.colSetActiveLocalUser = setActiveLocalUser
   window.colClearActiveLocalUser = clearActiveLocalUser
+
+  // Inject modal styles and UI immediately if DOM is ready
+  function ensureAuthUI() {
+    try {
+      if (typeof injectAuthStyles === 'function') {injectAuthStyles()}
+      if (typeof injectAuthUI === 'function') {injectAuthUI()}
+    } catch (e) {}
+  }
+  if (document.body) {
+    ensureAuthUI()
+  } else {
+    document.addEventListener('DOMContentLoaded', ensureAuthUI)
+  }
 
   // 1. Fetch Global Configuration to get Supabase Keys (root-absolute so /Traffic/* pages resolve)
   let authConfig = null
@@ -1070,6 +1087,7 @@ if (!window.closeMo) {
         setTimeout(function(){ const f = mo.querySelector('button, input, [tabindex]:not([tabindex="-1"])'); if(f) {f.focus();} }, 100)
       }
     }
+    window.openLogin = window.openGlobalLogin
 
     window.openAccountSettings = function () {
       if (!window.colUser) {
@@ -2124,6 +2142,23 @@ if (!window.closeMo) {
         }
       })
       navProfiles.forEach((prof) => (prof.style.display = 'none'))
+    }
+
+    // Sync Traffic UI components if present
+    if (typeof updateTrafficAuthUI === 'function') {
+      try { updateTrafficAuthUI(); } catch (e) {}
+    }
+    const topProfBtn = document.getElementById('top-profile-btn')
+    const topProfLbl = document.getElementById('top-profile-label')
+    if (topProfBtn && topProfLbl) {
+      if (window.colUser) {
+        const displayName = String(window.colUser.name || window.colUser.username || 'User').split(' ')[0]
+        topProfLbl.textContent = displayName
+        topProfBtn.title = 'Driver Dashboard: ' + (window.colUser.name || 'Driver')
+      } else {
+        topProfLbl.textContent = 'Sign In'
+        topProfBtn.title = 'Sign In'
+      }
     }
   }
 
