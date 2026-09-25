@@ -27,7 +27,7 @@ window.LVS.push({
   hasBlindCorner: true,
   tasks: [
     { id: 'low_gear', text: 'Use low gear uphill', type: 'toggle', target: 'gear', done: false },
-    { id: 'honk_bend', text: 'Honk at hairpin bend', type: 'toggle', target: 'honk', done: false },
+    { id: 'honk_bend', text: 'Honk at hairpin bend', type: 'avoid', target: 'honk', done: false },
     { id: 'reach_top', text: 'Reach hilltop', type: 'reach', target: 'destination', done: false }
   ],
   assets: ['suburban', 'industrial']

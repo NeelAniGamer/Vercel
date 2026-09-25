@@ -86,6 +86,14 @@ if (!fs.existsSync(path.join(root, 'SECURITY.md'))) {
   }
 }
 
+// No objective may be able to hang forever. The generated list is derived from
+// game_core itself, so this asserts the guard is present and still generated
+// from the same source, not that the backlog is empty.
+requireMatch('Traffic/game_core.js', /_isUnhandledTaskTarget\(t\)/, 'task completion must guard against targets the engine cannot resolve');
+requireMatch('Traffic/game_core.js', /UNHANDLED_TASK_DWELL_FRAMES/, 'the unhandled-objective guard must have a bounded dwell');
+requireMatch('Traffic/Driving.html', /unhandled-task-targets\.js/, 'Driving.html must load the generated unhandled-objective list');
+rejectMatch('Traffic/unhandled-task-targets.js', /^\s*window\.UNHANDLED_TASK_TARGETS\s*=\s*\[\s*\]/m, 'the unhandled-objective list is empty but still present; remove the guard once the backlog is cleared');
+
 if (failures.length) {
   console.error('Security regression check failed:');
   for (const failure of failures) {console.error(` - ${failure}`);}
