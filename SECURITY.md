@@ -87,8 +87,9 @@ fix or mitigation is available.
 - Service-worker caching excludes configuration, analytics, and dynamic endpoints.
 - `npm run verify:production` checks the generated output for unsafe files, missing
   local routes, and security regressions.
-- CodeQL analyzes maintained JavaScript/TypeScript and Python source on pushes,
-  pull requests, and a weekly schedule; generated and local-agent paths are excluded.
+- GitHub code scanning analyzes maintained JavaScript/TypeScript and Python source
+  using `.github/codeql/codeql-config.yml`; generated and local-agent paths are
+  excluded.
 
 ## Safe Harbor
 

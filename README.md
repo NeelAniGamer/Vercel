@@ -95,7 +95,7 @@ The root application also includes the studio landing page, team and career page
 | **Data and identity**    | Supabase Auth, Postgres-backed data, RLS-protected queries, and RPC functions                            |
 | **Hosting**              | Vercel static deployment with security headers and clean URLs                                            |
 | **Offline/distribution** | Service worker, web app manifest, Android APK, and version metadata                                      |
-| **Quality/security**     | Prettier, CodeQL, DevSkim, Dependabot, and `scripts/security-check.js`                                   |
+| **Quality/security**     | Prettier, GitHub code scanning, DevSkim, Defender for DevOps, Dependabot, and `scripts/security-check.js`   |
 | **Assets**               | Procedural scenes, GLB/model packs, textures, skins, and compressed public media                         |
 
 ## Design System
@@ -132,7 +132,7 @@ UI changes should remain mobile-first at 360px, use title case for player-facing
 | `dist/`                                                        | Filtered, committed production output served by Vercel                               | Generated artifact                  |
 | `build.js`                                                     | Root static-copy, validation, and esbuild pipeline                                   | Build source of truth               |
 | `scripts/`                                                     | Production and security verification                                                 | Development-only                    |
-| `.github/`                                                     | CodeQL, DevSkim, and Dependabot configuration                                        | CI/configuration                    |
+| `.github/`                                                     | Code-scanning config, DevSkim and Defender workflows, and Dependabot configuration   | CI/configuration                    |
 
 ### Root Build Flow
 
@@ -281,7 +281,7 @@ From `Traffic/`, `npm run test:smoke` currently points to a missing `pw_test.js`
 - Security headers: HSTS, clickjacking protection, MIME sniffing protection, referrer policy, permissions policy, and report-only CSP
 - Cache policy: long-lived static assets, revalidated HTML, and no-cache service/configuration files
 
-Vercel serves the filtered output, not the repository root. GitHub Actions currently provide CodeQL and DevSkim security scans; they are not a general build-and-test pipeline.
+Vercel serves the filtered output, not the repository root. GitHub provides code scanning plus DevSkim and Defender for DevOps scans; they are not a general build-and-test pipeline.
 
 ### Deployment Checklist
 
@@ -303,12 +303,19 @@ Vercel serves the filtered output, not the repository root. GitHub Actions curre
 | ----------------------------- | ------------------------------------------------------------------------------------------ |
 | Root build validation         | Maintained `level1`, `level5`, and `level_custom` scope                                    |
 | `scripts/production-check.js` | Required output files, forbidden paths, local references, and size warning                 |
-| `scripts/security-check.js`   | Live-session identity rules, QR verifier storage, Electron flags, and CodeQL configuration |
+| `scripts/security-check.js`   | Live-session identity rules, QR verifier storage, Electron flags, and scanning configuration |
 | CodeQL                        | Maintained JavaScript/TypeScript and Python source                                         |
 | DevSkim                       | Security-pattern scanning                                                                  |
 | Dependabot                    | Root npm, Traffic npm, and GitHub Actions updates                                          |
 
 Generated `dist/`, model packs, local agent directories, vendored libraries, and desktop output are excluded from source scanning. Fix maintained source rather than suppressing generated copies.
+
+CodeQL is configured through the repository's code-scanning settings and reads
+`.github/codeql/codeql-config.yml` for those exclusions. Do not add a second
+CodeQL workflow file: the repository already has a default analysis, and two
+analyses uploading the same language category for one ref make the analyze step
+fail. Disable the unused Go, Java/Kotlin, and C/C++ languages in the code-scanning
+settings, since the application has no source in those languages.
 
 ### Manual Verification
 
@@ -343,7 +350,7 @@ The production security boundary is built around these controls:
 - Salted PBKDF2 verifiers for QR passcodes; plaintext passwords must not be stored.
 - Electron `contextIsolation`, disabled Node integration, sandboxing, web security, and disabled insecure-content execution.
 - Supabase RLS and security-definer function review for privileged data paths.
-- CodeQL, DevSkim, dependency audits, and the repository security regression check.
+- GitHub code scanning, DevSkim, Defender for DevOps, dependency audits, and the repository security regression check.
 
 Never commit Supabase service-role keys, access tokens, passwords, private database exports, or local environment files.
 
