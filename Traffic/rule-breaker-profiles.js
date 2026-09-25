@@ -173,7 +173,7 @@ function pickRuleBreakerType() {
   let r = Math.random() * TOTAL_RULE_BREAKER_WEIGHT;
   for (let i = 0; i < RULE_BREAKER_KEYS.length; i++) {
     r -= RULE_BREAKER_WEIGHTS[i];
-    if (r <= 0) return RULE_BREAKER_KEYS[i];
+    if (r <= 0) {return RULE_BREAKER_KEYS[i];}
   }
   return 'signal_jumper';
 }
@@ -203,7 +203,7 @@ class RuleBreakerProfile {
     const triggers = this.data.triggers;
     const now = Date.now() / 1000;
 
-    if (now - this.lastViolation < this.violationCooldown) return false;
+    if (now - this.lastViolation < this.violationCooldown) {return false;}
 
     switch (this.typeKey) {
       case 'signal_jumper':

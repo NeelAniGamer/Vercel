@@ -23,13 +23,13 @@ class SeededPerlin {
     const rng = mulberry32(seed);
     this.perm = new Uint8Array(512);
     const p = new Uint8Array(256);
-    for (let i = 0; i < 256; i++) p[i] = i;
+    for (let i = 0; i < 256; i++) {p[i] = i;}
     // Fisher-Yates shuffle with seeded PRNG
     for (let i = 255; i > 0; i--) {
       const j = Math.floor(rng() * (i + 1));
       [p[i], p[j]] = [p[j], p[i]];
     }
-    for (let i = 0; i < 512; i++) this.perm[i] = p[i & 255];
+    for (let i = 0; i < 512; i++) {this.perm[i] = p[i & 255];}
   }
 
   _fade(t) {
@@ -126,20 +126,20 @@ class ProcTerrain {
   getBiome(x, z) {
     const h = this.getHeight(x, z);
     const moisture = this.biomeNoise.noise2D(x * 0.002, z * 0.002);
-    if (h < this.waterLevel) return 'water';
-    if (h < this.waterLevel + 2) return 'sand';
-    if (h > this.amplitude * 0.6) return 'rock';
-    if (moisture > 0.2) return 'grass_wet';
+    if (h < this.waterLevel) {return 'water';}
+    if (h < this.waterLevel + 2) {return 'sand';}
+    if (h > this.amplitude * 0.6) {return 'rock';}
+    if (moisture > 0.2) {return 'grass_wet';}
     return 'grass_dry';
   }
 
   // Tree density [0-1] for scenery placement
   getTreeDensity(x, z) {
     const h = this.getHeight(x, z);
-    if (h < this.waterLevel + 1) return 0;     // no trees in water
-    if (h > this.amplitude * 0.7) return 0;    // no trees on peaks
+    if (h < this.waterLevel + 1) {return 0;}     // no trees in water
+    if (h > this.amplitude * 0.7) {return 0;}    // no trees on peaks
     const slope = this.getSlope(x, z);
-    if (slope > 0.4) return 0;                // no trees on cliffs
+    if (slope > 0.4) {return 0;}                // no trees on cliffs
     const density = this.treeNoise.noise2D(x * 0.02, z * 0.02);
     return Math.max(0, density * 1.5 - 0.2);  // threshold and scale
   }

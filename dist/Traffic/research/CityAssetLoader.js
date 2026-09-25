@@ -39,12 +39,12 @@ class CityAssetLoader {
             creator: asset.creator
           };
           
-          if (asset.category === 'building') this.assets.buildings.push(model);
-          else if (asset.category === 'road') this.assets.roads.push(model);
-          else if (asset.category === 'vehicle') this.assets.vehicles.push(model);
-          else if (asset.category === 'prop') this.assets.props.push(model);
-          else if (asset.category === 'vegetation') this.assets.vegetation.push(model);
-          else if (asset.category === 'character') this.assets.characters.push(model);
+          if (asset.category === 'building') {this.assets.buildings.push(model);}
+          else if (asset.category === 'road') {this.assets.roads.push(model);}
+          else if (asset.category === 'vehicle') {this.assets.vehicles.push(model);}
+          else if (asset.category === 'prop') {this.assets.props.push(model);}
+          else if (asset.category === 'vegetation') {this.assets.vegetation.push(model);}
+          else if (asset.category === 'character') {this.assets.characters.push(model);}
         }
       } catch (e) {
         console.warn(`Failed to load ${asset.path}:`, e);
@@ -137,31 +137,31 @@ class CityAssetLoader {
   
   // Get a random building
   getRandomBuilding() {
-    if (this.assets.buildings.length === 0) return null;
+    if (this.assets.buildings.length === 0) {return null;}
     return this.assets.buildings[Math.floor(Math.random() * this.assets.buildings.length)].clone();
   }
   
   // Get a random vehicle
   getRandomVehicle() {
-    if (this.assets.vehicles.length === 0) return null;
+    if (this.assets.vehicles.length === 0) {return null;}
     return this.assets.vehicles[Math.floor(Math.random() * this.assets.vehicles.length)].clone();
   }
   
   // Get a random prop
   getRandomProp() {
-    if (this.assets.props.length === 0) return null;
+    if (this.assets.props.length === 0) {return null;}
     return this.assets.props[Math.floor(Math.random() * this.assets.props.length)].clone();
   }
   
   // Get a random tree/vegetation
   getRandomTree() {
-    if (this.assets.vegetation.length === 0) return null;
+    if (this.assets.vegetation.length === 0) {return null;}
     return this.assets.vegetation[Math.floor(Math.random() * this.assets.vegetation.length)].clone();
   }
   
   // Get a random character
   getRandomCharacter() {
-    if (this.assets.characters.length === 0) return null;
+    if (this.assets.characters.length === 0) {return null;}
     return this.assets.characters[Math.floor(Math.random() * this.assets.characters.length)].clone();
   }
   
@@ -173,7 +173,7 @@ class CityAssetLoader {
   // Place a building at position
   placeBuilding(position, rotation = 0) {
     const building = this.getRandomBuilding();
-    if (!building) return null;
+    if (!building) {return null;}
     
     building.position.copy(position);
     building.rotation.y = rotation;
@@ -185,7 +185,7 @@ class CityAssetLoader {
   // Place a vehicle at position
   placeVehicle(position, rotation = 0) {
     const vehicle = this.getRandomVehicle();
-    if (!vehicle) return null;
+    if (!vehicle) {return null;}
     
     vehicle.position.copy(position);
     vehicle.rotation.y = rotation;
@@ -198,7 +198,7 @@ class CityAssetLoader {
   // Place a prop at position
   placeProp(position, rotation = 0) {
     const prop = this.getRandomProp();
-    if (!prop) return null;
+    if (!prop) {return null;}
     
     prop.position.copy(position);
     prop.rotation.y = rotation;
@@ -210,7 +210,7 @@ class CityAssetLoader {
   // Place a tree at position
   placeTree(position) {
     const tree = this.getRandomTree();
-    if (!tree) return null;
+    if (!tree) {return null;}
     
     tree.position.copy(position);
     this.scene.add(tree);
@@ -257,7 +257,7 @@ class MumbaiCityBuilder {
         const worldZ = center.z + z * blockSize;
         
         // Skip some blocks for variety
-        if (Math.random() < 0.2) continue;
+        if (Math.random() < 0.2) {continue;}
         
         // Place building
         const pos = new THREE.Vector3(worldX, 0, worldZ);

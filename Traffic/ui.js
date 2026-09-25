@@ -2,7 +2,7 @@ let _tt = null
 function toast(msg, col = '#ffd54a', duration = 3000) {
   const t = document.getElementById('toast'),
     ti = document.getElementById('ti')
-  if (!t || !ti) return
+  if (!t || !ti) {return}
   ti.textContent = msg
   t.style.borderColor = col
   t.style.boxShadow = `0 12px 36px rgba(0, 0, 0, 0.85), 0 0 24px ${col}55`
@@ -31,14 +31,14 @@ window.sfx = Object.assign(window.sfx || {}, {
   vol: { sfx: 1, ui: 1, env: 1 },
   _cat: { horn: 'sfx', brake: 'sfx', ring: 'ui', challan: 'ui', ok: 'ui', error: 'ui', thunder: 'env' },
   init() {
-    if (this._c) return
+    if (this._c) {return}
     try {
       this._c = new (window.AudioContext || window.webkitAudioContext)()
     } catch (e) {}
   },
-  setVol(cat, v) { if (this.vol[cat] !== undefined) this.vol[cat] = Math.max(0, Math.min(1, v)); },
+  setVol(cat, v) { if (this.vol[cat] !== undefined) {this.vol[cat] = Math.max(0, Math.min(1, v));} },
   play(t) {
-    if (!this._c) return
+    if (!this._c) {return}
     if (t === 'horn') {
       try {
         const catVol = this.vol.sfx !== undefined ? this.vol.sfx : 1
@@ -121,7 +121,7 @@ window.sfx = Object.assign(window.sfx || {}, {
    _ambNodes: null,
    startAmbient(type) {
      this.stopAmbient()
-     if (!this._c || this.vol.env <= 0) return
+     if (!this._c || this.vol.env <= 0) {return}
      try {
        const ctx = this._c
        this._ambNodes = {}
@@ -133,7 +133,7 @@ window.sfx = Object.assign(window.sfx || {}, {
          const bufferSize = ctx.sampleRate * 2
          const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate)
          const data = buffer.getChannelData(0)
-         for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.3
+         for (let i = 0; i < bufferSize; i++) {data[i] = (Math.random() * 2 - 1) * 0.3}
          const noise = ctx.createBufferSource()
          noise.buffer = buffer; noise.loop = true
          const filter = ctx.createBiquadFilter()
@@ -167,9 +167,9 @@ window.sfx = Object.assign(window.sfx || {}, {
      } catch (e) {}
    },
    stopAmbient() {
-     if (!this._ambNodes) return
+     if (!this._ambNodes) {return}
      try {
-       Object.values(this._ambNodes).forEach(n => { if (n.stop) n.stop(); if (n.disconnect) n.disconnect() })
+       Object.values(this._ambNodes).forEach(n => { if (n.stop) {n.stop();} if (n.disconnect) {n.disconnect()} })
      } catch (e) {}
      this._ambNodes = null
    }
@@ -197,10 +197,10 @@ var ui = window.ui = Object.assign(window.ui || {}, {
   adminUnlock() {
 
     LVS.forEach((l) => {
-      if (!S.comp[l.id]) S.comp[l.id] = { score: 500, time: Date.now() }
+      if (!S.comp[l.id]) {S.comp[l.id] = { score: 500, time: Date.now() }}
     })
     BADGES.forEach((b) => {
-      if (!S.badges.includes(b.id)) S.badges.push(b.id)
+      if (!S.badges.includes(b.id)) {S.badges.push(b.id)}
     })
     S.total += 7500
     save()
@@ -226,7 +226,7 @@ var ui = window.ui = Object.assign(window.ui || {}, {
         window.location.href = 'Academy.html'
         return
       }
-      if (this.showStart) this.showStart()
+      if (this.showStart) {this.showStart()}
       else {
         this.show('ss', { instant: true })
       }
@@ -243,12 +243,12 @@ var ui = window.ui = Object.assign(window.ui || {}, {
       let s = null
       try {
         const raw = localStorage.getItem('mth4')
-        if (raw) s = JSON.parse(raw)
+        if (raw) {s = JSON.parse(raw)}
       } catch (e) {}
-      if (!s || typeof s !== 'object') s = { comp: {}, badges: [], total: 0, name: 'Traffic Hero', wallet: 50000, studentId: null, civicScore: 0 }
-      if (!s.comp) s.comp = {}
-      if (!s.badges) s.badges = []
-      if (!s.civicScore) s.civicScore = 0
+      if (!s || typeof s !== 'object') {s = { comp: {}, badges: [], total: 0, name: 'Traffic Hero', wallet: 50000, studentId: null, civicScore: 0 }}
+      if (!s.comp) {s.comp = {}}
+      if (!s.badges) {s.badges = []}
+      if (!s.civicScore) {s.civicScore = 0}
       if (!s.studentId) {
         s.studentId = window.colUser?.uid || 'STU-' + Math.floor(100000 + Math.random() * 900000)
       }
@@ -269,7 +269,7 @@ var ui = window.ui = Object.assign(window.ui || {}, {
       } catch (e) {}
     }
     try {
-      if (localStorage.getItem('theme') === 'light') document.body.classList.add('lm')
+      if (localStorage.getItem('theme') === 'light') {document.body.classList.add('lm')}
     } catch (e) {}
     const urlParams = new URLSearchParams(window.location.search)
     const screenParam = urlParams.get('screen')
@@ -280,14 +280,14 @@ var ui = window.ui = Object.assign(window.ui || {}, {
       if (lvParam) {
         const targetLid = parseInt(lvParam, 10) || lvParam
         setTimeout(() => {
-          if (this.showBriefing) this.showBriefing(targetLid)
+          if (this.showBriefing) {this.showBriefing(targetLid)}
           // Deep-link from the Driving reward screen: land straight in the exam quiz
           if (quizParam === '1') {
             setTimeout(() => {
               try {
                 const examTab = document.querySelector('.mode-tab[data-mode="exam"]')
-                if (examTab) examTab.click()
-                if (this.showQuiz) this.showQuiz('exam')
+                if (examTab) {examTab.click()}
+                if (this.showQuiz) {this.showQuiz('exam')}
               } catch (e) {}
             }, 700)
           }
@@ -353,13 +353,13 @@ var ui = window.ui = Object.assign(window.ui || {}, {
 
   
   initMicroInteractions() {
-    if (this._miInited) return;
+    if (this._miInited) {return;}
     this._miInited = true;
     const isMobile = mob();
 
 
     const reducedMotion = this._prefersReducedMotion || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    if (reducedMotion) return;
+    if (reducedMotion) {return;}
 
 
     if (!document.getElementById('mi-keyframes')) {
@@ -378,7 +378,7 @@ var ui = window.ui = Object.assign(window.ui || {}, {
     const rippleSelector = '.btn, .back-btn, .syl-item, .lcard:not(.lk), .mode-tab';
     document.addEventListener('pointerdown', (e) => {
       const target = e.target.closest(rippleSelector);
-      if (!target || target.disabled) return;
+      if (!target || target.disabled) {return;}
       const rect = target.getBoundingClientRect();
       const ripple = document.createElement('span');
       const size = Math.max(rect.width, rect.height) * 2;
@@ -404,13 +404,13 @@ var ui = window.ui = Object.assign(window.ui || {}, {
     if (!isMobile) {
       document.addEventListener('pointerdown', (e) => {
         const el = e.target.closest('.btn, .back-btn');
-        if (!el || el.disabled) return;
+        if (!el || el.disabled) {return;}
         el.style.transition = 'transform 0.08s ease';
         el.style.transform = 'scale(0.95) translateY(1px)';
       }, { passive: true });
       document.addEventListener('pointerup', (e) => {
         const el = e.target.closest('.btn, .back-btn');
-        if (!el) return;
+        if (!el) {return;}
         el.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
         el.style.transform = '';
         setTimeout(() => { el.style.transition = ''; }, 300);
@@ -428,11 +428,11 @@ var ui = window.ui = Object.assign(window.ui || {}, {
           if (_tiltCard) {
             _tiltCard.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
             _tiltCard.style.transform = '';
-            setTimeout(() => { if (_tiltCard) _tiltCard.style.transition = ''; }, 400);
+            setTimeout(() => { if (_tiltCard) {_tiltCard.style.transition = '';} }, 400);
           }
           _tiltCard = card;
         }
-        if (!card || card.classList.contains('lk')) return;
+        if (!card || card.classList.contains('lk')) {return;}
         const rect = card.getBoundingClientRect();
         const x = (e.clientX - rect.left) / rect.width - 0.5;
         const y = (e.clientY - rect.top) / rect.height - 0.5;
@@ -443,7 +443,7 @@ var ui = window.ui = Object.assign(window.ui || {}, {
         if (_tiltCard) {
           _tiltCard.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
           _tiltCard.style.transform = '';
-          setTimeout(() => { if (_tiltCard) _tiltCard.style.transition = ''; }, 400);
+          setTimeout(() => { if (_tiltCard) {_tiltCard.style.transition = '';} }, 400);
           _tiltCard = null;
         }
       }, { passive: true });
@@ -452,13 +452,13 @@ var ui = window.ui = Object.assign(window.ui || {}, {
 
     document.addEventListener('pointerdown', (e) => {
       const item = e.target.closest('.syl-item');
-      if (!item) return;
+      if (!item) {return;}
       item.style.transition = 'box-shadow 0.15s ease';
       item.style.boxShadow = '0 0 20px rgba(242,184,75,0.15), inset 0 0 0 1px rgba(242,184,75,0.2)';
     }, { passive: true });
     document.addEventListener('pointerup', (e) => {
       const item = e.target.closest('.syl-item');
-      if (!item) return;
+      if (!item) {return;}
       setTimeout(() => {
         item.style.transition = 'box-shadow 0.4s ease';
         item.style.boxShadow = '';
@@ -469,13 +469,13 @@ var ui = window.ui = Object.assign(window.ui || {}, {
 
     document.addEventListener('pointerdown', (e) => {
       const tab = e.target.closest('.mode-tab');
-      if (!tab) return;
+      if (!tab) {return;}
       tab.style.transition = 'transform 0.1s ease';
       tab.style.transform = 'scale(0.92)';
     }, { passive: true });
     document.addEventListener('pointerup', (e) => {
       const tab = e.target.closest('.mode-tab');
-      if (!tab) return;
+      if (!tab) {return;}
       tab.style.transition = 'transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)';
       tab.style.transform = '';
       setTimeout(() => { tab.style.transition = ''; }, 350);
@@ -493,10 +493,10 @@ var ui = window.ui = Object.assign(window.ui || {}, {
     const currentActive = document.querySelector('.screen.active:not(.screen-exiting)');
     
 
-    if (currentActive && currentActive.id === id && !opts.instant) return;
+    if (currentActive && currentActive.id === id && !opts.instant) {return;}
     
 
-    if (this._prefersReducedMotion && !opts.instant) opts.instant = true;
+    if (this._prefersReducedMotion && !opts.instant) {opts.instant = true;}
     
     if (id && id !== null && document.fullscreenElement) {
       document.exitFullscreen().catch(() => {})
@@ -534,7 +534,7 @@ var ui = window.ui = Object.assign(window.ui || {}, {
     
 
     this._screenHistory.push(currentActive?.id || null);
-    if (this._screenHistory.length > 10) this._screenHistory.shift();
+    if (this._screenHistory.length > 10) {this._screenHistory.shift();}
     
 
     this._transitioning = true;
@@ -553,13 +553,13 @@ var ui = window.ui = Object.assign(window.ui || {}, {
       
 
       currentActive.classList.add(exitClass);
-      if (exitVariant) currentActive.classList.add(exitVariant);
+      if (exitVariant) {currentActive.classList.add(exitVariant);}
       
 
       const exitDuration = 250;
       setTimeout(() => {
         currentActive.classList.remove('active', 'screen-animate-in', exitClass);
-        if (exitVariant) currentActive.classList.remove(exitVariant);
+        if (exitVariant) {currentActive.classList.remove(exitVariant);}
         currentActive.style.opacity = '';
         currentActive.style.transform = '';
         currentActive.style.pointerEvents = '';
@@ -632,15 +632,15 @@ var ui = window.ui = Object.assign(window.ui || {}, {
     if (typeof S === 'undefined') {
       try {
         const raw = localStorage.getItem('mth4')
-        if (raw) S = JSON.parse(raw)
+        if (raw) {S = JSON.parse(raw)}
       } catch (e) {}
-      if (!S) S = { comp: {}, badges: [], total: 0, name: 'Traffic Hero', wallet: 50000 }
-      if (!S.comp) S.comp = {}
-      if (!S.badges) S.badges = []
+      if (!S) {S = { comp: {}, badges: [], total: 0, name: 'Traffic Hero', wallet: 50000 }}
+      if (!S.comp) {S.comp = {}}
+      if (!S.badges) {S.badges = []}
     }
-    if (!S.comp) S.comp = {}
+    if (!S.comp) {S.comp = {}}
     const wrap = document.getElementById('lvbody')
-    if (!wrap) return
+    if (!wrap) {return}
     wrap.innerHTML = ''
 
     const catMap = {
@@ -689,7 +689,7 @@ var ui = window.ui = Object.assign(window.ui || {}, {
     const BATCH = 6
     const queue = []
     Object.values(cats).forEach((cat) => {
-      if (cat.levels.length === 0) return
+      if (cat.levels.length === 0) {return}
 
       const hdr = document.createElement('div')
       hdr.className = 'category-header'
@@ -713,7 +713,7 @@ var ui = window.ui = Object.assign(window.ui || {}, {
       for (; i < end; i++) {
         const { lv, idx, grid } = queue[i]
         if (grid !== curGrid) {
-          if (curGrid) curGrid.appendChild(frag)
+          if (curGrid) {curGrid.appendChild(frag)}
           frag = document.createDocumentFragment()
           curGrid = grid
         }
@@ -768,10 +768,10 @@ var ui = window.ui = Object.assign(window.ui || {}, {
         div.onclick = () => (window.ui || this).showBriefing(lv.id)
         frag.appendChild(div)
       }
-      if (curGrid) curGrid.appendChild(frag)
-      if (i < queue.length) requestAnimationFrame(flush)
+      if (curGrid) {curGrid.appendChild(frag)}
+      if (i < queue.length) {requestAnimationFrame(flush)}
     }
-    if (queue.length) requestAnimationFrame(flush)
+    if (queue.length) {requestAnimationFrame(flush)}
   },
   showLevels() {
     if (window.location.pathname.toLowerCase().includes('driving')) {
@@ -805,12 +805,12 @@ var ui = window.ui = Object.assign(window.ui || {}, {
   showNamePrompt() {
     const dlg = document.getElementById('name-prompt-dlg')
     if (dlg) {
-      const _pn = document.getElementById('prompt-name'); if (_pn) _pn.value = S.name && S.name !== 'Traffic Hero' ? S.name : ''
+      const _pn = document.getElementById('prompt-name'); if (_pn) {_pn.value = S.name && S.name !== 'Traffic Hero' ? S.name : ''}
       dlg.style.display = 'flex'
     }
   },
   saveNamePrompt() {
-    const _pn2 = document.getElementById('prompt-name'); if (!_pn2) return
+    const _pn2 = document.getElementById('prompt-name'); if (!_pn2) {return}
     const n = _pn2.value.trim()
     if (n.length > 0 && n.length < 3) {
       toast('Please enter a valid name', 'darkred')
@@ -818,7 +818,7 @@ var ui = window.ui = Object.assign(window.ui || {}, {
     }
     S.name = n || 'Traffic Hero'
     save()
-    const _npd = document.getElementById('name-prompt-dlg'); if (_npd) _npd.style.display = 'none'
+    const _npd = document.getElementById('name-prompt-dlg'); if (_npd) {_npd.style.display = 'none'}
     toast('Welcome, ' + S.name + '!', '#3b8c66')
     const cnameEl = document.getElementById('cname')
     if (cnameEl) {
@@ -827,14 +827,14 @@ var ui = window.ui = Object.assign(window.ui || {}, {
   },
   showProfile() {
     if (!window.colUser) {
-      if (window.openGlobalLogin) window.openGlobalLogin()
-      else if (window.openLogin) window.openLogin()
+      if (window.openGlobalLogin) {window.openGlobalLogin()}
+      else if (window.openLogin) {window.openLogin()}
       return
     }
     window.location.href = 'TrafficDashboard.html'
   },
   saveProfile() {
-    const _pn3 = document.getElementById('prof-name'); const _pv3 = document.getElementById('prof-veh'); if (!_pn3 || !_pv3) return
+    const _pn3 = document.getElementById('prof-name'); const _pv3 = document.getElementById('prof-veh'); if (!_pn3 || !_pv3) {return}
     const n = _pn3.value.trim()
     const v = _pv3.value
     const ageEl = document.getElementById('prof-age')
@@ -846,9 +846,9 @@ var ui = window.ui = Object.assign(window.ui || {}, {
     }
     S.name = n
     S.vehicle = v
-    if (ageEl) S.age = parseInt(ageEl.value) || 18
-    if (gradeEl) S.grade = parseInt(gradeEl.value) || 5
-    if (langEl) S.language = langEl.value
+    if (ageEl) {S.age = parseInt(ageEl.value) || 18}
+    if (gradeEl) {S.grade = parseInt(gradeEl.value) || 5}
+    if (langEl) {S.language = langEl.value}
     save()
     
 
@@ -883,18 +883,18 @@ var ui = window.ui = Object.assign(window.ui || {}, {
   },
   getAgeBracket() {
     const age = S.age || 18
-    if (age <= 12) return 'child'
-    if (age <= 17) return 'teen'
-    if (age <= 25) return 'young'
-    if (age <= 50) return 'adult'
+    if (age <= 12) {return 'child'}
+    if (age <= 17) {return 'teen'}
+    if (age <= 25) {return 'young'}
+    if (age <= 50) {return 'adult'}
     return 'senior'
   },
   getGradeTier() {
 
     const grade = S.grade || 5
-    if (grade <= 3) return 'grade-low'
-    if (grade <= 6) return 'grade-mid'
-    if (grade <= 9) return 'grade-high'
+    if (grade <= 3) {return 'grade-low'}
+    if (grade <= 6) {return 'grade-mid'}
+    if (grade <= 9) {return 'grade-high'}
     return 'grade-max'
   },
   getGradeConfig() {
@@ -919,7 +919,7 @@ _applyAgeTier() {
     document.body.dataset.gradeTier = gradeTier
 
 
-    if (!S.grade) S.grade = 5
+    if (!S.grade) {S.grade = 5}
 
     this._applyGradeUI()
   },
@@ -1002,7 +1002,7 @@ _applyAgeTier() {
     this.show('screen-certificate', { direction: 'forward' })
 
     const cname = document.getElementById('cname')
-    if (cname) cname.innerText = (S.name || 'DRIVER').toUpperCase()
+    if (cname) {cname.innerText = (S.name || 'DRIVER').toUpperCase()}
 
     const certNum = document.getElementById('cert-num')
     if (certNum) {
@@ -1026,26 +1026,26 @@ _applyAgeTier() {
       const b = BADGES.find((x) => x.id === badgeId)
       if (b) {
         const hasBadge = S.badges && S.badges.includes(badgeId)
-        if (cTitle) cTitle.innerText = b.name
+        if (cTitle) {cTitle.innerText = b.name}
         if (cIcon) {
           cIcon.innerText = b.icon
           cIcon.style.display = 'block'
         }
-        if (cStat) cStat.innerText = hasBadge ? `ACHIEVEMENT UNLOCKED: ${b.desc}` : `LOCKED: Complete requirements to unlock`
+        if (cStat) {cStat.innerText = hasBadge ? `ACHIEVEMENT UNLOCKED: ${b.desc}` : `LOCKED: Complete requirements to unlock`}
         if (certNum)
-          certNum.innerText = hasBadge ? `BDG-${badgeId
+          {certNum.innerText = hasBadge ? `BDG-${badgeId
             .toUpperCase()
             .replace(/[^A-Z]/g, '')
-            .substring(0, 5)}-${Math.floor(Math.random() * 10000)}` : '---'
-        if (cScoreLbl) cScoreLbl.innerText = hasBadge ? 'Mastered' : 'Locked'
-        if (cdownloadBtn) cdownloadBtn.style.display = hasBadge ? 'flex' : 'none'
+            .substring(0, 5)}-${Math.floor(Math.random() * 10000)}` : '---'}
+        if (cScoreLbl) {cScoreLbl.innerText = hasBadge ? 'Mastered' : 'Locked'}
+        if (cdownloadBtn) {cdownloadBtn.style.display = hasBadge ? 'flex' : 'none'}
         return
       }
     }
 
 
-    if (cTitle) cTitle.innerText = 'Traffic Hero Certification'
-    if (cIcon) cIcon.style.display = 'none'
+    if (cTitle) {cTitle.innerText = 'Traffic Hero Certification'}
+    if (cIcon) {cIcon.style.display = 'none'}
 
     const completedLevels = Object.keys(S.comp || {}).length
     const totalLevels = 52
@@ -1053,25 +1053,25 @@ _applyAgeTier() {
     let totalScore = 0,
       count = 0
     if (S.scores) {
-      for (let k in S.scores) {
+      for (const k in S.scores) {
         totalScore += S.scores[k]
         count++
       }
     }
-    let avgScore = count > 0 ? totalScore / count : 0
+    const avgScore = count > 0 ? totalScore / count : 0
 
 
     if (completedLevels >= totalLevels) {
-      if (cStat) cStat.innerText = `COMPLETED WITH ${Math.round(avgScore)}% PROFICIENCY`
-      if (cScoreLbl) cScoreLbl.innerText = `${Math.round(avgScore)}%`
-      if (cdownloadBtn) cdownloadBtn.style.display = 'flex'
+      if (cStat) {cStat.innerText = `COMPLETED WITH ${Math.round(avgScore)}% PROFICIENCY`}
+      if (cScoreLbl) {cScoreLbl.innerText = `${Math.round(avgScore)}%`}
+      if (cdownloadBtn) {cdownloadBtn.style.display = 'flex'}
     } else {
-      if (cStat) cStat.innerText = `IN PROGRESS: ${completedLevels}/${totalLevels} levels completed`
-      if (cScoreLbl) cScoreLbl.innerText = `${Math.round(avgScore)}%`
+      if (cStat) {cStat.innerText = `IN PROGRESS: ${completedLevels}/${totalLevels} levels completed`}
+      if (cScoreLbl) {cScoreLbl.innerText = `${Math.round(avgScore)}%`}
 
-      if (cdownloadBtn) cdownloadBtn.style.display = isLoggedIn ? 'flex' : 'none'
+      if (cdownloadBtn) {cdownloadBtn.style.display = isLoggedIn ? 'flex' : 'none'}
     }
-    if (certNum) certNum.innerText = completedLevels >= totalLevels ? S.certId : '---'
+    if (certNum) {certNum.innerText = completedLevels >= totalLevels ? S.certId : '---'}
   },
   getDriverRank(score) {
     const totalScore = score !== undefined ? score : (S.total || 0)
@@ -1099,7 +1099,7 @@ _applyAgeTier() {
   },
 
   updateDailyStreak() {
-    if (!S.streak) S.streak = { current: 0, best: 0, lastDate: null, freezes: 1 }
+    if (!S.streak) {S.streak = { current: 0, best: 0, lastDate: null, freezes: 1 }}
     const today = new Date().toISOString().slice(0, 10)
     const last = S.streak.lastDate
 
@@ -1123,8 +1123,8 @@ _applyAgeTier() {
         }
         save()
       } else if (diffDays === 2 && (S.streak.freezes > 0 || S.streakShield > 0)) {
-        if (S.streak.freezes > 0) S.streak.freezes--
-        else if (S.streakShield > 0) S.streakShield--
+        if (S.streak.freezes > 0) {S.streak.freezes--}
+        else if (S.streakShield > 0) {S.streakShield--}
         S.streak.lastDate = today
         toast(`🛡️ Streak Freeze saved your ${S.streak.current}-day streak!`, '#5ed4f5')
         save()
@@ -1168,10 +1168,10 @@ _applyAgeTier() {
           if (c && (c.score > 0 || c.completed || c.finalQuiz)) {
             const vio = c.vio !== undefined ? c.vio : 0
             const score = c.score || 0
-            if (vio === 0 && score >= 90) platinumCount++
-            else if (vio === 0) goldCount++
-            else if (vio <= 1) silverCount++
-            else bronzeCount++
+            if (vio === 0 && score >= 90) {platinumCount++}
+            else if (vio === 0) {goldCount++}
+            else if (vio <= 1) {silverCount++}
+            else {bronzeCount++}
           }
         })
       }
@@ -1353,8 +1353,8 @@ _applyAgeTier() {
     
 
     let hasStarted = false;
-    if (S.completed && S.completed.length > 0) hasStarted = true;
-    if (S.started && Object.keys(S.started).length > 0) hasStarted = true;
+    if (S.completed && S.completed.length > 0) {hasStarted = true;}
+    if (S.started && Object.keys(S.started).length > 0) {hasStarted = true;}
     
     const enterBtn = document.getElementById('enter-academy-btn');
     if (enterBtn) {
@@ -1381,7 +1381,7 @@ _applyAgeTier() {
     document.getElementById('name-dlg').classList.add('on')
     setTimeout(() => {
       const i = document.getElementById('name-input')
-      if (i) i.focus()
+      if (i) {i.focus()}
     }, 200)
   },
   _rain() {
@@ -1433,13 +1433,13 @@ _applyAgeTier() {
         
 
         let levelProgress = 0
-        if (cm) levelProgress = 100
+        if (cm) {levelProgress = 100}
         else if (ip && S.comp[lv.id]) {
 
           const subModules = ['intro', ...lv.hps.map((_, i) => 'rule' + i), 'law', 'theory', 'practical']
           let doneSubs = 0
           subModules.forEach(sm => {
-            if (S.comp[lv.id] && S.comp[lv.id][sm]) doneSubs++
+            if (S.comp[lv.id] && S.comp[lv.id][sm]) {doneSubs++}
           })
           levelProgress = Math.round((doneSubs / subModules.length) * 100)
         }
@@ -1515,7 +1515,7 @@ if (un) {
     }
     
 
-    if (!S.streak) S.streak = { current: 0, best: 0, lastDate: null }
+    if (!S.streak) {S.streak = { current: 0, best: 0, lastDate: null }}
     
 
     const streakEl = document.getElementById('br-streak')
@@ -1577,10 +1577,10 @@ if (un) {
         tab.style.color = 'var(--text)'
         tab.style.background = 'var(--panel)'
         this._currentModeTab = tab.dataset.mode
-        if (tab.dataset.mode === 'learn') this._selSyl('intro')
-        else if (tab.dataset.mode === 'practice') this._selSyl('practical')
-        else if (tab.dataset.mode === 'chaos') this._selSyl('chaos')
-        else if (tab.dataset.mode === 'exam') this._selSyl('exam')
+        if (tab.dataset.mode === 'learn') {this._selSyl('intro')}
+        else if (tab.dataset.mode === 'practice') {this._selSyl('practical')}
+        else if (tab.dataset.mode === 'chaos') {this._selSyl('chaos')}
+        else if (tab.dataset.mode === 'exam') {this._selSyl('exam')}
       }
 
       if (tab.dataset.mode === 'learn') {
@@ -1594,7 +1594,7 @@ if (un) {
   _updateBriefingForMode(lv, mode) {
     const config = window.COURSE?.getModeConfig?.(lv.id, mode.toUpperCase()) || {}
     const contentEl = document.getElementById('br-content')
-    if (!contentEl) return
+    if (!contentEl) {return}
     
     const syllabusEl = document.getElementById('br-syllabus')
     const items = this._getSyllabusForMode(lv, mode)
@@ -1630,7 +1630,7 @@ if (un) {
       })
     }
     
-    let firstUnviewed = items.find(it => !this._sylViewed.has(it.id))
+    const firstUnviewed = items.find(it => !this._sylViewed.has(it.id))
     this._selSyl(firstUnviewed ? firstUnviewed.id : (items[0]?.id || 'intro'))
     
     this._renderRewardsPreview(lv, mode, config)
@@ -1652,7 +1652,7 @@ if (un) {
     const progress = window.COURSE?.getModuleProgress?.(S) || []
     const mod = progress.find(p => p.module.id === moduleId)
     const container = document.getElementById('br-module-checklist')
-    if (!container || !mod) return
+    if (!container || !mod) {return}
     
     const modes = Object.keys(window.COURSE?.MODES || {})
     
@@ -1675,17 +1675,17 @@ if (un) {
   },
   _renderCampaignProgress(lv) {
     const campaignManager = window.game?.campaignManager
-    if (!campaignManager || !window.getCampaignsForModule) return
+    if (!campaignManager || !window.getCampaignsForModule) {return}
     
     const campaigns = window.getCampaignsForModule(lv.module?.id || 1)
-    if (!campaigns || campaigns.length === 0) return
+    if (!campaigns || campaigns.length === 0) {return}
     
     const campaign = campaigns[0]
     const progress = campaignManager.getCampaignProgress(campaign.id)
-    if (!progress) return
+    if (!progress) {return}
     
     const container = document.getElementById('br-campaign-progress')
-    if (!container) return
+    if (!container) {return}
     
     const { campaign: c, completedCount, totalMissions, currentMission, unlocked, progressPercent } = progress
     
@@ -1746,7 +1746,7 @@ if (un) {
   },
   _renderRewardsPreview(lv, mode, config) {
     const contentEl = document.getElementById('br-content')
-    if (!contentEl) return
+    if (!contentEl) {return}
     
     const xp = config.xpBase || 0
     const streakBonus = config.streakBonus || 0
@@ -1783,7 +1783,7 @@ if (un) {
   },
   showCommitmentPledge(levelId) {
     const lv = LVS.find(l => l.id === levelId)
-    if (!lv) return
+    if (!lv) {return}
     
     const modal = document.createElement('div')
     modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;'
@@ -1810,17 +1810,17 @@ if (un) {
     document.body.appendChild(modal)
   },
   savePledge(levelId, ifStatement, thenStatement) {
-    if (!S.pledges) S.pledges = {}
+    if (!S.pledges) {S.pledges = {}}
     S.pledges[levelId] = { if: ifStatement, then: thenStatement, created: Date.now() }
     save()
     toast('🤝 Pledge saved! Your if-then plan is set.', '#5ED4F5')
 
     const lv = LVS.find(l => l.id === levelId)
-    if (lv) this._renderPledgeCard(lv)
+    if (lv) {this._renderPledgeCard(lv)}
   },
   _renderPledgeCard(lv) {
     const container = document.getElementById('br-pledge')
-    if (!container) return
+    if (!container) {return}
     const hasPledge = S.pledges && S.pledges[lv.id]
     container.style.display = 'block'
     if (hasPledge) {
@@ -1849,30 +1849,30 @@ if (un) {
   _selSyl(id) {
     const lv = this._sylLv,
       items = this._sylItems
-    if (!lv) return
+    if (!lv) {return}
 
 
     if (id === 'pledge') {
       document.querySelectorAll('.syl-item').forEach((el) => el.classList.remove('syl-active'))
       const el = document.getElementById('syl-' + id)
-      if (el) el.classList.add('syl-active')
+      if (el) {el.classList.add('syl-active')}
       this.showCommitmentPledge(lv.id)
       if (!this._sylViewed.has(id)) {
         this._sylViewed.add(id)
-        if (!S.sylViewed) S.sylViewed = {}
-        if (!S.sylViewed[lv.id]) S.sylViewed[lv.id] = []
+        if (!S.sylViewed) {S.sylViewed = {}}
+        if (!S.sylViewed[lv.id]) {S.sylViewed[lv.id] = []}
         if (!S.sylViewed[lv.id].includes(id)) {
           S.sylViewed[lv.id].push(id)
         }
-        if (typeof save === 'function') save()
+        if (typeof save === 'function') {save()}
         const sylEl = document.getElementById('syl-' + id)
-        if (sylEl) sylEl.classList.add('syl-done')
+        if (sylEl) {sylEl.classList.add('syl-done')}
       }
       const pct = Math.round((this._sylViewed.size / items.length) * 100)
       const progFill = document.getElementById('br-prog-fill')
       const progLabel = document.getElementById('br-prog-label')
-      if (progFill) progFill.style.width = pct + '%'
-      if (progLabel) progLabel.textContent = pct + '%'
+      if (progFill) {progFill.style.width = pct + '%'}
+      if (progLabel) {progLabel.textContent = pct + '%'}
       return
     }
 
@@ -1880,46 +1880,46 @@ if (un) {
     ui.curMode = ui.curMode || (lv.modes ? lv.modes[0] : 'car')
     document.querySelectorAll('.syl-item').forEach((el) => el.classList.remove('syl-active'))
     const el = document.getElementById('syl-' + id)
-    if (el) el.classList.add('syl-active')
+    if (el) {el.classList.add('syl-active')}
     if (!this._sylViewed.has(id)) {
       this._sylViewed.add(id)
       
 
-      if (!S.sylViewed) S.sylViewed = {}
-      if (!S.sylViewed[lv.id]) S.sylViewed[lv.id] = []
+      if (!S.sylViewed) {S.sylViewed = {}}
+      if (!S.sylViewed[lv.id]) {S.sylViewed[lv.id] = []}
       if (!S.sylViewed[lv.id].includes(id)) {
         S.sylViewed[lv.id].push(id)
       }
       
-      if (!S.started) S.started = {}
+      if (!S.started) {S.started = {}}
       S.started[lv.id] = true
 
 
       const allViewed = items.every(it => S.sylViewed[lv.id].includes(it.id))
       if (allViewed || id === 'practical' || id === 'exam') {
-        if (!S.comp) S.comp = {}
+        if (!S.comp) {S.comp = {}}
         if (!S.comp[lv.id]) {
           S.comp[lv.id] = { score: 100, time: Date.now(), finalQuiz: true, modes: { learn: true } }
         } else {
           S.comp[lv.id].score = Math.max(S.comp[lv.id].score || 0, 100)
           S.comp[lv.id].finalQuiz = true
-          if (!S.comp[lv.id].modes) S.comp[lv.id].modes = {}
+          if (!S.comp[lv.id].modes) {S.comp[lv.id].modes = {}}
           S.comp[lv.id].modes.learn = true
         }
       }
 
-      if (typeof save === 'function') save()
+      if (typeof save === 'function') {save()}
 
       const sylEl = document.getElementById('syl-' + id)
-      if (sylEl) sylEl.classList.add('syl-done')
+      if (sylEl) {sylEl.classList.add('syl-done')}
     }
     
 
     const pct = Math.round((this._sylViewed.size / items.length) * 100)
     const progFill = document.getElementById('br-prog-fill')
     const progLabel = document.getElementById('br-prog-label')
-    if (progFill) progFill.style.width = pct + '%'
-    if (progLabel) progLabel.textContent = pct + '%'
+    if (progFill) {progFill.style.width = pct + '%'}
+    if (progLabel) {progLabel.textContent = pct + '%'}
 
     const c = document.getElementById('br-content')
     c.innerHTML = ''
@@ -2417,7 +2417,7 @@ if (un) {
   },
   _diag(id) {
     const lv = LVS.find((l) => l.id === id)
-    if (!lv) return ''
+    if (!lv) {return ''}
     const themeLabel = (lv.themeType || 'traffic_safety').replace(/_/g, ' ')
     const fineText = lv.law?.fine || '₹500 - ₹2000'
     const bgGradient = lv.gr || 'linear-gradient(135deg, #1e293b, #0f172a)'
@@ -2440,29 +2440,29 @@ if (un) {
     const name = String(lv?.name || '').toLowerCase();
 
     let key = 'grand_test';
-    if (theme.includes('ambulance') || name.includes('ambulance')) key = 'ambulance_priority';
-    else if (theme.includes('signal') || name.includes('red light') || name.includes('signal')) key = 'signal_jump';
-    else if (theme.includes('puddle') || theme.includes('puddle_etiquette')) key = 'puddle_etiquette';
-    else if (theme.includes('parking') || theme.includes('market_street') || name.includes('parking')) key = 'street_parking';
-    else if (theme.includes('silent') || theme.includes('no_honk') || theme.includes('quiet') || name.includes('silence') || name.includes('library') || name.includes('temple')) key = 'silent_zone';
-    else if (theme.includes('festival') || name.includes('festival') || name.includes('parade')) key = 'festival';
-    else if (theme.includes('rage') || name.includes('road rage')) key = 'road_rage';
-    else if (theme.includes('sign') || name.includes('sign')) key = 'signs';
-    else if (theme.includes('animal') || theme.includes('cow') || name.includes('cow')) key = 'animals';
-    else if (theme.includes('narrow') || theme.includes('rural') || name.includes('narrow') || name.includes('kacha')) key = 'narrow_street';
-    else if (theme.includes('auto') || theme.includes('multi_modal') || name.includes('auto')) key = 'auto_dance';
-    else if (theme.includes('toll') || name.includes('toll')) key = 'toll';
-    else if (theme.includes('blind') || theme.includes('mountain') || name.includes('blind') || name.includes('mountain')) key = 'blind_corner';
-    else if (theme.includes('hill') || name.includes('hill')) key = 'hill_driving';
-    else if (theme.includes('bus') || name.includes('bus')) key = 'bus_stop';
-    else if (theme.includes('construction') || name.includes('construction')) key = 'construction';
-    else if (theme.includes('wrong') || theme.includes('one_way') || name.includes('one-way') || name.includes('wrong-side')) key = 'one_way';
-    else if (theme.includes('cyclist') || name.includes('cyclist') || name.includes('cycle')) key = 'cyclist';
-    else if (theme.includes('merge') || theme.includes('lane') || name.includes('merge') || name.includes('lane discipline')) key = 'highway_merge';
-    else if (theme.includes('zero_vis') || theme.includes('night_monsoon') || name.includes('zero visibility')) key = 'zero_visibility';
-    else if (theme.includes('rain') || name.includes('heavy rain')) key = 'puddle_etiquette';
-    else if (theme.includes('pedestrian') || theme.includes('school') || name.includes('pedestrian') || name.includes('crossing')) key = 'pedestrian_courtesy';
-    else if (theme.includes('grand') || theme.includes('driving_school') || theme.includes('free_roam') || name.includes('grand') || name.includes('instructor') || name.includes('free roam')) key = 'grand_test';
+    if (theme.includes('ambulance') || name.includes('ambulance')) {key = 'ambulance_priority';}
+    else if (theme.includes('signal') || name.includes('red light') || name.includes('signal')) {key = 'signal_jump';}
+    else if (theme.includes('puddle') || theme.includes('puddle_etiquette')) {key = 'puddle_etiquette';}
+    else if (theme.includes('parking') || theme.includes('market_street') || name.includes('parking')) {key = 'street_parking';}
+    else if (theme.includes('silent') || theme.includes('no_honk') || theme.includes('quiet') || name.includes('silence') || name.includes('library') || name.includes('temple')) {key = 'silent_zone';}
+    else if (theme.includes('festival') || name.includes('festival') || name.includes('parade')) {key = 'festival';}
+    else if (theme.includes('rage') || name.includes('road rage')) {key = 'road_rage';}
+    else if (theme.includes('sign') || name.includes('sign')) {key = 'signs';}
+    else if (theme.includes('animal') || theme.includes('cow') || name.includes('cow')) {key = 'animals';}
+    else if (theme.includes('narrow') || theme.includes('rural') || name.includes('narrow') || name.includes('kacha')) {key = 'narrow_street';}
+    else if (theme.includes('auto') || theme.includes('multi_modal') || name.includes('auto')) {key = 'auto_dance';}
+    else if (theme.includes('toll') || name.includes('toll')) {key = 'toll';}
+    else if (theme.includes('blind') || theme.includes('mountain') || name.includes('blind') || name.includes('mountain')) {key = 'blind_corner';}
+    else if (theme.includes('hill') || name.includes('hill')) {key = 'hill_driving';}
+    else if (theme.includes('bus') || name.includes('bus')) {key = 'bus_stop';}
+    else if (theme.includes('construction') || name.includes('construction')) {key = 'construction';}
+    else if (theme.includes('wrong') || theme.includes('one_way') || name.includes('one-way') || name.includes('wrong-side')) {key = 'one_way';}
+    else if (theme.includes('cyclist') || name.includes('cyclist') || name.includes('cycle')) {key = 'cyclist';}
+    else if (theme.includes('merge') || theme.includes('lane') || name.includes('merge') || name.includes('lane discipline')) {key = 'highway_merge';}
+    else if (theme.includes('zero_vis') || theme.includes('night_monsoon') || name.includes('zero visibility')) {key = 'zero_visibility';}
+    else if (theme.includes('rain') || name.includes('heavy rain')) {key = 'puddle_etiquette';}
+    else if (theme.includes('pedestrian') || theme.includes('school') || name.includes('pedestrian') || name.includes('crossing')) {key = 'pedestrian_courtesy';}
+    else if (theme.includes('grand') || theme.includes('driving_school') || theme.includes('free_roam') || name.includes('grand') || name.includes('instructor') || name.includes('free roam')) {key = 'grand_test';}
 
     const isNight = theme.includes('night') || key === 'zero_visibility';
     const isRain = theme.includes('rain') || theme.includes('monsoon') || key === 'puddle_etiquette' || key === 'zero_visibility';
@@ -2531,7 +2531,7 @@ if (un) {
     const idx = (speeds.indexOf(this._simState.speed) + 1) % speeds.length;
     this._simState.speed = speeds[idx];
     const btn = document.getElementById('sim-speed-btn');
-    if (btn) btn.textContent = this._simState.speed + 'x';
+    if (btn) {btn.textContent = this._simState.speed + 'x';}
   },
   _simRestart() {
     this._simState.time = 0;
@@ -2546,9 +2546,9 @@ if (un) {
       this._simAnimId = null;
     }
     const canvas = document.getElementById('scenario-sim-canvas');
-    if (!canvas) return;
+    if (!canvas) {return;}
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) {return;}
 
     this._simState.isPlaying = true;
     this._simState.speed = 1.0;
@@ -2585,7 +2585,7 @@ if (un) {
       }
 
       const wrap = canvas.parentElement;
-      if (!wrap) return;
+      if (!wrap) {return;}
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const w = wrap.clientWidth;
       const h = wrap.clientHeight;
@@ -2724,7 +2724,7 @@ if (un) {
       function drawVectorCar(cx, cy, color, isBraking, headlightsOn, turnSignal, rollAngle, isPolice) {
         ctx.save();
         ctx.translate(cx, cy);
-        if (rollAngle) ctx.rotate(rollAngle);
+        if (rollAngle) {ctx.rotate(rollAngle);}
 
         ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
         ctx.beginPath();
@@ -2828,7 +2828,7 @@ if (un) {
       function drawAutoRickshaw(rx, ry, isWobbling) {
         ctx.save();
         ctx.translate(rx, ry);
-        if (isWobbling) ctx.rotate(Math.sin(now * 0.015) * 0.06);
+        if (isWobbling) {ctx.rotate(Math.sin(now * 0.015) * 0.06);}
 
         ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
         ctx.beginPath(); ctx.ellipse(0, 9, 24, 5, 0, 0, Math.PI * 2); ctx.fill();
@@ -3140,7 +3140,7 @@ if (un) {
           statusColor = isHonking ? '#ef4444' : '#10b981';
 
           drawVectorCar(px, roadTop + roadHeight * 0.28, '#3b82f6', false, true, false);
-          if (isHonking) drawVectorCar(px - 90, roadTop + roadHeight * 0.28, '#ef4444', false, true, false);
+          if (isHonking) {drawVectorCar(px - 90, roadTop + roadHeight * 0.28, '#ef4444', false, true, false);}
           showAlert('🔇 SILENT ZONE: HONKING PROHIBITED NEAR HOSPITALS/SCHOOLS (SEC 194F)', isHonking);
           break;
         }
@@ -3286,8 +3286,8 @@ if (un) {
           const isBarrierOpen = t > 4.0;
           ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 4;
           ctx.beginPath(); ctx.moveTo(tollX + 32, roadTop + 10);
-          if (isBarrierOpen) ctx.lineTo(tollX + 32, roadTop - 40); // Up
-          else ctx.lineTo(tollX - 35, roadTop + 10); // Down
+          if (isBarrierOpen) {ctx.lineTo(tollX + 32, roadTop - 40);} // Up
+          else {ctx.lineTo(tollX - 35, roadTop + 10);} // Down
           ctx.stroke();
 
           // Green Laser RFID scan beam
@@ -3519,8 +3519,8 @@ if (un) {
       }
 
       // ── 6. TELEMETRY HUD UPDATE ──
-      if (speedValEl) speedValEl.textContent = `${carSpeed} km/h`;
-      if (brakeValEl) brakeValEl.textContent = `${brakePercent}%`;
+      if (speedValEl) {speedValEl.textContent = `${carSpeed} km/h`;}
+      if (brakeValEl) {brakeValEl.textContent = `${brakePercent}%`;}
       if (statusValEl) {
         statusValEl.textContent = statusText;
         statusValEl.style.color = statusColor;
@@ -3544,10 +3544,10 @@ if (un) {
       }
       if (this._bScene) {
         this._bScene.traverse((c) => {
-          if (c.geometry) c.geometry.dispose()
+          if (c.geometry) {c.geometry.dispose()}
           if (c.material) {
-            if (Array.isArray(c.material)) c.material.forEach((m) => m.dispose())
-            else c.material.dispose()
+            if (Array.isArray(c.material)) {c.material.forEach((m) => m.dispose())}
+            else {c.material.dispose()}
           }
         })
         this._bScene = null
@@ -3556,9 +3556,9 @@ if (un) {
     }
   },
   _initBriefingScene(lv) {
-    if (typeof THREE === 'undefined') return
+    if (typeof THREE === 'undefined') {return}
     const wrap = document.getElementById('briefing-canvas-wrap')
-    if (!wrap) return
+    if (!wrap) {return}
     this._disposeBriefingScene()
     const W = wrap.clientWidth || 600,
       H = wrap.clientHeight || 280
@@ -3569,7 +3569,7 @@ if (un) {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     renderer.setClearColor(0x1a1f2e, 1)
     const oldCanvas = wrap.querySelector('canvas')
-    if (oldCanvas) oldCanvas.remove()
+    if (oldCanvas) {oldCanvas.remove()}
     wrap.appendChild(renderer.domElement)
     scene.add(new THREE.AmbientLight(0xffffff, 0.6))
     const dl = new THREE.DirectionalLight(0xffffff, 0.8)
@@ -3744,7 +3744,7 @@ if (un) {
       })
       npcs.forEach((npc) => {
         npc.position.x += npc.userData.speed * 0.016
-        if (npc.position.x > 30) npc.position.x = -30
+        if (npc.position.x > 30) {npc.position.x = -30}
       })
       t.children.forEach((c) => {
         if (c.userData && c.userData.isPed) {
@@ -3766,12 +3766,12 @@ if (un) {
     toast(`✅ Vehicle set to ${vehicleId}`, '#34d399')
 
     const lv = this.cur
-    if (lv) this._selSyl('practical')
+    if (lv) {this._selSyl('practical')}
   },
   selectMode(mode) {
     this.curMode = mode
     const lv = this.cur
-    if (lv) this._selSyl('practical')
+    if (lv) {this._selSyl('practical')}
   },
   dispatchStart(mode) {
     const lv = this.cur || (window.LVS && window.LVS[0]) || { id: 1 }
@@ -3837,7 +3837,7 @@ if (un) {
       const tag = perf.violations[0];
       const correction = typeof CORRECTIVE_QUIZ !== 'undefined' ? CORRECTIVE_QUIZ[tag] : null;
       if (correction) {
-        if (!qs) qs = [];
+        if (!qs) {qs = [];}
         qs = [...qs, { ...correction, o: [...correction.o] }];
       }
     }
@@ -3869,13 +3869,13 @@ if (un) {
     // Ensure all questions are well-formed (deep-cloned options, valid 4 choices)
     const validQuestions = [];
     qs.forEach((rawQ) => {
-      if (!rawQ || !rawQ.q || !Array.isArray(rawQ.o) || rawQ.o.length < 2) return;
+      if (!rawQ || !rawQ.q || !Array.isArray(rawQ.o) || rawQ.o.length < 2) {return;}
       const q = {
         q: String(rawQ.q),
         o: rawQ.o.map(opt => String(opt || '')),
         a: typeof rawQ.a === 'number' ? rawQ.a : 0
       };
-      while (q.o.length < 4) q.o.push('None of the above');
+      while (q.o.length < 4) {q.o.push('None of the above');}
       q.o = q.o.slice(0, 4);
       
       // Shuffle options and update answer index
@@ -3895,8 +3895,8 @@ if (un) {
 
     // Hide game canvas and pause game loop
     const gc = document.getElementById('gc');
-    if (gc) gc.classList.remove('on');
-    if (window.game) window.game.playing = false;
+    if (gc) {gc.classList.remove('on');}
+    if (window.game) {window.game.playing = false;}
 
     this._rq();
     this.show('screen-quiz', { direction: 'forward', instant: true });
@@ -3914,7 +3914,7 @@ if (un) {
       q = s.qs[s.cur]
     document.querySelectorAll('.qo').forEach((o) => (o.disabled = true))
     document.querySelectorAll('.qo')[idx].classList.add(idx === q.a ? 'ok' : 'no')
-    if (idx !== q.a) document.querySelectorAll('.qo')[q.a].classList.add('rv')
+    if (idx !== q.a) {document.querySelectorAll('.qo')[q.a].classList.add('rv')}
     const fb = document.getElementById('qfb')
     if (idx === q.a) {
       fb.textContent = '✅ Correct!'
@@ -3933,8 +3933,8 @@ if (un) {
   nextQ() {
     const s = this.qst
     s.cur++
-    if (s.cur < s.qs.length) this._rq()
-    else this._fq()
+    if (s.cur < s.qs.length) {this._rq()}
+    else {this._fq()}
   },
   _fq() {
     const s = this.qst
@@ -3948,8 +3948,8 @@ if (un) {
     } else {
       const lv = this.cur || (window.LVS && window.LVS.find(l => l.id == (this.qst?.lvId || 1))) || window.LVS?.[0]
       if (lv && lv.id) {
-        if (!S.comp[lv.id]) S.comp[lv.id] = {}
-        if (!S.comp[lv.id].modes) S.comp[lv.id].modes = {}
+        if (!S.comp[lv.id]) {S.comp[lv.id] = {}}
+        if (!S.comp[lv.id].modes) {S.comp[lv.id].modes = {}}
         S.comp[lv.id].modes[s.mode || 'practice'] = true
         S.comp[lv.id].completed = true
         S.comp[lv.id].finalQuiz = true
@@ -3965,22 +3965,22 @@ if (un) {
           S._counted = _countKey
           S.total = (S.total || 0) + finalScore
         }
-        if (lv.badge && !S.badges.includes(lv.badge.id)) S.badges.push(lv.badge.id)
+        if (lv.badge && !S.badges.includes(lv.badge.id)) {S.badges.push(lv.badge.id)}
 
         const completedCount = Object.keys(S.comp).length
-        if (completedCount >= 10 && !S.badges.includes('level_10')) S.badges.push('level_10')
-        if (completedCount >= 20 && !S.badges.includes('level_20')) S.badges.push('level_20')
-        if (completedCount >= 30 && !S.badges.includes('level_30')) S.badges.push('level_30')
-        if (completedCount >= 40 && !S.badges.includes('level_40')) S.badges.push('level_40')
-        if (completedCount >= 52 && !S.badges.includes('level_52')) S.badges.push('level_52')
-        if (completedCount >= 52 && !S.badges.includes('traffic_hero')) S.badges.push('traffic_hero')
+        if (completedCount >= 10 && !S.badges.includes('level_10')) {S.badges.push('level_10')}
+        if (completedCount >= 20 && !S.badges.includes('level_20')) {S.badges.push('level_20')}
+        if (completedCount >= 30 && !S.badges.includes('level_30')) {S.badges.push('level_30')}
+        if (completedCount >= 40 && !S.badges.includes('level_40')) {S.badges.push('level_40')}
+        if (completedCount >= 52 && !S.badges.includes('level_52')) {S.badges.push('level_52')}
+        if (completedCount >= 52 && !S.badges.includes('traffic_hero')) {S.badges.push('traffic_hero')}
 
         const vioCount = window.game?.fst?.vio || 0
         const civicGain = vioCount === 0 ? 25 : vioCount <= 2 ? 10 : vioCount <= 4 ? 3 : 0
         S.civicScore = (S.civicScore || 0) + civicGain
 
-        if (!S.violationHistory) S.violationHistory = {}
-        ;(window.game?.violationsLog || []).forEach((v) => {
+        if (!S.violationHistory) {S.violationHistory = {}
+        ;}(window.game?.violationsLog || []).forEach((v) => {
           S.violationHistory[v] = (S.violationHistory[v] || 0) + 1
         })
         const tiers = [
@@ -4020,7 +4020,7 @@ if (un) {
     if (lv && lv.id) {
       const prev = S.comp[lv.id]?.score || 0
       S.comp[lv.id] = { ...S.comp[lv.id], score: Math.max(score, prev), time: Date.now(), finalQuiz: true, completed: true }
-      if (!S.comp[lv.id].modes) S.comp[lv.id].modes = {}
+      if (!S.comp[lv.id].modes) {S.comp[lv.id].modes = {}}
       S.comp[lv.id].modes.learn = true
       S.comp[lv.id].modes.practice = true
       // Skip if the quiz-pass block just counted this exact (level, score)
@@ -4037,8 +4037,8 @@ if (un) {
       const civicGain = vioCount === 0 ? 25 : vioCount <= 2 ? 10 : vioCount <= 4 ? 3 : 0
       S.civicScore = (S.civicScore || 0) + civicGain
     }
-    if (!S.violationHistory) S.violationHistory = {}
-    ;(stats?.violations || window.game?.violationsLog || []).forEach((v) => {
+    if (!S.violationHistory) {S.violationHistory = {}
+    ;}(stats?.violations || window.game?.violationsLog || []).forEach((v) => {
       S.violationHistory[v] = (S.violationHistory[v] || 0) + 1
     })
     ;[
@@ -4059,17 +4059,17 @@ if (un) {
       S.badges.push(lv.badge.id)
       be = lv.badge
     }
-    if (!S.badges.includes('signal_master') && Object.keys(S.comp).length >= 5 && !stats.vio) S.badges.push('signal_master')
-    if (S.badges.includes('traffic_hero') && !S.badges.includes('smart_citizen')) S.badges.push('smart_citizen')
+    if (!S.badges.includes('signal_master') && Object.keys(S.comp).length >= 5 && !stats.vio) {S.badges.push('signal_master')}
+    if (S.badges.includes('traffic_hero') && !S.badges.includes('smart_citizen')) {S.badges.push('smart_citizen')}
 
 
     const completedCount = Object.keys(S.comp).length
-    if (completedCount >= 10 && !S.badges.includes('level_10')) S.badges.push('level_10')
-    if (completedCount >= 20 && !S.badges.includes('level_20')) S.badges.push('level_20')
-    if (completedCount >= 30 && !S.badges.includes('level_30')) S.badges.push('level_30')
-    if (completedCount >= 40 && !S.badges.includes('level_40')) S.badges.push('level_40')
-    if (completedCount >= 52 && !S.badges.includes('level_52')) S.badges.push('level_52')
-    if (completedCount >= 52 && !S.badges.includes('traffic_hero')) S.badges.push('traffic_hero')
+    if (completedCount >= 10 && !S.badges.includes('level_10')) {S.badges.push('level_10')}
+    if (completedCount >= 20 && !S.badges.includes('level_20')) {S.badges.push('level_20')}
+    if (completedCount >= 30 && !S.badges.includes('level_30')) {S.badges.push('level_30')}
+    if (completedCount >= 40 && !S.badges.includes('level_40')) {S.badges.push('level_40')}
+    if (completedCount >= 52 && !S.badges.includes('level_52')) {S.badges.push('level_52')}
+    if (completedCount >= 52 && !S.badges.includes('traffic_hero')) {S.badges.push('traffic_hero')}
 
 
     const themeTypes = {
@@ -4082,7 +4082,7 @@ if (un) {
 
 
     for (const [badgeId, themes] of Object.entries(themeTypes)) {
-      if (S.badges.includes(badgeId)) continue
+      if (S.badges.includes(badgeId)) {continue}
       const categoryLevels = LVS.filter(l => themes.some(t => (l.themeType || '').includes(t)))
       const completedCategoryLevels = categoryLevels.filter(l => S.comp[l.id])
       if (completedCategoryLevels.length >= categoryLevels.length && categoryLevels.length > 0) {
@@ -4092,11 +4092,11 @@ if (un) {
 
     save()
     const rico = document.getElementById('rico')
-    if (rico) rico.textContent = score > 200 ? '🌟' : '⭐'
+    if (rico) {rico.textContent = score > 200 ? '🌟' : '⭐'}
     const rtit = document.getElementById('rtit')
-    if (rtit) rtit.textContent = 'Level Complete!'
+    if (rtit) {rtit.textContent = 'Level Complete!'}
     const rsub = document.getElementById('rsub')
-    if (rsub) rsub.textContent = (lv.name || 'Lesson') + ' 🔄 Well done!'
+    if (rsub) {rsub.textContent = (lv.name || 'Lesson') + ' 🔄 Well done!'}
 
     // Generate and store certificate data for sharing
     const certData = this._generateCertificateData(lv, score, stats)
@@ -4117,13 +4117,13 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
 </div>`
     }
     const ro = document.getElementById('ro')
-    if (ro) ro.classList.add('on')
-    if (window.sfx && typeof window.sfx.play === 'function') sfx.play('win')
+    if (ro) {ro.classList.add('on')}
+    if (window.sfx && typeof window.sfx.play === 'function') {sfx.play('win')}
   },
   challanHistory: [],
   issueChallan(off, sec, amt, loc, cb) {
     this.cq.push({ off, sec, amt, loc, cb })
-    if (!this.cbusy) this._nc()
+    if (!this.cbusy) {this._nc()}
   },
   _nc() {
     if (!this.cq.length) {
@@ -4136,7 +4136,7 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
       const cId = 'MTP/2026/' + (Math.floor(Math.random() * 90000) + 10000)
       const cTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
       const challanItem = { id: cId, off: c.off, sec: c.sec, amt: c.amt, loc: c.loc || '📍 Mumbai', time: cTime }
-      if (!this.challanHistory) this.challanHistory = []
+      if (!this.challanHistory) {this.challanHistory = []}
       this.challanHistory.push(challanItem)
       this._updateChallanSummaryBox()
 
@@ -4147,19 +4147,19 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
         vf.classList.add('flash')
       }
       const cnumEl = document.getElementById('cnum')
-      if (cnumEl) cnumEl.textContent = cId
+      if (cnumEl) {cnumEl.textContent = cId}
       const coffEl = document.getElementById('coff')
-      if (coffEl) coffEl.textContent = c.off
+      if (coffEl) {coffEl.textContent = c.off}
       const clawEl = document.getElementById('claw')
-      if (clawEl) clawEl.textContent = c.sec
+      if (clawEl) {clawEl.textContent = c.sec}
       const camtEl = document.getElementById('camt')
-      if (camtEl) camtEl.textContent = c.amt
+      if (camtEl) {camtEl.textContent = c.amt}
       const locEl = document.getElementById('cloc')
-      if (locEl) locEl.textContent = c.loc || '📍 Mumbai'
+      if (locEl) {locEl.textContent = c.loc || '📍 Mumbai'}
       const covEl = document.getElementById('cov')
-      if (covEl) covEl.classList.add('on')
+      if (covEl) {covEl.classList.add('on')}
       this._ccb = c.cb || null
-      if (game.playing) game.pause = true
+      if (game.playing) {game.pause = true}
       sfx.play('challan')
     } catch (e) {
       console.warn('Challan display error:', e)
@@ -4171,7 +4171,7 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
   },
   _updateChallanSummaryBox() {
     const csb = document.getElementById('challan-summary-box')
-    if (!csb) return
+    if (!csb) {return}
     const totalCount = (this.challanHistory || []).length
     if (totalCount === 0) {
       csb.style.display = 'none'
@@ -4186,8 +4186,8 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
     const latest = this.challanHistory[this.challanHistory.length - 1]
     const titleEl = document.getElementById('csb-title')
     const subEl = document.getElementById('csb-sub')
-    if (titleEl) titleEl.textContent = '🚨 ' + (latest ? latest.off : 'E-Challan')
-    if (subEl) subEl.textContent = `${totalCount} Violation${totalCount > 1 ? 's' : ''} (₹${totalAmt.toLocaleString('en-IN')})`
+    if (titleEl) {titleEl.textContent = '🚨 ' + (latest ? latest.off : 'E-Challan')}
+    if (subEl) {subEl.textContent = `${totalCount} Violation${totalCount > 1 ? 's' : ''} (₹${totalAmt.toLocaleString('en-IN')})`}
   },
   dismissChallan() {
     const cov = document.getElementById('cov')
@@ -4223,7 +4223,7 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
       }
     }
 
-    if (cov) cov.classList.remove('on')
+    if (cov) {cov.classList.remove('on')}
     this._updateChallanSummaryBox()
 
     setTimeout(() => {
@@ -4231,14 +4231,14 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
         this._ccb()
         this._ccb = null
       }
-      if (game.playing) game.pause = false
+      if (game.playing) {game.pause = false}
       this.cbusy = false
       setTimeout(() => this._nc(), 80)
     }, 500)
   },
   openChallanHistoryModal() {
     const modal = document.getElementById('challan-history-modal')
-    if (!modal) return
+    if (!modal) {return}
     const list = document.getElementById('chm-list')
     const totalValEl = document.getElementById('chm-total-val')
     const history = this.challanHistory || []
@@ -4266,12 +4266,12 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
         }).join('')
       }
     }
-    if (totalValEl) totalValEl.textContent = '₹' + totalAmt.toLocaleString('en-IN')
+    if (totalValEl) {totalValEl.textContent = '₹' + totalAmt.toLocaleString('en-IN')}
     modal.classList.add('on')
   },
   closeChallanHistoryModal() {
     const modal = document.getElementById('challan-history-modal')
-    if (modal) modal.classList.remove('on')
+    if (modal) {modal.classList.remove('on')}
   },
   
   // ─── CERTIFICATE GENERATION ───
@@ -4439,14 +4439,14 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
     }, 100);
   },
   exit2D() {
-    if (typeof destroyScenario2D === 'function') destroyScenario2D()
+    if (typeof destroyScenario2D === 'function') {destroyScenario2D()}
     this._cur2D = null
     this.showLevels()
   },
   restart2D() {
-    if (!this._cur2D) return
+    if (!this._cur2D) {return}
     const id = this._cur2D.id
-    if (typeof destroyScenario2D === 'function') destroyScenario2D()
+    if (typeof destroyScenario2D === 'function') {destroyScenario2D()}
     setTimeout(() => {
       if (typeof initScenario2D === 'function') {
         initScenario2D('scenario2d-container', id)
@@ -4552,14 +4552,14 @@ const _genTex = (type) => {
   const tex = new THREE.CanvasTexture(c)
   tex.wrapS = THREE.RepeatWrapping
   tex.wrapT = THREE.RepeatWrapping
-  if (type === 'pave' || type === 'asphalt') tex.repeat.set(4, 4)
-  else if (type === 'building' || type === 'bank' || type === 'temple' || type === 'police' || type === 'hospital') tex.repeat.set(2, 2)
+  if (type === 'pave' || type === 'asphalt') {tex.repeat.set(4, 4)}
+  else if (type === 'building' || type === 'bank' || type === 'temple' || type === 'police' || type === 'hospital') {tex.repeat.set(2, 2)}
   return tex
 }
 
 let gTex = null
 const initGTex = () => {
-  if (gTex) return
+  if (gTex) {return}
   gTex = {
     asphalt: _genTex('asphalt'),
     pave: _genTex('pave'),
@@ -5159,8 +5159,8 @@ const _buildSampleGLBPlayer = (isPlayer = true, app = {}) => {
 
     // Universal Bounding-Box Height & Axis Normalizer
     scene.updateMatrixWorld(true)
-    let box = new THREE.Box3().setFromObject(scene)
-    let size = new THREE.Vector3()
+    const box = new THREE.Box3().setFromObject(scene)
+    const size = new THREE.Vector3()
     box.getSize(size)
 
     // Check dominant height axis
@@ -5212,7 +5212,7 @@ const _buildSampleGLBPlayer = (isPlayer = true, app = {}) => {
     const fileToLoad = sampleDef ? sampleDef.file : 'Models/character_hero_green.glb'
     new THREE.GLTFLoader().load(fileToLoad, function(gltf) {
       window['_sampleGLBModel_' + sampleId] = gltf.scene
-      if (gltf.animations) gltf.scene.animations = gltf.animations
+      if (gltf.animations) {gltf.scene.animations = gltf.animations}
       setupScene(gltf.scene, gltf.animations)
     }, undefined, function(err) {
       console.warn('[Player] ' + fileToLoad + ' load error:', err)
@@ -5282,7 +5282,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
   // ── NPC Pedestrians using 3D Hero/Citizen mesh ─────────────────────────
   if (!isPlayer && Math.random() < 0.35) {
     const npcSample = _buildSampleGLBPlayer(false, { variant })
-    if (npcSample) return npcSample
+    if (npcSample) {return npcSample}
   }
 
   const PM = window.PRELOADED_MODELS || {}
@@ -5367,7 +5367,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
       }
       const vc = variantColors[variant] || variantColors.normal
       charScene.traverse(c => {
-        if (!c.isMesh) return
+        if (!c.isMesh) {return}
         const nm = c.name.toLowerCase()
         if (nm.includes('shirt') || nm.includes('top') || nm.includes('torso') || nm.includes('body')) {
           c.material = c.material.clone()
@@ -5393,8 +5393,8 @@ const _buildHuman = (isPlayer = false, appearance) => {
         g.userData._mixer = mixer
         g.userData._walkAction = walkAction
         g.userData._idleAction = idleAction
-        if (variant === 'elderly') walkAction.timeScale = 0.4
-        if (variant === 'child') walkAction.timeScale = 1.3
+        if (variant === 'elderly') {walkAction.timeScale = 0.4}
+        if (variant === 'child') {walkAction.timeScale = 1.3}
       }
 
       const hb = new THREE.Mesh(new THREE.BoxGeometry(0.6*sk, 1.8*sk, 0.6*sk), new THREE.MeshBasicMaterial({ visible: false }))
@@ -6032,7 +6032,7 @@ function updateTrafficAuthUI() {
   }
 
   const navBtn = document.getElementById('academy-sign-in-btn')
-  if (navBtn) navBtn.style.display = user ? 'none' : 'block'
+  if (navBtn) {navBtn.style.display = user ? 'none' : 'block'}
 
   if (user) {
     if (profileDiv) {
@@ -6040,20 +6040,20 @@ function updateTrafficAuthUI() {
       profileDiv.onclick = () => (window.location.href = 'TrafficDashboard.html')
     }
 
-    if (userName) userName.textContent = user.name || 'Driver'
+    if (userName) {userName.textContent = user.name || 'Driver'}
     
 
     if (user.avatar && pfp) {
       pfp.src = user.avatar
       pfp.style.setProperty('display', 'block', 'important')
-      if (initials) initials.style.setProperty('display', 'none', 'important')
+      if (initials) {initials.style.setProperty('display', 'none', 'important')}
     } else if (initials && user.name) {
       initials.textContent = user.name.charAt(0).toUpperCase()
       initials.style.setProperty('display', 'flex', 'important')
-      if (pfp) pfp.style.setProperty('display', 'none', 'important')
+      if (pfp) {pfp.style.setProperty('display', 'none', 'important')}
     }
   } else {
-    if (profileDiv) profileDiv.style.display = 'none'
+    if (profileDiv) {profileDiv.style.display = 'none'}
   }
 }
 
@@ -6099,8 +6099,8 @@ function grantMysteryReward() {
   } else if (reward.type === 'streak') {
     S.streakShield = (S.streakShield || 0) + reward.amount
   } else if (reward.type === 'badge') {
-    if (!S.badges) S.badges = []
-    if (!S.badges.includes(reward.badgeId)) S.badges.push(reward.badgeId)
+    if (!S.badges) {S.badges = []}
+    if (!S.badges.includes(reward.badgeId)) {S.badges.push(reward.badgeId)}
   }
   save()
   showMysteryRewardModal(reward)
@@ -6424,21 +6424,21 @@ function showConsequenceModal(violationType, severity = 'normal') {
   }
 
   async function _syncAppearanceFromCloud() {
-    if (!window.supabaseClient || !window.colUser?.id) return;
+    if (!window.supabaseClient || !window.colUser?.id) {return;}
     try {
       const { data, error } = await window.supabaseClient
         .from('user_profiles')
         .select('appearance, appearance_updated_at')
         .eq('user_id', window.colUser.id)
         .maybeSingle();
-      if (error || !data || !data.appearance) return;
+      if (error || !data || !data.appearance) {return;}
       const localRaw = localStorage.getItem('traffic_appearance');
       if (localRaw) {
         try {
           const local = JSON.parse(localRaw);
           const cloudTime = data.appearance_updated_at ? new Date(data.appearance_updated_at).getTime() : 0;
           const localTime = local._updated || 0;
-          if (cloudTime <= localTime) return;
+          if (cloudTime <= localTime) {return;}
         } catch (e) {}
       }
       localStorage.setItem('traffic_appearance', JSON.stringify(data.appearance));
@@ -6451,7 +6451,7 @@ function showConsequenceModal(violationType, severity = 'normal') {
   }
 
   async function _syncAppearanceToCloud() {
-    if (!window.supabaseClient || !window.colUser?.id) return;
+    if (!window.supabaseClient || !window.colUser?.id) {return;}
     try {
       await window.supabaseClient
         .from('user_profiles')
@@ -6482,17 +6482,17 @@ function showConsequenceModal(violationType, severity = 'normal') {
     const mcPanels = document.getElementById('mc-panels-container');
 
     const isMC = _current.charType === 'minecraft';
-    if (mStylized) mStylized.className = 'studio-mode-btn ' + (!isMC ? 'active' : '');
-    if (mMC) mMC.className = 'studio-mode-btn mc-mode ' + (isMC ? 'active' : '');
-    if (stylTabs) stylTabs.style.display = isMC ? 'none' : 'flex';
-    if (mcTabs) mcTabs.style.display = isMC ? 'flex' : 'none';
-    if (stylPanels) stylPanels.style.display = isMC ? 'none' : 'flex';
-    if (mcPanels) mcPanels.style.display = isMC ? 'flex' : 'none';
+    if (mStylized) {mStylized.className = 'studio-mode-btn ' + (!isMC ? 'active' : '');}
+    if (mMC) {mMC.className = 'studio-mode-btn mc-mode ' + (isMC ? 'active' : '');}
+    if (stylTabs) {stylTabs.style.display = isMC ? 'none' : 'flex';}
+    if (mcTabs) {mcTabs.style.display = isMC ? 'flex' : 'none';}
+    if (stylPanels) {stylPanels.style.display = isMC ? 'none' : 'flex';}
+    if (mcPanels) {mcPanels.style.display = isMC ? 'flex' : 'none';}
 
     const gM = document.getElementById('gender-male');
     const gF = document.getElementById('gender-female');
-    if (gM) gM.className = 'studio-icon-btn ' + (_current.gender === 'male' ? 'active' : '');
-    if (gF) gF.className = 'studio-icon-btn ' + (_current.gender === 'female' ? 'active' : '');
+    if (gM) {gM.className = 'studio-icon-btn ' + (_current.gender === 'male' ? 'active' : '');}
+    if (gF) {gF.className = 'studio-icon-btn ' + (_current.gender === 'female' ? 'active' : '');}
 
     const smGrid = document.getElementById('sample-models-grid');
     if (smGrid) {
@@ -6526,13 +6526,13 @@ function showConsequenceModal(violationType, severity = 'normal') {
     const ps = document.getElementById('pants-swatches');
     const shoes = document.getElementById('shoe-swatches');
 
-    if (ss) ss.innerHTML = _swatchHTML(SKINS, _current.skin, 'skin');
-    if (hs) hs.innerHTML = _swatchHTML(HAIRS, _current.hair, 'hair');
-    if (es) es.innerHTML = _swatchHTML(EYES, _current.eyeColor, 'eyeColor');
-    if (shs) shs.innerHTML = _swatchHTML(SHIRTS, _current.shirt, 'shirt');
-    if (shAcc) shAcc.innerHTML = _swatchHTML(SHIRTS, _current.shirtAccent, 'shirtAccent');
-    if (ps) ps.innerHTML = _swatchHTML(SHIRTS, _current.pants, 'pants');
-    if (shoes) shoes.innerHTML = _swatchHTML(SHIRTS, _current.shoes, 'shoes');
+    if (ss) {ss.innerHTML = _swatchHTML(SKINS, _current.skin, 'skin');}
+    if (hs) {hs.innerHTML = _swatchHTML(HAIRS, _current.hair, 'hair');}
+    if (es) {es.innerHTML = _swatchHTML(EYES, _current.eyeColor, 'eyeColor');}
+    if (shs) {shs.innerHTML = _swatchHTML(SHIRTS, _current.shirt, 'shirt');}
+    if (shAcc) {shAcc.innerHTML = _swatchHTML(SHIRTS, _current.shirtAccent, 'shirtAccent');}
+    if (ps) {ps.innerHTML = _swatchHTML(SHIRTS, _current.pants, 'pants');}
+    if (shoes) {shoes.innerHTML = _swatchHTML(SHIRTS, _current.shoes, 'shoes');}
 
     const hys = document.getElementById('hairstyle-options');
     if (hys) {
@@ -6630,7 +6630,7 @@ function showConsequenceModal(violationType, severity = 'normal') {
 
   function _initPreview() {
     const canvas = document.getElementById('customize-preview');
-    if (!canvas || !window.THREE) return;
+    if (!canvas || !window.THREE) {return;}
 
     if (!canvas.dataset.dragInit) {
       canvas.dataset.dragInit = "true";
@@ -6718,16 +6718,16 @@ function showConsequenceModal(violationType, severity = 'normal') {
   }
 
   function _updatePreviewModel() {
-    if (!_previewScene) return;
-    if (_previewChar) _previewScene.remove(_previewChar);
+    if (!_previewScene) {return;}
+    if (_previewChar) {_previewScene.remove(_previewChar);}
     _previewChar = _buildHuman(true, _current);
     _previewChar.position.set(0, 0, 0);
-    if (_previewChar.userData) _previewChar.userData.pose = _studioPose;
+    if (_previewChar.userData) {_previewChar.userData.pose = _studioPose;}
     _previewScene.add(_previewChar);
   }
 
   function _animatePreview() {
-    if (!_previewRenderer) return;
+    if (!_previewRenderer) {return;}
     _previewRAF = requestAnimationFrame(_animatePreview);
     if (_previewChar) {
       if (window._autoRotatePreview !== false) {
@@ -6744,14 +6744,14 @@ function showConsequenceModal(violationType, severity = 'normal') {
   window._toggleAutoRotatePreview = function() {
     window._autoRotatePreview = !window._autoRotatePreview;
     const btn = document.getElementById('studio-autorotate-btn');
-    if (btn) btn.classList.toggle('active', !!window._autoRotatePreview);
+    if (btn) {btn.classList.toggle('active', !!window._autoRotatePreview);}
   };
 
   window._resetPreviewRotation = function() {
-    if (_previewChar) _previewChar.rotation.y = 0;
+    if (_previewChar) {_previewChar.rotation.y = 0;}
     window._autoRotatePreview = false;
     const btn = document.getElementById('studio-autorotate-btn');
-    if (btn) btn.classList.remove('active');
+    if (btn) {btn.classList.remove('active');}
   };
 
   window._setCharMode = function(mode) {
@@ -6766,7 +6766,7 @@ function showConsequenceModal(violationType, severity = 'normal') {
     _renderStudioUI();
     _updatePreviewModel();
     const s = SAMPLE_MODELS.find(function(x) { return x.id === id; });
-    if (s && typeof toast === 'function') toast('✨ Selected: ' + s.name, '#5ed4f5', 2000);
+    if (s && typeof toast === 'function') {toast('✨ Selected: ' + s.name, '#5ed4f5', 2000);}
   };
 
   window._switchStudioTab = function(tab) {
@@ -6797,10 +6797,10 @@ function showConsequenceModal(violationType, severity = 'normal') {
       _current.shirtAccent = p.shirtAccent;
       _current.pants = p.pants;
       _current.shoes = p.shoes;
-      if (p.hairStyle) _current.hairStyle = p.hairStyle;
-      if (p.hair) _current.hair = p.hair;
-      if (p.facialHair) _current.facialHair = p.facialHair;
-      if (p.accessories) _current.accessories = Object.assign({}, p.accessories);
+      if (p.hairStyle) {_current.hairStyle = p.hairStyle;}
+      if (p.hair) {_current.hair = p.hair;}
+      if (p.facialHair) {_current.facialHair = p.facialHair;}
+      if (p.accessories) {_current.accessories = Object.assign({}, p.accessories);}
       _renderStudioUI();
       _updatePreviewModel();
     }
@@ -6863,7 +6863,7 @@ function showConsequenceModal(violationType, severity = 'normal') {
     _current.mcSkinUrl = 'skins/' + id + '.png';
     _current.mcIsCustom = false;
     const s = window.MinecraftSkinManager?.DEFAULT_SKINS?.find(function(x) { return x.id === id; });
-    if (s && s.isSlim !== undefined) _current.mcIsSlim = s.isSlim;
+    if (s && s.isSlim !== undefined) {_current.mcIsSlim = s.isSlim;}
     _renderStudioUI();
     _updatePreviewModel();
   };
@@ -6872,14 +6872,14 @@ function showConsequenceModal(violationType, severity = 'normal') {
     _current.mcIsSlim = isSlim;
     const cArm = document.getElementById('mc-arm-classic');
     const sArm = document.getElementById('mc-arm-slim');
-    if (cArm) cArm.classList.toggle('active', !isSlim);
-    if (sArm) sArm.classList.toggle('active', isSlim);
+    if (cArm) {cArm.classList.toggle('active', !isSlim);}
+    if (sArm) {sArm.classList.toggle('active', isSlim);}
     _updatePreviewModel();
   };
 
   window._handleSkinFileUpload = async function(event) {
     const file = event.target?.files?.[0];
-    if (!file || !window.MinecraftSkinManager) return;
+    if (!file || !window.MinecraftSkinManager) {return;}
     try {
       const res = await window.MinecraftSkinManager.processSkinFile(file);
       const saved = window.MinecraftSkinManager.saveCustomSkin(res.name, res.dataUrl);
@@ -6916,9 +6916,9 @@ function showConsequenceModal(violationType, severity = 'normal') {
 
   window._setStudioCamera = function(view) {
     document.querySelectorAll('.studio-controls-row .studio-icon-btn').forEach(function(b) {
-      if (b.id && b.id.startsWith('cam-')) b.classList.toggle('active', b.id === 'cam-' + view);
+      if (b.id && b.id.startsWith('cam-')) {b.classList.toggle('active', b.id === 'cam-' + view);}
     });
-    if (!_previewCamera) return;
+    if (!_previewCamera) {return;}
     if (view === 'face') {
       _previewCamera.position.set(0, 1.56, 1.6);
       _previewCamera.lookAt(0, 1.50, 0);
@@ -6937,7 +6937,7 @@ function showConsequenceModal(violationType, severity = 'normal') {
   window._setStudioPose = function(pose) {
     _studioPose = pose;
     document.querySelectorAll('.studio-controls-row .studio-icon-btn').forEach(function(b) {
-      if (b.id && b.id.startsWith('pose-')) b.classList.toggle('active', b.id === 'pose-' + (pose === 'thumbs_up' ? 'thumbs' : pose));
+      if (b.id && b.id.startsWith('pose-')) {b.classList.toggle('active', b.id === 'pose-' + (pose === 'thumbs_up' ? 'thumbs' : pose));}
     });
     if (_previewChar && _previewChar.userData) {
       _previewChar.userData.pose = pose;
@@ -6947,9 +6947,9 @@ function showConsequenceModal(violationType, severity = 'normal') {
   window._setStudioLighting = function(light) {
     _studioLighting = light;
     document.querySelectorAll('.studio-controls-row .studio-icon-btn').forEach(function(b) {
-      if (b.id && b.id.startsWith('light-')) b.classList.toggle('active', b.id === 'light-' + light);
+      if (b.id && b.id.startsWith('light-')) {b.classList.toggle('active', b.id === 'light-' + light);}
     });
-    if (!_keyLight || !_fillLight || !_rimLight) return;
+    if (!_keyLight || !_fillLight || !_rimLight) {return;}
     if (light === 'neon') {
       _keyLight.color.setHex(0x00f0cc); _keyLight.intensity = 1.4;
       _fillLight.color.setHex(0xff007f); _fillLight.intensity = 1.0;
@@ -6969,7 +6969,7 @@ function showConsequenceModal(violationType, severity = 'normal') {
     if (_current.charType === 'minecraft') {
       const defs = window.MinecraftSkinManager?.DEFAULT_SKINS || [];
       const pick = defs[Math.floor(Math.random() * defs.length)];
-      if (pick) window._pickMCPreset(pick.id);
+      if (pick) {window._pickMCPreset(pick.id);}
     } else {
       _current.skin = SKINS[Math.floor(Math.random() * SKINS.length)].hex;
       _current.hair = HAIRS[Math.floor(Math.random() * HAIRS.length)].hex;
@@ -7017,7 +7017,7 @@ function showConsequenceModal(violationType, severity = 'normal') {
     _syncAppearanceToCloud();
 
     const modal = document.getElementById('customize-modal');
-    if (modal) modal.style.display = 'none';
+    if (modal) {modal.style.display = 'none';}
     if (_previewRenderer) { cancelAnimationFrame(_previewRAF); _previewRenderer.dispose(); _previewRenderer = null; }
 
     if (window.game && window.game.player && window.game.playerCharacter) {
@@ -7145,19 +7145,19 @@ function showConsequenceModal(violationType, severity = 'normal') {
 
     purchase(itemId) {
       const item = this.findItem(itemId);
-      if (!item) return { success: false, reason: 'Item not found' };
+      if (!item) {return { success: false, reason: 'Item not found' };}
 
-      if (this.isOwned(itemId)) return { success: false, reason: 'Already owned' };
+      if (this.isOwned(itemId)) {return { success: false, reason: 'Already owned' };}
 
-      if (!this.starsMet(item)) return { success: false, reason: `Needs ${item.stars}★ total (you have ${this.starTotal()}★) — earn stars by finishing levels` };
+      if (!this.starsMet(item)) {return { success: false, reason: `Needs ${item.stars}★ total (you have ${this.starTotal()}★) — earn stars by finishing levels` };}
 
-      if (!this.canAfford(item.price)) return { success: false, reason: 'Insufficient tokens' };
+      if (!this.canAfford(item.price)) {return { success: false, reason: 'Insufficient tokens' };}
 
       // Deduct tokens
       S.missionTokens = (S.missionTokens || 0) - item.price;
 
       // Mark as owned
-      if (!S.shopOwned) S.shopOwned = {};
+      if (!S.shopOwned) {S.shopOwned = {};}
       S.shopOwned[itemId] = true;
 
       // Auto-equip if first in category
@@ -7183,7 +7183,7 @@ function showConsequenceModal(violationType, severity = 'normal') {
 
     equip(itemId) {
       const item = this.findItem(itemId);
-      if (!item || !this.isOwned(itemId)) return { success: false, reason: 'Not owned' };
+      if (!item || !this.isOwned(itemId)) {return { success: false, reason: 'Not owned' };}
 
       const equipped = this.getEquippedItems();
       equipped[item.category] = itemId;
@@ -7206,7 +7206,7 @@ function showConsequenceModal(violationType, severity = 'normal') {
     findItem(itemId) {
       for (const [catKey, cat] of Object.entries(this.categories)) {
         const item = cat.items.find(i => i.id === itemId);
-        if (item) return { ...item, category: catKey };
+        if (item) {return { ...item, category: catKey };}
       }
       return null;
     },
@@ -7311,9 +7311,9 @@ function showConsequenceModal(violationType, severity = 'normal') {
       }
       // Update token display in HUD
       const tokenEl = document.getElementById('mission-tokens');
-      if (tokenEl) tokenEl.textContent = (S.missionTokens || 0).toLocaleString();
+      if (tokenEl) {tokenEl.textContent = (S.missionTokens || 0).toLocaleString();}
       const shopTokenEl = document.getElementById('shop-token-display');
-      if (shopTokenEl) shopTokenEl.textContent = (S.missionTokens || 0).toLocaleString();
+      if (shopTokenEl) {shopTokenEl.textContent = (S.missionTokens || 0).toLocaleString();}
     },
 
     openShop() {
@@ -7355,7 +7355,7 @@ function showConsequenceModal(violationType, severity = 'normal') {
 
     const syllabus = level.syllabus;
     const modal = document.getElementById('syllabus-modal');
-    if (!modal) return;
+    if (!modal) {return;}
 
     // Update header
     document.getElementById('syl-title').textContent = level.name;
@@ -7439,10 +7439,10 @@ function showConsequenceModal(violationType, severity = 'normal') {
   window.closeSyllabusModal = closeSyllabusModal;
 
   function startSyllabusDemo() {
-    if (!_currentSyllabusLevel) return;
+    if (!_currentSyllabusLevel) {return;}
     const level = window.COURSE?.getLevel?.(_currentSyllabusLevel);
     const demo2dKey = level?.syllabus?.demo2d;
-    if (!demo2dKey) return;
+    if (!demo2dKey) {return;}
 
     closeSyllabusModal();
     
@@ -7460,9 +7460,9 @@ function showConsequenceModal(violationType, severity = 'normal') {
   window.startSyllabusDemo = startSyllabusDemo;
 
   function launchSyllabusTest() {
-    if (!_currentSyllabusLevel) return;
+    if (!_currentSyllabusLevel) {return;}
     const level = window.COURSE?.getLevel?.(_currentSyllabusLevel);
-    if (!level) return;
+    if (!level) {return;}
 
     closeSyllabusModal();
 
@@ -7692,7 +7692,7 @@ function showConsequenceModal(violationType, severity = 'normal') {
       if (p !== null) {
         var code = (p || '').trim().toLowerCase();
         if (['neel', 'ansh', 'sanjana'].includes(p.trim())) {
-          if (typeof ui !== 'undefined' && ui && ui.adminUnlock) ui.adminUnlock();
+          if (typeof ui !== 'undefined' && ui && ui.adminUnlock) {ui.adminUnlock();}
           window.toggleGodModeCheat(true);
         } else {
           window.toggleGodModeCheat();

@@ -13,7 +13,7 @@ function waitForServer(url, retries = 60) {
     const attempt = (n) => {
       const req = http.get(url, () => resolve());
       req.on('error', () => {
-        if (n <= 0) return reject(new Error('Vite did not start'));
+        if (n <= 0) {return reject(new Error('Vite did not start'));}
         setTimeout(() => attempt(n - 1), 500);
       });
     };

@@ -76,7 +76,7 @@
 
   // ==================== DISPOSAL ====================
   function disposeGeometry(geo) {
-    if (!geo || !geometries.has(geo)) return
+    if (!geo || !geometries.has(geo)) {return}
     try {
       geo.dispose()
     } catch (e) {
@@ -86,20 +86,20 @@
   }
 
   function disposeMaterial(mat) {
-    if (!mat || !materials.has(mat)) return
+    if (!mat || !materials.has(mat)) {return}
     try {
       // Dispose textures in material
-      if (mat.map) disposeTexture(mat.map)
-      if (mat.normalMap) disposeTexture(mat.normalMap)
-      if (mat.roughnessMap) disposeTexture(mat.roughnessMap)
-      if (mat.metalnessMap) disposeTexture(mat.metalnessMap)
-      if (mat.emissiveMap) disposeTexture(mat.emissiveMap)
-      if (mat.alphaMap) disposeTexture(mat.alphaMap)
-      if (mat.envMap) disposeTexture(mat.envMap)
-      if (mat.lightMap) disposeTexture(mat.lightMap)
-      if (mat.aoMap) disposeTexture(mat.aoMap)
-      if (mat.displacementMap) disposeTexture(mat.displacementMap)
-      if (mat.gradientMap) disposeTexture(mat.gradientMap)
+      if (mat.map) {disposeTexture(mat.map)}
+      if (mat.normalMap) {disposeTexture(mat.normalMap)}
+      if (mat.roughnessMap) {disposeTexture(mat.roughnessMap)}
+      if (mat.metalnessMap) {disposeTexture(mat.metalnessMap)}
+      if (mat.emissiveMap) {disposeTexture(mat.emissiveMap)}
+      if (mat.alphaMap) {disposeTexture(mat.alphaMap)}
+      if (mat.envMap) {disposeTexture(mat.envMap)}
+      if (mat.lightMap) {disposeTexture(mat.lightMap)}
+      if (mat.aoMap) {disposeTexture(mat.aoMap)}
+      if (mat.displacementMap) {disposeTexture(mat.displacementMap)}
+      if (mat.gradientMap) {disposeTexture(mat.gradientMap)}
       mat.dispose()
     } catch (e) {
       console.warn('[DisposalRegistry] Material dispose failed:', e)
@@ -108,7 +108,7 @@
   }
 
   function disposeTexture(tex) {
-    if (!tex || !textures.has(tex)) return
+    if (!tex || !textures.has(tex)) {return}
     try {
       tex.dispose()
     } catch (e) {
@@ -118,7 +118,7 @@
   }
 
   function disposeRenderTarget(rt) {
-    if (!rt || !renderTargets.has(rt)) return
+    if (!rt || !renderTargets.has(rt)) {return}
     try {
       rt.dispose()
     } catch (e) {
@@ -128,14 +128,14 @@
   }
 
   function disposeObject(obj) {
-    if (!obj || !objects.has(obj)) return
+    if (!obj || !objects.has(obj)) {return}
     try {
       if (obj.userData._customDispose) {
         obj.userData._customDispose(obj)
       }
       // Recurse children
       obj.traverse(child => {
-        if (child.geometry) disposeGeometry(child.geometry)
+        if (child.geometry) {disposeGeometry(child.geometry)}
         if (child.material) {
           if (Array.isArray(child.material)) {
             child.material.forEach(disposeMaterial)
@@ -209,10 +209,10 @@
     autoDisposeGroup(group) {
       return trackObject(group, (g) => {
         g.traverse(child => {
-          if (child.geometry) disposeGeometry(child.geometry)
+          if (child.geometry) {disposeGeometry(child.geometry)}
           if (child.material) {
-            if (Array.isArray(child.material)) child.material.forEach(disposeMaterial)
-            else disposeMaterial(child.material)
+            if (Array.isArray(child.material)) {child.material.forEach(disposeMaterial)}
+            else {disposeMaterial(child.material)}
           }
         })
       })

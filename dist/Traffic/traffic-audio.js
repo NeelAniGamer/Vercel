@@ -45,10 +45,10 @@ class TrafficAudioEngine {
   }
 
   _initContext() {
-    if (this.ctx && this.ctx.state !== 'closed') return;
+    if (this.ctx && this.ctx.state !== 'closed') {return;}
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!AudioCtx) return;
+      if (!AudioCtx) {return;}
       this.ctx = new AudioCtx();
       this.masterGain = this.ctx.createGain();
 
@@ -73,7 +73,7 @@ class TrafficAudioEngine {
         let v = def;
         try {
           const s = localStorage.getItem('traffic_bus_' + key);
-          if (s !== null && !isNaN(parseFloat(s))) v = Math.max(0, Math.min(1, parseFloat(s)));
+          if (s !== null && !isNaN(parseFloat(s))) {v = Math.max(0, Math.min(1, parseFloat(s)));}
         } catch (e) {}
         g.gain.value = v;
         g.connect(this.masterGain);
@@ -114,7 +114,7 @@ class TrafficAudioEngine {
   // Duck the world bus under dialogue/voice moments, then restore.
   // factor 0.5 ≈ −6dB. Re-calling extends the hold; volumes stay intact.
   duckWorld(factor = 0.5, holdMs = 4000) {
-    if (!this.ctx || !this.worldGain) return;
+    if (!this.ctx || !this.worldGain) {return;}
     try {
       this._duckFactor = Math.max(0.05, Math.min(1, factor));
       this.worldGain.gain.cancelScheduledValues(this.ctx.currentTime);
@@ -132,7 +132,7 @@ class TrafficAudioEngine {
   _duckBase() {
     try {
       const s = localStorage.getItem('traffic_bus_world');
-      if (s !== null && !isNaN(parseFloat(s))) return Math.max(0, Math.min(1, parseFloat(s)));
+      if (s !== null && !isNaN(parseFloat(s))) {return Math.max(0, Math.min(1, parseFloat(s)));}
     } catch (e) {}
     return 1;
   }
@@ -182,7 +182,7 @@ class TrafficAudioEngine {
 
   startEngine(initialRpm = 0.20, vehicleType = 'car') {
     this._ensureUnlocked();
-    if (!this.ctx || this._engineRunning) return;
+    if (!this.ctx || this._engineRunning) {return;}
 
     try {
       const now = this.ctx.currentTime;
@@ -271,7 +271,7 @@ class TrafficAudioEngine {
       const windLen = this.ctx.sampleRate * 2;
       const windBuf = this.ctx.createBuffer(1, windLen, this.ctx.sampleRate);
       const windData = windBuf.getChannelData(0);
-      for (let i = 0; i < windLen; i++) windData[i] = Math.random() * 2 - 1;
+      for (let i = 0; i < windLen; i++) {windData[i] = Math.random() * 2 - 1;}
       const windSrc = this.ctx.createBufferSource();
       windSrc.buffer = windBuf;
       windSrc.loop = true;
@@ -312,7 +312,7 @@ class TrafficAudioEngine {
   }
 
   updateEngine(speedRatio = 0, isThrottle = false, isBoosting = false) {
-    if (!this._engineRunning || !this.engineNode || !this.ctx) return;
+    if (!this._engineRunning || !this.engineNode || !this.ctx) {return;}
     try {
       const now = this.ctx.currentTime;
       const absSpeed = Math.abs(speedRatio || 0);
@@ -322,7 +322,7 @@ class TrafficAudioEngine {
       const gearRatios = [18, 38, 62, 92, 130, 185];
       let targetGear = 1;
       for (let g = 0; g < gearRatios.length; g++) {
-        if (speedKmh > gearRatios[g]) targetGear = g + 2;
+        if (speedKmh > gearRatios[g]) {targetGear = g + 2;}
       }
       targetGear = Math.min(6, targetGear);
 
@@ -341,8 +341,8 @@ class TrafficAudioEngine {
       const gearProgress = Math.max(0, Math.min(1.0, (speedKmh - prevGearThreshold) / Math.max(10, nextGearThreshold - prevGearThreshold)));
 
       let targetRpm = 0.18 + gearProgress * 0.72;
-      if (isThrottle) targetRpm = Math.min(1.0, targetRpm + (isBoosting ? 0.20 : 0.10));
-      else targetRpm = Math.max(0.18, targetRpm * 0.85);
+      if (isThrottle) {targetRpm = Math.min(1.0, targetRpm + (isBoosting ? 0.20 : 0.10));}
+      else {targetRpm = Math.max(0.18, targetRpm * 0.85);}
 
       // Smooth RPM interpolation
       this._gearRpm += (targetRpm - this._gearRpm) * 0.18;
@@ -379,7 +379,7 @@ class TrafficAudioEngine {
       // Detect throttle release from high RPM -> Turbo Blow-off valve ('pshh-t-t-t')
       if (this._prevThrottle && !isThrottle && rpm > 0.55) {
         this.playBlowoffValve(rpm);
-        if (Math.random() < 0.40) this._playExhaustPop(0.30);
+        if (Math.random() < 0.40) {this._playExhaustPop(0.30);}
       }
       this._prevThrottle = isThrottle;
 
@@ -396,7 +396,7 @@ class TrafficAudioEngine {
   // Turbo Blow-off Valve Pressure Release
   playBlowoffValve(intensity = 0.7) {
     this._ensureUnlocked();
-    if (!this.ctx) return;
+    if (!this.ctx) {return;}
     try {
       const now = this.ctx.currentTime;
       const dur = 0.28;
@@ -432,7 +432,7 @@ class TrafficAudioEngine {
 
   // Exhaust backfire crackles & pops
   _playExhaustPop(volume = 0.4) {
-    if (!this.ctx) return;
+    if (!this.ctx) {return;}
     try {
       const now = this.ctx.currentTime;
       const popOsc = this.ctx.createOscillator();
@@ -453,7 +453,7 @@ class TrafficAudioEngine {
       const bSize = this.ctx.sampleRate * 0.04;
       const buf = this.ctx.createBuffer(1, bSize, this.ctx.sampleRate);
       const d = buf.getChannelData(0);
-      for (let i = 0; i < bSize; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (this.ctx.sampleRate * 0.015));
+      for (let i = 0; i < bSize; i++) {d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (this.ctx.sampleRate * 0.015));}
       const nSrc = this.ctx.createBufferSource();
       nSrc.buffer = buf;
       const nFilter = this.ctx.createBiquadFilter();
@@ -471,7 +471,7 @@ class TrafficAudioEngine {
   }
 
   stopEngine() {
-    if (!this._engineRunning || !this.engineNode || !this.ctx) return;
+    if (!this._engineRunning || !this.engineNode || !this.ctx) {return;}
     try {
       const now = this.ctx.currentTime;
       this.engineNode.gain.gain.setTargetAtTime(0.001, now, 0.15);
@@ -494,16 +494,16 @@ class TrafficAudioEngine {
   // ── 2. DYNAMIC FOOTSTEPS ──
   playFootstep(surface = 'asphalt', speed = 1.0) {
     this._ensureUnlocked();
-    if (!this.ctx) return;
+    if (!this.ctx) {return;}
     const now = this.ctx.currentTime;
-    if (now - this._lastStepTime < 0.15 / speed) return;
+    if (now - this._lastStepTime < 0.15 / speed) {return;}
     this._lastStepTime = now;
 
     try {
       this._stepAlt = !this._stepAlt;
       const pan = this._stepAlt ? 0.18 : -0.18;
       const panner = this.ctx.createStereoPanner ? this.ctx.createStereoPanner() : null;
-      if (panner) panner.pan.value = pan;
+      if (panner) {panner.pan.value = pan;}
 
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
@@ -557,7 +557,7 @@ class TrafficAudioEngine {
   // ── 3. SOLID CAR DOOR SLAM & LATCH ──
   playDoorClose() {
     this._ensureUnlocked();
-    if (!this.ctx) return;
+    if (!this.ctx) {return;}
     try {
       const now = this.ctx.currentTime;
       // High-precision mechanical latch click
@@ -590,7 +590,7 @@ class TrafficAudioEngine {
 
   playDoorOpen() {
     this._ensureUnlocked();
-    if (!this.ctx) return;
+    if (!this.ctx) {return;}
     try {
       const now = this.ctx.currentTime;
       const latch = this.ctx.createOscillator();
@@ -610,7 +610,7 @@ class TrafficAudioEngine {
   // ── 4. SEATBELT BUCKLE CLICK ──
   playSeatbelt() {
     this._ensureUnlocked();
-    if (!this.ctx) return;
+    if (!this.ctx) {return;}
     try {
       const now = this.ctx.currentTime;
       const osc1 = this.ctx.createOscillator();
@@ -642,14 +642,14 @@ class TrafficAudioEngine {
   // ── 5. AUTHENTIC MUMBAI DUAL-TONE BRASS HORN ──
   playHorn(duration = 0.38, pitch = 1) {
     this._ensureUnlocked();
-    if (!this.ctx) return;
+    if (!this.ctx) {return;}
     // NPC horns arrive as a horn-voice name (e.g. 'taxi', 'truck') — map to pitch.
     // (Previously a string here poisoned the envelope math and horns went silent.)
     if (typeof duration === 'string') {
       pitch = TrafficAudioEngine.HORN_PITCH[duration] || 1;
       duration = 0.38;
     }
-    if (typeof pitch !== 'number' || !(pitch > 0)) pitch = 1;
+    if (typeof pitch !== 'number' || !(pitch > 0)) {pitch = 1;}
     try {
       const now = this.ctx.currentTime;
       const g = this.ctx.createGain();
@@ -692,9 +692,9 @@ class TrafficAudioEngine {
   // ── F1 Juice: near-miss air whoosh (short filtered noise sweep) ──
   playWhoosh() {
     this._ensureUnlocked();
-    if (!this.ctx) return;
+    if (!this.ctx) {return;}
     const now = this.ctx.currentTime;
-    if (now - (this._lastWhooshTime || 0) < 0.5) return;
+    if (now - (this._lastWhooshTime || 0) < 0.5) {return;}
     this._lastWhooshTime = now;
     try {
       const dur = 0.28;
@@ -724,10 +724,10 @@ class TrafficAudioEngine {
   // ── 6. DYNAMIC TIRE SCREECH & ASPHALT DRIFT ──
   playScreech(intensity = 0.5) {
     this._ensureUnlocked();
-    if (!this.ctx) return;
+    if (!this.ctx) {return;}
     const now = this.ctx.currentTime;
     // Throttle to prevent screech cacophony during high-frequency frame loops
-    if (now - (this._lastScreechTime || 0) < 0.35) return;
+    if (now - (this._lastScreechTime || 0) < 0.35) {return;}
     this._lastScreechTime = now;
 
     try {
@@ -764,7 +764,7 @@ class TrafficAudioEngine {
   // ── 7. TWO-TONE POLICE SIREN ──
   playSiren() {
     this._ensureUnlocked();
-    if (!this.ctx || this._sirenPlaying) return;
+    if (!this.ctx || this._sirenPlaying) {return;}
     this._sirenPlaying = true;
     try {
       const now = this.ctx.currentTime;
@@ -797,7 +797,7 @@ class TrafficAudioEngine {
   // ── 8. SPARKLING CHECKPOINT PASS CHIME ──
   playCheckpoint() {
     this._ensureUnlocked();
-    if (!this.ctx) return;
+    if (!this.ctx) {return;}
     try {
       const now = this.ctx.currentTime;
       [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
@@ -818,7 +818,7 @@ class TrafficAudioEngine {
   // ── 9. IMPACT CRASH & DEFORMATION ──
   playCrash(intensity = 1.0) {
     this._ensureUnlocked();
-    if (!this.ctx) return;
+    if (!this.ctx) {return;}
     try {
       const now = this.ctx.currentTime;
       // Sub-bass heavy thump
@@ -864,7 +864,7 @@ class TrafficAudioEngine {
   // ── 10. TACTILE UI CLICK ──
   playClick() {
     this._ensureUnlocked();
-    if (!this.ctx) return;
+    if (!this.ctx) {return;}
     try {
       const now = this.ctx.currentTime;
       const osc = this.ctx.createOscillator();
@@ -884,7 +884,7 @@ class TrafficAudioEngine {
   // ── 11. VICTORY FANFARE ──
   playVictory() {
     this._ensureUnlocked();
-    if (!this.ctx) return;
+    if (!this.ctx) {return;}
     try {
       const now = this.ctx.currentTime;
       const notes = [
@@ -915,7 +915,7 @@ window.TrafficAudio = new TrafficAudioEngine();
 // Auto-unlock on first user gesture
 ['pointerdown', 'keydown', 'touchstart', 'click'].forEach(evt => {
   window.addEventListener(evt, () => {
-    if (window.TrafficAudio) window.TrafficAudio._ensureUnlocked();
+    if (window.TrafficAudio) {window.TrafficAudio._ensureUnlocked();}
   }, { once: true, passive: true });
 });
 

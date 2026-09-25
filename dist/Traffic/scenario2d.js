@@ -13,7 +13,7 @@
     easeOutBack: (t) => { const c1 = 1.70158; const c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2) },
     easeOutElastic: (t) => { const c4 = (2 * Math.PI) / 3; return t === 0 ? 0 : t === 1 ? 1 : Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4) + 1 },
     easeInOutQuad: (t) => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2,
-    bounce: (t) => { const n1 = 7.5625; const d1 = 2.75; if (t < 1 / d1) return n1 * t * t; else if (t < 2 / d1) return n1 * (t -= 1.5 / d1) * t + 0.75; else if (t < 2.5 / d1) return n1 * (t -= 2.25 / d1) * t + 0.9375; else return n1 * (t -= 2.625 / d1) * t + 0.984375; }
+    bounce: (t) => { const n1 = 7.5625; const d1 = 2.75; if (t < 1 / d1) {return n1 * t * t;} else if (t < 2 / d1) {return n1 * (t -= 1.5 / d1) * t + 0.75;} else if (t < 2.5 / d1) {return n1 * (t -= 2.25 / d1) * t + 0.9375;} else {return n1 * (t -= 2.625 / d1) * t + 0.984375;} }
   }
 
   const hexToRgb = (hex) => {
@@ -32,7 +32,7 @@
   const darkenColor = (hex, factor) => { const c = hexToRgb(hex); return rgbStr(Math.round(c.r * factor), Math.round(c.g * factor), Math.round(c.b * factor)) }
 
   function roundRect(ctx, x, y, w, h, r) {
-    if (w < 2 * r) r = w / 2; if (h < 2 * r) r = h / 2
+    if (w < 2 * r) {r = w / 2;} if (h < 2 * r) {r = h / 2}
     ctx.beginPath()
     ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r)
     ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r)
@@ -479,21 +479,21 @@
     }
     init() {
       const count = this.type === 'rain' ? 150 : this.type === 'confetti' ? 40 : this.type === 'dust' ? 30 : 60
-      for (let i = 0; i < count; i++) this.particles.push(this.createParticle(true))
+      for (let i = 0; i < count; i++) {this.particles.push(this.createParticle(true))}
     }
     createParticle(randomY = false) {
       const w = this.w, h = this.h
-      if (this.type === 'rain') return { x: rand(0, w), y: randomY ? rand(-h, h) : rand(-20, 0), speed: rand(10, 18), len: rand(10, 25), opacity: rand(0.2, 0.5), wind: rand(-2, 2) }
-      if (this.type === 'confetti') return { x: rand(0, w), y: randomY ? rand(-h, h * 0.3) : rand(-30, 0), speed: rand(1, 4), size: rand(4, 10), color: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFEAA7', '#DDA0DD', '#F39C12'][randInt(0, 5)], rotation: rand(0, Math.PI * 2), rotSpeed: rand(-0.15, 0.15), wobble: rand(0, Math.PI * 2), wobbleSpeed: rand(0.02, 0.08) }
-      if (this.type === 'dust') return { x: rand(0, w), y: randomY ? rand(0, h) : rand(h * 0.6, h), speed: rand(0.3, 1.5), size: rand(1, 4), opacity: rand(0.1, 0.3), drift: rand(-0.5, 0.5) }
+      if (this.type === 'rain') {return { x: rand(0, w), y: randomY ? rand(-h, h) : rand(-20, 0), speed: rand(10, 18), len: rand(10, 25), opacity: rand(0.2, 0.5), wind: rand(-2, 2) }}
+      if (this.type === 'confetti') {return { x: rand(0, w), y: randomY ? rand(-h, h * 0.3) : rand(-30, 0), speed: rand(1, 4), size: rand(4, 10), color: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFEAA7', '#DDA0DD', '#F39C12'][randInt(0, 5)], rotation: rand(0, Math.PI * 2), rotSpeed: rand(-0.15, 0.15), wobble: rand(0, Math.PI * 2), wobbleSpeed: rand(0.02, 0.08) }}
+      if (this.type === 'dust') {return { x: rand(0, w), y: randomY ? rand(0, h) : rand(h * 0.6, h), speed: rand(0.3, 1.5), size: rand(1, 4), opacity: rand(0.1, 0.3), drift: rand(-0.5, 0.5) }}
       return { x: rand(0, w), y: randomY ? rand(0, h) : 0, speed: rand(0.2, 1), size: rand(1, 3), opacity: rand(0.05, 0.2) }
     }
     update(dt, wind = 0) {
       for (let i = 0; i < this.particles.length; i++) {
         const p = this.particles[i]
         if (this.type === 'rain') { p.y += p.speed * dt * 60; p.x += (p.wind + wind) * dt * 60; if (p.y > this.h + 20) { this.particles[i] = this.createParticle(false); this.particles[i].x = rand(0, this.w) } }
-        else if (this.type === 'confetti') { p.y += p.speed * dt * 60; p.wobble += p.wobbleSpeed; p.x += Math.sin(p.wobble) * 1.2; p.rotation += p.rotSpeed; if (p.y > this.h + 20) this.particles[i] = this.createParticle(false) }
-        else if (this.type === 'dust') { p.x += (p.drift + wind * 0.3) * dt * 60; p.y -= p.speed * dt * 60; p.opacity -= 0.002 * dt * 60; if (p.y < -10 || p.opacity <= 0) this.particles[i] = this.createParticle(false) }
+        else if (this.type === 'confetti') { p.y += p.speed * dt * 60; p.wobble += p.wobbleSpeed; p.x += Math.sin(p.wobble) * 1.2; p.rotation += p.rotSpeed; if (p.y > this.h + 20) {this.particles[i] = this.createParticle(false)} }
+        else if (this.type === 'dust') { p.x += (p.drift + wind * 0.3) * dt * 60; p.y -= p.speed * dt * 60; p.opacity -= 0.002 * dt * 60; if (p.y < -10 || p.opacity <= 0) {this.particles[i] = this.createParticle(false)} }
       }
     }
     draw(ctx) {
@@ -567,7 +567,7 @@
   }
 
   function drawBuildings(ctx, w, h, config, t, parallax) {
-    if (!config) return
+    if (!config) {return}
     const { colors, count, minH, maxH } = config
     const roadY = h * 0.72
     for (let i = 0; i < count; i++) {
@@ -614,7 +614,7 @@
   }
 
   function drawRoad(ctx, w, h, config, t, parallax) {
-    if (!config) return
+    if (!config) {return}
     const { y: roadY, lanes, color, lineColor, dashLen, dashGap } = config
     const ry = roadY * h
     const roadH = h - ry
@@ -670,7 +670,7 @@
     } else if (v.type === 'bus') {
       roundRect(ctx, vx, vy, vw, vh, 5); ctx.fill()
       ctx.fillStyle = 'rgba(180,220,255,0.5)'
-      for (let wx = vx + 8; wx < vx + vw - 10; wx += 14) ctx.fillRect(wx, vy + 4, 10, vh * 0.35)
+      for (let wx = vx + 8; wx < vx + vw - 10; wx += 14) {ctx.fillRect(wx, vy + 4, 10, vh * 0.35)}
     } else if (v.type === 'truck') {
       roundRect(ctx, vx, vy, vw * 0.35, vh, 3); ctx.fill()
       ctx.fillStyle = darkenColor(v.color, 0.7); roundRect(ctx, vx + vw * 0.35, vy + 2, vw * 0.65, vh - 4, 2); ctx.fill()
@@ -726,7 +726,7 @@
   }
 
   function drawTrafficLight(ctx, config, w, h, t) {
-    if (!config) return
+    if (!config) {return}
     const lx = config.x * w, ly = config.y * h
     const stateIdx = Math.floor(t * 0.8) % config.states.length
     const state = config.states[stateIdx]
@@ -768,7 +768,7 @@
   }
 
   function drawHazardIndicator(ctx, hazard, w, h, t) {
-    if (!hazard) return
+    if (!hazard) {return}
     const icons = {
       red_light: '🚦', ambulance: '🚑', puddle: '💧', children: '🧒',
       crowd: '👥', dark: '🌙', rain: '🌧️', merge: '🔀', parking: '🅿️', hospital: '🏥'
@@ -835,19 +835,19 @@
         }
       }, { passive: true })
       this.canvas.addEventListener('touchend', (e) => {
-        if (!this.isDragging) skipHandler(e)
+        if (!this.isDragging) {skipHandler(e)}
       })
-      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') this.skip() })
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') {this.skip()} })
 
       // Particles
-      if (scenario.rain) this.particles = new ParticleSystem('rain', this.canvas.width, this.canvas.height)
-      else if (scenario.particles === 'confetti') this.particles = new ParticleSystem('confetti', this.canvas.width, this.canvas.height)
-      else if (scenario.particles === 'dust') this.particles = new ParticleSystem('dust', this.canvas.width, this.canvas.height)
+      if (scenario.rain) {this.particles = new ParticleSystem('rain', this.canvas.width, this.canvas.height)}
+      else if (scenario.particles === 'confetti') {this.particles = new ParticleSystem('confetti', this.canvas.width, this.canvas.height)}
+      else if (scenario.particles === 'dust') {this.particles = new ParticleSystem('dust', this.canvas.width, this.canvas.height)}
 
       // Ambient sound
       if (scenario.sound && window.sfx) {
-        if (!window.sfx._c) window.sfx.init()
-        if (window.sfx._c && window.sfx._c.state === 'suspended') window.sfx._c.resume()
+        if (!window.sfx._c) {window.sfx.init()}
+        if (window.sfx._c && window.sfx._c.state === 'suspended') {window.sfx._c.resume()}
         window.sfx.startAmbient(scenario.sound)
       }
 
@@ -879,8 +879,8 @@
     }
 
     _animate(scenario) {
-      if (!this.running) return
-      const ctx = this.ctx; if (!ctx) return
+      if (!this.running) {return}
+      const ctx = this.ctx; if (!ctx) {return}
       const now = performance.now(); const elapsed = now - this.startTime
       const t = elapsed / 1000; const dt = 1 / 60
       const progress = clamp(elapsed / this.duration, 0, 1)
@@ -902,7 +902,7 @@
       // Draw scene
       drawSky(ctx, w, h, scenario.sky, t)
       if (scenario.night) { drawStars(ctx, w, h, t); drawMoon(ctx, w, h, t) }
-      else drawSun(ctx, w, h, t)
+      else {drawSun(ctx, w, h, t)}
 
       // Clouds
       ctx.globalAlpha = 0.6
@@ -911,36 +911,36 @@
       ctx.globalAlpha = 1
 
       // Buildings
-      if (scenario.buildings) drawBuildings(ctx, w, h, scenario.buildings, t, this.camX)
+      if (scenario.buildings) {drawBuildings(ctx, w, h, scenario.buildings, t, this.camX)}
 
       // Trees
-      for (let i = 0; i < 5; i++) drawTree(ctx, w * 0.1 + i * w * 0.2, h * 0.72, 0.8 + Math.random() * 0.4)
+      for (let i = 0; i < 5; i++) {drawTree(ctx, w * 0.1 + i * w * 0.2, h * 0.72, 0.8 + Math.random() * 0.4)}
 
       // Street lights
       if (scenario.streetLights) {
-        for (let i = 0; i < 6; i++) drawStreetLight(ctx, w * 0.1 + i * w * 0.16, h * 0.72, h, t)
+        for (let i = 0; i < 6; i++) {drawStreetLight(ctx, w * 0.1 + i * w * 0.16, h * 0.72, h, t)}
       }
 
       // Road
       drawRoad(ctx, w, h, scenario.road, t, this.camX)
 
       // Crosswalk
-      if (scenario.crosswalk) drawCrosswalk(ctx, w, h, t)
+      if (scenario.crosswalk) {drawCrosswalk(ctx, w, h, t)}
 
       // Puddles
-      if (scenario.puddles) for (const p of scenario.puddles) drawPuddle(ctx, p, w, h, t)
+      if (scenario.puddles) {for (const p of scenario.puddles) {drawPuddle(ctx, p, w, h, t)}}
 
       // Parked cars
-      if (scenario.parkedCars) for (const pc of scenario.parkedCars) drawVehicle(ctx, { ...pc, dir: 1, type: 'car' }, w, h, t)
+      if (scenario.parkedCars) {for (const pc of scenario.parkedCars) {drawVehicle(ctx, { ...pc, dir: 1, type: 'car' }, w, h, t)}}
 
       // Traffic light
-      if (scenario.trafficLight) drawTrafficLight(ctx, scenario.trafficLight, w, h, t)
+      if (scenario.trafficLight) {drawTrafficLight(ctx, scenario.trafficLight, w, h, t)}
 
       // Vehicles
       if (scenario.vehicles) {
         for (const v of scenario.vehicles) {
           const vv = { ...v }
-          if (v.speed > 0) { vv.x = (v.x + (v.dir || 1) * v.speed * t * 0.03) % 1.2; if (vv.x < -0.1) vv.x = 1.1 }
+          if (v.speed > 0) { vv.x = (v.x + (v.dir || 1) * v.speed * t * 0.03) % 1.2; if (vv.x < -0.1) {vv.x = 1.1} }
           drawVehicle(ctx, vv, w, h, t)
         }
       }
@@ -950,7 +950,7 @@
         for (const p of scenario._pedInstances) {
           const pp = { ...p }
           pp.x = (p.x + p.dir * p.speed * t * 0.02) % 1.1
-          if (pp.x < -0.05) pp.x = 1.05; if (pp.x > 1.05) pp.x = -0.05
+          if (pp.x < -0.05) {pp.x = 1.05;} if (pp.x > 1.05) {pp.x = -0.05}
           drawPedestrian(ctx, pp, w, h, t)
         }
       }
@@ -1061,28 +1061,28 @@
     }
 
     skip() {
-      if (!this.running) return
+      if (!this.running) {return}
       this.skipRequested = true
       const fadeStart = performance.now()
       const fadeOut = () => {
         const elapsed = performance.now() - fadeStart
         const alpha = clamp(elapsed / 300, 0, 1)
         if (this.canvas) { this.ctx.fillStyle = `rgba(0,0,0,${alpha})`; this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height) }
-        if (alpha < 1) requestAnimationFrame(fadeOut)
-        else this.destroy()
+        if (alpha < 1) {requestAnimationFrame(fadeOut)}
+        else {this.destroy()}
       }
       requestAnimationFrame(fadeOut)
     }
 
     destroy() {
       this.running = false
-      if (this.animFrame) cancelAnimationFrame(this.animFrame)
+      if (this.animFrame) {cancelAnimationFrame(this.animFrame)}
       // Stop ambient sound
-      if (window.sfx && typeof window.sfx.stopAmbient === 'function') window.sfx.stopAmbient()
+      if (window.sfx && typeof window.sfx.stopAmbient === 'function') {window.sfx.stopAmbient()}
       if (this.canvas && this.canvas.parentNode) {
         this.canvas.style.transition = 'opacity 0.3s ease'; this.canvas.style.opacity = '0'
-        setTimeout(() => { if (this.canvas && this.canvas.parentNode) this.canvas.remove(); this.canvas = null; this.ctx = null; if (this.onComplete) this.onComplete() }, 300)
-      } else { if (this.onComplete) this.onComplete() }
+        setTimeout(() => { if (this.canvas && this.canvas.parentNode) {this.canvas.remove();} this.canvas = null; this.ctx = null; if (this.onComplete) {this.onComplete()} }, 300)
+      } else { if (this.onComplete) {this.onComplete()} }
     }
   }
 

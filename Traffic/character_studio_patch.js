@@ -219,21 +219,21 @@
   }
 
   async function _syncAppearanceFromCloud() {
-    if (!window.supabaseClient || !window.colUser?.id) return;
+    if (!window.supabaseClient || !window.colUser?.id) {return;}
     try {
       const { data, error } = await window.supabaseClient
         .from('user_profiles')
         .select('appearance, appearance_updated_at')
         .eq('user_id', window.colUser.id)
         .maybeSingle();
-      if (error || !data || !data.appearance) return;
+      if (error || !data || !data.appearance) {return;}
       const localRaw = localStorage.getItem('traffic_appearance');
       if (localRaw) {
         try {
           const local = JSON.parse(localRaw);
           const cloudTime = data.appearance_updated_at ? new Date(data.appearance_updated_at).getTime() : 0;
           const localTime = local._updated || 0;
-          if (cloudTime <= localTime) return;
+          if (cloudTime <= localTime) {return;}
         } catch (e) {}
       }
       localStorage.setItem('traffic_appearance', JSON.stringify(data.appearance));
@@ -246,7 +246,7 @@
   }
 
   async function _syncAppearanceToCloud() {
-    if (!window.supabaseClient || !window.colUser?.id) return;
+    if (!window.supabaseClient || !window.colUser?.id) {return;}
     try {
       await window.supabaseClient
         .from('user_profiles')
@@ -277,17 +277,17 @@
     const mcPanels = document.getElementById('mc-panels-container');
 
     const isMC = _current.charType === 'minecraft';
-    if (mStylized) mStylized.className = 'studio-mode-btn ' + (!isMC ? 'active' : '');
-    if (mMC) mMC.className = 'studio-mode-btn mc-mode ' + (isMC ? 'active' : '');
-    if (stylTabs) stylTabs.style.display = isMC ? 'none' : 'flex';
-    if (mcTabs) mcTabs.style.display = isMC ? 'flex' : 'none';
-    if (stylPanels) stylPanels.style.display = isMC ? 'none' : 'flex';
-    if (mcPanels) mcPanels.style.display = isMC ? 'flex' : 'none';
+    if (mStylized) {mStylized.className = 'studio-mode-btn ' + (!isMC ? 'active' : '');}
+    if (mMC) {mMC.className = 'studio-mode-btn mc-mode ' + (isMC ? 'active' : '');}
+    if (stylTabs) {stylTabs.style.display = isMC ? 'none' : 'flex';}
+    if (mcTabs) {mcTabs.style.display = isMC ? 'flex' : 'none';}
+    if (stylPanels) {stylPanels.style.display = isMC ? 'none' : 'flex';}
+    if (mcPanels) {mcPanels.style.display = isMC ? 'flex' : 'none';}
 
     const gM = document.getElementById('gender-male');
     const gF = document.getElementById('gender-female');
-    if (gM) gM.className = 'studio-icon-btn ' + (_current.gender === 'male' ? 'active' : '');
-    if (gF) gF.className = 'studio-icon-btn ' + (_current.gender === 'female' ? 'active' : '');
+    if (gM) {gM.className = 'studio-icon-btn ' + (_current.gender === 'male' ? 'active' : '');}
+    if (gF) {gF.className = 'studio-icon-btn ' + (_current.gender === 'female' ? 'active' : '');}
 
     const pGrid = document.getElementById('outfit-presets-grid');
     if (pGrid) {
@@ -307,13 +307,13 @@
     const ps = document.getElementById('pants-swatches');
     const shoes = document.getElementById('shoe-swatches');
 
-    if (ss) ss.innerHTML = _swatchHTML(SKINS, _current.skin, 'skin');
-    if (hs) hs.innerHTML = _swatchHTML(HAIRS, _current.hair, 'hair');
-    if (es) es.innerHTML = _swatchHTML(EYES, _current.eyeColor, 'eyeColor');
-    if (shs) shs.innerHTML = _swatchHTML(SHIRTS, _current.shirt, 'shirt');
-    if (shAcc) shAcc.innerHTML = _swatchHTML(SHIRTS, _current.shirtAccent, 'shirtAccent');
-    if (ps) ps.innerHTML = _swatchHTML(SHIRTS, _current.pants, 'pants');
-    if (shoes) shoes.innerHTML = _swatchHTML(SHIRTS, _current.shoes, 'shoes');
+    if (ss) {ss.innerHTML = _swatchHTML(SKINS, _current.skin, 'skin');}
+    if (hs) {hs.innerHTML = _swatchHTML(HAIRS, _current.hair, 'hair');}
+    if (es) {es.innerHTML = _swatchHTML(EYES, _current.eyeColor, 'eyeColor');}
+    if (shs) {shs.innerHTML = _swatchHTML(SHIRTS, _current.shirt, 'shirt');}
+    if (shAcc) {shAcc.innerHTML = _swatchHTML(SHIRTS, _current.shirtAccent, 'shirtAccent');}
+    if (ps) {ps.innerHTML = _swatchHTML(SHIRTS, _current.pants, 'pants');}
+    if (shoes) {shoes.innerHTML = _swatchHTML(SHIRTS, _current.shoes, 'shoes');}
 
     const hys = document.getElementById('hairstyle-options');
     if (hys) {
@@ -411,7 +411,7 @@
 
   function _initPreview() {
     const canvas = document.getElementById('customize-preview');
-    if (!canvas || !window.THREE) return;
+    if (!canvas || !window.THREE) {return;}
 
     if (!canvas.dataset.dragInit) {
       canvas.dataset.dragInit = "true";
@@ -499,16 +499,16 @@
   }
 
   function _updatePreviewModel() {
-    if (!_previewScene) return;
-    if (_previewChar) _previewScene.remove(_previewChar);
+    if (!_previewScene) {return;}
+    if (_previewChar) {_previewScene.remove(_previewChar);}
     _previewChar = _buildHuman(true, _current);
     _previewChar.position.set(0, 0, 0);
-    if (_previewChar.userData) _previewChar.userData.pose = _studioPose;
+    if (_previewChar.userData) {_previewChar.userData.pose = _studioPose;}
     _previewScene.add(_previewChar);
   }
 
   function _animatePreview() {
-    if (!_previewRenderer) return;
+    if (!_previewRenderer) {return;}
     _previewRAF = requestAnimationFrame(_animatePreview);
     if (_previewChar) {
       if (window._autoRotatePreview !== false) {
@@ -556,10 +556,10 @@
       _current.shirtAccent = p.shirtAccent;
       _current.pants = p.pants;
       _current.shoes = p.shoes;
-      if (p.hairStyle) _current.hairStyle = p.hairStyle;
-      if (p.hair) _current.hair = p.hair;
-      if (p.facialHair) _current.facialHair = p.facialHair;
-      if (p.accessories) _current.accessories = Object.assign({}, p.accessories);
+      if (p.hairStyle) {_current.hairStyle = p.hairStyle;}
+      if (p.hair) {_current.hair = p.hair;}
+      if (p.facialHair) {_current.facialHair = p.facialHair;}
+      if (p.accessories) {_current.accessories = Object.assign({}, p.accessories);}
       _renderStudioUI();
       _updatePreviewModel();
     }
@@ -622,7 +622,7 @@
     _current.mcSkinUrl = 'skins/' + id + '.png';
     _current.mcIsCustom = false;
     const s = window.MinecraftSkinManager?.DEFAULT_SKINS?.find(function(x) { return x.id === id; });
-    if (s && s.isSlim !== undefined) _current.mcIsSlim = s.isSlim;
+    if (s && s.isSlim !== undefined) {_current.mcIsSlim = s.isSlim;}
     _renderStudioUI();
     _updatePreviewModel();
   };
@@ -631,14 +631,14 @@
     _current.mcIsSlim = isSlim;
     const cArm = document.getElementById('mc-arm-classic');
     const sArm = document.getElementById('mc-arm-slim');
-    if (cArm) cArm.classList.toggle('active', !isSlim);
-    if (sArm) sArm.classList.toggle('active', isSlim);
+    if (cArm) {cArm.classList.toggle('active', !isSlim);}
+    if (sArm) {sArm.classList.toggle('active', isSlim);}
     _updatePreviewModel();
   };
 
   window._handleSkinFileUpload = async function(event) {
     const file = event.target?.files?.[0];
-    if (!file || !window.MinecraftSkinManager) return;
+    if (!file || !window.MinecraftSkinManager) {return;}
     try {
       const res = await window.MinecraftSkinManager.processSkinFile(file);
       const saved = window.MinecraftSkinManager.saveCustomSkin(res.name, res.dataUrl);
@@ -675,9 +675,9 @@
 
   window._setStudioCamera = function(view) {
     document.querySelectorAll('.studio-controls-row .studio-icon-btn').forEach(function(b) {
-      if (b.id && b.id.startsWith('cam-')) b.classList.toggle('active', b.id === 'cam-' + view);
+      if (b.id && b.id.startsWith('cam-')) {b.classList.toggle('active', b.id === 'cam-' + view);}
     });
-    if (!_previewCamera) return;
+    if (!_previewCamera) {return;}
     if (view === 'face') {
       _previewCamera.position.set(0, 1.56, 1.6);
       _previewCamera.lookAt(0, 1.50, 0);
@@ -696,7 +696,7 @@
   window._setStudioPose = function(pose) {
     _studioPose = pose;
     document.querySelectorAll('.studio-controls-row .studio-icon-btn').forEach(function(b) {
-      if (b.id && b.id.startsWith('pose-')) b.classList.toggle('active', b.id === 'pose-' + (pose === 'thumbs_up' ? 'thumbs' : pose));
+      if (b.id && b.id.startsWith('pose-')) {b.classList.toggle('active', b.id === 'pose-' + (pose === 'thumbs_up' ? 'thumbs' : pose));}
     });
     if (_previewChar && _previewChar.userData) {
       _previewChar.userData.pose = pose;
@@ -706,9 +706,9 @@
   window._setStudioLighting = function(light) {
     _studioLighting = light;
     document.querySelectorAll('.studio-controls-row .studio-icon-btn').forEach(function(b) {
-      if (b.id && b.id.startsWith('light-')) b.classList.toggle('active', b.id === 'light-' + light);
+      if (b.id && b.id.startsWith('light-')) {b.classList.toggle('active', b.id === 'light-' + light);}
     });
-    if (!_keyLight || !_fillLight || !_rimLight) return;
+    if (!_keyLight || !_fillLight || !_rimLight) {return;}
     if (light === 'neon') {
       _keyLight.color.setHex(0x00f0cc); _keyLight.intensity = 1.4;
       _fillLight.color.setHex(0xff007f); _fillLight.intensity = 1.0;
@@ -728,7 +728,7 @@
     if (_current.charType === 'minecraft') {
       const defs = window.MinecraftSkinManager?.DEFAULT_SKINS || [];
       const pick = defs[Math.floor(Math.random() * defs.length)];
-      if (pick) window._pickMCPreset(pick.id);
+      if (pick) {window._pickMCPreset(pick.id);}
     } else {
       _current.skin = SKINS[Math.floor(Math.random() * SKINS.length)].hex;
       _current.hair = HAIRS[Math.floor(Math.random() * HAIRS.length)].hex;
@@ -776,7 +776,7 @@
     _syncAppearanceToCloud();
 
     const modal = document.getElementById('customize-modal');
-    if (modal) modal.style.display = 'none';
+    if (modal) {modal.style.display = 'none';}
     if (_previewRenderer) { cancelAnimationFrame(_previewRAF); _previewRenderer.dispose(); _previewRenderer = null; }
 
     if (window.game && window.game.player && window.game.playerCharacter) {

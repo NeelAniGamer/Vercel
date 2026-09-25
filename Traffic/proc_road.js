@@ -19,7 +19,7 @@ class SpatialHash {
 
   insert(x, z, data) {
     const key = this._key(x, z);
-    if (!this.cells.has(key)) this.cells.set(key, []);
+    if (!this.cells.has(key)) {this.cells.set(key, []);}
     this.cells.get(key).push({ x, z, data });
   }
 
@@ -35,7 +35,7 @@ class SpatialHash {
         if (cell) {
           for (const p of cell) {
             const dist = Math.sqrt((p.x - x) ** 2 + (p.z - z) ** 2);
-            if (dist < radius) return true;
+            if (dist < radius) {return true;}
           }
         }
       }
@@ -56,7 +56,7 @@ class SpatialHash {
         if (cell) {
           for (const p of cell) {
             const dist = Math.sqrt((p.x - x) ** 2 + (p.z - z) ** 2);
-            if (dist < radius) results.push(p);
+            if (dist < radius) {results.push(p);}
           }
         }
       }
@@ -109,12 +109,12 @@ class RoadGenerator {
         }
       }
     }
-    if (bestPoint) return bestPoint;
+    if (bestPoint) {return bestPoint;}
     // Fallback: any roadable point
     for (let attempt = 0; attempt < 500; attempt++) {
       const x = (Math.random() - 0.5) * searchRadius * 2;
       const z = (Math.random() - 0.5) * searchRadius * 2;
-      if (this.terrain.isRoadable(x, z)) return { x, z };
+      if (this.terrain.isRoadable(x, z)) {return { x, z };}
     }
     return { x: 0, z: 0 };
   }
@@ -125,10 +125,10 @@ class RoadGenerator {
     const nx = x + dx * this.stepSize;
     const nz = z + dz * this.stepSize;
     const slope = this.terrain.getSlope(nx, nz);
-    if (slope > this.maxSlope * leniency) return Infinity;
+    if (slope > this.maxSlope * leniency) {return Infinity;}
 
     const height = this.terrain.getHeight(nx, nz);
-    if (height < this.terrain.waterLevel) return Infinity;
+    if (height < this.terrain.waterLevel) {return Infinity;}
 
     let score = slope * 50;
 
@@ -143,7 +143,7 @@ class RoadGenerator {
     for (let i = 1; i <= this.lookaheadSteps; i++) {
       const lx = x + dx * this.stepSize * i;
       const lz = z + dz * this.stepSize * i;
-      if (this.terrain.isRoadable(lx, lz)) roadableCount++;
+      if (this.terrain.isRoadable(lx, lz)) {roadableCount++;}
     }
     score += (this.lookaheadSteps - roadableCount) * 5;
 
@@ -176,7 +176,7 @@ class RoadGenerator {
 
     let currentX = start.x, currentZ = start.z;
     let stuckCount = 0;
-    let totalSteps = Math.floor(maxLength / this.stepSize);
+    const totalSteps = Math.floor(maxLength / this.stepSize);
 
     for (let step = 1; step <= totalSteps; step++) {
       // Score all directions (exclude reverse)
@@ -190,14 +190,14 @@ class RoadGenerator {
 
         // Skip reverse direction (dot product < -0.5 = more than 135 degrees)
         if (prevDx !== 0 || prevDz !== 0) {
-          if (dx * prevDx + dz * prevDz < -0.3) continue;
+          if (dx * prevDx + dz * prevDz < -0.3) {continue;}
         }
 
         const nx = currentX + dx * this.stepSize;
         const nz = currentZ + dz * this.stepSize;
 
         // Self-avoidance: check if too close to existing road (but not the immediate previous point)
-        if (spatialHash.hasNearby(nx, nz, this.stepSize * 1.2)) continue;
+        if (spatialHash.hasNearby(nx, nz, this.stepSize * 1.2)) {continue;}
 
         const score = this._scoreDirection(currentX, currentZ, dx, dz, prevDx, prevDz);
         if (score < bestScore) {
@@ -215,11 +215,11 @@ class RoadGenerator {
             const dx = Math.cos(angle);
             const dz = Math.sin(angle);
             if (prevDx !== 0 || prevDz !== 0) {
-              if (dx * prevDx + dz * prevDz < -0.3) continue;
+              if (dx * prevDx + dz * prevDz < -0.3) {continue;}
             }
             const nx = currentX + dx * this.stepSize;
             const nz = currentZ + dz * this.stepSize;
-            if (spatialHash.hasNearby(nx, nz, this.stepSize * 1.0)) continue;
+            if (spatialHash.hasNearby(nx, nz, this.stepSize * 1.0)) {continue;}
             const score = this._scoreDirection(currentX, currentZ, dx, dz, prevDx, prevDz, len);
             if (score < bestScore) {
               bestScore = score;
@@ -227,21 +227,21 @@ class RoadGenerator {
               bestDz = dz;
             }
           }
-          if (bestScore !== Infinity) break;
+          if (bestScore !== Infinity) {break;}
         }
       }
 
       if (bestScore === Infinity) {
         // Still stuck - turn back
         stuckCount++;
-        if (stuckCount > this.turnbackDepth || points.length < 3) break;
+        if (stuckCount > this.turnbackDepth || points.length < 3) {break;}
         // Remove last few points and try from earlier position
         const backtrack = Math.min(this.turnbackDepth, Math.floor(points.length / 3));
         for (let i = 0; i < backtrack; i++) {
           const removed = points.pop();
           spatialHash.cells.delete(spatialHash._key(removed.x, removed.z));
         }
-        if (points.length < 2) break;
+        if (points.length < 2) {break;}
         const lastPoint = points[points.length - 1];
         currentX = lastPoint.x;
         currentZ = lastPoint.z;
@@ -284,7 +284,7 @@ class RoadGenerator {
       const removed = points.pop();
       spatialHash.cells.delete(spatialHash._key(removed.x, removed.z));
     }
-    if (points.length < 2) return false;
+    if (points.length < 2) {return false;}
     return true;
   }
 
@@ -356,10 +356,10 @@ class RoadGenerator {
     let minX = Infinity, maxX = -Infinity;
     let minZ = Infinity, maxZ = -Infinity;
     for (const p of points) {
-      if (p.x < minX) minX = p.x;
-      if (p.x > maxX) maxX = p.x;
-      if (p.z < minZ) minZ = p.z;
-      if (p.z > maxZ) maxZ = p.z;
+      if (p.x < minX) {minX = p.x;}
+      if (p.x > maxX) {maxX = p.x;}
+      if (p.z < minZ) {minZ = p.z;}
+      if (p.z > maxZ) {maxZ = p.z;}
     }
     return { minX, maxX, minZ, maxZ };
   }
@@ -376,11 +376,11 @@ class RoadMeshGenerator {
 
   // Generate a road ribbon mesh from fine points
   generateRoadMesh(finePoints, startIdx = 0, count = null) {
-    if (!count) count = finePoints.length - startIdx;
+    if (!count) {count = finePoints.length - startIdx;}
     const endIdx = Math.min(startIdx + count, finePoints.length);
     const pts = finePoints.slice(startIdx, endIdx);
 
-    if (pts.length < 2) return null;
+    if (pts.length < 2) {return null;}
 
     const positions = [];
     const indices = [];
@@ -476,7 +476,7 @@ class RoadManager {
 
   // Generate and load a road
   generateRoad(seed = null) {
-    if (seed) this.terrain = new ProcTerrain({ seed });
+    if (seed) {this.terrain = new ProcTerrain({ seed });}
     const gen = new RoadGenerator(this.terrain);
     this.roadData = gen.generate(15000);
 
@@ -487,7 +487,7 @@ class RoadManager {
 
   // Update which road chunks to show based on player position
   update(playerX, playerZ) {
-    if (!this.roadData) return;
+    if (!this.roadData) {return;}
 
     // Find closest point on road
     const closestIdx = this._findClosestPoint(playerX, playerZ);
@@ -514,7 +514,7 @@ class RoadManager {
 
   // Find closest road point to world position
   _findClosestPoint(x, z) {
-    if (!this.roadData || !this.roadData.fine.length) return 0;
+    if (!this.roadData || !this.roadData.fine.length) {return 0;}
     let bestDist = Infinity;
     let bestIdx = 0;
     // Sample every 10th point for speed
@@ -531,7 +531,7 @@ class RoadManager {
 
   // Get road position at distance (for AI, spawn points)
   getPointAtDistance(dist) {
-    if (!this.roadData) return null;
+    if (!this.roadData) {return null;}
     const idx = Math.floor(dist);
     if (idx >= 0 && idx < this.roadData.fine.length) {
       return this.roadData.fine[idx];

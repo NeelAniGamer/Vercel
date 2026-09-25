@@ -43,7 +43,7 @@
   }
 
   async function loadCore() {
-    if (coreLoaded) return
+    if (coreLoaded) {return}
     await Promise.all(CORE_MODULES.map(m => loadScript(m)))
     coreLoaded = true
     // Wait for SceneManager.init()
@@ -65,7 +65,7 @@
 
   // ==================== LAZY LOADER ====================
   async function loadScene(canvasId) {
-    if (LOADED.has(canvasId) || LOADING.has(canvasId)) return
+    if (LOADED.has(canvasId) || LOADING.has(canvasId)) {return}
     const modulePath = SCENE_MODULES[canvasId]
     if (!modulePath) {
       console.warn('[LazyLoader] No scene module for canvas:', canvasId)
@@ -140,7 +140,7 @@
     // Observe all registered canvases
     Object.keys(SCENE_MODULES).forEach(id => {
       const canvas = document.getElementById(id)
-      if (canvas) observer.observe(canvas)
+      if (canvas) {observer.observe(canvas)}
     })
   }
 

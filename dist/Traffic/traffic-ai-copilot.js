@@ -43,7 +43,7 @@
     }
 
     _initHUD() {
-      if (typeof document === 'undefined') return;
+      if (typeof document === 'undefined') {return;}
       // Check if existing HUD element exists
       let hud = document.getElementById('ai-copilot-card');
       if (!hud) {
@@ -240,16 +240,16 @@
      * Speak audio alert through Web Speech Synthesis API
      */
     speak(text, priority = false) {
-      if (!this.voiceEnabled) return;
+      if (!this.voiceEnabled) {return;}
       const now = Date.now();
-      if (!priority && (now - this.lastSpokenTime < this.speechCooldown)) return;
-      if (text === this.lastAlertText && (now - this.lastSpokenTime < 10000)) return;
+      if (!priority && (now - this.lastSpokenTime < this.speechCooldown)) {return;}
+      if (text === this.lastAlertText && (now - this.lastSpokenTime < 10000)) {return;}
 
       this.lastSpokenTime = now;
       this.lastAlertText = text;
 
       // Update HUD Speech Bubble
-      if (typeof document === 'undefined') return;
+      if (typeof document === 'undefined') {return;}
       const bubble = document.getElementById('copilot-bubble');
       const bubbleText = document.getElementById('copilot-bubble-text');
       if (bubble && bubbleText) {
@@ -279,7 +279,7 @@
      * Main Per-Frame Telemetry Update & Syllabus Evaluation
      */
     update(dt) {
-      if (!this.active || !this.game || !this.game.player) return;
+      if (!this.active || !this.game || !this.game.player) {return;}
 
       const player = this.game.player;
       const pPos = player.position;
@@ -346,7 +346,7 @@
       // ────────────────────────────────────────────────────────────────────────
       if (this.game.peds && this.game.peds.length > 0) {
         for (const ped of this.game.peds) {
-          if (!ped.visible) continue;
+          if (!ped.visible) {continue;}
           const pedDist = Math.hypot(ped.position.x - pPos.x, ped.position.z - pPos.z);
           if (pedDist < 16.0) {
             currentHazard = 'danger';
@@ -397,12 +397,12 @@
       ];
 
       for (const list of taskLists) {
-        if (!list || !Array.isArray(list)) continue;
+        if (!list || !Array.isArray(list)) {continue;}
         const task = list.find(t => t.id === taskId || (t.desc && t.desc.toLowerCase().includes(taskId)));
         if (task && !task.done) {
           task.done = true;
           const msg = task.text || task.desc || taskId;
-          if (window.toast) toast(`✅ Syllabus Task Completed: ${msg}`, '#10b981', 4000);
+          if (window.toast) {toast(`✅ Syllabus Task Completed: ${msg}`, '#10b981', 4000);}
           this.speak(`Task completed: ${msg}`);
         }
       }
@@ -410,7 +410,7 @@
 
     _renderHUD() {
       const card = this.hudElement;
-      if (!card) return;
+      if (!card) {return;}
 
       card.className = (this.hazardStatus === 'danger' ? 'danger' :
                         this.hazardStatus === 'caution' ? 'caution' : '');
@@ -419,8 +419,8 @@
       const text = document.getElementById('copilot-hazard-text');
       const score = document.getElementById('copilot-score');
 
-      if (dot) dot.className = `hazard-dot ${this.hazardStatus}`;
-      if (text) text.textContent = this.hazardMessage;
+      if (dot) {dot.className = `hazard-dot ${this.hazardStatus}`;}
+      if (text) {text.textContent = this.hazardMessage;}
       if (score) {
         score.textContent = `${Math.round(this.safetyScore)}%`;
         score.style.color = (this.safetyScore > 80 ? '#10b981' : this.safetyScore > 50 ? '#f59e0b' : '#ef4444');

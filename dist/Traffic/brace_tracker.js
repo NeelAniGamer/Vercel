@@ -1,9 +1,9 @@
 const fs = require('fs');
 const lines = fs.readFileSync('game_core.js', 'utf8').split('\n');
-let stack = [];
+const stack = [];
 let inBlockComment = false;
 for (let i = 0; i < 3218; i++) {
-  let line = lines[i];
+  const line = lines[i];
   let inString = false, stringChar = '';
   let inLineComment = false;
 
@@ -15,7 +15,7 @@ for (let i = 0; i < 3218; i++) {
       if (c === '*' && next === '/') { inBlockComment = false; j++; }
       continue;
     }
-    if (inLineComment) continue;
+    if (inLineComment) {continue;}
     if (inString) {
       if (c === '\\') { j++; continue; }
       if (c === stringChar) { inString = false; }

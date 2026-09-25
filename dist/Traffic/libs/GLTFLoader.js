@@ -182,7 +182,7 @@
 
 					} catch ( error ) {
 
-						if ( onError ) onError( error );
+						if ( onError ) {onError( error );}
 						return;
 
 					}
@@ -201,7 +201,7 @@
 
 			if ( json.asset === undefined || json.asset.version[ 0 ] < 2 ) {
 
-				if ( onError ) onError( new Error( 'THREE.GLTFLoader: Unsupported asset. glTF versions >=2.0 are supported.' ) );
+				if ( onError ) {onError( new Error( 'THREE.GLTFLoader: Unsupported asset. glTF versions >=2.0 are supported.' ) );}
 				return;
 
 			}
@@ -372,14 +372,14 @@
 			const parser = this.parser;
 			const cacheKey = 'light:' + lightIndex;
 			let dependency = parser.cache.get( cacheKey );
-			if ( dependency ) return dependency;
+			if ( dependency ) {return dependency;}
 			const json = parser.json;
 			const extensions = json.extensions && json.extensions[ this.name ] || {};
 			const lightDefs = extensions.lights || [];
 			const lightDef = lightDefs[ lightIndex ];
 			let lightNode;
 			const color = new THREE.Color( 0xffffff );
-			if ( lightDef.color !== undefined ) color.fromArray( lightDef.color );
+			if ( lightDef.color !== undefined ) {color.fromArray( lightDef.color );}
 			const range = lightDef.range !== undefined ? lightDef.range : 0;
 
 			switch ( lightDef.type ) {
@@ -417,7 +417,7 @@
 
 			lightNode.position.set( 0, 0, 0 );
 			lightNode.decay = 2;
-			if ( lightDef.intensity !== undefined ) lightNode.intensity = lightDef.intensity;
+			if ( lightDef.intensity !== undefined ) {lightNode.intensity = lightDef.intensity;}
 			lightNode.name = parser.createUniqueName( lightDef.name || 'light_' + lightIndex );
 			dependency = Promise.resolve( lightNode );
 			parser.cache.add( cacheKey, dependency );
@@ -433,7 +433,7 @@
 			const nodeDef = json.nodes[ nodeIndex ];
 			const lightDef = nodeDef.extensions && nodeDef.extensions[ this.name ] || {};
 			const lightIndex = lightDef.light;
-			if ( lightIndex === undefined ) return null;
+			if ( lightIndex === undefined ) {return null;}
 			return this._loadLight( lightIndex ).then( function ( light ) {
 
 				return parser._getNodeRef( self.cache, lightIndex, light );
@@ -514,7 +514,7 @@
 
 			const parser = this.parser;
 			const materialDef = parser.json.materials[ materialIndex ];
-			if ( ! materialDef.extensions || ! materialDef.extensions[ this.name ] ) return null;
+			if ( ! materialDef.extensions || ! materialDef.extensions[ this.name ] ) {return null;}
 			return THREE.MeshPhysicalMaterial;
 
 		}
@@ -597,7 +597,7 @@
 
 			const parser = this.parser;
 			const materialDef = parser.json.materials[ materialIndex ];
-			if ( ! materialDef.extensions || ! materialDef.extensions[ this.name ] ) return null;
+			if ( ! materialDef.extensions || ! materialDef.extensions[ this.name ] ) {return null;}
 			return THREE.MeshPhysicalMaterial;
 
 		}
@@ -722,13 +722,13 @@
 			if ( source.uri ) {
 
 				const handler = parser.options.manager.getHandler( source.uri );
-				if ( handler !== null ) loader = handler;
+				if ( handler !== null ) {loader = handler;}
 
 			}
 
 			return this.detectSupport().then( function ( isSupported ) {
 
-				if ( isSupported ) return parser.loadTextureImage( textureIndex, source, loader );
+				if ( isSupported ) {return parser.loadTextureImage( textureIndex, source, loader );}
 
 				if ( json.extensionsRequired && json.extensionsRequired.indexOf( name ) >= 0 ) {
 
@@ -970,7 +970,7 @@
 
 							const attribute = geometry.attributes[ attributeName ];
 							const normalized = attributeNormalizedMap[ attributeName ];
-							if ( normalized !== undefined ) attribute.normalized = normalized;
+							if ( normalized !== undefined ) {attribute.normalized = normalized;}
 
 						}
 
@@ -1259,7 +1259,7 @@
 			material.bumpScale = 1;
 			material.normalMap = materialParams.normalMap === undefined ? null : materialParams.normalMap;
 			material.normalMapType = THREE.TangentSpaceNormalMap;
-			if ( materialParams.normalScale ) material.normalScale = materialParams.normalScale;
+			if ( materialParams.normalScale ) {material.normalScale = materialParams.normalScale;}
 			material.displacementMap = null;
 			material.displacementScale = 1;
 			material.displacementBias = 0;
@@ -1462,7 +1462,7 @@
 	function resolveURL( url, path ) {
 
 		// Invalid URL
-		if ( typeof url !== 'string' || url === '' ) return ''; // Host Relative URL
+		if ( typeof url !== 'string' || url === '' ) {return '';} // Host Relative URL
 
 		if ( /^https?:\/\//i.test( path ) && /^\//.test( url ) ) {
 
@@ -1471,11 +1471,11 @@
 		} // Absolute URL http://,https://,//
 
 
-		if ( /^(https?:)?\/\//i.test( url ) ) return url; // Data URI
+		if ( /^(https?:)?\/\//i.test( url ) ) {return url;} // Data URI
 
-		if ( /^data:.*,.*$/i.test( url ) ) return url; // Blob URL
+		if ( /^data:.*,.*$/i.test( url ) ) {return url;} // Blob URL
 
-		if ( /^blob:.*$/i.test( url ) ) return url; // Relative URL
+		if ( /^blob:.*$/i.test( url ) ) {return url;} // Relative URL
 
 		return path + url;
 
@@ -1561,13 +1561,13 @@
 		for ( let i = 0, il = targets.length; i < il; i ++ ) {
 
 			const target = targets[ i ];
-			if ( target.POSITION !== undefined ) hasMorphPosition = true;
-			if ( target.NORMAL !== undefined ) hasMorphNormal = true;
-			if ( hasMorphPosition && hasMorphNormal ) break;
+			if ( target.POSITION !== undefined ) {hasMorphPosition = true;}
+			if ( target.NORMAL !== undefined ) {hasMorphNormal = true;}
+			if ( hasMorphPosition && hasMorphNormal ) {break;}
 
 		}
 
-		if ( ! hasMorphPosition && ! hasMorphNormal ) return Promise.resolve( geometry );
+		if ( ! hasMorphPosition && ! hasMorphNormal ) {return Promise.resolve( geometry );}
 		const pendingPositionAccessors = [];
 		const pendingNormalAccessors = [];
 
@@ -1595,8 +1595,8 @@
 
 			const morphPositions = accessors[ 0 ];
 			const morphNormals = accessors[ 1 ];
-			if ( hasMorphPosition ) geometry.morphAttributes.position = morphPositions;
-			if ( hasMorphNormal ) geometry.morphAttributes.normal = morphNormals;
+			if ( hasMorphPosition ) {geometry.morphAttributes.position = morphPositions;}
+			if ( hasMorphNormal ) {geometry.morphAttributes.normal = morphNormals;}
 			geometry.morphTargetsRelative = true;
 			return geometry;
 
@@ -1890,7 +1890,7 @@
 
 		_addNodeRef( cache, index ) {
 
-			if ( index === undefined ) return;
+			if ( index === undefined ) {return;}
 
 			if ( cache.refs[ index ] === undefined ) {
 
@@ -1906,7 +1906,7 @@
 
 		_getNodeRef( cache, index, object ) {
 
-			if ( cache.refs[ index ] <= 1 ) return object;
+			if ( cache.refs[ index ] <= 1 ) {return object;}
 			const ref = object.clone();
 			ref.name += '_instance_' + cache.uses[ index ] ++;
 			return ref;
@@ -1921,7 +1921,7 @@
 			for ( let i = 0; i < extensions.length; i ++ ) {
 
 				const result = func( extensions[ i ] );
-				if ( result ) return result;
+				if ( result ) {return result;}
 
 			}
 
@@ -1938,7 +1938,7 @@
 			for ( let i = 0; i < extensions.length; i ++ ) {
 
 				const result = func( extensions[ i ] );
-				if ( result ) pending.push( result );
+				if ( result ) {pending.push( result );}
 
 			}
 
@@ -2227,10 +2227,10 @@
 
 						const index = sparseIndices[ i ];
 						bufferAttribute.setX( index, sparseValues[ i * itemSize ] );
-						if ( itemSize >= 2 ) bufferAttribute.setY( index, sparseValues[ i * itemSize + 1 ] );
-						if ( itemSize >= 3 ) bufferAttribute.setZ( index, sparseValues[ i * itemSize + 2 ] );
-						if ( itemSize >= 4 ) bufferAttribute.setW( index, sparseValues[ i * itemSize + 3 ] );
-						if ( itemSize >= 5 ) throw new Error( 'THREE.GLTFLoader: Unsupported itemSize in sparse THREE.BufferAttribute.' );
+						if ( itemSize >= 2 ) {bufferAttribute.setY( index, sparseValues[ i * itemSize + 1 ] );}
+						if ( itemSize >= 3 ) {bufferAttribute.setZ( index, sparseValues[ i * itemSize + 2 ] );}
+						if ( itemSize >= 4 ) {bufferAttribute.setW( index, sparseValues[ i * itemSize + 3 ] );}
+						if ( itemSize >= 5 ) {throw new Error( 'THREE.GLTFLoader: Unsupported itemSize in sparse THREE.BufferAttribute.' );}
 
 					}
 
@@ -2259,7 +2259,7 @@
 			if ( source.uri ) {
 
 				const handler = options.manager.getHandler( source.uri );
-				if ( handler !== null ) loader = handler;
+				if ( handler !== null ) {loader = handler;}
 
 			}
 
@@ -2277,7 +2277,7 @@
 			let sourceURI = source.uri;
 			let isObjectURL = false;
 			let hasAlpha = true;
-			if ( source.mimeType === 'image/jpeg' ) hasAlpha = false;
+			if ( source.mimeType === 'image/jpeg' ) {hasAlpha = false;}
 
 			if ( source.bufferView !== undefined ) {
 
@@ -2342,9 +2342,9 @@
 				}
 
 				texture.flipY = false;
-				if ( textureDef.name ) texture.name = textureDef.name; // When there is definitely no alpha channel in the texture, set THREE.RGBFormat to save space.
+				if ( textureDef.name ) {texture.name = textureDef.name;} // When there is definitely no alpha channel in the texture, set THREE.RGBFormat to save space.
 
-				if ( ! hasAlpha ) texture.format = THREE.RGBFormat;
+				if ( ! hasAlpha ) {texture.format = THREE.RGBFormat;}
 				const samplers = json.samplers || {};
 				const sampler = samplers[ textureDef.sampler ] || {};
 				texture.magFilter = WEBGL_FILTERS[ sampler.magFilter ] || THREE.LinearFilter;
@@ -2463,30 +2463,30 @@
 			if ( useVertexTangents || useVertexColors || useFlatShading || useSkinning || useMorphTargets ) {
 
 				let cacheKey = 'ClonedMaterial:' + material.uuid + ':';
-				if ( material.isGLTFSpecularGlossinessMaterial ) cacheKey += 'specular-glossiness:';
-				if ( useSkinning ) cacheKey += 'skinning:';
-				if ( useVertexTangents ) cacheKey += 'vertex-tangents:';
-				if ( useVertexColors ) cacheKey += 'vertex-colors:';
-				if ( useFlatShading ) cacheKey += 'flat-shading:';
-				if ( useMorphTargets ) cacheKey += 'morph-targets:';
-				if ( useMorphNormals ) cacheKey += 'morph-normals:';
+				if ( material.isGLTFSpecularGlossinessMaterial ) {cacheKey += 'specular-glossiness:';}
+				if ( useSkinning ) {cacheKey += 'skinning:';}
+				if ( useVertexTangents ) {cacheKey += 'vertex-tangents:';}
+				if ( useVertexColors ) {cacheKey += 'vertex-colors:';}
+				if ( useFlatShading ) {cacheKey += 'flat-shading:';}
+				if ( useMorphTargets ) {cacheKey += 'morph-targets:';}
+				if ( useMorphNormals ) {cacheKey += 'morph-normals:';}
 				let cachedMaterial = this.cache.get( cacheKey );
 
 				if ( ! cachedMaterial ) {
 
 					cachedMaterial = material.clone();
-					if ( useSkinning ) cachedMaterial.skinning = true;
-					if ( useVertexColors ) cachedMaterial.vertexColors = true;
-					if ( useFlatShading ) cachedMaterial.flatShading = true;
-					if ( useMorphTargets ) cachedMaterial.morphTargets = true;
-					if ( useMorphNormals ) cachedMaterial.morphNormals = true;
+					if ( useSkinning ) {cachedMaterial.skinning = true;}
+					if ( useVertexColors ) {cachedMaterial.vertexColors = true;}
+					if ( useFlatShading ) {cachedMaterial.flatShading = true;}
+					if ( useMorphTargets ) {cachedMaterial.morphTargets = true;}
+					if ( useMorphNormals ) {cachedMaterial.morphNormals = true;}
 
 					if ( useVertexTangents ) {
 
 						cachedMaterial.vertexTangents = true; // https://github.com/mrdoob/three.js/issues/11438#issuecomment-507003995
 
-						if ( cachedMaterial.normalScale ) cachedMaterial.normalScale.y *= - 1;
-						if ( cachedMaterial.clearcoatNormalScale ) cachedMaterial.clearcoatNormalScale.y *= - 1;
+						if ( cachedMaterial.normalScale ) {cachedMaterial.normalScale.y *= - 1;}
+						if ( cachedMaterial.clearcoatNormalScale ) {cachedMaterial.clearcoatNormalScale.y *= - 1;}
 
 					}
 
@@ -2668,16 +2668,16 @@
 
 				}
 
-				if ( materialDef.name ) material.name = materialDef.name; // baseColorTexture, emissiveTexture, and specularGlossinessTexture use sRGB encoding.
+				if ( materialDef.name ) {material.name = materialDef.name;} // baseColorTexture, emissiveTexture, and specularGlossinessTexture use sRGB encoding.
 
-				if ( material.map ) material.map.encoding = THREE.sRGBEncoding;
-				if ( material.emissiveMap ) material.emissiveMap.encoding = THREE.sRGBEncoding;
+				if ( material.map ) {material.map.encoding = THREE.sRGBEncoding;}
+				if ( material.emissiveMap ) {material.emissiveMap.encoding = THREE.sRGBEncoding;}
 				assignExtrasToUserData( material, materialDef );
 				parser.associations.set( material, {
 					type: 'materials',
 					index: materialIndex
 				} );
-				if ( materialDef.extensions ) addUnknownExtensionsToUserData( extensions, material, materialDef );
+				if ( materialDef.extensions ) {addUnknownExtensionsToUserData( extensions, material, materialDef );}
 				return material;
 
 			} );
@@ -2862,7 +2862,7 @@
 
 					mesh.name = parser.createUniqueName( meshDef.name || 'mesh_' + meshIndex );
 					assignExtrasToUserData( mesh, meshDef );
-					if ( primitive.extensions ) addUnknownExtensionsToUserData( extensions, mesh, primitive );
+					if ( primitive.extensions ) {addUnknownExtensionsToUserData( extensions, mesh, primitive );}
 					parser.assignFinalMaterial( mesh );
 					meshes.push( mesh );
 
@@ -2917,7 +2917,7 @@
 
 			}
 
-			if ( cameraDef.name ) camera.name = this.createUniqueName( cameraDef.name );
+			if ( cameraDef.name ) {camera.name = this.createUniqueName( cameraDef.name );}
 			assignExtrasToUserData( camera, cameraDef );
 			return Promise.resolve( camera );
 
@@ -3000,7 +3000,7 @@
 					const outputAccessor = outputAccessors[ i ];
 					const sampler = samplers[ i ];
 					const target = targets[ i ];
-					if ( node === undefined ) continue;
+					if ( node === undefined ) {continue;}
 					node.updateMatrix();
 					node.matrixAutoUpdate = true;
 					let TypedKeyframeTrack;
@@ -3101,7 +3101,7 @@
 			const json = this.json;
 			const parser = this;
 			const nodeDef = json.nodes[ nodeIndex ];
-			if ( nodeDef.mesh === undefined ) return null;
+			if ( nodeDef.mesh === undefined ) {return null;}
 			return parser.getDependency( 'mesh', nodeDef.mesh ).then( function ( mesh ) {
 
 				const node = parser._getNodeRef( parser.meshCache, nodeDef.mesh, mesh ); // if weights are provided on the node, override weights on the mesh.
@@ -3111,7 +3111,7 @@
 
 					node.traverse( function ( o ) {
 
-						if ( ! o.isMesh ) return;
+						if ( ! o.isMesh ) {return;}
 
 						for ( let i = 0, il = nodeDef.weights.length; i < il; i ++ ) {
 
@@ -3221,7 +3221,7 @@
 				}
 
 				assignExtrasToUserData( node, nodeDef );
-				if ( nodeDef.extensions ) addUnknownExtensionsToUserData( extensions, node, nodeDef );
+				if ( nodeDef.extensions ) {addUnknownExtensionsToUserData( extensions, node, nodeDef );}
 
 				if ( nodeDef.matrix !== undefined ) {
 
@@ -3276,9 +3276,9 @@
 			// See: https://github.com/mrdoob/three.js/issues/18342#issuecomment-578981172
 
 			const scene = new THREE.Group();
-			if ( sceneDef.name ) scene.name = parser.createUniqueName( sceneDef.name );
+			if ( sceneDef.name ) {scene.name = parser.createUniqueName( sceneDef.name );}
 			assignExtrasToUserData( scene, sceneDef );
-			if ( sceneDef.extensions ) addUnknownExtensionsToUserData( extensions, scene, sceneDef );
+			if ( sceneDef.extensions ) {addUnknownExtensionsToUserData( extensions, scene, sceneDef );}
 			const nodeIds = sceneDef.nodes || [];
 			const pending = [];
 
@@ -3303,7 +3303,7 @@
 		const nodeDef = json.nodes[ nodeId ];
 		return parser.getDependency( 'node', nodeId ).then( function ( node ) {
 
-			if ( nodeDef.skin === undefined ) return node; // build skeleton here as well
+			if ( nodeDef.skin === undefined ) {return node;} // build skeleton here as well
 
 			let skinEntry;
 			return parser.getDependency( 'skin', nodeDef.skin ).then( function ( skin ) {
@@ -3323,7 +3323,7 @@
 
 				node.traverse( function ( mesh ) {
 
-					if ( ! mesh.isMesh ) return;
+					if ( ! mesh.isMesh ) {return;}
 					const bones = [];
 					const boneInverses = [];
 
@@ -3512,7 +3512,7 @@
 
 			const threeAttributeName = ATTRIBUTES[ gltfAttributeName ] || gltfAttributeName.toLowerCase(); // Skip attributes already provided by e.g. Draco extension.
 
-			if ( threeAttributeName in geometry.attributes ) continue;
+			if ( threeAttributeName in geometry.attributes ) {continue;}
 			pending.push( assignAttributeAccessor( attributes[ gltfAttributeName ], threeAttributeName ) );
 
 		}

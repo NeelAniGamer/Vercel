@@ -253,7 +253,7 @@
     logCoT(msg) {
       const timestamp = new Date().toLocaleTimeString();
       this.cotLog.unshift(`[${timestamp}] ${msg}`);
-      if (this.cotLog.length > 25) this.cotLog.pop();
+      if (this.cotLog.length > 25) {this.cotLog.pop();}
       this.updateInspectorCoT();
     }
 
@@ -261,7 +261,7 @@
      * Spawns Crossing Guard Mr. Shinde, School Children Swarm, and Roadside Hazards
      */
     setupDirectorEntities() {
-      if (!this.game || !this.game.scene || typeof THREE === 'undefined') return;
+      if (!this.game || !this.game.scene || typeof THREE === 'undefined') {return;}
       const scene = this.game.scene;
 
       // ── 1. CROSSING GUARD MR. SHINDE (At Zebra Crossing Z = 2320) ───────────
@@ -476,7 +476,7 @@
      * Per-frame behavioral update for all dynamic entities
      */
     update(dt) {
-      if (!this.game || !this.game.player) return;
+      if (!this.game || !this.game.player) {return;}
       this.timeSinceStart += dt;
 
       const playerPos = this.game.player.position;
@@ -504,12 +504,12 @@
         if (shouldRaisePaddle && !this.guard.isRaised) {
           this.guard.isRaised = true;
           this.logCoT(`Guard raised STOP sign: Holding traffic for St. Xavier student crossing.`);
-          if (_win.toast) _win.toast('🛑 CROSSING GUARD: STOP! School children crossing!', '#ef4444', 3500);
-          if (_win.TrafficAudio && _win.TrafficAudio.playWhistle) _win.TrafficAudio.playWhistle();
+          if (_win.toast) {_win.toast('🛑 CROSSING GUARD: STOP! School children crossing!', '#ef4444', 3500);}
+          if (_win.TrafficAudio && _win.TrafficAudio.playWhistle) {_win.TrafficAudio.playWhistle();}
         } else if (!shouldRaisePaddle && this.guard.isRaised) {
           this.guard.isRaised = false;
           this.logCoT(`Guard lowered STOP sign: Crosswalk clear, safe to resume 20 km/h.`);
-          if (_win.toast) _win.toast('✅ Guard: Road clear! Drive slowly.', '#34d399', 2500);
+          if (_win.toast) {_win.toast('✅ Guard: Road clear! Drive slowly.', '#34d399', 2500);}
         }
 
         // Evaluate Driver Stop Compliance
@@ -518,7 +518,7 @@
             if (!this.playerYieldReported) {
               this.playerYieldReported = true;
               this.logCoT(`COMPLIANCE PASS: Driver stopped safely behind stop line (Speed: 0 km/h). MV Act Sec 194B satisfied.`);
-              if (_win.ui && _win.ui.markTask) _win.ui.markTask('yield_kids');
+              if (_win.ui && _win.ui.markTask) {_win.ui.markTask('yield_kids');}
             }
           } else if (distanceToZebra < 12 && playerSpeedKmh > 15) {
             this.logCoT(`VIOLATION: Driver encroaching crosswalk at ${playerSpeedKmh} km/h while guard STOP is raised!`);
@@ -585,22 +585,22 @@
       const _win = typeof window !== 'undefined' ? window : {};
       if (eventName === 'dismissal_bell') {
         this.dismissalTriggered = true;
-        if (_win.toast) _win.toast('🔔 SCHOOL BELL RANG: St. Xavier dismissal active! Students approaching crosswalk.', '#f59e0b', 4000);
+        if (_win.toast) {_win.toast('🔔 SCHOOL BELL RANG: St. Xavier dismissal active! Students approaching crosswalk.', '#f59e0b', 4000);}
         // Dispatch children in staggered waves
         this.children.forEach((c, idx) => {
           setTimeout(() => {
-            if (c.phase === 'WAITING_AT_CAMPUS') c.phase = 'APPROACHING_CROSSWALK';
+            if (c.phase === 'WAITING_AT_CAMPUS') {c.phase = 'APPROACHING_CROSSWALK';}
           }, idx * 600);
         });
       } else if (eventName === 'cattle_crossing') {
-        if (_win.toast) _win.toast('🐄 ROAD HAZARD: Sacred cattle on road verge! Do not honk (Silence Zone).', '#f59e0b', 3000);
+        if (_win.toast) {_win.toast('🐄 ROAD HAZARD: Sacred cattle on road verge! Do not honk (Silence Zone).', '#f59e0b', 3000);}
         this.logCoT(`Cattle alert active. Enforcing Silence Zone (no horn) rules.`);
       } else if (eventName === 'ambulance_emergency') {
-        if (_win.toast) _win.toast('🚑 EMERGENCY DISPATCH: Ambulance approaching! Clear the right lane immediately!', '#ef4444', 4000);
-        if (_win.TrafficAudio && _win.TrafficAudio.playSiren) _win.TrafficAudio.playSiren();
+        if (_win.toast) {_win.toast('🚑 EMERGENCY DISPATCH: Ambulance approaching! Clear the right lane immediately!', '#ef4444', 4000);}
+        if (_win.TrafficAudio && _win.TrafficAudio.playSiren) {_win.TrafficAudio.playSiren();}
         this.logCoT(`Emergency ambulance dispatched: Evaluating player lane change (Sec 194E).`);
       } else if (eventName === 'monsoon_puddle') {
-        if (_win.toast) _win.toast('🌧️ WEATHER: Wet asphalt road conditions. Stopping distance increased by 30%!', '#38bdf8', 3000);
+        if (_win.toast) {_win.toast('🌧️ WEATHER: Wet asphalt road conditions. Stopping distance increased by 30%!', '#38bdf8', 3000);}
         this.logCoT(`Surface friction set to wet asphalt (f=0.32). SSD recalculated.`);
       }
     }
@@ -609,13 +609,13 @@
      * Builds the interactive in-game AI Level Director & Inspector Panel
      */
     createUIInspector() {
-      if (typeof document === 'undefined') return;
+      if (typeof document === 'undefined') {return;}
 
       // Remove any previous instance
       const oldPanel = document.getElementById('ai-map-inspector-panel');
-      if (oldPanel) oldPanel.remove();
+      if (oldPanel) {oldPanel.remove();}
       const oldBtn = document.getElementById('ai-map-inspector-btn');
-      if (oldBtn) oldBtn.remove();
+      if (oldBtn) {oldBtn.remove();}
 
       // Floating Trigger Button
       const btn = document.createElement('div');
@@ -732,13 +732,13 @@
     }
 
     toggleInspectorPanel() {
-      if (!this.panel) return;
+      if (!this.panel) {return;}
       const isOpen = this.panel.style.right === '18px';
       this.panel.style.right = isOpen ? '-380px' : '18px';
     }
 
     updateInspectorTelemetry(playerSpeedKmh, distanceToZebra) {
-      if (typeof document === 'undefined') return;
+      if (typeof document === 'undefined') {return;}
       const ssdEl = document.getElementById('ai-tel-ssd');
       const guardEl = document.getElementById('ai-tel-guard');
       const crossingEl = document.getElementById('ai-tel-crossing');
@@ -758,7 +758,7 @@
     }
 
     updateInspectorCoT() {
-      if (typeof document === 'undefined') return;
+      if (typeof document === 'undefined') {return;}
       const cotEl = document.getElementById('ai-cot-stream');
       if (cotEl) {
         cotEl.innerHTML = this.cotLog.map(line => `<div>${line}</div>`).join('');
@@ -766,11 +766,11 @@
     }
 
     cleanup() {
-      if (typeof document === 'undefined') return;
+      if (typeof document === 'undefined') {return;}
       const panel = document.getElementById('ai-map-inspector-panel');
-      if (panel) panel.remove();
+      if (panel) {panel.remove();}
       const btn = document.getElementById('ai-map-inspector-btn');
-      if (btn) btn.remove();
+      if (btn) {btn.remove();}
     }
   }
 
@@ -794,7 +794,7 @@
      * Initializes the dynamic AI Level Director to actively handle and run the level
      */
     static initLevelDirector(game, levelConfig) {
-      if (this.director) this.director.cleanup();
+      if (this.director) {this.director.cleanup();}
       this.director = new LevelDirector(game, levelConfig);
       return this.director;
     }

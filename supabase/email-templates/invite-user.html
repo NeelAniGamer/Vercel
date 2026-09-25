@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"></head>
+<body style="margin:0;padding:28px 12px;background:#080b14;font-family:'Inter',-apple-system,sans-serif;color:#f8fafc;">
+  <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0"><tr><td align="center">
+    <table role="presentation" width="100%" style="max-width:520px;background:#0f172a;border:1px solid #1e293b;border-radius:14px;overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,.6);text-align:left;">
+      <tr><td height="4" style="background:linear-gradient(90deg,#10b981,#06b6d4,#3b82f6);"></td></tr>
+      <tr><td style="padding:24px 22px;">
+        <table width="100%" style="margin-bottom:18px;border-bottom:1px solid #1e293b;padding-bottom:14px;"><tr>
+          <td style="font-size:17px;font-weight:700;"><a href="{{ .SiteURL }}" target="_blank" style="color:#ffffff;text-decoration:none;">Class Of Learners</a></td>
+          <td align="right"><span style="font-size:11px;font-weight:600;color:#34d399;background:rgba(52,211,153,.12);padding:3px 8px;border-radius:99px;border:1px solid rgba(52,211,153,.25);">INVITATION</span></td>
+        </tr></table>
+        <h1 style="margin:0 0 10px;font-size:21px;font-weight:700;color:#f8fafc;">You've Been Invited!</h1>
+        <p style="margin:0 0 18px;font-size:14px;line-height:1.6;color:#94a3b8;">You were invited to join Class Of Learners as <strong style="color:#38bdf8;">{{ .Email }}</strong>. Click below to accept and create your account.</p>
+        <div style="text-align:center;margin:20px 0;">
+          <a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:12px 30px;background:linear-gradient(135deg,#059669,#0284c7);color:#fff;text-decoration:none;font-size:14px;font-weight:600;border-radius:8px;box-shadow:0 4px 12px rgba(5,150,105,.3);">Accept Invitation &rarr;</a>
+        </div>
+        <p style="margin:14px 0 0;font-size:12px;color:#64748b;word-break:break-all;">Link: <a href="{{ .ConfirmationURL }}" style="color:#34d399;">{{ .ConfirmationURL }}</a></p>
+        <div style="margin-top:16px;padding:10px 12px;background:rgba(30,41,59,.5);border-left:3px solid #34d399;font-size:12px;color:#94a3b8;">If you were not expecting this invitation, you can safely ignore this email.</div>
+        <div style="margin-top:20px;padding-top:14px;border-top:1px solid #1e293b;text-align:center;font-size:11px;color:#64748b;line-height:1.6;">
+          <a href="{{ .SiteURL }}" target="_blank" style="color:#34d399;text-decoration:none;font-weight:600;">Visit Class Of Learners &rarr;</a><br>&copy; 2026 Class Of Learners &bull; Security Notification
+        </div>
+      </td></tr>
+    </table>
+  </td></tr></table>
+</body>
+</html>

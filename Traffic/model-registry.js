@@ -176,7 +176,7 @@
       window.addEventListener('drop', (e) => {
         e.preventDefault();
         const files = e.dataTransfer.files;
-        if (!files || files.length === 0) return;
+        if (!files || files.length === 0) {return;}
 
         for (const file of files) {
           if (file.name.endsWith('.glb') || file.name.endsWith('.gltf')) {

@@ -160,7 +160,7 @@ class SafeZoneGrid {
   }
 
   _injectBaseStyles() {
-    if (document.getElementById('safezone-styles')) return;
+    if (document.getElementById('safezone-styles')) {return;}
 
     const style = document.createElement('style');
     style.id = 'safezone-styles';
@@ -284,22 +284,22 @@ class SafeZoneGrid {
     // DPR-aware effective width: high-DPI 720p@3x renders denser — treat as slightly smaller to keep HUD readable
     const effW = dpr >= 3 ? w * 0.94 : dpr >= 2.5 ? w * 0.97 : w;
     let bp = 'desktop';
-    if (effW <= 359) bp = 'xs';
-    else if (effW <= 389) bp = 'sm';
-    else if (effW <= 411) bp = 'md';
-    else if (effW <= 479) bp = 'lg';
-    else if (effW <= 599) bp = 'xl';
-    else if (effW <= 767) bp = '2k-sm';
-    else if (effW <= 1023) bp = 'tablet';
-    else if (effW <= 1439) bp = 'desktop';
-    else if (effW <= 1919) bp = '2k';
-    else bp = '2k-xl';
+    if (effW <= 359) {bp = 'xs';}
+    else if (effW <= 389) {bp = 'sm';}
+    else if (effW <= 411) {bp = 'md';}
+    else if (effW <= 479) {bp = 'lg';}
+    else if (effW <= 599) {bp = 'xl';}
+    else if (effW <= 767) {bp = '2k-sm';}
+    else if (effW <= 1023) {bp = 'tablet';}
+    else if (effW <= 1439) {bp = 'desktop';}
+    else if (effW <= 1919) {bp = '2k';}
+    else {bp = '2k-xl';}
 
     // Orientation tweak: landscape on phones squeezes vertical space — bump down one tier
     if (window.innerHeight < 500 && window.innerWidth > window.innerHeight && bp !== 'xs') {
       const order = ['xs','sm','md','lg','xl','2k-sm','tablet','desktop','2k','2k-xl'];
       const idx = order.indexOf(bp);
-      if (idx > 0) bp = order[idx - 1];
+      if (idx > 0) {bp = order[idx - 1];}
     }
 
     if (bp !== this.currentBreakpoint) {
@@ -377,7 +377,7 @@ class SafeZoneGrid {
         break;
       }
     }
-    if (!inserted) zone.appendChild(element);
+    if (!inserted) {zone.appendChild(element);}
 
     this.items.set(itemId, item);
     this._checkOverflow(zoneId);
@@ -386,7 +386,7 @@ class SafeZoneGrid {
 
   unregister(itemId) {
     const item = this.items.get(itemId);
-    if (!item) return false;
+    if (!item) {return false;}
     item.element.remove();
     this.items.delete(itemId);
     this._checkOverflow(item.zone);
@@ -395,7 +395,7 @@ class SafeZoneGrid {
 
   setVisible(itemId, visible) {
     const item = this.items.get(itemId);
-    if (!item) return;
+    if (!item) {return;}
     item.visible = visible;
     item.element.classList.toggle('hidden', !visible);
     this._checkOverflow(item.zone);
@@ -403,7 +403,7 @@ class SafeZoneGrid {
 
   setPriority(itemId, priority) {
     const item = this.items.get(itemId);
-    if (!item) return;
+    if (!item) {return;}
     item.priority = priority;
     item.element.dataset.priority = priority;
     this._checkOverflow(item.zone);
@@ -411,7 +411,7 @@ class SafeZoneGrid {
 
   moveToZone(itemId, newZoneId) {
     const item = this.items.get(itemId);
-    if (!item || !this.zones.has(newZoneId)) return false;
+    if (!item || !this.zones.has(newZoneId)) {return false;}
 
     const oldZone = this.zones.get(item.zone);
     const newZone = this.zones.get(newZoneId);
@@ -466,26 +466,26 @@ class SafeZoneGrid {
     const w = window.innerWidth;
     const dpr = window.devicePixelRatio || 1;
     const effW = dpr >= 3 ? w * 0.94 : w;
-    if (effW <= 359) return 'xs';
-    if (effW <= 389) return 'sm';
-    if (effW <= 411) return 'md';
-    if (effW <= 479) return 'lg';
-    if (effW <= 599) return 'xl';
-    if (effW <= 767) return '2k-sm';
-    if (effW <= 1023) return 'tablet';
-    if (effW <= 1439) return 'desktop';
-    if (effW <= 1919) return '2k';
+    if (effW <= 359) {return 'xs';}
+    if (effW <= 389) {return 'sm';}
+    if (effW <= 411) {return 'md';}
+    if (effW <= 479) {return 'lg';}
+    if (effW <= 599) {return 'xl';}
+    if (effW <= 767) {return '2k-sm';}
+    if (effW <= 1023) {return 'tablet';}
+    if (effW <= 1439) {return 'desktop';}
+    if (effW <= 1919) {return '2k';}
     return '2k-xl';
   }
 
 
   destroy() {
-    if (this._resizeHandler) window.removeEventListener('resize', this._resizeHandler);
+    if (this._resizeHandler) {window.removeEventListener('resize', this._resizeHandler);}
     this.zones.forEach(zone => zone.remove());
     this.zones.clear();
     this.items.clear();
     const styles = document.getElementById('safezone-styles');
-    if (styles) styles.remove();
+    if (styles) {styles.remove();}
   }
 }
 

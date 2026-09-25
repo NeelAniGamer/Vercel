@@ -6,7 +6,7 @@
   'use strict'
 
   // Guard: prefers-reduced-motion only. Mobile & touch are fully supported with optimized gestures & pixel ratio!
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {return}
 
   // Lazy-load Three.js only when the 3D canvas is near the viewport.
   // This avoids parsing & compiling a ~600KB script on pages where the
@@ -22,7 +22,7 @@
       return
     }
     var n = 0, iv = setInterval(function () {
-      if (++n > 60 || typeof THREE !== 'undefined') { clearInterval(iv); if (typeof THREE !== 'undefined') cb() }
+      if (++n > 60 || typeof THREE !== 'undefined') { clearInterval(iv); if (typeof THREE !== 'undefined') {cb()} }
     }, 100)
   }
 
@@ -47,10 +47,10 @@
                  document.getElementById('bgCanvas') ||
                  document.getElementById('schoolBg') ||
                  document.getElementById('webgl-canvas')
-    if (!canvas) return
+    if (!canvas) {return}
 
     var path = (window.location.pathname.split('/').pop() || 'home').replace('.html', '').toLowerCase()
-    if (path === '' || path === 'index') path = 'home'
+    if (path === '' || path === 'index') {path = 'home'}
 
     var isMobile = window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches
 
@@ -71,7 +71,7 @@
     renderer.setSize(window.innerWidth, window.innerHeight)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1 : 1.5))
     renderer.setClearColor(0x000000, 0)
-    if (!isMobile) canvas.style.willChange = 'transform'
+    if (!isMobile) {canvas.style.willChange = 'transform'}
 
     var scene = new THREE.Scene()
     scene.fog = new THREE.FogExp2(0x070a14, 0.003)
@@ -100,10 +100,10 @@
     }
 
     function playTone(freq, type, duration, vol) {
-      if (!soundEnabled) return
+      if (!soundEnabled) {return}
       try {
         var ctx = getAudioCtx()
-        if (!ctx) return
+        if (!ctx) {return}
         var osc = ctx.createOscillator()
         var gain = ctx.createGain()
         osc.type = type || 'sine'
@@ -118,7 +118,7 @@
     }
 
     function playChord(freqs, duration, vol) {
-      if (!soundEnabled) return
+      if (!soundEnabled) {return}
       freqs.forEach(function (f, i) {
         setTimeout(function () { playTone(f, 'sine', duration, vol) }, i * 32)
       })
@@ -161,7 +161,7 @@
     }, { passive: true })
 
     document.addEventListener('mousedown', function (e) {
-      if (e.target.closest('a, button, input, .pc, .nav-link, .orrery-hud, .orrery-dock, .node-inspector')) return
+      if (e.target.closest('a, button, input, .pc, .nav-link, .orrery-hud, .orrery-dock, .node-inspector')) {return}
       mouseDown = true
       dragDist = 0
       dragStartX = e.clientX
@@ -291,8 +291,8 @@
     function trackTheme(mat, key) { _themeTargets.push({ mat: mat, key: key }); return mat }
     function applyTheme() {
       var p = pal(), lm = document.body.classList.contains('lm')
-      _themeTargets.forEach(function (t) { if (t.mat && t.mat.color) t.mat.color.setHex(p[t.key]) })
-      if (scene.fog) scene.fog.color.setHex(lm ? PAL.light.void : PAL.dark.void)
+      _themeTargets.forEach(function (t) { if (t.mat && t.mat.color) {t.mat.color.setHex(p[t.key])} })
+      if (scene.fog) {scene.fog.color.setHex(lm ? PAL.light.void : PAL.dark.void)}
       canvas.style.opacity = lm ? 0.6 : 1
     }
 
@@ -306,18 +306,18 @@
       var hits = raycaster.intersectObjects(clickables, true)
       if (hits.length > 0) {
         var obj = hits[0].object
-        while (obj && !obj.userData.clickable && obj.parent) obj = obj.parent
+        while (obj && !obj.userData.clickable && obj.parent) {obj = obj.parent}
         if (obj && obj.userData.clickable && onClickCallback) {
           onClickCallback(obj.userData.payload, hits[0].point)
         }
       } else {
         // Empty space tap/click
-        if (onClickCallback) onClickCallback(null, null)
+        if (onClickCallback) {onClickCallback(null, null)}
       }
     }
 
     canvas.addEventListener('click', function () {
-      if (dragDist > 8) return
+      if (dragDist > 8) {return}
       triggerCanvasRaycast()
     })
 
@@ -330,18 +330,18 @@
       var found = null
       if (hits.length > 0) {
         var obj = hits[0].object
-        while (obj && !obj.userData.clickable && obj.parent) obj = obj.parent
-        if (obj && obj.userData.clickable) found = obj
+        while (obj && !obj.userData.clickable && obj.parent) {obj = obj.parent}
+        if (obj && obj.userData.clickable) {found = obj}
       }
       if (found !== currentHovered) {
-        if (currentHovered && currentHovered.userData.onUnhover) currentHovered.userData.onUnhover()
+        if (currentHovered && currentHovered.userData.onUnhover) {currentHovered.userData.onUnhover()}
         if (found && found.userData.onHover) {
           found.userData.onHover()
           playTone(659.25, 'sine', 0.12, 0.04)
         }
         currentHovered = found
         canvas.style.cursor = found ? 'pointer' : (mouseDown ? 'grabbing' : 'grab')
-        if (onHoverCallback) onHoverCallback(found ? found.userData.payload : null)
+        if (onHoverCallback) {onHoverCallback(found ? found.userData.payload : null)}
       }
     }
 
@@ -407,9 +407,9 @@
         return soundEnabled
       },
       playChime: function (type) {
-        if (type === 'chord') playChord([523.25, 659.25, 783.99, 1046.50], 0.45, 0.07)
-        else if (type === 'ping') playTone(783.99, 'sine', 0.15, 0.05)
-        else playTone(440, 'triangle', 0.2, 0.03)
+        if (type === 'chord') {playChord([523.25, 659.25, 783.99, 1046.50], 0.45, 0.07)}
+        else if (type === 'ping') {playTone(783.99, 'sine', 0.15, 0.05)}
+        else {playTone(440, 'triangle', 0.2, 0.03)}
       }
     }
 
@@ -769,8 +769,8 @@
               if (tip) {
                 var dot = document.getElementById('ntip-dot')
                 var nme = document.getElementById('ntip-name')
-                if (dot) dot.style.background = 'var(--' + p.key + ')'
-                if (nme) nme.textContent = p.name
+                if (dot) {dot.style.background = 'var(--' + p.key + ')'}
+                if (nme) {nme.textContent = p.name}
                 tip.style.display = 'block'
                 tip.style.opacity = '1'
               }
@@ -810,9 +810,9 @@
             // Clicked empty space
             if (focusTargetNode) {
               window.__col3d.resetView()
-              if (window.closeNodeInspector) window.closeNodeInspector()
+              if (window.closeNodeInspector) {window.closeNodeInspector()}
             }
-            if (hitPoint) spawnShockwave(hitPoint.x, hitPoint.y, hitPoint.z, pal().signal)
+            if (hitPoint) {spawnShockwave(hitPoint.x, hitPoint.y, hitPoint.z, pal().signal)}
             return
           }
 
@@ -823,7 +823,7 @@
             cameraTarget.rotY = 0
             cameraTarget.rotX = 0.15
             baseZoom = 26
-            if (window.openNodeInspector) window.openNodeInspector('core')
+            if (window.openNodeInspector) {window.openNodeInspector('core')}
             return
           }
 
@@ -1026,7 +1026,7 @@
           root.rotation.x = cameraCurrent.rotX
 
           // 8. Raycast hover sampling
-          if (Math.floor(t * 30) % 3 === 0) updateHover()
+          if (Math.floor(t * 30) % 3 === 0) {updateHover()}
         }
       },
 
@@ -1140,7 +1140,7 @@
           })
 
           // Drag rotation
-          if (!mouseDown) cameraTarget.rotY += 0.0002
+          if (!mouseDown) {cameraTarget.rotY += 0.0002}
 
           // Camera easing
           cameraCurrent.rotY += (cameraTarget.rotY - cameraCurrent.rotY) * 0.03
@@ -1149,7 +1149,7 @@
           root.rotation.y = cameraCurrent.rotY
           root.rotation.x = cameraCurrent.rotX
 
-          if (Math.floor(t * 30) % 3 === 0) updateHover()
+          if (Math.floor(t * 30) % 3 === 0) {updateHover()}
         }
       },
 
@@ -1200,7 +1200,7 @@
             o.rotation.y = t * 0.15
           })
 
-          if (!mouseDown) cameraTarget.rotY += 0.0002
+          if (!mouseDown) {cameraTarget.rotY += 0.0002}
 
           cameraCurrent.rotY += (cameraTarget.rotY - cameraCurrent.rotY) * 0.03
           cameraCurrent.rotX += (cameraTarget.rotX - cameraCurrent.rotX) * 0.03
@@ -1276,7 +1276,7 @@
           accentR.material.opacity = 0.3 + (1 - press) * 0.3 + hover * 0.15
 
           // Drag tilts the waveform
-          if (!mouseDown) cameraTarget.rotY += 0.0003
+          if (!mouseDown) {cameraTarget.rotY += 0.0003}
           root.rotation.z = Math.sin(t * 0.3) * 0.01
           root.rotation.y += (mouseX * 0.04 - root.rotation.y) * 0.012
           root.rotation.x += (mouseY * 0.02 - root.rotation.x) * 0.012
@@ -1357,7 +1357,7 @@
           // Markers flow toward camera
           markers.forEach(function (m) {
             m.position.z += 0.12 + hover * 0.08
-            if (m.position.z > 8) m.position.z = -m.userData.baseZ - markerCount * 2
+            if (m.position.z > 8) {m.position.z = -m.userData.baseZ - markerCount * 2}
             var a = Math.max(0, 1 - Math.abs(m.position.z + 5) / 70)
             m.material.opacity = a * 0.25
           })
@@ -1428,7 +1428,7 @@
 
         var origY = []
         var posAtt = waveGeo.attributes.position
-        for (var k = 0; k < posAtt.count; k++) origY.push(posAtt.getY(k))
+        for (var k = 0; k < posAtt.count; k++) {origY.push(posAtt.getY(k))}
 
         scene.add(createDust('plasma', isMobile ? 80 : 130, 40, 80))
 
@@ -1493,7 +1493,7 @@
         trackTheme(gridMat, 'signal')
         for (var gx = -3; gx <= 3; gx++) {
           for (var gz = -2; gz <= 2; gz++) {
-            if (Math.random() < 0.4) continue
+            if (Math.random() < 0.4) {continue}
             var cell = new THREE.Mesh(new THREE.BoxGeometry(2, 0.1, 2), gridMat)
             cell.position.set(gx * 2.5, -5, gz * 2.5)
             cell.userData.dist = Math.sqrt(gx * gx + gz * gz)
@@ -1561,10 +1561,10 @@
 
     // ─── Resolve scene ───
     var builder = builders[path] || builders[path.replace('-', '_')] || builders[path.replace('_', '-')]
-    if (!builder && path.indexOf('database') >= 0) builder = builders.database_logic
-    if (!builder && path.indexOf('career') >= 0) builder = builders.career
-    if (!builder) builder = builders.privacy
-    if (builder === null) return
+    if (!builder && path.indexOf('database') >= 0) {builder = builders.database_logic}
+    if (!builder && path.indexOf('career') >= 0) {builder = builders.career}
+    if (!builder) {builder = builders.privacy}
+    if (builder === null) {return}
 
     applyTheme()
     var updateFn = builder()
@@ -1572,7 +1572,7 @@
     // ─── Fade in ───
     canvas.style.opacity = '0'
     canvas.style.transition = 'opacity 1.8s cubic-bezier(0.16,1,0.3,1)'
-    setTimeout(function () { canvas.style.opacity = '1'; if (canvas.classList) canvas.classList.add('v') }, 120)
+    setTimeout(function () { canvas.style.opacity = '1'; if (canvas.classList) {canvas.classList.add('v')} }, 120)
 
     // ─── Animation loop ───
     // 30fps cap on desktop, 24fps on mobile/low-power. Skips ALL work when the
@@ -1585,15 +1585,15 @@
 
     function animate(now) {
       requestAnimationFrame(animate)
-      if (!visible || !canvasVisible) return
+      if (!visible || !canvasVisible) {return}
       var elapsed = now - lastFrame
-      if (elapsed < FRAME_MS) return
+      if (elapsed < FRAME_MS) {return}
       lastFrame = now - (elapsed % FRAME_MS)
       mouseX = _pmx
       mouseY = _pmy
       _hoverCurrent += (_hoverTarget - _hoverCurrent) * 0.05
       var t = clock.getElapsedTime()
-      if (updateFn) updateFn(t)
+      if (updateFn) {updateFn(t)}
       renderer.render(scene, camera)
     }
     animate(0)

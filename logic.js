@@ -157,18 +157,18 @@ class VisionAndChunkManager {
     update(camDist, dt, fpsFrameTrigger = false) {
         // Calculate dynamic render distance based on zoom level & mode
         let baseDist = 12000;
-        if (camDist > 1000000) baseDist = 25000000;
-        else if (camDist > 200000) baseDist = 4000000;
-        else if (camDist > 50000)  baseDist = 800000;
-        else if (camDist > 8000)   baseDist = 180000;
-        else if (camDist > 2000)   baseDist = 45000;
-        else if (camDist > 500)    baseDist = 14000;
-        else baseDist = 6000;
+        if (camDist > 1000000) {baseDist = 25000000;}
+        else if (camDist > 200000) {baseDist = 4000000;}
+        else if (camDist > 50000)  {baseDist = 800000;}
+        else if (camDist > 8000)   {baseDist = 180000;}
+        else if (camDist > 2000)   {baseDist = 45000;}
+        else if (camDist > 500)    {baseDist = 14000;}
+        else {baseDist = 6000;}
 
-        if (this.userRenderDistMode === 'near') baseDist *= 0.35;
-        else if (this.userRenderDistMode === 'med') baseDist *= 0.7;
-        else if (this.userRenderDistMode === 'far') baseDist *= 1.5;
-        else if (this.userRenderDistMode === 'ultra') baseDist *= 3.5;
+        if (this.userRenderDistMode === 'near') {baseDist *= 0.35;}
+        else if (this.userRenderDistMode === 'med') {baseDist *= 0.7;}
+        else if (this.userRenderDistMode === 'far') {baseDist *= 1.5;}
+        else if (this.userRenderDistMode === 'ultra') {baseDist *= 3.5;}
         
         this.activeRenderDistance = baseDist;
 
@@ -245,7 +245,7 @@ class VisionAndChunkManager {
         for (let i = 0; i < total; i++) {
             const item = this.registeredBodies[i];
             const { data, mesh, pivot } = item;
-            if (!mesh) continue;
+            if (!mesh) {continue;}
 
             const isMajor = majorBodies.has(data.name) || data.type === 'planet' || data.type === 'star' || data.type === 'dwarf';
 
@@ -335,7 +335,7 @@ class VisionAndChunkManager {
         
         // Update UI Stats element
         if (fpsFrameTrigger) {
-            if (!this.elOptStatus) this.init();
+            if (!this.elOptStatus) {this.init();}
             if (this.elOptStatus) {
                 this.elOptStatus.innerHTML = `<span class="sb-opt-pill">⚡ OPT: ${this.stats.culledPercent}% CULLED</span> | CHUNKS: <span>${this.stats.activeChunks}/${this.stats.totalChunks}</span>`;
             }
@@ -355,7 +355,7 @@ window.setSensitivity = function(type, val) {
         case 'pan':    controls.panSpeed      = val; break;
         case 'damp':   controls.dampingFactor = val; break;
         case 'labels': labelOpacity = val; allLabelDivs.forEach(d => { d.style.opacity = val; }); break;
-        case 'stars':  if(starPoints) starPoints.material.opacity = val; break;
+        case 'stars':  if(starPoints) {starPoints.material.opacity = val;} break;
         case 'quality': renderer.setPixelRatio(Math.min(val, window.devicePixelRatio)); break;
         case 'glow':   glowEnabled = val > 0; break;
         case 'perfMode': perfMode = val > 0; renderer.setPixelRatio(perfMode ? 1.0 : currentPixelRatio); break;
@@ -408,11 +408,11 @@ window._screenshotCallback = function() {
         }
         pos[i*3]=x; pos[i*3+1]=y; pos[i*3+2]=z;
         const t = Math.random();
-        if(t<0.60) c.setHSL(0.62,0.4,Math.random()*0.3+0.6);
-        else if(t<0.78) c.setHSL(0.12,0.6,Math.random()*0.3+0.6);
-        else if(t<0.90) c.setHSL(0.05,0.8,Math.random()*0.2+0.5);
-        else if(t<0.96) c.setHSL(0.00,0.9,Math.random()*0.2+0.4);
-        else c.setHSL(0.65,0.9,Math.random()*0.2+0.6);
+        if(t<0.60) {c.setHSL(0.62,0.4,Math.random()*0.3+0.6);}
+        else if(t<0.78) {c.setHSL(0.12,0.6,Math.random()*0.3+0.6);}
+        else if(t<0.90) {c.setHSL(0.05,0.8,Math.random()*0.2+0.5);}
+        else if(t<0.96) {c.setHSL(0.00,0.9,Math.random()*0.2+0.4);}
+        else {c.setHSL(0.65,0.9,Math.random()*0.2+0.6);}
         col[i*3]=c.r; col[i*3+1]=c.g; col[i*3+2]=c.b;
     }
     const geo = new THREE.BufferGeometry();
@@ -468,7 +468,7 @@ function buildMilkyWayTexture() {
             const r=t*S*0.44+4;
             const px=cx+r*Math.cos(ang);
             const py=cy+r*Math.sin(ang)*0.40;
-            if(px<2||px>S-2||py<2||py>S-2) continue;
+            if(px<2||px>S-2||py<2||py>S-2) {continue;}
             ctx.fillStyle=colorFn((1-t)*0.55+0.05, Math.random());
             ctx.fillRect(px|0,py|0,Math.random()<0.85?1:2,1);
         }
@@ -548,7 +548,7 @@ function updateMilkyWay(cd){
         lastMilkyOpacity=milkyWayOpacity;
     }
     // Show galaxy label and "you are here" marker when zoomed out to galaxy scale
-    if(milkyWayOpacity>0.5) galaxyLabel.classList.add('visible'); else galaxyLabel.classList.remove('visible');
+    if(milkyWayOpacity>0.5) {galaxyLabel.classList.add('visible');} else {galaxyLabel.classList.remove('visible');}
     if(milkyWayMesh._youLabel) {
         milkyWayMesh._youLabel.style.opacity = milkyWayOpacity > 0.65 ? '1' : '0';
     }
@@ -902,7 +902,7 @@ function makeAccretionDiskHotTexture(asymmetric) {
 
 const _gxTexCache = {};
 function getGalaxyTexture(type) {
-    if (_gxTexCache[type]) return _gxTexCache[type];
+    if (_gxTexCache[type]) {return _gxTexCache[type];}
     const cvs = document.createElement('canvas');
     cvs.width = 64; cvs.height = 64;
     const ctx = cvs.getContext('2d');
@@ -941,10 +941,10 @@ function buildGalaxy3D(data) {
     const R = data.size * 2.5; // True outer radius
 
     // --- ASTROPHYSICAL COLOR TEMPERATURES ---
-    let bulgeColor = new THREE.Color(0xffeebb); // Pop II (Old, warm)
-    let diskColor = new THREE.Color(0x77bbff);  // Pop I (Young, hot blue)
-    let gasColor = new THREE.Color(0xff1155);   // Ionized Hydrogen (H II regions)
-    let dustColor = new THREE.Color(0x020101);  // Carbon/Silicate dust
+    const bulgeColor = new THREE.Color(0xffeebb); // Pop II (Old, warm)
+    const diskColor = new THREE.Color(0x77bbff);  // Pop I (Young, hot blue)
+    const gasColor = new THREE.Color(0xff1155);   // Ionized Hydrogen (H II regions)
+    const dustColor = new THREE.Color(0x020101);  // Carbon/Silicate dust
     
     // Identity Overrides
     if (sub === 'elliptical' || sub === 'lenticular') { diskColor.setHex(0xffddb4); gasColor.setHex(0x000000); }
@@ -991,7 +991,7 @@ function buildGalaxy3D(data) {
                 
                 // Perfect, sharp dust ring blocking the bulge
                 if (rad > R * 0.65 && rad < R * 0.88) {
-                    if (Math.random() > 0.1) type = 'dust';
+                    if (Math.random() > 0.1) {type = 'dust';}
                 }
                 pCol.copy(diskColor);
             }
@@ -1009,7 +1009,7 @@ function buildGalaxy3D(data) {
                 y = (Math.random() - 0.5) * R * 2.0; // Shoot up/down
                 x *= 0.15; z *= 0.15;
                 type = 'gas';
-            } else if (Math.random() > 0.75) type = 'dust';
+            } else if (Math.random() > 0.75) {type = 'dust';}
             pCol.copy(diskColor);
         }
         else if (sub === 'elliptical' || sub === 'lenticular') {
@@ -1034,14 +1034,14 @@ function buildGalaxy3D(data) {
                 x = rad * 1.8 * Math.cos(theta) + offset;
                 z = rad * 1.8 * Math.sin(theta);
                 y = (Math.random() - 0.5) * R * 0.1;
-                if (Math.random() > 0.7) type = 'gas'; // Collision triggers starbursts
+                if (Math.random() > 0.7) {type = 'gas';} // Collision triggers starbursts
                 pCol.copy(diskColor);
             } else { 
                 // Dense Cores
                 x = (rad * 0.5) * Math.cos(theta) + offset;
                 z = (rad * 0.5) * Math.sin(theta);
                 y = (Math.random() - 0.5) * R * 0.15;
-                if (Math.random() > 0.8) type = 'dust';
+                if (Math.random() > 0.8) {type = 'dust';}
                 pCol.copy(bulgeColor);
             }
         }
@@ -1117,7 +1117,7 @@ function buildGalaxy3D(data) {
 
     // --- MATERIAL & GEOMETRY CREATION ---
     function createLayer(posArr, colArr, size, mapType, blendMode, opacity) {
-        if (posArr.length === 0) return null;
+        if (posArr.length === 0) {return null;}
         const geo = new THREE.BufferGeometry();
         geo.setAttribute('position', new THREE.Float32BufferAttribute(posArr, 3));
         geo.setAttribute('color', new THREE.Float32BufferAttribute(colArr, 3));
@@ -1135,16 +1135,16 @@ function buildGalaxy3D(data) {
 
     // Layer 1: HII Regions (Soft, glowing pink knots, Additive)
     const gasLayer = createLayer(gPos, gCol, data.size * 0.45, 'gas', THREE.AdditiveBlending, 0.7);
-    if (gasLayer) group.add(gasLayer);
+    if (gasLayer) {group.add(gasLayer);}
 
     // Layer 2: Stellar Populations (Tiny, sharp, Additive)
     // Using a tiny size so it looks like billions of individual stars rather than a blur
     const starLayer = createLayer(sPos, sCol, data.size * 0.08, 'star', THREE.AdditiveBlending, 1.0);
-    if (starLayer) group.add(starLayer);
+    if (starLayer) {group.add(starLayer);}
 
     // Layer 3: Physical Dark Dust (Normal Blending - Physically occludes the light behind it)
     const dustLayer = createLayer(dPos, dCol, data.size * 0.6, 'dust', THREE.NormalBlending, 0.85);
-    if (dustLayer) group.add(dustLayer);
+    if (dustLayer) {group.add(dustLayer);}
 
     // --- BLINDING NUCLEAR CORE ---
     // A brilliant localized glow right at the supermassive black hole
@@ -1180,8 +1180,8 @@ function buildGalaxy3D(data) {
     group.rotation.z = (Math.random() - 0.5) * Math.PI * 0.2;
     
     // Force specific viewing angles for famous galaxies
-    if (sub === 'edge_on' || name === 'Sombrero Galaxy') group.rotation.x = Math.PI / 2 - 0.05; // Perfect edge-on
-    if (name === 'Pinwheel Galaxy' || name === 'Whirlpool Galaxy') group.rotation.x = 0.2; // Face-on showcase
+    if (sub === 'edge_on' || name === 'Sombrero Galaxy') {group.rotation.x = Math.PI / 2 - 0.05;} // Perfect edge-on
+    if (name === 'Pinwheel Galaxy' || name === 'Whirlpool Galaxy') {group.rotation.x = 0.2;} // Face-on showcase
 
     // Black hole hitbox hook (invisible)
     if(data.stats && data.stats['Central Black Hole']){
@@ -1300,7 +1300,7 @@ function makeEngineNozzleTexture() {
 
 // ── Shared texture cache ──────────────────────────────────────────────────
 const _texCache = {};
-function getTex(key, fn) { if(!_texCache[key]) _texCache[key]=fn(); return _texCache[key]; }
+function getTex(key, fn) { if(!_texCache[key]) {_texCache[key]=fn();} return _texCache[key]; }
 
 // ── Solar panel sun-tracking hook registry ────────────────────────────────
 const _solarTrackers = [];
@@ -1395,7 +1395,7 @@ function buildSpacecraft3D(data) {
         pivot.add(mast);
 
         group.add(pivot);
-        if(track) _solarTrackers.push(pivot);
+        if(track) {_solarTrackers.push(pivot);}
         return pivot;
     }
 
@@ -1434,7 +1434,7 @@ function buildSpacecraft3D(data) {
         }
 
         group.add(pivot);
-        if(track) _antennaTrackers.push(pivot);
+        if(track) {_antennaTrackers.push(pivot);}
         return pivot;
     }
 
@@ -2260,7 +2260,7 @@ function buildSpacecraft3D(data) {
     // ── Add blinking status lights to all spacecraft ────────────────
     addStatusLight(group, S*0.5, S*0.3, S*0.3, 0x00ff88);  // Green status
     addStatusLight(group, -S*0.5, S*0.2, -S*0.2, 0xff4444); // Red warning
-    if(data.size > 0.5) addStatusLight(group, 0, -S*0.3, S*0.4, 0x4488ff); // Blue comm
+    if(data.size > 0.5) {addStatusLight(group, 0, -S*0.3, S*0.4, 0x4488ff);} // Blue comm
 
     group.userData.isTumbler = true;
     return group;
@@ -2268,7 +2268,7 @@ function buildSpacecraft3D(data) {
 
 // ── Solar panel + antenna tracking (called in animate loop) ──────────────
 function updateSpacecraftPhysics(simClock) {
-    if(_solarTrackers.length === 0 && _antennaTrackers.length === 0) return;
+    if(_solarTrackers.length === 0 && _antennaTrackers.length === 0) {return;}
 
     const sunPos = _scSun, worldPos = _scW, toSun = _scT;
 
@@ -2277,8 +2277,8 @@ function updateSpacecraftPhysics(simClock) {
         toSun.subVectors(sunPos, worldPos).normalize();
         const targetYaw = Math.atan2(toSun.x, toSun.z);
         let diff = targetYaw - pivot.rotation.y;
-        while(diff > Math.PI) diff -= Math.PI * 2;
-        while(diff < -Math.PI) diff += Math.PI * 2;
+        while(diff > Math.PI) {diff -= Math.PI * 2;}
+        while(diff < -Math.PI) {diff += Math.PI * 2;}
         pivot.rotation.y += diff * 0.03;
         const targetPitch = Math.atan2(toSun.y, Math.sqrt(toSun.x*toSun.x + toSun.z*toSun.z));
         pivot.rotation.x += (targetPitch * 0.5 - pivot.rotation.x) * 0.02;
@@ -2288,8 +2288,8 @@ function updateSpacecraftPhysics(simClock) {
         const baseRotation = Math.sin(simClock * 0.00005) * 0.2;
         const targetYaw = baseRotation;
         let diff = targetYaw - pivot.rotation.y;
-        while(diff > Math.PI) diff -= Math.PI * 2;
-        while(diff < -Math.PI) diff += Math.PI * 2;
+        while(diff > Math.PI) {diff -= Math.PI * 2;}
+        while(diff < -Math.PI) {diff += Math.PI * 2;}
         pivot.rotation.y += diff * 0.01;
     });
 }
@@ -2595,12 +2595,12 @@ const textureLoader=new THREE.TextureLoader(),texCache={};
 const allMoons=[],allBlackHoleDisk=[],allBlackHoleJets=[],allPulsarBeams=[],allFlares=[];
 const planets=[],clickableHitboxes=[],allGalaxies=[],orbitLines=[];
 
-function loadTex(url){if(!url)return null; if(!texCache[url]){const t=textureLoader.load(url); t.colorSpace=THREE.SRGBColorSpace; t.anisotropy=4; texCache[url]=t;} return texCache[url];}
+function loadTex(url){if(!url){return null;} if(!texCache[url]){const t=textureLoader.load(url); t.colorSpace=THREE.SRGBColorSpace; t.anisotropy=4; texCache[url]=t;} return texCache[url];}
 
 function drawOrbit(radius,color,parentObj){
     const segs=radius>3000?160:(radius>500?128:64),pts=[]; for(let i=0;i<=segs;i++){const t=(i/segs)*Math.PI*2; pts.push(new THREE.Vector3(Math.cos(t)*radius,0,Math.sin(t)*radius));}
     const geo=new THREE.BufferGeometry().setFromPoints(pts),mat=new THREE.LineBasicMaterial({color,transparent:true,opacity:0.35}),line=new THREE.Line(geo,mat);
-    orbitLines.push(line); if(parentObj){parentObj.add(line);} else scene.add(line); return line;
+    orbitLines.push(line); if(parentObj){parentObj.add(line);} else {scene.add(line);} return line;
 }
 function addAtmosphereGlow(mesh,size,glowColor){
     mesh.add(new THREE.Mesh(new THREE.SphereGeometry(size*1.08,24,24),new THREE.MeshBasicMaterial({color:glowColor,transparent:true,opacity:0.13,blending:THREE.AdditiveBlending,side:THREE.BackSide,depthWrite:false})));
@@ -2681,7 +2681,7 @@ function createPlanet(data){
                     new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: op, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false })
                 );
                 jet.position.y = dir * R * (len * 0.5 + 0.5);
-                if (dir < 0) jet.rotation.x = Math.PI;
+                if (dir < 0) {jet.rotation.x = Math.PI;}
                 jet.userData.isJet = true;
                 allBlackHoleJets.push(jet);
                 BH.add(jet);
@@ -2705,7 +2705,7 @@ function createPlanet(data){
 
     } else if(data.type==='pulsar'){
         mesh=new THREE.Mesh(new THREE.SphereGeometry(data.size,28,28),new THREE.MeshBasicMaterial({map:makePulsarTexture(),color:data.color}));
-        [-1,1].forEach(dir=>{const beam=new THREE.Mesh(new THREE.ConeGeometry(data.size*1.8,data.size*38,10),new THREE.MeshBasicMaterial({color:data.color,transparent:true,opacity:0.75,blending:THREE.AdditiveBlending})); beam.position.y=dir*data.size*19; if(dir<0)beam.rotation.x=Math.PI; beam.userData.isPulsarBeam=true; allPulsarBeams.push(beam); mesh.add(beam);});
+        [-1,1].forEach(dir=>{const beam=new THREE.Mesh(new THREE.ConeGeometry(data.size*1.8,data.size*38,10),new THREE.MeshBasicMaterial({color:data.color,transparent:true,opacity:0.75,blending:THREE.AdditiveBlending})); beam.position.y=dir*data.size*19; if(dir<0){beam.rotation.x=Math.PI;} beam.userData.isPulsarBeam=true; allPulsarBeams.push(beam); mesh.add(beam);});
 
     } else if(data.type==='probe'){
         mesh = buildSpacecraft3D(data);
@@ -2728,17 +2728,17 @@ function createPlanet(data){
         const segs=data.size>20?32:(data.size>8?24:16),geo=new THREE.SphereGeometry(data.size,segs,segs);
         let texMap=loadTex(data.texture);
         if(!texMap){
-            if(data.subtype==='io') texMap=makeIoTexture();
-            else if(data.subtype==='europa') texMap=makeEuropaTexture();
-            else if(data.subtype==='titan') texMap=makeTitanTexture();
-            else if(data.subtype==='enceladus') texMap=makeEnceladusTexture();
+            if(data.subtype==='io') {texMap=makeIoTexture();}
+            else if(data.subtype==='europa') {texMap=makeEuropaTexture();}
+            else if(data.subtype==='titan') {texMap=makeTitanTexture();}
+            else if(data.subtype==='enceladus') {texMap=makeEnceladusTexture();}
             // Gas/ice giants: use banded procedural instead of rocky
             else if(data.typeBadge&&(data.typeBadge.includes('GAS GIANT')||data.typeBadge.includes('ICE GIANT')))
-                texMap=makeGasGiantTexture(data.color||0xddaa77, data.typeBadge.includes('ICE')?0.08:0.14);
+                {texMap=makeGasGiantTexture(data.color||0xddaa77, data.typeBadge.includes('ICE')?0.08:0.14);}
             else { const hsl={h:0.06,s:0.2,l:0.35}; if(data.color){new THREE.Color(data.color).getHSL(hsl);} texMap=makeRockyTexture(hsl.h,hsl.s,Math.max(0.18,hsl.l),25); }
         }
         mesh=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({map:texMap,bumpMap:texMap,bumpScale:1.2,roughness:0.88,metalness:0.04}));
-        if(data.atmosphereColor) addAtmosphereGlow(mesh,data.size,data.atmosphereColor);
+        if(data.atmosphereColor) {addAtmosphereGlow(mesh,data.size,data.atmosphereColor);}
         if(data.name==='Earth'){
             // Animated cloud layer
             const cloudMesh=new THREE.Mesh(new THREE.SphereGeometry(data.size*1.012,40,40),
@@ -2746,7 +2746,7 @@ function createPlanet(data){
             mesh.add(cloudMesh);
             animHooks.push(dt=>{ cloudMesh.rotation.y+=0.008*dt; });
         }
-        if(data.name==='Jupiter') addJupiterGRS(mesh, data.size);
+        if(data.name==='Jupiter') {addJupiterGRS(mesh, data.size);}
     }
 
     // Saturn rings (multi-band, procedural — avoids dead external ref)
@@ -2767,7 +2767,7 @@ function createPlanet(data){
     }
 
     // Real axial tilt — rings, caps, moons and labels inherit it (Uranus rolls on its side)
-    if(data.tilt && (data.type==='planet'||data.type==='dwarf')) mesh.rotateZ(THREE.MathUtils.degToRad(data.tilt));
+    if(data.tilt && (data.type==='planet'||data.type==='dwarf')) {mesh.rotateZ(THREE.MathUtils.degToRad(data.tilt));}
 
     const hScale=data.size>40?1.12:Math.max(14 / Math.max(data.size, 0.3), 2.2);
     const hitBox=new THREE.Mesh(new THREE.SphereGeometry(data.size*hScale,8,8),new THREE.MeshBasicMaterial({visible:false})); hitBox.userData=data; mesh.add(hitBox); clickableHitboxes.push(hitBox);
@@ -2782,8 +2782,8 @@ function createPlanet(data){
         div.addEventListener('click', e => {
             e.stopPropagation();
             activeSelect = data;
-            if(window.openHUD) window.openHUD(data);
-            if(typeof flyTo === 'function') flyTo(data);
+            if(window.openHUD) {window.openHUD(data);}
+            if(typeof flyTo === 'function') {flyTo(data);}
         });
         const lbl=new CSS2DObject(div); lbl.position.set(0,Math.max(data.size * 1.6, 3.2) + 2.8,0); mesh.add(lbl); data._labelDiv=div; allLabelDivs.push(div);
     }
@@ -3998,7 +3998,7 @@ const LOD_THRESHOLDS = [
 ];
 let _lastLodPr = -1;
 function updateLOD(camDist) {
-    if (perfMode) return;
+    if (perfMode) {return;}
     const pr = LOD_THRESHOLDS.find(t => camDist <= t.dist)?.pr ?? 0.5;
     const finalPr = Math.min(pr, window.devicePixelRatio, _prCap);
     if (Math.abs(finalPr - _lastLodPr) > 0.05) {
@@ -4030,7 +4030,7 @@ function makeGalaxySprite(type, r, g, b, scale, pos, opacity) {
                 const ang = arm * Math.PI + t * Math.PI * 2.8 + (Math.random()-0.5)*0.5;
                 const rad = t * S * 0.44;
                 const px  = rad * Math.cos(ang), py = rad * Math.sin(ang);
-                if (Math.abs(px) > S/2-2 || Math.abs(py) > S/2-2) continue;
+                if (Math.abs(px) > S/2-2 || Math.abs(py) > S/2-2) {continue;}
                 ctx.fillStyle = `rgba(${r},${g},${b},${(Math.random()*0.45+0.08).toFixed(2)})`;
                 ctx.fillRect((px+cx)|0,(py+cy)|0,1,1);
             }
@@ -4157,25 +4157,25 @@ function updateCosmicLayers(camDist) {
     const fade=(start,full)=>Math.max(0,Math.min(1,(camDist-start)/(full-start)));
 
     const lgT=fade(cosmicLayers.localGroup.startDist, cosmicLayers.localGroup.fullDist);
-    cosmicLayers.localGroup.meshes.forEach(m=>{m.visible=lgT>0;if(m.material)m.material.opacity=lgT*0.6;});
+    cosmicLayers.localGroup.meshes.forEach(m=>{m.visible=lgT>0;if(m.material){m.material.opacity=lgT*0.6;}});
 
     const scT=fade(cosmicLayers.supercluster.startDist, cosmicLayers.supercluster.fullDist);
-    cosmicLayers.supercluster.meshes.forEach(m=>{m.visible=scT>0;if(m.material)m.material.opacity=scT*0.5;});
+    cosmicLayers.supercluster.meshes.forEach(m=>{m.visible=scT>0;if(m.material){m.material.opacity=scT*0.5;}});
     // Fade out nearby background galaxies as we enter supercluster view
     allGalaxies.filter(g=>!cosmicLayers.localGroup.meshes.includes(g))
-        .forEach(g=>{if(g.material)g.material.opacity=Math.max(0,0.65-scT*0.65);});
+        .forEach(g=>{if(g.material){g.material.opacity=Math.max(0,0.65-scT*0.65);}});
 
     const cwT=fade(cosmicLayers.cosmicWeb.startDist, cosmicLayers.cosmicWeb.fullDist);
-    cosmicLayers.cosmicWeb.meshes.forEach(m=>{m.visible=cwT>0;if(m.material)m.material.opacity=cwT*0.45;});
+    cosmicLayers.cosmicWeb.meshes.forEach(m=>{m.visible=cwT>0;if(m.material){m.material.opacity=cwT*0.45;}});
 
     const uvT=fade(cosmicLayers.universe.startDist, cosmicLayers.universe.fullDist);
-    cosmicLayers.universe.meshes.forEach(m=>{m.visible=uvT>0;if(m.material)m.material.opacity=uvT*0.35;});
-    if(cosmicLayers.universe.cmbMat) cosmicLayers.universe.cmbMat.opacity=uvT*0.06;
+    cosmicLayers.universe.meshes.forEach(m=>{m.visible=uvT>0;if(m.material){m.material.opacity=uvT*0.35;}});
+    if(cosmicLayers.universe.cmbMat) {cosmicLayers.universe.cmbMat.opacity=uvT*0.06;}
 
     const ulEl=document.getElementById('universe-label');
     const slEl=document.getElementById('supercluster-label');
-    if(ulEl) ulEl.classList.toggle('visible', uvT>0.4);
-    if(slEl) slEl.classList.toggle('visible', scT>0.4&&uvT<0.3);
+    if(ulEl) {ulEl.classList.toggle('visible', uvT>0.4);}
+    if(slEl) {slEl.classList.toggle('visible', scT>0.4&&uvT<0.3);}
 }
 
 (function buildGalaxies() { /* galaxies now built above */ })();
@@ -4328,7 +4328,7 @@ Object.entries(planetData).forEach(([name, data]) => {
         // ------------------------------------------------------------------
 
         const mesh = createPlanet(data);
-        if (!mesh) return;
+        if (!mesh) {return;}
         data._mesh = mesh;
 
         if (data.dist === 0) {
@@ -4366,7 +4366,7 @@ Object.entries(planetData).forEach(([name, data]) => {
             mesh.position.x = data.dist;
             pivot.add(mesh);
             scene.add(pivot);
-            if (data.period > 0) drawOrbit(data.dist, data.color || 0x334466);
+            if (data.period > 0) {drawOrbit(data.dist, data.color || 0x334466);}
             data._pivot = pivot;
             planets.push({ data, mesh, pivot });
             visionManager.registerBody({ data, mesh, pivot });
@@ -4387,7 +4387,7 @@ Object.entries(planetData).forEach(([name, data]) => {
    sibs.forEach((moonData, rank) => {
      const relDist = Math.max(moonData._moonBase ?? 20, moonData._moonMin ?? 20) + rank * 3;
      moonData._relDist = relDist;
-     if (moonData._mesh) moonData._mesh.position.x = relDist;
+     if (moonData._mesh) {moonData._mesh.position.x = relDist;}
      const parentData = planetData[moonData.parent];
      if (parentData?._mesh) {
        parentData._mesh.add(moonData._pivot);
@@ -4420,12 +4420,12 @@ window.toggleMeasure = function() {
     _mLine.visible = false;
     const el  = document.getElementById('measure-display');
     const txt = document.getElementById('measure-text');
-    if (el)  el.style.display  = measureMode ? 'flex' : 'none';
-    if (txt) txt.textContent   = 'Select first object…';
+    if (el)  {el.style.display  = measureMode ? 'flex' : 'none';}
+    if (txt) {txt.textContent   = 'Select first object…';}
 };
 
 function updateMeasureLine() {
-    if (!measureA?._mesh || !measureB?._mesh) return;
+    if (!measureA?._mesh || !measureB?._mesh) {return;}
     const pA = new THREE.Vector3(), pB = new THREE.Vector3();
     measureA._mesh.getWorldPosition(pA);
     measureB._mesh.getWorldPosition(pB);
@@ -4433,7 +4433,7 @@ function updateMeasureLine() {
     _mLine.visible = true;
     const auDist = (pA.distanceTo(pB) / 149.6).toFixed(2);
     const txt = document.getElementById('measure-text');
-    if (txt) txt.textContent = `${measureA.name}  →  ${measureB.name}  ·  ${auDist} AU`;
+    if (txt) {txt.textContent = `${measureA.name}  →  ${measureB.name}  ·  ${auDist} AU`;}
 }
 
 
@@ -4444,7 +4444,7 @@ const favorites    = new Set();
 let   activeSelect = null;          // currently selected planet data
 
 function toggleFavorite() {
-    if (!activeSelect) return;
+    if (!activeSelect) {return;}
     const name = activeSelect.name;
     favorites.has(name) ? favorites.delete(name) : favorites.add(name);
     renderFavBar();
@@ -4452,7 +4452,7 @@ function toggleFavorite() {
 
 function renderFavBar() {
     const bar = document.getElementById('favorites-bar');
-    if (!bar) return;
+    if (!bar) {return;}
     bar.innerHTML = [...favorites]
         .map(n =>
             `<button class="fav-btn" onclick="window._searchSelect && window._searchSelect('${n.replace(/'/g,"\\'")}')">✦ ${n}</button>`
@@ -4473,7 +4473,7 @@ const flyFromPos  = new THREE.Vector3(), flyFromCtrl = new THREE.Vector3();
 const flyToPos    = new THREE.Vector3(), flyToCtrl   = new THREE.Vector3();
 
 function flyTo(data) {
-    if (!data?._mesh) return;
+    if (!data?._mesh) {return;}
     const wp = new THREE.Vector3();
     data._mesh.getWorldPosition(wp);
 
@@ -4501,16 +4501,16 @@ renderer.domElement.addEventListener('click', e => {
     raycaster.setFromCamera(mouse, camera);
 
     const hits = raycaster.intersectObjects(clickableHitboxes, false);
-    if (!hits.length) return;
+    if (!hits.length) {return;}
     const data = hits[0].object.userData;
-    if (!data?.name) return;
+    if (!data?.name) {return;}
 
     // ── Measure mode ──────────────────────────────────────────────────────
     if (measureMode) {
         if (!measureA) {
             measureA = data;
             const txt = document.getElementById('measure-text');
-            if (txt) txt.textContent = `${data.name} selected — pick second object…`;
+            if (txt) {txt.textContent = `${data.name} selected — pick second object…`;}
         } else if (!measureB && data !== measureA) {
             measureB = data;
             updateMeasureLine();
@@ -4518,7 +4518,7 @@ renderer.domElement.addEventListener('click', e => {
             // Reset with new first point
             measureA = data; measureB = null; _mLine.visible = false;
             const txt = document.getElementById('measure-text');
-            if (txt) txt.textContent = `${data.name} selected — pick second object…`;
+            if (txt) {txt.textContent = `${data.name} selected — pick second object…`;}
         }
         return;
     }
@@ -4532,7 +4532,7 @@ renderer.domElement.addEventListener('click', e => {
 // Called from the HTML search results click handler and favorites buttons
 window._searchSelect = function(name) {
     const data = planetData[name];
-    if (!data) return;
+    if (!data) {return;}
     activeSelect = data;
     window.openHUD(data);
     flyTo(data);
@@ -4575,11 +4575,11 @@ let compareSlots = [null, null];
 window._clearCompare = function() { compareSlots = [null, null]; };
 
 function addToCompare(name) {
-  const data = planetData[name]; if (!data) return;
-  if (compareSlots[0] && compareSlots[0].name === name) return;
-  if (compareSlots[1] && compareSlots[1].name === name) return;
-  if (!compareSlots[0]) compareSlots[0] = { name, data };
-  else compareSlots[1] = { name, data };
+  const data = planetData[name]; if (!data) {return;}
+  if (compareSlots[0] && compareSlots[0].name === name) {return;}
+  if (compareSlots[1] && compareSlots[1].name === name) {return;}
+  if (!compareSlots[0]) {compareSlots[0] = { name, data };}
+  else {compareSlots[1] = { name, data };}
   renderCompare();
 }
 
@@ -4612,7 +4612,7 @@ function renderCompare() {
 const _origOpenHUD = window.openHUD;
 window.openHUD = function(data) {
   _origOpenHUD(data);
-  if (window.isCompareMode && window.isCompareMode()) addToCompare(data.name);
+  if (window.isCompareMode && window.isCompareMode()) {addToCompare(data.name);}
 };
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -4623,7 +4623,7 @@ const _allFacts = Object.entries(planetData)
   .map(([name,d]) => ({ name, fact: d.funFact }));
 
 window._showRandomFact = function() {
-  if (!_allFacts.length) return;
+  if (!_allFacts.length) {return;}
   const pick = _allFacts[Math.floor(Math.random() * _allFacts.length)];
   const toast = document.getElementById('fact-toast');
   document.getElementById('fact-toast-object').textContent = pick.name.toUpperCase();
@@ -4637,9 +4637,9 @@ window._showRandomFact = function() {
 //  KEYBOARD EXTRAS  (M = measure toggle | F = favorite)
 // ════════════════════════════════════════════════════════════════════════════
 document.addEventListener('keydown', e => {
-    if (e.target.tagName === 'INPUT') return;
-    if (e.key === 'm' || e.key === 'M') window.toggleMeasure?.();
-    if (e.key === 'f' || e.key === 'F') toggleFavorite();
+    if (e.target.tagName === 'INPUT') {return;}
+    if (e.key === 'm' || e.key === 'M') {window.toggleMeasure?.();}
+    if (e.key === 'f' || e.key === 'F') {toggleFavorite();}
 });
 
 
@@ -4655,7 +4655,7 @@ let fpsAcc = 0, fpsN = 0;
 function updateScaleIndicator(cd) {
     const lbl  = document.getElementById('scale-label');
     const fill = document.getElementById('scale-bar-fill');
-    if (!lbl || !fill) return;
+    if (!lbl || !fill) {return;}
     let txt = 'SOLAR SYSTEM', pct = 18;
     if      (cd > 5000000)  { txt = 'OBSERVABLE UNIVERSE';        pct = 100; }
     else if (cd > 1500000)  { txt = 'COSMIC WEB — GALAXY SHEETS'; pct = 96;  }
@@ -4739,17 +4739,17 @@ function animate() {
     }
 
     // ── Milky Way galaxy fade (throttled 2 frames) ────────────────────────
-    if (_frameId % 2 === 0) updateMilkyWay(camDist);        // also calls updateScaleIndicator(camDist)
-    else if (_frameId % 6 === 0) updateScaleIndicator(camDist);
+    if (_frameId % 2 === 0) {updateMilkyWay(camDist);}        // also calls updateScaleIndicator(camDist)
+    else if (_frameId % 6 === 0) {updateScaleIndicator(camDist);}
 
     // ── LOD: adjust render quality by distance (throttled) ────────────────
-    if (_frameId % 3 === 0) updateLOD(camDist);
+    if (_frameId % 3 === 0) {updateLOD(camDist);}
 
     // ── Cosmic zoom layers: local group → supercluster → universe ─────────
-    if (_frameId % 4 === 0) updateCosmicLayers(camDist);
+    if (_frameId % 4 === 0) {updateCosmicLayers(camDist);}
 
     // ── Active Vision Culling & Spatial Chunk Streamer (throttled 3f) ─────
-    if (_frameId % 3 === 0) visionManager.update(camDist, dt, fpsN === 0);
+    if (_frameId % 3 === 0) {visionManager.update(camDist, dt, fpsN === 0);}
 
     // ── Planet orbits & self-rotation ─────────────────────────────────────
     planets.forEach(({ data, mesh, pivot }) => {
@@ -4817,7 +4817,7 @@ function animate() {
     }
 
     // ── Live measure line ─────────────────────────────────────────────────
-    if (measureMode && measureA && measureB) updateMeasureLine();
+    if (measureMode && measureA && measureB) {updateMeasureLine();}
 
     // ── Animation hooks (star field, shooting stars, clouds — frozen on pause)
     animHooks.forEach(fn => fn(mdt));
@@ -4840,5 +4840,5 @@ window.addEventListener('resize', () => {
     renderer.setSize(innerWidth, innerHeight);
     labelRenderer.setSize(innerWidth, innerHeight);
     currentPixelRatio = Math.min(window.devicePixelRatio, 1.4);
-    if (!perfMode) renderer.setPixelRatio(currentPixelRatio);
+    if (!perfMode) {renderer.setPixelRatio(currentPixelRatio);}
 });

@@ -142,7 +142,7 @@
         completed: false,
         verify: (g) => {
           const veh = g.playerVehicle || g.player || g.car
-          if (!veh) return false
+          if (!veh) {return false}
           const p = veh.position
           // Left the garage spawn box and reached road surface
           const distFromStart = Math.hypot(p.x - (g._startX || 0), p.z - (g._startZ || 0))
@@ -260,7 +260,7 @@
     }
 
     update(dt) {
-      if (!this._initialized || !this.game || !this.game.playing) return
+      if (!this._initialized || !this.game || !this.game.playing) {return}
 
       for (let i = 0; i < this.tasks.length; i++) {
         const task = this.tasks[i]
@@ -276,14 +276,14 @@
 
     _completeTask(index) {
       const task = this.tasks[index]
-      if (!task || task.completed) return
+      if (!task || task.completed) {return}
 
       task.completed = true
       this.flagsUnlocked.push(task.flag)
 
       if (typeof S !== 'undefined') {
         S.total = (S.total || 0) + (task.xp || 25)
-        if (typeof save === 'function') save()
+        if (typeof save === 'function') {save()}
       }
 
       if (window.sfx && typeof window.sfx.play === 'function') {
@@ -309,8 +309,8 @@
       setTimeout(() => {
         toast.classList.add('cft-out')
         setTimeout(() => {
-          if (toast && typeof toast.remove === 'function') toast.remove()
-          else if (toast && toast.parentNode) toast.parentNode.removeChild(toast)
+          if (toast && typeof toast.remove === 'function') {toast.remove()}
+          else if (toast && toast.parentNode) {toast.parentNode.removeChild(toast)}
         }, 400)
       }, 3500)
     }
@@ -326,7 +326,7 @@
       }
 
       const oldCard = document.getElementById('sz-violation-card')
-      if (oldCard) oldCard.remove()
+      if (oldCard) {oldCard.remove()}
 
       const card = document.createElement('div')
       card.id = 'sz-violation-card'
@@ -364,8 +364,8 @@
         if (card.parentNode) {
           card.classList.add('vfc-fade-out')
           setTimeout(() => {
-            if (card && typeof card.remove === 'function') card.remove()
-            else if (card && card.parentNode) card.parentNode.removeChild(card)
+            if (card && typeof card.remove === 'function') {card.remove()}
+            else if (card && card.parentNode) {card.parentNode.removeChild(card)}
           }, 400)
         }
       }, 6000)
@@ -380,8 +380,8 @@
         const trStack = document.getElementById('top-right-hud-stack')
         const csb = document.getElementById('challan-summary-box')
         if (trStack) {
-          if (csb && csb.parentNode === trStack) trStack.insertBefore(drawer, csb)
-          else trStack.appendChild(drawer)
+          if (csb && csb.parentNode === trStack) {trStack.insertBefore(drawer, csb)}
+          else {trStack.appendChild(drawer)}
         } else {
           document.body.appendChild(drawer)
         }
@@ -404,13 +404,13 @@
     }
 
     _updateHUDDrawer() {
-      if (!this.containerEl) return
+      if (!this.containerEl) {return}
 
       const completedCount = this.tasks.filter((t) => t.completed).length
       const totalCount = this.tasks.length
       const pct = Math.round((completedCount / Math.max(1, totalCount)) * 100)
 
-      let tasksHtml = this.tasks
+      const tasksHtml = this.tasks
         .map((t, idx) => {
           const isDone = t.completed
           const isCurrent = !isDone && (idx === 0 || this.tasks[idx - 1].completed)
@@ -453,7 +453,7 @@
     }
 
     _injectStyles() {
-      if (document.getElementById('task-manager-styles')) return
+      if (document.getElementById('task-manager-styles')) {return}
 
       const style = document.createElement('style')
       style.id = 'task-manager-styles'

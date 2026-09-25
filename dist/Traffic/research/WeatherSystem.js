@@ -239,7 +239,7 @@ class WeatherSystem {
       cloud.position.x += cloud.userData.speed * dt;
       
       // Wrap around
-      if (cloud.position.x > 150) cloud.position.x = -150;
+      if (cloud.position.x > 150) {cloud.position.x = -150;}
       
       // Adjust opacity based on cloud cover
       cloud.material.opacity = cloud.userData.baseOpacity * this.cloudCover;
@@ -248,7 +248,7 @@ class WeatherSystem {
   
   updateTimeOfDay(dt) {
     this.timeOfDay += dt * this.timeSpeed * 0.01; // Slow progression
-    if (this.timeOfDay >= 24) this.timeOfDay = 0;
+    if (this.timeOfDay >= 24) {this.timeOfDay = 0;}
     
     // Update sun position
     const angle = (this.timeOfDay / 24) * Math.PI * 2 - Math.PI / 2;

@@ -51,7 +51,7 @@ function loadLevels() {
       errors.push({ file: f, msg: `[ERROR] ${f}: parse/exec failed: ${e.message}` });
       continue;
     }
-    for (const lv of g.LVS) levels.push({ file: f, lv });
+    for (const lv of g.LVS) {levels.push({ file: f, lv });}
   }
   return levels;
 }
@@ -59,12 +59,12 @@ function loadLevels() {
 function distToRoad(px, pz, r) {
   if (r.type === 'v' && typeof r.x === 'number') {
     const z1 = Math.min(r.z1, r.z2), z2 = Math.max(r.z1, r.z2);
-    if (pz < z1 || pz > z2) return Infinity;
+    if (pz < z1 || pz > z2) {return Infinity;}
     return Math.abs(px - r.x);
   }
   if (r.type === 'h' && typeof r.z === 'number') {
     const x1 = Math.min(r.x1, r.x2), x2 = Math.max(r.x1, r.x2);
-    if (px < x1 || px > x2) return Infinity;
+    if (px < x1 || px > x2) {return Infinity;}
     return Math.abs(pz - r.z);
   }
   return Infinity;
@@ -83,8 +83,8 @@ function checkLevel(file, lv) {
       continue;
     }
     const allowed = TASK_TARGETS[t.type];
-    if (allowed === null) continue;
-    if (t.type === 'reach' && REACH_CHECKPOINT.test(t.target || '')) continue;
+    if (allowed === null) {continue;}
+    if (t.type === 'reach' && REACH_CHECKPOINT.test(t.target || '')) {continue;}
     if (!allowed.has(t.target)) {
       E(id, `task '${t.id}' target '${t.target}' has no engine branch (never completes)`);
     }
@@ -113,21 +113,21 @@ function checkLevel(file, lv) {
   // 3. Spawn clearance: garage/player/route[0] vs plot boxes + colliding problems
   const solids = [];
   for (const p of lv.plots || []) {
-    if (!p || typeof p.x !== 'number') continue;
-    if (p.kind === 'garage') continue; // open structure, walls collide individually
+    if (!p || typeof p.x !== 'number') {continue;}
+    if (p.kind === 'garage') {continue;} // open structure, walls collide individually
     const q = Math.abs(((p.rotY || 0) % Math.PI));
     const swap = Math.abs(q - Math.PI / 2) < 0.1;
     const hw = ((swap ? p.d : p.w) || 12) / 2, hd = ((swap ? p.w : p.d) || 10) / 2;
     solids.push({ x: p.x, z: p.z, hw: hw + 1, hd: hd + 1, what: `plot ${p.kind}` });
   }
   for (const p of lv.roadProblems || []) {
-    if (p.kind === 'barricade') solids.push({ x: p.x, z: p.z, hw: 3, hd: 3, what: 'barricade' });
-    if (p.kind === 'parked_truck') solids.push({ x: p.x, z: p.z, hw: 6, hd: 6, what: 'parked_truck' });
+    if (p.kind === 'barricade') {solids.push({ x: p.x, z: p.z, hw: 3, hd: 3, what: 'barricade' });}
+    if (p.kind === 'parked_truck') {solids.push({ x: p.x, z: p.z, hw: 6, hd: 6, what: 'parked_truck' });}
   }
   const spawns = [];
-  if (lv.garageSpawn) spawns.push({ ...lv.garageSpawn, what: 'garageSpawn' });
-  if (lv.playerSpawn) spawns.push({ ...lv.playerSpawn, what: 'playerSpawn' });
-  if (lv.route && lv.route[0]) spawns.push({ ...lv.route[0], what: 'route[0]' });
+  if (lv.garageSpawn) {spawns.push({ ...lv.garageSpawn, what: 'garageSpawn' });}
+  if (lv.playerSpawn) {spawns.push({ ...lv.playerSpawn, what: 'playerSpawn' });}
+  if (lv.route && lv.route[0]) {spawns.push({ ...lv.route[0], what: 'route[0]' });}
   for (const s of spawns) {
     for (const b of solids) {
       if (Math.abs(s.x - b.x) < b.hw && Math.abs(s.z - b.z) < b.hd) {
@@ -156,9 +156,9 @@ function checkLevel(file, lv) {
 
   // 5. NPC/ped profile keys exist
   const checkMix = (mix, known, what) => {
-    if (!mix) return;
+    if (!mix) {return;}
     for (const k of Object.keys(mix)) {
-      if (!known.has(k)) E(id, `${what} references unknown profile '${k}'`);
+      if (!known.has(k)) {E(id, `${what} references unknown profile '${k}'`);}
     }
   };
   checkMix(lv.npcMix, NPC_PROFILES, 'npcMix');
@@ -167,7 +167,7 @@ function checkLevel(file, lv) {
     if (n.profileKey && !NPC_PROFILES.has(n.profileKey)) {
       E(id, `scripted npc '${n.type}' has unknown profileKey '${n.profileKey}'`);
     }
-    if (n.rival && !n.name) W(id, 'rival npc without a name (toast/nametag fall back to generic)');
+    if (n.rival && !n.name) {W(id, 'rival npc without a name (toast/nametag fall back to generic)');}
   }
 
   // 6. Dialogue speakers come from the cast roster (Title-Case house rule aside)
@@ -182,13 +182,13 @@ function checkLevel(file, lv) {
     if (n.rival) {
       const speaks = (story.dialogue || []).some(d => d.speaker && n.name &&
         d.speaker.toLowerCase().includes(n.name.toLowerCase().split(' ')[0]));
-      if (!speaks) W(id, `rival '${n.name}' never speaks in story.dialogue`);
+      if (!speaks) {W(id, `rival '${n.name}' never speaks in story.dialogue`);}
     }
   }
 
   // 7. Required fields + known mode + spawn schema sanity
   for (const f of ['id', 'name', 'tasks']) {
-    if (lv[f] === undefined) E(id, `missing required field '${f}'`);
+    if (lv[f] === undefined) {E(id, `missing required field '${f}'`);}
   }
   const MODES = new Set(['practical', 'quiz', 'theory', 'free_roam']);
   if (lv.mode !== undefined && !MODES.has(lv.mode)) {
@@ -205,8 +205,8 @@ const levels = loadLevels();
   const seen = {};
   for (const { file, lv } of levels) {
     const k = String(lv.id);
-    if (seen[k]) err(lv.id, `duplicate id (also in ${seen[k]})`, file);
-    else seen[k] = file;
+    if (seen[k]) {err(lv.id, `duplicate id (also in ${seen[k]})`, file);}
+    else {seen[k] = file;}
   }
 }
 for (const { file, lv } of levels) {
@@ -223,8 +223,8 @@ const scope = scopeArg
   : null;
 const inScope = (file) => !scope || scope.includes(file.replace(/\.js$/, ''));
 
-for (const w of warnings) console.log(w.msg);
-for (const e of errors) console.log(e.msg);
+for (const w of warnings) {console.log(w.msg);}
+for (const e of errors) {console.log(e.msg);}
 let failCount = 0;
 if (scope) {
   failCount = errors.filter(e => scope.includes((e.file || '').replace(/\.js$/, ''))).length;

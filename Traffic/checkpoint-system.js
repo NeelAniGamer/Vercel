@@ -15,7 +15,7 @@ class CheckpointSystem {
   }
 
   init() {
-    if (this._initialized) return;
+    if (this._initialized) {return;}
     if (this.game.scene) {
       this.game.scene.add(this.group);
       this._initialized = true;
@@ -27,7 +27,7 @@ class CheckpointSystem {
    */
   createFromRoute(route, count = 5) {
     this.init();
-    if (!route || route.length < 2) return;
+    if (!route || route.length < 2) {return;}
 
     // Distribute checkpoints evenly along route
     const step = Math.max(1, Math.floor(route.length / count));
@@ -52,7 +52,7 @@ class CheckpointSystem {
    */
   createFromRoads(roads, count = 5) {
     this.init();
-    if (!roads || roads.length === 0) return;
+    if (!roads || roads.length === 0) {return;}
 
     // Pick points along the first road
     const road = roads[0];
@@ -170,7 +170,7 @@ class CheckpointSystem {
    * Update checkpoints (animation + collision detection)
    */
   update(playerPos, time) {
-    if (!playerPos || this.checkpoints.length === 0) return;
+    if (!playerPos || this.checkpoints.length === 0) {return;}
 
     for (let i = 0; i < this.checkpoints.length; i++) {
       const cp = this.checkpoints[i];
@@ -185,7 +185,7 @@ class CheckpointSystem {
       data.beam.material.opacity = pulse;
 
       // Skip if already reached
-      if (data.reached) continue;
+      if (data.reached) {continue;}
 
       // Check if player is within range
       const dx = playerPos.x - cp.position.x;
@@ -255,7 +255,7 @@ class CheckpointSystem {
    * Get next checkpoint position (for GPS navigation)
    */
   getNextPosition() {
-    if (this.currentIndex >= this.checkpoints.length) return null;
+    if (this.currentIndex >= this.checkpoints.length) {return null;}
     return this.checkpoints[this.currentIndex].position;
   }
 

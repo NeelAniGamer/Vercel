@@ -16,7 +16,7 @@ class CollectibleSystem {
   }
 
   init() {
-    if (this._initialized) return;
+    if (this._initialized) {return;}
     if (this.game.scene) {
       this.game.scene.add(this.group);
       this._initialized = true;
@@ -28,7 +28,7 @@ class CollectibleSystem {
    */
   placeForLevel(cfg) {
     this.init();
-    if (!cfg.roads || cfg.roads.length === 0) return;
+    if (!cfg.roads || cfg.roads.length === 0) {return;}
 
     const theme = cfg.themeType || 'urban_grid';
 
@@ -57,7 +57,7 @@ class CollectibleSystem {
       const numCoins = Math.floor(len / spacing);
 
       for (let i = 0; i < numCoins; i++) {
-        if (Math.random() > density) continue;
+        if (Math.random() > density) {continue;}
 
         const t = (i + 0.5) / numCoins;
         let x, z;
@@ -214,12 +214,12 @@ class CollectibleSystem {
    * Update collectibles (animation + collection check)
    */
   update(playerPos, time, dt) {
-    if (!playerPos) return;
+    if (!playerPos) {return;}
     dt = dt || 0.016;
 
     for (let i = this.collectibles.length - 1; i >= 0; i--) {
       const c = this.collectibles[i];
-      if (c.userData.collected) continue;
+      if (c.userData.collected) {continue;}
 
       // Animate
       c.rotation.y += dt * 2;

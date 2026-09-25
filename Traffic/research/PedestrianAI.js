@@ -234,7 +234,7 @@ class Pedestrian {
   }
   
   shouldCross(context) {
-    if (!context) return false;
+    if (!context) {return false;}
     
     // Careful pedestrians wait for green light
     if (this.carefulness > 0.7 && context.trafficLights) {
@@ -274,7 +274,7 @@ class Pedestrian {
     const crossDir = new THREE.Vector3(-roadDir.z, 0, roadDir.x);
     
     // Random direction (left or right side of road)
-    if (Math.random() > 0.5) crossDir.negate();
+    if (Math.random() > 0.5) {crossDir.negate();}
     
     this.crossingStart = this.group.position.clone();
     this.crossingEnd = this.crossingStart.clone().add(crossDir.multiplyScalar(8 + Math.random() * 4));
@@ -330,7 +330,7 @@ class PedestrianManager {
   }
   
   spawnPedestrian(position) {
-    if (this.pedestrians.length >= this.maxPedestrians) return null;
+    if (this.pedestrians.length >= this.maxPedestrians) {return null;}
     
     const pos = position || this.getRandomSidewalkPosition();
     const pedestrian = new Pedestrian(pos);

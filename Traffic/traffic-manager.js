@@ -107,7 +107,7 @@ class TrafficManager {
     // Drain the staggered spawn queue first (keeps frame time flat at level start)
     if (this._spawnQueue > 0) {
       const n = Math.min(this._spawnQueue, 4);
-      for (let i = 0; i < n; i++) this._spawnSingleVehicle();
+      for (let i = 0; i < n; i++) {this._spawnSingleVehicle();}
       this._spawnQueue -= n;
     }
     this._updateDensity(dt);
@@ -125,7 +125,7 @@ class TrafficManager {
     const midDistSq = isMobile ? (75 * 75) : (130 * 130);
 
     this.vehicles.slice().forEach(vehicle => {
-      if (!vehicle.active || !vehicle.npcAI) return;
+      if (!vehicle.active || !vehicle.npcAI) {return;}
 
       if (vehicle.npcAI.state === COMPLETE) {
         // F2 rival loops its scripted route forever (never wanders off / despawns).
@@ -147,18 +147,18 @@ class TrafficManager {
 
         if (distSq > rDistSq) {
           // Out of render distance: hide mesh to save draw calls
-          if (vehicle.mesh && vehicle.mesh.visible) vehicle.mesh.visible = false;
+          if (vehicle.mesh && vehicle.mesh.visible) {vehicle.mesh.visible = false;}
           // Throttle AI calculation to every 4th frame
           vehicle._simTick = ((vehicle._simTick || 0) + 1) % 4;
-          if (vehicle._simTick !== 0) return;
+          if (vehicle._simTick !== 0) {return;}
         } else if (distSq > midDistSq) {
           // Mid-range: show mesh, update AI every 2nd frame
-          if (vehicle.mesh && !vehicle.mesh.visible) vehicle.mesh.visible = true;
+          if (vehicle.mesh && !vehicle.mesh.visible) {vehicle.mesh.visible = true;}
           vehicle._simTick = ((vehicle._simTick || 0) + 1) % 2;
-          if (vehicle._simTick !== 0) return;
+          if (vehicle._simTick !== 0) {return;}
         } else {
           // Close range: full 60Hz update
-          if (vehicle.mesh && !vehicle.mesh.visible) vehicle.mesh.visible = true;
+          if (vehicle.mesh && !vehicle.mesh.visible) {vehicle.mesh.visible = true;}
         }
       }
 
@@ -211,7 +211,7 @@ class TrafficManager {
     const playerPos = playerVehicle?.position || new THREE.Vector3();
     
     this.vehicles.forEach((vehicle, index) => {
-      if (!vehicle.active) return;
+      if (!vehicle.active) {return;}
       
       const dist = vehicle.position.distanceTo(playerPos);
       if (dist > despawnDist) {
@@ -255,7 +255,7 @@ class TrafficManager {
   _updateEdgeIndex() {
     this.edgeVehicles.clear();
     this.vehicles.forEach(v => {
-      if (!v.active || !v.currentEdge) return;
+      if (!v.active || !v.currentEdge) {return;}
       if (!this.edgeVehicles.has(v.currentEdge.id)) {
         this.edgeVehicles.set(v.currentEdge.id, []);
       }
@@ -278,14 +278,14 @@ class TrafficManager {
 
 
   _resolveRouteNodes(route) {
-    if (!Array.isArray(route) || !this.roadGraph || typeof this.roadGraph.getNearestNode !== 'function') return [];
+    if (!Array.isArray(route) || !this.roadGraph || typeof this.roadGraph.getNearestNode !== 'function') {return [];}
     const out = [];
     route.forEach(p => {
-      if (!p) return;
-      if (p.edges && p.position) { if (out[out.length - 1] !== p) out.push(p); return; }
-      if (typeof p.x !== 'number' || typeof p.z !== 'number') return;
+      if (!p) {return;}
+      if (p.edges && p.position) { if (out[out.length - 1] !== p) {out.push(p);} return; }
+      if (typeof p.x !== 'number' || typeof p.z !== 'number') {return;}
       const node = this.roadGraph.getNearestNode(p.x, p.z);
-      if (node && out[out.length - 1] !== node) out.push(node);
+      if (node && out[out.length - 1] !== node) {out.push(node);}
     });
     return out;
   }
@@ -326,7 +326,7 @@ class TrafficManager {
       const mixed = this._pickMixedProfile();
       if (mixed) {
         profileKey = mixed;
-        if (['reckless_bike', 'rulebreaker', 'aggressive'].includes(mixed)) isRuleBreaker = true;
+        if (['reckless_bike', 'rulebreaker', 'aggressive'].includes(mixed)) {isRuleBreaker = true;}
       } else {
         profileKey = isRuleBreaker
           ? this._pickProfileKey('reckless_bike', 'rulebreaker', 'aggressive')
@@ -337,7 +337,7 @@ class TrafficManager {
 
     const vehicle = this._createVehicle(type, color, profileKey, isRuleBreaker);
 
-    if (!vehicle) return null;
+    if (!vehicle) {return null;}
 
     const spawnPoint = this._findSpawnPoint();
     if (!spawnPoint) {
@@ -391,7 +391,7 @@ class TrafficManager {
       const resolvedRoute = this._resolveRouteNodes(route);
       if (resolvedRoute.length >= 2) {
         vehicle.npcAI.setRoute(resolvedRoute.slice(1));
-        if (vehicle.isRival) vehicle._rivalRoute = resolvedRoute.slice(1);
+        if (vehicle.isRival) {vehicle._rivalRoute = resolvedRoute.slice(1);}
       } else {
         this._assignRoute(vehicle);
       }
@@ -399,12 +399,12 @@ class TrafficManager {
       this._assignRoute(vehicle);
     }
 
-    if (isRuleBreaker) this.ruleBreakerCount++;
+    if (isRuleBreaker) {this.ruleBreakerCount++;}
     this.totalSpawned++;
 
     this.vehicles.push(vehicle);
     this.game.scene.add(vehicle.mesh);
-    if (this.game.npcs) this.game.npcs.push(vehicle.mesh);
+    if (this.game.npcs) {this.game.npcs.push(vehicle.mesh);}
     if (this.game.obstacles && !this.game.obstacles.includes(vehicle.mesh)) {
       this.game.obstacles.push(vehicle.mesh);
     }
@@ -416,11 +416,11 @@ class TrafficManager {
 
 
   _assignRoute(vehicle) {
-    if (!this.roadGraph || !vehicle.npcAI || !vehicle.currentNode) return false;
+    if (!this.roadGraph || !vehicle.npcAI || !vehicle.currentNode) {return false;}
     // Try several random destinations until A* finds a valid path
     for (let attempt = 0; attempt < 6; attempt++) {
       const dest = this._pickDestinationNode(vehicle.currentNode);
-      if (!dest) break;
+      if (!dest) {break;}
       const path = this.roadGraph.findPath(vehicle.currentNode, dest);
       if (path && path.length >= 2) {
         vehicle.npcAI.setRoute(path.slice(1));
@@ -429,21 +429,21 @@ class TrafficManager {
     }
     // Fallback: drive to any direct neighbor so vehicle always has a valid route
     const neighbors = vehicle.currentNode.neighbors || [];
-    if (!neighbors.length) return false;
+    if (!neighbors.length) {return false;}
     const nb = neighbors[Math.floor(Math.random() * neighbors.length)];
     vehicle.npcAI.setRoute([nb]);
     return true;
   }
 
   _pickDestinationNode(fromNode) {
-    if (!this.roadGraph || !this.roadGraph.nodes) return null;
+    if (!this.roadGraph || !this.roadGraph.nodes) {return null;}
     const nodes = Array.from(this.roadGraph.nodes.values());
-    if (nodes.length < 2) return null;
+    if (nodes.length < 2) {return null;}
     let best = null, bestDist = -1;
 
     for (let i = 0; i < 6; i++) {
       const n = nodes[Math.floor(Math.random() * nodes.length)];
-      if (n === fromNode) continue;
+      if (n === fromNode) {continue;}
       const d = n.position.distanceTo(fromNode.position);
       if (d > bestDist) { bestDist = d; best = n; }
     }
@@ -453,20 +453,20 @@ class TrafficManager {
   _pickProfileKey(...allowedKeys) {
     const profiles = window.NPC_PROFILES || {};
     const keys = (allowedKeys.length ? allowedKeys : Object.keys(profiles)).filter(k => profiles[k]);
-    if (!keys.length) return 'normal';
+    if (!keys.length) {return 'normal';}
     return keys[Math.floor(Math.random() * keys.length)];
   }
 
   // Level-driven profile mix, e.g. npcMix: { school_parent: 40, cautious: 25, school_bus: 10 }
   _pickMixedProfile() {
     const mix = this.levelConfig && this.levelConfig.npcMix;
-    if (!mix) return null;
+    if (!mix) {return null;}
     const profiles = window.NPC_PROFILES || {};
     const entries = Object.entries(mix).filter(([k, w]) => profiles[k] && w > 0);
-    if (!entries.length) return null;
+    if (!entries.length) {return null;}
     const total = entries.reduce((a, [, w]) => a + w, 0);
     let r = Math.random() * total;
-    for (const [k, w] of entries) { r -= w; if (r <= 0) return k; }
+    for (const [k, w] of entries) { r -= w; if (r <= 0) {return k;} }
     return entries[0][0];
   }
 
@@ -475,7 +475,7 @@ class TrafficManager {
     let cumulative = 0;
     for (const [type, weight] of Object.entries(VEHICLE_VARIETY_WEIGHTS)) {
       cumulative += weight;
-      if (rand < cumulative) return type;
+      if (rand < cumulative) {return type;}
     }
     return 'car';
   }
@@ -520,7 +520,7 @@ class TrafficManager {
     }
 
     const mesh = this._createVehicleMesh(type, color);
-    if (!mesh) return null;
+    if (!mesh) {return null;}
 
 
     vehicle = {
@@ -678,7 +678,7 @@ class TrafficManager {
 
     if (!mesh.userData.materials) {
       let body = null;
-      mesh.traverse(c => { if (!body && c.isMesh && c.material && c.material.color) body = c.material; });
+      mesh.traverse(c => { if (!body && c.isMesh && c.material && c.material.color) {body = c.material;} });
       mesh.userData.materials = { body: body };
     }
 
@@ -696,7 +696,7 @@ class TrafficManager {
 
     if (vehicle.mesh && vehicle.mesh.userData.materials) {
       const mats = vehicle.mesh.userData.materials;
-      if (mats.body) mats.body.color.setHex(color);
+      if (mats.body) {mats.body.color.setHex(color);}
     }
   }
 
@@ -718,24 +718,24 @@ class TrafficManager {
   }
 
   _despawnVehicle(vehicle) {
-    if (!vehicle.active) return;
+    if (!vehicle.active) {return;}
     vehicle.active = false;
     this.game.scene.remove(vehicle.mesh);
     if (this.game.npcs) {
       const idx = this.game.npcs.indexOf(vehicle.mesh);
-      if (idx > -1) this.game.npcs.splice(idx, 1);
+      if (idx > -1) {this.game.npcs.splice(idx, 1);}
     }
     if (this.game.obstacles) {
       const oIdx = this.game.obstacles.indexOf(vehicle.mesh);
-      if (oIdx > -1) this.game.obstacles.splice(oIdx, 1);
+      if (oIdx > -1) {this.game.obstacles.splice(oIdx, 1);}
     }
-    if (vehicle.isRuleBreaker) this.ruleBreakerCount--;
+    if (vehicle.isRuleBreaker) {this.ruleBreakerCount--;}
     this._returnToPool(vehicle);
     this.vehicles = this.vehicles.filter(v => v !== vehicle);
   }
 
   _findSpawnPoint() {
-    if (!this.roadGraph) return null;
+    if (!this.roadGraph) {return null;}
 
     let edge = null;
     let startNode = null;
@@ -761,7 +761,7 @@ class TrafficManager {
       startNode = Math.random() < 0.5 ? edge.startNode : edge.endNode;
     }
 
-    if (!edge || !startNode) return null;
+    if (!edge || !startNode) {return null;}
 
 
 
@@ -783,7 +783,7 @@ class TrafficManager {
     // Reject spawn if position is within 16m of any active vehicle or 22m of player
     const isOccupied = this.vehicles.some(v => v.active && v.position && v.position.distanceTo(pos) < 16.0);
     const isNearPlayer = player && Math.hypot(pos.x - player.x, pos.z - player.z) < 22.0;
-    if (isOccupied || isNearPlayer) return null;
+    if (isOccupied || isNearPlayer) {return null;}
 
     return {
       position: pos,
@@ -803,7 +803,7 @@ class TrafficManager {
       ? this.roadGraph.getEdgeList()
       : Array.from(this.roadGraph.edges.values ? this.roadGraph.edges.values() : []);
     const player = this.game && this.game.player && this.game.player.position;
-    if (!player || all.length === 0) return all;
+    if (!player || all.length === 0) {return all;}
 
     const near = all.filter(e => this._distanceToEdge(e, player) < SPAWN_RADIUS);
     return near.length ? near : all;
@@ -824,11 +824,11 @@ class TrafficManager {
 
   _spawnTOnEdge(edge) {
     const player = this.game && this.game.player && this.game.player.position;
-    if (!player || !edge.length) return 0.25 + Math.random() * 0.5;
+    if (!player || !edge.length) {return 0.25 + Math.random() * 0.5;}
     const a = edge.nodes[0].position, b = edge.nodes[1].position;
     const abx = b.x - a.x, abz = b.z - a.z;
     const len2 = abx * abx + abz * abz;
-    if (!len2) return 0.5;
+    if (!len2) {return 0.5;}
     let t = ((player.x - a.x) * abx + (player.z - a.z) * abz) / len2;
     t = Math.max(0, Math.min(1, t));
     const span = (SPAWN_MIN_GAP + Math.random() * (SPAWN_MAX_GAP - SPAWN_MIN_GAP)) / edge.length;
@@ -855,8 +855,8 @@ class TrafficManager {
   }
 
   _maybeFormPlatoon(vehicle) {
-    if (this.platoons.length > 5) return;
-    if (Math.random() > 0.3) return;
+    if (this.platoons.length > 5) {return;}
+    if (Math.random() > 0.3) {return;}
 
     const sameTypeVehicles = this.vehicles.filter(v => 
       v.active && v.type === vehicle.type && v !== vehicle && v.currentEdge === vehicle.currentEdge
@@ -873,12 +873,12 @@ class TrafficManager {
   }
 
   getVehiclesInRadius(pos, radius) {
-    if (!pos) return [];
+    if (!pos) {return [];}
     const rSq = radius * radius;
     return this.vehicles.filter(v => {
-      if (!v.active) return false;
+      if (!v.active) {return false;}
       const vPos = v.position || (v.mesh && v.mesh.position);
-      if (!vPos) return false;
+      if (!vPos) {return false;}
       const dx = vPos.x - pos.x;
       const dz = vPos.z - pos.z;
       return (dx * dx + dz * dz) <= rSq;
@@ -917,7 +917,7 @@ class TrafficManager {
   }
 
   propagateHornReaction(sourcePos, sourceVehicle, radius = 15.0) {
-    if (!sourcePos) return;
+    if (!sourcePos) {return;}
     const nearby = this.getVehiclesInRadius(sourcePos, radius);
     nearby.forEach(v => {
       if (v !== sourceVehicle && v.active && v.npcAI && typeof v.npcAI.receiveHornAlert === 'function') {
@@ -927,21 +927,21 @@ class TrafficManager {
   }
 
   handleDeadlockResolution(stalledVehicle) {
-    if (!stalledVehicle || !stalledVehicle.active || !stalledVehicle.npcAI) return;
+    if (!stalledVehicle || !stalledVehicle.active || !stalledVehicle.npcAI) {return;}
     const pos = stalledVehicle.position || (stalledVehicle.mesh && stalledVehicle.mesh.position);
-    if (!pos) return;
+    if (!pos) {return;}
     const stalledGroup = this.getVehiclesInRadius(pos, 25.0).filter(v => {
-      if (!v.active || !v.npcAI) return false;
+      if (!v.active || !v.npcAI) {return false;}
       const spd = v.npcAI.currentSpeed || v.speed || 0;
       return spd < 0.15;
     });
 
-    if (stalledGroup.length === 0) stalledGroup.push(stalledVehicle);
+    if (stalledGroup.length === 0) {stalledGroup.push(stalledVehicle);}
 
     const maxStuckTime = stalledGroup.reduce((max, v) => Math.max(max, v._stuckTimer || 0), stalledVehicle._stuckTimer || 3.5);
     const arbitrateFn = typeof arbitrateDeadlock === 'function' ? arbitrateDeadlock : (typeof window !== 'undefined' && window.arbitrateDeadlock ? window.arbitrateDeadlock : null);
     
-    if (!arbitrateFn) return;
+    if (!arbitrateFn) {return;}
 
     const arbitration = arbitrateFn(stalledGroup.map(v => ({
       id: v.id || v.type || 'veh',
@@ -994,17 +994,17 @@ class TrafficManager {
   }
 
   _checkDeadlocks(dt, playerVehicle) {
-    if (!this.vehicles || this.vehicles.length === 0) return;
+    if (!this.vehicles || this.vehicles.length === 0) {return;}
 
     for (let i = 0; i < this.vehicles.length; i++) {
       const v = this.vehicles[i];
-      if (!v.active || !v.npcAI) continue;
+      if (!v.active || !v.npcAI) {continue;}
       const st = v.npcAI.state;
-      if (st === 'PARK' || st === 'CRASH' || st === 'COMPLETE') continue;
+      if (st === 'PARK' || st === 'CRASH' || st === 'COMPLETE') {continue;}
 
       const spd = v.npcAI.currentSpeed || v.speed || 0;
       if (spd < 0.20 && (st !== 'WAIT_SIGNAL' || v.npcAI.waitTimer > 6.0)) {
-        if (!v._stallStartTime) v._stallStartTime = Date.now();
+        if (!v._stallStartTime) {v._stallStartTime = Date.now();}
         v._stuckTimer = (v._stuckTimer || 0) + dt;
         if (v._stuckTimer >= 0.8) {
           this.handleDeadlockResolution(v);
@@ -1054,7 +1054,7 @@ class Platoon {
     }
 
     this.followers.forEach((follower, idx) => {
-      if (!follower.npcAI) return;
+      if (!follower.npcAI) {return;}
       
       const targetPos = this._getFollowerPosition(idx);
       const toTarget = new THREE.Vector3().subVectors(targetPos, follower.position);

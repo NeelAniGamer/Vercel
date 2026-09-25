@@ -186,7 +186,7 @@ window.pywebview = {
 
     function serialize(obj, ancestors) {
       try {
-        if (obj instanceof Window) return 'Window';
+        if (obj instanceof Window) {return 'Window';}
         if (obj instanceof Node) {
           obj = pywebview.domJSON.toJSON(obj, {
             metadata: false,

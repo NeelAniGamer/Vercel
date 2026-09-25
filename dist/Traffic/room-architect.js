@@ -791,8 +791,8 @@
       group.add(classLight);
       this.pointLights.push(classLight);
 
-      for (let lx of [cx - 3.5, cx + 3.5]) {
-        for (let lz of [cz - 3.5, cz + 3.5]) {
+      for (const lx of [cx - 3.5, cx + 3.5]) {
+        for (const lz of [cz - 3.5, cz + 3.5]) {
           const fixture = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.1, 0.9), this.materials.trimDark);
           fixture.position.set(lx, b.height - 0.05, lz);
           const bulb = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.05, 0.7), this.materials.lampBulbMat);
@@ -930,8 +930,8 @@
       });
 
       // 4 Industrial High-Bay Fluorescent Fixtures (Glowing Daylight 5000K)
-      for (let lx of [cx - 4.5, cx + 4.5]) {
-        for (let lz of [cz - 4, cz + 4]) {
+      for (const lx of [cx - 4.5, cx + 4.5]) {
+        for (const lz of [cz - 4, cz + 4]) {
           const fixture = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.9, 0.4, 12), this.materials.metalPillar);
           fixture.position.set(lx, b.height - 0.35, lz);
           const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.32, 12, 8), this.materials.lampBulbMat);
@@ -1008,7 +1008,7 @@
       this._addCollider(dynoStation);
 
       // Dual Nitrous Oxide (NOS) Performance Bottles
-      for (let nIdx of [-0.25, 0.25]) {
+      for (const nIdx of [-0.25, 0.25]) {
         const nosBottle = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.75, 16), new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.8, roughness: 0.2 }));
         nosBottle.position.set(b.xMax - 1.2, 0.38, cz + 0.8 + nIdx);
         const nosValve = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.12, 8), this.materials.chrome || this.materials.goldTrim);
@@ -1295,7 +1295,7 @@
 
       // 4. Realistic Zebra Crossing Marking (aligned with road lanes outside classroom exit doorway)
       for (let sx = -15.5; sx <= -11.5; sx += 0.9) {
-        for (let sz of [-30.5, -34.0, -37.5]) {
+        for (const sz of [-30.5, -34.0, -37.5]) {
           const stripe = new THREE.Mesh(
             new THREE.PlaneGeometry(0.55, 2.4),
             this.materials.zebraMat
@@ -1464,8 +1464,8 @@
       carGroup.add(roof);
 
       // Wheels
-      for (let wx of [-1.0, 1.0]) {
-        for (let wz of [-1.3, 1.3]) {
+      for (const wx of [-1.0, 1.0]) {
+        for (const wz of [-1.3, 1.3]) {
           const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.36, 0.24, 16), blackMat);
           wheel.rotation.z = Math.PI / 2;
           wheel.position.set(wx, 0.36, wz);
@@ -1474,7 +1474,7 @@
       }
 
       // Glowing Headlights
-      for (let hx of [-0.7, 0.7]) {
+      for (const hx of [-0.7, 0.7]) {
         const hl = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.12, 0.08), this.materials.headlightYellow);
         hl.position.set(hx, 0.6, -2.12);
         carGroup.add(hl);
@@ -1505,8 +1505,8 @@
       g.add(top);
 
       // Metal tubular legs
-      for (let dx of [-0.6, 0.6]) {
-        for (let dz of [-0.3, 0.3]) {
+      for (const dx of [-0.6, 0.6]) {
+        for (const dz of [-0.3, 0.3]) {
           const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.75), this.materials.metalPillar);
           leg.position.set(dx, 0.375, dz);
           leg.castShadow = true;
@@ -1532,7 +1532,7 @@
     _createCarLift() {
       const g = new THREE.Group();
       // Two blue heavy steel posts
-      for (let x of [-2.2, 2.2]) {
+      for (const x of [-2.2, 2.2]) {
         const post = new THREE.Mesh(new THREE.BoxGeometry(0.4, 5.0, 0.5), this.materials.hydraulicBlue);
         post.position.set(x, 2.5, 0);
         post.castShadow = true;
@@ -1573,8 +1573,8 @@
       }
 
       // Castor wheels
-      for (let wx of [-0.65, 0.65]) {
-        for (let wz of [-0.25, 0.25]) {
+      for (const wx of [-0.65, 0.65]) {
+        for (const wz of [-0.25, 0.25]) {
           const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.08), this.materials.rubberTire);
           wheel.rotation.z = Math.PI / 2;
           wheel.position.set(wx, 0.08, wz);
@@ -1680,7 +1680,7 @@
       g.add(back);
 
       // Armrests
-      for (let ax of [-1.1, 1.1]) {
+      for (const ax of [-1.1, 1.1]) {
         const arm = new THREE.Mesh(new THREE.BoxGeometry(0.25, 0.5, 0.9), mat);
         arm.position.set(ax, 0.5, 0);
         g.add(arm);
@@ -1832,10 +1832,10 @@
         const moveSpeed = 4.5 * delta;
         const moveDir = new THREE.Vector3();
 
-        if (this.keys['KeyW'] || this.keys['ArrowUp']) moveDir.z -= 1;
-        if (this.keys['KeyS'] || this.keys['ArrowDown']) moveDir.z += 1;
-        if (this.keys['KeyA'] || this.keys['ArrowLeft']) moveDir.x -= 1;
-        if (this.keys['KeyD'] || this.keys['ArrowRight']) moveDir.x += 1;
+        if (this.keys['KeyW'] || this.keys['ArrowUp']) {moveDir.z -= 1;}
+        if (this.keys['KeyS'] || this.keys['ArrowDown']) {moveDir.z += 1;}
+        if (this.keys['KeyA'] || this.keys['ArrowLeft']) {moveDir.x -= 1;}
+        if (this.keys['KeyD'] || this.keys['ArrowRight']) {moveDir.x += 1;}
 
         if (moveDir.lengthSq() > 0) {
           moveDir.normalize();
@@ -1911,7 +1911,7 @@
     }
 
     _spawnTurntableCar(colorHex = 0xdc2626) {
-      if (!this.turntable) return;
+      if (!this.turntable) {return;}
       if (this.turntableCar) {
         this.turntable.remove(this.turntableCar);
       }
@@ -2016,7 +2016,7 @@
       carGroup.add(noseWedge);
 
       // Front Honeycomb Radiator Grilles
-      for (let gx of [-0.55, 0.55]) {
+      for (const gx of [-0.55, 0.55]) {
         const radGrille = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.18, 0.06), blackTrimMat);
         radGrille.position.set(gx, 0.28, -2.42);
         carGroup.add(radGrille);
@@ -2028,7 +2028,7 @@
       carGroup.add(splitter);
 
       // Dual Stepped Corner Dive-Planes (Canards)
-      for (let cx of [-1.06, 1.06]) {
+      for (const cx of [-1.06, 1.06]) {
         for (let tier = 0; tier < 2; tier++) {
           const canard = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.12, 0.32), carbonMat);
           canard.position.set(cx, 0.22 + (tier * 0.14), -2.36 + (tier * 0.08));
@@ -2050,7 +2050,7 @@
       carGroup.add(sDuct);
 
       // Dual Carbon Fiber Hood Heat Extractor Louvers (Stepped slats)
-      for (let hx of [-0.52, 0.52]) {
+      for (const hx of [-0.52, 0.52]) {
         for (let slat = 0; slat < 3; slat++) {
           const louver = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.025, 0.12), carbonMat);
           louver.position.set(hx, 0.65 + (slat * 0.02), -1.25 + (slat * 0.18));
@@ -2062,7 +2062,7 @@
       // ────────────────────────────────────────────────────────────────────────
       // 4. FRONT FENDERS & PRESSURE-RELIEF WHEEL ARCH LOUVERS
       // ────────────────────────────────────────────────────────────────────────
-      for (let fx of [-0.96, 0.96]) {
+      for (const fx of [-0.96, 0.96]) {
         const fArch = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.44, 1.25), this.carPaintMat);
         fArch.position.set(fx, 0.46, -1.35);
         carGroup.add(fArch);
@@ -2079,14 +2079,14 @@
       // ────────────────────────────────────────────────────────────────────────
       // 5. MATRIX LED HEADLIGHTS & ARROW DRL LIGHTBARS
       // ────────────────────────────────────────────────────────────────────────
-      for (let hx of [-0.70, 0.70]) {
+      for (const hx of [-0.70, 0.70]) {
         const hHousing = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.10, 0.14), blackTrimMat);
         hHousing.position.set(hx, 0.52, -2.22);
         hHousing.rotation.y = (hx > 0) ? -0.14 : 0.14;
         carGroup.add(hHousing);
 
         // Dual Projector Jewel Lenses
-        for (let pOff of [-0.07, 0.07]) {
+        for (const pOff of [-0.07, 0.07]) {
           const lens = new THREE.Mesh(new THREE.SphereGeometry(0.042, 12, 12), ledWhite);
           lens.position.set(hx + pOff, 0.52, -2.28);
           carGroup.add(lens);
@@ -2128,7 +2128,7 @@
       carGroup.add(rearGlass);
 
       // Carbon Fiber Pillars (A, B, C pillars)
-      for (let px of [-0.72, 0.72]) {
+      for (const px of [-0.72, 0.72]) {
         const aPillar = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.52, 0.05), carbonMat);
         aPillar.position.set(px, 0.84, -0.62);
         aPillar.rotation.x = -0.48;
@@ -2141,7 +2141,7 @@
       }
 
       // Aerodynamic Carbon Fiber Side Mirrors
-      for (let mx of [-0.92, 0.92]) {
+      for (const mx of [-0.92, 0.92]) {
         const stalk = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.18, 8), carbonMat);
         stalk.position.set(mx, 0.82, -0.60);
         stalk.rotation.z = (mx > 0) ? -0.45 : 0.45;
@@ -2180,7 +2180,7 @@
       hubCenter.rotation.x = Math.PI / 2;
 
       // Dual Shift Paddles behind wheel
-      for (let padX of [-0.11, 0.11]) {
+      for (const padX of [-0.11, 0.11]) {
         const paddle = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.10, 0.015), carbonMat);
         paddle.position.set(-0.35 + padX, 0.81, -0.56);
         paddle.rotation.x = 0.32;
@@ -2189,7 +2189,7 @@
       carGroup.add(wheelRim, wheelStripe, hubCenter);
 
       // Twin High-Bolster Racing Bucket Seats with Harnesses
-      for (let seatX of [-0.36, 0.36]) {
+      for (const seatX of [-0.36, 0.36]) {
         // Carbon shell
         const seatShell = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.62, 0.48), carbonMat);
         seatShell.position.set(seatX, 0.58, 0.05);
@@ -2242,7 +2242,7 @@
       // 8. MID-MOUNTED V10 TWIN-TURBO ENGINE BAY (Under Rear Glass)
       // ────────────────────────────────────────────────────────────────────────
       // Twin Crinkle-Red Cylinder Valve Covers
-      for (let cx of [-0.22, 0.22]) {
+      for (const cx of [-0.22, 0.22]) {
         const valveCover = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.14, 0.85), engineRedMat);
         valveCover.position.set(cx, 0.62, 0.82);
         valveCover.rotation.z = (cx > 0) ? -0.15 : 0.15;
@@ -2260,7 +2260,7 @@
       carGroup.add(intakePlenum);
 
       // Dual Carbon Conical Air Intake Filters (connected to roof scoop)
-      for (let ax of [-0.28, 0.28]) {
+      for (const ax of [-0.28, 0.28]) {
         const airFilter = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.05, 0.22, 12), carbonMat);
         airFilter.rotation.x = Math.PI / 2;
         airFilter.position.set(ax, 0.66, 0.38);
@@ -2283,7 +2283,7 @@
       // ────────────────────────────────────────────────────────────────────────
       // 9. MUSCULAR REAR HAUNCHES, SIDE RADIATOR SCOOPS & SKIRTS
       // ────────────────────────────────────────────────────────────────────────
-      for (let rx of [-1.02, 1.02]) {
+      for (const rx of [-1.02, 1.02]) {
         // Muscular flared rear fenders
         const rArch = new THREE.Mesh(new THREE.BoxGeometry(0.30, 0.48, 1.42), this.carPaintMat);
         rArch.position.set(rx, 0.50, 1.25);
@@ -2303,7 +2303,7 @@
       }
 
       // Carbon Fiber Aero Side Skirts with Rear Flick-Up Winglets
-      for (let sx of [-1.04, 1.04]) {
+      for (const sx of [-1.04, 1.04]) {
         const skirt = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.05, 2.25), carbonMat);
         skirt.position.set(sx, 0.14, -0.05);
 
@@ -2362,7 +2362,7 @@
 
       // High-Downforce GT Swan-Neck Carbon Race Wing
       // Curved Swan-Neck Pylons arching from above
-      for (let px of [-0.55, 0.55]) {
+      for (const px of [-0.55, 0.55]) {
         const pylon = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.42, 0.25), carbonMat);
         pylon.position.set(px, 1.08, 1.96);
         pylon.rotation.x = -0.22;
@@ -2379,7 +2379,7 @@
       gurney.position.set(0, 1.28, 2.25);
 
       // Aerodynamic Wing Endplates with Winglets
-      for (let ex of [-1.03, 1.03]) {
+      for (const ex of [-1.03, 1.03]) {
         const endplate = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.26, 0.46), carbonMat);
         endplate.position.set(ex, 1.25, 2.06);
         carGroup.add(endplate);
@@ -2438,7 +2438,7 @@
         // Concave Forged 10-Spoke Split-Y Alloy Face
         for (let s = 0; s < 5; s++) {
           const spokeAngle = (s * Math.PI * 2) / 5;
-          for (let split of [-0.10, 0.10]) {
+          for (const split of [-0.10, 0.10]) {
             const spokeA = spokeAngle + split;
             const spokeY = Math.cos(spokeA) * (cfg.r * 0.36);
             const spokeZ = Math.sin(spokeA) * (cfg.r * 0.36);

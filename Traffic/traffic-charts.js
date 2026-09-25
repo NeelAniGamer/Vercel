@@ -81,7 +81,7 @@
   let _lastChartWarnTime = 0;
   function _chartWarn(msg) {
     const now = Date.now();
-    if (now - _lastChartWarnTime < 8000) return;
+    if (now - _lastChartWarnTime < 8000) {return;}
     _lastChartWarnTime = now;
     if (typeof toast === 'function') {
       toast('📊 Chart: ' + msg, '#f59e0b');
@@ -109,10 +109,10 @@
 
 
   function _drawFallbackMessage(canvas, message) {
-    if (!canvas || !canvas.getContext) return;
+    if (!canvas || !canvas.getContext) {return;}
     try {
       const ctx = canvas.getContext('2d');
-      if (!ctx) return;
+      if (!ctx) {return;}
       const w = canvas.width || 200;
       const h = canvas.height || 200;
       ctx.clearRect(0, 0, w, h);
@@ -140,7 +140,7 @@
   (function _setupChartErrorCatcher() {
 
     window.addEventListener('unhandledrejection', function _onChartRejection(e) {
-      if (!e.reason || typeof e.reason !== 'string' && !e.reason.message) return;
+      if (!e.reason || typeof e.reason !== 'string' && !e.reason.message) {return;}
       const msg = (e.reason.message || e.reason).toString();
       if (msg.includes('chart.js') || msg.includes('chart.umd') || msg.includes('Chart') && msg.includes('cdn')) {
         _chartJsAvailable = false;
@@ -149,7 +149,7 @@
     });
 
     window.addEventListener('error', function _onChartError(e) {
-      if (!e.message) return;
+      if (!e.message) {return;}
       const msg = e.message.toString();
       if (msg.includes('Chart') && (msg.includes('is not defined') || msg.includes('is not a constructor') || msg.includes('chart'))) {
         _chartJsAvailable = false;
@@ -208,10 +208,10 @@
 
 
   function createGradient(ctx, colorStops, direction = 'vertical') {
-    if (!ctx || !ctx.chart || !ctx.chart.ctx) return colorStops[0]?.color || '#f2b84b';
+    if (!ctx || !ctx.chart || !ctx.chart.ctx) {return colorStops[0]?.color || '#f2b84b';}
     const chart = ctx.chart;
     const { ctx: canvasCtx, chartArea } = chart;
-    if (!chartArea) return colorStops[0]?.color || '#f2b84b';
+    if (!chartArea) {return colorStops[0]?.color || '#f2b84b';}
 
     const gradient = direction === 'vertical'
       ? canvasCtx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top)
@@ -259,7 +259,7 @@
 
 
   function createProgressRing(canvas, value, options = {}) {
-    if (!canvas) return null;
+    if (!canvas) {return null;}
     return _safeChartOp(function() {
       const colors = getColors();
       const ctx = canvas.getContext('2d');
@@ -293,7 +293,7 @@
       };
 
 
-      if (canvas._chart) canvas._chart.destroy();
+      if (canvas._chart) {canvas._chart.destroy();}
       canvas._chart = new Chart(ctx, config);
       return canvas._chart;
     }, canvas, 'Progress ring', null);
@@ -301,7 +301,7 @@
 
 
   function createHorizontalBarChart(canvas, data, options = {}) {
-    if (!canvas) return null;
+    if (!canvas) {return null;}
     return _safeChartOp(function() {
       const colors = getColors();
       const ctx = canvas.getContext('2d');
@@ -351,7 +351,7 @@
         },
       };
 
-      if (canvas._chart) canvas._chart.destroy();
+      if (canvas._chart) {canvas._chart.destroy();}
       canvas._chart = new Chart(ctx, config);
       return canvas._chart;
     }, canvas, 'Bar chart', null);
@@ -408,7 +408,7 @@
 
     ctx.clearRect(0, 0, width, height);
 
-    if (!data.length) return;
+    if (!data.length) {return;}
 
     const max = Math.max(...data);
     const min = Math.min(...data);
@@ -420,8 +420,8 @@
     data.forEach((val, i) => {
       const x = padding + (i / (data.length - 1)) * (width - padding * 2);
       const y = height - padding - ((val - min) / range) * (height - padding * 2);
-      if (i === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
+      if (i === 0) {ctx.moveTo(x, y);}
+      else {ctx.lineTo(x, y);}
     });
 
 
@@ -493,7 +493,7 @@
 
   function setupObserver() {
     const targetNode = document.body || document.documentElement;
-    if (!targetNode) return;
+    if (!targetNode) {return;}
     try {
       observer.observe(targetNode, { attributes: true, attributeFilter: ['class'] });
     } catch (e) {}

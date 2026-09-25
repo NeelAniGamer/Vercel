@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Authentication Email Templates — Class Of Learners</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: #111827;
+      --card-hover: #162032;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-active: rgba(56, 189, 248, 0.4);
+      --text: #f8fafc;
+      --text-muted: #8891aa;
+      --accent: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.15);
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'Space Mono', Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      padding: 48px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 960px;
+    }
+
+    .header-section {
+      margin-bottom: 28px;
+    }
+
+    .title {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--accent);
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    /* Main Settings Card */
+    .settings-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .template-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .template-item:last-child {
+      border-bottom: none;
+    }
+
+    .template-item:hover {
+      background-color: var(--card-hover);
+    }
+
+    .template-item.active {
+      background-color: #151e30;
+      border-left: 3px solid var(--accent);
+      padding-left: 21px;
+    }
+
+    .item-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .item-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #f1f5f9;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .item-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .chevron {
+      color: #64748b;
+      transition: transform 0.2s ease, color 0.2s ease;
+      display: flex;
+      align-items: center;
+    }
+
+    .template-item:hover .chevron {
+      color: var(--text);
+      transform: translateX(3px);
+    }
+
+    .template-item.active .chevron {
+      color: var(--accent);
+      transform: rotate(90deg);
+    }
+
+    /* Modal / Drawer for Inspection */
+    .drawer {
+      display: none;
+      margin-top: 24px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-active);
+      border-radius: 14px;
+      padding: 28px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    .drawer.open {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+
+    .drawer-title-group h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .drawer-title-group p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .actions-bar {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+
+    .btn-primary {
+      background: #0284c7;
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3);
+    }
+    .btn-primary:hover {
+      background: #0369a1;
+    }
+
+    .btn-secondary {
+      background: #1e293b;
+      color: #e2e8f0;
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+    .btn-secondary:hover {
+      background: #283548;
+    }
+
+    .meta-box {
+      background: #090d16;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .meta-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .meta-value {
+      font-size: 14px;
+      font-weight: 500;
+      color: #38bdf8;
+      font-family: var(--font-mono);
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+    }
+
+    .tab {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab.active {
+      color: #ffffff;
+      background: #1e293b;
+    }
+
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Iframe preview */
+    .preview-frame-container {
+      background: #080b14;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      height: 600px;
+    }
+
+    .preview-frame {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* Code View */
+    .code-container {
+      position: relative;
+    }
+
+    .code-block {
+      background: #070a12;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+      color: #cbd5e1;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.6;
+      max-height: 540px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #0284c7;
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      display: none;
+      animation: toastIn 0.2s ease-out;
+      z-index: 1000;
+    }
+
+    @keyframes toastIn {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header-section">
+      <div style="margin-bottom: 14px;">
+        <a href="../../home.html" style="color: var(--accent); text-decoration: none; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+          &larr; Return to Class Of Learners
+        </a>
+      </div>
+      <h1 class="title">
+        Authentication
+        <span class="badge">Supabase Templates</span>
+      </h1>
+      <p class="subtitle">Select an email template below to preview its design, copy the subject line, or copy the ready-to-paste Supabase HTML code.</p>
+    </div>
+
+    <!-- The 6 Authentication Email Items matching user interface -->
+    <div class="settings-card">
+      <div class="template-item" onclick="openTemplate('confirm-signup', this)">
+        <div class="item-info">
+          <div class="item-title">Confirm sign up</div>
+          <div class="item-desc">Ask users to confirm their email address after signing up</div>
+        </div>
+        <div class="chevron">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </div>
+      </div>
+
+      <div class="template-item" onclick="openTemplate('invite-user', this)">
+        <div class="item-info">
+          <div class="item-title">Invite user</div>
+          <div class="item-desc">Invite someone to create an account</div>
+        </div>
+        <div class="chevron">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </div>
+      </div>
+
+      <div class="template-item" onclick="openTemplate('magic-link', this)">
+        <div class="item-info">
+          <div class="item-title">Magic link or OTP</div>
+          <div class="item-desc">Send a one-time sign-in link or one-time password</div>
+        </div>
+        <div class="chevron">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </div>
+      </div>
+
+      <div class="template-item" onclick="openTemplate('change-email', this)">
+        <div class="item-info">
+          <div class="item-title">Change email address</div>
+          <div class="item-desc">Ask users to verify their new email address after changing it</div>
+        </div>
+        <div class="chevron">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </div>
+      </div>
+
+      <div class="template-item" onclick="openTemplate('reset-password', this)">
+        <div class="item-info">
+          <div class="item-title">Reset password</div>
+          <div class="item-desc">Send a password reset link or code</div>
+        </div>
+        <div class="chevron">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </div>
+      </div>
+
+      <div class="template-item" onclick="openTemplate('reauthentication', this)">
+        <div class="item-info">
+          <div class="item-title">Reauthentication</div>
+          <div class="item-desc">Ask users to verify their identity before a sensitive operation</div>
+        </div>
+        <div class="chevron">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inspector Drawer -->
+    <div id="inspectorDrawer" class="drawer">
+      <div class="drawer-header">
+        <div class="drawer-title-group">
+          <h2 id="drawerTitle">Template Details</h2>
+          <p id="drawerDesc">Configure this template in Supabase Authentication > Email Templates</p>
+        </div>
+        <div class="actions-bar">
+          <button class="btn btn-secondary" onclick="copySubject()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            Copy Subject
+          </button>
+          <button class="btn btn-primary" onclick="copyTemplateHtml()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+            Copy HTML Code
+          </button>
+        </div>
+      </div>
+
+      <!-- Subject display -->
+      <div class="meta-box">
+        <div>
+          <div class="meta-label">Email Subject</div>
+          <div id="drawerSubject" class="meta-value">Confirm your email address — Class Of Learners</div>
+        </div>
+      </div>
+
+      <!-- Tabs for Visual Preview vs HTML Source -->
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('preview', this)">Visual Preview</button>
+        <button class="tab" onclick="switchTab('code', this)">HTML Source Code</button>
+      </div>
+
+      <div id="tab-preview" class="tab-content active">
+        <div class="preview-frame-container">
+          <iframe id="previewFrame" class="preview-frame" src="confirm-signup.html"></iframe>
+        </div>
+      </div>
+
+      <div id="tab-code" class="tab-content">
+        <div class="code-container">
+          <pre id="codeView" class="code-block"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast">Copied to clipboard!</div>
+
+  <script>
+    const TEMPLATES = {
+  "confirm-signup": {
+    "title": "Confirm sign up",
+    "desc": "Ask users to confirm their email address after signing up",
+    "subject": "Confirm your email address — Class Of Learners",
+    "file": "confirm-signup.html",
+    "html": "<!DOCTYPE html>\n<html>\n<head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Mono:wght@700&display=swap\" rel=\"stylesheet\"></head>\n<body style=\"margin:0;padding:28px 12px;background:#080b14;font-family:'Inter',-apple-system,sans-serif;color:#f8fafc;\">\n  <table role=\"presentation\" width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr><td align=\"center\">\n    <table role=\"presentation\" width=\"100%\" style=\"max-width:520px;background:#0f172a;border:1px solid #1e293b;border-radius:14px;overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,.6);text-align:left;\">\n      <tr><td height=\"4\" style=\"background:linear-gradient(90deg,#0284c7,#38bdf8,#818cf8);\"></td></tr>\n      <tr><td style=\"padding:24px 22px;\">\n        <table width=\"100%\" style=\"margin-bottom:18px;border-bottom:1px solid #1e293b;padding-bottom:14px;\"><tr>\n          <td style=\"font-size:17px;font-weight:700;\"><a href=\"{{ .SiteURL }}\" target=\"_blank\" style=\"color:#ffffff;text-decoration:none;\">Class Of Learners</a></td>\n          <td align=\"right\"><span style=\"font-size:11px;font-weight:600;color:#38bdf8;background:rgba(56,189,248,.12);padding:3px 8px;border-radius:99px;border:1px solid rgba(56,189,248,.25);\">VERIFY</span></td>\n        </tr></table>\n        <h1 style=\"margin:0 0 10px;font-size:21px;font-weight:700;color:#f8fafc;\">Confirm Your Email Address</h1>\n        <p style=\"margin:0 0 18px;font-size:14px;line-height:1.6;color:#94a3b8;\">Welcome to Class Of Learners. Click below or enter the code to confirm your email and activate your account.</p>\n        <div style=\"text-align:center;margin:18px 0;\">\n          <a href=\"{{ .ConfirmationURL }}\" style=\"display:inline-block;padding:12px 28px;background:linear-gradient(135deg,#0284c7,#2563eb);color:#fff;text-decoration:none;font-size:14px;font-weight:600;border-radius:8px;box-shadow:0 4px 12px rgba(2,132,199,.3);\">Confirm Email Address &rarr;</a>\n        </div>\n        <div style=\"background:#090d16;border:1px solid #1e293b;border-radius:10px;padding:12px;text-align:center;margin:14px 0;\">\n          <div style=\"font-size:11px;color:#64748b;letter-spacing:1px;text-transform:uppercase;\">Or 6-Digit Code</div>\n          <div style=\"font-family:'Space Mono',monospace;font-size:26px;font-weight:700;letter-spacing:6px;color:#38bdf8;\">{{ .Token }}</div>\n        </div>\n        <p style=\"margin:14px 0 0;font-size:12px;color:#64748b;word-break:break-all;\">Link: <a href=\"{{ .ConfirmationURL }}\" style=\"color:#38bdf8;\">{{ .ConfirmationURL }}</a></p>\n        <div style=\"margin-top:16px;padding:10px 12px;background:rgba(30,41,59,.5);border-left:3px solid #38bdf8;font-size:12px;color:#94a3b8;\">Expires in 24h. If you did not create this account, please disregard this email.</div>\n        <div style=\"margin-top:20px;padding-top:14px;border-top:1px solid #1e293b;text-align:center;font-size:11px;color:#64748b;line-height:1.6;\">\n          <a href=\"{{ .SiteURL }}\" target=\"_blank\" style=\"color:#38bdf8;text-decoration:none;font-weight:600;\">Visit Class Of Learners &rarr;</a><br>&copy; 2026 Class Of Learners &bull; Security Notification\n        </div>\n      </td></tr>\n    </table>\n  </td></tr></table>\n</body>\n</html>"
+  },
+  "invite-user": {
+    "title": "Invite user",
+    "desc": "Invite someone to create an account",
+    "subject": "You've been invited to join Class Of Learners",
+    "file": "invite-user.html",
+    "html": "<!DOCTYPE html>\n<html>\n<head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap\" rel=\"stylesheet\"></head>\n<body style=\"margin:0;padding:28px 12px;background:#080b14;font-family:'Inter',-apple-system,sans-serif;color:#f8fafc;\">\n  <table role=\"presentation\" width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr><td align=\"center\">\n    <table role=\"presentation\" width=\"100%\" style=\"max-width:520px;background:#0f172a;border:1px solid #1e293b;border-radius:14px;overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,.6);text-align:left;\">\n      <tr><td height=\"4\" style=\"background:linear-gradient(90deg,#10b981,#06b6d4,#3b82f6);\"></td></tr>\n      <tr><td style=\"padding:24px 22px;\">\n        <table width=\"100%\" style=\"margin-bottom:18px;border-bottom:1px solid #1e293b;padding-bottom:14px;\"><tr>\n          <td style=\"font-size:17px;font-weight:700;\"><a href=\"{{ .SiteURL }}\" target=\"_blank\" style=\"color:#ffffff;text-decoration:none;\">Class Of Learners</a></td>\n          <td align=\"right\"><span style=\"font-size:11px;font-weight:600;color:#34d399;background:rgba(52,211,153,.12);padding:3px 8px;border-radius:99px;border:1px solid rgba(52,211,153,.25);\">INVITATION</span></td>\n        </tr></table>\n        <h1 style=\"margin:0 0 10px;font-size:21px;font-weight:700;color:#f8fafc;\">You've Been Invited!</h1>\n        <p style=\"margin:0 0 18px;font-size:14px;line-height:1.6;color:#94a3b8;\">You were invited to join Class Of Learners as <strong style=\"color:#38bdf8;\">{{ .Email }}</strong>. Click below to accept and create your account.</p>\n        <div style=\"text-align:center;margin:20px 0;\">\n          <a href=\"{{ .ConfirmationURL }}\" style=\"display:inline-block;padding:12px 30px;background:linear-gradient(135deg,#059669,#0284c7);color:#fff;text-decoration:none;font-size:14px;font-weight:600;border-radius:8px;box-shadow:0 4px 12px rgba(5,150,105,.3);\">Accept Invitation &rarr;</a>\n        </div>\n        <p style=\"margin:14px 0 0;font-size:12px;color:#64748b;word-break:break-all;\">Link: <a href=\"{{ .ConfirmationURL }}\" style=\"color:#34d399;\">{{ .ConfirmationURL }}</a></p>\n        <div style=\"margin-top:16px;padding:10px 12px;background:rgba(30,41,59,.5);border-left:3px solid #34d399;font-size:12px;color:#94a3b8;\">If you were not expecting this invitation, you can safely ignore this email.</div>\n        <div style=\"margin-top:20px;padding-top:14px;border-top:1px solid #1e293b;text-align:center;font-size:11px;color:#64748b;line-height:1.6;\">\n          <a href=\"{{ .SiteURL }}\" target=\"_blank\" style=\"color:#34d399;text-decoration:none;font-weight:600;\">Visit Class Of Learners &rarr;</a><br>&copy; 2026 Class Of Learners &bull; Security Notification\n        </div>\n      </td></tr>\n    </table>\n  </td></tr></table>\n</body>\n</html>"
+  },
+  "magic-link": {
+    "title": "Magic link or OTP",
+    "desc": "Send a one-time sign-in link or one-time password",
+    "subject": "Your sign-in link and verification code",
+    "file": "magic-link.html",
+    "html": "<!DOCTYPE html>\n<html>\n<head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Mono:wght@700&display=swap\" rel=\"stylesheet\"></head>\n<body style=\"margin:0;padding:28px 12px;background:#080b14;font-family:'Inter',-apple-system,sans-serif;color:#f8fafc;\">\n  <table role=\"presentation\" width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr><td align=\"center\">\n    <table role=\"presentation\" width=\"100%\" style=\"max-width:520px;background:#0f172a;border:1px solid #1e293b;border-radius:14px;overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,.6);text-align:left;\">\n      <tr><td height=\"4\" style=\"background:linear-gradient(90deg,#6366f1,#8b5cf6,#ec4899);\"></td></tr>\n      <tr><td style=\"padding:24px 22px;\">\n        <table width=\"100%\" style=\"margin-bottom:18px;border-bottom:1px solid #1e293b;padding-bottom:14px;\"><tr>\n          <td style=\"font-size:17px;font-weight:700;\"><a href=\"{{ .SiteURL }}\" target=\"_blank\" style=\"color:#ffffff;text-decoration:none;\">Class Of Learners</a></td>\n          <td align=\"right\"><span style=\"font-size:11px;font-weight:600;color:#c084fc;background:rgba(192,132,252,.12);padding:3px 8px;border-radius:99px;border:1px solid rgba(192,132,252,.25);\">PASSWORDLESS</span></td>\n        </tr></table>\n        <h1 style=\"margin:0 0 10px;font-size:21px;font-weight:700;color:#f8fafc;\">Sign In to Your Account</h1>\n        <p style=\"margin:0 0 18px;font-size:14px;line-height:1.6;color:#94a3b8;\">Click the button below to sign in instantly, or enter the single-use OTP code in your login screen.</p>\n        <div style=\"text-align:center;margin:18px 0;\">\n          <a href=\"{{ .ConfirmationURL }}\" style=\"display:inline-block;padding:12px 28px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;text-decoration:none;font-size:14px;font-weight:600;border-radius:8px;box-shadow:0 4px 12px rgba(99,102,241,.3);\">Sign In Instantly &rarr;</a>\n        </div>\n        <div style=\"background:#090d16;border:1px solid #1e293b;border-radius:10px;padding:12px;text-align:center;margin:14px 0;\">\n          <div style=\"font-size:11px;color:#64748b;letter-spacing:1px;text-transform:uppercase;\">Or One-Time Code</div>\n          <div style=\"font-family:'Space Mono',monospace;font-size:26px;font-weight:700;letter-spacing:6px;color:#c084fc;\">{{ .Token }}</div>\n        </div>\n        <p style=\"margin:14px 0 0;font-size:12px;color:#64748b;word-break:break-all;\">Link: <a href=\"{{ .ConfirmationURL }}\" style=\"color:#c084fc;\">{{ .ConfirmationURL }}</a></p>\n        <div style=\"margin-top:16px;padding:10px 12px;background:rgba(30,41,59,.5);border-left:3px solid #8b5cf6;font-size:12px;color:#94a3b8;\">Valid for 10 minutes. If you did not request this, your account is safe.</div>\n        <div style=\"margin-top:20px;padding-top:14px;border-top:1px solid #1e293b;text-align:center;font-size:11px;color:#64748b;line-height:1.6;\">\n          <a href=\"{{ .SiteURL }}\" target=\"_blank\" style=\"color:#c084fc;text-decoration:none;font-weight:600;\">Visit Class Of Learners &rarr;</a><br>&copy; 2026 Class Of Learners &bull; Security Notification\n        </div>\n      </td></tr>\n    </table>\n  </td></tr></table>\n</body>\n</html>"
+  },
+  "change-email": {
+    "title": "Change email address",
+    "desc": "Ask users to verify their new email address after changing it",
+    "subject": "Confirm your new email address",
+    "file": "change-email.html",
+    "html": "<!DOCTYPE html>\n<html>\n<head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Mono:wght@700&display=swap\" rel=\"stylesheet\"></head>\n<body style=\"margin:0;padding:28px 12px;background:#080b14;font-family:'Inter',-apple-system,sans-serif;color:#f8fafc;\">\n  <table role=\"presentation\" width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr><td align=\"center\">\n    <table role=\"presentation\" width=\"100%\" style=\"max-width:520px;background:#0f172a;border:1px solid #1e293b;border-radius:14px;overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,.6);text-align:left;\">\n      <tr><td height=\"4\" style=\"background:linear-gradient(90deg,#f59e0b,#06b6d4,#3b82f6);\"></td></tr>\n      <tr><td style=\"padding:24px 22px;\">\n        <table width=\"100%\" style=\"margin-bottom:18px;border-bottom:1px solid #1e293b;padding-bottom:14px;\"><tr>\n          <td style=\"font-size:17px;font-weight:700;\"><a href=\"{{ .SiteURL }}\" target=\"_blank\" style=\"color:#ffffff;text-decoration:none;\">Class Of Learners</a></td>\n          <td align=\"right\"><span style=\"font-size:11px;font-weight:600;color:#fbbf24;background:rgba(251,191,36,.12);padding:3px 8px;border-radius:99px;border:1px solid rgba(251,191,36,.25);\">EMAIL CHANGE</span></td>\n        </tr></table>\n        <h1 style=\"margin:0 0 10px;font-size:21px;font-weight:700;color:#f8fafc;\">Confirm Email Address Change</h1>\n        <p style=\"margin:0 0 14px;font-size:14px;line-height:1.6;color:#94a3b8;\">A request was made to change your email from <code style=\"color:#94a3b8;\">{{ .Email }}</code> to <code style=\"color:#38bdf8;\">{{ .NewEmail }}</code>.</p>\n        <div style=\"text-align:center;margin:18px 0;\">\n          <a href=\"{{ .ConfirmationURL }}\" style=\"display:inline-block;padding:12px 28px;background:linear-gradient(135deg,#0284c7,#2563eb);color:#fff;text-decoration:none;font-size:14px;font-weight:600;border-radius:8px;box-shadow:0 4px 12px rgba(2,132,199,.3);\">Verify New Email &rarr;</a>\n        </div>\n        <div style=\"background:#090d16;border:1px solid #1e293b;border-radius:10px;padding:12px;text-align:center;margin:14px 0;\">\n          <div style=\"font-size:11px;color:#64748b;letter-spacing:1px;text-transform:uppercase;\">Or Verification Code</div>\n          <div style=\"font-family:'Space Mono',monospace;font-size:26px;font-weight:700;letter-spacing:6px;color:#38bdf8;\">{{ .Token }}</div>\n        </div>\n        <p style=\"margin:14px 0 0;font-size:12px;color:#64748b;word-break:break-all;\">Link: <a href=\"{{ .ConfirmationURL }}\" style=\"color:#38bdf8;\">{{ .ConfirmationURL }}</a></p>\n        <div style=\"margin-top:16px;padding:10px 12px;background:rgba(245,158,11,.08);border-left:3px solid #f59e0b;font-size:12px;color:#fbbf24;\">If you did NOT request this, do not click the link and contact support immediately.</div>\n        <div style=\"margin-top:20px;padding-top:14px;border-top:1px solid #1e293b;text-align:center;font-size:11px;color:#64748b;line-height:1.6;\">\n          <a href=\"{{ .SiteURL }}\" target=\"_blank\" style=\"color:#38bdf8;text-decoration:none;font-weight:600;\">Visit Class Of Learners &rarr;</a><br>&copy; 2026 Class Of Learners &bull; Security Notification\n        </div>\n      </td></tr>\n    </table>\n  </td></tr></table>\n</body>\n</html>"
+  },
+  "reset-password": {
+    "title": "Reset password",
+    "desc": "Send a password reset link or code",
+    "subject": "Reset your password — Class Of Learners",
+    "file": "reset-password.html",
+    "html": "<!DOCTYPE html>\n<html>\n<head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Mono:wght@700&display=swap\" rel=\"stylesheet\"></head>\n<body style=\"margin:0;padding:28px 12px;background:#080b14;font-family:'Inter',-apple-system,sans-serif;color:#f8fafc;\">\n  <table role=\"presentation\" width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr><td align=\"center\">\n    <table role=\"presentation\" width=\"100%\" style=\"max-width:520px;background:#0f172a;border:1px solid #1e293b;border-radius:14px;overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,.6);text-align:left;\">\n      <tr><td height=\"4\" style=\"background:linear-gradient(90deg,#ef4444,#f97316,#f59e0b);\"></td></tr>\n      <tr><td style=\"padding:24px 22px;\">\n        <table width=\"100%\" style=\"margin-bottom:18px;border-bottom:1px solid #1e293b;padding-bottom:14px;\"><tr>\n          <td style=\"font-size:17px;font-weight:700;\"><a href=\"{{ .SiteURL }}\" target=\"_blank\" style=\"color:#ffffff;text-decoration:none;\">Class Of Learners</a></td>\n          <td align=\"right\"><span style=\"font-size:11px;font-weight:600;color:#f87171;background:rgba(248,113,113,.12);padding:3px 8px;border-radius:99px;border:1px solid rgba(248,113,113,.25);\">RECOVERY</span></td>\n        </tr></table>\n        <h1 style=\"margin:0 0 10px;font-size:21px;font-weight:700;color:#f8fafc;\">Reset Your Password</h1>\n        <p style=\"margin:0 0 18px;font-size:14px;line-height:1.6;color:#94a3b8;\">A password reset was requested for your account. Click below or enter your code to choose a new password.</p>\n        <div style=\"text-align:center;margin:18px 0;\">\n          <a href=\"{{ .ConfirmationURL }}\" style=\"display:inline-block;padding:12px 28px;background:linear-gradient(135deg,#dc2626,#ea580c);color:#fff;text-decoration:none;font-size:14px;font-weight:600;border-radius:8px;box-shadow:0 4px 12px rgba(220,38,38,.3);\">Reset Password &rarr;</a>\n        </div>\n        <div style=\"background:#090d16;border:1px solid #1e293b;border-radius:10px;padding:12px;text-align:center;margin:14px 0;\">\n          <div style=\"font-size:11px;color:#64748b;letter-spacing:1px;text-transform:uppercase;\">Or Recovery Code</div>\n          <div style=\"font-family:'Space Mono',monospace;font-size:26px;font-weight:700;letter-spacing:6px;color:#fb7185;\">{{ .Token }}</div>\n        </div>\n        <p style=\"margin:14px 0 0;font-size:12px;color:#64748b;word-break:break-all;\">Link: <a href=\"{{ .ConfirmationURL }}\" style=\"color:#fb7185;\">{{ .ConfirmationURL }}</a></p>\n        <div style=\"margin-top:16px;padding:10px 12px;background:rgba(30,41,59,.5);border-left:3px solid #f87171;font-size:12px;color:#94a3b8;\">Expires in 1 hour. If you did not request this, you can safely ignore this email.</div>\n        <div style=\"margin-top:20px;padding-top:14px;border-top:1px solid #1e293b;text-align:center;font-size:11px;color:#64748b;line-height:1.6;\">\n          <a href=\"{{ .SiteURL }}\" target=\"_blank\" style=\"color:#fb7185;text-decoration:none;font-weight:600;\">Visit Class Of Learners &rarr;</a><br>&copy; 2026 Class Of Learners &bull; Security Notification\n        </div>\n      </td></tr>\n    </table>\n  </td></tr></table>\n</body>\n</html>"
+  },
+  "reauthentication": {
+    "title": "Reauthentication",
+    "desc": "Ask users to verify their identity before a sensitive operation",
+    "subject": "Confirm your identity — Verification Code",
+    "file": "reauthentication.html",
+    "html": "<!DOCTYPE html>\n<html>\n<head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Mono:wght@700&display=swap\" rel=\"stylesheet\"></head>\n<body style=\"margin:0;padding:28px 12px;background:#080b14;font-family:'Inter',-apple-system,sans-serif;color:#f8fafc;\">\n  <table role=\"presentation\" width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr><td align=\"center\">\n    <table role=\"presentation\" width=\"100%\" style=\"max-width:520px;background:#0f172a;border:1px solid #1e293b;border-radius:14px;overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,.6);text-align:left;\">\n      <tr><td height=\"4\" style=\"background:linear-gradient(90deg,#38bdf8,#818cf8,#c084fc);\"></td></tr>\n      <tr><td style=\"padding:24px 22px;\">\n        <table width=\"100%\" style=\"margin-bottom:18px;border-bottom:1px solid #1e293b;padding-bottom:14px;\"><tr>\n          <td style=\"font-size:17px;font-weight:700;\"><a href=\"{{ .SiteURL }}\" target=\"_blank\" style=\"color:#ffffff;text-decoration:none;\">Class Of Learners</a></td>\n          <td align=\"right\"><span style=\"font-size:11px;font-weight:600;color:#38bdf8;background:rgba(56,189,248,.12);padding:3px 8px;border-radius:99px;border:1px solid rgba(56,189,248,.25);\">SECURITY</span></td>\n        </tr></table>\n        <h1 style=\"margin:0 0 10px;font-size:21px;font-weight:700;color:#f8fafc;\">Verify Your Identity</h1>\n        <p style=\"margin:0 0 16px;font-size:14px;line-height:1.6;color:#94a3b8;\">A sensitive action was initiated for <strong style=\"color:#fff;\">{{ .Email }}</strong>. Enter this code to verify your identity:</p>\n        <div style=\"background:#090d16;border:2px solid rgba(56,189,248,.3);border-radius:12px;padding:18px;text-align:center;margin:16px 0;\">\n          <div style=\"font-size:11px;color:#64748b;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;\">Security Verification Code</div>\n          <div style=\"font-family:'Space Mono',monospace;font-size:32px;font-weight:700;letter-spacing:8px;color:#38bdf8;\">{{ .Token }}</div>\n          <div style=\"font-size:11px;color:#64748b;margin-top:6px;\">Valid for 10 minutes</div>\n        </div>\n        <div style=\"margin-top:16px;padding:10px 12px;background:rgba(30,41,59,.5);border-left:3px solid #38bdf8;font-size:12px;color:#94a3b8;\">Never share this code. If you did not trigger this request, please secure your account immediately.</div>\n        <div style=\"margin-top:20px;padding-top:14px;border-top:1px solid #1e293b;text-align:center;font-size:11px;color:#64748b;line-height:1.6;\">\n          <a href=\"{{ .SiteURL }}\" target=\"_blank\" style=\"color:#38bdf8;text-decoration:none;font-weight:600;\">Visit Class Of Learners &rarr;</a><br>&copy; 2026 Class Of Learners &bull; Security Notification\n        </div>\n      </td></tr>\n    </table>\n  </td></tr></table>\n</body>\n</html>"
+  }
+};
+
+    let currentKey = 'confirm-signup';
+    let currentRawHtml = '';
+
+    async function openTemplate(key, element) {
+      currentKey = key;
+      document.querySelectorAll('.template-item').forEach(el => el.classList.remove('active'));
+      if (element) element.classList.add('active');
+
+      const data = TEMPLATES[key];
+      document.getElementById('drawerTitle').innerText = data.title;
+      document.getElementById('drawerDesc').innerText = data.desc;
+      document.getElementById('drawerSubject').innerText = data.subject;
+      document.getElementById('previewFrame').srcdoc = data.html;
+
+      const drawer = document.getElementById('inspectorDrawer');
+      drawer.classList.add('open');
+
+      currentRawHtml = data.html;
+      document.getElementById('codeView').textContent = currentRawHtml;
+
+      drawer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function switchTab(tabName, btn) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + tabName).classList.add('active');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.innerText = msg;
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.display = 'none'; }, 2200);
+    }
+
+    function copySubject() {
+      const subject = TEMPLATES[currentKey].subject;
+      navigator.clipboard.writeText(subject).then(() => {
+        showToast('Subject copied: "' + subject + '"');
+      });
+    }
+
+    function copyTemplateHtml() {
+      if (!currentRawHtml) return;
+      navigator.clipboard.writeText(currentRawHtml).then(() => {
+        showToast('Full HTML template copied to clipboard!');
+      });
+    }
+
+    // Auto-open first item on load
+    window.addEventListener('DOMContentLoaded', () => {
+      const firstItem = document.querySelector('.template-item');
+      openTemplate('confirm-signup', firstItem);
+    });
+  </script>
+</body>
+</html>

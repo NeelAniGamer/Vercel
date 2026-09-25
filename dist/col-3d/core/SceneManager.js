@@ -30,7 +30,7 @@
         clearInterval(interval)
         callback()
       }
-      if (checks > 50) clearInterval(interval) // 5s timeout
+      if (checks > 50) {clearInterval(interval)} // 5s timeout
     }, 100)
   }
 
@@ -101,7 +101,7 @@
   function handleResize() {
     scenes.forEach(({ renderer, camera, canvas }) => {
       // Skip if canvas is on mobile (should have been cleaned up)
-      if (window.innerWidth < globalConfig.mobileBreakpoint) return
+      if (window.innerWidth < globalConfig.mobileBreakpoint) {return}
       camera.aspect = window.innerWidth / window.innerHeight
       camera.updateProjectionMatrix()
       renderer.setSize(window.innerWidth, window.innerHeight)
@@ -117,10 +117,10 @@
   function animate(now) {
     rafId = requestAnimationFrame(animate)
 
-    if (!isVisible) return
+    if (!isVisible) {return}
 
     const elapsed = now - _lastFrameTime
-    if (elapsed < _FRAME_MS) return
+    if (elapsed < _FRAME_MS) {return}
     _lastFrameTime = now - (elapsed % _FRAME_MS) // drift correction
 
     // Consume pending mouse coords once per frame
@@ -131,7 +131,7 @@
     const elapsedTime = globalClock ? globalClock.getElapsedTime() : now * 0.001
 
     scenes.forEach(({ updateFn, renderer, scene, camera, canvas, config }) => {
-      if (!canvas.isConnected) return // Cleaned up
+      if (!canvas.isConnected) {return} // Cleaned up
       if (updateFn) {
         try {
           updateFn(elapsedTime, delta, { mouseX, mouseY })
@@ -152,7 +152,7 @@
     config: globalConfig,
 
     init() {
-      if (isInitialized) return Promise.resolve()
+      if (isInitialized) {return Promise.resolve()}
       return new Promise((resolve) => {
         waitForThree(() => {
           globalClock = new THREE.Clock()
@@ -199,8 +199,8 @@
       try {
         const result = sceneBuilder(scene, camera, renderer, { mouseX: () => mouseX, mouseY: () => mouseY })
         if (result && typeof result === 'object') {
-          if (result.updateFn) updateFn = result.updateFn
-          if (result.scene) Object.assign(scene, result.scene)
+          if (result.updateFn) {updateFn = result.updateFn}
+          if (result.scene) {Object.assign(scene, result.scene)}
         } else if (typeof result === 'function') {
           updateFn = result
         }
@@ -236,7 +236,7 @@
 
     dispose(canvas) {
       const entry = scenes.get(canvas)
-      if (!entry) return
+      if (!entry) {return}
 
       // Stop rendering this scene
       scenes.delete(canvas)
@@ -246,7 +246,7 @@
 
       // Geometries
       scene.traverse(obj => {
-        if (obj.geometry) obj.geometry.dispose()
+        if (obj.geometry) {obj.geometry.dispose()}
         if (obj.material) {
           if (Array.isArray(obj.material)) {
             obj.material.forEach(m => m.dispose())
@@ -296,9 +296,9 @@
           if (obj.geometry) {
             geometries++
             const attr = obj.geometry.attributes.position
-            if (attr) triangles += attr.count / 3
+            if (attr) {triangles += attr.count / 3}
           }
-          if (obj.material) materials++
+          if (obj.material) {materials++}
         })
         if (renderer.info) {
           drawCalls += renderer.info.render.calls || 0

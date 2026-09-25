@@ -177,7 +177,7 @@ class TrafficLight {
   }
   
   updateTimerDisplay() {
-    if (!this.timerDisplay) return;
+    if (!this.timerDisplay) {return;}
     
     const { canvas, texture, ctx } = this.timerDisplay.userData;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -245,9 +245,9 @@ class TrafficLight {
     this.greenGlow.visible = this.state === 'green';
     
     // Scale glow based on state
-    if (this.redGlow.visible) this.redGlow.scale.set(2, 2, 1);
-    if (this.yellowGlow.visible) this.yellowGlow.scale.set(1.5, 1.5, 1);
-    if (this.greenGlow.visible) this.greenGlow.scale.set(2, 2, 1);
+    if (this.redGlow.visible) {this.redGlow.scale.set(2, 2, 1);}
+    if (this.yellowGlow.visible) {this.yellowGlow.scale.set(1.5, 1.5, 1);}
+    if (this.greenGlow.visible) {this.greenGlow.scale.set(2, 2, 1);}
   }
   
   getRemainingTime() {
@@ -280,7 +280,7 @@ class TrafficLightSystem {
   }
   
   spawnAtIntersection(node, options = {}) {
-    if (node.type !== 'junction' && node.edges.length < 3) return null;
+    if (node.type !== 'junction' && node.edges.length < 3) {return null;}
     
     const light = new TrafficLight(
       new THREE.Vector3(node.position.x, 0, node.position.z),
@@ -295,7 +295,7 @@ class TrafficLightSystem {
   }
   
   spawnAtAllIntersections() {
-    if (!this.roadGraph || !this.roadGraph.nodes) return;
+    if (!this.roadGraph || !this.roadGraph.nodes) {return;}
     
     this.roadGraph.nodes.forEach((node, index) => {
       if (node.type === 'junction' || node.edges.length >= 3) {
@@ -351,7 +351,7 @@ class TrafficLightSystem {
   
   getStateAt(position) {
     const nearby = this.getLightsNear(position, 30);
-    if (nearby.length === 0) return null;
+    if (nearby.length === 0) {return null;}
     
     // Return the closest light
     let closest = nearby[0];
@@ -376,7 +376,7 @@ class TrafficLightSystem {
   // Check if player ran a red light
   checkViolation(vehiclePosition, vehicleSpeed) {
     const state = this.getStateAt(vehiclePosition);
-    if (!state) return null;
+    if (!state) {return null;}
     
     if (state.state === 'red' && state.distance < 10 && vehicleSpeed > 5) {
       return {

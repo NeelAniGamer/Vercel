@@ -209,10 +209,10 @@
       mentor.rings.forEach(({ mat }) => mat.color.setHex(p.signal))
       comet.material.color.setHex(p.signal)
 
-      if (scene.fog) scene.fog.color.setHex(isLight ? 0xeef2ff : 0x070a14)
+      if (scene.fog) {scene.fog.color.setHex(isLight ? 0xeef2ff : 0x070a14)}
     }
     applyTheme()
-    if (window.ThemeSync) window.ThemeSync.onChange(applyTheme)
+    if (window.ThemeSync) {window.ThemeSync.onChange(applyTheme)}
 
     // Animation
     return function update(time) {

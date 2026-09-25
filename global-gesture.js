@@ -8,7 +8,7 @@
 // These wrappers delegate so download.html (which loads both files) stays consistent.
 window.toggleMenu = function () {
   const navLinks = document.querySelector('.nav-links')
-  if (navLinks) navLinks.classList.toggle('active')
+  if (navLinks) {navLinks.classList.toggle('active')}
 }
 
 if (!window._colThemeDelegated) {
@@ -32,7 +32,7 @@ window.initializeTheme = function () {
     const isLight = t === 'light';
     document.body.classList.toggle('lm', isLight);
     document.body.classList.toggle('dark-mode', !isLight);
-    if (toggleSwitch) toggleSwitch.checked = !!isLight;
+    if (toggleSwitch) {toggleSwitch.checked = !!isLight;}
   } catch (e) {}
 };
 
@@ -40,7 +40,7 @@ window.initializeTheme = function () {
 window.addEventListener('DOMContentLoaded', window.initializeTheme)
 
 document.addEventListener('DOMContentLoaded', () => {
-  if (document.getElementById('global-gesture-container')) return
+  if (document.getElementById('global-gesture-container')) {return}
 
   // 1. Inject Global Elements (Cursor, Toast, FAB, PiP Camera)
   const container = document.createElement('div')
@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 3. Start Engine Function (EXPOSED TO WINDOW)
   window.startGlobalGesture = async function () {
-    if (isEngineRunning) return
+    if (isEngineRunning) {return}
     fab.innerText = 'Loading Engine...'
 
     try {
@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
       await loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js')
       await loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js')
       await loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js')
-      if (typeof Hands === 'undefined' || typeof Camera === 'undefined') throw new Error('MediaPipe unavailable');
+      if (typeof Hands === 'undefined' || typeof Camera === 'undefined') {throw new Error('MediaPipe unavailable');}
 
       const hands = new Hands({ locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}` })
       hands.setOptions({ maxNumHands: 1, modelComplexity: 1, minDetectionConfidence: 0.7, minTrackingConfidence: 0.7 })
@@ -199,17 +199,17 @@ document.addEventListener('DOMContentLoaded', () => {
           }
 
           // Cursor Movement
-          let targetX = (1 - lm[8].x) * window.innerWidth
-          let targetY = lm[8].y * window.innerHeight
+          const targetX = (1 - lm[8].x) * window.innerWidth
+          const targetY = lm[8].y * window.innerHeight
           curX += (targetX - curX) * 0.3
           curY += (targetY - curY) * 0.3
           cursor.style.left = `${curX}px`
           cursor.style.top = `${curY}px`
 
-          let iUp = lm[8].y < lm[6].y
-          let mUp = lm[12].y < lm[10].y
-          let rUp = lm[16].y < lm[14].y
-          let pUp = lm[20].y < lm[18].y
+          const iUp = lm[8].y < lm[6].y
+          const mUp = lm[12].y < lm[10].y
+          const rUp = lm[16].y < lm[14].y
+          const pUp = lm[20].y < lm[18].y
 
           // ── TERMINATION (3 Fingers Up, Pinky Down) ──
           if (iUp && mUp && rUp && !pUp) {
@@ -234,9 +234,9 @@ document.addEventListener('DOMContentLoaded', () => {
               cursor.style.backgroundColor = COLORS.SCROLL
               cursor.style.boxShadow = `0 0 15px ${COLORS.SCROLL}`
 
-              let currentY = (lm[8].y + lm[12].y) / 2
+              const currentY = (lm[8].y + lm[12].y) / 2
               if (lastScrollY !== null) {
-                let dy = (currentY - lastScrollY) * window.innerHeight
+                const dy = (currentY - lastScrollY) * window.innerHeight
                 window.scrollBy({ top: dy * 2.5 })
               }
               lastScrollY = currentY
@@ -247,8 +247,8 @@ document.addEventListener('DOMContentLoaded', () => {
             isTerminating = false
             lastScrollY = null
 
-            let distIndex = Math.hypot(lm[4].x - lm[8].x, lm[4].y - lm[8].y)
-            let distMiddle = Math.hypot(lm[4].x - lm[12].x, lm[4].y - lm[12].y)
+            const distIndex = Math.hypot(lm[4].x - lm[8].x, lm[4].y - lm[8].y)
+            const distMiddle = Math.hypot(lm[4].x - lm[12].x, lm[4].y - lm[12].y)
 
             // LEFT CLICK
             if (distIndex < 0.05 && !isLeftClicking) {
@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
               cursor.style.transform = 'translate(-50%, -50%) scale(0.6)'
               cursor.style.backgroundColor = COLORS.LEFT
 
-              let el = document.elementFromPoint(curX, curY)
+              const el = document.elementFromPoint(curX, curY)
               if (el) {
                 showToast('LEFT CLICK', COLORS.LEFT)
                 el.click()
@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
               cursor.style.transform = 'translate(-50%, -50%) scale(1.5)'
               cursor.style.backgroundColor = COLORS.RIGHT
 
-              let el = document.elementFromPoint(curX, curY)
+              const el = document.elementFromPoint(curX, curY)
               if (el) {
                 showToast('RIGHT CLICK', COLORS.RIGHT)
                 el.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true, clientX: curX, clientY: curY }))
@@ -292,7 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
           lastScrollY = null
         }
         ctx.restore()
-        if (lCtx) lCtx.restore()
+        if (lCtx) {lCtx.restore()}
       })
 
       cameraInstance = new Camera(video, {
@@ -314,7 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (e) {
       console.error(e)
       fab.innerHTML = '<span style="color:#ef4444;margin-right:6px;font-weight:bold;">!</span>Camera Error'
-      try { if (window.toast) toast('Gesture Camera Unavailable — Check Connection', 'error'); } catch (_e) {}
+      try { if (window.toast) {toast('Gesture Camera Unavailable — Check Connection', 'error');} } catch (_e) {}
       fab.innerText = 'Enable Gestures';
       try { alert('Gesture engine failed to start. Check camera permission and connection.'); } catch (_e) {}
     }

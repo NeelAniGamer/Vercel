@@ -174,10 +174,10 @@
         b.mesh.material.color.setHex([p.signal, p.em, p.ion][i % 3])
       })
 
-      if (scene.fog) scene.fog.color.setHex(isLight ? 0xeef2ff : 0x070a14)
+      if (scene.fog) {scene.fog.color.setHex(isLight ? 0xeef2ff : 0x070a14)}
     }
     applyTheme()
-    if (window.ThemeSync) window.ThemeSync.onChange(applyTheme)
+    if (window.ThemeSync) {window.ThemeSync.onChange(applyTheme)}
 
     // ===== ANIMATION =====
     return function update(time) {
@@ -207,7 +207,7 @@
         pos[i * 3 + 2] = newR * Math.sin(phi) * Math.sin(theta)
 
         // Bounce at boundaries
-        if (newR > 70 || newR < 15) v.radiusSpeed *= -1
+        if (newR > 70 || newR < 15) {v.radiusSpeed *= -1}
       }
       particles.geometry.attributes.position.needsUpdate = true
 

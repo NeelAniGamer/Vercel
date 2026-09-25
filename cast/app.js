@@ -27,7 +27,7 @@ navBtns.forEach(btn => {
 document.getElementById("connect-btn").addEventListener("click", () => {
     connectionType = document.getElementById("connection-type").value;
     const target = document.getElementById("target-ip").value;
-    if (!target) return;
+    if (!target) {return;}
     
     currentIp = target;
     
@@ -39,7 +39,7 @@ document.getElementById("connect-btn").addEventListener("click", () => {
 });
 
 function connectLocal(ip) {
-    if (ws) ws.close();
+    if (ws) {ws.close();}
     ws = new WebSocket(`ws://${ip}:8080/ws`);
     setupWebSocket();
     
@@ -90,8 +90,8 @@ document.addEventListener("keydown", (e) => {
         }
 
         // Local UI Navigation for TV browsers
-        if (e.key === "ArrowRight") focusIndex = (focusIndex + 1) % focusables.length;
-        if (e.key === "ArrowLeft") focusIndex = (focusIndex - 1 + focusables.length) % focusables.length;
+        if (e.key === "ArrowRight") {focusIndex = (focusIndex + 1) % focusables.length;}
+        if (e.key === "ArrowLeft") {focusIndex = (focusIndex - 1 + focusables.length) % focusables.length;}
         focusables[focusIndex].focus();
     }
     

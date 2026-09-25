@@ -30,7 +30,7 @@
     ensureContext() {
       if (!this.ctx) {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        if (AudioCtx) this.ctx = new AudioCtx();
+        if (AudioCtx) {this.ctx = new AudioCtx();}
       }
       if (this.ctx && this.ctx.state === 'suspended') {
         this.ctx.resume();
@@ -40,7 +40,7 @@
     playKeyChime() {
       try {
         this.ensureContext();
-        if (!this.ctx) return;
+        if (!this.ctx) {return;}
         const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
         notes.forEach((freq, idx) => {
           const osc = this.ctx.createOscillator();
@@ -61,7 +61,7 @@
     playDoorCreak() {
       try {
         this.ensureContext();
-        if (!this.ctx) return;
+        if (!this.ctx) {return;}
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = 'sawtooth';
@@ -79,7 +79,7 @@
     playPowerHum() {
       try {
         this.ensureContext();
-        if (!this.ctx) return;
+        if (!this.ctx) {return;}
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = 'triangle';
@@ -98,7 +98,7 @@
     playObjectiveSuccess() {
       try {
         this.ensureContext();
-        if (!this.ctx) return;
+        if (!this.ctx) {return;}
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = 'triangle';
@@ -199,10 +199,10 @@
       const hint = document.getElementById('objective-hint');
       const icon = document.getElementById('objective-icon');
 
-      if (badge) badge.innerText = `OBJECTIVE ${stage.id} OF 5`;
-      if (title) title.innerText = stage.title;
-      if (hint) hint.innerText = stage.hint;
-      if (icon) icon.innerText = stage.icon;
+      if (badge) {badge.innerText = `OBJECTIVE ${stage.id} OF 5`;}
+      if (title) {title.innerText = stage.title;}
+      if (hint) {hint.innerText = stage.hint;}
+      if (icon) {icon.innerText = stage.icon;}
 
       const card = document.getElementById('top-objective-hud');
       if (card) {
@@ -1132,7 +1132,7 @@
     }
 
     setCarPaint(paintHex, glowHex) {
-      if (!this.carMesh) return;
+      if (!this.carMesh) {return;}
       if (paintHex !== null && this.carMesh.userData.bodyMat) {
         this.carMesh.userData.bodyMat.color.setHex(paintHex);
       }
@@ -1152,7 +1152,7 @@
           this.sound.playKeyChime();
           this.objectives.hasKey = true;
           this.scene.remove(this.keyMesh);
-          if (this.keyMesh.parent) this.keyMesh.parent.remove(this.keyMesh);
+          if (this.keyMesh.parent) {this.keyMesh.parent.remove(this.keyMesh);}
           this.keyMesh = null;
           this.objectives.advance(2);
           if (window.toast) {
@@ -1168,7 +1168,7 @@
         this.doorGroup.getWorldPosition(doorWorldPos);
         if (p.distanceTo(doorWorldPos) < this.interactiveRange + 0.8) {
           if (!this.objectives.hasKey) {
-            if (window.toast) window.toast('🔒 The front door is locked! Search the house for the key first.', '#ef4444', 3000);
+            if (window.toast) {window.toast('🔒 The front door is locked! Search the house for the key first.', '#ef4444', 3000);}
             return;
           }
 
@@ -1196,7 +1196,7 @@
         this.powerLever.getWorldPosition(leverWorldPos);
         if (p.distanceTo(leverWorldPos) < this.interactiveRange + 1.2) {
           if (this.objectives.currentStage <= 2) {
-            if (window.toast) window.toast('⚠️ Leave the safehouse first before restoring town power.', '#f59e0b', 3000);
+            if (window.toast) {window.toast('⚠️ Leave the safehouse first before restoring town power.', '#f59e0b', 3000);}
             return;
           }
 
@@ -1254,11 +1254,11 @@
     bindControls() {
       window.addEventListener('keydown', (e) => {
         const k = e.key.toLowerCase();
-        if (k === 'w') this.keys.w = true;
-        if (k === 'a') this.keys.a = true;
-        if (k === 's') this.keys.s = true;
-        if (k === 'd') this.keys.d = true;
-        if (e.shiftKey) this.keys.Shift = true;
+        if (k === 'w') {this.keys.w = true;}
+        if (k === 'a') {this.keys.a = true;}
+        if (k === 's') {this.keys.s = true;}
+        if (k === 'd') {this.keys.d = true;}
+        if (e.shiftKey) {this.keys.Shift = true;}
         if (k === 'e') {
           this.interact();
         }
@@ -1266,11 +1266,11 @@
 
       window.addEventListener('keyup', (e) => {
         const k = e.key.toLowerCase();
-        if (k === 'w') this.keys.w = false;
-        if (k === 'a') this.keys.a = false;
-        if (k === 's') this.keys.s = false;
-        if (k === 'd') this.keys.d = false;
-        if (!e.shiftKey) this.keys.Shift = false;
+        if (k === 'w') {this.keys.w = false;}
+        if (k === 'a') {this.keys.a = false;}
+        if (k === 's') {this.keys.s = false;}
+        if (k === 'd') {this.keys.d = false;}
+        if (!e.shiftKey) {this.keys.Shift = false;}
       });
     }
 
@@ -1299,10 +1299,10 @@
       const moveSpeed = this.keys.Shift ? 9.0 : 4.8;
       const moveVector = new THREE.Vector3();
 
-      if (this.keys.w) moveVector.z -= 1;
-      if (this.keys.s) moveVector.z += 1;
-      if (this.keys.a) moveVector.x -= 1;
-      if (this.keys.d) moveVector.x += 1;
+      if (this.keys.w) {moveVector.z -= 1;}
+      if (this.keys.s) {moveVector.z += 1;}
+      if (this.keys.a) {moveVector.x -= 1;}
+      if (this.keys.d) {moveVector.x += 1;}
 
       if (moveVector.lengthSq() > 0) {
         moveVector.normalize();

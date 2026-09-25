@@ -18,7 +18,7 @@ pywebview.state = (function() {
   return new Proxy(target, {
     get: function(obj, key) {
       var value = obj[key];
-      if (typeof(value) == 'function'){
+      if (typeof(value) === 'function'){
         return value.bind(obj);
       }
       return value;

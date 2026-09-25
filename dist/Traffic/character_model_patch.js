@@ -40,8 +40,8 @@ const _buildSampleGLBPlayer = (isPlayer = true, app = {}) => {
 
     // Universal Bounding-Box Height & Axis Normalizer
     scene.updateMatrixWorld(true)
-    let box = new THREE.Box3().setFromObject(scene)
-    let size = new THREE.Vector3()
+    const box = new THREE.Box3().setFromObject(scene)
+    const size = new THREE.Vector3()
     box.getSize(size)
 
     if (size.z > size.y && size.z > size.x) {
@@ -87,7 +87,7 @@ const _buildSampleGLBPlayer = (isPlayer = true, app = {}) => {
     const fileToLoad = sampleDef ? sampleDef.file : 'Models/character_hero_green.glb'
     new THREE.GLTFLoader().load(fileToLoad, function(gltf) {
       window['_sampleGLBModel_' + sampleId] = gltf.scene
-      if (gltf.animations) gltf.scene.animations = gltf.animations
+      if (gltf.animations) {gltf.scene.animations = gltf.animations}
       setupScene(gltf.scene, gltf.animations)
     }, undefined, function(err) {
       console.warn('[Player] ' + fileToLoad + ' load error:', err)
@@ -156,7 +156,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
   // ── NPC Pedestrians using 3D Hero/Citizen mesh ─────────────────────────
   if (!isPlayer && Math.random() < 0.35) {
     const npcSample = _buildSampleGLBPlayer(false, { variant })
-    if (npcSample) return npcSample
+    if (npcSample) {return npcSample}
   }
 
   const PM = window.PRELOADED_MODELS || {}
@@ -241,7 +241,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
       }
       const vc = variantColors[variant] || variantColors.normal
       charScene.traverse(c => {
-        if (!c.isMesh) return
+        if (!c.isMesh) {return}
         const nm = c.name.toLowerCase()
         if (nm.includes('shirt') || nm.includes('top') || nm.includes('torso') || nm.includes('body')) {
           c.material = c.material.clone()
@@ -267,8 +267,8 @@ const _buildHuman = (isPlayer = false, appearance) => {
         g.userData._mixer = mixer
         g.userData._walkAction = walkAction
         g.userData._idleAction = idleAction
-        if (variant === 'elderly') walkAction.timeScale = 0.4
-        if (variant === 'child') walkAction.timeScale = 1.3
+        if (variant === 'elderly') {walkAction.timeScale = 0.4}
+        if (variant === 'child') {walkAction.timeScale = 1.3}
       }
 
       const hb = new THREE.Mesh(new THREE.BoxGeometry(0.6*sk, 1.8*sk, 0.6*sk), new THREE.MeshBasicMaterial({ visible: false }))

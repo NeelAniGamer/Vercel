@@ -257,7 +257,7 @@ class RoadGraph {
             for (let k = 0; k < existing.length; k++) {
               const ep = existing[k];
               const dist = Math.hypot(p.x - ep.x, p.z - ep.z);
-              if (dist < minD) return true;
+              if (dist < minD) {return true;}
             }
           }
         }
@@ -269,7 +269,7 @@ class RoadGraph {
       const gx = Math.floor(pos.x / slotGridSize);
       const gz = Math.floor(pos.z / slotGridSize);
       const key = `${gx},${gz}`;
-      if (!slotGrid.has(key)) slotGrid.set(key, []);
+      if (!slotGrid.has(key)) {slotGrid.set(key, []);}
       slotGrid.get(key).push(pos);
     };
     this.segments.forEach(seg => {
@@ -287,7 +287,7 @@ class RoadGraph {
           // Enforce 18m corner clearance from road intersection endpoints
           const distToStart = pos.distanceTo(seg.edge.startNode.position);
           const distToEnd = pos.distanceTo(seg.edge.endNode.position);
-          if (distToStart < 18 || distToEnd < 18) continue;
+          if (distToStart < 18 || distToEnd < 18) {continue;}
 
           const zone = this.getZoneAt(pos.x, pos.z);
           const isRes = (zone === 'Residential');
@@ -295,8 +295,8 @@ class RoadGraph {
           // Keep clearance near intersection junctions
           const distFromStart = t * len;
           const distFromEnd = (1 - t) * len;
-          if (seg.startT === 0 && seg.edge.nodes[0].edges.length >= 3 && distFromStart < 14) continue;
-          if (seg.endT === 1 && seg.edge.nodes[1].edges.length >= 3 && distFromEnd < 14) continue;
+          if (seg.startT === 0 && seg.edge.nodes[0].edges.length >= 3 && distFromStart < 14) {continue;}
+          if (seg.endT === 1 && seg.edge.nodes[1].edges.length >= 3 && distFromEnd < 14) {continue;}
 
           // Row 1: Primary street-facing buildings
           // Houses: 14m setback (sidewalk 4m + garden 4m + house half-depth 6m)
@@ -323,7 +323,7 @@ class RoadGraph {
   }
 
   getZoneAt(x, z) {
-    if (!this._anchorNodes || !this._anchorNodes.length) return 'Residential';
+    if (!this._anchorNodes || !this._anchorNodes.length) {return 'Residential';}
     let best = this._anchorNodes[0];
     let minDist = Infinity;
     for (const n of this._anchorNodes) {
@@ -343,7 +343,7 @@ class RoadGraph {
       const gx = Math.floor(node.position.x / this._gridSize);
       const gz = Math.floor(node.position.z / this._gridSize);
       const key = `${gx},${gz}`;
-      if (!this._nodeGrid.has(key)) this._nodeGrid.set(key, []);
+      if (!this._nodeGrid.has(key)) {this._nodeGrid.set(key, []);}
       this._nodeGrid.get(key).push(node);
     });
   }
@@ -351,10 +351,10 @@ class RoadGraph {
   classifyNodes() {
     this.nodes.forEach(node => {
       const degree = node.edges.length;
-      if (degree >= 4) node.type = 'major_junction';
-      else if (degree === 3) node.type = 't_junction';
-      else if (degree === 2) node.type = 'corner';
-      else node.type = 'dead_end';
+      if (degree >= 4) {node.type = 'major_junction';}
+      else if (degree === 3) {node.type = 't_junction';}
+      else if (degree === 2) {node.type = 'corner';}
+      else {node.type = 'dead_end';}
     });
   }
 
@@ -402,7 +402,7 @@ class RoadGraph {
 
 
   getEdgeTo(nodeA, nodeB) {
-    if (!nodeA || !nodeB || !nodeA.edges) return null;
+    if (!nodeA || !nodeB || !nodeA.edges) {return null;}
     return nodeA.getEdgeTo(nodeB) || null;
   }
 
@@ -422,18 +422,18 @@ class RoadGraph {
         const f = fScore.has(n) ? fScore.get(n) : Infinity;
         if (f < lowest) { lowest = f; current = n; }
       });
-      if (current === endNode) return this._reconstructPath(cameFrom, current);
+      if (current === endNode) {return this._reconstructPath(cameFrom, current);}
 
       open.delete(current);
       current.neighbors.forEach(neighbor => {
         const edge = current.getEdgeTo(neighbor);
-        if (!edge) return;
+        if (!edge) {return;}
 
         // FIXED: One-way check now uses the edge's defined direction vector
         // If it's one-way, the movement must align with the edge's forward vector
         if (edge.oneWay) {
           const moveDir = new THREE.Vector3().subVectors(neighbor.position, current.position).normalize();
-          if (moveDir.dot(edge.direction) < 0) return;
+          if (moveDir.dot(edge.direction) < 0) {return;}
         }
 
         const tentative = (gScore.has(current) ? gScore.get(current) : Infinity) + edge.length;
@@ -479,7 +479,7 @@ class RoadGraph {
     this.nodes.forEach(node => {
       if (node.type !== 'dead_end') {
         const d = Math.hypot(node.position.x - x, node.position.z - z);
-        if (d < radius) results.push(node);
+        if (d < radius) {results.push(node);}
       }
     });
     return results;

@@ -194,7 +194,7 @@
 
 		convert( materialsInfo ) {
 
-			if ( ! this.options ) return materialsInfo;
+			if ( ! this.options ) {return materialsInfo;}
 			const converted = {};
 
 			for ( const mn in materialsInfo ) {
@@ -310,16 +310,16 @@
 
 			function resolveURL( baseUrl, url ) {
 
-				if ( typeof url !== 'string' || url === '' ) return ''; // Absolute URL
+				if ( typeof url !== 'string' || url === '' ) {return '';} // Absolute URL
 
-				if ( /^https?:\/\//i.test( url ) ) return url;
+				if ( /^https?:\/\//i.test( url ) ) {return url;}
 				return baseUrl + url;
 
 			}
 
 			function setMapForType( mapType, value ) {
 
-				if ( params[ mapType ] ) return; // Keep the first encountered texture
+				if ( params[ mapType ] ) {return;} // Keep the first encountered texture
 
 				const texParams = scope.getTextureParams( value, params );
 				const map = scope.loadTexture( resolveURL( scope.baseUrl, texParams.url ) );
@@ -335,7 +335,7 @@
 
 				const value = mat[ prop ];
 				let n;
-				if ( value === '' ) continue;
+				if ( value === '' ) {continue;}
 
 				switch ( prop.toLowerCase() ) {
 
@@ -406,7 +406,7 @@
 
 					case 'tr':
 						n = parseFloat( value );
-						if ( this.options && this.options.invertTrProperty ) n = 1 - n;
+						if ( this.options && this.options.invertTrProperty ) {n = 1 - n;}
 
 						if ( n > 0 ) {
 
@@ -480,9 +480,9 @@
 
 			}
 
-			if ( loader.setCrossOrigin ) loader.setCrossOrigin( this.crossOrigin );
+			if ( loader.setCrossOrigin ) {loader.setCrossOrigin( this.crossOrigin );}
 			const texture = loader.load( url, onLoad, onProgress, onError );
-			if ( mapping !== undefined ) texture.mapping = mapping;
+			if ( mapping !== undefined ) {texture.mapping = mapping;}
 			return texture;
 
 		}

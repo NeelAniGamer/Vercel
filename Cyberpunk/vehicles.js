@@ -68,7 +68,7 @@ window.IndianVehicles = {
   },
 
   buildVehicle: function (type, colorHex) {
-    if (!this.textures.grille) this.init()
+    if (!this.textures.grille) {this.init()}
 
     const g = new THREE.Group()
     const bMat = new THREE.MeshPhongMaterial({ color: colorHex, shininess: 80 })

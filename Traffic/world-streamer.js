@@ -36,7 +36,7 @@ class CityChunk {
   }
 
   generate() {
-    if (this.disposed) return;
+    if (this.disposed) {return;}
     const rng = this.rng;
     const distFromCenter = Math.hypot(this.cx, this.cz);
     const maxDist = 40;
@@ -136,7 +136,7 @@ class CityChunk {
         const px = (rng() - 0.5) * 20;
         const pz = (rng() - 0.5) * 20;
         const prop = this._spawnAsset(propKey, px, pz, rng() * Math.PI, 1.0);
-        if (prop) this.props.push(prop);
+        if (prop) {this.props.push(prop);}
       }
 
 
@@ -145,13 +145,13 @@ class CityChunk {
         const fx = (rng() - 0.5) * 25;
         const fz = (rng() - 0.5) * 25;
         const fol = this._spawnAsset(folKey, fx, fz, 0, 1.0);
-        if (fol) this.foliage.push(fol);
+        if (fol) {this.foliage.push(fol);}
       }
     } else if (rng() > 0.5 && propKeys.length > 0) {
 
       const propKey = propKeys[Math.floor(rng() * propKeys.length)];
       const prop = this._spawnAsset(propKey, 0, 0, rng() * Math.PI, 1.0);
-      if (prop) this.props.push(prop);
+      if (prop) {this.props.push(prop);}
     }
 
     this.game.scene.add(this.group);
@@ -201,7 +201,7 @@ class CityChunk {
         const px = (rng() - 0.5) * 20;
         const pz = (rng() - 0.5) * 20;
         const prop = this._spawnAsset(propKey, px, pz, rng() * Math.PI, 1.0);
-        if (prop) this.props.push(prop);
+        if (prop) {this.props.push(prop);}
       }
 
 
@@ -210,18 +210,18 @@ class CityChunk {
         const fx = (rng() - 0.5) * 25;
         const fz = (rng() - 0.5) * 25;
         const fol = this._spawnAsset(folKey, fx, fz, 0, 1.0);
-        if (fol) this.foliage.push(fol);
+        if (fol) {this.foliage.push(fol);}
       }
     } else if (rng() > 0.6 && carKeys.length > 0) {
 
       const carKey = carKeys[Math.floor(rng() * carKeys.length)];
       const car = this._spawnAsset(carKey, 0, 0, Math.floor(rng() * 4) * (Math.PI / 2), 1.0);
-      if (car) this.props.push(car);
+      if (car) {this.props.push(car);}
     } else if (rng() > 0.7 && foliageKeys.length > 0) {
 
       const folKey = foliageKeys[Math.floor(rng() * foliageKeys.length)];
       const fol = this._spawnAsset(folKey, 0, 0, 0, 1.0);
-      if (fol) this.foliage.push(fol);
+      if (fol) {this.foliage.push(fol);}
     }
 
     this.game.scene.add(this.group);
@@ -238,21 +238,21 @@ class CityChunk {
       const fx = (rng() - 0.5) * 30;
       const fz = (rng() - 0.5) * 30;
       const fol = this._spawnAsset(folKey, fx, fz, 0, 1.0);
-      if (fol) this.foliage.push(fol);
+      if (fol) {this.foliage.push(fol);}
     }
     if (rng() > 0.85 && propKeys.length > 0) {
       const propKey = propKeys[Math.floor(rng() * propKeys.length)];
       const px = (rng() - 0.5) * 30;
       const pz = (rng() - 0.5) * 30;
       const prop = this._spawnAsset(propKey, px, pz, rng() * Math.PI, 1.0);
-      if (prop) this.props.push(prop);
+      if (prop) {this.props.push(prop);}
     }
 
     this.game.scene.add(this.group);
   }
 
   _spawnAsset(key, x, z, ry, scale) {
-    if (!window.PRELOADED_MODELS || !window.PRELOADED_MODELS[key]) return null;
+    if (!window.PRELOADED_MODELS || !window.PRELOADED_MODELS[key]) {return null;}
     const asset = window.PRELOADED_MODELS[key].clone();
     asset.position.set(x, 0, z);
     asset.rotation.y = ry;
@@ -283,16 +283,16 @@ class CityChunk {
 
     for (const b of this.buildings) {
       const idx = this.game.obstacles.indexOf(b);
-      if (idx >= 0) this.game.obstacles.splice(idx, 1);
+      if (idx >= 0) {this.game.obstacles.splice(idx, 1);}
     }
 
 
     this.group.traverse(c => {
       if (c.isMesh) {
-        if (c.geometry) c.geometry.dispose();
+        if (c.geometry) {c.geometry.dispose();}
         if (c.material) {
-          if (Array.isArray(c.material)) c.material.forEach(m => m.dispose());
-          else c.material.dispose();
+          if (Array.isArray(c.material)) {c.material.forEach(m => m.dispose());}
+          else {c.material.dispose();}
         }
       }
     });
@@ -329,14 +329,14 @@ class WorldStreamer {
     }
 
     this.timeSinceUpdate += dt;
-    if (this.timeSinceUpdate < this.updateInterval) return;
+    if (this.timeSinceUpdate < this.updateInterval) {return;}
     this.timeSinceUpdate = 0;
 
     const cx = Math.floor(playerPos.x / this.chunkSize);
     const cz = Math.floor(playerPos.z / this.chunkSize);
 
     // Skip if player hasn't moved to a new chunk
-    if (cx === this.lastCenterX && cz === this.lastCenterZ) return;
+    if (cx === this.lastCenterX && cz === this.lastCenterZ) {return;}
     this.lastCenterX = cx;
     this.lastCenterZ = cz;
     console.log(`[WorldStreamer] Loading chunks around (${cx}, ${cz}), loaded: ${this.loadedChunks.size}`);
@@ -350,7 +350,7 @@ class WorldStreamer {
     for (let dx = -this.renderDistance; dx <= this.renderDistance; dx++) {
       for (let dz = -this.renderDistance; dz <= this.renderDistance; dz++) {
 
-        if (dx * dx + dz * dz > this.renderDistance * this.renderDistance) continue;
+        if (dx * dx + dz * dz > this.renderDistance * this.renderDistance) {continue;}
         const key = `${cx + dx},${cz + dz}`;
         needed.add(key);
         if (!this.loadedChunks.has(key)) {
@@ -380,7 +380,7 @@ class WorldStreamer {
     });
 
     for (const [lx, lz] of toLoad) {
-      if (loaded >= this.maxChunksPerFrame) break;
+      if (loaded >= this.maxChunksPerFrame) {break;}
       this._loadChunk(lx, lz);
       loaded++;
     }
@@ -393,7 +393,7 @@ class WorldStreamer {
 
   _loadChunk(cx, cz) {
     const key = `${cx},${cz}`;
-    if (this.loadedChunks.has(key)) return;
+    if (this.loadedChunks.has(key)) {return;}
 
     const chunk = new CityChunk(cx, cz, this.chunkSize, this.game);
     chunk.generate();
@@ -405,7 +405,7 @@ class WorldStreamer {
 
   _unloadChunk(key) {
     const chunk = this.loadedChunks.get(key);
-    if (!chunk) return;
+    if (!chunk) {return;}
     chunk.dispose();
     this.loadedChunks.delete(key);
   }

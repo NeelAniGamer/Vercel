@@ -14,7 +14,7 @@
 
   function bytesToBase64(bytes) {
     let binary = '';
-    for (const byte of bytes) binary += String.fromCharCode(byte);
+    for (const byte of bytes) {binary += String.fromCharCode(byte);}
     return btoa(binary);
   }
 
@@ -24,7 +24,7 @@
   }
 
   async function derivePassword(password, salt) {
-    if (!password || !globalThis.crypto?.subtle || typeof TextEncoder === 'undefined') return null;
+    if (!password || !globalThis.crypto?.subtle || typeof TextEncoder === 'undefined') {return null;}
     const key = await globalThis.crypto.subtle.importKey(
       'raw',
       new TextEncoder().encode(password),
@@ -42,28 +42,28 @@
   }
 
   function constantTimeEqual(left, right) {
-    if (typeof left !== 'string' || typeof right !== 'string' || left.length !== right.length) return false;
+    if (typeof left !== 'string' || typeof right !== 'string' || left.length !== right.length) {return false;}
     let difference = 0;
-    for (let i = 0; i < left.length; i++) difference |= left.charCodeAt(i) ^ right.charCodeAt(i);
+    for (let i = 0; i < left.length; i++) {difference |= left.charCodeAt(i) ^ right.charCodeAt(i);}
     return difference === 0;
   }
 
   function withoutPlaintextPassword(entry) {
     const safe = {};
     for (const key of Object.keys(entry || {})) {
-      if (['password', 'pin', 'email', 'access_token', 'refresh_token'].includes(key)) continue;
+      if (['password', 'pin', 'email', 'access_token', 'refresh_token'].includes(key)) {continue;}
       safe[key] = entry[key];
     }
     return safe;
   }
 
   async function removeLegacyPlaintextPasswords() {
-    if (typeof localStorage === 'undefined') return;
+    if (typeof localStorage === 'undefined') {return;}
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return;
+      if (!raw) {return;}
       const entries = JSON.parse(raw);
-      if (!Array.isArray(entries)) return;
+      if (!Array.isArray(entries)) {return;}
       // Legacy records are discarded rather than copied with their plaintext
       // password. A user can recreate protected QRs with the secure editor.
       localStorage.setItem(STORAGE_KEY, JSON.stringify(entries.map(withoutPlaintextPassword)));
@@ -135,7 +135,7 @@
 
     // Save or update a single entry
     save: async function (entry) {
-      if (this.ready) await this.ready;
+      if (this.ready) {await this.ready;}
       const all = this.getAll();
       const normalized = withoutPlaintextPassword(entry);
       if (entry.password) {
@@ -143,7 +143,7 @@
           ? globalThis.crypto.getRandomValues(new Uint8Array(16))
           : null;
         const verifier = salt ? await derivePassword(entry.password, salt) : null;
-        if (!verifier) throw new Error('Secure password storage is unavailable in this browser.');
+        if (!verifier) {throw new Error('Secure password storage is unavailable in this browser.');}
         normalized.passwordHash = verifier;
         normalized.passwordSalt = bytesToBase64(salt);
       }
@@ -159,7 +159,7 @@
 
     // Lookup entry by shortCode or ID
     getByCode: function (code) {
-      if (!code) return null;
+      if (!code) {return null;}
       const all = this.getAll();
       return all.find(q => q.shortCode === code || String(q.id) === String(code)) || null;
     },
@@ -184,7 +184,7 @@
     _syncQrsMin: function (shortCode, newDestination) {
       try {
         const raw = localStorage.getItem('qrs_min');
-        if (!raw) return;
+        if (!raw) {return;}
         const list = JSON.parse(raw);
         let changed = false;
         list.forEach(q => {
@@ -193,7 +193,7 @@
             changed = true;
           }
         });
-        if (changed) localStorage.setItem('qrs_min', JSON.stringify(list));
+        if (changed) {localStorage.setItem('qrs_min', JSON.stringify(list));}
       } catch (e) {}
     },
 
@@ -205,7 +205,7 @@
 
     // Bulk delete QRs
     bulkDelete: function (shortCodes) {
-      if (!Array.isArray(shortCodes)) return;
+      if (!Array.isArray(shortCodes)) {return;}
       const all = this.getAll().filter(q => !shortCodes.includes(q.shortCode) && !shortCodes.includes(String(q.id)));
       this.saveAll(all);
 
@@ -223,19 +223,19 @@
     trackScan: function (shortCode, scanData) {
       const all = this.getAll();
       const idx = all.findIndex(q => q.shortCode === shortCode || String(q.id) === String(shortCode));
-      if (idx === -1) return;
+      if (idx === -1) {return;}
 
       const qr = all[idx];
       qr.scans = (qr.scans || 0) + 1;
 
       const ipHash = this.hashIP(scanData.ip || 'anon');
-      if (!Array.isArray(qr.uniqueIPs)) qr.uniqueIPs = [];
+      if (!Array.isArray(qr.uniqueIPs)) {qr.uniqueIPs = [];}
       if (!qr.uniqueIPs.includes(ipHash)) {
         qr.uniqueIPs.push(ipHash);
       }
       qr.uniqueScans = qr.uniqueIPs.length;
 
-      if (!Array.isArray(qr.analytics)) qr.analytics = [];
+      if (!Array.isArray(qr.analytics)) {qr.analytics = [];}
       qr.analytics.push({
         time: new Date().toISOString(),
         ip: ipHash,
@@ -258,7 +258,7 @@
     // Compute aggregated analytics
     getAnalytics: function (shortCode, period = '30d') {
       const entry = this.getByCode(shortCode);
-      if (!entry) return null;
+      if (!entry) {return null;}
 
       const days = parseInt(period) || 30;
       const cutoff = new Date(Date.now() - days * 86400000);
@@ -300,7 +300,7 @@
     // Export scan logs as CSV
     exportCSV: function (shortCode) {
       const entry = this.getByCode(shortCode);
-      if (!entry || !entry.analytics || entry.analytics.length === 0) return '';
+      if (!entry || !entry.analytics || entry.analytics.length === 0) {return '';}
       const headers = ['Time', 'Country', 'City', 'Device', 'OS', 'Browser', 'Referrer', 'IP Hash'];
       const rows = entry.analytics.map(a => [
         `"${a.time}"`,
@@ -319,7 +319,7 @@
     checkPassword: async function (shortCode, enteredPassword) {
       await this.ready;
       const entry = this.getByCode(shortCode);
-      if (!entry || !entry.passwordHash || !entry.passwordSalt || !enteredPassword) return false;
+      if (!entry || !entry.passwordHash || !entry.passwordSalt || !enteredPassword) {return false;}
       const actual = await derivePassword(enteredPassword, base64ToBytes(entry.passwordSalt));
       return constantTimeEqual(actual, entry.passwordHash);
     },
@@ -334,18 +334,18 @@
     },
 
     isExpired: function (entry) {
-      if (!entry || !entry.expiry) return false;
+      if (!entry || !entry.expiry) {return false;}
       return new Date(entry.expiry) < new Date();
     },
 
     isActive: function (entry) {
-      if (!entry) return false;
+      if (!entry) {return false;}
       if (entry.schedule) {
         const now = new Date();
         const start = entry.schedule.start ? new Date(entry.schedule.start) : null;
         const end = entry.schedule.end ? new Date(entry.schedule.end) : null;
-        if (start && now < start) return false;
-        if (end && now > end) return false;
+        if (start && now < start) {return false;}
+        if (end && now > end) {return false;}
       }
       return true;
     },
@@ -445,7 +445,7 @@
   }
 
   // Export globally
-  if (typeof window !== 'undefined') window.DYNAMIC_QR = DYNAMIC_QR;
-  if (typeof globalThis !== 'undefined') globalThis.DYNAMIC_QR = DYNAMIC_QR;
-  if (typeof module !== 'undefined' && module.exports) module.exports = DYNAMIC_QR;
+  if (typeof window !== 'undefined') {window.DYNAMIC_QR = DYNAMIC_QR;}
+  if (typeof globalThis !== 'undefined') {globalThis.DYNAMIC_QR = DYNAMIC_QR;}
+  if (typeof module !== 'undefined' && module.exports) {module.exports = DYNAMIC_QR;}
 })(typeof window !== 'undefined' ? window : (typeof globalThis !== 'undefined' ? globalThis : this));

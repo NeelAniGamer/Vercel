@@ -30,10 +30,10 @@ const MIME_TYPES = {
 
 function resolvePath(urlPath) {
   let clean = decodeURIComponent(urlPath.split('?')[0]);
-  if (clean === '/' || clean === '') clean = '/home.html';
+  if (clean === '/' || clean === '') {clean = '/home.html';}
 
-  let directPath = path.normalize(path.join(ROOT_DIR, clean));
-  if (!directPath.startsWith(ROOT_DIR)) return null;
+  const directPath = path.normalize(path.join(ROOT_DIR, clean));
+  if (!directPath.startsWith(ROOT_DIR)) {return null;}
 
   // If file exists directly
   if (fs.existsSync(directPath) && fs.statSync(directPath).isFile()) {
@@ -41,28 +41,28 @@ function resolvePath(urlPath) {
   }
 
   // Clean URL: try adding .html
-  let htmlPath = directPath + '.html';
+  const htmlPath = directPath + '.html';
   if (fs.existsSync(htmlPath) && fs.statSync(htmlPath).isFile()) {
     return htmlPath;
   }
 
   // Check if directory with index.html
   if (fs.existsSync(directPath) && fs.statSync(directPath).isDirectory()) {
-    let indexPath = path.join(directPath, 'index.html');
-    if (fs.existsSync(indexPath)) return indexPath;
-    let drivingPath = path.join(directPath, 'Driving.html');
-    if (fs.existsSync(drivingPath)) return drivingPath;
+    const indexPath = path.join(directPath, 'index.html');
+    if (fs.existsSync(indexPath)) {return indexPath;}
+    const drivingPath = path.join(directPath, 'Driving.html');
+    if (fs.existsSync(drivingPath)) {return drivingPath;}
   }
 
   // Check shortcuts for hub and Traffic subfolder
   if (clean === '/hub' || clean === '/hub.html') {
-    let hubPath = path.join(ROOT_DIR, 'Traffic', 'hub.html');
-    if (fs.existsSync(hubPath)) return hubPath;
+    const hubPath = path.join(ROOT_DIR, 'Traffic', 'hub.html');
+    if (fs.existsSync(hubPath)) {return hubPath;}
   }
 
-  let trafficSubPath = path.join(ROOT_DIR, 'Traffic', clean.replace(/^\//, ''));
-  if (fs.existsSync(trafficSubPath) && fs.statSync(trafficSubPath).isFile()) return trafficSubPath;
-  if (fs.existsSync(trafficSubPath + '.html') && fs.statSync(trafficSubPath + '.html').isFile()) return trafficSubPath + '.html';
+  const trafficSubPath = path.join(ROOT_DIR, 'Traffic', clean.replace(/^\//, ''));
+  if (fs.existsSync(trafficSubPath) && fs.statSync(trafficSubPath).isFile()) {return trafficSubPath;}
+  if (fs.existsSync(trafficSubPath + '.html') && fs.statSync(trafficSubPath + '.html').isFile()) {return trafficSubPath + '.html';}
 
   return null;
 }

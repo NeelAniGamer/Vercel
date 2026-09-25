@@ -18,7 +18,7 @@ window.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('keydown', (e) => {
   if (e.ctrlKey && e.shiftKey && e.key === 'D') {
     e.preventDefault()
-    if (window.ui && typeof window.ui.adminUnlock === 'function') window.ui.adminUnlock()
+    if (window.ui && typeof window.ui.adminUnlock === 'function') {window.ui.adminUnlock()}
   }
 })
 
@@ -278,16 +278,16 @@ window.CORE_ASSETS = [
 ]
 
 
-window._expandAssets = function (assets) {  if (!assets || !assets.length) return [];
+window._expandAssets = function (assets) {  if (!assets || !assets.length) {return [];}
   const out = new Set();
   assets.forEach(a => {
-    if (window.ASSET_GROUPS[a]) window.ASSET_GROUPS[a].forEach(k => out.add(k));
-    else out.add(a);
+    if (window.ASSET_GROUPS[a]) {window.ASSET_GROUPS[a].forEach(k => out.add(k));}
+    else {out.add(a);}
   });
   // Auto-include street props and building kit for urban levels
   if (out.has('suburban') || out.has('industrial') || out.has('modular')) {
-    if (window.ASSET_GROUPS.street_props) window.ASSET_GROUPS.street_props.forEach(k => out.add(k));
-    if (window.ASSET_GROUPS.bkit) window.ASSET_GROUPS.bkit.forEach(k => out.add(k));
+    if (window.ASSET_GROUPS.street_props) {window.ASSET_GROUPS.street_props.forEach(k => out.add(k));}
+    if (window.ASSET_GROUPS.bkit) {window.ASSET_GROUPS.bkit.forEach(k => out.add(k));}
   }
   return [...out];
 };
@@ -298,8 +298,8 @@ window._expandAssets = function (assets) {  if (!assets || !assets.length) retur
 // Lets future .glb/.drc models ship 5–10× smaller; existing files load unchanged.
 window._dracoLoader = null;
 window._getDracoLoader = function () {
-  if (window._dracoLoader) return window._dracoLoader;
-  if (typeof THREE === 'undefined' || typeof THREE.DRACOLoader === 'undefined') return null;
+  if (window._dracoLoader) {return window._dracoLoader;}
+  if (typeof THREE === 'undefined' || typeof THREE.DRACOLoader === 'undefined') {return null;}
   try {
     const dl = new THREE.DRACOLoader();
     dl.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/draco/');
@@ -310,7 +310,7 @@ window._getDracoLoader = function () {
 window._attachDraco = function (gltfLoader) {
   try {
     const dl = window._getDracoLoader();
-    if (gltfLoader && dl && typeof gltfLoader.setDRACOLoader === 'function') gltfLoader.setDRACOLoader(dl);
+    if (gltfLoader && dl && typeof gltfLoader.setDRACOLoader === 'function') {gltfLoader.setDRACOLoader(dl);}
   } catch (e) {}
   return gltfLoader;
 };
@@ -347,8 +347,8 @@ window.loadLevelAssets = function (keys, callback) {
         child.receiveShadow = true
         if (child.material) {
           if (child.material.map) { child.material.map.magFilter = THREE.NearestFilter; child.material.map.minFilter = THREE.NearestFilter; child.material.map.needsUpdate = true }
-          if ('roughness' in child.material) child.material.roughness = 0.8
-          if ('metalness' in child.material) child.material.metalness = 0.1
+          if ('roughness' in child.material) {child.material.roughness = 0.8}
+          if ('metalness' in child.material) {child.material.metalness = 0.1}
         }
       }
     })
@@ -358,14 +358,14 @@ window.loadLevelAssets = function (keys, callback) {
   function tick() {
     loaded++
     const pct = Math.round((loaded / total) * 100)
-    if (pctEl) pctEl.textContent = pct + '%'
-    if (barEl) barEl.style.width = pct + '%'
+    if (pctEl) {pctEl.textContent = pct + '%'}
+    if (barEl) {barEl.style.width = pct + '%'}
   }
 
   function done() {
     if (ld && ld.parentNode) {
       ld.innerHTML = '<h1 style="color:#34D399;">World Ready!</h1><div style="font-size:1rem;color:#8891AA;">Entering level...</div>'
-      setTimeout(() => { ld.style.opacity = '0'; ld.style.transform = 'scale(1.05)'; setTimeout(() => { if (ld.parentNode) ld.remove() }, 400) }, 300)
+      setTimeout(() => { ld.style.opacity = '0'; ld.style.transform = 'scale(1.05)'; setTimeout(() => { if (ld.parentNode) {ld.remove()} }, 400) }, 300)
     }
     callback()
   }
@@ -378,7 +378,7 @@ window.loadLevelAssets = function (keys, callback) {
     return new Promise((resolve) => {
       const entry = manifest[key]
       if (!entry) { tick(); resolve(); return }
-      if (statusEl) statusEl.textContent = 'Loading: ' + key + '...'
+      if (statusEl) {statusEl.textContent = 'Loading: ' + key + '...'}
 
       const fmt = (typeof entry === 'string') ? 'glb' : (entry.fmt || 'glb')
       const filePath = (typeof entry === 'string') ? entry : entry.path
@@ -386,7 +386,7 @@ window.loadLevelAssets = function (keys, callback) {
       const onOk = (root) => {
         postProcess(root, key)
         const isFBXOBJ = (fmt === 'fbx' || fmt === 'obj')
-        if (!isFBXOBJ) root.scale.set(4.5, 4.5, 4.5)
+        if (!isFBXOBJ) {root.scale.set(4.5, 4.5, 4.5)}
         try {
           const b3 = new THREE.Box3().setFromObject(root);
           root.userData = root.userData || {};
@@ -484,7 +484,7 @@ window.confetti = {
   particles: [],
   running: false,
   init() {
-    if (this.canvas) return
+    if (this.canvas) {return}
     this.canvas = document.createElement('canvas')
     this.canvas.style.cssText = 'position:fixed;inset:0;z-index:20;pointer-events:none;'
     document.body.appendChild(this.canvas)
@@ -493,7 +493,7 @@ window.confetti = {
   burst(duration = 3000) {
     this.init()
 
-    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {return}
     this.canvas.width = window.innerWidth
     this.canvas.height = window.innerHeight
     this.particles = []
@@ -516,7 +516,7 @@ window.confetti = {
     this.running = true
     const start = Date.now()
     const animate = () => {
-      if (!this.running) return
+      if (!this.running) {return}
       const elapsed = Date.now() - start
       if (elapsed > duration) {
         this.running = false
@@ -551,15 +551,15 @@ ui.selectOption = function (idx, correctIdx) {
   this._correctIdx = correctIdx
   document.querySelectorAll('.qo').forEach((o, i) => {
     o.classList.remove('selected')
-    if (i === idx) o.classList.add('selected')
+    if (i === idx) {o.classList.add('selected')}
   })
   const cb = document.getElementById('qconfirm')
-  if (cb) cb.classList.add('show')
+  if (cb) {cb.classList.add('show')}
 }
 ui.confirmAnswer = function () {
-  if (this._selectedAnswer < 0) return
+  if (this._selectedAnswer < 0) {return}
   const cb = document.getElementById('qconfirm')
-  if (cb) cb.classList.remove('show')
+  if (cb) {cb.classList.remove('show')}
 
   this._submitAnswer(this._selectedAnswer, this._correctIdx)
   this._selectedAnswer = -1
@@ -570,7 +570,7 @@ ui._challanCards = []
 ui._addChallanCard = function (off, amt) {
   try {
     const stack = document.getElementById('challan-stack')
-    if (!stack) return
+    if (!stack) {return}
     stack.classList.add('on')
     const card = document.createElement('div')
     card.className = 'challan-card'
@@ -587,7 +587,7 @@ ui._addChallanCard = function (off, amt) {
 
     if (this._challanCards.length > 5) {
       const old = this._challanCards.shift()
-      if (old.parentNode) old.parentNode.removeChild(old)
+      if (old.parentNode) {old.parentNode.removeChild(old)}
     }
   } catch (e) {
     console.warn('Add challan card error:', e)
@@ -605,7 +605,7 @@ preloadModels(() => {
 
   // Init UI then create game (guard against ui.js/game_core.js not loaded yet)
   function _doBoot() {
-    if (typeof ui.init === 'function') ui.init()
+    if (typeof ui.init === 'function') {ui.init()}
     if (typeof Game !== 'undefined') {
       game = new Game()
       window.game = game
@@ -618,7 +618,7 @@ preloadModels(() => {
 
   if (typeof Game !== 'undefined') {
     // Game class ready - boot now (ui.init can run later if needed)
-    if (typeof ui.init === 'function') ui.init()
+    if (typeof ui.init === 'function') {ui.init()}
     game = new Game()
     window.game = game
   } else {
@@ -626,7 +626,7 @@ preloadModels(() => {
     var _bootWait = setInterval(function() {
       if (typeof Game !== 'undefined') {
         clearInterval(_bootWait)
-        if (typeof ui.init === 'function') ui.init()
+        if (typeof ui.init === 'function') {ui.init()}
         game = new Game()
         window.game = game
       }
@@ -635,9 +635,9 @@ preloadModels(() => {
   }
 
   const urlParams = new URLSearchParams(window.location.search)
-  let lvId = urlParams.get('level') || urlParams.get('lv') || localStorage.getItem('traffic_lv') || '1'
-  let mode = urlParams.get('mode') || localStorage.getItem('traffic_mode') || 'car'
-  let veh = urlParams.get('veh') || localStorage.getItem('traffic_veh') || (mode === 'pedestrian' ? 'pedestrian' : (((typeof S !== 'undefined' && S && S.vehicle) ? String(S.vehicle).toLowerCase() : null) || 'car'))
+  const lvId = urlParams.get('level') || urlParams.get('lv') || localStorage.getItem('traffic_lv') || '1'
+  const mode = urlParams.get('mode') || localStorage.getItem('traffic_mode') || 'car'
+  const veh = urlParams.get('veh') || localStorage.getItem('traffic_veh') || (mode === 'pedestrian' ? 'pedestrian' : (((typeof S !== 'undefined' && S && S.vehicle) ? String(S.vehicle).toLowerCase() : null) || 'car'))
 
   const isLevelsScreen = urlParams.get('screen') === 'levels'
 
@@ -686,7 +686,7 @@ preloadModels(() => {
 
         let _drivingRedirected = false
         function _redirectToAcademy() {
-          if (_drivingRedirected) return
+          if (_drivingRedirected) {return}
           _drivingRedirected = true
           console.warn('[Driving] Canvas timeout or level launch issue')
         }
@@ -709,7 +709,7 @@ preloadModels(() => {
           const overlay = document.getElementById('play-overlay')
           if (overlay) {
             overlay.style.display = 'none'
-            if (overlay.parentNode) overlay.parentNode.removeChild(overlay)
+            if (overlay.parentNode) {overlay.parentNode.removeChild(overlay)}
           }
           try {
             if (!window.game || typeof window.game.startLevel !== 'function') {
@@ -744,7 +744,7 @@ preloadModels(() => {
           const overlay = document.getElementById('play-overlay')
           if (overlay) {
             overlay.style.display = 'none'
-            if (overlay.parentNode) overlay.parentNode.removeChild(overlay)
+            if (overlay.parentNode) {overlay.parentNode.removeChild(overlay)}
           }
           if (!_isMobile && document.documentElement.requestFullscreen && !document.fullscreenElement) {
             document.documentElement.requestFullscreen().catch(() => {})
@@ -779,19 +779,19 @@ preloadModels(() => {
       }
     } else {
 
-      if (ui.showLevels) ui.showLevels()
+      if (ui.showLevels) {ui.showLevels()}
     }
   } else {
 
     const alreadyActive = document.querySelector('.screen.active')
     if (!alreadyActive || alreadyActive.id === 'ss') {
-      if (ui.showStart) ui.showStart()
+      if (ui.showStart) {ui.showStart()}
     }
   }
 })
 
 async function downloadSourceCode(e) {
-  if (e) e.preventDefault()
+  if (e) {e.preventDefault()}
   const btn = document.getElementById('dl-btn')
   if (!btn || typeof JSZip === 'undefined') {
     alert('Zip library loading, please wait.')
@@ -808,16 +808,16 @@ async function downloadSourceCode(e) {
 
     let fetched = 0
 
-    for (let f of files) {
+    for (const f of files) {
       let fetchUrl = f
-      if (f === 'Academy') fetchUrl = window.location.href.split('?')[0].split('#')[0]
+      if (f === 'Academy') {fetchUrl = window.location.href.split('?')[0].split('#')[0]}
 
       try {
         const res = await fetch(fetchUrl)
         if (res.ok) {
           const blob = await res.blob()
           let fName = f
-          if (f === 'Academy') fName = fetchUrl.split('/').pop() || 'Academy'
+          if (f === 'Academy') {fName = fetchUrl.split('/').pop() || 'Academy'}
           zip.file(fName, blob)
           fetched++
         } else {

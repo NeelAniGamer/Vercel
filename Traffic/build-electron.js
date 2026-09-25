@@ -10,7 +10,7 @@ function copyFileSafe(src, dest) {
   try {
     if (fs.existsSync(src)) {
       const destDir = path.dirname(dest);
-      if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
+      if (!fs.existsSync(destDir)) {fs.mkdirSync(destDir, { recursive: true });}
       fs.copyFileSync(src, dest);
     }
   } catch (e) {
@@ -21,7 +21,7 @@ function copyFileSafe(src, dest) {
 function copyDirSafe(src, dest) {
   try {
     if (fs.existsSync(src)) {
-      if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
+      if (!fs.existsSync(dest)) {fs.mkdirSync(dest, { recursive: true });}
       if (typeof fs.cpSync === 'function') {
         fs.cpSync(src, dest, { recursive: true, force: true });
       } else {
@@ -44,7 +44,7 @@ function copyDirSafe(src, dest) {
 
 async function copyAssets() {
   const distDir = path.join(__dirname, 'dist');
-  if (!fs.existsSync(distDir)) fs.mkdirSync(distDir, { recursive: true });
+  if (!fs.existsSync(distDir)) {fs.mkdirSync(distDir, { recursive: true });}
 
   // 1. Copy All Screens: Driving, Dashboard, Academy, Setup, index
   const screens = ['Driving.html', 'TrafficDashboard.html', 'Academy.html', 'TrafficSetup.html', 'index.html'];

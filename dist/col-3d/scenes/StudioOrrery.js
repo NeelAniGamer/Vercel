@@ -198,7 +198,7 @@
     for (let c = 0; c < 40; c++) {
       let rx = (Math.random() - 0.5) * 100
       const rz = (Math.random() - 0.5) * 40 - 15
-      if (Math.abs(rx) < 15 && Math.abs(rz) < 15) rx += 20 * Math.sign(rx)
+      if (Math.abs(rx) < 15 && Math.abs(rz) < 15) {rx += 20 * Math.sign(rx)}
 
       const pos = new Float32Array(6)
       const y = (Math.random() - 0.5) * 80
@@ -230,7 +230,7 @@
     wGeo.rotateX(-Math.PI / 2)
     const origY = []
     const posAtt = wGeo.attributes.position
-    for (let i = 0; i < posAtt.count; i++) origY.push(posAtt.getY(i))
+    for (let i = 0; i < posAtt.count; i++) {origY.push(posAtt.getY(i))}
 
     const wMat = trackMat(new THREE.MeshBasicMaterial({
       color: pal.ion,
@@ -257,7 +257,7 @@
     }), 'signal')
     for (let qx = -6; qx <= 6; qx++) {
       for (let qy = -4; qy <= 4; qy++) {
-        if (Math.random() < 0.3) continue
+        if (Math.random() < 0.3) {continue}
         const cell = new THREE.Mesh(new THREE.BoxGeometry(3.8, 3.8, 0.2), qrMat)
         cell.position.set(qx * 4.2, qy * 4.2, (Math.random() - 0.5) * 1.5)
         const dist = Math.sqrt(qx * qx + qy * qy)
@@ -316,11 +316,11 @@
         mat.color.setHex(p[key])
       })
       // Fog
-      if (scene.fog) scene.fog.color.setHex(isLight ? 0xeef2ff : 0x070a14)
+      if (scene.fog) {scene.fog.color.setHex(isLight ? 0xeef2ff : 0x070a14)}
       // Canvas opacity handled by SceneManager + ThemeSync
       // Glow sprite
-      if (glowMat) glowMat.opacity = isLight ? 0.35 : 0.95
-      if (starMat) starMat.opacity = isLight ? 0.7 : 0.9
+      if (glowMat) {glowMat.opacity = isLight ? 0.35 : 0.95}
+      if (starMat) {starMat.opacity = isLight ? 0.7 : 0.9}
     }
     applyTheme()
     if (window.ThemeSync) {
@@ -333,12 +333,12 @@
       orbitalRings.forEach(r => { r.pts.rotation.y += r.speed })
 
       // Core pulse
-      if (starMat) starMat.opacity = 0.75 + Math.sin(time * 2.2) * 0.15
-      if (coreGlow) coreGlow.scale.set(
+      if (starMat) {starMat.opacity = 0.75 + Math.sin(time * 2.2) * 0.15}
+      if (coreGlow) {coreGlow.scale.set(
         15 + Math.sin(time * 1.8) * 2,
         15 + Math.sin(time * 1.8) * 2,
         1
-      )
+      )}
 
       // Network rotation
       nodePoints.rotation.y = time * 0.05

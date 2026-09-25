@@ -221,7 +221,7 @@
 	 */
 	class EventDispatcher {
 		addEventListener(type, listener) {
-			if (this._listeners === undefined) this._listeners = {};
+			if (this._listeners === undefined) {this._listeners = {};}
 			const listeners = this._listeners;
 
 			if (listeners[type] === undefined) {
@@ -234,13 +234,13 @@
 		}
 
 		hasEventListener(type, listener) {
-			if (this._listeners === undefined) return false;
+			if (this._listeners === undefined) {return false;}
 			const listeners = this._listeners;
 			return listeners[type] !== undefined && listeners[type].indexOf(listener) !== -1;
 		}
 
 		removeEventListener(type, listener) {
-			if (this._listeners === undefined) return;
+			if (this._listeners === undefined) {return;}
 			const listeners = this._listeners;
 			const listenerArray = listeners[type];
 
@@ -254,7 +254,7 @@
 		}
 
 		dispatchEvent(event) {
-			if (this._listeners === undefined) return;
+			if (this._listeners === undefined) {return;}
 			const listeners = this._listeners;
 			const listenerArray = listeners[event.type];
 
@@ -334,15 +334,15 @@
 
 
 	function smoothstep(x, min, max) {
-		if (x <= min) return 0;
-		if (x >= max) return 1;
+		if (x <= min) {return 0;}
+		if (x >= max) {return 1;}
 		x = (x - min) / (max - min);
 		return x * x * (3 - 2 * x);
 	}
 
 	function smootherstep(x, min, max) {
-		if (x <= min) return 0;
-		if (x >= max) return 1;
+		if (x <= min) {return 0;}
+		if (x >= max) {return 1;}
 		x = (x - min) / (max - min);
 		return x * x * x * (x * (x * 6 - 15) + 10);
 	} // Random integer from <low, high> interval
@@ -364,7 +364,7 @@
 
 
 	function seededRandom(s) {
-		if (s !== undefined) _seed = s % 2147483647; // Park-Miller algorithm
+		if (s !== undefined) {_seed = s % 2147483647;} // Park-Miller algorithm
 
 		_seed = _seed * 16807 % 2147483647;
 		return (_seed - 1) / 2147483646;
@@ -936,7 +936,7 @@
 						t12 = n32 * n13 - n33 * n12,
 						t13 = n23 * n12 - n22 * n13,
 						det = n11 * t11 + n21 * t12 + n31 * t13;
-			if (det === 0) return this.set(0, 0, 0, 0, 0, 0, 0, 0, 0);
+			if (det === 0) {return this.set(0, 0, 0, 0, 0, 0, 0, 0, 0);}
 			const detInv = 1 / det;
 			te[0] = t11 * detInv;
 			te[1] = (n31 * n23 - n33 * n21) * detInv;
@@ -1036,7 +1036,7 @@
 			const me = matrix.elements;
 
 			for (let i = 0; i < 9; i++) {
-				if (te[i] !== me[i]) return false;
+				if (te[i] !== me[i]) {return false;}
 			}
 
 			return true;
@@ -1080,7 +1080,7 @@
 				return image.src;
 			}
 
-			if (typeof HTMLCanvasElement == 'undefined') {
+			if (typeof HTMLCanvasElement === 'undefined') {
 				return image.src;
 			}
 
@@ -1089,7 +1089,7 @@
 			if (image instanceof HTMLCanvasElement) {
 				canvas = image;
 			} else {
-				if (_canvas === undefined) _canvas = document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');
+				if (_canvas === undefined) {_canvas = document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');}
 				_canvas.width = image.width;
 				_canvas.height = image.height;
 
@@ -1273,7 +1273,7 @@
 		}
 
 		transformUv(uv) {
-			if (this.mapping !== UVMapping) return uv;
+			if (this.mapping !== UVMapping) {return uv;}
 			uv.applyMatrix3(this.matrix);
 
 			if (uv.x < 0 || uv.x > 1) {
@@ -1326,7 +1326,7 @@
 		}
 
 		set needsUpdate(value) {
-			if (value === true) this.version++;
+			if (value === true) {this.version++;}
 		}
 
 	}
@@ -1670,7 +1670,7 @@
 
 			let s = Math.sqrt((m32 - m23) * (m32 - m23) + (m13 - m31) * (m13 - m31) + (m21 - m12) * (m21 - m12)); // used to normalize
 
-			if (Math.abs(s) < 0.001) s = 1; // prevent divide by zero, should not happen if matrix is orthogonal and should be
+			if (Math.abs(s) < 0.001) {s = 1;} // prevent divide by zero, should not happen if matrix is orthogonal and should be
 			// caught by singularity test above, but I've left it in just in case
 
 			this.x = (m32 - m23) / s;
@@ -2160,7 +2160,7 @@
 					console.warn('THREE.Quaternion: .setFromEuler() encountered an unknown order: ' + order);
 			}
 
-			if (update !== false) this._onChangeCallback();
+			if (update !== false) {this._onChangeCallback();}
 			return this;
 		}
 
@@ -2261,7 +2261,7 @@
 
 		rotateTowards(q, step) {
 			const angle = this.angleTo(q);
-			if (angle === 0) return this;
+			if (angle === 0) {return this;}
 			const t = Math.min(1, step / angle);
 			this.slerp(q, t);
 			return this;
@@ -2353,8 +2353,8 @@
 		}
 
 		slerp(qb, t) {
-			if (t === 0) return this;
-			if (t === 1) return this.copy(qb);
+			if (t === 0) {return this;}
+			if (t === 1) {return this.copy(qb);}
 			const x = this._x,
 						y = this._y,
 						z = this._z,
@@ -2463,7 +2463,7 @@
 		}
 
 		set(x, y, z) {
-			if (z === undefined) z = this.z; // sprite.scale.set(x,y)
+			if (z === undefined) {z = this.z;} // sprite.scale.set(x,y)
 
 			this.x = x;
 			this.y = y;
@@ -2849,7 +2849,7 @@
 
 		projectOnVector(v) {
 			const denominator = v.lengthSq();
-			if (denominator === 0) return this.set(0, 0, 0);
+			if (denominator === 0) {return this.set(0, 0, 0);}
 			const scalar = v.dot(this) / denominator;
 			return this.copy(v).multiplyScalar(scalar);
 		}
@@ -2868,7 +2868,7 @@
 
 		angleTo(v) {
 			const denominator = Math.sqrt(this.lengthSq() * v.lengthSq());
-			if (denominator === 0) return Math.PI / 2;
+			if (denominator === 0) {return Math.PI / 2;}
 			const theta = this.dot(v) / denominator; // clamp, to handle numerical problems
 
 			return Math.acos(clamp(theta, -1, 1));
@@ -3006,12 +3006,12 @@
 				const x = array[i];
 				const y = array[i + 1];
 				const z = array[i + 2];
-				if (x < minX) minX = x;
-				if (y < minY) minY = y;
-				if (z < minZ) minZ = z;
-				if (x > maxX) maxX = x;
-				if (y > maxY) maxY = y;
-				if (z > maxZ) maxZ = z;
+				if (x < minX) {minX = x;}
+				if (y < minY) {minY = y;}
+				if (z < minZ) {minZ = z;}
+				if (x > maxX) {maxX = x;}
+				if (y > maxY) {maxY = y;}
+				if (z > maxZ) {maxZ = z;}
 			}
 
 			this.min.set(minX, minY, minZ);
@@ -3031,12 +3031,12 @@
 				const x = attribute.getX(i);
 				const y = attribute.getY(i);
 				const z = attribute.getZ(i);
-				if (x < minX) minX = x;
-				if (y < minY) minY = y;
-				if (z < minZ) minZ = z;
-				if (x > maxX) maxX = x;
-				if (y > maxY) maxY = y;
-				if (z > maxZ) maxZ = z;
+				if (x < minX) {minX = x;}
+				if (y < minY) {minY = y;}
+				if (z < minZ) {minZ = z;}
+				if (x > maxX) {maxX = x;}
+				if (y > maxY) {maxY = y;}
+				if (z > maxZ) {maxZ = z;}
 			}
 
 			this.min.set(minX, minY, minZ);
@@ -3291,7 +3291,7 @@
 			this.min.max(box.min);
 			this.max.min(box.max); // ensure that if there is no overlap, the result is fully empty, not slightly empty with non-inf/+inf values that will cause subsequence intersects to erroneously return valid values.
 
-			if (this.isEmpty()) this.makeEmpty();
+			if (this.isEmpty()) {this.makeEmpty();}
 			return this;
 		}
 
@@ -3303,7 +3303,7 @@
 
 		applyMatrix4(matrix) {
 			// transform of empty box is an empty box.
-			if (this.isEmpty()) return this; // NOTE: I am using a binary pattern to specify all 2^3 combinations below
+			if (this.isEmpty()) {return this;} // NOTE: I am using a binary pattern to specify all 2^3 combinations below
 
 			_points[0].set(this.min.x, this.min.y, this.min.z).applyMatrix4(matrix); // 000
 
@@ -3737,18 +3737,18 @@
 
 			const d2 = _vector$a.dot(_vector$a) - tca * tca;
 			const radius2 = sphere.radius * sphere.radius;
-			if (d2 > radius2) return null;
+			if (d2 > radius2) {return null;}
 			const thc = Math.sqrt(radius2 - d2); // t0 = first intersect point - entrance on front of sphere
 
 			const t0 = tca - thc; // t1 = second intersect point - exit point on back of sphere
 
 			const t1 = tca + thc; // test to see if both t0 and t1 are behind the ray - if so, return null
 
-			if (t0 < 0 && t1 < 0) return null; // test to see if t0 is behind the ray:
+			if (t0 < 0 && t1 < 0) {return null;} // test to see if t0 is behind the ray:
 			// if it is, the ray is inside the sphere, so return the second exit point scaled by t1,
 			// in order to always return an intersect point that is in front of the ray.
 
-			if (t0 < 0) return this.at(t1, target); // else t0 is in front of the ray, so return the first collision point scaled by t0
+			if (t0 < 0) {return this.at(t1, target);} // else t0 is in front of the ray, so return the first collision point scaled by t0
 
 			return this.at(t0, target);
 		}
@@ -3826,11 +3826,11 @@
 				tymax = (box.min.y - origin.y) * invdiry;
 			}
 
-			if (tmin > tymax || tymin > tmax) return null; // These lines also handle the case where tmin or tmax is NaN
+			if (tmin > tymax || tymin > tmax) {return null;} // These lines also handle the case where tmin or tmax is NaN
 			// (result of 0 * Infinity). x !== x returns true if x is NaN
 
-			if (tymin > tmin || tmin !== tmin) tmin = tymin;
-			if (tymax < tmax || tmax !== tmax) tmax = tymax;
+			if (tymin > tmin || tmin !== tmin) {tmin = tymin;}
+			if (tymax < tmax || tmax !== tmax) {tmax = tymax;}
 
 			if (invdirz >= 0) {
 				tzmin = (box.min.z - origin.z) * invdirz;
@@ -3840,11 +3840,11 @@
 				tzmax = (box.min.z - origin.z) * invdirz;
 			}
 
-			if (tmin > tzmax || tzmin > tmax) return null;
-			if (tzmin > tmin || tmin !== tmin) tmin = tzmin;
-			if (tzmax < tmax || tmax !== tmax) tmax = tzmax; //return point closest to the ray (positive side)
+			if (tmin > tzmax || tzmin > tmax) {return null;}
+			if (tzmin > tmin || tmin !== tmin) {tmin = tzmin;}
+			if (tzmax < tmax || tmax !== tmax) {tmax = tzmax;} //return point closest to the ray (positive side)
 
-			if (tmax < 0) return null;
+			if (tmax < 0) {return null;}
 			return this.at(tmin >= 0 ? tmin : tmax, target);
 		}
 
@@ -3870,7 +3870,7 @@
 			let sign;
 
 			if (DdN > 0) {
-				if (backfaceCulling) return null;
+				if (backfaceCulling) {return null;}
 				sign = 1;
 			} else if (DdN < 0) {
 				sign = -1;
@@ -4381,7 +4381,7 @@
 						t13 = n13 * n24 * n42 - n14 * n23 * n42 + n14 * n22 * n43 - n12 * n24 * n43 - n13 * n22 * n44 + n12 * n23 * n44,
 						t14 = n14 * n23 * n32 - n13 * n24 * n32 - n14 * n22 * n33 + n12 * n24 * n33 + n13 * n22 * n34 - n12 * n23 * n34;
 			const det = n11 * t11 + n21 * t12 + n31 * t13 + n41 * t14;
-			if (det === 0) return this.set(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+			if (det === 0) {return this.set(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);}
 			const detInv = 1 / det;
 			te[0] = t11 * detInv;
 			te[1] = (n24 * n33 * n41 - n23 * n34 * n41 - n24 * n31 * n43 + n21 * n34 * n43 + n23 * n31 * n44 - n21 * n33 * n44) * detInv;
@@ -4531,7 +4531,7 @@
 
 
 			const det = this.determinant();
-			if (det < 0) sx = -sx;
+			if (det < 0) {sx = -sx;}
 			position.x = te[12];
 			position.y = te[13];
 			position.z = te[14]; // scale the rotation part
@@ -4620,7 +4620,7 @@
 			const me = matrix.elements;
 
 			for (let i = 0; i < 16; i++) {
-				if (te[i] !== me[i]) return false;
+				if (te[i] !== me[i]) {return false;}
 			}
 
 			return true;
@@ -4849,7 +4849,7 @@
 			}
 
 			this._order = order;
-			if (update !== false) this._onChangeCallback();
+			if (update !== false) {this._onChangeCallback();}
 			return this;
 		}
 
@@ -4878,7 +4878,7 @@
 			this._x = array[0];
 			this._y = array[1];
 			this._z = array[2];
-			if (array[3] !== undefined) this._order = array[3];
+			if (array[3] !== undefined) {this._order = array[3];}
 
 			this._onChangeCallback();
 
@@ -5054,7 +5054,7 @@
 		onAfterRender() {}
 
 		applyMatrix4(matrix) {
-			if (this.matrixAutoUpdate) this.updateMatrix();
+			if (this.matrixAutoUpdate) {this.updateMatrix();}
 			this.matrix.premultiply(matrix);
 			this.matrix.decompose(this.position, this.quaternion, this.scale);
 		}
@@ -5260,7 +5260,7 @@
 		}
 
 		getObjectByProperty(name, value) {
-			if (this[name] === value) return this;
+			if (this[name] === value) {return this;}
 
 			for (let i = 0, l = this.children.length; i < l; i++) {
 				const child = this.children[i];
@@ -5329,7 +5329,7 @@
 		}
 
 		traverseVisible(callback) {
-			if (this.visible === false) return;
+			if (this.visible === false) {return;}
 			callback(this);
 			const children = this.children;
 
@@ -5353,7 +5353,7 @@
 		}
 
 		updateMatrixWorld(force) {
-			if (this.matrixAutoUpdate) this.updateMatrix();
+			if (this.matrixAutoUpdate) {this.updateMatrix();}
 
 			if (this.matrixWorldNeedsUpdate || force) {
 				if (this.parent === null) {
@@ -5381,7 +5381,7 @@
 				parent.updateWorldMatrix(true, false);
 			}
 
-			if (this.matrixAutoUpdate) this.updateMatrix();
+			if (this.matrixAutoUpdate) {this.updateMatrix();}
 
 			if (this.parent === null) {
 				this.matrixWorld.copy(this.matrix);
@@ -5428,22 +5428,22 @@
 			const object = {};
 			object.uuid = this.uuid;
 			object.type = this.type;
-			if (this.name !== '') object.name = this.name;
-			if (this.castShadow === true) object.castShadow = true;
-			if (this.receiveShadow === true) object.receiveShadow = true;
-			if (this.visible === false) object.visible = false;
-			if (this.frustumCulled === false) object.frustumCulled = false;
-			if (this.renderOrder !== 0) object.renderOrder = this.renderOrder;
-			if (JSON.stringify(this.userData) !== '{}') object.userData = this.userData;
+			if (this.name !== '') {object.name = this.name;}
+			if (this.castShadow === true) {object.castShadow = true;}
+			if (this.receiveShadow === true) {object.receiveShadow = true;}
+			if (this.visible === false) {object.visible = false;}
+			if (this.frustumCulled === false) {object.frustumCulled = false;}
+			if (this.renderOrder !== 0) {object.renderOrder = this.renderOrder;}
+			if (JSON.stringify(this.userData) !== '{}') {object.userData = this.userData;}
 			object.layers = this.layers.mask;
 			object.matrix = this.matrix.toArray();
-			if (this.matrixAutoUpdate === false) object.matrixAutoUpdate = false; // object specific properties
+			if (this.matrixAutoUpdate === false) {object.matrixAutoUpdate = false;} // object specific properties
 
 			if (this.isInstancedMesh) {
 				object.type = 'InstancedMesh';
 				object.count = this.count;
 				object.instanceMatrix = this.instanceMatrix.toJSON();
-				if (this.instanceColor !== null) object.instanceColor = this.instanceColor.toJSON();
+				if (this.instanceColor !== null) {object.instanceColor = this.instanceColor.toJSON();}
 			} //
 
 
@@ -5524,13 +5524,13 @@
 				const shapes = extractFromCache(meta.shapes);
 				const skeletons = extractFromCache(meta.skeletons);
 				const animations = extractFromCache(meta.animations);
-				if (geometries.length > 0) output.geometries = geometries;
-				if (materials.length > 0) output.materials = materials;
-				if (textures.length > 0) output.textures = textures;
-				if (images.length > 0) output.images = images;
-				if (shapes.length > 0) output.shapes = shapes;
-				if (skeletons.length > 0) output.skeletons = skeletons;
-				if (animations.length > 0) output.animations = animations;
+				if (geometries.length > 0) {output.geometries = geometries;}
+				if (materials.length > 0) {output.materials = materials;}
+				if (textures.length > 0) {output.textures = textures;}
+				if (images.length > 0) {output.images = images;}
+				if (shapes.length > 0) {output.shapes = shapes;}
+				if (skeletons.length > 0) {output.skeletons = skeletons;}
+				if (animations.length > 0) {output.animations = animations;}
 			}
 
 			output.object = object;
@@ -6086,7 +6086,7 @@
 			return this.onBeforeCompile.toString();
 		},
 		setValues: function (values) {
-			if (values === undefined) return;
+			if (values === undefined) {return;}
 
 			for (const key in values) {
 				const newValue = values[key];
@@ -6139,17 +6139,17 @@
 
 			data.uuid = this.uuid;
 			data.type = this.type;
-			if (this.name !== '') data.name = this.name;
-			if (this.color && this.color.isColor) data.color = this.color.getHex();
-			if (this.roughness !== undefined) data.roughness = this.roughness;
-			if (this.metalness !== undefined) data.metalness = this.metalness;
-			if (this.sheen && this.sheen.isColor) data.sheen = this.sheen.getHex();
-			if (this.emissive && this.emissive.isColor) data.emissive = this.emissive.getHex();
-			if (this.emissiveIntensity && this.emissiveIntensity !== 1) data.emissiveIntensity = this.emissiveIntensity;
-			if (this.specular && this.specular.isColor) data.specular = this.specular.getHex();
-			if (this.shininess !== undefined) data.shininess = this.shininess;
-			if (this.clearcoat !== undefined) data.clearcoat = this.clearcoat;
-			if (this.clearcoatRoughness !== undefined) data.clearcoatRoughness = this.clearcoatRoughness;
+			if (this.name !== '') {data.name = this.name;}
+			if (this.color && this.color.isColor) {data.color = this.color.getHex();}
+			if (this.roughness !== undefined) {data.roughness = this.roughness;}
+			if (this.metalness !== undefined) {data.metalness = this.metalness;}
+			if (this.sheen && this.sheen.isColor) {data.sheen = this.sheen.getHex();}
+			if (this.emissive && this.emissive.isColor) {data.emissive = this.emissive.getHex();}
+			if (this.emissiveIntensity && this.emissiveIntensity !== 1) {data.emissiveIntensity = this.emissiveIntensity;}
+			if (this.specular && this.specular.isColor) {data.specular = this.specular.getHex();}
+			if (this.shininess !== undefined) {data.shininess = this.shininess;}
+			if (this.clearcoat !== undefined) {data.clearcoat = this.clearcoat;}
+			if (this.clearcoatRoughness !== undefined) {data.clearcoatRoughness = this.clearcoatRoughness;}
 
 			if (this.clearcoatMap && this.clearcoatMap.isTexture) {
 				data.clearcoatMap = this.clearcoatMap.toJSON(meta).uuid;
@@ -6164,9 +6164,9 @@
 				data.clearcoatNormalScale = this.clearcoatNormalScale.toArray();
 			}
 
-			if (this.map && this.map.isTexture) data.map = this.map.toJSON(meta).uuid;
-			if (this.matcap && this.matcap.isTexture) data.matcap = this.matcap.toJSON(meta).uuid;
-			if (this.alphaMap && this.alphaMap.isTexture) data.alphaMap = this.alphaMap.toJSON(meta).uuid;
+			if (this.map && this.map.isTexture) {data.map = this.map.toJSON(meta).uuid;}
+			if (this.matcap && this.matcap.isTexture) {data.matcap = this.matcap.toJSON(meta).uuid;}
+			if (this.alphaMap && this.alphaMap.isTexture) {data.alphaMap = this.alphaMap.toJSON(meta).uuid;}
 
 			if (this.lightMap && this.lightMap.isTexture) {
 				data.lightMap = this.lightMap.toJSON(meta).uuid;
@@ -6195,32 +6195,32 @@
 				data.displacementBias = this.displacementBias;
 			}
 
-			if (this.roughnessMap && this.roughnessMap.isTexture) data.roughnessMap = this.roughnessMap.toJSON(meta).uuid;
-			if (this.metalnessMap && this.metalnessMap.isTexture) data.metalnessMap = this.metalnessMap.toJSON(meta).uuid;
-			if (this.emissiveMap && this.emissiveMap.isTexture) data.emissiveMap = this.emissiveMap.toJSON(meta).uuid;
-			if (this.specularMap && this.specularMap.isTexture) data.specularMap = this.specularMap.toJSON(meta).uuid;
+			if (this.roughnessMap && this.roughnessMap.isTexture) {data.roughnessMap = this.roughnessMap.toJSON(meta).uuid;}
+			if (this.metalnessMap && this.metalnessMap.isTexture) {data.metalnessMap = this.metalnessMap.toJSON(meta).uuid;}
+			if (this.emissiveMap && this.emissiveMap.isTexture) {data.emissiveMap = this.emissiveMap.toJSON(meta).uuid;}
+			if (this.specularMap && this.specularMap.isTexture) {data.specularMap = this.specularMap.toJSON(meta).uuid;}
 
 			if (this.envMap && this.envMap.isTexture) {
 				data.envMap = this.envMap.toJSON(meta).uuid;
-				if (this.combine !== undefined) data.combine = this.combine;
+				if (this.combine !== undefined) {data.combine = this.combine;}
 			}
 
-			if (this.envMapIntensity !== undefined) data.envMapIntensity = this.envMapIntensity;
-			if (this.reflectivity !== undefined) data.reflectivity = this.reflectivity;
-			if (this.refractionRatio !== undefined) data.refractionRatio = this.refractionRatio;
+			if (this.envMapIntensity !== undefined) {data.envMapIntensity = this.envMapIntensity;}
+			if (this.reflectivity !== undefined) {data.reflectivity = this.reflectivity;}
+			if (this.refractionRatio !== undefined) {data.refractionRatio = this.refractionRatio;}
 
 			if (this.gradientMap && this.gradientMap.isTexture) {
 				data.gradientMap = this.gradientMap.toJSON(meta).uuid;
 			}
 
-			if (this.size !== undefined) data.size = this.size;
-			if (this.shadowSide !== null) data.shadowSide = this.shadowSide;
-			if (this.sizeAttenuation !== undefined) data.sizeAttenuation = this.sizeAttenuation;
-			if (this.blending !== NormalBlending) data.blending = this.blending;
-			if (this.side !== FrontSide) data.side = this.side;
-			if (this.vertexColors) data.vertexColors = true;
-			if (this.opacity < 1) data.opacity = this.opacity;
-			if (this.transparent === true) data.transparent = this.transparent;
+			if (this.size !== undefined) {data.size = this.size;}
+			if (this.shadowSide !== null) {data.shadowSide = this.shadowSide;}
+			if (this.sizeAttenuation !== undefined) {data.sizeAttenuation = this.sizeAttenuation;}
+			if (this.blending !== NormalBlending) {data.blending = this.blending;}
+			if (this.side !== FrontSide) {data.side = this.side;}
+			if (this.vertexColors) {data.vertexColors = true;}
+			if (this.opacity < 1) {data.opacity = this.opacity;}
+			if (this.transparent === true) {data.transparent = this.transparent;}
 			data.depthFunc = this.depthFunc;
 			data.depthTest = this.depthTest;
 			data.depthWrite = this.depthWrite;
@@ -6234,29 +6234,29 @@
 			data.stencilZFail = this.stencilZFail;
 			data.stencilZPass = this.stencilZPass; // rotation (SpriteMaterial)
 
-			if (this.rotation && this.rotation !== 0) data.rotation = this.rotation;
-			if (this.polygonOffset === true) data.polygonOffset = true;
-			if (this.polygonOffsetFactor !== 0) data.polygonOffsetFactor = this.polygonOffsetFactor;
-			if (this.polygonOffsetUnits !== 0) data.polygonOffsetUnits = this.polygonOffsetUnits;
-			if (this.linewidth && this.linewidth !== 1) data.linewidth = this.linewidth;
-			if (this.dashSize !== undefined) data.dashSize = this.dashSize;
-			if (this.gapSize !== undefined) data.gapSize = this.gapSize;
-			if (this.scale !== undefined) data.scale = this.scale;
-			if (this.dithering === true) data.dithering = true;
-			if (this.alphaTest > 0) data.alphaTest = this.alphaTest;
-			if (this.alphaToCoverage === true) data.alphaToCoverage = this.alphaToCoverage;
-			if (this.premultipliedAlpha === true) data.premultipliedAlpha = this.premultipliedAlpha;
-			if (this.wireframe === true) data.wireframe = this.wireframe;
-			if (this.wireframeLinewidth > 1) data.wireframeLinewidth = this.wireframeLinewidth;
-			if (this.wireframeLinecap !== 'round') data.wireframeLinecap = this.wireframeLinecap;
-			if (this.wireframeLinejoin !== 'round') data.wireframeLinejoin = this.wireframeLinejoin;
-			if (this.morphTargets === true) data.morphTargets = true;
-			if (this.morphNormals === true) data.morphNormals = true;
-			if (this.skinning === true) data.skinning = true;
-			if (this.flatShading === true) data.flatShading = this.flatShading;
-			if (this.visible === false) data.visible = false;
-			if (this.toneMapped === false) data.toneMapped = false;
-			if (JSON.stringify(this.userData) !== '{}') data.userData = this.userData; // TODO: Copied from Object3D.toJSON
+			if (this.rotation && this.rotation !== 0) {data.rotation = this.rotation;}
+			if (this.polygonOffset === true) {data.polygonOffset = true;}
+			if (this.polygonOffsetFactor !== 0) {data.polygonOffsetFactor = this.polygonOffsetFactor;}
+			if (this.polygonOffsetUnits !== 0) {data.polygonOffsetUnits = this.polygonOffsetUnits;}
+			if (this.linewidth && this.linewidth !== 1) {data.linewidth = this.linewidth;}
+			if (this.dashSize !== undefined) {data.dashSize = this.dashSize;}
+			if (this.gapSize !== undefined) {data.gapSize = this.gapSize;}
+			if (this.scale !== undefined) {data.scale = this.scale;}
+			if (this.dithering === true) {data.dithering = true;}
+			if (this.alphaTest > 0) {data.alphaTest = this.alphaTest;}
+			if (this.alphaToCoverage === true) {data.alphaToCoverage = this.alphaToCoverage;}
+			if (this.premultipliedAlpha === true) {data.premultipliedAlpha = this.premultipliedAlpha;}
+			if (this.wireframe === true) {data.wireframe = this.wireframe;}
+			if (this.wireframeLinewidth > 1) {data.wireframeLinewidth = this.wireframeLinewidth;}
+			if (this.wireframeLinecap !== 'round') {data.wireframeLinecap = this.wireframeLinecap;}
+			if (this.wireframeLinejoin !== 'round') {data.wireframeLinejoin = this.wireframeLinejoin;}
+			if (this.morphTargets === true) {data.morphTargets = true;}
+			if (this.morphNormals === true) {data.morphNormals = true;}
+			if (this.skinning === true) {data.skinning = true;}
+			if (this.flatShading === true) {data.flatShading = this.flatShading;}
+			if (this.visible === false) {data.visible = false;}
+			if (this.toneMapped === false) {data.toneMapped = false;}
+			if (JSON.stringify(this.userData) !== '{}') {data.userData = this.userData;} // TODO: Copied from Object3D.toJSON
 
 			function extractFromCache(cache) {
 				const values = [];
@@ -6273,8 +6273,8 @@
 			if (isRoot) {
 				const textures = extractFromCache(meta.textures);
 				const images = extractFromCache(meta.images);
-				if (textures.length > 0) data.textures = textures;
-				if (images.length > 0) data.images = images;
+				if (textures.length > 0) {data.textures = textures;}
+				if (images.length > 0) {data.images = images;}
 			}
 
 			return data;
@@ -6345,7 +6345,7 @@
 	});
 	Object.defineProperty(Material.prototype, 'needsUpdate', {
 		set: function (value) {
-			if (value === true) this.version++;
+			if (value === true) {this.version++;}
 		}
 	});
 
@@ -6511,11 +6511,11 @@
 	};
 
 	function hue2rgb(p, q, t) {
-		if (t < 0) t += 1;
-		if (t > 1) t -= 1;
-		if (t < 1 / 6) return p + (q - p) * 6 * t;
-		if (t < 1 / 2) return q;
-		if (t < 2 / 3) return p + (q - p) * 6 * (2 / 3 - t);
+		if (t < 0) {t += 1;}
+		if (t > 1) {t -= 1;}
+		if (t < 1 / 6) {return p + (q - p) * 6 * t;}
+		if (t < 1 / 2) {return q;}
+		if (t < 2 / 3) {return p + (q - p) * 6 * (2 / 3 - t);}
 		return p;
 	}
 
@@ -6592,7 +6592,7 @@
 
 		setStyle(style) {
 			function handleAlpha(string) {
-				if (string === undefined) return;
+				if (string === undefined) {return;}
 
 				if (parseFloat(string) < 1) {
 					console.warn('THREE.Color: Alpha component of ' + style + ' will be ignored.');
@@ -7037,7 +7037,7 @@
 		}
 
 		set needsUpdate(value) {
-			if (value === true) this.version++;
+			if (value === true) {this.version++;}
 		}
 
 		setUsage(value) {
@@ -7296,9 +7296,9 @@
 				array: Array.prototype.slice.call(this.array),
 				normalized: this.normalized
 			};
-			if (this.name !== '') data.name = this.name;
-			if (this.usage !== StaticDrawUsage) data.usage = this.usage;
-			if (this.updateRange.offset !== 0 || this.updateRange.count !== -1) data.updateRange = this.updateRange;
+			if (this.name !== '') {data.name = this.name;}
+			if (this.usage !== StaticDrawUsage) {data.usage = this.usage;}
+			if (this.updateRange.offset !== 0 || this.updateRange.count !== -1) {data.updateRange = this.updateRange;}
 			return data;
 		}
 
@@ -7379,11 +7379,11 @@
 	} //
 
 	function arrayMax(array) {
-		if (array.length === 0) return -Infinity;
+		if (array.length === 0) {return -Infinity;}
 		let max = array[0];
 
 		for (let i = 1, l = array.length; i < l; ++i) {
-			if (array[i] > max) max = array[i];
+			if (array[i] > max) {max = array[i];}
 		}
 
 		return max;
@@ -7776,7 +7776,7 @@
 				uvC.sub(uvA);
 				const r = 1.0 / (uvB.x * uvC.y - uvC.x * uvB.y); // silently ignore degenerate uv triangles having coincident or colinear vertices
 
-				if (!isFinite(r)) return;
+				if (!isFinite(r)) {return;}
 				sdir.copy(vB).multiplyScalar(uvC.y).addScaledVector(vC, -uvB.y).multiplyScalar(r);
 				tdir.copy(vC).multiplyScalar(uvB.x).addScaledVector(vB, -uvC.x).multiplyScalar(r);
 				tan1[a].add(sdir);
@@ -7922,7 +7922,7 @@
 			const attributes = this.attributes;
 
 			for (const key in attributes) {
-				if (geometry.attributes[key] === undefined) continue;
+				if (geometry.attributes[key] === undefined) {continue;}
 				const attribute1 = attributes[key];
 				const attributeArray1 = attribute1.array;
 				const attribute2 = geometry.attributes[key];
@@ -8025,14 +8025,14 @@
 
 			data.uuid = this.uuid;
 			data.type = this.type;
-			if (this.name !== '') data.name = this.name;
-			if (Object.keys(this.userData).length > 0) data.userData = this.userData;
+			if (this.name !== '') {data.name = this.name;}
+			if (Object.keys(this.userData).length > 0) {data.userData = this.userData;}
 
 			if (this.parameters !== undefined) {
 				const parameters = this.parameters;
 
 				for (const key in parameters) {
-					if (parameters[key] !== undefined) data[key] = parameters[key];
+					if (parameters[key] !== undefined) {data[key] = parameters[key];}
 				}
 
 				return data;
@@ -8292,15 +8292,15 @@
 			const geometry = this.geometry;
 			const material = this.material;
 			const matrixWorld = this.matrixWorld;
-			if (material === undefined) return; // Checking boundingSphere distance to ray
+			if (material === undefined) {return;} // Checking boundingSphere distance to ray
 
-			if (geometry.boundingSphere === null) geometry.computeBoundingSphere();
+			if (geometry.boundingSphere === null) {geometry.computeBoundingSphere();}
 
 			_sphere$3.copy(geometry.boundingSphere);
 
 			_sphere$3.applyMatrix4(matrixWorld);
 
-			if (raycaster.ray.intersectsSphere(_sphere$3) === false) return; //
+			if (raycaster.ray.intersectsSphere(_sphere$3) === false) {return;} //
 
 			_inverseMatrix$2.copy(matrixWorld).invert();
 
@@ -8308,7 +8308,7 @@
 
 
 			if (geometry.boundingBox !== null) {
-				if (_ray$2.intersectsBox(geometry.boundingBox) === false) return;
+				if (_ray$2.intersectsBox(geometry.boundingBox) === false) {return;}
 			}
 
 			let intersection;
@@ -8422,14 +8422,14 @@
 			intersect = ray.intersectTriangle(pA, pB, pC, material.side !== DoubleSide, point);
 		}
 
-		if (intersect === null) return null;
+		if (intersect === null) {return null;}
 
 		_intersectionPointWorld.copy(point);
 
 		_intersectionPointWorld.applyMatrix4(object.matrixWorld);
 
 		const distance = raycaster.ray.origin.distanceTo(_intersectionPointWorld);
-		if (distance < raycaster.near || distance > raycaster.far) return null;
+		if (distance < raycaster.near || distance > raycaster.far) {return null;}
 		return {
 			distance: distance,
 			point: _intersectionPointWorld.clone(),
@@ -8456,7 +8456,7 @@
 			for (let i = 0, il = morphPosition.length; i < il; i++) {
 				const influence = morphInfluences[i];
 				const morphAttribute = morphPosition[i];
-				if (influence === 0) continue;
+				if (influence === 0) {continue;}
 
 				_tempA.fromBufferAttribute(morphAttribute, a);
 
@@ -8827,16 +8827,16 @@
 				}
 			}
 
-			if (Object.keys(this.defines).length > 0) data.defines = this.defines;
+			if (Object.keys(this.defines).length > 0) {data.defines = this.defines;}
 			data.vertexShader = this.vertexShader;
 			data.fragmentShader = this.fragmentShader;
 			const extensions = {};
 
 			for (const key in this.extensions) {
-				if (this.extensions[key] === true) extensions[key] = true;
+				if (this.extensions[key] === true) {extensions[key] = true;}
 			}
 
-			if (Object.keys(extensions).length > 0) data.extensions = extensions;
+			if (Object.keys(extensions).length > 0) {data.extensions = extensions;}
 			return data;
 		}
 
@@ -9048,7 +9048,7 @@
 			}
 
 			const skew = this.filmOffset;
-			if (skew !== 0) left += near * skew / this.getFilmWidth();
+			if (skew !== 0) {left += near * skew / this.getFilmWidth();}
 			this.projectionMatrix.makePerspective(left, left + width, top, top - height, near, this.far);
 			this.projectionMatrixInverse.copy(this.projectionMatrix).invert();
 		}
@@ -9061,7 +9061,7 @@
 			data.object.far = this.far;
 			data.object.focus = this.focus;
 			data.object.aspect = this.aspect;
-			if (this.view !== null) data.object.view = Object.assign({}, this.view);
+			if (this.view !== null) {data.object.view = Object.assign({}, this.view);}
 			data.object.filmGauge = this.filmGauge;
 			data.object.filmOffset = this.filmOffset;
 			return data;
@@ -9118,7 +9118,7 @@
 		}
 
 		update(renderer, scene) {
-			if (this.parent === null) this.updateMatrixWorld();
+			if (this.parent === null) {this.updateMatrixWorld();}
 			const renderTarget = this.renderTarget;
 			const [cameraPX, cameraNX, cameraPY, cameraNY, cameraPZ, cameraNZ] = this.children;
 			const currentXrEnabled = renderer.xr.enabled;
@@ -9259,7 +9259,7 @@
 			const mesh = new Mesh(geometry, material);
 			const currentMinFilter = texture.minFilter; // Avoid blurred poles
 
-			if (texture.minFilter === LinearMipmapLinearFilter) texture.minFilter = LinearFilter;
+			if (texture.minFilter === LinearMipmapLinearFilter) {texture.minFilter = LinearFilter;}
 			const camera = new CubeCamera(1, 10, this);
 			camera.update(renderer, mesh);
 			texture.minFilter = currentMinFilter;
@@ -9363,7 +9363,7 @@
 
 		intersectsObject(object) {
 			const geometry = object.geometry;
-			if (geometry.boundingSphere === null) geometry.computeBoundingSphere();
+			if (geometry.boundingSphere === null) {geometry.computeBoundingSphere();}
 
 			_sphere$2.copy(geometry.boundingSphere).applyMatrix4(object.matrixWorld);
 
@@ -9445,8 +9445,8 @@
 
 		return {
 			start: function () {
-				if (isAnimating === true) return;
-				if (animationLoop === null) return;
+				if (isAnimating === true) {return;}
+				if (animationLoop === null) {return;}
 				requestId = context.requestAnimationFrame(onAnimationFrame);
 				isAnimating = true;
 			},
@@ -9531,12 +9531,12 @@
 
 
 		function get(attribute) {
-			if (attribute.isInterleavedBufferAttribute) attribute = attribute.data;
+			if (attribute.isInterleavedBufferAttribute) {attribute = attribute.data;}
 			return buffers.get(attribute);
 		}
 
 		function remove(attribute) {
-			if (attribute.isInterleavedBufferAttribute) attribute = attribute.data;
+			if (attribute.isInterleavedBufferAttribute) {attribute = attribute.data;}
 			const data = buffers.get(attribute);
 
 			if (data) {
@@ -9561,7 +9561,7 @@
 				return;
 			}
 
-			if (attribute.isInterleavedBufferAttribute) attribute = attribute.data;
+			if (attribute.isInterleavedBufferAttribute) {attribute = attribute.data;}
 			const data = buffers.get(attribute);
 
 			if (data === undefined) {
@@ -10667,7 +10667,7 @@
 				}
 
 				updateBuffers = needsUpdate(geometry, index);
-				if (updateBuffers) saveCache(geometry, index);
+				if (updateBuffers) {saveCache(geometry, index);}
 			} else {
 				const wireframe = material.wireframe === true;
 
@@ -10697,17 +10697,17 @@
 		}
 
 		function createVertexArrayObject() {
-			if (capabilities.isWebGL2) return gl.createVertexArray();
+			if (capabilities.isWebGL2) {return gl.createVertexArray();}
 			return extension.createVertexArrayOES();
 		}
 
 		function bindVertexArrayObject(vao) {
-			if (capabilities.isWebGL2) return gl.bindVertexArray(vao);
+			if (capabilities.isWebGL2) {return gl.bindVertexArray(vao);}
 			return extension.bindVertexArrayOES(vao);
 		}
 
 		function deleteVertexArrayObject(vao) {
-			if (capabilities.isWebGL2) return gl.deleteVertexArray(vao);
+			if (capabilities.isWebGL2) {return gl.deleteVertexArray(vao);}
 			return extension.deleteVertexArrayOES(vao);
 		}
 
@@ -10770,14 +10770,14 @@
 			for (const key in geometryAttributes) {
 				const cachedAttribute = cachedAttributes[key];
 				const geometryAttribute = geometryAttributes[key];
-				if (cachedAttribute === undefined) return true;
-				if (cachedAttribute.attribute !== geometryAttribute) return true;
-				if (cachedAttribute.data !== geometryAttribute.data) return true;
+				if (cachedAttribute === undefined) {return true;}
+				if (cachedAttribute.attribute !== geometryAttribute) {return true;}
+				if (cachedAttribute.data !== geometryAttribute.data) {return true;}
 				attributesNum++;
 			}
 
-			if (currentState.attributesNum !== attributesNum) return true;
-			if (currentState.index !== index) return true;
+			if (currentState.attributesNum !== attributesNum) {return true;}
+			if (currentState.index !== index) {return true;}
 			return false;
 		}
 
@@ -10856,7 +10856,7 @@
 
 		function setupVertexAttributes(object, material, program, geometry) {
 			if (capabilities.isWebGL2 === false && (object.isInstancedMesh || geometry.isInstancedBufferGeometry)) {
-				if (extensions.get('ANGLE_instanced_arrays') === null) return;
+				if (extensions.get('ANGLE_instanced_arrays') === null) {return;}
 			}
 
 			initAttributes();
@@ -10875,7 +10875,7 @@
 						const size = geometryAttribute.itemSize;
 						const attribute = attributes.get(geometryAttribute); // TODO Attribute may not be available on context restore
 
-						if (attribute === undefined) continue;
+						if (attribute === undefined) {continue;}
 						const buffer = attribute.buffer;
 						const type = attribute.type;
 						const bytesPerElement = attribute.bytesPerElement;
@@ -10914,7 +10914,7 @@
 					} else if (name === 'instanceMatrix') {
 						const attribute = attributes.get(object.instanceMatrix); // TODO Attribute may not be available on context restore
 
-						if (attribute === undefined) continue;
+						if (attribute === undefined) {continue;}
 						const buffer = attribute.buffer;
 						const type = attribute.type;
 						enableAttributeAndDivisor(programAttribute + 0, 1);
@@ -10929,7 +10929,7 @@
 					} else if (name === 'instanceColor') {
 						const attribute = attributes.get(object.instanceColor); // TODO Attribute may not be available on context restore
 
-						if (attribute === undefined) continue;
+						if (attribute === undefined) {continue;}
 						const buffer = attribute.buffer;
 						const type = attribute.type;
 						enableAttributeAndDivisor(programAttribute, 1);
@@ -10985,7 +10985,7 @@
 		}
 
 		function releaseStatesOfGeometry(geometry) {
-			if (bindingStates[geometry.id] === undefined) return;
+			if (bindingStates[geometry.id] === undefined) {return;}
 			const programMap = bindingStates[geometry.id];
 
 			for (const programId in programMap) {
@@ -11005,7 +11005,7 @@
 		function releaseStatesOfProgram(program) {
 			for (const geometryId in bindingStates) {
 				const programMap = bindingStates[geometryId];
-				if (programMap[program.id] === undefined) continue;
+				if (programMap[program.id] === undefined) {continue;}
 				const stateMap = programMap[program.id];
 
 				for (const wireframe in stateMap) {
@@ -11019,7 +11019,7 @@
 
 		function reset() {
 			resetDefaultState();
-			if (currentState === defaultState) return;
+			if (currentState === defaultState) {return;}
 			currentState = defaultState;
 			bindVertexArrayObject(currentState.object);
 		} // for backward-compatilibity
@@ -11058,7 +11058,7 @@
 		}
 
 		function renderInstances(start, count, primcount) {
-			if (primcount === 0) return;
+			if (primcount === 0) {return;}
 			let extension, methodName;
 
 			if (isWebGL2) {
@@ -11088,7 +11088,7 @@
 		let maxAnisotropy;
 
 		function getMaxAnisotropy() {
-			if (maxAnisotropy !== undefined) return maxAnisotropy;
+			if (maxAnisotropy !== undefined) {return maxAnisotropy;}
 
 			if (extensions.has('EXT_texture_filter_anisotropic') === true) {
 				const extension = extensions.get('EXT_texture_filter_anisotropic');
@@ -11117,11 +11117,11 @@
 
 			return 'lowp';
 		}
-		/* eslint-disable no-undef */
+		 
 
 
 		const isWebGL2 = typeof WebGL2RenderingContext !== 'undefined' && gl instanceof WebGL2RenderingContext || typeof WebGL2ComputeRenderingContext !== 'undefined' && gl instanceof WebGL2ComputeRenderingContext;
-		/* eslint-enable no-undef */
+		 
 
 		let precision = parameters.precision !== undefined ? parameters.precision : 'highp';
 		const maxPrecision = getMaxPrecision(precision);
@@ -11443,7 +11443,7 @@
 		}
 
 		function get(object, geometry) {
-			if (geometries[geometry.id] === true) return geometry;
+			if (geometries[geometry.id] === true) {return geometry;}
 			geometry.addEventListener('dispose', onGeometryDispose);
 			geometries[geometry.id] = true;
 			info.memory.geometries++;
@@ -11502,7 +11502,7 @@
 			//
 
 			const previousAttribute = wireframeAttributes.get(geometry);
-			if (previousAttribute) attributes.remove(previousAttribute); //
+			if (previousAttribute) {attributes.remove(previousAttribute);} //
 
 			wireframeAttributes.set(geometry, attribute);
 		}
@@ -11554,7 +11554,7 @@
 		}
 
 		function renderInstances(start, count, primcount) {
-			if (primcount === 0) return;
+			if (primcount === 0) {return;}
 			let extension, methodName;
 
 			if (isWebGL2) {
@@ -11779,7 +11779,7 @@
 			const instancedMesh = event.target;
 			instancedMesh.removeEventListener('dispose', onInstancedMeshDispose);
 			attributes.remove(instancedMesh.instanceMatrix);
-			if (instancedMesh.instanceColor !== null) attributes.remove(instancedMesh.instanceColor);
+			if (instancedMesh.instanceColor !== null) {attributes.remove(instancedMesh.instanceColor);}
 		}
 
 		return {
@@ -11896,7 +11896,7 @@
 
 	function flatten(array, nBlocks, blockSize) {
 		const firstElem = array[0];
-		if (firstElem <= 0 || firstElem > 0) return array; // unoptimized: ! isNaN( firstElem )
+		if (firstElem <= 0 || firstElem > 0) {return array;} // unoptimized: ! isNaN( firstElem )
 		// see http://jacksondunstan.com/articles/983
 
 		const n = nBlocks * blockSize;
@@ -11920,10 +11920,10 @@
 	}
 
 	function arraysEqual(a, b) {
-		if (a.length !== b.length) return false;
+		if (a.length !== b.length) {return false;}
 
 		for (let i = 0, l = a.length; i < l; i++) {
-			if (a[i] !== b[i]) return false;
+			if (a[i] !== b[i]) {return false;}
 		}
 
 		return true;
@@ -11957,7 +11957,7 @@
 
 	function setValueV1f(gl, v) {
 		const cache = this.cache;
-		if (cache[0] === v) return;
+		if (cache[0] === v) {return;}
 		gl.uniform1f(this.addr, v);
 		cache[0] = v;
 	} // Single float vector (from flat array or THREE.VectorN)
@@ -11973,7 +11973,7 @@
 				cache[1] = v.y;
 			}
 		} else {
-			if (arraysEqual(cache, v)) return;
+			if (arraysEqual(cache, v)) {return;}
 			gl.uniform2fv(this.addr, v);
 			copyArray(cache, v);
 		}
@@ -11997,7 +11997,7 @@
 				cache[2] = v.b;
 			}
 		} else {
-			if (arraysEqual(cache, v)) return;
+			if (arraysEqual(cache, v)) {return;}
 			gl.uniform3fv(this.addr, v);
 			copyArray(cache, v);
 		}
@@ -12015,7 +12015,7 @@
 				cache[3] = v.w;
 			}
 		} else {
-			if (arraysEqual(cache, v)) return;
+			if (arraysEqual(cache, v)) {return;}
 			gl.uniform4fv(this.addr, v);
 			copyArray(cache, v);
 		}
@@ -12027,11 +12027,11 @@
 		const elements = v.elements;
 
 		if (elements === undefined) {
-			if (arraysEqual(cache, v)) return;
+			if (arraysEqual(cache, v)) {return;}
 			gl.uniformMatrix2fv(this.addr, false, v);
 			copyArray(cache, v);
 		} else {
-			if (arraysEqual(cache, elements)) return;
+			if (arraysEqual(cache, elements)) {return;}
 			mat2array.set(elements);
 			gl.uniformMatrix2fv(this.addr, false, mat2array);
 			copyArray(cache, elements);
@@ -12043,11 +12043,11 @@
 		const elements = v.elements;
 
 		if (elements === undefined) {
-			if (arraysEqual(cache, v)) return;
+			if (arraysEqual(cache, v)) {return;}
 			gl.uniformMatrix3fv(this.addr, false, v);
 			copyArray(cache, v);
 		} else {
-			if (arraysEqual(cache, elements)) return;
+			if (arraysEqual(cache, elements)) {return;}
 			mat3array.set(elements);
 			gl.uniformMatrix3fv(this.addr, false, mat3array);
 			copyArray(cache, elements);
@@ -12059,11 +12059,11 @@
 		const elements = v.elements;
 
 		if (elements === undefined) {
-			if (arraysEqual(cache, v)) return;
+			if (arraysEqual(cache, v)) {return;}
 			gl.uniformMatrix4fv(this.addr, false, v);
 			copyArray(cache, v);
 		} else {
-			if (arraysEqual(cache, elements)) return;
+			if (arraysEqual(cache, elements)) {return;}
 			mat4array.set(elements);
 			gl.uniformMatrix4fv(this.addr, false, mat4array);
 			copyArray(cache, elements);
@@ -12073,7 +12073,7 @@
 
 	function setValueV1i(gl, v) {
 		const cache = this.cache;
-		if (cache[0] === v) return;
+		if (cache[0] === v) {return;}
 		gl.uniform1i(this.addr, v);
 		cache[0] = v;
 	} // Single integer / boolean vector (from flat array)
@@ -12081,21 +12081,21 @@
 
 	function setValueV2i(gl, v) {
 		const cache = this.cache;
-		if (arraysEqual(cache, v)) return;
+		if (arraysEqual(cache, v)) {return;}
 		gl.uniform2iv(this.addr, v);
 		copyArray(cache, v);
 	}
 
 	function setValueV3i(gl, v) {
 		const cache = this.cache;
-		if (arraysEqual(cache, v)) return;
+		if (arraysEqual(cache, v)) {return;}
 		gl.uniform3iv(this.addr, v);
 		copyArray(cache, v);
 	}
 
 	function setValueV4i(gl, v) {
 		const cache = this.cache;
-		if (arraysEqual(cache, v)) return;
+		if (arraysEqual(cache, v)) {return;}
 		gl.uniform4iv(this.addr, v);
 		copyArray(cache, v);
 	} // Single unsigned integer
@@ -12103,7 +12103,7 @@
 
 	function setValueV1ui(gl, v) {
 		const cache = this.cache;
-		if (cache[0] === v) return;
+		if (cache[0] === v) {return;}
 		gl.uniform1ui(this.addr, v);
 		cache[0] = v;
 	} // Single unsigned integer vector (from flat array)
@@ -12111,21 +12111,21 @@
 
 	function setValueV2ui(gl, v) {
 		const cache = this.cache;
-		if (arraysEqual(cache, v)) return;
+		if (arraysEqual(cache, v)) {return;}
 		gl.uniform2uiv(this.addr, v);
 		copyArray(cache, v);
 	}
 
 	function setValueV3ui(gl, v) {
 		const cache = this.cache;
-		if (arraysEqual(cache, v)) return;
+		if (arraysEqual(cache, v)) {return;}
 		gl.uniform3uiv(this.addr, v);
 		copyArray(cache, v);
 	}
 
 	function setValueV4ui(gl, v) {
 		const cache = this.cache;
-		if (arraysEqual(cache, v)) return;
+		if (arraysEqual(cache, v)) {return;}
 		gl.uniform4uiv(this.addr, v);
 		copyArray(cache, v);
 	} // Single texture (2D / Cube)
@@ -12542,7 +12542,7 @@
 			let id = match[1];
 			const idIsIndex = match[2] === ']',
 						subscript = match[3];
-			if (idIsIndex) id = id | 0; // convert to integer
+			if (idIsIndex) {id = id | 0;} // convert to integer
 
 			if (subscript === undefined || subscript === '[' && matchEnd + 2 === pathLength) {
 				// bare name or "pure" bottom-level array "[0]" suffix
@@ -12578,12 +12578,12 @@
 
 	WebGLUniforms.prototype.setValue = function (gl, name, value, textures) {
 		const u = this.map[name];
-		if (u !== undefined) u.setValue(gl, value, textures);
+		if (u !== undefined) {u.setValue(gl, value, textures);}
 	};
 
 	WebGLUniforms.prototype.setOptional = function (gl, object, name) {
 		const v = object[name];
-		if (v !== undefined) this.setValue(gl, name, v);
+		if (v !== undefined) {this.setValue(gl, name, v);}
 	}; // Static interface
 
 
@@ -12604,7 +12604,7 @@
 
 		for (let i = 0, n = seq.length; i !== n; ++i) {
 			const u = seq[i];
-			if (u.id in values) r.push(u);
+			if (u.id in values) {r.push(u);}
 		}
 
 		return r;
@@ -12664,7 +12664,7 @@
 	function getShaderErrors(gl, shader, type) {
 		const status = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
 		const log = gl.getShaderInfoLog(shader).trim();
-		if (status && log === '') return ''; // --enable-privileged-webgl-extension
+		if (status && log === '') {return '';} // --enable-privileged-webgl-extension
 		// console.log( '**' + type + '**', gl.getExtension( 'WEBGL_debug_shaders' ).getTranslatedShaderSource( shader ) );
 
 		const source = gl.getShaderSource(shader);
@@ -12723,7 +12723,7 @@
 
 		for (const name in defines) {
 			const value = defines[name];
-			if (value === false) continue;
+			if (value === false) {continue;}
 			chunks.push('#define ' + name + ' ' + value);
 		}
 
@@ -13429,15 +13429,15 @@
 		}
 
 		function sort(customOpaqueSort, customTransparentSort) {
-			if (opaque.length > 1) opaque.sort(customOpaqueSort || painterSortStable);
-			if (transparent.length > 1) transparent.sort(customTransparentSort || reversePainterSortStable);
+			if (opaque.length > 1) {opaque.sort(customOpaqueSort || painterSortStable);}
+			if (transparent.length > 1) {transparent.sort(customTransparentSort || reversePainterSortStable);}
 		}
 
 		function finish() {
 			// Clear references from inactive renderItems in the list
 			for (let i = renderItemsIndex, il = renderItems.length; i < il; i++) {
 				const renderItem = renderItems[i];
-				if (renderItem.id === null) break;
+				if (renderItem.id === null) {break;}
 				renderItem.id = null;
 				renderItem.object = null;
 				renderItem.geometry = null;
@@ -13641,7 +13641,7 @@
 			hemi: []
 		};
 
-		for (let i = 0; i < 9; i++) state.probe.push(new Vector3());
+		for (let i = 0; i < 9; i++) {state.probe.push(new Vector3());}
 
 		const vector3 = new Vector3();
 		const matrix4 = new Matrix4();
@@ -13652,7 +13652,7 @@
 					g = 0,
 					b = 0;
 
-			for (let i = 0; i < 9; i++) state.probe[i].set(0, 0, 0);
+			for (let i = 0; i < 9; i++) {state.probe[i].set(0, 0, 0);}
 
 			let directionalLength = 0;
 			let pointLength = 0;
@@ -14114,9 +14114,9 @@
 		this.type = PCFShadowMap;
 
 		this.render = function (lights, scene, camera) {
-			if (scope.enabled === false) return;
-			if (scope.autoUpdate === false && scope.needsUpdate === false) return;
-			if (lights.length === 0) return;
+			if (scope.enabled === false) {return;}
+			if (scope.autoUpdate === false && scope.needsUpdate === false) {return;}
+			if (lights.length === 0) {return;}
 
 			const currentRenderTarget = _renderer.getRenderTarget();
 
@@ -14144,7 +14144,7 @@
 					continue;
 				}
 
-				if (shadow.autoUpdate === false && shadow.needsUpdate === false) continue;
+				if (shadow.autoUpdate === false && shadow.needsUpdate === false) {continue;}
 
 				_shadowMapSize.copy(shadow.mapSize);
 
@@ -14359,7 +14359,7 @@
 		}
 
 		function renderObject(object, camera, shadowCamera, light, type) {
-			if (object.visible === false) return;
+			if (object.visible === false) {return;}
 			const visible = object.layers.test(camera.layers);
 
 			if (visible && (object.isMesh || object.isLine || object.isPoints)) {
@@ -14678,7 +14678,7 @@
 		}
 
 		function bindFramebuffer(target, framebuffer) {
-			if (framebuffer === null && xrFramebuffer !== null) framebuffer = xrFramebuffer; // use active XR framebuffer if available
+			if (framebuffer === null && xrFramebuffer !== null) {framebuffer = xrFramebuffer;} // use active XR framebuffer if available
 
 			if (currentBoundFramebuffers[target] !== framebuffer) {
 				gl.bindFramebuffer(target, framebuffer);
@@ -14845,7 +14845,7 @@
 		function setMaterial(material, frontFaceCW) {
 			material.side === DoubleSide ? disable(gl.CULL_FACE) : enable(gl.CULL_FACE);
 			let flipSided = material.side === BackSide;
-			if (frontFaceCW) flipSided = !flipSided;
+			if (frontFaceCW) {flipSided = !flipSided;}
 			setFlipSided(flipSided);
 			material.blending === NormalBlending && material.transparent === false ? setBlending(NoBlending) : setBlending(material.blending, material.blendEquation, material.blendSrc, material.blendDst, material.blendEquationAlpha, material.blendSrcAlpha, material.blendDstAlpha, material.premultipliedAlpha);
 			depthBuffer.setFunc(material.depthFunc);
@@ -14900,7 +14900,7 @@
 
 		function setLineWidth(width) {
 			if (width !== currentLineWidth) {
-				if (lineWidthAvailable) gl.lineWidth(width);
+				if (lineWidthAvailable) {gl.lineWidth(width);}
 				currentLineWidth = width;
 			}
 		}
@@ -14929,7 +14929,7 @@
 
 
 		function activeTexture(webglSlot) {
-			if (webglSlot === undefined) webglSlot = gl.TEXTURE0 + maxTextures - 1;
+			if (webglSlot === undefined) {webglSlot = gl.TEXTURE0 + maxTextures - 1;}
 
 			if (currentTextureSlot !== webglSlot) {
 				gl.activeTexture(webglSlot);
@@ -15143,7 +15143,7 @@
 					const floor = needsPowerOfTwo ? floorPowerOfTwo : Math.floor;
 					const width = floor(scale * image.width);
 					const height = floor(scale * image.height);
-					if (_canvas === undefined) _canvas = createCanvas(width, height); // cube textures can't reuse the same canvas
+					if (_canvas === undefined) {_canvas = createCanvas(width, height);} // cube textures can't reuse the same canvas
 
 					const canvas = needsNewCanvas ? createCanvas(width, height) : _canvas;
 					canvas.width = width;
@@ -15169,7 +15169,7 @@
 		}
 
 		function textureNeedsPowerOfTwo(texture) {
-			if (isWebGL2) return false;
+			if (isWebGL2) {return false;}
 			return texture.wrapS !== ClampToEdgeWrapping || texture.wrapT !== ClampToEdgeWrapping || texture.minFilter !== NearestFilter && texture.minFilter !== LinearFilter;
 		}
 
@@ -15185,31 +15185,31 @@
 		}
 
 		function getInternalFormat(internalFormatName, glFormat, glType) {
-			if (isWebGL2 === false) return glFormat;
+			if (isWebGL2 === false) {return glFormat;}
 
 			if (internalFormatName !== null) {
-				if (_gl[internalFormatName] !== undefined) return _gl[internalFormatName];
+				if (_gl[internalFormatName] !== undefined) {return _gl[internalFormatName];}
 				console.warn('THREE.WebGLRenderer: Attempt to use non-existing WebGL internal format \'' + internalFormatName + '\'');
 			}
 
 			let internalFormat = glFormat;
 
 			if (glFormat === _gl.RED) {
-				if (glType === _gl.FLOAT) internalFormat = _gl.R32F;
-				if (glType === _gl.HALF_FLOAT) internalFormat = _gl.R16F;
-				if (glType === _gl.UNSIGNED_BYTE) internalFormat = _gl.R8;
+				if (glType === _gl.FLOAT) {internalFormat = _gl.R32F;}
+				if (glType === _gl.HALF_FLOAT) {internalFormat = _gl.R16F;}
+				if (glType === _gl.UNSIGNED_BYTE) {internalFormat = _gl.R8;}
 			}
 
 			if (glFormat === _gl.RGB) {
-				if (glType === _gl.FLOAT) internalFormat = _gl.RGB32F;
-				if (glType === _gl.HALF_FLOAT) internalFormat = _gl.RGB16F;
-				if (glType === _gl.UNSIGNED_BYTE) internalFormat = _gl.RGB8;
+				if (glType === _gl.FLOAT) {internalFormat = _gl.RGB32F;}
+				if (glType === _gl.HALF_FLOAT) {internalFormat = _gl.RGB16F;}
+				if (glType === _gl.UNSIGNED_BYTE) {internalFormat = _gl.RGB8;}
 			}
 
 			if (glFormat === _gl.RGBA) {
-				if (glType === _gl.FLOAT) internalFormat = _gl.RGBA32F;
-				if (glType === _gl.HALF_FLOAT) internalFormat = _gl.RGBA16F;
-				if (glType === _gl.UNSIGNED_BYTE) internalFormat = _gl.RGBA8;
+				if (glType === _gl.FLOAT) {internalFormat = _gl.RGBA32F;}
+				if (glType === _gl.HALF_FLOAT) {internalFormat = _gl.RGBA16F;}
+				if (glType === _gl.UNSIGNED_BYTE) {internalFormat = _gl.RGBA8;}
 			}
 
 			if (internalFormat === _gl.R16F || internalFormat === _gl.R32F || internalFormat === _gl.RGBA16F || internalFormat === _gl.RGBA32F) {
@@ -15251,7 +15251,7 @@
 
 		function deallocateTexture(texture) {
 			const textureProperties = properties.get(texture);
-			if (textureProperties.__webglInit === undefined) return;
+			if (textureProperties.__webglInit === undefined) {return;}
 
 			_gl.deleteTexture(textureProperties.__webglTexture);
 
@@ -15262,7 +15262,7 @@
 			const texture = renderTarget.texture;
 			const renderTargetProperties = properties.get(renderTarget);
 			const textureProperties = properties.get(texture);
-			if (!renderTarget) return;
+			if (!renderTarget) {return;}
 
 			if (textureProperties.__webglTexture !== undefined) {
 				_gl.deleteTexture(textureProperties.__webglTexture);
@@ -15276,15 +15276,15 @@
 				for (let i = 0; i < 6; i++) {
 					_gl.deleteFramebuffer(renderTargetProperties.__webglFramebuffer[i]);
 
-					if (renderTargetProperties.__webglDepthbuffer) _gl.deleteRenderbuffer(renderTargetProperties.__webglDepthbuffer[i]);
+					if (renderTargetProperties.__webglDepthbuffer) {_gl.deleteRenderbuffer(renderTargetProperties.__webglDepthbuffer[i]);}
 				}
 			} else {
 				_gl.deleteFramebuffer(renderTargetProperties.__webglFramebuffer);
 
-				if (renderTargetProperties.__webglDepthbuffer) _gl.deleteRenderbuffer(renderTargetProperties.__webglDepthbuffer);
-				if (renderTargetProperties.__webglMultisampledFramebuffer) _gl.deleteFramebuffer(renderTargetProperties.__webglMultisampledFramebuffer);
-				if (renderTargetProperties.__webglColorRenderbuffer) _gl.deleteRenderbuffer(renderTargetProperties.__webglColorRenderbuffer);
-				if (renderTargetProperties.__webglDepthRenderbuffer) _gl.deleteRenderbuffer(renderTargetProperties.__webglDepthRenderbuffer);
+				if (renderTargetProperties.__webglDepthbuffer) {_gl.deleteRenderbuffer(renderTargetProperties.__webglDepthbuffer);}
+				if (renderTargetProperties.__webglMultisampledFramebuffer) {_gl.deleteFramebuffer(renderTargetProperties.__webglMultisampledFramebuffer);}
+				if (renderTargetProperties.__webglColorRenderbuffer) {_gl.deleteRenderbuffer(renderTargetProperties.__webglColorRenderbuffer);}
+				if (renderTargetProperties.__webglDepthRenderbuffer) {_gl.deleteRenderbuffer(renderTargetProperties.__webglDepthRenderbuffer);}
 			}
 
 			properties.remove(texture);
@@ -15312,7 +15312,7 @@
 
 		function setTexture2D(texture, slot) {
 			const textureProperties = properties.get(texture);
-			if (texture.isVideoTexture) updateVideoTexture(texture);
+			if (texture.isVideoTexture) {updateVideoTexture(texture);}
 
 			if (texture.version > 0 && textureProperties.__version !== texture.version) {
 				const image = texture.image;
@@ -15418,9 +15418,9 @@
 
 			if (extensions.has('EXT_texture_filter_anisotropic') === true) {
 				const extension = extensions.get('EXT_texture_filter_anisotropic');
-				if (texture.type === FloatType && extensions.has('OES_texture_float_linear') === false) return; // verify extension for WebGL 1 and WebGL 2
+				if (texture.type === FloatType && extensions.has('OES_texture_float_linear') === false) {return;} // verify extension for WebGL 1 and WebGL 2
 
-				if (isWebGL2 === false && texture.type === HalfFloatType && extensions.has('OES_texture_half_float_linear') === false) return; // verify extension for WebGL 1 only
+				if (isWebGL2 === false && texture.type === HalfFloatType && extensions.has('OES_texture_half_float_linear') === false) {return;} // verify extension for WebGL 1 only
 
 				if (texture.anisotropy > 1 || properties.get(texture).__currentAnisotropy) {
 					_gl.texParameterf(textureType, extension.TEXTURE_MAX_ANISOTROPY_EXT, Math.min(texture.anisotropy, capabilities.getMaxAnisotropy()));
@@ -15441,8 +15441,8 @@
 
 		function uploadTexture(textureProperties, texture, slot) {
 			let textureType = _gl.TEXTURE_2D;
-			if (texture.isDataTexture2DArray) textureType = _gl.TEXTURE_2D_ARRAY;
-			if (texture.isDataTexture3D) textureType = _gl.TEXTURE_3D;
+			if (texture.isDataTexture2DArray) {textureType = _gl.TEXTURE_2D_ARRAY;}
+			if (texture.isDataTexture3D) {textureType = _gl.TEXTURE_3D;}
 			initTexture(textureProperties, texture);
 			state.activeTexture(_gl.TEXTURE0 + slot);
 			state.bindTexture(textureType, textureProperties.__webglTexture);
@@ -15575,11 +15575,11 @@
 			}
 
 			textureProperties.__version = texture.version;
-			if (texture.onUpdate) texture.onUpdate(texture);
+			if (texture.onUpdate) {texture.onUpdate(texture);}
 		}
 
 		function uploadCubeTexture(textureProperties, texture, slot) {
-			if (texture.image.length !== 6) return;
+			if (texture.image.length !== 6) {return;}
 			initTexture(textureProperties, texture);
 			state.activeTexture(_gl.TEXTURE0 + slot);
 			state.bindTexture(_gl.TEXTURE_CUBE_MAP, textureProperties.__webglTexture);
@@ -15663,7 +15663,7 @@
 			}
 
 			textureProperties.__version = texture.version;
-			if (texture.onUpdate) texture.onUpdate(texture);
+			if (texture.onUpdate) {texture.onUpdate(texture);}
 		} // Render targets
 		// Setup storage for target texture and bind it to correct framebuffer
 
@@ -15744,7 +15744,7 @@
 
 		function setupDepthTexture(framebuffer, renderTarget) {
 			const isCube = renderTarget && renderTarget.isWebGLCubeRenderTarget;
-			if (isCube) throw new Error('Depth Texture with cube render targets is not supported');
+			if (isCube) {throw new Error('Depth Texture with cube render targets is not supported');}
 			state.bindFramebuffer(_gl.FRAMEBUFFER, framebuffer);
 
 			if (!(renderTarget.depthTexture && renderTarget.depthTexture.isDepthTexture)) {
@@ -15777,7 +15777,7 @@
 			const isCube = renderTarget.isWebGLCubeRenderTarget === true;
 
 			if (renderTarget.depthTexture) {
-				if (isCube) throw new Error('target.depthTexture not supported in Cube render targets');
+				if (isCube) {throw new Error('target.depthTexture not supported in Cube render targets');}
 				setupDepthTexture(renderTargetProperties.__webglFramebuffer, renderTarget);
 			} else {
 				if (isCube) {
@@ -15924,8 +15924,8 @@
 					const width = renderTarget.width;
 					const height = renderTarget.height;
 					let mask = _gl.COLOR_BUFFER_BIT;
-					if (renderTarget.depthBuffer) mask |= _gl.DEPTH_BUFFER_BIT;
-					if (renderTarget.stencilBuffer) mask |= _gl.STENCIL_BUFFER_BIT;
+					if (renderTarget.depthBuffer) {mask |= _gl.DEPTH_BUFFER_BIT;}
+					if (renderTarget.stencilBuffer) {mask |= _gl.STENCIL_BUFFER_BIT;}
 					const renderTargetProperties = properties.get(renderTarget);
 					state.bindFramebuffer(_gl.READ_FRAMEBUFFER, renderTargetProperties.__webglMultisampledFramebuffer);
 					state.bindFramebuffer(_gl.DRAW_FRAMEBUFFER, renderTargetProperties.__webglFramebuffer);
@@ -16003,19 +16003,19 @@
 
 		function convert(p) {
 			let extension;
-			if (p === UnsignedByteType) return gl.UNSIGNED_BYTE;
-			if (p === UnsignedShort4444Type) return gl.UNSIGNED_SHORT_4_4_4_4;
-			if (p === UnsignedShort5551Type) return gl.UNSIGNED_SHORT_5_5_5_1;
-			if (p === UnsignedShort565Type) return gl.UNSIGNED_SHORT_5_6_5;
-			if (p === ByteType) return gl.BYTE;
-			if (p === ShortType) return gl.SHORT;
-			if (p === UnsignedShortType) return gl.UNSIGNED_SHORT;
-			if (p === IntType) return gl.INT;
-			if (p === UnsignedIntType) return gl.UNSIGNED_INT;
-			if (p === FloatType) return gl.FLOAT;
+			if (p === UnsignedByteType) {return gl.UNSIGNED_BYTE;}
+			if (p === UnsignedShort4444Type) {return gl.UNSIGNED_SHORT_4_4_4_4;}
+			if (p === UnsignedShort5551Type) {return gl.UNSIGNED_SHORT_5_5_5_1;}
+			if (p === UnsignedShort565Type) {return gl.UNSIGNED_SHORT_5_6_5;}
+			if (p === ByteType) {return gl.BYTE;}
+			if (p === ShortType) {return gl.SHORT;}
+			if (p === UnsignedShortType) {return gl.UNSIGNED_SHORT;}
+			if (p === IntType) {return gl.INT;}
+			if (p === UnsignedIntType) {return gl.UNSIGNED_INT;}
+			if (p === FloatType) {return gl.FLOAT;}
 
 			if (p === HalfFloatType) {
-				if (isWebGL2) return gl.HALF_FLOAT;
+				if (isWebGL2) {return gl.HALF_FLOAT;}
 				extension = extensions.get('OES_texture_half_float');
 
 				if (extension !== null) {
@@ -16025,29 +16025,29 @@
 				}
 			}
 
-			if (p === AlphaFormat) return gl.ALPHA;
-			if (p === RGBFormat) return gl.RGB;
-			if (p === RGBAFormat) return gl.RGBA;
-			if (p === LuminanceFormat) return gl.LUMINANCE;
-			if (p === LuminanceAlphaFormat) return gl.LUMINANCE_ALPHA;
-			if (p === DepthFormat) return gl.DEPTH_COMPONENT;
-			if (p === DepthStencilFormat) return gl.DEPTH_STENCIL;
-			if (p === RedFormat) return gl.RED; // WebGL2 formats.
+			if (p === AlphaFormat) {return gl.ALPHA;}
+			if (p === RGBFormat) {return gl.RGB;}
+			if (p === RGBAFormat) {return gl.RGBA;}
+			if (p === LuminanceFormat) {return gl.LUMINANCE;}
+			if (p === LuminanceAlphaFormat) {return gl.LUMINANCE_ALPHA;}
+			if (p === DepthFormat) {return gl.DEPTH_COMPONENT;}
+			if (p === DepthStencilFormat) {return gl.DEPTH_STENCIL;}
+			if (p === RedFormat) {return gl.RED;} // WebGL2 formats.
 
-			if (p === RedIntegerFormat) return gl.RED_INTEGER;
-			if (p === RGFormat) return gl.RG;
-			if (p === RGIntegerFormat) return gl.RG_INTEGER;
-			if (p === RGBIntegerFormat) return gl.RGB_INTEGER;
-			if (p === RGBAIntegerFormat) return gl.RGBA_INTEGER;
+			if (p === RedIntegerFormat) {return gl.RED_INTEGER;}
+			if (p === RGFormat) {return gl.RG;}
+			if (p === RGIntegerFormat) {return gl.RG_INTEGER;}
+			if (p === RGBIntegerFormat) {return gl.RGB_INTEGER;}
+			if (p === RGBAIntegerFormat) {return gl.RGBA_INTEGER;}
 
 			if (p === RGB_S3TC_DXT1_Format || p === RGBA_S3TC_DXT1_Format || p === RGBA_S3TC_DXT3_Format || p === RGBA_S3TC_DXT5_Format) {
 				extension = extensions.get('WEBGL_compressed_texture_s3tc');
 
 				if (extension !== null) {
-					if (p === RGB_S3TC_DXT1_Format) return extension.COMPRESSED_RGB_S3TC_DXT1_EXT;
-					if (p === RGBA_S3TC_DXT1_Format) return extension.COMPRESSED_RGBA_S3TC_DXT1_EXT;
-					if (p === RGBA_S3TC_DXT3_Format) return extension.COMPRESSED_RGBA_S3TC_DXT3_EXT;
-					if (p === RGBA_S3TC_DXT5_Format) return extension.COMPRESSED_RGBA_S3TC_DXT5_EXT;
+					if (p === RGB_S3TC_DXT1_Format) {return extension.COMPRESSED_RGB_S3TC_DXT1_EXT;}
+					if (p === RGBA_S3TC_DXT1_Format) {return extension.COMPRESSED_RGBA_S3TC_DXT1_EXT;}
+					if (p === RGBA_S3TC_DXT3_Format) {return extension.COMPRESSED_RGBA_S3TC_DXT3_EXT;}
+					if (p === RGBA_S3TC_DXT5_Format) {return extension.COMPRESSED_RGBA_S3TC_DXT5_EXT;}
 				} else {
 					return null;
 				}
@@ -16057,10 +16057,10 @@
 				extension = extensions.get('WEBGL_compressed_texture_pvrtc');
 
 				if (extension !== null) {
-					if (p === RGB_PVRTC_4BPPV1_Format) return extension.COMPRESSED_RGB_PVRTC_4BPPV1_IMG;
-					if (p === RGB_PVRTC_2BPPV1_Format) return extension.COMPRESSED_RGB_PVRTC_2BPPV1_IMG;
-					if (p === RGBA_PVRTC_4BPPV1_Format) return extension.COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;
-					if (p === RGBA_PVRTC_2BPPV1_Format) return extension.COMPRESSED_RGBA_PVRTC_2BPPV1_IMG;
+					if (p === RGB_PVRTC_4BPPV1_Format) {return extension.COMPRESSED_RGB_PVRTC_4BPPV1_IMG;}
+					if (p === RGB_PVRTC_2BPPV1_Format) {return extension.COMPRESSED_RGB_PVRTC_2BPPV1_IMG;}
+					if (p === RGBA_PVRTC_4BPPV1_Format) {return extension.COMPRESSED_RGBA_PVRTC_4BPPV1_IMG;}
+					if (p === RGBA_PVRTC_2BPPV1_Format) {return extension.COMPRESSED_RGBA_PVRTC_2BPPV1_IMG;}
 				} else {
 					return null;
 				}
@@ -16080,8 +16080,8 @@
 				extension = extensions.get('WEBGL_compressed_texture_etc');
 
 				if (extension !== null) {
-					if (p === RGB_ETC2_Format) return extension.COMPRESSED_RGB8_ETC2;
-					if (p === RGBA_ETC2_EAC_Format) return extension.COMPRESSED_RGBA8_ETC2_EAC;
+					if (p === RGB_ETC2_Format) {return extension.COMPRESSED_RGB8_ETC2;}
+					if (p === RGBA_ETC2_EAC_Format) {return extension.COMPRESSED_RGBA8_ETC2_EAC;}
 				}
 			}
 
@@ -16108,7 +16108,7 @@
 			}
 
 			if (p === UnsignedInt248Type) {
-				if (isWebGL2) return gl.UNSIGNED_INT_24_8;
+				if (isWebGL2) {return gl.UNSIGNED_INT_24_8;}
 				extension = extensions.get('WEBGL_depth_texture');
 
 				if (extension !== null) {
@@ -16502,7 +16502,7 @@
 						depth: attributes.depth,
 						stencil: attributes.stencil,
 						framebufferScaleFactor: framebufferScaleFactor
-					}; // eslint-disable-next-line no-undef
+					};  
 
 					const baseLayer = new XRWebGLLayer(session, gl, layerInit);
 					session.updateRenderState({
@@ -16699,7 +16699,7 @@
 					controller.update(inputSource, frame, referenceSpace);
 				}
 
-				if (onAnimationFrameCallback) onAnimationFrameCallback(time, frame);
+				if (onAnimationFrameCallback) {onAnimationFrameCallback(time, frame);}
 			}
 
 			const animation = new WebGLAnimation();
@@ -16998,13 +16998,13 @@
 			if (material.bumpMap) {
 				uniforms.bumpMap.value = material.bumpMap;
 				uniforms.bumpScale.value = material.bumpScale;
-				if (material.side === BackSide) uniforms.bumpScale.value *= -1;
+				if (material.side === BackSide) {uniforms.bumpScale.value *= -1;}
 			}
 
 			if (material.normalMap) {
 				uniforms.normalMap.value = material.normalMap;
 				uniforms.normalScale.value.copy(material.normalScale);
-				if (material.side === BackSide) uniforms.normalScale.value.negate();
+				if (material.side === BackSide) {uniforms.normalScale.value.negate();}
 			}
 
 			if (material.displacementMap) {
@@ -17026,13 +17026,13 @@
 			if (material.bumpMap) {
 				uniforms.bumpMap.value = material.bumpMap;
 				uniforms.bumpScale.value = material.bumpScale;
-				if (material.side === BackSide) uniforms.bumpScale.value *= -1;
+				if (material.side === BackSide) {uniforms.bumpScale.value *= -1;}
 			}
 
 			if (material.normalMap) {
 				uniforms.normalMap.value = material.normalMap;
 				uniforms.normalScale.value.copy(material.normalScale);
-				if (material.side === BackSide) uniforms.normalScale.value.negate();
+				if (material.side === BackSide) {uniforms.normalScale.value.negate();}
 			}
 
 			if (material.displacementMap) {
@@ -17061,13 +17061,13 @@
 			if (material.bumpMap) {
 				uniforms.bumpMap.value = material.bumpMap;
 				uniforms.bumpScale.value = material.bumpScale;
-				if (material.side === BackSide) uniforms.bumpScale.value *= -1;
+				if (material.side === BackSide) {uniforms.bumpScale.value *= -1;}
 			}
 
 			if (material.normalMap) {
 				uniforms.normalMap.value = material.normalMap;
 				uniforms.normalScale.value.copy(material.normalScale);
-				if (material.side === BackSide) uniforms.normalScale.value.negate();
+				if (material.side === BackSide) {uniforms.normalScale.value.negate();}
 			}
 
 			if (material.displacementMap) {
@@ -17090,7 +17090,7 @@
 
 			uniforms.clearcoat.value = material.clearcoat;
 			uniforms.clearcoatRoughness.value = material.clearcoatRoughness;
-			if (material.sheen) uniforms.sheen.value.copy(material.sheen);
+			if (material.sheen) {uniforms.sheen.value.copy(material.sheen);}
 
 			if (material.clearcoatMap) {
 				uniforms.clearcoatMap.value = material.clearcoatMap;
@@ -17124,13 +17124,13 @@
 			if (material.bumpMap) {
 				uniforms.bumpMap.value = material.bumpMap;
 				uniforms.bumpScale.value = material.bumpScale;
-				if (material.side === BackSide) uniforms.bumpScale.value *= -1;
+				if (material.side === BackSide) {uniforms.bumpScale.value *= -1;}
 			}
 
 			if (material.normalMap) {
 				uniforms.normalMap.value = material.normalMap;
 				uniforms.normalScale.value.copy(material.normalScale);
-				if (material.side === BackSide) uniforms.normalScale.value.negate();
+				if (material.side === BackSide) {uniforms.normalScale.value.negate();}
 			}
 
 			if (material.displacementMap) {
@@ -17164,13 +17164,13 @@
 			if (material.bumpMap) {
 				uniforms.bumpMap.value = material.bumpMap;
 				uniforms.bumpScale.value = material.bumpScale;
-				if (material.side === BackSide) uniforms.bumpScale.value *= -1;
+				if (material.side === BackSide) {uniforms.bumpScale.value *= -1;}
 			}
 
 			if (material.normalMap) {
 				uniforms.normalMap.value = material.normalMap;
 				uniforms.normalScale.value.copy(material.normalScale);
-				if (material.side === BackSide) uniforms.normalScale.value.negate();
+				if (material.side === BackSide) {uniforms.normalScale.value.negate();}
 			}
 
 			if (material.displacementMap) {
@@ -17303,7 +17303,7 @@
 
 				const context = _canvas.getContext(contextName, contextAttributes);
 
-				if (context !== null) return context;
+				if (context !== null) {return context;}
 			}
 
 			return null;
@@ -17413,12 +17413,12 @@
 
 		this.forceContextLoss = function () {
 			const extension = extensions.get('WEBGL_lose_context');
-			if (extension) extension.loseContext();
+			if (extension) {extension.loseContext();}
 		};
 
 		this.forceContextRestore = function () {
 			const extension = extensions.get('WEBGL_lose_context');
-			if (extension) extension.restoreContext();
+			if (extension) {extension.restoreContext();}
 		};
 
 		this.getPixelRatio = function () {
@@ -17426,7 +17426,7 @@
 		};
 
 		this.setPixelRatio = function (value) {
-			if (value === undefined) return;
+			if (value === undefined) {return;}
 			_pixelRatio = value;
 			this.setSize(_width, _height, false);
 		};
@@ -17554,9 +17554,9 @@
 
 		this.clear = function (color, depth, stencil) {
 			let bits = 0;
-			if (color === undefined || color) bits |= _gl.COLOR_BUFFER_BIT;
-			if (depth === undefined || depth) bits |= _gl.DEPTH_BUFFER_BIT;
-			if (stencil === undefined || stencil) bits |= _gl.STENCIL_BUFFER_BIT;
+			if (color === undefined || color) {bits |= _gl.COLOR_BUFFER_BIT;}
+			if (depth === undefined || depth) {bits |= _gl.DEPTH_BUFFER_BIT;}
+			if (stencil === undefined || stencil) {bits |= _gl.STENCIL_BUFFER_BIT;}
 
 			_gl.clear(bits);
 		};
@@ -17648,10 +17648,10 @@
 		this.renderBufferImmediate = function (object, program) {
 			bindingStates.initAttributes();
 			const buffers = properties.get(object);
-			if (object.hasPositions && !buffers.position) buffers.position = _gl.createBuffer();
-			if (object.hasNormals && !buffers.normal) buffers.normal = _gl.createBuffer();
-			if (object.hasUvs && !buffers.uv) buffers.uv = _gl.createBuffer();
-			if (object.hasColors && !buffers.color) buffers.color = _gl.createBuffer();
+			if (object.hasPositions && !buffers.position) {buffers.position = _gl.createBuffer();}
+			if (object.hasNormals && !buffers.normal) {buffers.normal = _gl.createBuffer();}
+			if (object.hasUvs && !buffers.uv) {buffers.uv = _gl.createBuffer();}
+			if (object.hasColors && !buffers.color) {buffers.color = _gl.createBuffer();}
 			const programAttributes = program.getAttributes();
 
 			if (object.hasPositions) {
@@ -17702,7 +17702,7 @@
 		};
 
 		this.renderBufferDirect = function (camera, scene, geometry, material, object, group) {
-			if (scene === null) scene = _emptyScene; // renderBufferDirect second parameter used to be fog (could be null)
+			if (scene === null) {scene = _emptyScene;} // renderBufferDirect second parameter used to be fog (could be null)
 
 			const frontFaceCW = object.isMesh && object.matrixWorld.determinant() < 0;
 			const program = setProgram(camera, scene, material, object);
@@ -17712,7 +17712,7 @@
 			const position = geometry.attributes.position; //
 
 			if (index === null) {
-				if (position === undefined || position.count === 0) return;
+				if (position === undefined || position.count === 0) {return;}
 			} else if (index.count === 0) {
 				return;
 			} //
@@ -17748,7 +17748,7 @@
 			const drawStart = Math.max(rangeStart, groupStart);
 			const drawEnd = Math.min(dataCount, rangeStart + rangeCount, groupStart + groupCount) - 1;
 			const drawCount = Math.max(0, drawEnd - drawStart + 1);
-			if (drawCount === 0) return; //
+			if (drawCount === 0) {return;} //
 
 			if (object.isMesh) {
 				if (material.wireframe === true) {
@@ -17759,7 +17759,7 @@
 				}
 			} else if (object.isLine) {
 				let lineWidth = material.linewidth;
-				if (lineWidth === undefined) lineWidth = 1; // Not using Line*Material
+				if (lineWidth === undefined) {lineWidth = 1;} // Not using Line*Material
 
 				state.setLineWidth(lineWidth * getTargetPixelRatio());
 
@@ -17820,7 +17820,7 @@
 		let onAnimationFrameCallback = null;
 
 		function onAnimationFrame(time) {
-			if (onAnimationFrameCallback) onAnimationFrameCallback(time);
+			if (onAnimationFrameCallback) {onAnimationFrameCallback(time);}
 		}
 
 		function onXRSessionStart() {
@@ -17833,7 +17833,7 @@
 
 		const animation = new WebGLAnimation();
 		animation.setAnimationLoop(onAnimationFrame);
-		if (typeof window !== 'undefined') animation.setContext(window);
+		if (typeof window !== 'undefined') {animation.setContext(window);}
 
 		this.setAnimationLoop = function (callback) {
 			onAnimationFrameCallback = callback;
@@ -17862,18 +17862,18 @@
 				return;
 			}
 
-			if (_isContextLost === true) return; // update scene graph
+			if (_isContextLost === true) {return;} // update scene graph
 
-			if (scene.autoUpdate === true) scene.updateMatrixWorld(); // update camera matrices and frustum
+			if (scene.autoUpdate === true) {scene.updateMatrixWorld();} // update camera matrices and frustum
 
-			if (camera.parent === null) camera.updateMatrixWorld();
+			if (camera.parent === null) {camera.updateMatrixWorld();}
 
 			if (xr.enabled === true && xr.isPresenting === true) {
 				camera = xr.getCamera(camera);
 			} //
 
 
-			if (scene.isScene === true) scene.onBeforeRender(_this, scene, camera, renderTarget || _currentRenderTarget);
+			if (scene.isScene === true) {scene.onBeforeRender(_this, scene, camera, renderTarget || _currentRenderTarget);}
 			currentRenderState = renderStates.get(scene, renderStateStack.length);
 			currentRenderState.init();
 			renderStateStack.push(currentRenderState);
@@ -17895,14 +17895,14 @@
 			} //
 
 
-			if (_clippingEnabled === true) clipping.beginShadows();
+			if (_clippingEnabled === true) {clipping.beginShadows();}
 			const shadowsArray = currentRenderState.state.shadowsArray;
 			shadowMap.render(shadowsArray, scene, camera);
 			currentRenderState.setupLights();
 			currentRenderState.setupLightsView(camera);
-			if (_clippingEnabled === true) clipping.endShadows(); //
+			if (_clippingEnabled === true) {clipping.endShadows();} //
 
-			if (this.info.autoReset === true) this.info.reset();
+			if (this.info.autoReset === true) {this.info.reset();}
 
 			if (renderTarget !== undefined) {
 				this.setRenderTarget(renderTarget);
@@ -17913,8 +17913,8 @@
 
 			const opaqueObjects = currentRenderList.opaque;
 			const transparentObjects = currentRenderList.transparent;
-			if (opaqueObjects.length > 0) renderObjects(opaqueObjects, scene, camera);
-			if (transparentObjects.length > 0) renderObjects(transparentObjects, scene, camera); //
+			if (opaqueObjects.length > 0) {renderObjects(opaqueObjects, scene, camera);}
+			if (transparentObjects.length > 0) {renderObjects(transparentObjects, scene, camera);} //
 
 			if (_currentRenderTarget !== null) {
 				// Generate mipmap if we're using any kind of mipmap filtering
@@ -17924,7 +17924,7 @@
 			} //
 
 
-			if (scene.isScene === true) scene.onAfterRender(_this, scene, camera); // Ensure depth buffer writing is enabled so it can be cleared on next render
+			if (scene.isScene === true) {scene.onAfterRender(_this, scene, camera);} // Ensure depth buffer writing is enabled so it can be cleared on next render
 
 			state.buffers.depth.setTest(true);
 			state.buffers.depth.setMask(true);
@@ -17952,14 +17952,14 @@
 		};
 
 		function projectObject(object, camera, groupOrder, sortObjects) {
-			if (object.visible === false) return;
+			if (object.visible === false) {return;}
 			const visible = object.layers.test(camera.layers);
 
 			if (visible) {
 				if (object.isGroup) {
 					groupOrder = object.renderOrder;
 				} else if (object.isLOD) {
-					if (object.autoUpdate === true) object.update(camera);
+					if (object.autoUpdate === true) {object.update(camera);}
 				} else if (object.isLight) {
 					currentRenderState.pushLight(object);
 
@@ -18073,7 +18073,7 @@
 		}
 
 		function getProgram(material, scene, object) {
-			if (scene.isScene !== true) scene = _emptyScene; // scene could be a Mesh, Line, Points, ...
+			if (scene.isScene !== true) {scene = _emptyScene;} // scene could be a Mesh, Line, Points, ...
 
 			const materialProperties = properties.get(material);
 			const lights = currentRenderState.state.lights;
@@ -18161,7 +18161,7 @@
 		}
 
 		function setProgram(camera, scene, material, object) {
-			if (scene.isScene !== true) scene = _emptyScene; // scene could be a Mesh, Line, Points, ...
+			if (scene.isScene !== true) {scene = _emptyScene;} // scene could be a Mesh, Line, Points, ...
 
 			textures.resetTextureUnits();
 			const fog = scene.fog;
@@ -18531,7 +18531,7 @@
 			} // Generate mipmaps only when copying level 0
 
 
-			if (level === 0 && dstTexture.generateMipmaps) _gl.generateMipmap(_gl.TEXTURE_2D);
+			if (level === 0 && dstTexture.generateMipmaps) {_gl.generateMipmap(_gl.TEXTURE_2D);}
 			state.unbindTexture();
 		};
 
@@ -18600,7 +18600,7 @@
 			_gl.pixelStorei(_gl.UNPACK_SKIP_IMAGES, unpackSkipImages); // Generate mipmaps only when copying level 0
 
 
-			if (level === 0 && dstTexture.generateMipmaps) _gl.generateMipmap(glTarget);
+			if (level === 0 && dstTexture.generateMipmaps) {_gl.generateMipmap(glTarget);}
 			state.unbindTexture();
 		};
 
@@ -18620,7 +18620,7 @@
 		if (typeof __THREE_DEVTOOLS__ !== 'undefined') {
 			__THREE_DEVTOOLS__.dispatchEvent(new CustomEvent('observe', {
 				detail: this
-			})); // eslint-disable-line no-undef
+			}));  
 
 		}
 	}
@@ -18694,17 +18694,17 @@
 			if (typeof __THREE_DEVTOOLS__ !== 'undefined') {
 				__THREE_DEVTOOLS__.dispatchEvent(new CustomEvent('observe', {
 					detail: this
-				})); // eslint-disable-line no-undef
+				}));  
 
 			}
 		}
 
 		copy(source, recursive) {
 			super.copy(source, recursive);
-			if (source.background !== null) this.background = source.background.clone();
-			if (source.environment !== null) this.environment = source.environment.clone();
-			if (source.fog !== null) this.fog = source.fog.clone();
-			if (source.overrideMaterial !== null) this.overrideMaterial = source.overrideMaterial.clone();
+			if (source.background !== null) {this.background = source.background.clone();}
+			if (source.environment !== null) {this.environment = source.environment.clone();}
+			if (source.fog !== null) {this.fog = source.fog.clone();}
+			if (source.overrideMaterial !== null) {this.overrideMaterial = source.overrideMaterial.clone();}
 			this.autoUpdate = source.autoUpdate;
 			this.matrixAutoUpdate = source.matrixAutoUpdate;
 			return this;
@@ -18712,9 +18712,9 @@
 
 		toJSON(meta) {
 			const data = super.toJSON(meta);
-			if (this.background !== null) data.object.background = this.background.toJSON(meta);
-			if (this.environment !== null) data.object.environment = this.environment.toJSON(meta);
-			if (this.fog !== null) data.object.fog = this.fog.toJSON();
+			if (this.background !== null) {data.object.background = this.background.toJSON(meta);}
+			if (this.environment !== null) {data.object.environment = this.environment.toJSON(meta);}
+			if (this.fog !== null) {data.object.fog = this.fog.toJSON();}
 			return data;
 		}
 
@@ -18739,7 +18739,7 @@
 		}
 
 		set needsUpdate(value) {
-			if (value === true) this.version++;
+			if (value === true) {this.version++;}
 		}
 
 		setUsage(value) {
@@ -19156,7 +19156,7 @@
 			}
 
 			const distance = raycaster.ray.origin.distanceTo(_intersectPoint);
-			if (distance < raycaster.near || distance > raycaster.far) return;
+			if (distance < raycaster.near || distance > raycaster.far) {return;}
 			intersects.push({
 				distance: distance,
 				point: _intersectPoint.clone(),
@@ -19168,7 +19168,7 @@
 
 		copy(source) {
 			super.copy(source);
-			if (source.center !== undefined) this.center.copy(source.center);
+			if (source.center !== undefined) {this.center.copy(source.center);}
 			this.material = source.material;
 			return this;
 		}
@@ -19313,7 +19313,7 @@
 
 		toJSON(meta) {
 			const data = super.toJSON(meta);
-			if (this.autoUpdate === false) data.object.autoUpdate = false;
+			if (this.autoUpdate === false) {data.object.autoUpdate = false;}
 			data.object.levels = [];
 			const levels = this.levels;
 
@@ -19635,7 +19635,7 @@
 		copy(source) {
 			super.copy(source);
 			this.instanceMatrix.copy(source.instanceMatrix);
-			if (source.instanceColor !== null) this.instanceColor = source.instanceColor.clone();
+			if (source.instanceColor !== null) {this.instanceColor = source.instanceColor.clone();}
 			this.count = source.count;
 			return this;
 		}
@@ -19653,7 +19653,7 @@
 			const raycastTimes = this.count;
 			_mesh.geometry = this.geometry;
 			_mesh.material = this.material;
-			if (_mesh.material === undefined) return;
+			if (_mesh.material === undefined) {return;}
 
 			for (let instanceId = 0; instanceId < raycastTimes; instanceId++) {
 				// calculate the world matrix for each instance
@@ -19800,14 +19800,14 @@
 			const threshold = raycaster.params.Line.threshold;
 			const drawRange = geometry.drawRange; // Checking boundingSphere distance to ray
 
-			if (geometry.boundingSphere === null) geometry.computeBoundingSphere();
+			if (geometry.boundingSphere === null) {geometry.computeBoundingSphere();}
 
 			_sphere$1.copy(geometry.boundingSphere);
 
 			_sphere$1.applyMatrix4(matrixWorld);
 
 			_sphere$1.radius += threshold;
-			if (raycaster.ray.intersectsSphere(_sphere$1) === false) return; //
+			if (raycaster.ray.intersectsSphere(_sphere$1) === false) {return;} //
 
 			_inverseMatrix$1.copy(matrixWorld).invert();
 
@@ -19838,11 +19838,11 @@
 
 						const distSq = _ray$1.distanceSqToSegment(vStart, vEnd, interRay, interSegment);
 
-						if (distSq > localThresholdSq) continue;
+						if (distSq > localThresholdSq) {continue;}
 						interRay.applyMatrix4(this.matrixWorld); //Move back to world space for distance calculation
 
 						const distance = raycaster.ray.origin.distanceTo(interRay);
-						if (distance < raycaster.near || distance > raycaster.far) continue;
+						if (distance < raycaster.near || distance > raycaster.far) {continue;}
 						intersects.push({
 							distance: distance,
 							// What do we want? intersection point on the ray or on the segment??
@@ -19864,11 +19864,11 @@
 
 						const distSq = _ray$1.distanceSqToSegment(vStart, vEnd, interRay, interSegment);
 
-						if (distSq > localThresholdSq) continue;
+						if (distSq > localThresholdSq) {continue;}
 						interRay.applyMatrix4(this.matrixWorld); //Move back to world space for distance calculation
 
 						const distance = raycaster.ray.origin.distanceTo(interRay);
-						if (distance < raycaster.near || distance > raycaster.far) continue;
+						if (distance < raycaster.near || distance > raycaster.far) {continue;}
 						intersects.push({
 							distance: distance,
 							// What do we want? intersection point on the ray or on the segment??
@@ -20045,14 +20045,14 @@
 			const threshold = raycaster.params.Points.threshold;
 			const drawRange = geometry.drawRange; // Checking boundingSphere distance to ray
 
-			if (geometry.boundingSphere === null) geometry.computeBoundingSphere();
+			if (geometry.boundingSphere === null) {geometry.computeBoundingSphere();}
 
 			_sphere.copy(geometry.boundingSphere);
 
 			_sphere.applyMatrix4(matrixWorld);
 
 			_sphere.radius += threshold;
-			if (raycaster.ray.intersectsSphere(_sphere) === false) return; //
+			if (raycaster.ray.intersectsSphere(_sphere) === false) {return;} //
 
 			_inverseMatrix.copy(matrixWorld).invert();
 
@@ -20136,7 +20136,7 @@
 
 			intersectPoint.applyMatrix4(matrixWorld);
 			const distance = raycaster.ray.origin.distanceTo(intersectPoint);
-			if (distance < raycaster.near || distance > raycaster.far) return;
+			if (distance < raycaster.near || distance > raycaster.far) {return;}
 			intersects.push({
 				distance: distance,
 				distanceToRay: Math.sqrt(rayPointDistanceSq),
@@ -20222,8 +20222,8 @@
 				throw new Error('DepthTexture format must be either THREE.DepthFormat or THREE.DepthStencilFormat');
 			}
 
-			if (type === undefined && format === DepthFormat) type = UnsignedShortType;
-			if (type === undefined && format === DepthStencilFormat) type = UnsignedInt248Type;
+			if (type === undefined && format === DepthFormat) {type = UnsignedShortType;}
+			if (type === undefined && format === DepthStencilFormat) {type = UnsignedInt248Type;}
 			super(null, mapping, wrapS, wrapT, magFilter, minFilter, format, type, anisotropy);
 			this.image = {
 				width: width,
@@ -20322,8 +20322,8 @@
 			generateTorso();
 
 			if (openEnded === false) {
-				if (radiusTop > 0) generateCap(true);
-				if (radiusBottom > 0) generateCap(false);
+				if (radiusTop > 0) {generateCap(true);}
+				if (radiusBottom > 0) {generateCap(false);}
 			} // build geometry
 
 
@@ -20602,9 +20602,9 @@
 					const min = Math.min(x0, x1, x2); // 0.9 is somewhat arbitrary
 
 					if (max > 0.9 && min < 0.1) {
-						if (x0 < 0.2) uvBuffer[i + 0] += 1;
-						if (x1 < 0.2) uvBuffer[i + 2] += 1;
-						if (x2 < 0.2) uvBuffer[i + 4] += 1;
+						if (x0 < 0.2) {uvBuffer[i + 0] += 1;}
+						if (x1 < 0.2) {uvBuffer[i + 2] += 1;}
+						if (x2 < 0.2) {uvBuffer[i + 4] += 1;}
 					}
 				}
 			}
@@ -20815,9 +20815,9 @@
 			const outerLen = hasHoles ? holeIndices[0] * dim : data.length;
 			let outerNode = linkedList(data, 0, outerLen, dim, true);
 			const triangles = [];
-			if (!outerNode || outerNode.next === outerNode.prev) return triangles;
+			if (!outerNode || outerNode.next === outerNode.prev) {return triangles;}
 			let minX, minY, maxX, maxY, x, y, invSize;
-			if (hasHoles) outerNode = eliminateHoles(data, holeIndices, outerNode, dim); // if the shape is not too simple, we'll use z-order curve hash later; calculate polygon bbox
+			if (hasHoles) {outerNode = eliminateHoles(data, holeIndices, outerNode, dim);} // if the shape is not too simple, we'll use z-order curve hash later; calculate polygon bbox
 
 			if (data.length > 80 * dim) {
 				minX = maxX = data[0];
@@ -20826,10 +20826,10 @@
 				for (let i = dim; i < outerLen; i += dim) {
 					x = data[i];
 					y = data[i + 1];
-					if (x < minX) minX = x;
-					if (y < minY) minY = y;
-					if (x > maxX) maxX = x;
-					if (y > maxY) maxY = y;
+					if (x < minX) {minX = x;}
+					if (y < minY) {minY = y;}
+					if (x > maxX) {maxX = x;}
+					if (y > maxY) {maxY = y;}
 				} // minX, minY and invSize are later used to transform coords into integers for z-order calculation
 
 
@@ -20846,9 +20846,9 @@
 		let i, last;
 
 		if (clockwise === signedArea(data, start, end, dim) > 0) {
-			for (i = start; i < end; i += dim) last = insertNode(i, data[i], data[i + 1], last);
+			for (i = start; i < end; i += dim) {last = insertNode(i, data[i], data[i + 1], last);}
 		} else {
-			for (i = end - dim; i >= start; i -= dim) last = insertNode(i, data[i], data[i + 1], last);
+			for (i = end - dim; i >= start; i -= dim) {last = insertNode(i, data[i], data[i + 1], last);}
 		}
 
 		if (last && equals(last, last.next)) {
@@ -20861,8 +20861,8 @@
 
 
 	function filterPoints(start, end) {
-		if (!start) return start;
-		if (!end) end = start;
+		if (!start) {return start;}
+		if (!end) {end = start;}
 		let p = start,
 				again;
 
@@ -20872,7 +20872,7 @@
 			if (!p.steiner && (equals(p, p.next) || area(p.prev, p, p.next) === 0)) {
 				removeNode(p);
 				p = end = p.prev;
-				if (p === p.next) break;
+				if (p === p.next) {break;}
 				again = true;
 			} else {
 				p = p.next;
@@ -20884,9 +20884,9 @@
 
 
 	function earcutLinked(ear, triangles, dim, minX, minY, invSize, pass) {
-		if (!ear) return; // interlink polygon nodes in z-order
+		if (!ear) {return;} // interlink polygon nodes in z-order
 
-		if (!pass && invSize) indexCurve(ear, minX, minY, invSize);
+		if (!pass && invSize) {indexCurve(ear, minX, minY, invSize);}
 		let stop = ear,
 				prev,
 				next; // iterate through ears, slicing them one by one
@@ -20930,13 +20930,13 @@
 		const a = ear.prev,
 					b = ear,
 					c = ear.next;
-		if (area(a, b, c) >= 0) return false; // reflex, can't be an ear
+		if (area(a, b, c) >= 0) {return false;} // reflex, can't be an ear
 		// now make sure we don't have other points inside the potential ear
 
 		let p = ear.next.next;
 
 		while (p !== ear.prev) {
-			if (pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) && area(p.prev, p, p.next) >= 0) return false;
+			if (pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) && area(p.prev, p, p.next) >= 0) {return false;}
 			p = p.next;
 		}
 
@@ -20947,7 +20947,7 @@
 		const a = ear.prev,
 					b = ear,
 					c = ear.next;
-		if (area(a, b, c) >= 0) return false; // reflex, can't be an ear
+		if (area(a, b, c) >= 0) {return false;} // reflex, can't be an ear
 		// triangle bbox; min & max are calculated like this for speed
 
 		const minTX = a.x < b.x ? a.x < c.x ? a.x : c.x : b.x < c.x ? b.x : c.x,
@@ -20961,21 +20961,21 @@
 				n = ear.nextZ; // look for points inside the triangle in both directions
 
 		while (p && p.z >= minZ && n && n.z <= maxZ) {
-			if (p !== ear.prev && p !== ear.next && pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) && area(p.prev, p, p.next) >= 0) return false;
+			if (p !== ear.prev && p !== ear.next && pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) && area(p.prev, p, p.next) >= 0) {return false;}
 			p = p.prevZ;
-			if (n !== ear.prev && n !== ear.next && pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, n.x, n.y) && area(n.prev, n, n.next) >= 0) return false;
+			if (n !== ear.prev && n !== ear.next && pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, n.x, n.y) && area(n.prev, n, n.next) >= 0) {return false;}
 			n = n.nextZ;
 		} // look for remaining points in decreasing z-order
 
 
 		while (p && p.z >= minZ) {
-			if (p !== ear.prev && p !== ear.next && pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) && area(p.prev, p, p.next) >= 0) return false;
+			if (p !== ear.prev && p !== ear.next && pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) && area(p.prev, p, p.next) >= 0) {return false;}
 			p = p.prevZ;
 		} // look for remaining points in increasing z-order
 
 
 		while (n && n.z <= maxZ) {
-			if (n !== ear.prev && n !== ear.next && pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, n.x, n.y) && area(n.prev, n, n.next) >= 0) return false;
+			if (n !== ear.prev && n !== ear.next && pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, n.x, n.y) && area(n.prev, n, n.next) >= 0) {return false;}
 			n = n.nextZ;
 		}
 
@@ -21043,7 +21043,7 @@
 			start = holeIndices[i] * dim;
 			end = i < len - 1 ? holeIndices[i + 1] * dim : data.length;
 			list = linkedList(data, start, end, dim, false);
-			if (list === list.next) list.steiner = true;
+			if (list === list.next) {list.steiner = true;}
 			queue.push(getLeftmost(list));
 		}
 
@@ -21090,8 +21090,8 @@
 					qx = x;
 
 					if (x === hx) {
-						if (hy === p.y) return p;
-						if (hy === p.next.y) return p.next;
+						if (hy === p.y) {return p;}
+						if (hy === p.next.y) {return p.next;}
 					}
 
 					m = p.x < p.next.x ? p : p.next;
@@ -21101,8 +21101,8 @@
 			p = p.next;
 		} while (p !== outerNode);
 
-		if (!m) return null;
-		if (hx === qx) return m; // hole touches outer segment; pick leftmost endpoint
+		if (!m) {return null;}
+		if (hx === qx) {return m;} // hole touches outer segment; pick leftmost endpoint
 		// look for points inside the triangle of hole point, segment intersection and endpoint;
 		// if there are no points found, we have a valid connection;
 		// otherwise choose the point of the minimum angle with the ray as connection point
@@ -21140,7 +21140,7 @@
 		let p = start;
 
 		do {
-			if (p.z === null) p.z = zOrder(p.x, p.y, minX, minY, invSize);
+			if (p.z === null) {p.z = zOrder(p.x, p.y, minX, minY, invSize);}
 			p.prevZ = p.prev;
 			p.nextZ = p.next;
 			p = p.next;
@@ -21178,7 +21178,7 @@
 				for (i = 0; i < inSize; i++) {
 					pSize++;
 					q = q.nextZ;
-					if (!q) break;
+					if (!q) {break;}
 				}
 
 				qSize = inSize;
@@ -21194,7 +21194,7 @@
 						qSize--;
 					}
 
-					if (tail) tail.nextZ = e;else list = e;
+					if (tail) {tail.nextZ = e;}else {list = e;}
 					e.prevZ = tail;
 					tail = e;
 				}
@@ -21231,7 +21231,7 @@
 				leftmost = start;
 
 		do {
-			if (p.x < leftmost.x || p.x === leftmost.x && p.y < leftmost.y) leftmost = p;
+			if (p.x < leftmost.x || p.x === leftmost.x && p.y < leftmost.y) {leftmost = p;}
 			p = p.next;
 		} while (p !== start);
 
@@ -21267,15 +21267,15 @@
 		const o2 = sign(area(p1, q1, q2));
 		const o3 = sign(area(p2, q2, p1));
 		const o4 = sign(area(p2, q2, q1));
-		if (o1 !== o2 && o3 !== o4) return true; // general case
+		if (o1 !== o2 && o3 !== o4) {return true;} // general case
 
-		if (o1 === 0 && onSegment(p1, p2, q1)) return true; // p1, q1 and p2 are collinear and p2 lies on p1q1
+		if (o1 === 0 && onSegment(p1, p2, q1)) {return true;} // p1, q1 and p2 are collinear and p2 lies on p1q1
 
-		if (o2 === 0 && onSegment(p1, q2, q1)) return true; // p1, q1 and q2 are collinear and q2 lies on p1q1
+		if (o2 === 0 && onSegment(p1, q2, q1)) {return true;} // p1, q1 and q2 are collinear and q2 lies on p1q1
 
-		if (o3 === 0 && onSegment(p2, p1, q2)) return true; // p2, q2 and p1 are collinear and p1 lies on p2q2
+		if (o3 === 0 && onSegment(p2, p1, q2)) {return true;} // p2, q2 and p1 are collinear and p1 lies on p2q2
 
-		if (o4 === 0 && onSegment(p2, q1, q2)) return true; // p2, q2 and q1 are collinear and q1 lies on p2q2
+		if (o4 === 0 && onSegment(p2, q1, q2)) {return true;} // p2, q2 and q1 are collinear and q1 lies on p2q2
 
 		return false;
 	} // for collinear points p, q, r, check if point q lies on segment pr
@@ -21294,7 +21294,7 @@
 		let p = a;
 
 		do {
-			if (p.i !== a.i && p.next.i !== a.i && p.i !== b.i && p.next.i !== b.i && intersects(p, p.next, a, b)) return true;
+			if (p.i !== a.i && p.next.i !== a.i && p.i !== b.i && p.next.i !== b.i && intersects(p, p.next, a, b)) {return true;}
 			p = p.next;
 		} while (p !== a);
 
@@ -21314,7 +21314,7 @@
 					py = (a.y + b.y) / 2;
 
 		do {
-			if (p.y > py !== p.next.y > py && p.next.y !== p.y && px < (p.next.x - p.x) * (py - p.y) / (p.next.y - p.y) + p.x) inside = !inside;
+			if (p.y > py !== p.next.y > py && p.next.y !== p.y && px < (p.next.x - p.x) * (py - p.y) / (p.next.y - p.y) + p.x) {inside = !inside;}
 			p = p.next;
 		} while (p !== a);
 
@@ -21359,8 +21359,8 @@
 	function removeNode(p) {
 		p.next.prev = p.prev;
 		p.prev.next = p.next;
-		if (p.prevZ) p.prevZ.nextZ = p.nextZ;
-		if (p.nextZ) p.nextZ.prevZ = p.prevZ;
+		if (p.prevZ) {p.prevZ.nextZ = p.nextZ;}
+		if (p.nextZ) {p.nextZ.prevZ = p.prevZ;}
 	}
 
 	function Node(i, x, y) {
@@ -21575,7 +21575,7 @@
 				}
 
 				function scalePt2(pt, vec, size) {
-					if (!vec) console.error('THREE.ExtrudeGeometry: vec does not exist');
+					if (!vec) {console.error('THREE.ExtrudeGeometry: vec does not exist');}
 					return vec.clone().multiplyScalar(size).add(pt);
 				}
 
@@ -21664,8 +21664,8 @@
 				const contourMovements = [];
 
 				for (let i = 0, il = contour.length, j = il - 1, k = i + 1; i < il; i++, j++, k++) {
-					if (j === il) j = 0;
-					if (k === il) k = 0; //	(j)---(i)---(k)
+					if (j === il) {j = 0;}
+					if (k === il) {k = 0;} //	(j)---(i)---(k)
 					// console.log('i,j,k', i, j , k)
 
 					contourMovements[i] = getBevelVec(contour[i], contour[j], contour[k]);
@@ -21680,8 +21680,8 @@
 					oneHoleMovements = [];
 
 					for (let i = 0, il = ahole.length, j = il - 1, k = i + 1; i < il; i++, j++, k++) {
-						if (j === il) j = 0;
-						if (k === il) k = 0; //	(j)---(i)---(k)
+						if (j === il) {j = 0;}
+						if (k === il) {k = 0;} //	(j)---(i)---(k)
 
 						oneHoleMovements[i] = getBevelVec(ahole[i], ahole[j], ahole[k]);
 					}
@@ -21844,7 +21844,7 @@
 					while (--i >= 0) {
 						const j = i;
 						let k = i - 1;
-						if (k < 0) k = contour.length - 1; //console.log('b', i,j, i-1, k,vertices.length);
+						if (k < 0) {k = contour.length - 1;} //console.log('b', i,j, i-1, k,vertices.length);
 
 						for (let s = 0, sl = steps + bevelSegments * 2; s < sl; s++) {
 							const slen1 = vlen * s;
@@ -21958,7 +21958,7 @@
 			data.shapes.push(shapes.uuid);
 		}
 
-		if (options.extrudePath !== undefined) data.options.extrudePath = options.extrudePath.toJSON();
+		if (options.extrudePath !== undefined) {data.options.extrudePath = options.extrudePath.toJSON();}
 		return data;
 	}
 
@@ -22407,8 +22407,8 @@
 					const b = grid[iy][ix];
 					const c = grid[iy + 1][ix];
 					const d = grid[iy + 1][ix + 1];
-					if (iy !== 0 || thetaStart > 0) indices.push(a, b, d);
-					if (iy !== heightSegments - 1 || thetaEnd < Math.PI) indices.push(b, c, d);
+					if (iy !== 0 || thetaStart > 0) {indices.push(a, b, d);}
+					if (iy !== heightSegments - 1 || thetaEnd < Math.PI) {indices.push(b, c, d);}
 				}
 			} // build geometry
 
@@ -22465,9 +22465,9 @@
 
 			parameters.depth = parameters.height !== undefined ? parameters.height : 50; // defaults
 
-			if (parameters.bevelThickness === undefined) parameters.bevelThickness = 10;
-			if (parameters.bevelSize === undefined) parameters.bevelSize = 8;
-			if (parameters.bevelEnabled === undefined) parameters.bevelEnabled = false;
+			if (parameters.bevelThickness === undefined) {parameters.bevelThickness = 10;}
+			if (parameters.bevelSize === undefined) {parameters.bevelSize = 8;}
+			if (parameters.bevelEnabled === undefined) {parameters.bevelEnabled = false;}
 			super(shapes, parameters);
 			this.type = 'TextGeometry';
 		}
@@ -23704,7 +23704,7 @@
 		// converts an array to a specific type
 		convertArray: function (array, type, forceClone) {
 			if (!array || // let 'undefined' and 'null' pass
-			!forceClone && array.constructor === type) return array;
+			!forceClone && array.constructor === type) {return array;}
 
 			if (typeof type.BYTES_PER_ELEMENT === 'number') {
 				return new type(array); // create typed array
@@ -23724,7 +23724,7 @@
 			const n = times.length;
 			const result = new Array(n);
 
-			for (let i = 0; i !== n; ++i) result[i] = i;
+			for (let i = 0; i !== n; ++i) {result[i] = i;}
 
 			result.sort(compareTime);
 			return result;
@@ -23753,10 +23753,10 @@
 				key = jsonKeys[i++];
 			}
 
-			if (key === undefined) return; // no data
+			if (key === undefined) {return;} // no data
 
 			let value = key[valuePropertyName];
-			if (value === undefined) return; // no data
+			if (value === undefined) {return;} // no data
 
 			if (Array.isArray(value)) {
 				do {
@@ -23808,7 +23808,7 @@
 
 				for (let j = 0; j < track.times.length; ++j) {
 					const frame = track.times[j] * fps;
-					if (frame < startFrame || frame >= endFrame) continue;
+					if (frame < startFrame || frame >= endFrame) {continue;}
 					times.push(track.times[j]);
 
 					for (let k = 0; k < valueSize; ++k) {
@@ -23816,7 +23816,7 @@
 					}
 				}
 
-				if (times.length === 0) continue;
+				if (times.length === 0) {continue;}
 				track.times = AnimationUtils.convertArray(times, track.times.constructor);
 				track.values = AnimationUtils.convertArray(values, track.values.constructor);
 				tracks.push(track);
@@ -23841,7 +23841,7 @@
 			return clip;
 		},
 		makeClipAdditive: function (targetClip, referenceFrame = 0, referenceClip = targetClip, fps = 30) {
-			if (fps <= 0) fps = 30;
+			if (fps <= 0) {fps = 30;}
 			const numTracks = referenceClip.tracks.length;
 			const referenceTime = referenceFrame / fps; // Make each track's values relative to the values at the reference frame
 
@@ -23849,12 +23849,12 @@
 				const referenceTrack = referenceClip.tracks[i];
 				const referenceTrackType = referenceTrack.ValueTypeName; // Skip this track if it's non-numeric
 
-				if (referenceTrackType === 'bool' || referenceTrackType === 'string') continue; // Find the track in the target clip whose name and type matches the reference track
+				if (referenceTrackType === 'bool' || referenceTrackType === 'string') {continue;} // Find the track in the target clip whose name and type matches the reference track
 
 				const targetTrack = targetClip.tracks.find(function (track) {
 					return track.name === referenceTrack.name && track.ValueTypeName === referenceTrackType;
 				});
-				if (targetTrack === undefined) continue;
+				if (targetTrack === undefined) {continue;}
 				let referenceOffset = 0;
 				const referenceValueSize = referenceTrack.getValueSize();
 
@@ -23970,14 +23970,14 @@
 						forward_scan: if (!(t < t1)) {
 							for (let giveUpAt = i1 + 2;;) {
 								if (t1 === undefined) {
-									if (t < t0) break forward_scan; // after end
+									if (t < t0) {break forward_scan;} // after end
 
 									i1 = pp.length;
 									this._cachedIndex = i1;
 									return this.afterEnd_(i1 - 1, t, t0);
 								}
 
-								if (i1 === giveUpAt) break; // this loop
+								if (i1 === giveUpAt) {break;} // this loop
 
 								t0 = t1;
 								t1 = pp[++i1];
@@ -24013,7 +24013,7 @@
 									return this.beforeStart_(0, t, t1);
 								}
 
-								if (i1 === giveUpAt) break; // this loop
+								if (i1 === giveUpAt) {break;} // this loop
 
 								t1 = t0;
 								t0 = pp[--i1 - 1];
@@ -24258,8 +24258,8 @@
 
 	class KeyframeTrack {
 		constructor(name, times, values, interpolation) {
-			if (name === undefined) throw new Error('THREE.KeyframeTrack: track name is undefined');
-			if (times === undefined || times.length === 0) throw new Error('THREE.KeyframeTrack: no keyframes in track named ' + name);
+			if (name === undefined) {throw new Error('THREE.KeyframeTrack: track name is undefined');}
+			if (times === undefined || times.length === 0) {throw new Error('THREE.KeyframeTrack: no keyframes in track named ' + name);}
 			this.name = name;
 			this.times = AnimationUtils.convertArray(times, this.TimeBufferType);
 			this.values = AnimationUtils.convertArray(values, this.ValueBufferType);
@@ -24803,7 +24803,7 @@
 			for (let h = 0; h < hierarchyTracks.length; h++) {
 				const animationKeys = hierarchyTracks[h].keys; // skip empty tracks
 
-				if (!animationKeys || animationKeys.length === 0) continue; // process morph targets
+				if (!animationKeys || animationKeys.length === 0) {continue;} // process morph targets
 
 				if (animationKeys[0].morphTargets) {
 					// figure out all morph targets used in this track
@@ -24967,12 +24967,12 @@
 		enabled: false,
 		files: {},
 		add: function (key, file) {
-			if (this.enabled === false) return; // console.log( 'THREE.Cache', 'Adding key:', key );
+			if (this.enabled === false) {return;} // console.log( 'THREE.Cache', 'Adding key:', key );
 
 			this.files[key] = file;
 		},
 		get: function (key) {
-			if (this.enabled === false) return; // console.log( 'THREE.Cache', 'Checking key:', key );
+			if (this.enabled === false) {return;} // console.log( 'THREE.Cache', 'Checking key:', key );
 
 			return this.files[key];
 		},
@@ -25065,7 +25065,7 @@
 				for (let i = 0, l = handlers.length; i < l; i += 2) {
 					const regex = handlers[i];
 					const loader = handlers[i + 1];
-					if (regex.global) regex.lastIndex = 0; // see #17920
+					if (regex.global) {regex.lastIndex = 0;} // see #17920
 
 					if (regex.test(file)) {
 						return loader;
@@ -25140,8 +25140,8 @@
 		}
 
 		load(url, onLoad, onProgress, onError) {
-			if (url === undefined) url = '';
-			if (this.path !== undefined) url = this.path + url;
+			if (url === undefined) {url = '';}
+			if (this.path !== undefined) {url = this.path + url;}
 			url = this.manager.resolveURL(url);
 			const scope = this;
 			const cached = Cache.get(url);
@@ -25149,7 +25149,7 @@
 			if (cached !== undefined) {
 				scope.manager.itemStart(url);
 				setTimeout(function () {
-					if (onLoad) onLoad(cached);
+					if (onLoad) {onLoad(cached);}
 					scope.manager.itemEnd(url);
 				}, 0);
 				return cached;
@@ -25175,7 +25175,7 @@
 				const isBase64 = !!dataUriRegexResult[2];
 				let data = dataUriRegexResult[3];
 				data = decodeURIComponent(data);
-				if (isBase64) data = atob(data);
+				if (isBase64) {data = atob(data);}
 
 				try {
 					let response;
@@ -25217,13 +25217,13 @@
 
 
 					setTimeout(function () {
-						if (onLoad) onLoad(response);
+						if (onLoad) {onLoad(response);}
 						scope.manager.itemEnd(url);
 					}, 0);
 				} catch (error) {
 					// Wait for next browser tick like standard XMLHttpRequest event dispatching does
 					setTimeout(function () {
-						if (onError) onError(error);
+						if (onError) {onError(error);}
 						scope.manager.itemError(url);
 						scope.manager.itemEnd(url);
 					}, 0);
@@ -25246,21 +25246,21 @@
 					if (this.status === 200 || this.status === 0) {
 						// Some browsers return HTTP Status 0 when using non-http protocol
 						// e.g. 'file://' or 'data://'. Handle as success.
-						if (this.status === 0) console.warn('THREE.FileLoader: HTTP Status 0 received.'); // Add to cache only on HTTP success, so that we do not cache
+						if (this.status === 0) {console.warn('THREE.FileLoader: HTTP Status 0 received.');} // Add to cache only on HTTP success, so that we do not cache
 						// error response bodies as proper responses to requests.
 
 						Cache.add(url, response);
 
 						for (let i = 0, il = callbacks.length; i < il; i++) {
 							const callback = callbacks[i];
-							if (callback.onLoad) callback.onLoad(response);
+							if (callback.onLoad) {callback.onLoad(response);}
 						}
 
 						scope.manager.itemEnd(url);
 					} else {
 						for (let i = 0, il = callbacks.length; i < il; i++) {
 							const callback = callbacks[i];
-							if (callback.onError) callback.onError(event);
+							if (callback.onError) {callback.onError(event);}
 						}
 
 						scope.manager.itemError(url);
@@ -25272,7 +25272,7 @@
 
 					for (let i = 0, il = callbacks.length; i < il; i++) {
 						const callback = callbacks[i];
-						if (callback.onProgress) callback.onProgress(event);
+						if (callback.onProgress) {callback.onProgress(event);}
 					}
 				}, false);
 				request.addEventListener('error', function (event) {
@@ -25281,7 +25281,7 @@
 
 					for (let i = 0, il = callbacks.length; i < il; i++) {
 						const callback = callbacks[i];
-						if (callback.onError) callback.onError(event);
+						if (callback.onError) {callback.onError(event);}
 					}
 
 					scope.manager.itemError(url);
@@ -25293,15 +25293,15 @@
 
 					for (let i = 0, il = callbacks.length; i < il; i++) {
 						const callback = callbacks[i];
-						if (callback.onError) callback.onError(event);
+						if (callback.onError) {callback.onError(event);}
 					}
 
 					scope.manager.itemError(url);
 					scope.manager.itemEnd(url);
 				}, false);
-				if (this.responseType !== undefined) request.responseType = this.responseType;
-				if (this.withCredentials !== undefined) request.withCredentials = this.withCredentials;
-				if (request.overrideMimeType) request.overrideMimeType(this.mimeType !== undefined ? this.mimeType : 'text/plain');
+				if (this.responseType !== undefined) {request.responseType = this.responseType;}
+				if (this.withCredentials !== undefined) {request.withCredentials = this.withCredentials;}
+				if (request.overrideMimeType) {request.overrideMimeType(this.mimeType !== undefined ? this.mimeType : 'text/plain');}
 
 				for (const header in this.requestHeader) {
 					request.setRequestHeader(header, this.requestHeader[header]);
@@ -25399,11 +25399,11 @@
 					loaded += 1;
 
 					if (loaded === 6) {
-						if (texDatas.mipmapCount === 1) texture.minFilter = LinearFilter;
+						if (texDatas.mipmapCount === 1) {texture.minFilter = LinearFilter;}
 						texture.image = images;
 						texture.format = texDatas.format;
 						texture.needsUpdate = true;
-						if (onLoad) onLoad(texture);
+						if (onLoad) {onLoad(texture);}
 					}
 				}, onProgress, onError);
 			}
@@ -25446,7 +25446,7 @@
 
 					texture.format = texDatas.format;
 					texture.needsUpdate = true;
-					if (onLoad) onLoad(texture);
+					if (onLoad) {onLoad(texture);}
 				}, onProgress, onError);
 			}
 
@@ -25461,7 +25461,7 @@
 		}
 
 		load(url, onLoad, onProgress, onError) {
-			if (this.path !== undefined) url = this.path + url;
+			if (this.path !== undefined) {url = this.path + url;}
 			url = this.manager.resolveURL(url);
 			const scope = this;
 			const cached = Cache.get(url);
@@ -25469,7 +25469,7 @@
 			if (cached !== undefined) {
 				scope.manager.itemStart(url);
 				setTimeout(function () {
-					if (onLoad) onLoad(cached);
+					if (onLoad) {onLoad(cached);}
 					scope.manager.itemEnd(url);
 				}, 0);
 				return cached;
@@ -25481,14 +25481,14 @@
 				image.removeEventListener('load', onImageLoad, false);
 				image.removeEventListener('error', onImageError, false);
 				Cache.add(url, this);
-				if (onLoad) onLoad(this);
+				if (onLoad) {onLoad(this);}
 				scope.manager.itemEnd(url);
 			}
 
 			function onImageError(event) {
 				image.removeEventListener('load', onImageLoad, false);
 				image.removeEventListener('error', onImageError, false);
-				if (onError) onError(event);
+				if (onError) {onError(event);}
 				scope.manager.itemError(url);
 				scope.manager.itemEnd(url);
 			}
@@ -25497,7 +25497,7 @@
 			image.addEventListener('error', onImageError, false);
 
 			if (url.substr(0, 5) !== 'data:') {
-				if (this.crossOrigin !== undefined) image.crossOrigin = this.crossOrigin;
+				if (this.crossOrigin !== undefined) {image.crossOrigin = this.crossOrigin;}
 			}
 
 			scope.manager.itemStart(url);
@@ -25526,7 +25526,7 @@
 
 					if (loaded === 6) {
 						texture.needsUpdate = true;
-						if (onLoad) onLoad(texture);
+						if (onLoad) {onLoad(texture);}
 					}
 				}, undefined, onError);
 			}
@@ -25561,7 +25561,7 @@
 			loader.setWithCredentials(scope.withCredentials);
 			loader.load(url, function (buffer) {
 				const texData = scope.parse(buffer);
-				if (!texData) return;
+				if (!texData) {return;}
 
 				if (texData.image !== undefined) {
 					texture.image = texData.image;
@@ -25607,7 +25607,7 @@
 				}
 
 				texture.needsUpdate = true;
-				if (onLoad) onLoad(texture, texData);
+				if (onLoad) {onLoad(texture, texData);}
 			}, onProgress, onError);
 			return texture;
 		}
@@ -25808,8 +25808,8 @@
 			let t1 = t - delta;
 			let t2 = t + delta; // Capping in case of danger
 
-			if (t1 < 0) t1 = 0;
-			if (t2 > 1) t2 = 1;
+			if (t1 < 0) {t1 = 0;}
+			if (t2 > 1) {t2 = 1;}
 			const pt1 = this.getPoint(t1);
 			const pt2 = this.getPoint(t2);
 			const tangent = optionalTarget || (pt1.isVector2 ? new Vector2() : new Vector3());
@@ -25951,9 +25951,9 @@
 			let deltaAngle = this.aEndAngle - this.aStartAngle;
 			const samePoints = Math.abs(deltaAngle) < Number.EPSILON; // ensures that deltaAngle is 0 .. 2 PI
 
-			while (deltaAngle < 0) deltaAngle += twoPi;
+			while (deltaAngle < 0) {deltaAngle += twoPi;}
 
-			while (deltaAngle > twoPi) deltaAngle -= twoPi;
+			while (deltaAngle > twoPi) {deltaAngle -= twoPi;}
 
 			if (deltaAngle < Number.EPSILON) {
 				if (samePoints) {
@@ -26161,9 +26161,9 @@
 				let dt1 = Math.pow(p1.distanceToSquared(p2), pow);
 				let dt2 = Math.pow(p2.distanceToSquared(p3), pow); // safety check for repeated points
 
-				if (dt1 < 1e-4) dt1 = 1.0;
-				if (dt0 < 1e-4) dt0 = dt1;
-				if (dt2 < 1e-4) dt2 = dt1;
+				if (dt1 < 1e-4) {dt1 = 1.0;}
+				if (dt0 < 1e-4) {dt0 = dt1;}
+				if (dt2 < 1e-4) {dt2 = dt1;}
 				px.initNonuniformCatmullRom(p0.x, p1.x, p2.x, p3.x, dt0, dt1, dt2);
 				py.initNonuniformCatmullRom(p0.y, p1.y, p2.y, p3.y, dt0, dt1, dt2);
 				pz.initNonuniformCatmullRom(p0.z, p1.z, p2.z, p3.z, dt0, dt1, dt2);
@@ -26771,7 +26771,7 @@
 
 				for (let j = 0; j < pts.length; j++) {
 					const point = pts[j];
-					if (last && last.equals(point)) continue; // ensures no consecutive points are duplicates
+					if (last && last.equals(point)) {continue;} // ensures no consecutive points are duplicates
 
 					points.push(point);
 					last = point;
@@ -27029,12 +27029,12 @@
 			const data = super.toJSON(meta);
 			data.object.color = this.color.getHex();
 			data.object.intensity = this.intensity;
-			if (this.groundColor !== undefined) data.object.groundColor = this.groundColor.getHex();
-			if (this.distance !== undefined) data.object.distance = this.distance;
-			if (this.angle !== undefined) data.object.angle = this.angle;
-			if (this.decay !== undefined) data.object.decay = this.decay;
-			if (this.penumbra !== undefined) data.object.penumbra = this.penumbra;
-			if (this.shadow !== undefined) data.object.shadow = this.shadow.toJSON();
+			if (this.groundColor !== undefined) {data.object.groundColor = this.groundColor.getHex();}
+			if (this.distance !== undefined) {data.object.distance = this.distance;}
+			if (this.angle !== undefined) {data.object.angle = this.angle;}
+			if (this.decay !== undefined) {data.object.decay = this.decay;}
+			if (this.penumbra !== undefined) {data.object.penumbra = this.penumbra;}
+			if (this.shadow !== undefined) {data.object.shadow = this.shadow.toJSON();}
 			return data;
 		}
 
@@ -27147,10 +27147,10 @@
 
 		toJSON() {
 			const object = {};
-			if (this.bias !== 0) object.bias = this.bias;
-			if (this.normalBias !== 0) object.normalBias = this.normalBias;
-			if (this.radius !== 1) object.radius = this.radius;
-			if (this.mapSize.x !== 512 || this.mapSize.y !== 512) object.mapSize = this.mapSize.toArray();
+			if (this.bias !== 0) {object.bias = this.bias;}
+			if (this.normalBias !== 0) {object.normalBias = this.normalBias;}
+			if (this.radius !== 1) {object.radius = this.radius;}
+			if (this.mapSize.x !== 512 || this.mapSize.y !== 512) {object.mapSize = this.mapSize.toArray();}
 			object.camera = this.camera.toJSON(false).object;
 			delete object.camera.matrix;
 			return object;
@@ -27431,7 +27431,7 @@
 			data.object.bottom = this.bottom;
 			data.object.near = this.near;
 			data.object.far = this.far;
-			if (this.view !== null) data.object.view = Object.assign({}, this.view);
+			if (this.view !== null) {data.object.view = Object.assign({}, this.view);}
 			return data;
 		}
 
@@ -27758,59 +27758,59 @@
 			}
 
 			const material = new Materials[json.type]();
-			if (json.uuid !== undefined) material.uuid = json.uuid;
-			if (json.name !== undefined) material.name = json.name;
-			if (json.color !== undefined && material.color !== undefined) material.color.setHex(json.color);
-			if (json.roughness !== undefined) material.roughness = json.roughness;
-			if (json.metalness !== undefined) material.metalness = json.metalness;
-			if (json.sheen !== undefined) material.sheen = new Color().setHex(json.sheen);
-			if (json.emissive !== undefined && material.emissive !== undefined) material.emissive.setHex(json.emissive);
-			if (json.specular !== undefined && material.specular !== undefined) material.specular.setHex(json.specular);
-			if (json.shininess !== undefined) material.shininess = json.shininess;
-			if (json.clearcoat !== undefined) material.clearcoat = json.clearcoat;
-			if (json.clearcoatRoughness !== undefined) material.clearcoatRoughness = json.clearcoatRoughness;
-			if (json.fog !== undefined) material.fog = json.fog;
-			if (json.flatShading !== undefined) material.flatShading = json.flatShading;
-			if (json.blending !== undefined) material.blending = json.blending;
-			if (json.combine !== undefined) material.combine = json.combine;
-			if (json.side !== undefined) material.side = json.side;
-			if (json.shadowSide !== undefined) material.shadowSide = json.shadowSide;
-			if (json.opacity !== undefined) material.opacity = json.opacity;
-			if (json.transparent !== undefined) material.transparent = json.transparent;
-			if (json.alphaTest !== undefined) material.alphaTest = json.alphaTest;
-			if (json.depthTest !== undefined) material.depthTest = json.depthTest;
-			if (json.depthWrite !== undefined) material.depthWrite = json.depthWrite;
-			if (json.colorWrite !== undefined) material.colorWrite = json.colorWrite;
-			if (json.stencilWrite !== undefined) material.stencilWrite = json.stencilWrite;
-			if (json.stencilWriteMask !== undefined) material.stencilWriteMask = json.stencilWriteMask;
-			if (json.stencilFunc !== undefined) material.stencilFunc = json.stencilFunc;
-			if (json.stencilRef !== undefined) material.stencilRef = json.stencilRef;
-			if (json.stencilFuncMask !== undefined) material.stencilFuncMask = json.stencilFuncMask;
-			if (json.stencilFail !== undefined) material.stencilFail = json.stencilFail;
-			if (json.stencilZFail !== undefined) material.stencilZFail = json.stencilZFail;
-			if (json.stencilZPass !== undefined) material.stencilZPass = json.stencilZPass;
-			if (json.wireframe !== undefined) material.wireframe = json.wireframe;
-			if (json.wireframeLinewidth !== undefined) material.wireframeLinewidth = json.wireframeLinewidth;
-			if (json.wireframeLinecap !== undefined) material.wireframeLinecap = json.wireframeLinecap;
-			if (json.wireframeLinejoin !== undefined) material.wireframeLinejoin = json.wireframeLinejoin;
-			if (json.rotation !== undefined) material.rotation = json.rotation;
-			if (json.linewidth !== 1) material.linewidth = json.linewidth;
-			if (json.dashSize !== undefined) material.dashSize = json.dashSize;
-			if (json.gapSize !== undefined) material.gapSize = json.gapSize;
-			if (json.scale !== undefined) material.scale = json.scale;
-			if (json.polygonOffset !== undefined) material.polygonOffset = json.polygonOffset;
-			if (json.polygonOffsetFactor !== undefined) material.polygonOffsetFactor = json.polygonOffsetFactor;
-			if (json.polygonOffsetUnits !== undefined) material.polygonOffsetUnits = json.polygonOffsetUnits;
-			if (json.skinning !== undefined) material.skinning = json.skinning;
-			if (json.morphTargets !== undefined) material.morphTargets = json.morphTargets;
-			if (json.morphNormals !== undefined) material.morphNormals = json.morphNormals;
-			if (json.dithering !== undefined) material.dithering = json.dithering;
-			if (json.alphaToCoverage !== undefined) material.alphaToCoverage = json.alphaToCoverage;
-			if (json.premultipliedAlpha !== undefined) material.premultipliedAlpha = json.premultipliedAlpha;
-			if (json.vertexTangents !== undefined) material.vertexTangents = json.vertexTangents;
-			if (json.visible !== undefined) material.visible = json.visible;
-			if (json.toneMapped !== undefined) material.toneMapped = json.toneMapped;
-			if (json.userData !== undefined) material.userData = json.userData;
+			if (json.uuid !== undefined) {material.uuid = json.uuid;}
+			if (json.name !== undefined) {material.name = json.name;}
+			if (json.color !== undefined && material.color !== undefined) {material.color.setHex(json.color);}
+			if (json.roughness !== undefined) {material.roughness = json.roughness;}
+			if (json.metalness !== undefined) {material.metalness = json.metalness;}
+			if (json.sheen !== undefined) {material.sheen = new Color().setHex(json.sheen);}
+			if (json.emissive !== undefined && material.emissive !== undefined) {material.emissive.setHex(json.emissive);}
+			if (json.specular !== undefined && material.specular !== undefined) {material.specular.setHex(json.specular);}
+			if (json.shininess !== undefined) {material.shininess = json.shininess;}
+			if (json.clearcoat !== undefined) {material.clearcoat = json.clearcoat;}
+			if (json.clearcoatRoughness !== undefined) {material.clearcoatRoughness = json.clearcoatRoughness;}
+			if (json.fog !== undefined) {material.fog = json.fog;}
+			if (json.flatShading !== undefined) {material.flatShading = json.flatShading;}
+			if (json.blending !== undefined) {material.blending = json.blending;}
+			if (json.combine !== undefined) {material.combine = json.combine;}
+			if (json.side !== undefined) {material.side = json.side;}
+			if (json.shadowSide !== undefined) {material.shadowSide = json.shadowSide;}
+			if (json.opacity !== undefined) {material.opacity = json.opacity;}
+			if (json.transparent !== undefined) {material.transparent = json.transparent;}
+			if (json.alphaTest !== undefined) {material.alphaTest = json.alphaTest;}
+			if (json.depthTest !== undefined) {material.depthTest = json.depthTest;}
+			if (json.depthWrite !== undefined) {material.depthWrite = json.depthWrite;}
+			if (json.colorWrite !== undefined) {material.colorWrite = json.colorWrite;}
+			if (json.stencilWrite !== undefined) {material.stencilWrite = json.stencilWrite;}
+			if (json.stencilWriteMask !== undefined) {material.stencilWriteMask = json.stencilWriteMask;}
+			if (json.stencilFunc !== undefined) {material.stencilFunc = json.stencilFunc;}
+			if (json.stencilRef !== undefined) {material.stencilRef = json.stencilRef;}
+			if (json.stencilFuncMask !== undefined) {material.stencilFuncMask = json.stencilFuncMask;}
+			if (json.stencilFail !== undefined) {material.stencilFail = json.stencilFail;}
+			if (json.stencilZFail !== undefined) {material.stencilZFail = json.stencilZFail;}
+			if (json.stencilZPass !== undefined) {material.stencilZPass = json.stencilZPass;}
+			if (json.wireframe !== undefined) {material.wireframe = json.wireframe;}
+			if (json.wireframeLinewidth !== undefined) {material.wireframeLinewidth = json.wireframeLinewidth;}
+			if (json.wireframeLinecap !== undefined) {material.wireframeLinecap = json.wireframeLinecap;}
+			if (json.wireframeLinejoin !== undefined) {material.wireframeLinejoin = json.wireframeLinejoin;}
+			if (json.rotation !== undefined) {material.rotation = json.rotation;}
+			if (json.linewidth !== 1) {material.linewidth = json.linewidth;}
+			if (json.dashSize !== undefined) {material.dashSize = json.dashSize;}
+			if (json.gapSize !== undefined) {material.gapSize = json.gapSize;}
+			if (json.scale !== undefined) {material.scale = json.scale;}
+			if (json.polygonOffset !== undefined) {material.polygonOffset = json.polygonOffset;}
+			if (json.polygonOffsetFactor !== undefined) {material.polygonOffsetFactor = json.polygonOffsetFactor;}
+			if (json.polygonOffsetUnits !== undefined) {material.polygonOffsetUnits = json.polygonOffsetUnits;}
+			if (json.skinning !== undefined) {material.skinning = json.skinning;}
+			if (json.morphTargets !== undefined) {material.morphTargets = json.morphTargets;}
+			if (json.morphNormals !== undefined) {material.morphNormals = json.morphNormals;}
+			if (json.dithering !== undefined) {material.dithering = json.dithering;}
+			if (json.alphaToCoverage !== undefined) {material.alphaToCoverage = json.alphaToCoverage;}
+			if (json.premultipliedAlpha !== undefined) {material.premultipliedAlpha = json.premultipliedAlpha;}
+			if (json.vertexTangents !== undefined) {material.vertexTangents = json.vertexTangents;}
+			if (json.visible !== undefined) {material.visible = json.visible;}
+			if (json.toneMapped !== undefined) {material.toneMapped = json.toneMapped;}
+			if (json.userData !== undefined) {material.userData = json.userData;}
 
 			if (json.vertexColors !== undefined) {
 				if (typeof json.vertexColors === 'number') {
@@ -27861,9 +27861,9 @@
 				}
 			}
 
-			if (json.defines !== undefined) material.defines = json.defines;
-			if (json.vertexShader !== undefined) material.vertexShader = json.vertexShader;
-			if (json.fragmentShader !== undefined) material.fragmentShader = json.fragmentShader;
+			if (json.defines !== undefined) {material.defines = json.defines;}
+			if (json.vertexShader !== undefined) {material.vertexShader = json.vertexShader;}
+			if (json.fragmentShader !== undefined) {material.fragmentShader = json.fragmentShader;}
 
 			if (json.extensions !== undefined) {
 				for (const key in json.extensions) {
@@ -27872,19 +27872,19 @@
 			} // Deprecated
 
 
-			if (json.shading !== undefined) material.flatShading = json.shading === 1; // THREE.FlatShading
+			if (json.shading !== undefined) {material.flatShading = json.shading === 1;} // THREE.FlatShading
 			// for PointsMaterial
 
-			if (json.size !== undefined) material.size = json.size;
-			if (json.sizeAttenuation !== undefined) material.sizeAttenuation = json.sizeAttenuation; // maps
+			if (json.size !== undefined) {material.size = json.size;}
+			if (json.sizeAttenuation !== undefined) {material.sizeAttenuation = json.sizeAttenuation;} // maps
 
-			if (json.map !== undefined) material.map = getTexture(json.map);
-			if (json.matcap !== undefined) material.matcap = getTexture(json.matcap);
-			if (json.alphaMap !== undefined) material.alphaMap = getTexture(json.alphaMap);
-			if (json.bumpMap !== undefined) material.bumpMap = getTexture(json.bumpMap);
-			if (json.bumpScale !== undefined) material.bumpScale = json.bumpScale;
-			if (json.normalMap !== undefined) material.normalMap = getTexture(json.normalMap);
-			if (json.normalMapType !== undefined) material.normalMapType = json.normalMapType;
+			if (json.map !== undefined) {material.map = getTexture(json.map);}
+			if (json.matcap !== undefined) {material.matcap = getTexture(json.matcap);}
+			if (json.alphaMap !== undefined) {material.alphaMap = getTexture(json.alphaMap);}
+			if (json.bumpMap !== undefined) {material.bumpMap = getTexture(json.bumpMap);}
+			if (json.bumpScale !== undefined) {material.bumpScale = json.bumpScale;}
+			if (json.normalMap !== undefined) {material.normalMap = getTexture(json.normalMap);}
+			if (json.normalMapType !== undefined) {material.normalMapType = json.normalMapType;}
 
 			if (json.normalScale !== undefined) {
 				let normalScale = json.normalScale;
@@ -27897,29 +27897,29 @@
 				material.normalScale = new Vector2().fromArray(normalScale);
 			}
 
-			if (json.displacementMap !== undefined) material.displacementMap = getTexture(json.displacementMap);
-			if (json.displacementScale !== undefined) material.displacementScale = json.displacementScale;
-			if (json.displacementBias !== undefined) material.displacementBias = json.displacementBias;
-			if (json.roughnessMap !== undefined) material.roughnessMap = getTexture(json.roughnessMap);
-			if (json.metalnessMap !== undefined) material.metalnessMap = getTexture(json.metalnessMap);
-			if (json.emissiveMap !== undefined) material.emissiveMap = getTexture(json.emissiveMap);
-			if (json.emissiveIntensity !== undefined) material.emissiveIntensity = json.emissiveIntensity;
-			if (json.specularMap !== undefined) material.specularMap = getTexture(json.specularMap);
-			if (json.envMap !== undefined) material.envMap = getTexture(json.envMap);
-			if (json.envMapIntensity !== undefined) material.envMapIntensity = json.envMapIntensity;
-			if (json.reflectivity !== undefined) material.reflectivity = json.reflectivity;
-			if (json.refractionRatio !== undefined) material.refractionRatio = json.refractionRatio;
-			if (json.lightMap !== undefined) material.lightMap = getTexture(json.lightMap);
-			if (json.lightMapIntensity !== undefined) material.lightMapIntensity = json.lightMapIntensity;
-			if (json.aoMap !== undefined) material.aoMap = getTexture(json.aoMap);
-			if (json.aoMapIntensity !== undefined) material.aoMapIntensity = json.aoMapIntensity;
-			if (json.gradientMap !== undefined) material.gradientMap = getTexture(json.gradientMap);
-			if (json.clearcoatMap !== undefined) material.clearcoatMap = getTexture(json.clearcoatMap);
-			if (json.clearcoatRoughnessMap !== undefined) material.clearcoatRoughnessMap = getTexture(json.clearcoatRoughnessMap);
-			if (json.clearcoatNormalMap !== undefined) material.clearcoatNormalMap = getTexture(json.clearcoatNormalMap);
-			if (json.clearcoatNormalScale !== undefined) material.clearcoatNormalScale = new Vector2().fromArray(json.clearcoatNormalScale);
-			if (json.transmission !== undefined) material.transmission = json.transmission;
-			if (json.transmissionMap !== undefined) material.transmissionMap = getTexture(json.transmissionMap);
+			if (json.displacementMap !== undefined) {material.displacementMap = getTexture(json.displacementMap);}
+			if (json.displacementScale !== undefined) {material.displacementScale = json.displacementScale;}
+			if (json.displacementBias !== undefined) {material.displacementBias = json.displacementBias;}
+			if (json.roughnessMap !== undefined) {material.roughnessMap = getTexture(json.roughnessMap);}
+			if (json.metalnessMap !== undefined) {material.metalnessMap = getTexture(json.metalnessMap);}
+			if (json.emissiveMap !== undefined) {material.emissiveMap = getTexture(json.emissiveMap);}
+			if (json.emissiveIntensity !== undefined) {material.emissiveIntensity = json.emissiveIntensity;}
+			if (json.specularMap !== undefined) {material.specularMap = getTexture(json.specularMap);}
+			if (json.envMap !== undefined) {material.envMap = getTexture(json.envMap);}
+			if (json.envMapIntensity !== undefined) {material.envMapIntensity = json.envMapIntensity;}
+			if (json.reflectivity !== undefined) {material.reflectivity = json.reflectivity;}
+			if (json.refractionRatio !== undefined) {material.refractionRatio = json.refractionRatio;}
+			if (json.lightMap !== undefined) {material.lightMap = getTexture(json.lightMap);}
+			if (json.lightMapIntensity !== undefined) {material.lightMapIntensity = json.lightMapIntensity;}
+			if (json.aoMap !== undefined) {material.aoMap = getTexture(json.aoMap);}
+			if (json.aoMapIntensity !== undefined) {material.aoMapIntensity = json.aoMapIntensity;}
+			if (json.gradientMap !== undefined) {material.gradientMap = getTexture(json.gradientMap);}
+			if (json.clearcoatMap !== undefined) {material.clearcoatMap = getTexture(json.clearcoatMap);}
+			if (json.clearcoatRoughnessMap !== undefined) {material.clearcoatRoughnessMap = getTexture(json.clearcoatRoughnessMap);}
+			if (json.clearcoatNormalMap !== undefined) {material.clearcoatNormalMap = getTexture(json.clearcoatNormalMap);}
+			if (json.clearcoatNormalScale !== undefined) {material.clearcoatNormalScale = new Vector2().fromArray(json.clearcoatNormalScale);}
+			if (json.transmission !== undefined) {material.transmission = json.transmission;}
+			if (json.transmissionMap !== undefined) {material.transmissionMap = getTexture(json.transmissionMap);}
 			return material;
 		}
 
@@ -27956,7 +27956,7 @@
 
 		static extractUrlBase(url) {
 			const index = url.lastIndexOf('/');
-			if (index === -1) return './';
+			if (index === -1) {return './';}
 			return url.substr(0, index + 1);
 		}
 
@@ -28050,7 +28050,7 @@
 			const arrayBufferMap = {};
 
 			function getInterleavedBuffer(json, uuid) {
-				if (interleavedBufferMap[uuid] !== undefined) return interleavedBufferMap[uuid];
+				if (interleavedBufferMap[uuid] !== undefined) {return interleavedBufferMap[uuid];}
 				const interleavedBuffers = json.interleavedBuffers;
 				const interleavedBuffer = interleavedBuffers[uuid];
 				const buffer = getArrayBuffer(json, interleavedBuffer.buffer);
@@ -28062,7 +28062,7 @@
 			}
 
 			function getArrayBuffer(json, uuid) {
-				if (arrayBufferMap[uuid] !== undefined) return arrayBufferMap[uuid];
+				if (arrayBufferMap[uuid] !== undefined) {return arrayBufferMap[uuid];}
 				const arrayBuffers = json.arrayBuffers;
 				const arrayBuffer = arrayBuffers[uuid];
 				const ab = new Uint32Array(arrayBuffer).buffer;
@@ -28093,8 +28093,8 @@
 					bufferAttribute = new bufferAttributeConstr(typedArray, attribute.itemSize, attribute.normalized);
 				}
 
-				if (attribute.name !== undefined) bufferAttribute.name = attribute.name;
-				if (attribute.usage !== undefined) bufferAttribute.setUsage(attribute.usage);
+				if (attribute.name !== undefined) {bufferAttribute.name = attribute.name;}
+				if (attribute.usage !== undefined) {bufferAttribute.setUsage(attribute.usage);}
 
 				if (attribute.updateRange !== undefined) {
 					bufferAttribute.updateRange.offset = attribute.updateRange.offset;
@@ -28123,7 +28123,7 @@
 							bufferAttribute = new BufferAttribute(typedArray, attribute.itemSize, attribute.normalized);
 						}
 
-						if (attribute.name !== undefined) bufferAttribute.name = attribute.name;
+						if (attribute.name !== undefined) {bufferAttribute.name = attribute.name;}
 						array.push(bufferAttribute);
 					}
 
@@ -28158,8 +28158,8 @@
 				geometry.boundingSphere = new Sphere(center, boundingSphere.radius);
 			}
 
-			if (json.name) geometry.name = json.name;
-			if (json.userData) geometry.userData = json.userData;
+			if (json.name) {geometry.name = json.name;}
+			if (json.userData) {geometry.userData = json.userData;}
 			return geometry;
 		}
 
@@ -28184,7 +28184,7 @@
 				try {
 					json = JSON.parse(text);
 				} catch (error) {
-					if (onError !== undefined) onError(error);
+					if (onError !== undefined) {onError(error);}
 					console.error('THREE:ObjectLoader: Can\'t parse ' + url + '.', error.message);
 					return;
 				}
@@ -28205,7 +28205,7 @@
 			const shapes = this.parseShapes(json.shapes);
 			const geometries = this.parseGeometries(json.geometries, shapes);
 			const images = this.parseImages(json.images, function () {
-				if (onLoad !== undefined) onLoad(object);
+				if (onLoad !== undefined) {onLoad(object);}
 			});
 			const textures = this.parseTextures(json.textures, images);
 			const materials = this.parseMaterials(json.materials, textures);
@@ -28223,7 +28223,7 @@
 					}
 				}
 
-				if (hasImages === false) onLoad(object);
+				if (hasImages === false) {onLoad(object);}
 			}
 
 			return object;
@@ -28247,7 +28247,7 @@
 			const bones = {}; // generate bone lookup table
 
 			object.traverse(function (child) {
-				if (child.isBone) bones[child.uuid] = child;
+				if (child.isBone) {bones[child.uuid] = child;}
 			}); // create skeletons
 
 			if (json !== undefined) {
@@ -28390,8 +28390,8 @@
 					}
 
 					geometry.uuid = data.uuid;
-					if (data.name !== undefined) geometry.name = data.name;
-					if (geometry.isBufferGeometry === true && data.userData !== undefined) geometry.userData = data.userData;
+					if (data.name !== undefined) {geometry.name = data.name;}
+					if (geometry.isBufferGeometry === true && data.userData !== undefined) {geometry.userData = data.userData;}
 					geometries[data.uuid] = geometry;
 				}
 			}
@@ -28528,7 +28528,7 @@
 
 		parseTextures(json, images) {
 			function parseConstant(value, type) {
-				if (typeof value === 'number') return value;
+				if (typeof value === 'number') {return value;}
 				console.warn('THREE.ObjectLoader.parseTexture: Constant should be in numeric form.', value);
 				return type[value];
 			}
@@ -28552,7 +28552,7 @@
 
 					if (Array.isArray(image)) {
 						texture = new CubeTexture(image);
-						if (image.length === 6) texture.needsUpdate = true;
+						if (image.length === 6) {texture.needsUpdate = true;}
 					} else {
 						if (image && image.data) {
 							texture = new DataTexture(image.data, image.width, image.height);
@@ -28560,31 +28560,31 @@
 							texture = new Texture(image);
 						}
 
-						if (image) texture.needsUpdate = true; // textures can have undefined image data
+						if (image) {texture.needsUpdate = true;} // textures can have undefined image data
 					}
 
 					texture.uuid = data.uuid;
-					if (data.name !== undefined) texture.name = data.name;
-					if (data.mapping !== undefined) texture.mapping = parseConstant(data.mapping, TEXTURE_MAPPING);
-					if (data.offset !== undefined) texture.offset.fromArray(data.offset);
-					if (data.repeat !== undefined) texture.repeat.fromArray(data.repeat);
-					if (data.center !== undefined) texture.center.fromArray(data.center);
-					if (data.rotation !== undefined) texture.rotation = data.rotation;
+					if (data.name !== undefined) {texture.name = data.name;}
+					if (data.mapping !== undefined) {texture.mapping = parseConstant(data.mapping, TEXTURE_MAPPING);}
+					if (data.offset !== undefined) {texture.offset.fromArray(data.offset);}
+					if (data.repeat !== undefined) {texture.repeat.fromArray(data.repeat);}
+					if (data.center !== undefined) {texture.center.fromArray(data.center);}
+					if (data.rotation !== undefined) {texture.rotation = data.rotation;}
 
 					if (data.wrap !== undefined) {
 						texture.wrapS = parseConstant(data.wrap[0], TEXTURE_WRAPPING);
 						texture.wrapT = parseConstant(data.wrap[1], TEXTURE_WRAPPING);
 					}
 
-					if (data.format !== undefined) texture.format = data.format;
-					if (data.type !== undefined) texture.type = data.type;
-					if (data.encoding !== undefined) texture.encoding = data.encoding;
-					if (data.minFilter !== undefined) texture.minFilter = parseConstant(data.minFilter, TEXTURE_FILTER);
-					if (data.magFilter !== undefined) texture.magFilter = parseConstant(data.magFilter, TEXTURE_FILTER);
-					if (data.anisotropy !== undefined) texture.anisotropy = data.anisotropy;
-					if (data.flipY !== undefined) texture.flipY = data.flipY;
-					if (data.premultiplyAlpha !== undefined) texture.premultiplyAlpha = data.premultiplyAlpha;
-					if (data.unpackAlignment !== undefined) texture.unpackAlignment = data.unpackAlignment;
+					if (data.format !== undefined) {texture.format = data.format;}
+					if (data.type !== undefined) {texture.type = data.type;}
+					if (data.encoding !== undefined) {texture.encoding = data.encoding;}
+					if (data.minFilter !== undefined) {texture.minFilter = parseConstant(data.minFilter, TEXTURE_FILTER);}
+					if (data.magFilter !== undefined) {texture.magFilter = parseConstant(data.magFilter, TEXTURE_FILTER);}
+					if (data.anisotropy !== undefined) {texture.anisotropy = data.anisotropy;}
+					if (data.flipY !== undefined) {texture.flipY = data.flipY;}
+					if (data.premultiplyAlpha !== undefined) {texture.premultiplyAlpha = data.premultiplyAlpha;}
+					if (data.unpackAlignment !== undefined) {texture.unpackAlignment = data.unpackAlignment;}
 					textures[data.uuid] = texture;
 				}
 			}
@@ -28604,7 +28604,7 @@
 			}
 
 			function getMaterial(name) {
-				if (name === undefined) return undefined;
+				if (name === undefined) {return undefined;}
 
 				if (Array.isArray(name)) {
 					const array = [];
@@ -28653,17 +28653,17 @@
 
 				case 'PerspectiveCamera':
 					object = new PerspectiveCamera(data.fov, data.aspect, data.near, data.far);
-					if (data.focus !== undefined) object.focus = data.focus;
-					if (data.zoom !== undefined) object.zoom = data.zoom;
-					if (data.filmGauge !== undefined) object.filmGauge = data.filmGauge;
-					if (data.filmOffset !== undefined) object.filmOffset = data.filmOffset;
-					if (data.view !== undefined) object.view = Object.assign({}, data.view);
+					if (data.focus !== undefined) {object.focus = data.focus;}
+					if (data.zoom !== undefined) {object.zoom = data.zoom;}
+					if (data.filmGauge !== undefined) {object.filmGauge = data.filmGauge;}
+					if (data.filmOffset !== undefined) {object.filmOffset = data.filmOffset;}
+					if (data.view !== undefined) {object.view = Object.assign({}, data.view);}
 					break;
 
 				case 'OrthographicCamera':
 					object = new OrthographicCamera(data.left, data.right, data.top, data.bottom, data.near, data.far);
-					if (data.zoom !== undefined) object.zoom = data.zoom;
-					if (data.view !== undefined) object.view = Object.assign({}, data.view);
+					if (data.zoom !== undefined) {object.zoom = data.zoom;}
+					if (data.view !== undefined) {object.view = Object.assign({}, data.view);}
 					break;
 
 				case 'AmbientLight':
@@ -28698,9 +28698,9 @@
 					geometry = getGeometry(data.geometry);
 					material = getMaterial(data.material);
 					object = new SkinnedMesh(geometry, material);
-					if (data.bindMode !== undefined) object.bindMode = data.bindMode;
-					if (data.bindMatrix !== undefined) object.bindMatrix.fromArray(data.bindMatrix);
-					if (data.skeleton !== undefined) object.skeleton = data.skeleton;
+					if (data.bindMode !== undefined) {object.bindMode = data.bindMode;}
+					if (data.bindMatrix !== undefined) {object.bindMatrix.fromArray(data.bindMatrix);}
+					if (data.skeleton !== undefined) {object.skeleton = data.skeleton;}
 					break;
 
 				case 'Mesh':
@@ -28717,7 +28717,7 @@
 					const instanceColor = data.instanceColor;
 					object = new InstancedMesh(geometry, material, count);
 					object.instanceMatrix = new BufferAttribute(new Float32Array(instanceMatrix.array), 16);
-					if (instanceColor !== undefined) object.instanceColor = new BufferAttribute(new Float32Array(instanceColor.array), instanceColor.itemSize);
+					if (instanceColor !== undefined) {object.instanceColor = new BufferAttribute(new Float32Array(instanceColor.array), instanceColor.itemSize);}
 					break;
 
 				case 'LOD':
@@ -28758,35 +28758,35 @@
 			}
 
 			object.uuid = data.uuid;
-			if (data.name !== undefined) object.name = data.name;
+			if (data.name !== undefined) {object.name = data.name;}
 
 			if (data.matrix !== undefined) {
 				object.matrix.fromArray(data.matrix);
-				if (data.matrixAutoUpdate !== undefined) object.matrixAutoUpdate = data.matrixAutoUpdate;
-				if (object.matrixAutoUpdate) object.matrix.decompose(object.position, object.quaternion, object.scale);
+				if (data.matrixAutoUpdate !== undefined) {object.matrixAutoUpdate = data.matrixAutoUpdate;}
+				if (object.matrixAutoUpdate) {object.matrix.decompose(object.position, object.quaternion, object.scale);}
 			} else {
-				if (data.position !== undefined) object.position.fromArray(data.position);
-				if (data.rotation !== undefined) object.rotation.fromArray(data.rotation);
-				if (data.quaternion !== undefined) object.quaternion.fromArray(data.quaternion);
-				if (data.scale !== undefined) object.scale.fromArray(data.scale);
+				if (data.position !== undefined) {object.position.fromArray(data.position);}
+				if (data.rotation !== undefined) {object.rotation.fromArray(data.rotation);}
+				if (data.quaternion !== undefined) {object.quaternion.fromArray(data.quaternion);}
+				if (data.scale !== undefined) {object.scale.fromArray(data.scale);}
 			}
 
-			if (data.castShadow !== undefined) object.castShadow = data.castShadow;
-			if (data.receiveShadow !== undefined) object.receiveShadow = data.receiveShadow;
+			if (data.castShadow !== undefined) {object.castShadow = data.castShadow;}
+			if (data.receiveShadow !== undefined) {object.receiveShadow = data.receiveShadow;}
 
 			if (data.shadow) {
-				if (data.shadow.bias !== undefined) object.shadow.bias = data.shadow.bias;
-				if (data.shadow.normalBias !== undefined) object.shadow.normalBias = data.shadow.normalBias;
-				if (data.shadow.radius !== undefined) object.shadow.radius = data.shadow.radius;
-				if (data.shadow.mapSize !== undefined) object.shadow.mapSize.fromArray(data.shadow.mapSize);
-				if (data.shadow.camera !== undefined) object.shadow.camera = this.parseObject(data.shadow.camera);
+				if (data.shadow.bias !== undefined) {object.shadow.bias = data.shadow.bias;}
+				if (data.shadow.normalBias !== undefined) {object.shadow.normalBias = data.shadow.normalBias;}
+				if (data.shadow.radius !== undefined) {object.shadow.radius = data.shadow.radius;}
+				if (data.shadow.mapSize !== undefined) {object.shadow.mapSize.fromArray(data.shadow.mapSize);}
+				if (data.shadow.camera !== undefined) {object.shadow.camera = this.parseObject(data.shadow.camera);}
 			}
 
-			if (data.visible !== undefined) object.visible = data.visible;
-			if (data.frustumCulled !== undefined) object.frustumCulled = data.frustumCulled;
-			if (data.renderOrder !== undefined) object.renderOrder = data.renderOrder;
-			if (data.userData !== undefined) object.userData = data.userData;
-			if (data.layers !== undefined) object.layers.mask = data.layers;
+			if (data.visible !== undefined) {object.visible = data.visible;}
+			if (data.frustumCulled !== undefined) {object.frustumCulled = data.frustumCulled;}
+			if (data.renderOrder !== undefined) {object.renderOrder = data.renderOrder;}
+			if (data.userData !== undefined) {object.userData = data.userData;}
+			if (data.layers !== undefined) {object.layers.mask = data.layers;}
 
 			if (data.children !== undefined) {
 				const children = data.children;
@@ -28806,7 +28806,7 @@
 			}
 
 			if (data.type === 'LOD') {
-				if (data.autoUpdate !== undefined) object.autoUpdate = data.autoUpdate;
+				if (data.autoUpdate !== undefined) {object.autoUpdate = data.autoUpdate;}
 				const levels = data.levels;
 
 				for (let l = 0; l < levels.length; l++) {
@@ -28823,7 +28823,7 @@
 		}
 
 		bindSkeletons(object, skeletons) {
-			if (Object.keys(skeletons).length === 0) return;
+			if (Object.keys(skeletons).length === 0) {return;}
 			object.traverse(function (child) {
 				if (child.isSkinnedMesh === true && child.skeleton !== undefined) {
 					const skeleton = skeletons[child.skeleton];
@@ -28892,8 +28892,8 @@
 		}
 
 		load(url, onLoad, onProgress, onError) {
-			if (url === undefined) url = '';
-			if (this.path !== undefined) url = this.path + url;
+			if (url === undefined) {url = '';}
+			if (this.path !== undefined) {url = this.path + url;}
 			url = this.manager.resolveURL(url);
 			const scope = this;
 			const cached = Cache.get(url);
@@ -28901,7 +28901,7 @@
 			if (cached !== undefined) {
 				scope.manager.itemStart(url);
 				setTimeout(function () {
-					if (onLoad) onLoad(cached);
+					if (onLoad) {onLoad(cached);}
 					scope.manager.itemEnd(url);
 				}, 0);
 				return cached;
@@ -28918,10 +28918,10 @@
 				}));
 			}).then(function (imageBitmap) {
 				Cache.add(url, imageBitmap);
-				if (onLoad) onLoad(imageBitmap);
+				if (onLoad) {onLoad(imageBitmap);}
 				scope.manager.itemEnd(url);
 			}).catch(function (e) {
-				if (onError) onError(e);
+				if (onError) {onError(e);}
 				scope.manager.itemError(url);
 				scope.manager.itemEnd(url);
 			});
@@ -29004,24 +29004,24 @@
 							edgeDy = -edgeDy;
 						}
 
-						if (inPt.y < edgeLowPt.y || inPt.y > edgeHighPt.y) continue;
+						if (inPt.y < edgeLowPt.y || inPt.y > edgeHighPt.y) {continue;}
 
 						if (inPt.y === edgeLowPt.y) {
-							if (inPt.x === edgeLowPt.x) return true; // inPt is on contour ?
+							if (inPt.x === edgeLowPt.x) {return true;} // inPt is on contour ?
 							// continue;				// no intersection or edgeLowPt => doesn't count !!!
 						} else {
 							const perpEdge = edgeDy * (inPt.x - edgeLowPt.x) - edgeDx * (inPt.y - edgeLowPt.y);
-							if (perpEdge === 0) return true; // inPt is on contour ?
+							if (perpEdge === 0) {return true;} // inPt is on contour ?
 
-							if (perpEdge < 0) continue;
+							if (perpEdge < 0) {continue;}
 							inside = !inside; // true intersection left of inPt
 						}
 					} else {
 						// parallel or collinear
-						if (inPt.y !== edgeLowPt.y) continue; // parallel
+						if (inPt.y !== edgeLowPt.y) {continue;} // parallel
 						// edge lies on the same horizontal line as inPt
 
-						if (edgeHighPt.x <= inPt.x && inPt.x <= edgeLowPt.x || edgeLowPt.x <= inPt.x && inPt.x <= edgeHighPt.x) return true; // inPt: Point on contour !
+						if (edgeHighPt.x <= inPt.x && inPt.x <= edgeLowPt.x || edgeLowPt.x <= inPt.x && inPt.x <= edgeHighPt.x) {return true;} // inPt: Point on contour !
 						// continue;
 					}
 				}
@@ -29031,8 +29031,8 @@
 
 			const isClockWise = ShapeUtils.isClockWise;
 			const subPaths = this.subPaths;
-			if (subPaths.length === 0) return [];
-			if (noHoles === true) return toShapesNoHoles(subPaths);
+			if (subPaths.length === 0) {return [];}
+			if (noHoles === true) {return toShapesNoHoles(subPaths);}
 			let solid, tmpPath, tmpShape;
 			const shapes = [];
 
@@ -29062,13 +29062,13 @@
 				solid = isCCW ? !solid : solid;
 
 				if (solid) {
-					if (!holesFirst && newShapes[mainIdx]) mainIdx++;
+					if (!holesFirst && newShapes[mainIdx]) {mainIdx++;}
 					newShapes[mainIdx] = {
 						s: new Shape(),
 						p: tmpPoints
 					};
 					newShapes[mainIdx].s.curves = tmpPath.curves;
-					if (holesFirst) mainIdx++;
+					if (holesFirst) {mainIdx++;}
 					newShapeHoles[mainIdx] = []; //console.log('cw', i);
 				} else {
 					newShapeHoles[mainIdx].push({
@@ -29079,7 +29079,7 @@
 			} // only Holes? -> probably all Shapes with wrong orientation
 
 
-			if (!newShapes[0]) return toShapesNoHoles(subPaths);
+			if (!newShapes[0]) {return toShapesNoHoles(subPaths);}
 
 			if (newShapes.length > 1) {
 				let ambiguous = false;
@@ -29098,11 +29098,11 @@
 
 						for (let s2Idx = 0; s2Idx < newShapes.length; s2Idx++) {
 							if (isPointInsidePolygon(ho.p, newShapes[s2Idx].p)) {
-								if (sIdx !== s2Idx) toChange.push({
+								if (sIdx !== s2Idx) {toChange.push({
 									froms: sIdx,
 									tos: s2Idx,
 									hole: hIdx
-								});
+								});}
 
 								if (hole_unassigned) {
 									hole_unassigned = false;
@@ -29122,7 +29122,7 @@
 
 				if (toChange.length > 0) {
 					// console.log("to change: ", toChange);
-					if (!ambiguous) newShapeHoles = betterShapeHoles;
+					if (!ambiguous) {newShapeHoles = betterShapeHoles;}
 				}
 			}
 
@@ -29272,7 +29272,7 @@
 				}
 
 				const font = scope.parse(json);
-				if (onLoad) onLoad(font);
+				if (onLoad) {onLoad(font);}
 			}, onProgress, onError);
 		}
 
@@ -29631,7 +29631,7 @@
 		setBuffer(audioBuffer) {
 			this.buffer = audioBuffer;
 			this.sourceType = 'buffer';
-			if (this.autoplay) this.play();
+			if (this.autoplay) {this.play();}
 			return this;
 		}
 
@@ -29736,7 +29736,7 @@
 		}
 
 		setFilters(value) {
-			if (!value) value = [];
+			if (!value) {value = [];}
 
 			if (this._connected === true) {
 				this.disconnect();
@@ -29751,7 +29751,7 @@
 
 		setDetune(value) {
 			this.detune = value;
-			if (this.source.detune === undefined) return; // only set detune when available
+			if (this.source.detune === undefined) {return;} // only set detune when available
 
 			if (this.isPlaying === true) {
 				this.source.detune.setTargetAtTime(this.detune, this.context.currentTime, 0.01);
@@ -29905,7 +29905,7 @@
 
 		updateMatrixWorld(force) {
 			super.updateMatrixWorld(force);
-			if (this.hasPlaybackControl === true && this.isPlaying === false) return;
+			if (this.hasPlaybackControl === true && this.isPlaying === false) {return;}
 			this.matrixWorld.decompose(_position, _quaternion, _scale);
 
 			_orientation.set(0, 0, 1).applyQuaternion(_quaternion);
@@ -30220,7 +30220,7 @@
 			const firstValidIndex = this._targetGroup.nCachedObjects_,
 						binding = this._bindings[firstValidIndex]; // and only call .getValue on the first
 
-			if (binding !== undefined) binding.getValue(array, offset);
+			if (binding !== undefined) {binding.getValue(array, offset);}
 		}
 
 		setValue(array, offset) {
@@ -30347,7 +30347,7 @@
 						}
 
 						const result = searchNodeSubtree(childNode.children);
-						if (result) return result;
+						if (result) {return result;}
 					}
 
 					return null;
@@ -30888,7 +30888,7 @@
 			const indicesByPath = this._bindingsIndicesByPath;
 			let index = indicesByPath[path];
 			const bindings = this._bindings;
-			if (index !== undefined) return bindings[index];
+			if (index !== undefined) {return bindings[index];}
 			const paths = this._paths,
 						parsedPaths = this._parsedPaths,
 						objects = this._objects,
@@ -31290,7 +31290,7 @@
 			const pingPong = loop === LoopPingPong;
 
 			if (deltaTime === 0) {
-				if (loopCount === -1) return time;
+				if (loopCount === -1) {return time;}
 				return pingPong && (loopCount & 1) === 1 ? duration - time : time;
 			}
 
@@ -31312,7 +31312,7 @@
 						break handle_stop;
 					}
 
-					if (this.clampWhenFinished) this.paused = true;else this.enabled = false;
+					if (this.clampWhenFinished) {this.paused = true;}else {this.enabled = false;}
 					this.time = time;
 
 					this._mixer.dispatchEvent({
@@ -31347,7 +31347,7 @@
 
 					if (pending <= 0) {
 						// have to stop (switch state, clamp time, fire event)
-						if (this.clampWhenFinished) this.paused = true;else this.enabled = false;
+						if (this.clampWhenFinished) {this.paused = true;}else {this.enabled = false;}
 						time = deltaTime > 0 ? duration : 0;
 						this.time = time;
 
@@ -31810,11 +31810,11 @@
 
 				prototypeAction = actionsForClip.knownActions[0]; // also, take the clip from the prototype action
 
-				if (clipObject === null) clipObject = prototypeAction._clip;
+				if (clipObject === null) {clipObject = prototypeAction._clip;}
 			} // clip must be known when specified via string
 
 
-			if (clipObject === null) return null; // allocate all resources required to run it
+			if (clipObject === null) {return null;} // allocate all resources required to run it
 
 			const newAction = new AnimationAction(this, clipObject, optionalRoot, blendMode);
 
@@ -32028,7 +32028,7 @@
 		}
 
 		set needsUpdate(value) {
-			if (value === true) this.version++;
+			if (value === true) {this.version++;}
 		}
 
 		setBuffer(buffer) {
@@ -32740,7 +32740,7 @@
 				fog: false,
 				toneMapped: false
 			});
-			if (this.color === undefined) this.material.vertexColors = true;
+			if (this.color === undefined) {this.material.vertexColors = true;}
 			const position = geometry.getAttribute('position');
 			const colors = new Float32Array(position.count * 3);
 			geometry.setAttribute('color', new BufferAttribute(colors, 3));
@@ -32881,7 +32881,7 @@
 			this.matrix = light.matrixWorld;
 			this.matrixAutoUpdate = false;
 			this.color = color;
-			if (size === undefined) size = 1;
+			if (size === undefined) {size = 1;}
 			let geometry = new BufferGeometry();
 			geometry.setAttribute('position', new Float32BufferAttribute([-size, size, 0, size, size, 0, size, -size, 0, -size, -size, 0, -size, size, 0], 3));
 			const material = new LineBasicMaterial({
@@ -33009,7 +33009,7 @@
 			super(geometry, material);
 			this.type = 'CameraHelper';
 			this.camera = camera;
-			if (this.camera.updateProjectionMatrix) this.camera.updateProjectionMatrix();
+			if (this.camera.updateProjectionMatrix) {this.camera.updateProjectionMatrix();}
 			this.matrix = camera.matrixWorld;
 			this.matrixAutoUpdate = false;
 			this.pointMap = pointMap;
@@ -33103,7 +33103,7 @@
 				_box.setFromObject(this.object);
 			}
 
-			if (_box.isEmpty()) return;
+			if (_box.isEmpty()) {return;}
 			const min = _box.min;
 			const max = _box.max;
 			/*
@@ -33183,7 +33183,7 @@
 
 		updateMatrixWorld(force) {
 			const box = this.box;
-			if (box.isEmpty()) return;
+			if (box.isEmpty()) {return;}
 			box.getCenter(this.position);
 			box.getSize(this.scale);
 			this.scale.multiplyScalar(0.5);
@@ -33221,7 +33221,7 @@
 
 		updateMatrixWorld(force) {
 			let scale = -this.plane.constant;
-			if (Math.abs(scale) < 1e-8) scale = 1e-8; // sign does not matter
+			if (Math.abs(scale) < 1e-8) {scale = 1e-8;} // sign does not matter
 
 			this.scale.set(0.5 * this.size, 0.5 * this.size, scale);
 			this.children[0].material.side = scale < 0 ? BackSide : FrontSide; // renderer flips side when determinant < 0; flipping not wanted here
@@ -33354,7 +33354,7 @@
 			/* If zero, or denormal, or exponent underflows too much for a denormal
 				* half, return signed zero. */
 
-			if (e < 103) return bits;
+			if (e < 103) {return bits;}
 			/* If NaN, return NaN. If Inf or exponent overflow, return Inf. */
 
 			if (e > 142) {
@@ -33547,8 +33547,8 @@
 		dispose() {
 			this._blurMaterial.dispose();
 
-			if (this._cubemapShader !== null) this._cubemapShader.dispose();
-			if (this._equirectShader !== null) this._equirectShader.dispose();
+			if (this._cubemapShader !== null) {this._cubemapShader.dispose();}
+			if (this._equirectShader !== null) {this._equirectShader.dispose();}
 
 			for (let i = 0; i < _lodPlanes.length; i++) {
 				_lodPlanes[i].dispose();
@@ -33795,7 +33795,7 @@
 	}
 
 	function _isLDR(texture) {
-		if (texture === undefined || texture.type !== UnsignedByteType) return false;
+		if (texture === undefined || texture.type !== UnsignedByteType) {return false;}
 		return texture.encoding === LinearEncoding || texture.encoding === sRGBEncoding || texture.encoding === GammaEncoding;
 	}
 
@@ -34822,7 +34822,7 @@
 
 	PerspectiveCamera.prototype.setLens = function (focalLength, filmGauge) {
 		console.warn('THREE.PerspectiveCamera.setLens is deprecated. ' + 'Use .setFocalLength and .filmGauge for a photographic setup.');
-		if (filmGauge !== undefined) this.filmGauge = filmGauge;
+		if (filmGauge !== undefined) {this.filmGauge = filmGauge;}
 		this.setFocalLength(focalLength);
 	}; //
 
@@ -35460,7 +35460,7 @@
 		const loader = new TextureLoader();
 		loader.setCrossOrigin(this.crossOrigin);
 		const texture = loader.load(url, onLoad, undefined, onError);
-		if (mapping) texture.mapping = mapping;
+		if (mapping) {texture.mapping = mapping;}
 		return texture;
 	};
 
@@ -35469,7 +35469,7 @@
 		const loader = new CubeTextureLoader();
 		loader.setCrossOrigin(this.crossOrigin);
 		const texture = loader.load(urls, onLoad, undefined, onError);
-		if (mapping) texture.mapping = mapping;
+		if (mapping) {texture.mapping = mapping;}
 		return texture;
 	};
 
@@ -35513,13 +35513,13 @@
 	}
 
 	if (typeof __THREE_DEVTOOLS__ !== 'undefined') {
-		/* eslint-disable no-undef */
+		 
 		__THREE_DEVTOOLS__.dispatchEvent(new CustomEvent('register', {
 			detail: {
 				revision: REVISION
 			}
 		}));
-		/* eslint-enable no-undef */
+		 
 
 	}
 

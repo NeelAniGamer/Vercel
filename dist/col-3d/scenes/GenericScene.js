@@ -26,16 +26,16 @@
         for (let row = 0; row < rows; row++) {
           for (let col = 0; col < cols; col++) {
             let x = col * hexSize * 1.75 - (cols * hexSize * 1.75) / 2
-            let y = row * hexSize * 1.55 - (rows * hexSize * 1.55) / 2
-            if (row % 2) x += hexSize * 0.875
+            const y = row * hexSize * 1.55 - (rows * hexSize * 1.55) / 2
+            if (row % 2) {x += hexSize * 0.875}
 
             const shape = new THREE.Shape()
             for (let k = 0; k < 6; k++) {
               const angle = (Math.PI / 3) * k - Math.PI / 6
               const hx = Math.cos(angle) * hexSize * 0.85
               const hy = Math.sin(angle) * hexSize * 0.85
-              if (k === 0) shape.moveTo(hx, hy)
-              else shape.lineTo(hx, hy)
+              if (k === 0) {shape.moveTo(hx, hy)}
+              else {shape.lineTo(hx, hy)}
             }
             shape.closePath()
 
@@ -126,7 +126,7 @@
             const pos = col.geometry.attributes.position.array
             for (let i = 0; i < pos.length; i += 3) {
               pos[i + 1] -= col.userData.speed
-              if (pos[i + 1] < -40) pos[i + 1] = 40
+              if (pos[i + 1] < -40) {pos[i + 1] = 40}
             }
             col.geometry.attributes.position.needsUpdate = true
           })
@@ -202,7 +202,7 @@
 
     const pal = getPal()
     const preset = PRESETS[presetName]
-    if (!preset) return () => {}
+    if (!preset) {return () => {}}
 
     const { group, ...rest } = preset.build(scene, camera, pal)
 
@@ -213,19 +213,19 @@
       group.traverse(obj => {
         if (obj.material) {
           if (Array.isArray(obj.material)) {
-            obj.material.forEach(m => { if (m.color) m.color.setHex(p.teal) })
+            obj.material.forEach(m => { if (m.color) {m.color.setHex(p.teal)} })
           } else if (obj.material.color) {
             obj.material.color.setHex(p.teal)
           }
         }
       })
-      if (scene.fog) scene.fog.color.setHex(isLight ? 0xeef2ff : 0x070a14)
+      if (scene.fog) {scene.fog.color.setHex(isLight ? 0xeef2ff : 0x070a14)}
     }
     applyTheme()
-    if (window.ThemeSync) window.ThemeSync.onChange(applyTheme)
+    if (window.ThemeSync) {window.ThemeSync.onChange(applyTheme)}
 
     return function update(time) {
-      if (rest.update) rest.update(time)
+      if (rest.update) {rest.update(time)}
     }
   }
 })()

@@ -66,7 +66,7 @@ const server = http.createServer((req, res) => {
     pathname = '/home';
   }
 
-  let filePath = path.join(ROOT_DIR, pathname);
+  const filePath = path.join(ROOT_DIR, pathname);
 
   if (!filePath.startsWith(ROOT_DIR)) {
     res.writeHead(403, { 'Content-Type': 'text/plain' });

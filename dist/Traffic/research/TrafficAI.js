@@ -55,12 +55,12 @@ class TrafficAI {
   
   generateRandomPath() {
     const nodes = this.roadGraph.nodes;
-    if (nodes.length < 2) return;
+    if (nodes.length < 2) {return;}
     
     const start = nodes[Math.floor(Math.random() * nodes.length)];
     const end = nodes[Math.floor(Math.random() * nodes.length)];
     
-    if (start === end) return;
+    if (start === end) {return;}
     
     const path = this.roadGraph.findPath(start, end);
     if (path && path.length > 1) {
@@ -94,7 +94,7 @@ class TrafficAI {
   
   makeDecision() {
     const ctx = this.context;
-    if (!ctx) return;
+    if (!ctx) {return;}
     
     // Priority 1: Traffic lights
     const nearestLight = this.findNearestTrafficLight(ctx.trafficLights);
@@ -193,8 +193,8 @@ class TrafficAI {
     let angleDiff = targetAngle - v.rotation.y;
     
     // Normalize angle to [-PI, PI]
-    while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
-    while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
+    while (angleDiff > Math.PI) {angleDiff -= Math.PI * 2;}
+    while (angleDiff < -Math.PI) {angleDiff += Math.PI * 2;}
     
     // Apply steering with skill-based error
     const steerError = (1 - this.skill) * 0.3 * (Math.random() - 0.5);
@@ -248,7 +248,7 @@ class TrafficAI {
   }
   
   findNearestTrafficLight(lights) {
-    if (!lights || lights.length === 0) return null;
+    if (!lights || lights.length === 0) {return null;}
     
     let nearest = null;
     let minDist = Infinity;
@@ -265,23 +265,23 @@ class TrafficAI {
   }
   
   findVehicleAhead(vehicles) {
-    if (!vehicles || vehicles.length === 0) return null;
+    if (!vehicles || vehicles.length === 0) {return null;}
     
     const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(this.vehicle.quaternion);
     let nearest = null;
     let minDist = Infinity;
     
     for (const v of vehicles) {
-      if (v === this.vehicle) continue;
+      if (v === this.vehicle) {continue;}
       
       const toV = new THREE.Vector3().subVectors(v.position, this.vehicle.position);
       const dist = toV.length();
       
-      if (dist > this.viewDistance * 0.4) continue;
+      if (dist > this.viewDistance * 0.4) {continue;}
       
       // Check if ahead (dot product)
       const dot = toV.normalize().dot(forward);
-      if (dot < 0.7) continue; // Not in front arc
+      if (dot < 0.7) {continue;} // Not in front arc
       
       if (dist < minDist) {
         minDist = dist;
@@ -298,7 +298,7 @@ class TrafficAI {
   }
   
   findPedestrianAhead(pedestrians) {
-    if (!pedestrians || pedestrians.length === 0) return null;
+    if (!pedestrians || pedestrians.length === 0) {return null;}
     
     const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(this.vehicle.quaternion);
     let nearest = null;
@@ -308,10 +308,10 @@ class TrafficAI {
       const toP = new THREE.Vector3().subVectors(p.group.position, this.vehicle.position);
       const dist = toP.length();
       
-      if (dist > 25) continue;
+      if (dist > 25) {continue;}
       
       const dot = toP.normalize().dot(forward);
-      if (dot < 0.5) continue;
+      if (dot < 0.5) {continue;}
       
       if (dist < minDist) {
         minDist = dist;
@@ -323,7 +323,7 @@ class TrafficAI {
   }
   
   canOvertake(ctx) {
-    if (!ctx) return false;
+    if (!ctx) {return false;}
     
     // Check if lane change is safe
     const sideCheck = this.getOvertakeDirection(ctx);
@@ -335,8 +335,8 @@ class TrafficAI {
     const leftClear = this.isSideClear('left', ctx.vehicles);
     const rightClear = this.isSideClear('right', ctx.vehicles);
     
-    if (leftClear) return 'left';
-    if (rightClear) return 'right';
+    if (leftClear) {return 'left';}
+    if (rightClear) {return 'right';}
     return null;
   }
   
@@ -347,8 +347,8 @@ class TrafficAI {
     sidePos.add(right.multiplyScalar(offset * 4));
     
     for (const v of vehicles) {
-      if (v === this.vehicle) continue;
-      if (sidePos.distanceTo(v.position) < 10) return false;
+      if (v === this.vehicle) {continue;}
+      if (sidePos.distanceTo(v.position) < 10) {return false;}
     }
     
     return true;
@@ -375,7 +375,7 @@ class TrafficManager {
   }
   
   spawnVehicle(vehicleMesh) {
-    if (this.vehicles.length >= this.maxVehicles) return null;
+    if (this.vehicles.length >= this.maxVehicles) {return null;}
     
     const vehicle = vehicleMesh.clone();
     vehicle.userData.speed = 0;

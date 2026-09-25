@@ -2,7 +2,7 @@
 // IE 11 CustomEvent polyfill
 
 (function () {
-  if ( typeof window.CustomEvent === "function" ) return false; //If not IE
+  if ( typeof window.CustomEvent === "function" ) {return false;} //If not IE
 
   function CustomEvent ( event, params ) {
     params = params || { bubbles: false, cancelable: false, detail: undefined };
@@ -18,7 +18,7 @@
 
 // IE 11 EventTarget polyfill
 (function () {
-  if (typeof window.EventTarget === "function") return false; // If EventTarget exists
+  if (typeof window.EventTarget === "function") {return false;} // If EventTarget exists
 
   function EventTarget() {
     this._listeners = {};
@@ -75,15 +75,15 @@ if (!Array.isArray) {
 (function UMD(name,context,definition){
 	// special form of UMD for polyfilling across environments
 	context[name] = context[name] || definition();
-	if (typeof module != "undefined" && module.exports) { module.exports = context[name]; }
-	else if (typeof define == "function" && define.amd) { define(function $AMD$(){ return context[name]; }); }
-})("Promise",typeof global != "undefined" ? global : this,function DEF(){
+	if (typeof module !== "undefined" && module.exports) { module.exports = context[name]; }
+	else if (typeof define === "function" && define.amd) { define(function $AMD$(){ return context[name]; }); }
+})("Promise",typeof global !== "undefined" ? global : this,function DEF(){
 	/*jshint validthis:true */
 	"use strict";
 
 	var builtInProp, cycle, scheduling_queue,
 		ToString = Object.prototype.toString,
-		timer = (typeof setImmediate != "undefined") ?
+		timer = (typeof setImmediate !== "undefined") ?
 			function timer(fn) { return setImmediate(fn); } :
 			setTimeout
 	;
@@ -158,7 +158,7 @@ if (!Array.isArray) {
 		) {
 			_then = o.then;
 		}
-		return typeof _then == "function" ? _then : false;
+		return typeof _then === "function" ? _then : false;
 	}
 
 	function notify() {
@@ -294,7 +294,7 @@ if (!Array.isArray) {
 	}
 
 	function Promise(executor) {
-		if (typeof executor != "function") {
+		if (typeof executor !== "function") {
 			throw TypeError("Not a function");
 		}
 
@@ -310,14 +310,14 @@ if (!Array.isArray) {
 
 		this["then"] = function then(success,failure) {
 			var o = {
-				success: typeof success == "function" ? success : true,
-				failure: typeof failure == "function" ? failure : false
+				success: typeof success === "function" ? success : true,
+				failure: typeof failure === "function" ? failure : false
 			};
 			// Note: `then(..)` itself can be borrowed to be used against
 			// a different promise constructor for making the chained promise,
 			// by substituting a different `this` binding.
 			o.promise = new this.constructor(function extractChain(resolve,reject) {
-				if (typeof resolve != "function" || typeof reject != "function") {
+				if (typeof resolve !== "function" || typeof reject !== "function") {
 					throw TypeError("Not a function");
 				}
 
@@ -369,12 +369,12 @@ if (!Array.isArray) {
 
 		// spec mandated checks
 		// note: best "isPromise" check that's practical for now
-		if (msg && typeof msg == "object" && msg.__NPO__ === 1) {
+		if (msg && typeof msg === "object" && msg.__NPO__ === 1) {
 			return msg;
 		}
 
 		return new Constructor(function executor(resolve,reject){
-			if (typeof resolve != "function" || typeof reject != "function") {
+			if (typeof resolve !== "function" || typeof reject !== "function") {
 				throw TypeError("Not a function");
 			}
 
@@ -384,7 +384,7 @@ if (!Array.isArray) {
 
 	builtInProp(Promise,"reject",function Promise$reject(msg) {
 		return new this(function executor(resolve,reject){
-			if (typeof resolve != "function" || typeof reject != "function") {
+			if (typeof resolve !== "function" || typeof reject !== "function") {
 				throw TypeError("Not a function");
 			}
 
@@ -404,7 +404,7 @@ if (!Array.isArray) {
 		}
 
 		return new Constructor(function executor(resolve,reject){
-			if (typeof resolve != "function" || typeof reject != "function") {
+			if (typeof resolve !== "function" || typeof reject !== "function") {
 				throw TypeError("Not a function");
 			}
 
@@ -428,7 +428,7 @@ if (!Array.isArray) {
 		}
 
 		return new Constructor(function executor(resolve,reject){
-			if (typeof resolve != "function" || typeof reject != "function") {
+			if (typeof resolve !== "function" || typeof reject !== "function") {
 				throw TypeError("Not a function");
 			}
 
@@ -526,13 +526,13 @@ if (!Array.isArray) {
 
 	var es6FunctionPrototypeHasInstanceSymbol = function (instance) {
 			if (typeof this !== "function")
-					return false;
+					{return false;}
 			return instance instanceof this;
 	};
 
 	var es6InstanceOfOperator = function (object, constructor) {
 			if (!isObject(constructor))
-					throw new TypeError("Right-hand side of 'instanceof' is not an object");
+					{throw new TypeError("Right-hand side of 'instanceof' is not an object");}
 
 			var hasInstanceSymbolProp = constructor[Symbol.hasInstance];
 			if (typeof hasInstanceSymbolProp === "undefined") {
@@ -587,7 +587,7 @@ if (!Array.isArray) {
 			for(; i<registryLength; ++i) {
 					record = globalSymbolRegistry[i];
 					if (record.key === key)
-							return record.symbol;
+							{return record.symbol;}
 			}
 
 			record = {
@@ -600,7 +600,7 @@ if (!Array.isArray) {
 
 	var symbolKeyFor = function (symbol) {
 			if (!ES6.isSymbol(symbol))
-					throw new TypeError(String(symbol) + " is not a symbol");
+					{throw new TypeError(String(symbol) + " is not a symbol");}
 			var registryLength = globalSymbolRegistry.length,
 					record,
 					i = 0;
@@ -608,7 +608,7 @@ if (!Array.isArray) {
 			for(; i<registryLength; ++i) {
 					record = globalSymbolRegistry[i];
 					if (record.symbol === symbol)
-							return record.key;
+							{return record.key;}
 			}
 	};
 
@@ -616,30 +616,30 @@ if (!Array.isArray) {
 	var appendArray = function (array1, array2) {
 			// Returns immediately if these are not array or not array-like objects
 			if (!(typeof array1.length === "number" && array1.length >= 0 && typeof array2.length === "number" && array2.length >= 0))
-					return;
+					{return;}
 			var length1 = Math.floor(array1.length),
 					length2 = Math.floor(array2.length),
 					i = 0;
 
 			array1.length = length1 + length2;
 			for (; i<length2; ++i)
-					if (array2.hasOwnProperty(i))
-							array1[length1 + i] = array2[i];
+					{if (array2.hasOwnProperty(i))
+							{array1[length1 + i] = array2[i];}}
 	};
 
 	var es6ObjectPrototypeToString = function toString() {
 			if (this === undefined || this === null)
-					return objectToString.call(this);
+					{return objectToString.call(this);}
 			// Add support for @@toStringTag symbol
 			if (typeof this[Symbol.toStringTag] === "string")
-					return "[object " + this[Symbol.toStringTag] + "]";
+					{return "[object " + this[Symbol.toStringTag] + "]";}
 			else
-					return objectToString.call(this);
+					{return objectToString.call(this);}
 	};
 
 	var es6ArrayPrototypeConcat = function concat() {
 			if (this === undefined || this === null)
-					throw new TypeError("Array.prototype.concat called on null or undefined");
+					{throw new TypeError("Array.prototype.concat called on null or undefined");}
 
 			// Boxing 'this' value to wrapper object
 			var self = Object(this),
@@ -651,7 +651,7 @@ if (!Array.isArray) {
 			targets.forEach(function (target) {
 					// If target is primitive then just push
 					if (!isObject(target))
-							outputs.push(target);
+							{outputs.push(target);}
 					// Here Symbol.isConcatSpreadable support is added
 					else if (typeof target[Symbol.isConcatSpreadable] !== "undefined") {
 							if (target[Symbol.isConcatSpreadable]) {
@@ -671,17 +671,17 @@ if (!Array.isArray) {
 	var es6ForOfLoop = function (iterable, callback, thisArg) {
 			callback = typeof callback !== "function" ? emptyFunction : callback;
 			if (typeof iterable[Symbol.iterator] !== "function")
-					throw new TypeError("Iterable[Symbol.iterator] is not a function");
+					{throw new TypeError("Iterable[Symbol.iterator] is not a function");}
 			var iterator = iterable[Symbol.iterator](),
 					iterationResult;
 			if (typeof iterator.next !== "function")
-					throw new TypeError(".iterator.next is not a function");
+					{throw new TypeError(".iterator.next is not a function");}
 			while (true) {
 					iterationResult = iterator.next();
 					if (!isObject(iterationResult))
-							throw new TypeError("Iterator result " + iterationResult + " is not an object");
+							{throw new TypeError("Iterator result " + iterationResult + " is not an object");}
 					if (iterationResult.done)
-							break;
+							{break;}
 					callback.call(thisArg, iterationResult.value);
 			}
 	};
@@ -689,7 +689,7 @@ if (!Array.isArray) {
 	// Provides simple inheritance functionality
 	var simpleInheritance = function (child, parent) {
 			if (typeof child !== "function" || typeof parent !== "function")
-					throw new TypeError("Child and Parent must be function type");
+					{throw new TypeError("Child and Parent must be function type");}
 
 			child.prototype = Object.create(parent.prototype);
 			child.prototype.constructor = child;
@@ -703,7 +703,7 @@ if (!Array.isArray) {
 			desc = typeof desc === "undefined" ? "" : String(desc);
 
 			if(this instanceof Symbol)
-					throw new TypeError("Symbol is not a constructor");
+					{throw new TypeError("Symbol is not a constructor");}
 
 			return setupSymbolInternals(Object.create(Symbol.prototype), desc);
 	};
@@ -774,7 +774,7 @@ if (!Array.isArray) {
 	// This iterator works on any Array or TypedArray or array-like objects
 	ArrayIterator.prototype.next = function next() {
 			if (!(this instanceof ArrayIterator))
-					throw new TypeError("Method Array Iterator.prototype.next called on incompatible receiver " + String(this));
+					{throw new TypeError("Method Array Iterator.prototype.next called on incompatible receiver " + String(this));}
 
 			var self = this,
 					nextValue;
@@ -799,11 +799,11 @@ if (!Array.isArray) {
 			// _flag = 3 for [index]
 			if (self._nextIndex < Math.floor(self._array.length)) {
 					if (self._flag === 1)
-							nextValue = [self._nextIndex, self._array[self._nextIndex]];
+							{nextValue = [self._nextIndex, self._array[self._nextIndex]];}
 					else if (self._flag === 2)
-							nextValue = self._array[self._nextIndex];
+							{nextValue = self._array[self._nextIndex];}
 					else if (self._flag === 3)
-							nextValue = self._nextIndex;
+							{nextValue = self._nextIndex;}
 					self._nextIndex++;
 					return {
 							done: false,
@@ -820,7 +820,7 @@ if (!Array.isArray) {
 
 	StringIterator.prototype.next = function next() {
 			if (!(this instanceof StringIterator))
-					throw new TypeError("Method String Iterator.prototype.next called on incompatible receiver " + String(this));
+					{throw new TypeError("Method String Iterator.prototype.next called on incompatible receiver " + String(this));}
 
 			var self = this,
 					stringObject = new String(this._string),
@@ -851,7 +851,7 @@ if (!Array.isArray) {
 
 	var es6ArrayPrototypeIteratorSymbol = function values() {
 			if (this === undefined || this === null)
-					throw new TypeError("Cannot convert undefined or null to object");
+					{throw new TypeError("Cannot convert undefined or null to object");}
 
 			var self = Object(this);
 			return new ArrayIterator(self, 2);
@@ -859,13 +859,13 @@ if (!Array.isArray) {
 
 	var es6StringPrototypeIteratorSymbol = function values() {
 			if (this === undefined || this === null)
-					throw new TypeError("String.prototype[Symbol.iterator] called on null or undefined");
+					{throw new TypeError("String.prototype[Symbol.iterator] called on null or undefined");}
 			return new StringIterator(String(this), 0);
 	};
 
 	var es6ArrayPrototypeEntries = function entries() {
 			if (this === undefined || this === null)
-					throw new TypeError("Cannot convert undefined or null to object");
+					{throw new TypeError("Cannot convert undefined or null to object");}
 
 			var self = Object(this);
 			return new ArrayIterator(self, 1);
@@ -873,7 +873,7 @@ if (!Array.isArray) {
 
 	var es6ArrayPrototypeKeys = function keys() {
 			if (this === undefined || this === null)
-					throw new TypeError("Cannot convert undefined or null to object");
+					{throw new TypeError("Cannot convert undefined or null to object");}
 			var self = Object(this);
 			return new ArrayIterator(self, 3);
 	};
@@ -904,14 +904,14 @@ if (!Array.isArray) {
 
 	SpreadOperatorImpl.prototype.call = function (thisArg) {
 			if (typeof this._target !== "function")
-					throw new TypeError("Target is not a function");
+					{throw new TypeError("Target is not a function");}
 			thisArg = arguments.length <= 0 ? this._thisArg : thisArg;
 			return this._target.apply(thisArg, this._values);
 	};
 
 	SpreadOperatorImpl.prototype.new = function () {
 			if (typeof this._target !== "function")
-					throw new TypeError("Target is not a constructor");
+					{throw new TypeError("Target is not a constructor");}
 
 			var temp,
 					returnValue;
@@ -923,7 +923,7 @@ if (!Array.isArray) {
 	// Affects the target array
 	SpreadOperatorImpl.prototype.array = function () {
 			if (!isArray(this._target))
-					throw new TypeError("Target is not a array");
+					{throw new TypeError("Target is not a array");}
 			push.apply(this._target, this._values);
 			return this._target;
 	};
@@ -931,7 +931,7 @@ if (!Array.isArray) {
 	// Target must be Array or function
 	var es6SpreadOperator = function spreadOperator(target, thisArg) {
 			if (!(typeof target === "function" || isArray(target)))
-					throw new TypeError("Spread operator only supports on array and function objects at this moment");
+					{throw new TypeError("Spread operator only supports on array and function objects at this moment");}
 			return new SpreadOperatorImpl(target, thisArg);
 	};
 
@@ -943,13 +943,13 @@ if (!Array.isArray) {
 			// Use the generic constructor
 			constructor = !isConstructor(this) ? Array : this;
 			if (arrayLike === undefined || arrayLike === null)
-					throw new TypeError("Cannot convert undefined or null to object");
+					{throw new TypeError("Cannot convert undefined or null to object");}
 
 			arrayLike = Object(arrayLike);
 			if (mapFn === undefined)
-					mapFn = simpleFunction;
+					{mapFn = simpleFunction;}
 			else if (!isCallable(mapFn))
-					throw new TypeError(mapFn + " is not a function");
+					{throw new TypeError(mapFn + " is not a function");}
 
 			if (typeof arrayLike[Symbol.iterator] === "undefined") {
 					if (!(typeof arrayLike.length === "number" && arrayLike.length >= 0)) {
@@ -961,7 +961,7 @@ if (!Array.isArray) {
 					outputs = new constructor(length);
 					outputs.length = length;
 					for(; i < length; ++i)
-							outputs[i] = mapFn.call(thisArg, arrayLike[i]);
+							{outputs[i] = mapFn.call(thisArg, arrayLike[i]);}
 			} else {
 					outputs = new constructor();
 					outputs.length = 0;
@@ -976,7 +976,7 @@ if (!Array.isArray) {
 	// Export ES6 APIs and add all the patches to support Symbol in ES5
 	// If the running environment already supports ES6 then no patches will be applied,
 	if (isES6Running())
-			return ES6;
+			{return ES6;}
 	else {
 
 			// Some ES6 APIs can't be implemented in pure ES5, so this 'ES6' object provides

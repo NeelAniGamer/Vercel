@@ -115,16 +115,16 @@ function checkAndAwardBadges(userData) {
   const newBadges = [];
   const badges = userData?.badges || [];
   
-  if (userData.streak?.current >= 7 && !badges.includes('streak_7')) newBadges.push('streak_7');
-  if (userData.streak?.current >= 30 && !badges.includes('streak_30')) newBadges.push('streak_30');
-  if (userData.perfectRuns >= 1 && !badges.includes('perfect_run')) newBadges.push('perfect_run');
+  if (userData.streak?.current >= 7 && !badges.includes('streak_7')) {newBadges.push('streak_7');}
+  if (userData.streak?.current >= 30 && !badges.includes('streak_30')) {newBadges.push('streak_30');}
+  if (userData.perfectRuns >= 1 && !badges.includes('perfect_run')) {newBadges.push('perfect_run');}
   
   const completedCount = Object.keys(userData.comp || {}).length;
-  if (completedCount >= 10 && !badges.includes('level_10')) newBadges.push('level_10');
-  if (completedCount >= 20 && !badges.includes('level_20')) newBadges.push('level_20');
-  if (completedCount >= 30 && !badges.includes('level_30')) newBadges.push('level_30');
-  if (completedCount >= 40 && !badges.includes('level_40')) newBadges.push('level_40');
-  if (completedCount >= 52 && !badges.includes('level_52')) newBadges.push('level_52');
+  if (completedCount >= 10 && !badges.includes('level_10')) {newBadges.push('level_10');}
+  if (completedCount >= 20 && !badges.includes('level_20')) {newBadges.push('level_20');}
+  if (completedCount >= 30 && !badges.includes('level_30')) {newBadges.push('level_30');}
+  if (completedCount >= 40 && !badges.includes('level_40')) {newBadges.push('level_40');}
+  if (completedCount >= 52 && !badges.includes('level_52')) {newBadges.push('level_52');}
   
   return newBadges;
 }
@@ -918,7 +918,7 @@ function getMissionForLevel(levelId) {
   for (const c of CAMPAIGNS) {
     if (c.missions) {
       const m = c.missions.find(m => m.levelId === numId);
-      if (m) return { campaign: c, mission: m };
+      if (m) {return { campaign: c, mission: m };}
     }
   }
   if (typeof MODULES !== 'undefined') {
@@ -947,7 +947,7 @@ function getMissionForLevel(levelId) {
 
 function getCampaignProgress(userData, campaignId) {
   const campaign = getCampaign(campaignId);
-  if (!campaign) return null;
+  if (!campaign) {return null;}
 
   const progress = userData?.campaignProgress?.[campaignId] || {};
   const completed = progress.completedMissions || [];
@@ -968,7 +968,7 @@ function getCampaignProgress(userData, campaignId) {
 
 function checkCampaignPrerequisites(userData, campaignId) {
   const campaign = getCampaign(campaignId);
-  if (!campaign || !campaign.prerequisite) return true;
+  if (!campaign || !campaign.prerequisite) {return true;}
   return userData?.campaignProgress?.[campaign.prerequisite]?.completed === true;
 }
 
@@ -1025,7 +1025,7 @@ const MODE_CONFIG = {
 function getLevel(levelId) {
   for (const m of MODULES) {
     const lvl = m.levels.find(l => l.id === levelId);
-    if (lvl) return { ...lvl, module: m };
+    if (lvl) {return { ...lvl, module: m };}
   }
   return null;
 }
@@ -1036,7 +1036,7 @@ function getModule(moduleId) {
 
 function getModeConfig(levelId, modeId) {
   const level = getLevel(levelId);
-  if (!level) return MODE_CONFIG[modeId];
+  if (!level) {return MODE_CONFIG[modeId];}
   const base = { ...MODE_CONFIG[modeId] };
   base.timeLimit = Math.round(level.timeLimit * base.timeLimitMult);
   base.npcTypes = level.npcTypes;
@@ -1055,7 +1055,7 @@ function getModuleProgress(userData) {
     levels.forEach(l => {
       modes.forEach(mode => {
         total++;
-        if (completed.includes(`${l.id}-${mode}`)) done++;
+        if (completed.includes(`${l.id}-${mode}`)) {done++;}
       });
     });
     return { module: m, done, total, percent: total ? Math.round(done/total*100) : 0 };
@@ -1064,7 +1064,7 @@ function getModuleProgress(userData) {
 
 function checkCertificateEligibility(userData, moduleId) {
   const mod = getModule(moduleId);
-  if (!mod) return false;
+  if (!mod) {return false;}
   const completed = userData?.completedLevels || [];
   return mod.levels.every(l => 
     Object.keys(MODES).every(mode => completed.includes(`${l.id}-${mode}`))
@@ -1073,7 +1073,7 @@ function checkCertificateEligibility(userData, moduleId) {
 
 function getRecommendedVehicle(levelId) {
   const level = getLevel(levelId);
-  if (!level) return VEHICLES[0];
+  if (!level) {return VEHICLES[0];}
   const theme = level.module.theme;
   const themeVehicles = {
     intersection_mastery: ['car','bus','taxi'],

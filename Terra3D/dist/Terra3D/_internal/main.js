@@ -12,13 +12,13 @@ let hoveredCountry = null;
 let selectedCountry = null;
 const R = 1.0; // Globe radius
 let highlightCanvas, highlightCtx, highlightTexture, highlightMesh;
-let cameraTarget = null;
+const cameraTarget = null;
 let isAnimatingCamera = false;
 let animationStartTime = 0;
-let animationStartPos = new THREE.Vector3();
-let animationEndPos = new THREE.Vector3();
-let animationStartTarget = new THREE.Vector3();
-let animationEndTarget = new THREE.Vector3();
+const animationStartPos = new THREE.Vector3();
+const animationEndPos = new THREE.Vector3();
+const animationStartTarget = new THREE.Vector3();
+const animationEndTarget = new THREE.Vector3();
 const ANIMATION_DURATION = 1500; // ms
 
 let isPlaying = false;
@@ -30,7 +30,7 @@ let isViewingMoon = false;
 let nasaMoonTexture = null;
 
 function updateMoonQuality(mode) {
-    if (!moonMesh) return;
+    if (!moonMesh) {return;}
 
     // 1. Scale 3D Mesh Geometry Subdivisions smoothly
     const segs = mode === '4k' ? 128 : (mode === '1440p' ? 64 : (mode === '720p' ? 48 : 32));
@@ -90,8 +90,8 @@ function decodeTopoJSON(topology) {
             const reverse = index < 0;
             const arcIdx = reverse ? ~index : index;
             let arc = arcs[arcIdx];
-            if (!arc) return;
-            if (reverse) arc = [...arc].reverse();
+            if (!arc) {return;}
+            if (reverse) {arc = [...arc].reverse();}
             // Skip first point of subsequent arcs to avoid duplicates
             const start = coords.length > 0 ? 1 : 0;
             for (let i = start; i < arc.length; i++) {
@@ -105,7 +105,7 @@ function decodeTopoJSON(topology) {
     const objects = topology.objects;
     for (const key in objects) {
         const obj = objects[key];
-        if (!obj.geometries) continue;
+        if (!obj.geometries) {continue;}
 
         obj.geometries.forEach(geom => {
             const feature = {
@@ -158,9 +158,9 @@ function createCountryMesh(feature) {
 
     function processPolygon(polygonCoords) {
         let minLat = 90, maxLat = -90, minLng = 180, maxLng = -180;
-        let points = [];
+        const points = [];
         const ring = polygonCoords[0];
-        if (!ring || ring.length === 0) return;
+        if (!ring || ring.length === 0) {return;}
 
         ring.forEach(coord => {
             const lng = coord[0];
@@ -181,12 +181,12 @@ function createCountryMesh(feature) {
         const scale = 1.0;
         points.forEach((p, i) => {
             let diffLng = p.lng - centerLng;
-            if (diffLng > 180) diffLng -= 360;
-            if (diffLng < -180) diffLng += 360;
+            if (diffLng > 180) {diffLng -= 360;}
+            if (diffLng < -180) {diffLng += 360;}
             const dx = diffLng * cosLat * scale;
             const dy = (p.lat - centerLat) * scale;
-            if (i === 0) shape.moveTo(dx, dy);
-            else shape.lineTo(dx, dy);
+            if (i === 0) {shape.moveTo(dx, dy);}
+            else {shape.lineTo(dx, dy);}
         });
 
         const geometry = new THREE.ShapeGeometry(shape);
@@ -196,8 +196,8 @@ function createCountryMesh(feature) {
             const dx = posAttribute.getX(i) / scale;
             const dy = posAttribute.getY(i) / scale;
             let plng = centerLng + dx / cosLat;
-            if (plng > 180) plng -= 360;
-            if (plng < -180) plng += 360;
+            if (plng > 180) {plng -= 360;}
+            if (plng < -180) {plng += 360;}
             const plat = centerLat + dy;
             
             const v3 = latLngToVector3(plat, plng, R + 0.012);
@@ -294,14 +294,14 @@ function getCentroid(geometry) {
             });
         }
     });
-    if (count === 0) return { lat: 0, lng: 0 };
+    if (count === 0) {return { lat: 0, lng: 0 };}
     const avg = new THREE.Vector3(xSum / count, ySum / count, zSum / count).normalize();
     const phi = Math.acos(Math.max(-1, Math.min(1, avg.y)));
     const lat = 90 - phi * (180 / Math.PI);
-    let theta = Math.atan2(avg.z, -avg.x);
+    const theta = Math.atan2(avg.z, -avg.x);
     let lng = theta * (180 / Math.PI) - 180;
-    while (lng > 180) lng -= 360;
-    while (lng < -180) lng += 360;
+    while (lng > 180) {lng -= 360;}
+    while (lng < -180) {lng += 360;}
     return { lat, lng };
 }
 
@@ -309,11 +309,11 @@ function getColorForRegion(countryName) {
     const cd = countryData[countryName];
     const region = cd ? cd.region : 'Other';
     
-    if (region.includes('Europe')) return 0x4a9e5c;
-    if (region.includes('Americas') || region.includes('America')) return 0x5cb85c;
-    if (region.includes('Africa')) return 0xc4a44a;
-    if (region.includes('Asia')) return 0x6aad6a;
-    if (region.includes('Oceania')) return 0x8baf4f;
+    if (region.includes('Europe')) {return 0x4a9e5c;}
+    if (region.includes('Americas') || region.includes('America')) {return 0x5cb85c;}
+    if (region.includes('Africa')) {return 0xc4a44a;}
+    if (region.includes('Asia')) {return 0x6aad6a;}
+    if (region.includes('Oceania')) {return 0x8baf4f;}
     
     return 0x7a9a5a;
 }
@@ -567,7 +567,7 @@ async function loadData() {
                 countryMeshes.set(name, meshGroup);
             }
             loaded++;
-            if (loadingBar) loadingBar.style.width = `${(loaded / total) * 100}%`;
+            if (loadingBar) {loadingBar.style.width = `${(loaded / total) * 100}%`;}
         });
 
         setTimeout(() => {
@@ -588,10 +588,10 @@ function onMouseMove(event) {
     raycaster.setFromCamera(mouse, camera);
 
     const interactableMeshes = [];
-    if (moonMesh) interactableMeshes.push(moonMesh);
+    if (moonMesh) {interactableMeshes.push(moonMesh);}
     for (const group of countryMeshes.values()) {
         group.children.forEach(child => {
-            if (child.isMesh) interactableMeshes.push(child);
+            if (child.isMesh) {interactableMeshes.push(child);}
         });
     }
 
@@ -627,7 +627,7 @@ function onMouseMove(event) {
         if (isHoveredMoon) {
             isHoveredMoon = false;
             const tooltip = document.getElementById('country-tooltip');
-            if (tooltip) tooltip.classList.remove('visible');
+            if (tooltip) {tooltip.classList.remove('visible');}
         }
     }
 
@@ -678,7 +678,7 @@ function onMouseMove(event) {
             resetCountryStyle(previousHovered);
         }
         const tooltip = document.getElementById('country-tooltip');
-        if (tooltip) tooltip.classList.remove('visible');
+        if (tooltip) {tooltip.classList.remove('visible');}
     }
 }
 
@@ -692,7 +692,7 @@ function onClick(event) {
 
 function selectMoon() {
     const tooltip = document.getElementById('country-tooltip');
-    if (tooltip) tooltip.classList.remove('visible');
+    if (tooltip) {tooltip.classList.remove('visible');}
 
     if (selectedCountry) {
         const prevSelected = selectedCountry;
@@ -723,7 +723,7 @@ function selectMoon() {
 }
 
 function highlightCountry(group, isSelect = false) {
-    if (!group) return;
+    if (!group) {return;}
     group.children.forEach(child => {
         if (child.isLine) {
             if (child.userData.type === 'border-normal') {
@@ -738,7 +738,7 @@ function highlightCountry(group, isSelect = false) {
 }
 
 function resetCountryStyle(group) {
-    if (!group) return;
+    if (!group) {return;}
     const isBold = document.getElementById('bold-borders-toggle')?.checked ?? true;
     group.children.forEach(child => {
         if (child.isLine) {
@@ -776,7 +776,7 @@ function drawCountryOnCanvas(feature, colorString) {
     highlightCtx.fillStyle = colorString;
     
     function drawRing(ring) {
-        if (!ring || ring.length === 0) return;
+        if (!ring || ring.length === 0) {return;}
 
         // Build continuous longitude coordinates to avoid antimeridian jumps
         const adjustedCoords = [];
@@ -806,8 +806,8 @@ function drawCountryOnCanvas(feature, colorString) {
             adjustedCoords.forEach((coord, i) => {
                 const x = (((coord[0] + offset) + 180) / 360) * highlightCanvas.width;
                 const y = ((90 - coord[1]) / 180) * highlightCanvas.height;
-                if (i === 0) highlightCtx.moveTo(x, y);
-                else highlightCtx.lineTo(x, y);
+                if (i === 0) {highlightCtx.moveTo(x, y);}
+                else {highlightCtx.lineTo(x, y);}
             });
             highlightCtx.closePath();
             highlightCtx.fill();
@@ -825,7 +825,7 @@ function drawCountryOnCanvas(feature, colorString) {
 
 function selectCountry(name) {
     const group = countryMeshes.get(name);
-    if (!group) return;
+    if (!group) {return;}
 
     if (isViewingMoon) {
         isViewingMoon = false; // Resume Moon movement when selecting a country
@@ -841,7 +841,7 @@ function selectCountry(name) {
     highlightCountry(selectedCountry, true);
     
     const tooltip = document.getElementById('country-tooltip');
-    if (tooltip) tooltip.classList.remove('visible');
+    if (tooltip) {tooltip.classList.remove('visible');}
 
     // Camera animation — check countryData coordinates first, fallback to 3D centroid
     const normName = normalizeCountryName(name);
@@ -924,7 +924,7 @@ function setupUI() {
             
             const results = [];
             for (const name of countryMeshes.keys()) {
-                if (name.toLowerCase().includes(query)) results.push(name);
+                if (name.toLowerCase().includes(query)) {results.push(name);}
             }
             
             if (results.length > 0) {
@@ -961,7 +961,7 @@ function setupUI() {
         settingsBtn.addEventListener('click', () => settingsModal.classList.add('open'));
         settingsClose?.addEventListener('click', () => settingsModal.classList.remove('open'));
         settingsModal.addEventListener('click', (e) => {
-            if (e.target === settingsModal) settingsModal.classList.remove('open');
+            if (e.target === settingsModal) {settingsModal.classList.remove('open');}
         });
 
         const settingsTabBtns = document.querySelectorAll('.settings-tab-btn');
@@ -973,7 +973,7 @@ function setupUI() {
                 settingsTabPanels.forEach(p => p.classList.remove('active'));
                 btn.classList.add('active');
                 const activePanel = document.getElementById(`settings-tab-${targetTab}`);
-                if (activePanel) activePanel.classList.add('active');
+                if (activePanel) {activePanel.classList.add('active');}
             });
         });
 
@@ -1012,10 +1012,10 @@ function setupUI() {
             radio.addEventListener('change', (e) => {
                 const resBadge = document.getElementById('resolution-badge');
                 if (resBadge) {
-                    if (e.target.value === '4k') resBadge.textContent = '4K UHD';
-                    else if (e.target.value === '720p') resBadge.textContent = '720p HD';
-                    else if (e.target.value === '480p') resBadge.textContent = '480p SD';
-                    else resBadge.textContent = '1440p QHD';
+                    if (e.target.value === '4k') {resBadge.textContent = '4K UHD';}
+                    else if (e.target.value === '720p') {resBadge.textContent = '720p HD';}
+                    else if (e.target.value === '480p') {resBadge.textContent = '480p SD';}
+                    else {resBadge.textContent = '1440p QHD';}
                 }
                 updatePixelRatio(e.target.value);
             });
@@ -1032,7 +1032,7 @@ function setupUI() {
         document.getElementById('borders-toggle')?.addEventListener('change', (e) => {
             for (const group of countryMeshes.values()) {
                 group.children.forEach(child => {
-                    if (child.isLine) child.visible = e.target.checked;
+                    if (child.isLine) {child.visible = e.target.checked;}
                 });
             }
         });
@@ -1058,11 +1058,11 @@ function setupUI() {
                 if (isLight) {
                     document.body.classList.add('light-mode');
                     scene.background.setHex(0xf4f7fa);
-                    if (stars) stars.visible = false;
+                    if (stars) {stars.visible = false;}
                 } else {
                     document.body.classList.remove('light-mode');
                     scene.background.setHex(0x050811);
-                    if (stars) stars.visible = true;
+                    if (stars) {stars.visible = true;}
                 }
             });
         });
@@ -1295,19 +1295,19 @@ const countryIsoMap = {
 };
 
 function normalizeCountryName(name) {
-    if (!name) return '';
-    if (name === 'Dem. Rep. Congo' || name === 'Democratic Republic of the Congo') return 'Democratic Republic of the Congo';
-    if (name === 'Central African Rep.' || name === 'Central African Republic') return 'Central African Republic';
-    if (name === 'Eq. Guinea' || name === 'Equatorial Guinea') return 'Equatorial Guinea';
-    if (name === 'S. Sudan' || name === 'South Sudan') return 'South Sudan';
-    if (name === 'Swaziland' || name === 'Eswatini') return 'Eswatini';
-    if (name === 'Côte d\'Ivoire' || name === 'Ivory Coast' || name === "Cote d'Ivoire") return 'Ivory Coast';
-    if (name === 'Dem. Rep. Korea' || name === 'North Korea') return 'North Korea';
-    if (name === 'Bosnia and Herz.' || name === 'Bosnia and Herzegovina') return 'Bosnia and Herzegovina';
-    if (name === 'Czech Rep.' || name === 'Czechia' || name === 'Czech Republic') return 'Czechia';
-    if (name === 'Macedonia' || name === 'North Macedonia') return 'North Macedonia';
-    if (name === 'Dominican Rep.' || name === 'Dominican Republic') return 'Dominican Republic';
-    if (name === 'Trinidad & Tobago' || name === 'Trinidad and Tobago') return 'Trinidad and Tobago';
+    if (!name) {return '';}
+    if (name === 'Dem. Rep. Congo' || name === 'Democratic Republic of the Congo') {return 'Democratic Republic of the Congo';}
+    if (name === 'Central African Rep.' || name === 'Central African Republic') {return 'Central African Republic';}
+    if (name === 'Eq. Guinea' || name === 'Equatorial Guinea') {return 'Equatorial Guinea';}
+    if (name === 'S. Sudan' || name === 'South Sudan') {return 'South Sudan';}
+    if (name === 'Swaziland' || name === 'Eswatini') {return 'Eswatini';}
+    if (name === 'Côte d\'Ivoire' || name === 'Ivory Coast' || name === "Cote d'Ivoire") {return 'Ivory Coast';}
+    if (name === 'Dem. Rep. Korea' || name === 'North Korea') {return 'North Korea';}
+    if (name === 'Bosnia and Herz.' || name === 'Bosnia and Herzegovina') {return 'Bosnia and Herzegovina';}
+    if (name === 'Czech Rep.' || name === 'Czechia' || name === 'Czech Republic') {return 'Czechia';}
+    if (name === 'Macedonia' || name === 'North Macedonia') {return 'North Macedonia';}
+    if (name === 'Dominican Rep.' || name === 'Dominican Republic') {return 'Dominican Republic';}
+    if (name === 'Trinidad & Tobago' || name === 'Trinidad and Tobago') {return 'Trinidad and Tobago';}
     return name;
 }
 
@@ -1316,7 +1316,7 @@ function populateDrawer(countryName) {
     const data = countryData[normName] || countryData[countryName];
     const drawer = document.getElementById('info-drawer');
     
-    if (!drawer) return;
+    if (!drawer) {return;}
     
     if (data) {
         // Find flag ISO based on either the display name or normalized name
@@ -1410,7 +1410,7 @@ function animate() {
     if (time >= lastTime + 500) {
         const fps = Math.round((frames * 1000) / (time - lastTime));
         const fpsCounter = document.getElementById('fps-counter');
-        if (fpsCounter) fpsCounter.textContent = `FPS: ${fps}`;
+        if (fpsCounter) {fpsCounter.textContent = `FPS: ${fps}`;}
         frames = 0;
         lastTime = time;
     }
@@ -1418,7 +1418,7 @@ function animate() {
     // Globe position transition to center after play is clicked
     if (isPlaying && globeGroup && globeGroup.position.x > 0.0) {
         globeGroup.position.x = THREE.MathUtils.lerp(globeGroup.position.x, 0.0, 0.06);
-        if (globeGroup.position.x < 0.001) globeGroup.position.x = 0.0;
+        if (globeGroup.position.x < 0.001) {globeGroup.position.x = 0.0;}
     }
 
     // Sweeping cyan light in main menu, fading out in game mode

@@ -1,6 +1,6 @@
 // Achievement Engine Global Helpers
 ;(async function () {
-  if (window._colAchievementsRunning) return
+  if (window._colAchievementsRunning) {return}
   window._colAchievementsRunning = true
 
   /**

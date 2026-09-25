@@ -33,7 +33,7 @@
       const abx = bx - ax;
       const abz = bz - az;
       const len2 = abx * abx + abz * abz;
-      if (len2 === 0) return Math.hypot(px - ax, pz - az);
+      if (len2 === 0) {return Math.hypot(px - ax, pz - az);}
       let t = ((px - ax) * abx + (pz - az) * abz) / len2;
       t = Math.max(0, Math.min(1, t));
       return Math.hypot(px - (ax + t * abx), pz - (az + t * abz));
@@ -58,7 +58,7 @@
 
       // Test center and all 4 corners against road corridor half-width
       const safeDist = corridorWidth / 2 + 1.2;
-      if (SpatialMath.distanceToSegment(cx, cz, ax, az, bx, bz) < safeDist) return true;
+      if (SpatialMath.distanceToSegment(cx, cz, ax, az, bx, bz) < safeDist) {return true;}
       for (let i = 0; i < 4; i++) {
         if (SpatialMath.distanceToSegment(corners[i].x, corners[i].z, ax, az, bx, bz) < safeDist) {
           return true;
@@ -113,8 +113,8 @@
       // Remove instanced meshes
       if (this.activeScene && this._instancedMeshes.length) {
         this._instancedMeshes.forEach(mesh => {
-          if (mesh.parent) mesh.parent.remove(mesh);
-          if (mesh.geometry) mesh.geometry.dispose();
+          if (mesh.parent) {mesh.parent.remove(mesh);}
+          if (mesh.geometry) {mesh.geometry.dispose();}
         });
       }
       this._instancedMeshes = [];
@@ -126,7 +126,7 @@
       // Remove placed objects
       if (this.activeScene && this.placedObjects.length) {
         this.placedObjects.forEach(obj => {
-          if (obj && obj.parent) obj.parent.remove(obj);
+          if (obj && obj.parent) {obj.parent.remove(obj);}
         });
       }
       this.placedObjects = [];
@@ -136,7 +136,7 @@
 
     getMaterial(type, color, options = {}) {
       const key = `${type}_${color}_${JSON.stringify(options)}`;
-      if (this._matCache.has(key)) return this._matCache.get(key);
+      if (this._matCache.has(key)) {return this._matCache.get(key);}
 
       let mat;
       const isNode = typeof window === 'undefined' || !window.document;
@@ -160,8 +160,8 @@
      * Creates or retrieves a reusable procedural canvas texture for window facades or signs
      */
     getProceduralTexture(name, drawFn, width = 256, height = 256) {
-      if (this._texCache.has(name)) return this._texCache.get(name);
-      if (typeof document === 'undefined') return null;
+      if (this._texCache.has(name)) {return this._texCache.get(name);}
+      if (typeof document === 'undefined') {return null;}
 
       try {
         const canvas = document.createElement('canvas');
@@ -245,7 +245,7 @@
      * Synthesize and place an architecturally beautiful building with proper lot and facade
      */
     placeBuildingAtParcel(parcel, buildingType = 'commercial', modelKey = null, archetype = 'downtown') {
-      if (!parcel) return null;
+      if (!parcel) {return null;}
       this.occupiedParcels.push(parcel);
 
       const group = new THREE.Group();
@@ -813,13 +813,13 @@
       this._pendingStreetLights.forEach(l => {
         const g = new THREE.Group();
         g.position.set(l.x, 0, l.z);
-        if (this.activeScene) this.activeScene.add(g);
+        if (this.activeScene) {this.activeScene.add(g);}
         this.placedObjects.push(g);
       });
       this._pendingTrees.forEach(t => {
         const g = new THREE.Group();
         g.position.set(t.x, 0, t.z);
-        if (this.activeScene) this.activeScene.add(g);
+        if (this.activeScene) {this.activeScene.add(g);}
         this.placedObjects.push(g);
       });
     }
@@ -971,7 +971,7 @@
      */
     placeMarineDriveOceanWater(minZ, maxZ, seaX = -60) {
       const scene = this.activeScene;
-      if (!scene) return;
+      if (!scene) {return;}
 
       const seaLen = Math.abs(maxZ - minZ) + 400;
       const seaCenterZ = (minZ + maxZ) / 2;
@@ -1010,7 +1010,7 @@
     }
 
     resolveLevelSyllabus(cfg) {
-      if (!cfg) return;
+      if (!cfg) {return;}
       const theme = cfg.themeType || '';
 
       console.log(`[AISyllabusResolver] Resolving syllabus demands for Level ${cfg.id} ('${cfg.name}') — Theme: '${theme}'`);
@@ -1088,7 +1088,7 @@
           pedGrp.add(ped);
         });
         pedGrp.position.set(-10, 0.08, targetZ);
-        if (this.game.scene) this.game.scene.add(pedGrp);
+        if (this.game.scene) {this.game.scene.add(pedGrp);}
 
         let crossProg = 0;
         const crossInterval = setInterval(() => {
@@ -1097,7 +1097,7 @@
           pedGrp.position.x = -10 + crossProg * 20;
           if (crossProg >= 1.0) {
             clearInterval(crossInterval);
-            if (sig && sig.userData) sig.userData.state = 'green';
+            if (sig && sig.userData) {sig.userData.state = 'green';}
           }
         }, 33);
         this.spatialEngine._activeTimers.push(crossInterval);
@@ -1106,7 +1106,7 @@
 
     _buildSchoolZoneScenario(cfg) {
       cfg.speedLimit = 25;
-      if (this.game) this.game.speedLimitCap = 25;
+      if (this.game) {this.game.speedLimitCap = 25;}
 
       const schoolParcel = { x: -30, z: -80, w: 28, d: 22, rotY: Math.PI / 2 };
       this.spatialEngine.placeBuildingAtParcel(schoolParcel, 'school', 'building_high_school', 'suburban');
@@ -1146,7 +1146,7 @@
 
     _buildAmbulancePriorityScenario(cfg) {
       setTimeout(() => {
-        if (!this.game || !this.game.playing) return;
+        if (!this.game || !this.game.playing) {return;}
         const pPos = this.game.player ? this.game.player.position : new THREE.Vector3(0, 0, 0);
 
         let amb = null;
@@ -1174,13 +1174,13 @@
           }, 80);
           this.spatialEngine._activeTimers.push(flashTimer);
 
-          if (window.toast) toast('🚨 AMBULANCE APPROACHING FROM BEHIND! YIELD TO THE LEFT!', '#ef4444', 5000);
+          if (window.toast) {toast('🚨 AMBULANCE APPROACHING FROM BEHIND! YIELD TO THE LEFT!', '#ef4444', 5000);}
         }
       }, 3500);
     }
 
     _buildPuddleEtiquetteScenario(cfg) {
-      if (!this.game || !this.game.scene) return;
+      if (!this.game || !this.game.scene) {return;}
       const puddleMat = this.spatialEngine.getMaterial('basic', 0x1e293b, { transparent: true, opacity: 0.85 });
       [-40, -85, -130].forEach((pz, idx) => {
         const puddle = new THREE.Mesh(new THREE.CircleGeometry(2.4 + idx * 0.4, 16), puddleMat);
@@ -1215,7 +1215,7 @@
     }
 
     _buildConstructionScenario(cfg) {
-      if (!this.game || !this.game.scene) return;
+      if (!this.game || !this.game.scene) {return;}
       const coneMat = this.spatialEngine.getMaterial('basic', 0xf97316);
       const barMat = this.spatialEngine.getMaterial('toon', 0xfacc15);
 
@@ -1230,14 +1230,14 @@
           barrier.position.set(-3.0 + i * 1.5, 0.55, -92 - i * 3);
           barrier.userData = { noLod: true };
           this.game.scene.add(barrier);
-          if (this.game.world) this.game.world.push(barrier);
+          if (this.game.world) {this.game.world.push(barrier);}
         }
       }
-      if (window.toast) toast('⚠️ ROAD CONSTRUCTION AHEAD: Single Lane Diversion!', '#f59e0b', 4000);
+      if (window.toast) {toast('⚠️ ROAD CONSTRUCTION AHEAD: Single Lane Diversion!', '#f59e0b', 4000);}
     }
 
     _buildBlindCornerScenario(cfg) {
-      if (!this.game || !this.game.scene) return;
+      if (!this.game || !this.game.scene) {return;}
       const mirrorPost = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 3.4, 8), this.spatialEngine.getMaterial('toon', 0x64748b));
       mirrorPost.position.set(11.5, 1.7, -90);
       mirrorPost.userData = { noLod: true };
@@ -1251,7 +1251,7 @@
     }
 
     _buildAnimalObstacleScenario(cfg) {
-      if (!this.game || !this.game.scene) return;
+      if (!this.game || !this.game.scene) {return;}
       const cowGrp = new THREE.Group();
       const cowMat = this.spatialEngine.getMaterial('toon', 0xffffff);
       const spotMat = this.spatialEngine.getMaterial('toon', 0x1e293b);
@@ -1274,12 +1274,12 @@
       cowGrp.position.set(2.5, 0.08, -75);
       cowGrp.userData = { isAnimal: true, noLod: true };
       this.game.scene.add(cowGrp);
-      if (this.game.world) this.game.world.push(cowGrp);
-      if (this.game.obstacles) this.game.obstacles.push(cowGrp);
+      if (this.game.world) {this.game.world.push(cowGrp);}
+      if (this.game.obstacles) {this.game.obstacles.push(cowGrp);}
     }
 
     _buildParkingRulesScenario(cfg) {
-      if (!this.game || !this.game.scene) return;
+      if (!this.game || !this.game.scene) {return;}
       const lineMat = this.spatialEngine.getMaterial('basic', 0xffffff);
       const startZ = -40;
       for (let i = 0; i < 4; i++) {
@@ -1295,14 +1295,14 @@
             const parkedCar = window._buildVehicle('car', i === 0 ? 0xef4444 : 0x3b82f6);
             parkedCar.position.set(10.5, 0.08, bayZ);
             this.game.scene.add(parkedCar);
-            if (this.game.world) this.game.world.push(parkedCar);
+            if (this.game.world) {this.game.world.push(parkedCar);}
           }
         }
       }
     }
 
     _buildHighwayMergeScenario(cfg) {
-      if (!this.game || !this.game.scene) return;
+      if (!this.game || !this.game.scene) {return;}
       const mergeLineMat = this.spatialEngine.getMaterial('basic', 0xfacc15);
       for (let i = 0; i < 15; i++) {
         const dash = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.06, 3.0), mergeLineMat);
@@ -1526,7 +1526,7 @@
      */
     generateScene(archetypeKey = 'downtown', customOptions = {}) {
       const g = this.game;
-      if (!g || !g.scene) return;
+      if (!g || !g.scene) {return;}
 
       console.log(`[AISceneGenerator] Synthesizing complete 3D scene — Archetype: '${archetypeKey}'`);
       this.spatialEngine.reset();
@@ -1583,7 +1583,7 @@
     synthesizeInfrastructure(cfg) {
       this.spatialEngine.reset();
       const graph = this.game.roadGraph;
-      if (!graph) return;
+      if (!graph) {return;}
 
       const isCoastal = (cfg.id === 'ai_coastal' || cfg.themeType === 'coastal');
 
@@ -1651,7 +1651,7 @@
      */
     synthesizeParcelsAndBuildings(cfg) {
       const graph = this.game.roadGraph;
-      if (!graph) return;
+      if (!graph) {return;}
 
       const archetypeKey = (cfg.id || '').replace('ai_', '') || 'downtown';
       const style = cfg.buildingStyle || 'commercial';
@@ -1679,7 +1679,7 @@
 
           for (let i = 0; i < numSlots; i++) {
             const t = (i + 0.5) * (slotStep / len);
-            if (t <= 0.08 || t >= 0.92) continue; // preserve intersection clear sightlines!
+            if (t <= 0.08 || t >= 0.92) {continue;} // preserve intersection clear sightlines!
 
             const parcel = this.spatialEngine.findValidBuildingParcel(edge, t, side, buildingW, buildingD);
             if (parcel) {

@@ -5,14 +5,14 @@ const zlib = require('zlib');
 // Minimal PNG encoder
 function createPNG(width, height, rgbaBuffer) {
   function crc32(buf) {
-    let table = new Uint32Array(256);
+    const table = new Uint32Array(256);
     for (let i = 0; i < 256; i++) {
       let c = i;
-      for (let j = 0; j < 8; j++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+      for (let j = 0; j < 8; j++) {c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);}
       table[i] = c;
     }
     let crc = 0 ^ (-1);
-    for (let i = 0; i < buf.length; i++) crc = (crc >>> 8) ^ table[(crc ^ buf[i]) & 0xFF];
+    for (let i = 0; i < buf.length; i++) {crc = (crc >>> 8) ^ table[(crc ^ buf[i]) & 0xFF];}
     return (crc ^ (-1)) >>> 0;
   }
 
@@ -58,7 +58,7 @@ class SkinPainter {
   }
 
   setPixel(x, y, r, g, b, a = 255) {
-    if (x < 0 || x >= 64 || y < 0 || y >= 64) return;
+    if (x < 0 || x >= 64 || y < 0 || y >= 64) {return;}
     const idx = (y * 64 + x) * 4;
     this.buffer[idx] = r;
     this.buffer[idx + 1] = g;
@@ -453,7 +453,7 @@ const skins = {
 };
 
 const skinsDir = path.join(__dirname, 'skins');
-if (!fs.existsSync(skinsDir)) fs.mkdirSync(skinsDir, { recursive: true });
+if (!fs.existsSync(skinsDir)) {fs.mkdirSync(skinsDir, { recursive: true });}
 
 for (const [filename, pngData] of Object.entries(skins)) {
   const filePath = path.join(skinsDir, filename);

@@ -17,17 +17,17 @@
 
   function createSuburbanNeighborhood(game, cfg) {
     const scene = game.scene;
-    if (!scene) return;
+    if (!scene) {return;}
 
     // Remove any existing suburban scenery group
     const existing = scene.getObjectByName('SuburbanNeighborhoodScenery');
     if (existing) {
       scene.remove(existing);
       existing.traverse(ch => {
-        if (ch.geometry) ch.geometry.dispose();
+        if (ch.geometry) {ch.geometry.dispose();}
         if (ch.material) {
-          if (Array.isArray(ch.material)) ch.material.forEach(m => m.dispose());
-          else ch.material.dispose();
+          if (Array.isArray(ch.material)) {ch.material.forEach(m => m.dispose());}
+          else {ch.material.dispose();}
         }
       });
     }
@@ -127,7 +127,7 @@
     roadMesh.position.set(0, 0.01, 0);
     roadMesh.receiveShadow = true;
     group.add(roadMesh);
-    if (game.world) game.world.push(roadMesh);
+    if (game.world) {game.world.push(roadMesh);}
 
     // ── 2. White Centerline Paint Stripes ───────────────────────────────────
     const dashLength = 3.2;
@@ -176,7 +176,7 @@
       swMesh.position.set(swCenterX, sidewalkHeight / 2, 0);
       swMesh.receiveShadow = true;
       group.add(swMesh);
-      if (game.world) game.world.push(swMesh);
+      if (game.world) {game.world.push(swMesh);}
 
       // Chamfered Curb Stone Lip facing the street
       const curbLip = new THREE.Mesh(
@@ -315,7 +315,7 @@
         // Street Furniture Props: Mailbox near driveway
         const mailbox = buildSuburbanMailbox(mMailboxPost, mMailboxBox, mMailboxFlag);
         mailbox.position.set(xSign * (halfRoad + sidewalkWidth - 0.5), 0, drivewayZ + (xSign > 0 ? 2.6 : -2.6));
-        if (xSign < 0) mailbox.rotation.y = Math.PI;
+        if (xSign < 0) {mailbox.rotation.y = Math.PI;}
         group.add(mailbox);
 
         // Street lights every 2 lots
@@ -929,10 +929,10 @@
 
     const P = window.PRELOADED_MODELS || {};
     const glbKeys = [];
-    if (P['house_lowpoly_isometric']) glbKeys.push('house_lowpoly_isometric');
-    if (P['house_mansion_lowpoly']) glbKeys.push('house_mansion_lowpoly');
+    if (P['house_lowpoly_isometric']) {glbKeys.push('house_lowpoly_isometric');}
+    if (P['house_mansion_lowpoly']) {glbKeys.push('house_mansion_lowpoly');}
     'abcdefghijklmnopqrstu'.split('').forEach(l => {
-      if (P['suburban_' + l]) glbKeys.push('suburban_' + l);
+      if (P['suburban_' + l]) {glbKeys.push('suburban_' + l);}
     });
 
     const variant = lotIndex % 6;
@@ -1095,7 +1095,7 @@
     // Windows
     for (let wx = -13; wx <= 13; wx += 3.5) {
       for (let wy = 3; wy <= 9; wy += 3) {
-        if (Math.abs(wx) < 3.5 && wy === 3) continue;
+        if (Math.abs(wx) < 3.5 && wy === 3) {continue;}
         const win = new THREE.Mesh(new THREE.BoxGeometry(1.8, 1.8, 0.1), mGlass);
         win.position.set(wx, wy, 7.05);
         school.add(win);
@@ -1109,7 +1109,7 @@
    * In-Game Storyline Radio Dispatch HUD System
    */
   function setupStoryRadioHUD(game, story) {
-    if (!story || !story.dialogue || typeof document === 'undefined') return;
+    if (!story || !story.dialogue || typeof document === 'undefined') {return;}
 
     let hud = document.getElementById('suburban-radio-hud');
     if (!hud) {
@@ -1153,17 +1153,17 @@
     const triggeredSet = new Set();
 
     function showDialogue(d) {
-      if (!hud || !speakerEl || !lineEl) return;
+      if (!hud || !speakerEl || !lineEl) {return;}
       speakerEl.textContent = d.speaker || 'Dispatch';
       lineEl.textContent = d.line || '';
       hud.style.opacity = '1';
       hud.style.transform = 'translateX(-50%) translateY(0)';
       // Duck engine/wind under the voice line so radio stays intelligible
       try {
-        if (window.TrafficAudio && window.TrafficAudio.duckWorld) window.TrafficAudio.duckWorld(0.5, 7800);
+        if (window.TrafficAudio && window.TrafficAudio.duckWorld) {window.TrafficAudio.duckWorld(0.5, 7800);}
       } catch (e) {}
 
-      if (activeTimeout) clearTimeout(activeTimeout);
+      if (activeTimeout) {clearTimeout(activeTimeout);}
       activeTimeout = setTimeout(() => {
         hud.style.opacity = '0';
         hud.style.transform = 'translateX(-50%) translateY(20px)';
@@ -1180,9 +1180,9 @@
     }
 
     // Polling hook based on player Z position
-    if (game._storyTimer) clearInterval(game._storyTimer);
+    if (game._storyTimer) {clearInterval(game._storyTimer);}
     game._storyTimer = setInterval(() => {
-      if (!game.playing || !game.player) return;
+      if (!game.playing || !game.player) {return;}
       const pZ = game.player.position ? game.player.position.z : (game.vehicle ? game.vehicle.position.z : 0);
       story.dialogue.forEach(d => {
         if (!triggeredSet.has(d.triggerZ) && pZ >= d.triggerZ - 20 && pZ <= d.triggerZ + 80) {
@@ -1710,8 +1710,8 @@
     const texBasalt = createBasaltStoneTexture();
 
     // High-Fidelity Materials with procedural textures
-    if (texAsphalt && mats.mRoad) mats.mRoad.map = texAsphalt;
-    if (texSidewalk && mats.mSidewalk) mats.mSidewalk.map = texSidewalk;
+    if (texAsphalt && mats.mRoad) {mats.mRoad.map = texAsphalt;}
+    if (texSidewalk && mats.mSidewalk) {mats.mSidewalk.map = texSidewalk;}
     if (texGrass && mats.mGrass) {
       mats.mGrass.map = texGrass;
       mats.mGrass.needsUpdate = true;
@@ -1787,7 +1787,7 @@
 
     function addScenery(obj, x, z, isSkyline = false) {
       const chunk = getOrCreateChunk(x, z, isSkyline);
-      if (isSkyline) chunk.userData.isSkyline = true;
+      if (isSkyline) {chunk.userData.isSkyline = true;}
       chunk.add(obj);
     }
 
@@ -1844,7 +1844,7 @@
       roadMesh.position.set(cx, 0.01, cz);
       roadMesh.receiveShadow = true;
       group.add(roadMesh);
-      if (game.world) game.world.push(roadMesh);
+      if (game.world) {game.world.push(roadMesh);}
 
       // Lane Markings & Medians
       if (isV) {
@@ -1905,7 +1905,7 @@
           swMesh.position.set(swX, sidewalkHeight / 2, cz);
           swMesh.receiveShadow = true;
           group.add(swMesh);
-          if (game.world) game.world.push(swMesh);
+          if (game.world) {game.world.push(swMesh);}
 
           // Yellow Tactile Blister Paving Strip along Curb Edge
           const tactile = new THREE.Mesh(new THREE.PlaneGeometry(0.35, len), mTactileYellow);
@@ -1948,7 +1948,7 @@
           swMesh.position.set(cx, sidewalkHeight / 2, swZ);
           swMesh.receiveShadow = true;
           group.add(swMesh);
-          if (game.world) game.world.push(swMesh);
+          if (game.world) {game.world.push(swMesh);}
 
           // Yellow Tactile Blister Paving Strip along Curb Edge
           const tactile = new THREE.Mesh(new THREE.PlaneGeometry(len, 0.35), mTactileYellow);
@@ -1995,7 +1995,7 @@
       juncPad.position.set(ix, 0.015, iz);
       juncPad.receiveShadow = true;
       group.add(juncPad);
-      if (game.world) game.world.push(juncPad);
+      if (game.world) {game.world.push(juncPad);}
     });
 
     junctions.forEach(j => {
@@ -2869,7 +2869,7 @@
     modernSkyscrapers.forEach(sky => {
       const bldg = buildModernHighriseSkyscraper(sky.stories, sky.width, sky.depth, sky.opts);
       bldg.position.set(sky.x, 0, sky.z);
-      if (sky.rot) bldg.rotation.y = sky.rot;
+      if (sky.rot) {bldg.rotation.y = sky.rot;}
       addScenerySafe(bldg, sky.x, sky.z, sky.width / 2);
 
       // Courtyard shade trees around skyscraper plaza
@@ -3188,7 +3188,7 @@
 
     // Active tracking loop (100ms interval, negligible CPU usage)
     game._mumbaiCullTimer = setInterval(() => {
-      if (!game.playing) return;
+      if (!game.playing) {return;}
       const cam = game.camera;
       const target = (game.inVehicle && game.vehicle) ? game.vehicle : (game.player || game.vehicle);
       const isHighAltitude = !!(cam && cam.position && cam.position.y > 150);
@@ -4263,7 +4263,7 @@ function buildSchoolAcademicBuilding(opts) {
   // Windows along main facade (facing X positive / road)
   for (let f = 0; f < 4; f++) {
     for (let w = -hallW / 2 + 4; w < hallW / 2 - 3; w += 4.8) {
-      if (Math.abs(w) < 5.0 && f === 0) continue; // Entrance portico opening
+      if (Math.abs(w) < 5.0 && f === 0) {continue;} // Entrance portico opening
       const win = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 2.6), mGlass);
       win.position.set(hallD / 2 + 0.05, 2.6 + f * 3.8, w);
       win.rotation.y = Math.PI / 2;
@@ -4949,7 +4949,7 @@ function buildSocietyGarden(w, d, opts) {
 // PROCEDURAL CANVAS TEXTURE GENERATORS (Zero-GC, Instant WebGL Upload)
 // ═════════════════════════════════════════════════════════════════════════════
 function createAsphaltCanvasTexture() {
-  if (typeof document === 'undefined') return null;
+  if (typeof document === 'undefined') {return null;}
   const canvas = document.createElement('canvas');
   canvas.width = 512;
   canvas.height = 512;
@@ -4999,7 +4999,7 @@ function createAsphaltCanvasTexture() {
 }
 
 function createSidewalkPaverTexture() {
-  if (typeof document === 'undefined') return null;
+  if (typeof document === 'undefined') {return null;}
   const canvas = document.createElement('canvas');
   canvas.width = 256;
   canvas.height = 256;
@@ -5036,7 +5036,7 @@ function createSidewalkPaverTexture() {
 }
 
 function createBuildingFacadeTexture(baseColorHex, isHighrise) {
-  if (typeof document === 'undefined') return null;
+  if (typeof document === 'undefined') {return null;}
   const canvas = document.createElement('canvas');
   canvas.width = 512;
   canvas.height = 512;
@@ -5110,7 +5110,7 @@ function createBuildingFacadeTexture(baseColorHex, isHighrise) {
 }
 
 function createBasaltStoneTexture() {
-  if (typeof document === 'undefined') return null;
+  if (typeof document === 'undefined') {return null;}
   const canvas = document.createElement('canvas');
   canvas.width = 256;
   canvas.height = 256;
@@ -5151,7 +5151,7 @@ function createBasaltStoneTexture() {
 
 // ── Procedural High-Resolution Organic Grass Texture ────────────────────────
 function createGrassCanvasTexture() {
-  if (typeof document === 'undefined') return null;
+  if (typeof document === 'undefined') {return null;}
   const canvas = document.createElement('canvas');
   canvas.width = 512;
   canvas.height = 512;
@@ -5204,7 +5204,7 @@ window.createGrassCanvasTexture = createGrassCanvasTexture;
 
 // ── Crisp High-Resolution Society Signboard Texture ─────────────────────────
 function createSocietySignCanvasTexture(mainText, subText) {
-  if (typeof document === 'undefined') return null;
+  if (typeof document === 'undefined') {return null;}
   const canvas = document.createElement('canvas');
   canvas.width = 1024;
   canvas.height = 128;

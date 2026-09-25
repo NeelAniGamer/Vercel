@@ -996,19 +996,19 @@ const LVS = [
 
     // ðŸš¦ STATE MANAGEMENT ðŸš¦
     let S = { comp: {}, badges: [], total: 0, name: 'Traffic Hero', wallet: 10000 };
-    try { const s = localStorage.getItem('mth4'); if (s) S = Object.assign(S, JSON.parse(s)); } catch (e) { }
+    try { const s = localStorage.getItem('mth4'); if (s) {S = Object.assign(S, JSON.parse(s));} } catch (e) { }
     const save = () => { try { localStorage.setItem('mth4', JSON.stringify(S)); } catch (e) { } };
 
     // ðŸš¦ UTILS ðŸš¦
     let _tt = null;
-    function toast(msg, col = '#ffd54a') { const t = document.getElementById('toast'), ti = document.getElementById('ti'); if (!t || !ti) return; ti.textContent = msg; ti.style.background = col; t.classList.add('on'); clearTimeout(_tt); _tt = setTimeout(() => t.classList.remove('on'), 2500); }
+    function toast(msg, col = '#ffd54a') { const t = document.getElementById('toast'), ti = document.getElementById('ti'); if (!t || !ti) {return;} ti.textContent = msg; ti.style.background = col; t.classList.add('on'); clearTimeout(_tt); _tt = setTimeout(() => t.classList.remove('on'), 2500); }
     const mob = () => /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
     // ðŸš¦ SOUND FX ðŸš¦
     const sfx = {
-      _c: null, init() { if (this._c) return; try { this._c = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { } },
+      _c: null, init() { if (this._c) {return;} try { this._c = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { } },
       play(t) {
-        if (!this._c) return; const p = { horn: { f: 440, ty: 'square', d: .18, v: .12 }, brake: { f: 160, ty: 'sawtooth', d: .15, v: .08 }, challan: { f: 880, ty: 'triangle', d: .32, v: .11 }, ok: { f: 660, ty: 'sine', d: .22, v: .09 }, error: { f: 110, ty: 'square', d: .28, v: .1 } }; const pp = p[t] || p.horn;
+        if (!this._c) {return;} const p = { horn: { f: 440, ty: 'square', d: .18, v: .12 }, brake: { f: 160, ty: 'sawtooth', d: .15, v: .08 }, challan: { f: 880, ty: 'triangle', d: .32, v: .11 }, ok: { f: 660, ty: 'sine', d: .22, v: .09 }, error: { f: 110, ty: 'square', d: .28, v: .1 } }; const pp = p[t] || p.horn;
         try { const o = this._c.createOscillator(), g = this._c.createGain(); o.connect(g); g.connect(this._c.destination); o.type = pp.ty; o.frequency.setValueAtTime(pp.f, this._c.currentTime); g.gain.setValueAtTime(pp.v, this._c.currentTime); g.gain.exponentialRampToValueAtTime(.001, this._c.currentTime + pp.d); o.start(); o.stop(this._c.currentTime + pp.d); } catch (e) { }
       }
     };
@@ -1017,20 +1017,20 @@ const LVS = [
     const ui = {
     showProfile() {
         const dlg = document.getElementById('profile-dlg');
-        if(!dlg) return;
-        const _lpn = document.getElementById('prof-name'); if (_lpn) _lpn.value = S.name || '';
-        const _lpv = document.getElementById('prof-veh'); if (_lpv) _lpv.value = S.vehicle || 'Car';
+        if(!dlg) {return;}
+        const _lpn = document.getElementById('prof-name'); if (_lpn) {_lpn.value = S.name || '';}
+        const _lpv = document.getElementById('prof-veh'); if (_lpv) {_lpv.value = S.vehicle || 'Car';}
         dlg.style.display = 'flex';
     },
     saveProfile() {
-        const _spn = document.getElementById('prof-name'); const _spv = document.getElementById('prof-veh'); if (!_spn || !_spv) return;
+        const _spn = document.getElementById('prof-name'); const _spv = document.getElementById('prof-veh'); if (!_spn || !_spv) {return;}
         const n = _spn.value.trim();
         const v = _spv.value;
         if(n.length > 0 && n.length < 3) { toast('Please enter a valid name', 'darkred'); return; }
         S.name = n;
         S.vehicle = v;
         save();
-        var _pd=document.getElementById('profile-dlg');if(_pd)_pd.style.display='none';
+        var _pd=document.getElementById('profile-dlg');if(_pd){_pd.style.display='none';}
         toast('Profile Saved!', '#3b8c66');
         
         const cnameEl = document.getElementById('cname');
@@ -1038,14 +1038,14 @@ const LVS = [
     },
 
       cur: null, qst: null, cq: [], cbusy: false, _ccb: null,
-      adminUnlock() { LVS.forEach(l => { if (!S.comp[l.id]) S.comp[l.id] = { score: 500, time: Date.now() } }); BADGES.forEach(b => { if (!S.badges.includes(b.id)) S.badges.push(b.id) }); if (!S._counted) { S.total += 7500; S._counted = true; } save(); toast('🔓 Developer Unlock Triggered!', '#00c851'); this.showLevels(); },
+      adminUnlock() { LVS.forEach(l => { if (!S.comp[l.id]) {S.comp[l.id] = { score: 500, time: Date.now() }} }); BADGES.forEach(b => { if (!S.badges.includes(b.id)) {S.badges.push(b.id)} }); if (!S._counted) { S.total += 7500; S._counted = true; } save(); toast('🔓 Developer Unlock Triggered!', '#00c851'); this.showLevels(); },
       hardReset() { if (confirm('Reset all progress?')) { S.comp = {}; S.badges = []; S.total = 0; save(); toast('⚠️ï¸ Progress Reset!', '#ff3b30'); this.showStart(); } },
-      show(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); if (id) { const _el = document.getElementById(id); if (_el) _el.classList.add('active'); } },
+      show(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); if (id) { const _el = document.getElementById(id); if (_el) {_el.classList.add('active');} } },
       showStart() { this.show('ss'); this._rain(); if (!S.name || S.name === 'Traffic Hero') { setTimeout(() => this.showProfile(), 1000); } },
-      showNameDlg() { document.getElementById('name-dlg').classList.add('on'); setTimeout(() => { const i = document.getElementById('name-input'); if (i) i.focus(); }, 200); },
+      showNameDlg() { document.getElementById('name-dlg').classList.add('on'); setTimeout(() => { const i = document.getElementById('name-input'); if (i) {i.focus();} }, 200); },
       showProfile() {
         const dlg = document.getElementById('profile-dlg');
-        if(!dlg) return;
+        if(!dlg) {return;}
         document.getElementById('prof-name').value = S.name || '';
         document.getElementById('prof-veh').value = S.vehicle || 'Car';
         dlg.style.display = 'flex';
@@ -1057,7 +1057,7 @@ const LVS = [
         S.name = n;
         S.vehicle = v;
         save();
-        var _pd=document.getElementById('profile-dlg');if(_pd)_pd.style.display='none';
+        var _pd=document.getElementById('profile-dlg');if(_pd){_pd.style.display='none';}
         toast('Profile Saved!', '#3b8c66');
         
         const cnameEl = document.getElementById('cname');
@@ -1066,8 +1066,8 @@ const LVS = [
       _rain() { const r = document.getElementById('rl'); if (r && !r._b) { r._b = 1; for (let i = 0; i < 30; i++) { const d = document.createElement('div'); d.className = 'rd'; d.style.left = Math.random() * 100 + '%'; d.style.height = (50 + Math.random() * 50) + 'px'; d.style.animationDuration = ('.6' + Math.random() * .5) + 's'; r.appendChild(d); } } },
       showLevels() { this.show('screen-levels'); this._bldLvs(); },
       _bldLvs() {
-        const body = document.getElementById('lvbody'); if (!body) return; body.innerHTML = '';
-        const _pc = document.getElementById('pchip'); if (_pc) _pc.textContent = Object.keys(S.comp).length + '/15 ✅';
+        const body = document.getElementById('lvbody'); if (!body) {return;} body.innerHTML = '';
+        const _pc = document.getElementById('pchip'); if (_pc) {_pc.textContent = Object.keys(S.comp).length + '/15 ✅';}
         const done = Object.keys(S.comp).length;
         const secs = [{ t: '🔰 Beginner Modules', ids: [1, 2, 3, 4] }, { t: '🔰 Intermediate Corridors', ids: [5, 6, 7, 8, 9] }, { t: '🔰 Advanced Systems', ids: [10, 11, 12, 13] }, { t: '🎓 Expert Gauntlets', ids: [14, 15] }];
         secs.forEach(sec => {
@@ -1110,7 +1110,7 @@ const LVS = [
         }
         this.show('screen-briefing');
       },
-      _selSyl(id) { if (this._sylItems) { const it = this._sylItems.find(i => i.id === id); if (it && !this._sylViewed.has(id)) { this._sylViewed.add(id); const sylEl = document.getElementById('syl-' + id); if (sylEl) sylEl.classList.add('syl-done'); } } }
+      _selSyl(id) { if (this._sylItems) { const it = this._sylItems.find(i => i.id === id); if (it && !this._sylViewed.has(id)) { this._sylViewed.add(id); const sylEl = document.getElementById('syl-' + id); if (sylEl) {sylEl.classList.add('syl-done');} } } }
     };
     window.__lvsLegacy = { LVS, BADGES, ui, sfx, save, toast, mob };
   })();

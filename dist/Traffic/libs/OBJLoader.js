@@ -258,9 +258,9 @@
 
 				const src = this.colors;
 				const dst = this.object.geometry.colors;
-				if ( src[ a ] !== undefined ) dst.push( src[ a + 0 ], src[ a + 1 ], src[ a + 2 ] );
-				if ( src[ b ] !== undefined ) dst.push( src[ b + 0 ], src[ b + 1 ], src[ b + 2 ] );
-				if ( src[ c ] !== undefined ) dst.push( src[ c + 0 ], src[ c + 1 ], src[ c + 2 ] );
+				if ( src[ a ] !== undefined ) {dst.push( src[ a + 0 ], src[ a + 1 ], src[ a + 2 ] );}
+				if ( src[ b ] !== undefined ) {dst.push( src[ b + 0 ], src[ b + 1 ], src[ b + 2 ] );}
+				if ( src[ c ] !== undefined ) {dst.push( src[ c + 0 ], src[ c + 1 ], src[ c + 2 ] );}
 
 			},
 			addUV: function ( a, b, c ) {
@@ -448,10 +448,10 @@
 				line = lines[ i ];
 				line = trimLeft ? line.trimLeft() : line.trim();
 				lineLength = line.length;
-				if ( lineLength === 0 ) continue;
+				if ( lineLength === 0 ) {continue;}
 				lineFirstChar = line.charAt( 0 ); // @todo invoke passed in handler if any
 
-				if ( lineFirstChar === '#' ) continue;
+				if ( lineFirstChar === '#' ) {continue;}
 
 				if ( lineFirstChar === 'v' ) {
 
@@ -530,8 +530,8 @@
 						for ( let li = 0, llen = lineParts.length; li < llen; li ++ ) {
 
 							const parts = lineParts[ li ].split( '/' );
-							if ( parts[ 0 ] !== '' ) lineVertices.push( parts[ 0 ] );
-							if ( parts[ 1 ] !== '' ) lineUVs.push( parts[ 1 ] );
+							if ( parts[ 0 ] !== '' ) {lineVertices.push( parts[ 0 ] );}
+							if ( parts[ 1 ] !== '' ) {lineUVs.push( parts[ 1 ] );}
 
 						}
 
@@ -606,12 +606,12 @@
 					}
 
 					const material = state.object.currentMaterial();
-					if ( material ) material.smooth = state.object.smooth;
+					if ( material ) {material.smooth = state.object.smooth;}
 
 				} else {
 
 					// Handle null terminated files without exception
-					if ( line === '\0' ) continue;
+					if ( line === '\0' ) {continue;}
 					console.warn( 'THREE.OBJLoader: Unexpected line: "' + line + '"' );
 
 				}
@@ -634,7 +634,7 @@
 					const isPoints = geometry.type === 'Points';
 					let hasVertexColors = false; // Skip o/g line declarations that did not follow with any faces
 
-					if ( geometry.vertices.length === 0 ) continue;
+					if ( geometry.vertices.length === 0 ) {continue;}
 					const buffergeometry = new THREE.BufferGeometry();
 					buffergeometry.setAttribute( 'position', new THREE.Float32BufferAttribute( geometry.vertices, 3 ) );
 

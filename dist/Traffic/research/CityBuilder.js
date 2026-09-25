@@ -81,7 +81,7 @@ class CityBuilder {
   }
   
   buildCityFromGraph() {
-    if (!this.roadGraph) return;
+    if (!this.roadGraph) {return;}
     
     // Place buildings along roads
     this.roadGraph.edges.forEach(edge => {
@@ -112,7 +112,7 @@ class CityBuilder {
     
     for (let i = 0; i < buildingCount; i++) {
       // Skip based on density
-      if (Math.random() > zoneConfig.density) continue;
+      if (Math.random() > zoneConfig.density) {continue;}
       
       const t = (i + 0.5) / buildingCount;
       const center = edge.getPointAt(t);
@@ -188,7 +188,7 @@ class CityBuilder {
     
     for (let floor = 0; floor < floors; floor++) {
       for (let w = 0; w < windowsPerFloor; w++) {
-        if (Math.random() < 0.3) continue; // Some windows dark
+        if (Math.random() < 0.3) {continue;} // Some windows dark
         
         const window = new THREE.Mesh(
           new THREE.PlaneGeometry(1.2, 1.8),
@@ -249,7 +249,7 @@ class CityBuilder {
   
   placeVegetation() {
     // Place trees along sidewalks
-    if (!this.roadGraph) return;
+    if (!this.roadGraph) {return;}
     
     this.roadGraph.edges.forEach(edge => {
       const treeCount = Math.floor(edge.length / 25);
@@ -301,7 +301,7 @@ class CityBuilder {
   
   placeStreetProps() {
     // Place bus stops, street vendors, etc.
-    if (!this.roadGraph) return;
+    if (!this.roadGraph) {return;}
     
     this.roadGraph.nodes.forEach(node => {
       if (Math.random() < 0.2) {
@@ -459,7 +459,7 @@ class CityBuilder {
   
   unloadChunk(key) {
     const chunk = this.loadedChunks.get(key);
-    if (!chunk) return;
+    if (!chunk) {return;}
     
     // Remove from scene
     chunk.buildings.forEach(b => this.scene.remove(b));
@@ -471,7 +471,7 @@ class CityBuilder {
   }
   
   isNearRoad(position, maxDist) {
-    if (!this.roadGraph) return null;
+    if (!this.roadGraph) {return null;}
     
     let nearest = null;
     let minDist = maxDist;

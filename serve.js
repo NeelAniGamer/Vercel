@@ -35,16 +35,16 @@ const ROOT_DIR = __dirname;
 
 function resolveFilePath(reqPath) {
   let decoded = decodeURIComponent(reqPath);
-  if (decoded === '/' || decoded === '') decoded = '/home.html';
+  if (decoded === '/' || decoded === '') {decoded = '/home.html';}
 
-  let filePath = path.normalize(path.join(ROOT_DIR, decoded));
-  if (!filePath.startsWith(ROOT_DIR)) return null;
+  const filePath = path.normalize(path.join(ROOT_DIR, decoded));
+  if (!filePath.startsWith(ROOT_DIR)) {return null;}
 
   if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
     const indexHtml = path.join(filePath, 'index.html');
     const academyHtml = path.join(filePath, 'Academy.html');
-    if (fs.existsSync(indexHtml)) return indexHtml;
-    if (fs.existsSync(academyHtml)) return academyHtml;
+    if (fs.existsSync(indexHtml)) {return indexHtml;}
+    if (fs.existsSync(academyHtml)) {return academyHtml;}
   }
 
   if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {

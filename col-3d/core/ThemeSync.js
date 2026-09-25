@@ -195,7 +195,7 @@
 
   function applyToMaterial(material, paletteKey, property) {
     const value = palette[paletteKey]
-    if (value === undefined) return
+    if (value === undefined) {return}
 
     if (property === 'color' && material.color && material.color.setHex) {
       material.color.setHex(value)
@@ -218,7 +218,7 @@
 
   // ==================== OBSERVER ====================
   function initObserver() {
-    if (observer) return
+    if (observer) {return}
     observer = new MutationObserver((mutations) => {
       for (const m of mutations) {
         if (m.attributeName === 'class' && m.target === document.body) {

@@ -37,9 +37,9 @@
   // ═══════════════════════════════════════════════════════════════════════
   function initPullToRefresh() {
     // Only on touch devices, only on pages that don't have their own scroll handling
-    if (!('ontouchstart' in window)) return
+    if (!('ontouchstart' in window)) {return}
     var isGamePage = /Driving|Academy|solar|gesture|rpg/i.test(location.pathname)
-    if (isGamePage) return
+    if (isGamePage) {return}
 
     var pullThreshold = 80
     var startY = 0
@@ -48,7 +48,7 @@
     var spinner = null
 
     function createIndicator() {
-      if (indicator) return
+      if (indicator) {return}
       indicator = document.createElement('div')
       indicator.id = 'pull-indicator'
       indicator.style.cssText = [
@@ -99,13 +99,13 @@
     }
 
     document.addEventListener('touchstart', function (e) {
-      if (window.scrollY > 5) return
+      if (window.scrollY > 5) {return}
       startY = e.touches[0].clientY
       pulling = true
     }, { passive: true })
 
     document.addEventListener('touchmove', function (e) {
-      if (!pulling) return
+      if (!pulling) {return}
       var currentY = e.touches[0].clientY
       var diff = currentY - startY
       if (diff < 10 || window.scrollY > 0) {
@@ -123,7 +123,7 @@
     }, { passive: true })
 
     document.addEventListener('touchend', function () {
-      if (!pulling) return
+      if (!pulling) {return}
       pulling = false
 
       if (indicator) {

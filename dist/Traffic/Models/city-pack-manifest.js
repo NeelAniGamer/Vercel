@@ -99,6 +99,6 @@ window.getCitPackAssetsByLicense = function(license) {
 // Helper function to get random asset from category
 window.getRandomCityPackAsset = function(category) {
   const assets = window.CITY_PACK_ASSETS[category];
-  if (!assets || assets.length === 0) return null;
+  if (!assets || assets.length === 0) {return null;}
   return assets[Math.floor(Math.random() * assets.length)];
 }

@@ -165,7 +165,7 @@ class RenderCore {
 
             if (highEnd.test(renderer)) {
                 score += 1;
-                if (/RTX|GTX 30|GTX 40|RX 6[0-9]{3}|RX 7[0-9]{3}/i.test(renderer)) score += 1;
+                if (/RTX|GTX 30|GTX 40|RX 6[0-9]{3}|RX 7[0-9]{3}/i.test(renderer)) {score += 1;}
             } else if (lowEnd.test(renderer)) {
                 score -= 1;
             }
@@ -174,33 +174,33 @@ class RenderCore {
 
         if (navigator.hardwareConcurrency) {
             console.log(`RenderCore: CPU Cores: ${navigator.hardwareConcurrency}`);
-            if (navigator.hardwareConcurrency <= 2) score -= 1;
-            else if (navigator.hardwareConcurrency >= 8) score += 1;
+            if (navigator.hardwareConcurrency <= 2) {score -= 1;}
+            else if (navigator.hardwareConcurrency >= 8) {score += 1;}
         }
 
 
         if (navigator.deviceMemory) {
             console.log(`RenderCore: Device Memory: ${navigator.deviceMemory}GB`);
-            if (navigator.deviceMemory < 4) score -= 1;
-            else if (navigator.deviceMemory >= 16) score += 1;
+            if (navigator.deviceMemory < 4) {score -= 1;}
+            else if (navigator.deviceMemory >= 16) {score += 1;}
         }
 
 
         const msPerFrame = this._perfTest();
         console.log(`RenderCore: Burn-in test: ${msPerFrame.toFixed(2)}ms/frame`);
-        if (msPerFrame > 16.67) score -= 2;
-        else if (msPerFrame > 10) score -= 1;
+        if (msPerFrame > 16.67) {score -= 2;}
+        else if (msPerFrame > 10) {score -= 1;}
 
 
         let finalPreset = 'MED';
-        if (score <= 0) finalPreset = 'LOW';
-        else if (score === 1) finalPreset = 'LOW';
-        else if (score === 2) finalPreset = 'MED';
-        else if (score === 3) finalPreset = 'HIGH';
-        else if (score >= 4) finalPreset = 'ULTRA';
+        if (score <= 0) {finalPreset = 'LOW';}
+        else if (score === 1) {finalPreset = 'LOW';}
+        else if (score === 2) {finalPreset = 'MED';}
+        else if (score === 3) {finalPreset = 'HIGH';}
+        else if (score >= 4) {finalPreset = 'ULTRA';}
 
 
-        if (msPerFrame > 33) finalPreset = 'LOW';
+        if (msPerFrame > 33) {finalPreset = 'LOW';}
 
         // ── 720p→2K correction: mobile DPR + viewport size ──
         const vw = window.innerWidth;
@@ -208,9 +208,9 @@ class RenderCore {
         const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || vw <= 767;
         if (isMobile) {
             // 720p budget phones (360w @3x): force LOW, 1080p mid: cap at MED, 2K tablets allow HIGH
-            if (vw <= 389 && dpr >= 2.8) finalPreset = 'LOW';
-            else if (vw <= 479 && finalPreset === 'ULTRA') finalPreset = 'HIGH';
-            else if (vw <= 599 && finalPreset === 'ULTRA') finalPreset = 'HIGH';
+            if (vw <= 389 && dpr >= 2.8) {finalPreset = 'LOW';}
+            else if (vw <= 479 && finalPreset === 'ULTRA') {finalPreset = 'HIGH';}
+            else if (vw <= 599 && finalPreset === 'ULTRA') {finalPreset = 'HIGH';}
         }
         // High-DPI desktop 2K: allow ULTRA but with resScale correction
         console.log(`RenderCore: Auto-detected quality: ${finalPreset} (score: ${score}, vw:${vw}, dpr:${dpr.toFixed(1)})`);
@@ -223,9 +223,9 @@ class RenderCore {
         const dpr = window.devicePixelRatio || 1;
         const vw = window.innerWidth;
         const isMobile = vw <= 767 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-        if (!isMobile || dpr <= 1.5) return;
+        if (!isMobile || dpr <= 1.5) {return;}
         const preset = QUALITY_PRESETS[this.currentPreset];
-        if (!preset) return;
+        if (!preset) {return;}
         // 720p@3x: multiply by 0.62 → ~0.52 effective; 1080p@2.6x: 0.71; 2K tablet@2x: 0.82
         const dprFactor = dpr >= 3 ? 0.62 : dpr >= 2.5 ? 0.71 : dpr >= 2 ? 0.82 : 1;
         const corrected = Math.max(0.5, Math.min(1, preset.resScale * dprFactor));
@@ -252,7 +252,7 @@ class RenderCore {
 
     
     _setupRenderBypass() {
-        if (!this.renderer || !this.canvas) return;
+        if (!this.renderer || !this.canvas) {return;}
 
         const preset = this.getPreset();
         const scale = this._dprResScale != null ? this._dprResScale : preset.resScale;
@@ -261,7 +261,7 @@ class RenderCore {
         const height = Math.floor(this.canvas.height * scale);
 
 
-        if (this.renderTarget) this.renderTarget.dispose();
+        if (this.renderTarget) {this.renderTarget.dispose();}
 
         this.renderTarget = new THREE.WebGLRenderTarget(width, height, {
             minFilter: THREE.LinearFilter,
@@ -291,7 +291,7 @@ class RenderCore {
 
     
     _applyQualitySettings(preset) {
-        if (!this.renderer) return;
+        if (!this.renderer) {return;}
 
         console.log(`RenderCore: Applying quality settings - ${preset.description}`);
 
@@ -336,7 +336,7 @@ class RenderCore {
 
     
     render(scene, camera) {
-        if (!this.renderer) return;
+        if (!this.renderer) {return;}
 
         const preset = this.getPreset();
         const scale = this._dprResScale != null ? this._dprResScale : preset.resScale;
@@ -346,7 +346,7 @@ class RenderCore {
             this.renderer.render(scene, camera);
         } else {
 
-            if (!this.renderTarget) this._setupRenderBypass();
+            if (!this.renderTarget) {this._setupRenderBypass();}
 
             this.renderer.setRenderTarget(this.renderTarget);
             this.renderer.render(scene, camera);
@@ -356,26 +356,26 @@ class RenderCore {
         }
 
 
-        if (this._autoQualityEnabled) this._checkFrameBudget();
+        if (this._autoQualityEnabled) {this._checkFrameBudget();}
     }
 
     
     _checkFrameBudget() {
         const now = performance.now();
-        if (!this._lastFrameTime) this._lastFrameTime = now;
+        if (!this._lastFrameTime) {this._lastFrameTime = now;}
         
         const dt = now - this._lastFrameTime;
         this._lastFrameTime = now;
         
         this._frameTimeHistory.push(dt);
-        if (this._frameTimeHistory.length > 120) this._frameTimeHistory.shift();
+        if (this._frameTimeHistory.length > 120) {this._frameTimeHistory.shift();}
 
         this._frameBudgetFrames++;
 
         if (this._frameBudgetFrames >= 120) { // Check every 2s
             this._frameBudgetFrames = 0;
             // Cooldown of 6s before allowing another auto adjustment
-            if (this._lastQualityShift && now - this._lastQualityShift < 6000) return;
+            if (this._lastQualityShift && now - this._lastQualityShift < 6000) {return;}
 
             const avg = this._frameTimeHistory.reduce((a, b) => a + b, 0) / this._frameTimeHistory.length;
             const preset = this.getPreset();

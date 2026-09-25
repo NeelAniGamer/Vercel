@@ -159,7 +159,7 @@ class Collectible {
   }
 
   update(dt, time) {
-    if (this.collected) return;
+    if (this.collected) {return;}
 
     this.mesh.rotation.y += this.rotationSpeed * dt;
 
@@ -167,9 +167,9 @@ class Collectible {
   }
 
   collect() {
-    if (this.collected) return 0;
+    if (this.collected) {return 0;}
     this.collected = true;
-    if (this.mesh.parent) this.mesh.parent.remove(this.mesh);
+    if (this.mesh.parent) {this.mesh.parent.remove(this.mesh);}
 
     this.mesh.geometry.dispose();
     this.mesh.material.dispose();
@@ -177,7 +177,7 @@ class Collectible {
   }
 
   dispose() {
-    if (this.mesh.parent) this.mesh.parent.remove(this.mesh);
+    if (this.mesh.parent) {this.mesh.parent.remove(this.mesh);}
     this.mesh.geometry.dispose();
     this.mesh.material.dispose();
   }
@@ -201,7 +201,7 @@ class Mission {
     this.progress = Math.min(value, this.target);
     if (this.progress >= this.target) {
       this.status = 'completed';
-      if (this.onComplete) this.onComplete(this);
+      if (this.onComplete) {this.onComplete(this);}
     }
   }
 
@@ -211,7 +211,7 @@ class Mission {
 
   fail() {
     this.status = 'failed';
-    if (this.onFail) this.onFail(this);
+    if (this.onFail) {this.onFail(this);}
   }
 
   getProgressPercent() {
@@ -239,8 +239,8 @@ class EscortMission extends Mission {
   }
 
   update(playerPos, leadVehiclePos, dt, intersections) {
-    if (this.status !== 'active') return;
-    if (!leadVehiclePos) return;
+    if (this.status !== 'active') {return;}
+    if (!leadVehiclePos) {return;}
 
     const dx = leadVehiclePos.x - playerPos.x;
     const dz = leadVehiclePos.z - playerPos.z;
@@ -252,13 +252,13 @@ class EscortMission extends Mission {
       this.distanceViolationTime += dt;
       if (this.distanceViolationTime > this.maxViolationTime) {
         this.fail();
-        if (typeof toast === 'function') toast('❌ Too close to VIP vehicle!', '#ef4444');
+        if (typeof toast === 'function') {toast('❌ Too close to VIP vehicle!', '#ef4444');}
       }
     } else if (dist > this.data.maxDistance) {
       this.distanceViolationTime += dt;
       if (this.distanceViolationTime > this.maxViolationTime) {
         this.fail();
-        if (typeof toast === 'function') toast('❌ Fell too far behind!', '#ef4444');
+        if (typeof toast === 'function') {toast('❌ Fell too far behind!', '#ef4444');}
       }
     } else {
       this.distanceViolationTime = Math.max(0, this.distanceViolationTime - dt * 2);
@@ -269,13 +269,13 @@ class EscortMission extends Mission {
       if (cleared > this.data.intersectionsCleared) {
         this.data.intersectionsCleared = cleared;
         this.updateProgress(cleared);
-        if (typeof toast === 'function') toast(`🛡️ Intersection cleared (${cleared}/${this.data.targetIntersections})`, '#34d399');
+        if (typeof toast === 'function') {toast(`🛡️ Intersection cleared (${cleared}/${this.data.targetIntersections})`, '#34d399');}
       }
     }
 
     if (this.data.intersectionsCleared >= this.data.targetIntersections) {
       this.status = 'completed';
-      if (this.onComplete) this.onComplete(this);
+      if (this.onComplete) {this.onComplete(this);}
     }
   }
 
@@ -302,13 +302,13 @@ class ChaseMission extends Mission {
   }
 
   update(playerPos, targetPos, dt) {
-    if (this.status !== 'active') return;
-    if (!targetPos) return;
+    if (this.status !== 'active') {return;}
+    if (!targetPos) {return;}
 
     this.data.chaseTime += dt;
     if (this.data.chaseTime > this.data.maxChaseTime) {
       this.fail();
-      if (typeof toast === 'function') toast('⏱️ Target escaped!', '#ef4444');
+      if (typeof toast === 'function') {toast('⏱️ Target escaped!', '#ef4444');}
       return;
     }
 
@@ -321,10 +321,10 @@ class ChaseMission extends Mission {
     if (dist < this.data.catchDistance) {
       this.data.targetVehicle = 'stopped';
       this.status = 'completed';
-      if (typeof toast === 'function') toast('🚓 Target apprehended!', '#34d399');
-      if (this.onComplete) this.onComplete(this);
+      if (typeof toast === 'function') {toast('🚓 Target apprehended!', '#34d399');}
+      if (this.onComplete) {this.onComplete(this);}
     } else if (dist < this.data.pitDistance) {
-      if (typeof toast === 'function') toast('⚡ PIT maneuver available!', '#f2b84b');
+      if (typeof toast === 'function') {toast('⚡ PIT maneuver available!', '#f2b84b');}
     }
   }
 
@@ -351,7 +351,7 @@ class ParkingMission extends Mission {
   }
 
   update(playerPos, playerRot, dt, speed) {
-    if (this.status !== 'active') return;
+    if (this.status !== 'active') {return;}
 
     const spot = this.data.spot;
     const dx = playerPos.x - spot.x;
@@ -366,11 +366,11 @@ class ParkingMission extends Mission {
       if (!this.data.parked) {
         this.data.parked = true;
         this.data.parkStartTime = Date.now();
-        if (typeof toast === 'function') toast('🅿️ Parked! Hold position...', '#34d399');
+        if (typeof toast === 'function') {toast('🅿️ Parked! Hold position...', '#34d399');}
       } else if (Date.now() - this.data.parkStartTime > 3000) {
         this.status = 'completed';
-        if (typeof toast === 'function') toast('✅ Perfect park!', '#34d399');
-        if (this.onComplete) this.onComplete(this);
+        if (typeof toast === 'function') {toast('✅ Perfect park!', '#34d399');}
+        if (this.onComplete) {this.onComplete(this);}
       }
     } else {
       this.data.parked = false;
@@ -408,7 +408,7 @@ class CargoMission extends Mission {
   }
 
   update(playerPos, lateralG, longitudinalG, dt, hitPothole, lastPos) {
-    if (this.status !== 'active') return;
+    if (this.status !== 'active') {return;}
 
     if (lastPos) {
       const dx = playerPos.x - lastPos.x;
@@ -427,7 +427,7 @@ class CargoMission extends Mission {
     if (hitPothole) {
       this.data.potholeImpacts++;
       this.data.cargoIntegrity -= 15;
-      if (typeof toast === 'function') toast(`📦 Cargo damaged! (${this.data.potholeImpacts}/${this.data.maxPotholes})`, '#ef4444');
+      if (typeof toast === 'function') {toast(`📦 Cargo damaged! (${this.data.potholeImpacts}/${this.data.maxPotholes})`, '#ef4444');}
     }
 
     this.data.cargoIntegrity = Math.max(0, this.data.cargoIntegrity);
@@ -435,11 +435,11 @@ class CargoMission extends Mission {
 
     if (this.data.cargoIntegrity <= 0) {
       this.fail();
-      if (typeof toast === 'function') toast('💥 Cargo destroyed!', '#ef4444');
+      if (typeof toast === 'function') {toast('💥 Cargo destroyed!', '#ef4444');}
     } else if (this.data.distanceTraveled >= this.data.distanceTarget) {
       this.status = 'completed';
-      if (typeof toast === 'function') toast(`📦 Cargo delivered! Integrity: ${Math.round(this.data.cargoIntegrity)}%`, '#34d399');
-      if (this.onComplete) this.onComplete(this);
+      if (typeof toast === 'function') {toast(`📦 Cargo delivered! Integrity: ${Math.round(this.data.cargoIntegrity)}%`, '#34d399');}
+      if (this.onComplete) {this.onComplete(this);}
     }
   }
 
@@ -466,12 +466,12 @@ class EvasionMission extends Mission {
   }
 
   update(playerPos, pursuerPositions, dt) {
-    if (this.status !== 'active') return;
+    if (this.status !== 'active') {return;}
 
     this.data.evasionTime += dt;
     if (this.data.evasionTime > this.data.maxEvasionTime) {
       this.fail();
-      if (typeof toast === 'function') toast('⏱️ Caught by pursuers!', '#ef4444');
+      if (typeof toast === 'function') {toast('⏱️ Caught by pursuers!', '#ef4444');}
       return;
     }
 
@@ -481,7 +481,7 @@ class EvasionMission extends Mission {
       const dist = Math.sqrt(dx * dx + dz * dz);
       if (dist < 5) {
         this.fail();
-        if (typeof toast === 'function') toast('💥 Pursuer caught you!', '#ef4444');
+        if (typeof toast === 'function') {toast('💥 Pursuer caught you!', '#ef4444');}
         return;
       }
     }
@@ -492,8 +492,8 @@ class EvasionMission extends Mission {
 
     if (distToSafe < this.data.safeZone.radius) {
       this.status = 'completed';
-      if (typeof toast === 'function') toast('🏁 Reached safe zone!', '#34d399');
-      if (this.onComplete) this.onComplete(this);
+      if (typeof toast === 'function') {toast('🏁 Reached safe zone!', '#34d399');}
+      if (this.onComplete) {this.onComplete(this);}
     }
   }
 
@@ -523,10 +523,10 @@ class CrossingGuardMission extends Mission {
   }
 
   update(playerPos, childrenGroups, dt) {
-    if (this.status !== 'active') return;
+    if (this.status !== 'active') {return;}
 
     for (const group of childrenGroups) {
-      if (group.crossed) continue;
+      if (group.crossed) {continue;}
       const dx = group.x - playerPos.x;
       const dz = group.z - playerPos.z;
       const dist = Math.sqrt(dx * dx + dz * dz);
@@ -534,20 +534,20 @@ class CrossingGuardMission extends Mission {
         group.waiting = false;
         group.crossing = true;
         this.data.currentGroup = group;
-        if (typeof toast === 'function') toast('🚸 Guide children across!', '#34d399');
+        if (typeof toast === 'function') {toast('🚸 Guide children across!', '#34d399');}
       }
       if (group.crossing && dist > 15) {
         group.crossed = true;
         group.crossing = false;
         this.data.childrenCrossed++;
         this.updateProgress(this.data.childrenCrossed);
-        if (typeof toast === 'function') toast(`🚸 Group crossed (${this.data.childrenCrossed}/${this.data.targetChildren})`, '#34d399');
+        if (typeof toast === 'function') {toast(`🚸 Group crossed (${this.data.childrenCrossed}/${this.data.targetChildren})`, '#34d399');}
       }
     }
 
     if (this.data.childrenCrossed >= this.data.targetChildren) {
       this.status = 'completed';
-      if (this.onComplete) this.onComplete(this);
+      if (this.onComplete) {this.onComplete(this);}
     }
   }
 
@@ -573,10 +573,10 @@ class SidewalkPatrolMission extends Mission {
   }
 
   update(playerPos, violations, dt) {
-    if (this.status !== 'active') return;
+    if (this.status !== 'active') {return;}
 
     for (const v of violations) {
-      if (v.reported) continue;
+      if (v.reported) {continue;}
       const dx = v.x - playerPos.x;
       const dz = v.z - playerPos.z;
       const dist = Math.sqrt(dx * dx + dz * dz);
@@ -584,13 +584,13 @@ class SidewalkPatrolMission extends Mission {
         v.reported = true;
         this.data.violationsReported++;
         this.updateProgress(this.data.violationsReported);
-        if (typeof toast === 'function') toast(`🚶 Violation reported: ${v.type}`, '#34d399');
+        if (typeof toast === 'function') {toast(`🚶 Violation reported: ${v.type}`, '#34d399');}
       }
     }
 
     if (this.data.violationsReported >= this.data.targetViolations) {
       this.status = 'completed';
-      if (this.onComplete) this.onComplete(this);
+      if (this.onComplete) {this.onComplete(this);}
     }
   }
 
@@ -615,8 +615,8 @@ class EmergencyClearMission extends Mission {
   }
 
   update(playerPos, ambulancePos, pedPositions, dt) {
-    if (this.status !== 'active') return;
-    if (!ambulancePos) return;
+    if (this.status !== 'active') {return;}
+    if (!ambulancePos) {return;}
 
     this.data.ambulancePos = ambulancePos;
 
@@ -629,13 +629,13 @@ class EmergencyClearMission extends Mission {
       for (const ped of pedPositions) {
         const pdx = ped.x - ambulancePos.x;
         const pdz = ped.z - ambulancePos.z;
-        if (Math.sqrt(pdx * pdx + pdz * pdz) < 8) blocking++;
+        if (Math.sqrt(pdx * pdx + pdz * pdz) < 8) {blocking++;}
       }
       if (blocking === 0) {
         this.data.pathCleared = true;
         this.status = 'completed';
-        if (typeof toast === 'function') toast('🚑 Path cleared for ambulance!', '#34d399');
-        if (this.onComplete) this.onComplete(this);
+        if (typeof toast === 'function') {toast('🚑 Path cleared for ambulance!', '#34d399');}
+        if (this.onComplete) {this.onComplete(this);}
       } else if (typeof toast === 'function') {
         toast(`🚑 Clear ${blocking} pedestrians from path!`, '#f2b84b');
       }
@@ -663,10 +663,10 @@ class SchoolPatrolMission extends Mission {
   }
 
   update(playerPos, vehiclePositions, dt) {
-    if (this.status !== 'active') return;
+    if (this.status !== 'active') {return;}
 
     for (const v of vehiclePositions) {
-      if (v.caught) continue;
+      if (v.caught) {continue;}
       const dx = v.x - this.data.schoolZone.x;
       const dz = v.z - this.data.schoolZone.z;
       const dist = Math.sqrt(dx * dx + dz * dz);
@@ -674,13 +674,13 @@ class SchoolPatrolMission extends Mission {
         v.caught = true;
         this.data.speedersCaught++;
         this.updateProgress(this.data.speedersCaught);
-        if (typeof toast === 'function') toast(`🏫 Speeder caught in school zone! (${this.data.speedersCaught}/${this.data.targetSpeeders})`, '#ef4444');
+        if (typeof toast === 'function') {toast(`🏫 Speeder caught in school zone! (${this.data.speedersCaught}/${this.data.targetSpeeders})`, '#ef4444');}
       }
     }
 
     if (this.data.speedersCaught >= this.data.targetSpeeders) {
       this.status = 'completed';
-      if (this.onComplete) this.onComplete(this);
+      if (this.onComplete) {this.onComplete(this);}
     }
   }
 
@@ -710,7 +710,7 @@ class PassengerPickupMission extends Mission {
   }
 
   update(playerPos, playerRot, dt, speed, game) {
-    if (this.status !== 'active') return;
+    if (this.status !== 'active') {return;}
     const stage = this.data.stage;
     const g = game || (window.game);
 
@@ -731,7 +731,7 @@ class PassengerPickupMission extends Mission {
         if (typeof toast === 'function') {
           toast(`🙋 ${this.data.passengerName}: "${this.data.dialogue}"`, '#00f0cc', 4500);
         }
-        if (window.sfx && window.sfx.play) window.sfx.play('ok');
+        if (window.sfx && window.sfx.play) {window.sfx.play('ok');}
       }
     } else if (stage === 'BOARDING') {
       this.data.dwellTimer += dt;
@@ -768,8 +768,8 @@ class PassengerPickupMission extends Mission {
         if (typeof toast === 'function') {
           toast(`🎉 Dropped off ${this.data.passengerName}! +₹${this.reward} Bonus`, '#34d399', 5000);
         }
-        if (window.sfx && window.sfx.play) window.sfx.play('win');
-        if (this.onComplete) this.onComplete(this);
+        if (window.sfx && window.sfx.play) {window.sfx.play('win');}
+        if (this.onComplete) {this.onComplete(this);}
       }
     }
   }
@@ -801,10 +801,10 @@ class PassengerPickupMission extends Mission {
   }
 
   getProgressPercent() {
-    if (this.data.stage === 'DRIVE_TO_PICKUP') return 25;
-    if (this.data.stage === 'BOARDING') return 50;
-    if (this.data.stage === 'DRIVE_TO_DROPOFF') return 75;
-    if (this.data.stage === 'COMPLETED') return 100;
+    if (this.data.stage === 'DRIVE_TO_PICKUP') {return 25;}
+    if (this.data.stage === 'BOARDING') {return 50;}
+    if (this.data.stage === 'DRIVE_TO_DROPOFF') {return 75;}
+    if (this.data.stage === 'COMPLETED') {return 100;}
     return 0;
   }
 }
@@ -835,7 +835,7 @@ class MissionManager {
     // Snapshot wallet tokens so the reward screen can show tokens earned THIS run
     this._runTokensStart = (window.S && window.S.missionTokens) || 0;
 
-    if (!levelConfig) return [];
+    if (!levelConfig) {return [];}
 
     // Fewer collectibles but more valuable, placed along the route
     this.spawnCollectibles(levelConfig, 5 + Math.floor(Math.random() * 4));
@@ -843,15 +843,15 @@ class MissionManager {
     // Primary mission: distance-based checkpoints along the route
     if (levelConfig.route && levelConfig.route.length >= 2) {
       const cpMission = this.createRouteCheckpointMission(levelConfig);
-      if (cpMission) this.missions.push(cpMission);
+      if (cpMission) {this.missions.push(cpMission);}
     } else if (levelConfig.roads && levelConfig.roads.length > 0) {
       const cpMission = this.createCheckpointMission(levelConfig);
-      if (cpMission) this.missions.push(cpMission);
+      if (cpMission) {this.missions.push(cpMission);}
     }
 
     // Secondary mission: driving behavior objectives
     const behaviorMission = this.createBehaviorMission(levelConfig);
-    if (behaviorMission) this.missions.push(behaviorMission);
+    if (behaviorMission) {this.missions.push(behaviorMission);}
 
     // Theme-based special missions (only one special mission per level for variety)
     const specialMissions = [];
@@ -888,7 +888,7 @@ class MissionManager {
     // Tertiary mission: exploration/collection
     if (levelConfig.useLowPolyCity || (levelConfig.roads && levelConfig.roads.length > 2)) {
       const exploreMission = this.createExplorationMission(levelConfig);
-      if (exploreMission) this.missions.push(exploreMission);
+      if (exploreMission) {this.missions.push(exploreMission);}
     }
 
     return this.missions;
@@ -1023,9 +1023,9 @@ class MissionManager {
   }
 
   createEscortMission(levelConfig) {
-    if (!levelConfig.route || levelConfig.route.length < 3) return null;
+    if (!levelConfig.route || levelConfig.route.length < 3) {return null;}
     const theme = levelConfig.themeType || levelConfig.theme || '';
-    if (!['emergency_access', 'bonus_vip_convoy', 'highway_discipline'].includes(theme)) return null;
+    if (!['emergency_access', 'bonus_vip_convoy', 'highway_discipline'].includes(theme)) {return null;}
 
     const baseReward = levelConfig.isPedestrian ? 4000 : 6000;
     return new EscortMission({
@@ -1041,7 +1041,7 @@ class MissionManager {
 
   createChaseMission(levelConfig) {
     const theme = levelConfig.themeType || levelConfig.theme || '';
-    if (!['emergency_access', 'night_driving', 'bonus_vip_convoy', 'chaos'].includes(theme)) return null;
+    if (!['emergency_access', 'night_driving', 'bonus_vip_convoy', 'chaos'].includes(theme)) {return null;}
 
     const baseReward = levelConfig.isPedestrian ? 4500 : 7000;
     return new ChaseMission({
@@ -1057,11 +1057,11 @@ class MissionManager {
 
   createParkingMission(levelConfig) {
     const theme = levelConfig.themeType || levelConfig.theme || '';
-    if (!['speed_management', 'pedestrian_courtesy', 'silence_zone'].includes(theme)) return null;
-    if (levelConfig.isPedestrian) return null;
+    if (!['speed_management', 'pedestrian_courtesy', 'silence_zone'].includes(theme)) {return null;}
+    if (levelConfig.isPedestrian) {return null;}
 
     const spot = this._generateParkingSpot(levelConfig);
-    if (!spot) return null;
+    if (!spot) {return null;}
 
     return new ParkingMission({
       target: 1,
@@ -1073,8 +1073,8 @@ class MissionManager {
 
   createCargoMission(levelConfig) {
     const theme = levelConfig.themeType || levelConfig.theme || '';
-    if (!['highway_discipline', 'monsoon_survival', 'bonus_night_monsoon', 'rail_safety'].includes(theme)) return null;
-    if (levelConfig.isPedestrian) return null;
+    if (!['highway_discipline', 'monsoon_survival', 'bonus_night_monsoon', 'rail_safety'].includes(theme)) {return null;}
+    if (levelConfig.isPedestrian) {return null;}
 
     return new CargoMission({
       target: 100,
@@ -1090,7 +1090,7 @@ class MissionManager {
 
   createEvasionMission(levelConfig) {
     const theme = levelConfig.themeType || levelConfig.theme || '';
-    if (!['night_driving', 'chaos', 'bonus_night_monsoon'].includes(theme)) return null;
+    if (!['night_driving', 'chaos', 'bonus_night_monsoon'].includes(theme)) {return null;}
 
     const baseReward = levelConfig.isPedestrian ? 3500 : 6000;
     const safeZone = this._generateSafeZone(levelConfig);
@@ -1106,9 +1106,9 @@ class MissionManager {
   }
 
   createCrossingGuardMission(levelConfig) {
-    if (!levelConfig.isPedestrian) return null;
+    if (!levelConfig.isPedestrian) {return null;}
     const theme = levelConfig.themeType || levelConfig.theme || '';
-    if (!['pedestrian_courtesy', 'silence_zone', 'rail_safety'].includes(theme)) return null;
+    if (!['pedestrian_courtesy', 'silence_zone', 'rail_safety'].includes(theme)) {return null;}
 
     return new CrossingGuardMission({
       target: 5,
@@ -1121,7 +1121,7 @@ class MissionManager {
   }
 
   createSidewalkPatrolMission(levelConfig) {
-    if (!levelConfig.isPedestrian) return null;
+    if (!levelConfig.isPedestrian) {return null;}
 
     return new SidewalkPatrolMission({
       target: 3,
@@ -1136,7 +1136,7 @@ class MissionManager {
 
   createEmergencyClearMission(levelConfig) {
     const theme = levelConfig.themeType || levelConfig.theme || '';
-    if (!['emergency_access', 'silence_zone', 'rail_safety'].includes(theme)) return null;
+    if (!['emergency_access', 'silence_zone', 'rail_safety'].includes(theme)) {return null;}
 
     const baseReward = levelConfig.isPedestrian ? 3500 : 5000;
     return new EmergencyClearMission({
@@ -1148,7 +1148,7 @@ class MissionManager {
   }
 
   createSchoolPatrolMission(levelConfig) {
-    if (!levelConfig.hasSchool && !levelConfig.isSilenceZone) return null;
+    if (!levelConfig.hasSchool && !levelConfig.isSilenceZone) {return null;}
 
     const baseReward = levelConfig.isPedestrian ? 3000 : 4500;
     // Zone follows the level's real school: explicit schoolX/schoolZ, else route finish, else origin.
@@ -1168,9 +1168,9 @@ class MissionManager {
   }
 
   createPassengerPickupMission(levelConfig) {
-    if (levelConfig.isPedestrian) return null;
+    if (levelConfig.isPedestrian) {return null;}
     const roads = levelConfig.roads || [];
-    if (roads.length === 0) return null;
+    if (roads.length === 0) {return null;}
 
     const r1 = roads[0];
     const r2 = roads[roads.length - 1] || r1;
@@ -1205,7 +1205,7 @@ class MissionManager {
 
   _generateParkingSpot(levelConfig) {
     const roads = levelConfig.roads || [];
-    if (roads.length === 0) return null;
+    if (roads.length === 0) {return null;}
 
     const road = roads[Math.floor(Math.random() * roads.length)];
     let x, z, rotation, type;
@@ -1227,7 +1227,7 @@ class MissionManager {
 
   _generateSafeZone(levelConfig) {
     const roads = levelConfig.roads || [];
-    if (roads.length === 0) return { x: 500, z: 500, radius: 50 };
+    if (roads.length === 0) {return { x: 500, z: 500, radius: 50 };}
 
     const road = roads[Math.floor(Math.random() * roads.length)];
     let x, z;
@@ -1295,7 +1295,7 @@ class MissionManager {
   }
 
   update(playerPos, dt, time, extra = {}) {
-    if (!this.active) return;
+    if (!this.active) {return;}
 
     const {
       playerRot = 0,
@@ -1316,7 +1316,7 @@ class MissionManager {
     } = extra;
 
     for (const c of this.collectibles) {
-      if (c.collected) continue;
+      if (c.collected) {continue;}
       c.update(dt, time);
 
 
@@ -1335,7 +1335,7 @@ class MissionManager {
 
 
     for (const mission of this.missions) {
-      if (mission.status !== 'active') continue;
+      if (mission.status !== 'active') {continue;}
 
       const wasActive = mission.status === 'active';
 
@@ -1423,7 +1423,7 @@ class MissionManager {
 
   _grantMissionTokens(mission) {
     let tokens = mission.tokenReward || 0;
-    if (tokens <= 0) return;
+    if (tokens <= 0) {return;}
 
     // Weekly challenge: 2× mission tokens while playing this week's level
     try {
@@ -1431,7 +1431,7 @@ class MissionManager {
       const lvId = String((this.game && (this.game.lvId || (this.game.mapCfg && this.game.mapCfg.id))) || '');
       if (w && lvId && String(w.lv) === lvId) {
         const weekNow = Math.floor(Date.now() / 604800000);
-        if (String(w.week) === String(weekNow)) tokens *= 2;
+        if (String(w.week) === String(weekNow)) {tokens *= 2;}
       }
     } catch (e) {}
 
@@ -1540,9 +1540,9 @@ class CampaignManager {
 
   getAvailableCampaigns() {
     const campaigns = window.CAMPAIGNS || (window.COURSE && window.COURSE.CAMPAIGNS) || [];
-    if (!campaigns.length) return [];
+    if (!campaigns.length) {return [];}
     return campaigns.filter(c => {
-      if (!c.prerequisite) return true;
+      if (!c.prerequisite) {return true;}
       const prereq = this.campaignProgress[c.prerequisite];
       return prereq?.completed === true;
     });
@@ -1550,7 +1550,7 @@ class CampaignManager {
 
   getCampaignProgress(campaignId) {
     const fn = window.getCampaignProgress || (window.COURSE && window.COURSE.getCampaignProgress);
-    if (!fn) return null;
+    if (!fn) {return null;}
     const userData = { campaignProgress: this.campaignProgress };
     return fn(userData, campaignId);
   }
@@ -1558,15 +1558,15 @@ class CampaignManager {
   startCampaign(campaignId) {
     const getCamp = window.getCampaign || (window.COURSE && window.COURSE.getCampaign);
     const campaign = getCamp ? getCamp(campaignId) : null;
-    if (!campaign) return false;
+    if (!campaign) {return false;}
 
     const progress = this.getCampaignProgress(campaignId);
-    if (!progress?.unlocked) return false;
+    if (!progress?.unlocked) {return false;}
 
     this.activeCampaign = campaign;
     this.activeMissionIndex = progress?.currentMission ? campaign.missions.findIndex(m => m.levelId === progress.currentMission.levelId) : 0;
     
-    if (this.activeMissionIndex < 0) this.activeMissionIndex = 0;
+    if (this.activeMissionIndex < 0) {this.activeMissionIndex = 0;}
     
     // Initialize campaign progress if not exists
     if (!this.campaignProgress[campaignId]) {
@@ -1583,15 +1583,15 @@ class CampaignManager {
   }
 
   getCurrentMission() {
-    if (!this.activeCampaign) return null;
+    if (!this.activeCampaign) {return null;}
     return this.activeCampaign.missions[this.activeMissionIndex] || null;
   }
 
   completeCurrentMission(success = true) {
-    if (!this.activeCampaign) return false;
+    if (!this.activeCampaign) {return false;}
 
     const mission = this.getCurrentMission();
-    if (!mission) return false;
+    if (!mission) {return false;}
 
     const campaignId = this.activeCampaign.id;
     const progress = this.campaignProgress[campaignId];
@@ -1617,14 +1617,14 @@ class CampaignManager {
   }
 
   _grantCampaignRewards() {
-    if (!this.activeCampaign?.rewards) return;
+    if (!this.activeCampaign?.rewards) {return;}
     
     const { wallet, xp, badge } = this.activeCampaign.rewards;
     
     if (window.S && wallet) {
       window.S.wallet = (window.S.wallet || 0) + wallet;
       const hw = document.getElementById('hwallet');
-      if (hw) hw.textContent = '₹' + window.S.wallet.toLocaleString('en-IN');
+      if (hw) {hw.textContent = '₹' + window.S.wallet.toLocaleString('en-IN');}
     }
     
     if (window.S && xp) {
@@ -1645,7 +1645,7 @@ class CampaignManager {
   }
 
   nextMission() {
-    if (!this.activeCampaign) return null;
+    if (!this.activeCampaign) {return null;}
     
     this.activeMissionIndex++;
     
@@ -1665,7 +1665,7 @@ class CampaignManager {
 
   getMissionChainUI(campaignId) {
     const progress = this.getCampaignProgress(campaignId);
-    if (!progress) return null;
+    if (!progress) {return null;}
 
     return {
       campaign: progress.campaign,
