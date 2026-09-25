@@ -739,6 +739,52 @@
       .fl a:hover {
         color: var(--primary);
       }
+
+      /* ──── ADMIN LIGHT MODE (WCAG 2.2 AA COMPLIANT) ──── */
+      body.lm {
+        --bg-color: #f8fafc;
+        --text-main: #0f172a;
+        --text-muted: #475569;
+        --card-bg: #ffffff;
+        --card-sub: #f1f5f9;
+        --border-light: rgba(0, 0, 0, 0.08);
+        --border-glow: rgba(2, 132, 199, 0.15);
+        --nav-bg: rgba(248, 250, 252, 0.95);
+        --primary: #0284c7;
+        background-color: var(--bg-color) !important;
+        color: var(--text-main) !important;
+      }
+      body.lm .card,
+      body.lm .stat-card,
+      body.lm .chart-box,
+      body.lm .table-card,
+      body.lm .lock-box {
+        background: #ffffff !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04) !important;
+        color: #0f172a !important;
+      }
+      body.lm .lock-screen {
+        background: rgba(248, 250, 252, 0.95) !important;
+      }
+      body.lm table {
+        background: #ffffff !important;
+      }
+      body.lm th {
+        background: #f1f5f9 !important;
+        color: #0f172a !important;
+      }
+      body.lm td {
+        color: #334155 !important;
+        border-bottom-color: rgba(0, 0, 0, 0.06) !important;
+      }
+      body.lm input,
+      body.lm select,
+      body.lm textarea {
+        background: #ffffff !important;
+        border: 1px solid rgba(0, 0, 0, 0.15) !important;
+        color: #0f172a !important;
+      }
     </style>
 
     <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/admin" />
@@ -754,6 +800,15 @@
     <link rel="icon" type="image/png" href="Icon.png" />
   </head>
   <body>
+    <script>
+      ;(function () {
+        try {
+          if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('lm')
+          }
+        } catch (e) {}
+      })()
+    </script>
     <div class="cd" id="cDot"></div>
     <div class="cr" id="cRing"></div>
 

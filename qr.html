@@ -7,6 +7,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>QR Dashboard | Class Of Learners</title>
+    <script>
+      ;(function () {
+        try {
+          if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.add('lm')
+          }
+        } catch (e) {}
+      })()
+    </script>
     <script defer src="qr-dynamic.js"></script>
     <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
     <link rel="stylesheet" href="liquid-glass.css" />
@@ -50,12 +59,67 @@
       body.light,
       body.lm {
         --bg: #f8fafc;
-        --panel: rgba(255, 255, 255, 0.8);
-        --panel-hover: rgba(241, 245, 249, 0.9);
+        --panel: #ffffff;
+        --panel-hover: #f1f5f9;
         --border: rgba(0, 0, 0, 0.08);
         --txt: #0f172a;
-        --txt-m: #64748b;
-        --nav: rgba(255, 255, 255, 0.85);
+        --txt-m: #475569;
+        --nav: rgba(255, 255, 255, 0.88);
+        --pri: #059669;
+        --pri-hover: #047857;
+        --border-focus: #059669;
+        --glow: rgba(5, 150, 105, 0.15);
+        --glow-strong: rgba(5, 150, 105, 0.3);
+      }
+
+      body.lm .st-card .v,
+      body.light .st-card .v {
+        background: linear-gradient(135deg, #047857, #059669) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        filter: none !important;
+      }
+      body.lm .st-card,
+      body.light .st-card {
+        background: #ffffff !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+      }
+      body.lm .st-card:hover,
+      body.light .st-card:hover {
+        border-color: rgba(5, 150, 105, 0.3) !important;
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08) !important;
+      }
+      body.lm .dbc,
+      body.light .dbc {
+        background: #ffffff !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+      }
+      body.lm .dbc:hover,
+      body.light .dbc:hover {
+        border-color: rgba(5, 150, 105, 0.3) !important;
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08) !important;
+      }
+      body.lm .app-sb,
+      body.light .app-sb {
+        background: rgba(255, 255, 255, 0.92) !important;
+        border-right-color: rgba(0, 0, 0, 0.08) !important;
+      }
+      body.lm .dbf,
+      body.light .dbf {
+        background: #ffffff !important;
+        border-color: rgba(0, 0, 0, 0.08) !important;
+      }
+      body.lm .db-sync-bar,
+      body.light .db-sync-bar {
+        background: #ffffff !important;
+        border-color: rgba(0, 0, 0, 0.08) !important;
+      }
+      body.lm .pcard,
+      body.light .pcard {
+        background: #ffffff !important;
+        border-color: rgba(0, 0, 0, 0.08) !important;
       }
 
       * {

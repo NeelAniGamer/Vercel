@@ -262,10 +262,69 @@
                 font-size: 0.6rem;
             }
         }
+
+        /* ──── VERIFY LIGHT MODE (WCAG 2.2 AA COMPLIANT) ──── */
+        body.lm {
+            --void: #f0ede4;
+            --panel: #ffffff;
+            --line: rgba(0, 0, 0, 0.09);
+            --ink: #0f172a;
+            --dim: #475569;
+            --signal: #b8720a;
+            --ion: #0e72a0;
+            background-color: var(--void) !important;
+            color: var(--ink) !important;
+        }
+        body.lm .cert-container {
+            background: #ffffff !important;
+            border: 1px solid rgba(0, 0, 0, 0.08) !important;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08) !important;
+        }
+        body.lm .cert-header h1 {
+            color: #b8720a !important;
+        }
+        body.lm .cert-sub {
+            color: #475569 !important;
+        }
+        body.lm .cert-body .label {
+            color: #64748b !important;
+        }
+        body.lm .cert-body .value {
+            color: #0f172a !important;
+        }
+        body.lm .cert-body .achievement-name {
+            color: #0e72a0 !important;
+        }
+        body.lm .cert-body .achievement-desc {
+            color: #475569 !important;
+        }
+        body.lm .footer-item .value {
+            color: #0f172a !important;
+        }
+        body.lm .verified-stamp {
+            border-color: #b8720a !important;
+            color: #b8720a !important;
+        }
+        body.lm .btn-home {
+            background: #b8720a !important;
+            color: #ffffff !important;
+        }
+        body.lm #loading {
+            background: var(--void) !important;
+        }
     </style>
     <link rel="icon" type="image/png" href="Icon.png" />
   </head>
 <body>
+    <script>
+      ;(function () {
+        try {
+          if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('lm')
+          }
+        } catch (e) {}
+      })()
+    </script>
 
     <div id="loading">
         <div class="cert-badge" style="animation: pulse 2s infinite;">

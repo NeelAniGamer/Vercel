@@ -1185,6 +1185,56 @@
           font-size: 2.6rem;
         }
       }
+
+      /* ──── SNEH ASHA LIGHT MODE (WCAG 2.2 AA COMPLIANT) ──── */
+      body.lm {
+        --void: #f0ede4;
+        --void2: #e6e2d8;
+        --panel: #ffffff;
+        --line: rgba(0, 0, 0, 0.09);
+        --lineb: rgba(0, 0, 0, 0.18);
+        --ink: #0f172a;
+        --dim: #475569;
+        --signal: #b8720a;
+        --ion: #0e72a0;
+        --teal: #0a8c7a;
+        --plasma: #6f4fe0;
+        --em: #1b9d66;
+        --nav: rgba(240, 237, 228, 0.85);
+        background: var(--void) !important;
+        color: var(--ink) !important;
+      }
+      body.lm .init-card,
+      body.lm .ack-card {
+        background: #ffffff !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+      }
+      body.lm .init-card:hover,
+      body.lm .ack-card:hover {
+        border-color: rgba(0, 0, 0, 0.16) !important;
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08) !important;
+      }
+      body.lm .ic-title,
+      body.lm .ack-name {
+        color: #0f172a !important;
+      }
+      body.lm .ic-desc,
+      body.lm .ack-desc,
+      body.lm .sdesc {
+        color: #475569 !important;
+      }
+      body.lm .hero-badge {
+        background: rgba(184, 114, 10, 0.08) !important;
+        border: 1px solid rgba(184, 114, 10, 0.25) !important;
+        color: var(--signal) !important;
+      }
+      body.lm .sneh-hero h1 {
+        color: #0f172a !important;
+      }
+      body.lm .hlede {
+        color: #475569 !important;
+      }
     </style>
 
     <script defer src="col-router.js"></script>
@@ -1200,6 +1250,15 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   </head>
   <body>
+    <script>
+      ;(function () {
+        try {
+          if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('lm')
+          }
+        } catch (e) {}
+      })()
+    </script>
     <nav class="top-nav" id="topNav">
       <a href="/" class="nav-brand">
         <img src="Class.png" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" />

@@ -17,6 +17,19 @@
 <script defer src="qr-dynamic.js"></script>
 <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/qr-editor" />
 
+<script>
+  ;(function () {
+    try {
+      if (localStorage.getItem('theme') === 'light') {
+        document.documentElement.classList.add('lm')
+      }
+    } catch (e) {}
+  })()
+</script>
+<link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
+<link rel="stylesheet" href="liquid-glass.css" />
+<link rel="stylesheet" href="mobile-perf.css" />
+<script defer src="pull-refresh.js"></script>
 <script defer src="col-router.js"></script>
 <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU"/>
   <link rel="manifest" href="manifest.json">
@@ -49,10 +62,35 @@
 
 body.light,
 body.lm {
-  --bg: #f8fafc; --panel: rgba(255, 255, 255, 0.8); --panel-hover: rgba(241, 245, 249, 0.9);
-  --border: rgba(0, 0, 0, 0.08); --txt: #0f172a; --txt-m: #64748b;
-  --nav: rgba(255, 255, 255, 0.85);
+  --bg: #f8fafc;
+  --panel: #ffffff;
+  --panel-hover: #f1f5f9;
+  --border: rgba(0, 0, 0, 0.08);
+  --txt: #0f172a;
+  --txt-m: #475569;
+  --nav: rgba(255, 255, 255, 0.88);
+  --pri: #059669;
+  --pri-hover: #047857;
+  --border-focus: #059669;
+  --glow: rgba(5, 150, 105, 0.15);
+  --glow-strong: rgba(5, 150, 105, 0.3);
 }
+
+body.lm .app-sb, body.light .app-sb { background: rgba(255, 255, 255, 0.92) !important; border-right-color: rgba(0, 0, 0, 0.08) !important; }
+body.lm .si, body.light .si { background: #ffffff !important; border-color: rgba(0, 0, 0, 0.08) !important; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04) !important; }
+body.lm .tc, body.light .tc { background: #ffffff !important; border-color: rgba(0, 0, 0, 0.08) !important; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04) !important; }
+body.lm .fi, body.light .fi { background: #ffffff !important; border-color: rgba(0, 0, 0, 0.15) !important; color: #0f172a !important; box-shadow: none !important; }
+body.lm .ds, body.light .ds { background: #ffffff !important; border-color: rgba(0, 0, 0, 0.08) !important; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04) !important; }
+body.lm .dsb, body.light .dsb { background: #f8fafc !important; border-top-color: rgba(0, 0, 0, 0.08) !important; }
+body.lm .vb, body.light .vb { background: #ffffff !important; border-color: rgba(0, 0, 0, 0.08) !important; }
+body.lm .clr-blk, body.light .clr-blk { background: #ffffff !important; border-color: rgba(0, 0, 0, 0.08) !important; }
+body.lm .hex, body.light .hex { background: #f8fafc !important; border-color: rgba(0, 0, 0, 0.12) !important; color: #0f172a !important; }
+body.lm .pcard, body.light .pcard { background: #ffffff !important; border-color: rgba(0, 0, 0, 0.08) !important; }
+body.lm .prev-p, body.light .prev-p { background: rgba(255, 255, 255, 0.92) !important; border-left-color: rgba(0, 0, 0, 0.08) !important; box-shadow: -4px 0 20px rgba(0, 0, 0, 0.04) !important; }
+body.lm .prev-cw, body.light .prev-cw { background: #f8fafc !important; }
+body.lm .btn-bk, body.light .btn-bk { background: #ffffff !important; border-color: rgba(0, 0, 0, 0.12) !important; color: #0f172a !important; }
+body.lm .btn-nx, body.light .btn-nx, body.lm .btn-cp, body.light .btn-cp { background: #059669 !important; color: #ffffff !important; }
+body.lm .dl-main, body.light .dl-main { background: #059669 !important; color: #ffffff !important; }
 
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-main); }
 
@@ -78,9 +116,6 @@ body::after {
 }
 
 /* Top bar: layout/blur/drawer owned by shared col-ui.css; page only sets accent via --page-theme */
-    <link rel="stylesheet" href="liquid-glass.css" />
-    <link rel="stylesheet" href="mobile-perf.css" />
-    <script defer src="pull-refresh.js"></script>
 .top-nav { --page-theme: var(--pri); --primary: var(--pri); }
         
         /* .nav-brand + .brand-logo: inherited from col-ui.css */

@@ -23,6 +23,15 @@
     <script>
       ;(function () {
         try {
+          if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.add('lm')
+          }
+        } catch (e) {}
+      })()
+    </script>
+    <script>
+      ;(function () {
+        try {
           var c = localStorage.getItem('col_admin_config')
           if (c) {
             var cfg = JSON.parse(c),
@@ -715,7 +724,11 @@
         pointer-events: none;
         transition: opacity 0.35s var(--ease), transform 0.35s var(--ease), visibility 0.35s;
       }
+      .node-inspector:not(.active) {
+        display: none !important;
+      }
       .node-inspector.active {
+        display: block !important;
         opacity: 1;
         visibility: visible;
         pointer-events: auto;
@@ -2385,6 +2398,7 @@
       </div>
     </nav>
 
+    <main id="main">
     <section class="hero" id="heroSection">
       <div class="hvig"></div>
       <div class="hvigb"></div>
@@ -2410,12 +2424,12 @@
 
 
       <!-- Holographic In-Place Node Inspector Card -->
-      <div class="node-inspector" id="nodeInspector" aria-hidden="true">
+      <div class="node-inspector" id="nodeInspector" aria-hidden="true" inert>
         <div class="ni-header">
           <div class="ni-icon" id="niIcon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="8" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="7.5" cy="15.5" r="1.5"/><circle cx="16.5" cy="15.5" r="1.5"/></svg></div>
           <div class="ni-meta">
             <div class="ni-badge" id="niBadge">3D Simulation & AI</div>
-            <h3 class="ni-title" id="niTitle">Mumbai Traffic Hero</h3>
+            <h2 class="ni-title" id="niTitle">Mumbai Traffic Hero</h2>
           </div>
           <button class="ni-close" id="niCloseBtn" aria-label="Close Inspector">&times;</button>
         </div>
@@ -2469,21 +2483,21 @@
           <div class="vp-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
           </div>
-          <h3 class="vp-title">Performance First</h3>
+          <h2 class="vp-title">Performance First</h2>
           <p class="vp-desc">Our tools are built natively without bulky frameworks, keeping load times fast across every device.</p>
         </div>
         <div class="vp-card rv">
           <div class="vp-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/><circle cx="12" cy="12" r="5"/></svg>
           </div>
-          <h3 class="vp-title">Interactive Learning</h3>
+          <h2 class="vp-title">Interactive Learning</h2>
           <p class="vp-desc">Move beyond textbooks and static pages. We create immersive environments where you learn by experimenting in real-time.</p>
         </div>
         <div class="vp-card rv">
           <div class="vp-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
           </div>
-          <h3 class="vp-title">Open &amp; Accessible</h3>
+          <h2 class="vp-title">Open &amp; Accessible</h2>
           <p class="vp-desc">Education should have zero barriers. Everything we build is free to access and works for anyone, anywhere.</p>
         </div>
       </div>
@@ -3464,6 +3478,7 @@
         </a>
       </div>
     </section>
+    </main>
 
 <footer class="sf" style="content-visibility:auto; contain-intrinsic-size: 0 200px">
       <div class="fi">
@@ -3823,7 +3838,8 @@
 
           if (inspector) {
             inspector.classList.add('active')
-            inspector.setAttribute('aria-hidden', 'false')
+            inspector.removeAttribute('aria-hidden')
+            inspector.removeAttribute('inert')
           }
 
           // Sync dock chip
@@ -3837,6 +3853,7 @@
           if (inspector) {
             inspector.classList.remove('active')
             inspector.setAttribute('aria-hidden', 'true')
+            inspector.setAttribute('inert', '')
           }
           currentNodeKey = null
           dockChips.forEach(function (chip) { chip.classList.remove('active') })

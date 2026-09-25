@@ -18,6 +18,16 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script>
+      ;(function () {
+        try {
+          if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.add('lm')
+          }
+        } catch (e) {}
+      })()
+    </script>
+    <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
     <link rel="stylesheet" href="col-mobile.css" />
 
     <script type="application/ld+json">
@@ -461,9 +471,178 @@
         @media (max-width: 900px) {
             body { padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px)); }
         }
+
+        /* ── CASTFLOW LIGHT MODE POLISH ── */
+        body.lm {
+            --void: #fbfaf5 !important;
+            --void-2: #f1efe6 !important;
+            --panel: #ffffff !important;
+            --line: rgba(0, 0, 0, 0.08) !important;
+            --ink: #0f172a !important;
+            --dim: #475569 !important;
+            --signal: #b8720a !important;
+            --signal-ink: #ffffff !important;
+            --teal: #0d9488 !important;
+            --primary: #0d9488 !important;
+        }
+        body.lm header.site-head {
+            background: rgba(251, 250, 245, 0.92) !important;
+            border-bottom-color: rgba(0, 0, 0, 0.08) !important;
+        }
+        body.lm nav.primary a:hover {
+            color: #0f172a !important;
+            background: rgba(0, 0, 0, 0.04) !important;
+        }
+        body.lm .btn-solid {
+            background: #b8720a !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 15px rgba(184, 114, 10, 0.2) !important;
+        }
+        body.lm .btn-ghost {
+            color: #0f172a !important;
+            border-color: rgba(0, 0, 0, 0.15) !important;
+        }
+        body.lm .btn-ghost:hover {
+            border-color: #b8720a !important;
+            color: #b8720a !important;
+            background: rgba(184, 114, 10, 0.04) !important;
+        }
+        body.lm .feat,
+        body.lm .step {
+            background: #ffffff !important;
+            border: 1px solid rgba(0, 0, 0, 0.08) !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+        }
+        body.lm .feat:hover,
+        body.lm .step:hover {
+            border-color: rgba(0, 0, 0, 0.16) !important;
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08) !important;
+        }
+        body.lm .feat-title,
+        body.lm .step-title {
+            color: #0f172a !important;
+        }
+        body.lm .feat-desc,
+        body.lm .step-desc {
+            color: #475569 !important;
+        }
+        body.lm .feat-ic {
+            background: rgba(13, 148, 136, 0.08) !important;
+            border-color: rgba(13, 148, 136, 0.2) !important;
+            color: #0d9488 !important;
+        }
+        body.lm .step-num {
+            background: #f1f5f9 !important;
+            color: #b8720a !important;
+            border-color: rgba(0, 0, 0, 0.08) !important;
+        }
+        body.lm .phone {
+            background: #ffffff !important;
+            border-color: rgba(0, 0, 0, 0.1) !important;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.1) !important;
+        }
+        body.lm .phone-screen {
+            background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%) !important;
+        }
+        body.lm .cast-card {
+            background: rgba(13, 148, 136, 0.08) !important;
+            border-color: rgba(13, 148, 136, 0.25) !important;
+        }
+        body.lm .screen-row {
+            background: #ffffff !important;
+            border-color: rgba(0, 0, 0, 0.08) !important;
+            color: #0f172a !important;
+        }
+        body.lm .float-chip {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border-color: rgba(0, 0, 0, 0.08) !important;
+            color: #0f172a !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+        }
+        body.lm .browser {
+            background: #ffffff !important;
+            border: 1px solid rgba(0, 0, 0, 0.08) !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06) !important;
+        }
+        body.lm .browser-bar {
+            border-bottom-color: rgba(0, 0, 0, 0.08) !important;
+            background: #f8fafc !important;
+        }
+        body.lm .browser-url {
+            background: #ffffff !important;
+            border-color: rgba(0, 0, 0, 0.08) !important;
+            color: #0f172a !important;
+        }
+        body.lm .file-card {
+            background: #f8fafc !important;
+            border-color: rgba(0, 0, 0, 0.08) !important;
+            color: #0f172a !important;
+        }
+        body.lm .stats-band {
+            background: #ffffff !important;
+            border: 1px solid rgba(0, 0, 0, 0.08) !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+        }
+        body.lm .stat b {
+            color: #0f172a !important;
+        }
+        body.lm .stat span {
+            color: #475569 !important;
+        }
+        body.lm .dl-card {
+            background: #ffffff !important;
+            border: 1px solid rgba(184, 114, 10, 0.25) !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06) !important;
+        }
+        body.lm .dl-card h2 {
+            color: #0f172a !important;
+        }
+        body.lm .dl-card > p {
+            color: #475569 !important;
+        }
+        body.lm details.faq {
+            background: #ffffff !important;
+            border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        }
+        body.lm details.faq summary {
+            color: #0f172a !important;
+        }
+        body.lm details.faq .faq-a {
+            color: #475569 !important;
+        }
+        body.lm .news-card {
+            background: #ffffff !important;
+            border: 1px solid rgba(0, 0, 0, 0.08) !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+        }
+        body.lm .news-form input {
+            background: #f8fafc !important;
+            border-color: rgba(0, 0, 0, 0.12) !important;
+            color: #0f172a !important;
+        }
+        body.lm footer.site-foot {
+            border-color: rgba(0, 0, 0, 0.08) !important;
+        }
+        body.lm .foot-base {
+            border-color: rgba(0, 0, 0, 0.08) !important;
+            color: #475569 !important;
+        }
+        body.lm .foot-links a {
+            color: #475569 !important;
+        }
+        body.lm .foot-links a:hover {
+            color: #b8720a !important;
+        }
     </style>
 </head>
 <body>
+    <script>
+      ;(function () {
+        try {
+          if (localStorage.getItem('theme') === 'light') document.body.classList.add('lm')
+        } catch (e) {}
+      })()
+    </script>
     <a class="skip-link" href="#main">Skip To Content</a>
 
     <div class="announcement">Open Source — No Tracking — No Ads</div>

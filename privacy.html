@@ -13,6 +13,15 @@
     <script>
       ;(function () {
         try {
+          if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.add('lm')
+          }
+        } catch (e) {}
+      })()
+    </script>
+    <script>
+      ;(function () {
+        try {
           var c = localStorage.getItem('col_admin_config')
           if (c) {
             var cfg = JSON.parse(c),
@@ -1032,6 +1041,60 @@
           font-size: 2.8rem;
         }
       }
+
+      /* ── PRIVACY LIGHT MODE POLISH ── */
+      body.lm {
+        --void: #fbfaf5 !important;
+        --void2: #f1efe6 !important;
+        --panel: #ffffff !important;
+        --line: rgba(0, 0, 0, 0.08) !important;
+        --lineb: rgba(0, 0, 0, 0.16) !important;
+        --ink: #0f172a !important;
+        --dim: #475569 !important;
+        --signal: #b8720a !important;
+        --ion: #0e72a0 !important;
+        --teal: #0a8c7a !important;
+        --plasma: #6f4fe0 !important;
+        --em: #1b9d66 !important;
+        --nav: rgba(251, 250, 245, 0.88) !important;
+      }
+      body.lm .hvig {
+        background: linear-gradient(to right, var(--void) 0%, rgba(251, 250, 245, 0.95) 20%, rgba(251, 250, 245, 0.6) 40%, rgba(251, 250, 245, 0.05) 60%, transparent 80%) !important;
+      }
+      body.lm .hvigb {
+        background: linear-gradient(to top, var(--void), transparent) !important;
+      }
+      body.lm .agreement-card {
+        background: #ffffff !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+      }
+      body.lm .sec-title {
+        color: #0f172a !important;
+      }
+      body.lm .sec-num {
+        background: rgba(184, 114, 10, 0.1) !important;
+        color: #b8720a !important;
+        border: 1px solid rgba(184, 114, 10, 0.25) !important;
+      }
+      body.lm .agreement-section p {
+        color: #475569 !important;
+      }
+      body.lm .hero-badge {
+        background: rgba(184, 114, 10, 0.08) !important;
+        color: #b8720a !important;
+        border: 1px solid rgba(184, 114, 10, 0.25) !important;
+      }
+      body.lm .col-hero h1 {
+        color: #0f172a !important;
+      }
+      body.lm .hlede {
+        color: #475569 !important;
+      }
+      body.lm .sf {
+        border-color: rgba(0, 0, 0, 0.08) !important;
+        background: transparent !important;
+      }
     </style>
     <script defer src="col-router.js"></script>
     <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
@@ -1181,7 +1244,7 @@
       <div class="hvig"></div>
       <div class="hvigb"></div>
       <div class="shc">
-        <div class="hero-badge">?? Data & Privacy</div>
+        <div class="hero-badge">Data &amp; Privacy Policy</div>
         <h1 class="pg-title">Privacy <i>Policy</i>.</h1>
         <p class="pg-desc">
           Effective Date: April 2026. We are committed to protecting your privacy across our applications, including ATI, Solar Engine, Gesture Controller, and QR Studio. Read on to learn how we

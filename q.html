@@ -12,6 +12,18 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script defer src="qr-dynamic.js"></script>
+  <script>
+    ;(function () {
+      try {
+        if (localStorage.getItem('theme') === 'light') {
+          document.documentElement.classList.add('lm')
+          document.addEventListener('DOMContentLoaded', function() {
+            document.body.classList.add('lm')
+          })
+        }
+      } catch (e) {}
+    })()
+  </script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -22,6 +34,31 @@
       --text: #f8fafc;
       --text-muted: #94a3b8;
       --danger: #ef4444;
+    }
+    body.lm {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: rgba(0, 0, 0, 0.08);
+      --accent: #059669;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --danger: #dc2626;
+    }
+    body.lm .card {
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+    }
+    body.lm .spinner {
+      border: 3px solid rgba(0, 0, 0, 0.08);
+      border-top-color: var(--accent);
+    }
+    body.lm .icon-container {
+      background: rgba(5, 150, 105, 0.08);
+      border-color: rgba(5, 150, 105, 0.2);
+    }
+    body.lm .pwd-input {
+      background: #f8fafc;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      color: #0f172a;
     }
     body {
       font-family: 'Inter', system-ui, -apple-system, sans-serif;

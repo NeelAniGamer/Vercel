@@ -415,3 +415,156 @@ kbd { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1
 .moon-entry-badge { display: inline-block; font: 700 8px 'Space Mono', monospace; color: var(--muted); letter-spacing: 0.06em; margin-left: 6px; background: rgba(255,255,255,0.06); padding: 1px 5px; border-radius: 3px; }
 .moon-entry-facts { font: 11px/1.5 'Exo 2', sans-serif; color: rgba(255,255,255,0.65); margin-top: 3px; }
 .no-moons-msg { font: 13px 'Exo 2', sans-serif; color: var(--muted); font-style: italic; padding: 10px 0; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LIGHT MODE FOR SOLAR SYSTEM ENGINE (WCAG 2.2 AA COMPLIANT)
+   ═══════════════════════════════════════════════════════════════════════════ */
+body.lm {
+  --bg: #f8fafc;
+  --panel: rgba(255, 255, 255, 0.94);
+  --panel-solid: #ffffff;
+  --border: rgba(194, 87, 0, 0.25);
+  --border2: rgba(14, 114, 160, 0.22);
+  --border3: rgba(10, 140, 122, 0.22);
+  --text: #0f172a;
+  --muted: #475569;
+  --acc: #c25700;
+  --acc-glow: rgba(194, 87, 0, 0.25);
+  --acc2: #0284c7;
+  --acc2-glow: rgba(2, 132, 199, 0.25);
+  --acc3: #0d9488;
+  --acc3-glow: rgba(13, 148, 136, 0.25);
+  --glass-shadow: 0 16px 40px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  background: var(--bg);
+  color: var(--text);
+}
+
+body.lm #homepage {
+  background: #f8fafc;
+  color: #0f172a;
+}
+body.lm .ht-line {
+  color: #0f172a;
+}
+body.lm #home-tagline {
+  color: #475569;
+}
+body.lm .hs-label {
+  color: #64748b;
+}
+body.lm .hs-divider {
+  background: rgba(0, 0, 0, 0.1);
+}
+body.lm .hs-num {
+  color: var(--acc);
+}
+body.lm #home-badge {
+  color: var(--acc);
+}
+body.lm .badge-dot {
+  background: var(--acc);
+}
+body.lm #home-solar-rings .ring-1 {
+  border-color: rgba(194, 87, 0, 0.25);
+}
+body.lm #home-solar-rings .ring-2 {
+  border-color: rgba(2, 132, 199, 0.2);
+}
+body.lm #home-solar-rings .ring-3 {
+  border-color: rgba(13, 148, 136, 0.2);
+}
+body.lm .hf-card {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  color: #0f172a !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04) !important;
+}
+body.lm .hf-card h3 {
+  color: #0f172a;
+}
+body.lm .hf-card p {
+  color: #475569;
+}
+
+body.lm #top-bar {
+  background: rgba(255, 255, 255, 0.92);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+body.lm .tc-btn,
+body.lm .icon-btn,
+body.lm .speed-btn {
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: #334155;
+}
+body.lm .tc-btn:hover,
+body.lm .icon-btn:hover,
+body.lm .speed-btn:hover {
+  background: rgba(194, 87, 0, 0.08);
+  border-color: rgba(194, 87, 0, 0.3);
+  color: var(--acc);
+}
+body.lm .tc-btn.active,
+body.lm .speed-btn.active {
+  background: var(--acc);
+  color: #ffffff;
+  border-color: var(--acc);
+}
+body.lm #search-box {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  color: #0f172a;
+}
+body.lm #search-results {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+body.lm .sr-item {
+  color: #0f172a;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+body.lm .sr-item:hover {
+  background: rgba(194, 87, 0, 0.06);
+}
+body.lm #settings-panel,
+body.lm #info-panel,
+body.lm #compare-panel,
+body.lm #timeline-panel {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.12);
+  color: #0f172a;
+}
+body.lm #cp-header,
+body.lm #tp-header {
+  background: #ffffff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+body.lm .data-row,
+body.lm .tp-scale-row,
+body.lm .tp-time-row {
+  border-bottom-color: rgba(0, 0, 0, 0.06);
+}
+body.lm .data-row .label,
+body.lm .cp-rows .label {
+  color: #64748b;
+}
+body.lm .data-row .value,
+body.lm .cp-rows .value,
+body.lm .tp-val,
+body.lm .tp-event {
+  color: #0f172a;
+}
+body.lm #scale-indicator {
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: #334155;
+}
+body.lm #measure-display {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: #0f172a;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}

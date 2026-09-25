@@ -953,6 +953,49 @@
           gap: 16px;
         }
       }
+
+      /* ──── SITEMAP LIGHT MODE (WCAG 2.2 AA COMPLIANT) ──── */
+      body.lm {
+        --void: #f0ede4;
+        --void2: #e6e2d8;
+        --panel: #ffffff;
+        --line: rgba(0, 0, 0, 0.09);
+        --lineb: rgba(0, 0, 0, 0.18);
+        --ink: #0f172a;
+        --dim: #475569;
+        --signal: #b8720a;
+        --ion: #0e72a0;
+        --teal: #0a8c7a;
+        --plasma: #6f4fe0;
+        --em: #1b9d66;
+        --nav: rgba(240, 237, 228, 0.85);
+        background: var(--void) !important;
+        color: var(--ink) !important;
+      }
+      body.lm .sitemap-card {
+        background: #ffffff !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04) !important;
+      }
+      body.lm .sitemap-card:hover {
+        border-color: rgba(0, 0, 0, 0.16) !important;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08) !important;
+      }
+      body.lm .sitemap-group-title {
+        color: #0f172a !important;
+      }
+      body.lm .sc-name {
+        color: #0f172a !important;
+      }
+      body.lm .sc-desc {
+        color: #475569 !important;
+      }
+      body.lm .page-hero h1 {
+        color: #0f172a !important;
+      }
+      body.lm .page-subtitle {
+        color: #475569 !important;
+      }
     </style>
 
     <script defer src="col-router.js"></script>

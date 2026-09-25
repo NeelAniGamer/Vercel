@@ -535,6 +535,97 @@
           stroke: #00ffcc;
         }
       }
+
+      /* ──── DATABASE LOGIC LIGHT MODE (WCAG 2.2 AA COMPLIANT) ──── */
+      body.lm {
+        --bg-color: #f8fafc !important;
+        --panel-bg: #ffffff !important;
+        --panel-border: rgba(0, 0, 0, 0.08) !important;
+        --text-main: #0f172a !important;
+        --text-muted: #475569 !important;
+        --accent-primary: #0d9488 !important;
+        background-color: var(--bg-color) !important;
+        color: var(--text-main) !important;
+      }
+      body.lm #webgl-canvas {
+        opacity: 0.15 !important;
+        filter: invert(1) !important;
+      }
+      body.lm .hero-badge {
+        background: rgba(13, 148, 136, 0.08) !important;
+        color: var(--accent-primary) !important;
+        border: 1px solid rgba(13, 148, 136, 0.25) !important;
+      }
+      body.lm .hero h1 span {
+        background: none !important;
+        -webkit-text-fill-color: initial !important;
+        color: #0f172a !important;
+      }
+      body.lm .hero h1 .highlight {
+        background: none !important;
+        -webkit-text-fill-color: initial !important;
+        color: var(--accent-primary) !important;
+      }
+      body.lm .hero p {
+        color: #475569 !important;
+      }
+      body.lm .btn {
+        background: var(--accent-primary) !important;
+        color: #ffffff !important;
+        box-shadow: 0 4px 14px rgba(13, 148, 136, 0.25) !important;
+      }
+      body.lm .btn:hover {
+        background: #0f766e !important;
+        box-shadow: 0 8px 22px rgba(13, 148, 136, 0.35) !important;
+      }
+      body.lm .module-card {
+        background: #ffffff !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04) !important;
+      }
+      body.lm .module-card:hover {
+        background: #ffffff !important;
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08) !important;
+      }
+      body.lm .module-card h3 {
+        color: #0f172a !important;
+      }
+      body.lm .module-card p {
+        color: #475569 !important;
+      }
+      body.lm .tier-header {
+        border-bottom-color: rgba(0, 0, 0, 0.1) !important;
+        color: #0f172a !important;
+      }
+      body.lm .section-header h2 {
+        color: #0f172a !important;
+      }
+      body.lm .content-block h2 {
+        color: #0f172a !important;
+      }
+      body.lm .content-block p {
+        color: #475569 !important;
+      }
+      body.lm .tech-panel {
+        background: #ffffff !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        color: #0f172a !important;
+      }
+      body.lm .modal-panel {
+        background: #ffffff !important;
+        color: #0f172a !important;
+        border: 1px solid rgba(0, 0, 0, 0.12) !important;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15) !important;
+      }
+      body.lm .modal-header {
+        border-bottom-color: rgba(0, 0, 0, 0.08) !important;
+      }
+      body.lm .modal-body {
+        color: #475569 !important;
+      }
+      body.lm .modal-overlay {
+        background: rgba(15, 23, 42, 0.4) !important;
+      }
     </style>
     <link rel="manifest" href="manifest.json" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -544,6 +635,15 @@
       <link rel="icon" type="image/png" href="Icon.png" />
   </head>
   <body>
+    <script>
+      ;(function () {
+        try {
+          if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('lm')
+          }
+        } catch (e) {}
+      })()
+    </script>
     <div class="container">
       <!-- Hero Section -->
       <section id="home" class="hero">

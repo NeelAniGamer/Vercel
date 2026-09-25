@@ -1230,6 +1230,75 @@
           grid-template-columns: 1fr;
         }
       }
+
+      /* ──── DOWNLOAD HUB LIGHT MODE (WCAG 2.2 AA COMPLIANT) ──── */
+      body.lm {
+        --void: #f0ede4;
+        --void2: #e6e2d8;
+        --panel: #ffffff;
+        --line: rgba(0, 0, 0, 0.09);
+        --lineb: rgba(0, 0, 0, 0.18);
+        --ink: #0f172a;
+        --dim: #475569;
+        --signal: #b8720a;
+        --ion: #0e72a0;
+        --teal: #0a8c7a;
+        --plasma: #6f4fe0;
+        --em: #1b9d66;
+        --nav: rgba(240, 237, 228, 0.85);
+        background: var(--void) !important;
+        color: var(--ink) !important;
+      }
+      body.lm .pc {
+        background: #ffffff !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+      }
+      body.lm .pc:hover {
+        border-color: rgba(0, 0, 0, 0.16) !important;
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08) !important;
+      }
+      body.lm .info-banner {
+        background: #ffffff !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        border-left: 4px solid var(--signal) !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03) !important;
+      }
+      body.lm .banner-text strong {
+        color: #0f172a !important;
+      }
+      body.lm .banner-text span {
+        color: #475569 !important;
+      }
+      body.lm .setup-list li {
+        color: #475569 !important;
+      }
+      body.lm .ext-link-btn {
+        background: rgba(0, 0, 0, 0.04) !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        color: #334155 !important;
+      }
+      body.lm .ext-link-btn:hover {
+        background: rgba(0, 0, 0, 0.08) !important;
+        color: #0f172a !important;
+      }
+      body.lm .mi {
+        background: #ffffff !important;
+        border-color: rgba(0, 0, 0, 0.15) !important;
+        color: #0f172a !important;
+      }
+      body.lm .dropdown-content {
+        background: #ffffff !important;
+        border-color: rgba(0, 0, 0, 0.1) !important;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1) !important;
+      }
+      body.lm .dropdown-content a {
+        color: #334155 !important;
+      }
+      body.lm .dropdown-content a:hover {
+        background: rgba(0, 0, 0, 0.04) !important;
+        color: #0f172a !important;
+      }
     </style>
 
     <script defer src="col-router.js"></script>

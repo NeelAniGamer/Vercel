@@ -831,6 +831,74 @@
           font-size: 1.1rem;
         }
       }
+
+      /* ──── RPG LIGHT MODE (WCAG 2.2 AA COMPLIANT) ──── */
+      body.lm {
+        --bg-deep: #f8fafc;
+        --bg-mid: #f1f5f9;
+        --primary: #7c3aed;
+        --primary-glow: rgba(124, 58, 237, 0.25);
+        --gold: #b45309;
+        --text-main: #0f172a;
+        --text-muted: #475569;
+        --border-light: rgba(0, 0, 0, 0.08);
+        --nav-bg: rgba(248, 250, 252, 0.95);
+        background-color: var(--bg-deep) !important;
+        background-image: radial-gradient(ellipse at top, #ffffff 0%, var(--bg-deep) 60%) !important;
+        color: var(--text-main) !important;
+      }
+      body.lm .starfield {
+        opacity: 0.15;
+        filter: invert(1);
+      }
+      body.lm .hero-title {
+        color: #0f172a !important;
+      }
+      body.lm .hero-subtitle {
+        color: #475569 !important;
+      }
+      body.lm .hero-badge {
+        background: rgba(124, 58, 237, 0.08);
+        border: 1px solid rgba(124, 58, 237, 0.25);
+        color: var(--primary);
+      }
+      body.lm .feature-card {
+        background: #ffffff !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+      }
+      body.lm .feature-card:hover {
+        border-color: rgba(124, 58, 237, 0.4) !important;
+        box-shadow: 0 16px 36px rgba(124, 58, 237, 0.12) !important;
+      }
+      body.lm .feature-card h3 {
+        color: #0f172a !important;
+      }
+      body.lm .feature-card p {
+        color: #475569 !important;
+      }
+      body.lm .icon-wrapper {
+        background: rgba(124, 58, 237, 0.08) !important;
+        border: 1px solid rgba(124, 58, 237, 0.25) !important;
+        color: var(--primary) !important;
+      }
+      body.lm .btn-demo {
+        background: #ffffff;
+        color: var(--primary);
+        border: 2px solid var(--primary);
+      }
+      body.lm .btn-demo:hover {
+        background: var(--primary);
+        color: #ffffff;
+      }
+      body.lm .btn-download {
+        background: var(--primary);
+        color: #ffffff;
+        box-shadow: 0 10px 25px rgba(124, 58, 237, 0.25);
+      }
+      body.lm .btn-download:hover {
+        background: #6d28d9;
+      }
     </style>
 
     <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/rpg" />
@@ -850,6 +918,15 @@
       <link rel="icon" type="image/png" href="Icon.png" />
   </head>
   <body>
+    <script>
+      ;(function () {
+        try {
+          if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('lm')
+          }
+        } catch (e) {}
+      })()
+    </script>
     <div class="cd" id="cDot"></div>
     <div class="cr" id="cRing"></div>
 

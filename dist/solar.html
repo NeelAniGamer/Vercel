@@ -1474,6 +1474,211 @@
           font-size: 1.4rem;
         }
       }
+
+      /* ──── SOLAR LIGHT MODE (WCAG 2.2 AA COMPLIANT) ──── */
+      body.lm {
+        --bg-1: #fbfaf5;
+        --bg-2: #f1efe6;
+        --primary: #c25700;
+        --primary-dim: rgba(194, 87, 0, 0.08);
+        --primary-glow: rgba(194, 87, 0, 0.25);
+        --card-bg: #ffffff;
+        --text-main: #0f172a;
+        --nav-bg: rgba(251, 250, 245, 0.92);
+        --border-light: rgba(0, 0, 0, 0.08);
+        --text-muted: #475569;
+        --warning: #dc2626;
+        background-color: var(--bg-1) !important;
+        background-image: radial-gradient(circle at top center, #ffffff 0%, #f1efe6 100%) !important;
+        color: var(--text-main) !important;
+      }
+      body.lm .stars-bg {
+        opacity: 0.12;
+        filter: invert(1);
+      }
+      body.lm .game-hero {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        background: linear-gradient(180deg, transparent 0%, rgba(194, 87, 0, 0.04) 100%);
+      }
+      body.lm .hero-badge {
+        background: rgba(194, 87, 0, 0.08);
+        border: 1px solid rgba(194, 87, 0, 0.25);
+        color: var(--primary);
+      }
+      body.lm .game-hero h1 {
+        color: #0f172a;
+      }
+      body.lm .game-hero p {
+        color: #475569;
+      }
+      body.lm .btn-download {
+        background: var(--primary);
+        color: #ffffff;
+        box-shadow: 0 10px 25px rgba(194, 87, 0, 0.25);
+      }
+      body.lm .btn-download:hover {
+        background: #a34600;
+        color: #ffffff;
+        box-shadow: 0 15px 35px rgba(194, 87, 0, 0.35);
+      }
+      body.lm .btn-demo {
+        background: #ffffff;
+        color: var(--primary);
+        border: 2px solid var(--primary);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+      }
+      body.lm .btn-demo:hover {
+        background: var(--primary);
+        color: #ffffff;
+        box-shadow: 0 10px 25px rgba(194, 87, 0, 0.25);
+      }
+      body.lm .feature-card {
+        background: #ffffff !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+      }
+      body.lm .feature-card::before {
+        background: radial-gradient(rgba(194, 87, 0, 0.06) 1px, transparent 1px) !important;
+        opacity: 0.4;
+      }
+      body.lm .feature-card:hover {
+        border-color: rgba(194, 87, 0, 0.4) !important;
+        box-shadow: 0 16px 36px rgba(194, 87, 0, 0.12) !important;
+      }
+      body.lm .feature-card h3 {
+        color: #0f172a !important;
+      }
+      body.lm .feature-card p {
+        color: #475569 !important;
+      }
+      body.lm .icon-wrapper {
+        background: rgba(194, 87, 0, 0.08) !important;
+        border: 1px solid rgba(194, 87, 0, 0.25) !important;
+        color: var(--primary) !important;
+        animation: none;
+      }
+      body.lm .tech-tag {
+        background: rgba(0, 0, 0, 0.04) !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        color: #334155 !important;
+      }
+      body.lm .feature-card:hover .tech-tag {
+        background: rgba(194, 87, 0, 0.08) !important;
+        border-color: rgba(194, 87, 0, 0.2) !important;
+        color: var(--primary) !important;
+      }
+      body.lm .gallery-title {
+        color: #0f172a;
+      }
+      body.lm .snapshot-card {
+        background: #ffffff !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06) !important;
+      }
+      body.lm .snapshot-card:hover {
+        border-color: var(--primary) !important;
+        box-shadow: 0 16px 36px rgba(194, 87, 0, 0.15) !important;
+      }
+      body.lm .snapshot-overlay {
+        background: rgba(255, 255, 255, 0.92) !important;
+        border: 1px solid var(--primary) !important;
+        color: var(--primary) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+      }
+      body.lm .planet-card {
+        background: #ffffff !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+      }
+      body.lm .planet-card:hover {
+        border-color: var(--primary) !important;
+        box-shadow: 0 12px 32px rgba(194, 87, 0, 0.12) !important;
+      }
+      body.lm .planet-name {
+        color: var(--primary) !important;
+      }
+      body.lm .planet-tag {
+        background: rgba(194, 87, 0, 0.08) !important;
+        border: 1px solid rgba(194, 87, 0, 0.25) !important;
+        color: var(--primary) !important;
+      }
+      body.lm .planet-facts {
+        color: #475569 !important;
+      }
+      body.lm .planet-facts strong {
+        color: #0f172a !important;
+      }
+      body.lm .doubt-section {
+        background: #ffffff !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.04) !important;
+      }
+      body.lm .doubt-note {
+        color: #475569 !important;
+      }
+      body.lm .doubt-chip {
+        background: rgba(194, 87, 0, 0.06) !important;
+        border: 1px solid rgba(194, 87, 0, 0.2) !important;
+        color: #334155 !important;
+      }
+      body.lm .doubt-chip:hover {
+        background: var(--primary) !important;
+        color: #ffffff !important;
+      }
+      body.lm .doubt-input {
+        background: #f8fafc !important;
+        border: 1px solid rgba(0, 0, 0, 0.12) !important;
+        color: #0f172a !important;
+      }
+      body.lm .doubt-input:focus {
+        border-color: var(--primary) !important;
+        box-shadow: 0 0 0 3px rgba(194, 87, 0, 0.15) !important;
+      }
+      body.lm .doubt-ask {
+        background: var(--primary) !important;
+        color: #ffffff !important;
+      }
+      body.lm .doubt-ask:hover {
+        background: #a34600 !important;
+      }
+      body.lm .doubt-answer {
+        background: #f8fafc !important;
+        border-left: 3px solid var(--primary) !important;
+        color: #0f172a !important;
+      }
+      body.lm .doubt-answer strong {
+        color: var(--primary) !important;
+      }
+      body.lm .engine-container {
+        border: 1px solid rgba(0, 0, 0, 0.12) !important;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08) !important;
+      }
+      body.lm .engine-hud-header {
+        background: #ffffff !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+      }
+      body.lm .hud-title {
+        color: #0f172a !important;
+      }
+      body.lm .gesture-card {
+        background: rgba(0, 0, 0, 0.04) !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+      }
+      body.lm .g-title {
+        color: #0f172a !important;
+      }
+      body.lm .g-desc {
+        color: #475569 !important;
+      }
+      body.lm .nav-login-btn {
+        background: rgba(194, 87, 0, 0.08) !important;
+        color: var(--primary) !important;
+        border-color: var(--primary) !important;
+      }
+      body.lm .nav-login-btn:hover {
+        background: var(--primary) !important;
+        color: #ffffff !important;
+      }
     </style>
 
     <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/solar" />
@@ -1625,8 +1830,8 @@
     <script>
       ;(function () {
         try {
-          if (localStorage.getItem('theme') === 'dark') {
-            document.body.classList.add('dark-mode')
+          if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('lm')
           }
         } catch (e) {}
       })()

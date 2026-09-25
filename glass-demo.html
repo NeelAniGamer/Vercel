@@ -280,44 +280,53 @@
     }
 
     /* ── LIGHT MICA MODE OVERRIDES ── */
+    body.lm,
     body.light-mode {
       background: #f1f5f9;
       color: #0f172a;
     }
 
+    body.lm .lab-header h1,
     body.light-mode .lab-header h1 {
       color: #0f172a;
     }
 
+    body.lm .lab-header p,
     body.light-mode .lab-header p {
       color: #475569;
     }
 
+    body.lm .bg-grid-lines,
     body.light-mode .bg-grid-lines {
       background-image: 
         linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
         linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
     }
 
+    body.lm .bg-floating-text,
     body.light-mode .bg-floating-text {
       color: rgba(0, 0, 0, 0.035);
     }
 
+    body.lm .toggle-group,
     body.light-mode .toggle-group {
       background: rgba(255, 255, 255, 0.7);
       border-color: rgba(0, 0, 0, 0.1);
     }
 
+    body.lm .toggle-btn,
     body.light-mode .toggle-btn {
       color: #64748b;
     }
 
+    body.lm .toggle-btn.active,
     body.light-mode .toggle-btn.active {
       background: #ffffff;
       color: #0f172a;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
     }
 
+    body.lm .standard-glass,
     body.light-mode .standard-glass {
       background: rgba(255, 255, 255, 0.72);
       border-color: rgba(255, 255, 255, 0.9);
@@ -325,6 +334,7 @@
       color: #0f172a;
     }
 
+    body.lm .apple-liquid-glass,
     body.light-mode .apple-liquid-glass {
       background: rgba(255, 255, 255, 0.65);
       border-color: rgba(255, 255, 255, 0.9);
@@ -332,24 +342,30 @@
       color: #0f172a;
     }
 
+    body.lm .card-header h3,
     body.light-mode .card-header h3 {
       color: #0f172a;
     }
 
+    body.lm .standard-glass p,
+    body.lm .apple-liquid-glass p,
     body.light-mode .standard-glass p,
     body.light-mode .apple-liquid-glass p {
       color: #475569 !important;
     }
 
+    body.lm .feature-list,
     body.light-mode .feature-list {
       color: #334155;
     }
 
+    body.lm .tag-standard,
     body.light-mode .tag-standard {
       background: rgba(0, 0, 0, 0.08);
       color: #1e293b;
     }
 
+    body.lm .apple-glass-pill,
     body.light-mode .apple-glass-pill {
       color: #1e293b;
       background: rgba(255, 255, 255, 0.65);
@@ -357,28 +373,34 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
     }
 
+    body.lm .apple-glass-pill:hover,
     body.light-mode .apple-glass-pill:hover {
       background: rgba(255, 255, 255, 0.95);
     }
 
+    body.lm .apple-glass-pill.primary,
     body.light-mode .apple-glass-pill.primary {
       background: rgba(242, 184, 75, 0.25);
       color: #92400e;
       border-color: rgba(242, 184, 75, 0.6);
     }
 
+    body.lm .apple-glass-dock,
     body.light-mode .apple-glass-dock {
       background: rgba(255, 255, 255, 0.75);
       border-color: rgba(255, 255, 255, 0.95);
       box-shadow: 0 18px 45px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 1);
     }
 
+    body.lm .apple-dock-item,
     body.light-mode .apple-dock-item {
       color: #334155;
       background: rgba(255, 255, 255, 0.6);
       border-color: rgba(0, 0, 0, 0.08);
     }
 
+    body.lm .apple-dock-item:hover,
+    body.lm .apple-dock-item.active,
     body.light-mode .apple-dock-item:hover,
     body.light-mode .apple-dock-item.active {
       background: #ffffff;
@@ -389,6 +411,15 @@
   </style>
 </head>
 <body>
+  <script>
+    ;(function () {
+      try {
+        if (localStorage.getItem('theme') === 'light') {
+          document.body.classList.add('lm', 'light-mode')
+        }
+      } catch (e) {}
+    })()
+  </script>
 
   <!-- Animated Backdrop -->
   <div class="lab-backdrop" aria-hidden="true">

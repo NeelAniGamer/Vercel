@@ -1082,6 +1082,82 @@
                 font-size: 2.8rem
             }
         }
+
+        /* ──── FEEDBACK LIGHT MODE (WCAG 2.2 AA COMPLIANT) ──── */
+        body.lm {
+            --void: #f0ede4;
+            --void2: #e6e2d8;
+            --panel: #ffffff;
+            --line: rgba(0, 0, 0, 0.09);
+            --lineb: rgba(0, 0, 0, 0.18);
+            --ink: #0f172a;
+            --dim: #475569;
+            --signal: #b8720a;
+            --ion: #0e72a0;
+            --teal: #0a8c7a;
+            --plasma: #6f4fe0;
+            --em: #1b9d66;
+            --nav: rgba(240, 237, 228, 0.85);
+            background: var(--void) !important;
+            color: var(--ink) !important;
+        }
+        body.lm .fb-card {
+            background: #ffffff !important;
+            border: 1px solid rgba(0, 0, 0, 0.08) !important;
+            border-top: 3px solid var(--teal) !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+        }
+        body.lm .history-card {
+            border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
+        }
+        body.lm .ft-pill span {
+            background: rgba(0, 0, 0, 0.03) !important;
+            border: 1px solid rgba(0, 0, 0, 0.12) !important;
+            color: #334155 !important;
+        }
+        body.lm .ft-pill input:checked+span {
+            border-color: var(--teal) !important;
+            color: var(--teal) !important;
+            background: rgba(10, 140, 122, 0.08) !important;
+        }
+        body.lm .mi {
+            background: #ffffff !important;
+            border: 1px solid rgba(0, 0, 0, 0.14) !important;
+            color: #0f172a !important;
+        }
+        body.lm .mi:focus {
+            border-color: var(--teal) !important;
+            box-shadow: 0 0 0 3px rgba(10, 140, 122, 0.15) !important;
+        }
+        body.lm .file-up {
+            background: rgba(0, 0, 0, 0.02) !important;
+            border: 1px dashed rgba(0, 0, 0, 0.18) !important;
+            color: #334155 !important;
+        }
+        body.lm .urg-labels span {
+            color: #64748b !important;
+        }
+        body.lm .urg-labels span.emr {
+            color: #dc2626 !important;
+        }
+        body.lm .hero-badge {
+            background: rgba(10, 140, 122, 0.08) !important;
+            border: 1px solid rgba(10, 140, 122, 0.25) !important;
+            color: var(--teal) !important;
+        }
+        body.lm .pg-title {
+            color: #0f172a !important;
+        }
+        body.lm .pg-desc {
+            color: #475569 !important;
+        }
+        body.lm .ms {
+            background: var(--teal) !important;
+            color: #ffffff !important;
+        }
+        body.lm .ms:hover {
+            background: #087364 !important;
+        }
     </style>
     <script defer src="col-router.js"></script>
     <link rel="stylesheet" href="col-ui.css?v=20260923-nav3">
