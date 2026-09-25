@@ -24,7 +24,7 @@
   "devDependencies": {
     "@types/howler": "^2.2.11",
     "@types/node": "^20.14.0",
-    "@types/three": "^0.170.0",
+    "@types/three": "^0.186.0",
     "electron": "^44.4.5",
     "electron-builder": "^26.15.3",
     "electron-updater": "^6.8.9",
@@ -32,10 +32,10 @@
     "vite": "^8.3.1"
   },
   "dependencies": {
-    "@dimforge/rapier3d-compat": "^0.14.0",
+    "@dimforge/rapier3d-compat": "^0.20.0",
     "howler": "^2.2.4",
-    "three": "0.170.0",
-    "zustand": "^4.5.4"
+    "three": "0.186.0",
+    "zustand": "^5.0.15"
   },
   "build": {
     "appId": "com.classoflearners.traffic",
