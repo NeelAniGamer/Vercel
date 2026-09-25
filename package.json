@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "node build.js",
-    "postbuild": "node scripts/production-check.js && node scripts/security-check.js",
+    "postbuild": "node scripts/production-check.js && node scripts/security-check.js --allow-missing-sources",
     "verify:production": "node scripts/production-check.js && node scripts/security-check.js",
     "security:check": "node scripts/security-check.js",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",

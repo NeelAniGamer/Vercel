@@ -1,12 +1,8 @@
 version: 2
 updates:
   - package-ecosystem: npm
-    directory: /
-    exclude:
-      - '.agents/**'
-      - 'Traffic/.agents/**'
-      - 'dist/**'
-      - 'Traffic/dist/**'
+    directories:
+      - '/'
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
@@ -20,13 +16,16 @@ updates:
           - 'eslint'
           - 'prettier'
           - 'typescript'
+          - 'react'
+          - 'react-dom'
+          - 'three'
+          - 'playwright'
+          - 'acorn'
+          - '@types/*'
 
   - package-ecosystem: npm
-    directory: /Traffic
-    exclude:
-      - '.agents/**'
-      - 'dist/**'
-      - 'dist-web/**'
+    directories:
+      - '/Traffic'
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
@@ -46,7 +45,8 @@ updates:
           - 'typescript'
 
   - package-ecosystem: github-actions
-    directory: /
+    directories:
+      - '/'
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
