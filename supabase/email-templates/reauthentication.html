@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify Your Identity</title>
+  <!--[if mso]>
+  <noscript>
+    <xml>
+      <o:OfficeDocumentSettings>
+        <o:PixelsPerInch>96</o:PixelsPerInch>
+      </o:OfficeDocumentSettings>
+    </xml>
+  </noscript>
+  <![endif]-->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@700&display=swap');
+    body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { -ms-interpolation-mode: bicubic; border: 0; outline: none; text-decoration: none; }
+    body { margin: 0; padding: 0; width: 100% !important; background-color: #080b14; }
+    @media only screen and (max-width: 640px) {
+      .email-container { width: 100% !important; padding: 12px !important; }
+      .email-card { padding: 26px 20px !important; }
+      .otp-code { font-size: 28px !important; letter-spacing: 8px !important; }
+    }
+  </style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #080b14; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #f8fafc;">
+  <!-- Preheader snippet -->
+  <div style="display: none; font-size: 1px; color: #080b14; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden;">
+    Your One-Time Identity Verification Code For Class Of Learners.
+  </div>
+
+  <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #080b14;">
+    <tr>
+      <td align="center" style="padding: 44px 16px;">
+        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" class="email-container" style="max-width: 600px; margin: 0 auto;">
+          
+          <!-- Outer Card -->
+          <tr>
+            <td style="background-color: #0f172a; border: 1px solid #1e293b; border-radius: 20px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.75);">
+              
+              <!-- Gradient Accent Top Bar -->
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td height="5" style="background: linear-gradient(90deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%); line-height: 5px; font-size: 5px;">&nbsp;</td>
+                </tr>
+              </table>
+
+              <!-- Card Content -->
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" class="email-card" style="padding: 40px 38px 36px 38px;">
+                
+                <!-- Brand Header -->
+                <tr>
+                  <td align="left" style="padding-bottom: 28px; border-bottom: 1px solid #1e293b;">
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                      <tr>
+                        <td align="left" style="vertical-align: middle;">
+                          <span style="display: inline-block; font-size: 20px; font-weight: 700; letter-spacing: -0.02em; color: #ffffff;">
+                            Class Of Learners
+                          </span>
+                        </td>
+                        <td align="right" style="vertical-align: middle;">
+                          <span style="display: inline-block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #38bdf8; background: rgba(56, 189, 248, 0.12); padding: 5px 12px; border-radius: 9999px; border: 1px solid rgba(56, 189, 248, 0.3);">
+                            Reauthentication
+                          </span>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- Main Content -->
+                <tr>
+                  <td align="left" style="padding-top: 30px;">
+                    <h1 style="margin: 0 0 14px 0; font-size: 26px; font-weight: 700; line-height: 1.3; color: #f8fafc; letter-spacing: -0.02em;">
+                      Verify Your Identity
+                    </h1>
+                    <p style="margin: 0 0 24px 0; font-size: 15px; line-height: 1.6; color: #94a3b8;">
+                      A sensitive account action was initiated for <strong style="color: #f1f5f9;">{{ .Email }}</strong> on <strong style="color: #f1f5f9;">Class Of Learners</strong>. Use this one-time security code to verify that it is really you:
+                    </p>
+                  </td>
+                </tr>
+
+                <!-- OTP Code Box Prominent -->
+                <tr>
+                  <td style="padding: 10px 0 24px 0;">
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #090d16; border: 2px solid rgba(56, 189, 248, 0.35); border-radius: 14px; padding: 26px 20px; text-align: center; box-shadow: 0 0 24px rgba(56, 189, 248, 0.12);">
+                      <tr>
+                        <td align="center">
+                          <p style="margin: 0 0 8px 0; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em; color: #64748b;">
+                            Your One-Time Security Code
+                          </p>
+                          <p class="otp-code" style="margin: 0; font-family: 'Space Mono', Consolas, 'SFMono-Regular', monospace; font-size: 38px; font-weight: 700; letter-spacing: 10px; color: #38bdf8;">
+                            {{ .Token }}
+                          </p>
+                          <p style="margin: 8px 0 0 0; font-size: 12px; color: #64748b;">
+                            Expires In 10 Minutes
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- Security Checklist -->
+                <tr>
+                  <td align="left">
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: rgba(30, 41, 59, 0.5); border-left: 3px solid #38bdf8; border-radius: 0 8px 8px 0; padding: 16px 18px;">
+                      <tr>
+                        <td style="font-size: 13px; line-height: 1.6; color: #94a3b8;">
+                          <strong style="color: #f1f5f9;">Never Share This Code With Anyone.</strong> Class Of Learners team members will never ask for your verification code. If you did not trigger this request, someone may be trying to access your account &mdash; please change your password immediately.
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                  <td align="center" style="padding-top: 34px; border-top: 1px solid #1e293b; margin-top: 26px;">
+                    <p style="margin: 0 0 6px 0; font-size: 12px; color: #64748b;">
+                      Sent Securely By Class Of Learners &bull; Interactive Simulation & Learning
+                    </p>
+                    <p style="margin: 0; font-size: 11px; color: #475569;">
+                      &copy; 2026 Class Of Learners. All Rights Reserved.
+                    </p>
+                  </td>
+                </tr>
+
+              </table>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
