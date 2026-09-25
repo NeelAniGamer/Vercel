@@ -22,7 +22,6 @@
     "@types/howler": "^2.2.11",
     "@types/node": "^20.14.0",
     "@types/three": "^0.170.0",
-    "@vitejs/plugin-basic-ssl": "^1.0.1",
     "electron": "^39.8.10",
     "electron-builder": "^26.15.3",
     "electron-updater": "^6.8.9",
