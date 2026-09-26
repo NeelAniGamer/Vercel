@@ -1,14 +1,6 @@
----
-title: Class Of Learners
-emoji: 💻
-colorFrom: blue
-colorTo: purple
-sdk: static
-pinned: false
-license: mit
----
-
 <div align="center">
+
+<img src="Icon.png" alt="Class Of Learners Logo" width="96" height="96" />
 
 # Class Of Learners
 
@@ -20,11 +12,13 @@ license: mit
 [![Supabase](https://img.shields.io/badge/Supabase-Auth%20%26%20Data-3ECF8E?style=for-the-badge&logo=supabase)](#technology)
 [![PWA](https://img.shields.io/badge/PWA-Installable-5A0FC8?style=for-the-badge&logo=pwa)](#pwa-and-android-apk)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](#license)
+[![GitHub Sponsors](https://img.shields.io/badge/Sponsor-GitHub%20Sponsors-ea4aaa?style=for-the-badge&logo=githubsponsors)](https://github.com/sponsors/NeelAniGamer)
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Donate-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black)](https://www.buymeacoffee.com/NeelAniGamer)
+[![Patreon](https://img.shields.io/badge/Patreon-Support-FF424D?style=for-the-badge&logo=patreon)](https://patreon.com/AdvancedLogicLabs)
 
-Production site: <https://advancedlogiclabs.dpdns.org/>
+<br />
 
-This is the only public URL. The site is served from the committed `dist/`
-output, so there is no separate preview or mirror domain to keep in sync.
+**[Production Website](https://advancedlogiclabs.dpdns.org/)** · **[Architecture](#architecture)** · **[Projects](#projects)** · **[Getting Started](#getting-started)**
 
 </div>
 
