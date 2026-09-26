@@ -1,5 +1,5 @@
-const CACHE_NAME = 'col-cache-v10'
-const SW_VERSION = '2026-09-25'
+const CACHE_NAME = 'col-cache-v11'
+const SW_VERSION = '2026-09-26-v2'
 const OFFLINE_FALLBACK = '/home.html'
 const urlsToCache = [
   '/home.html',
@@ -9,7 +9,9 @@ const urlsToCache = [
   '/col-ui.js',
   '/col-router.js',
   '/col-auth.js',
-  '/Icon.png'
+  '/Icon.png',
+  '/bmc-button.svg',
+  '/Funding'
 ]
 
 const cacheableDestinations = new Set([
@@ -92,6 +94,21 @@ self.addEventListener('fetch', (event) => {
     (async () => {
       const cache = await caches.open(CACHE_NAME)
       const cached = await cache.match(request)
+
+      // Network-first for core scripts and navigation to ensure deployments are live immediately
+      const isCoreUpdate = request.mode === 'navigate' || request.url.includes('col-ui.js') || request.url.includes('col-ui.css') || request.url.includes('bmc-button.svg')
+      if (isCoreUpdate) {
+        try {
+          const fresh = await fetch(request)
+          if (fresh && fresh.ok && fresh.type === 'basic') {
+            cache.put(request, fresh.clone())
+            return fresh
+          }
+        } catch (_e) {
+          if (cached) {return cached}
+        }
+      }
+
       const networkPromise = fetch(request).then((networkResponse) => {
         if (networkResponse && networkResponse.ok && networkResponse.type === 'basic') {
           event.waitUntil(cache.put(request, networkResponse.clone()))

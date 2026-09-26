@@ -58,6 +58,12 @@
       ]
     },
     {
+      "source": "/(col-ui\\.js|col-ui\\.css|global-gesture\\.js|bmc-button\\.svg)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+      ]
+    },
+    {
       "source": "/sw.js",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
@@ -84,6 +90,10 @@
     {
       "source": "/perceptus",
       "destination": "/gesture"
+    },
+    {
+      "source": "/funding",
+      "destination": "/Funding"
     }
   ],
   "redirects": [

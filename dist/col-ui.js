@@ -829,7 +829,7 @@ function initBmcBadge() {
     badge.id = 'bmc-floating-badge'
     badge.className = 'bmc-floating-badge'
     badge.setAttribute('aria-label', 'Support Creator')
-    badge.innerHTML = '<a href="https://www.buymeacoffee.com/NeelAniGamer" target="_blank" rel="noopener noreferrer" title="Buy Me A Coffee" aria-label="Buy Me A Coffee"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=NeelAniGamer&button_colour=5F7FFF&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00" alt="Buy Me A Coffee" width="180" height="40" loading="lazy" /></a>'
+    badge.innerHTML = '<a href="https://www.buymeacoffee.com/NeelAniGamer" target="_blank" rel="noopener noreferrer" title="Buy Me A Coffee" aria-label="Buy Me A Coffee"><img src="/bmc-button.svg" onerror="if(this.src.indexOf(\'img.buymeacoffee.com\')===-1)this.src=\'https://img.buymeacoffee.com/button-api/?text=Buy%20me%20a%20coffee&emoji=&slug=NeelAniGamer&button_colour=5F7FFF&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00\'" alt="Buy Me A Coffee" width="180" height="40" loading="lazy" /></a>'
 
     document.body.appendChild(badge)
   }
