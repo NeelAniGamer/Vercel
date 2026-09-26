@@ -10,8 +10,7 @@ const urlsToCache = [
   '/col-router.js',
   '/col-auth.js',
   '/Icon.png',
-  '/bmc-button.svg',
-  '/Funding'
+  '/bmc-button.svg'
 ]
 
 const cacheableDestinations = new Set([

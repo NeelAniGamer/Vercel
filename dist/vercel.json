@@ -90,10 +90,6 @@
     {
       "source": "/perceptus",
       "destination": "/gesture"
-    },
-    {
-      "source": "/funding",
-      "destination": "/Funding"
     }
   ],
   "redirects": [
