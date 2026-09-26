@@ -32,8 +32,13 @@ function resolvePath(urlPath) {
   let clean = decodeURIComponent(urlPath.split('?')[0]);
   if (clean === '/' || clean === '') {clean = '/home.html';}
 
-  const directPath = path.normalize(path.join(ROOT_DIR, clean));
-  if (!directPath.startsWith(ROOT_DIR)) {return null;}
+  // Strip traversal segments to guarantee relative safety
+  const safeRel = path.normalize(clean).replace(/^(\.\.[\/\\])+/g, '').replace(/^[\/\\]+/, '');
+  const rootDirResolved = path.resolve(ROOT_DIR);
+  const directPath = path.resolve(rootDirResolved, safeRel);
+  if (!directPath.startsWith(rootDirResolved + path.sep) && directPath !== rootDirResolved) {
+    return null;
+  }
 
   // If file exists directly
   if (fs.existsSync(directPath) && fs.statSync(directPath).isFile()) {
@@ -42,7 +47,7 @@ function resolvePath(urlPath) {
 
   // Clean URL: try adding .html
   const htmlPath = directPath + '.html';
-  if (fs.existsSync(htmlPath) && fs.statSync(htmlPath).isFile()) {
+  if (htmlPath.startsWith(rootDirResolved + path.sep) && fs.existsSync(htmlPath) && fs.statSync(htmlPath).isFile()) {
     return htmlPath;
   }
 
@@ -56,13 +61,21 @@ function resolvePath(urlPath) {
 
   // Check shortcuts for hub and Traffic subfolder
   if (clean === '/hub' || clean === '/hub.html') {
-    const hubPath = path.join(ROOT_DIR, 'Traffic', 'hub.html');
+    const hubPath = path.join(rootDirResolved, 'Traffic', 'hub.html');
     if (fs.existsSync(hubPath)) {return hubPath;}
   }
 
-  const trafficSubPath = path.join(ROOT_DIR, 'Traffic', clean.replace(/^\//, ''));
-  if (fs.existsSync(trafficSubPath) && fs.statSync(trafficSubPath).isFile()) {return trafficSubPath;}
-  if (fs.existsSync(trafficSubPath + '.html') && fs.statSync(trafficSubPath + '.html').isFile()) {return trafficSubPath + '.html';}
+  const trafficBase = path.resolve(rootDirResolved, 'Traffic');
+  const trafficSubPath = path.resolve(trafficBase, safeRel);
+  if (trafficSubPath.startsWith(trafficBase + path.sep) || trafficSubPath === trafficBase) {
+    if (fs.existsSync(trafficSubPath) && fs.statSync(trafficSubPath).isFile()) {
+      return trafficSubPath;
+    }
+    const trafficHtml = trafficSubPath + '.html';
+    if (trafficHtml.startsWith(trafficBase + path.sep) && fs.existsSync(trafficHtml) && fs.statSync(trafficHtml).isFile()) {
+      return trafficHtml;
+    }
+  }
 
   return null;
 }

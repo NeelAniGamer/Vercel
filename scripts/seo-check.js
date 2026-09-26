@@ -37,13 +37,40 @@ function captureAll(html, pattern) {
 }
 
 function stripNonContent(html) {
-  return html
-    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')
-    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, '')
+  const parts = []
+  let inSkip = false
+  const tokens = html.split(/(<\/?(?:script|style)\b[^>]*>)/i)
+  for (const token of tokens) {
+    if (/^<(?:script|style)\b/i.test(token)) {
+      inSkip = true
+    } else if (/^<\/(?:script|style)>/i.test(token)) {
+      inSkip = false
+    } else if (!inSkip) {
+      parts.push(token)
+    }
+  }
+  return parts.join('')
+}
+
+const HTML_ENTITIES = {
+  '&quot;': '"',
+  '&#39;': "'",
+  '&apos;': "'",
+  '&lt;': '<',
+  '&gt;': '>',
+  '&amp;': '&'
+}
+
+function decodeHtml(value) {
+  return value
+    .replace(/&(?:quot|#39|apos|lt|gt|amp);/g, (entity) => HTML_ENTITIES[entity] || entity)
+    .replace(/\s+/g, ' ')
+    .trim()
 }
 
 function visibleText(html) {
-  return decodeHtml(html.replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim()
+  const textChunks = html.split(/<(?:"[^"]*"|'[^']*'|[^'">])*>/)
+  return decodeHtml(textChunks.join(' ')).replace(/\s+/g, ' ').trim()
 }
 
 function captureMetaContent(html, attribute, value) {
@@ -198,16 +225,6 @@ if (!fs.existsSync(distRoot)) {
   }
 }
 
-function decodeHtml(value) {
-  return value
-    .replace(/&amp;/g, '&')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;|&apos;/g, "'")
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/\s+/g, ' ')
-    .trim()
-}
 
 if (warnings.length > 0) {
   console.warn(`SEO check warnings (${warnings.length}):`)

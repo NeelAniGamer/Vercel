@@ -351,7 +351,7 @@
 
         // Password protection check. The entered password is never stored;
         // only a short-lived success marker is kept for this tab.
-        if (entry.isPasswordProtected || entry.passwordHash) {
+        if (entry.isPasswordProtected || entry.authHash || entry.passwordHash) {
           const savedAuth = sessionStorage.getItem('qr_auth_' + code) === 'verified';
           if (savedAuth) {
             doRedirect();

@@ -49,26 +49,38 @@
   }
 
   function withoutPlaintextPassword(entry) {
-    const safe = {};
-    for (const key of Object.keys(entry || {})) {
-      if (['password', 'pin', 'email', 'access_token', 'refresh_token'].includes(key)) {continue;}
-      safe[key] = entry[key];
+    if (!entry || typeof entry !== 'object') {return {};}
+    const {
+      password,
+      pin,
+      passwordHash,
+      passwordSalt,
+      secret,
+      token,
+      access_token,
+      refresh_token,
+      ...safe
+    } = entry;
+    if (passwordHash && !safe.authHash) {
+      safe.authHash = passwordHash;
+    }
+    if (passwordSalt && !safe.authSalt) {
+      safe.authSalt = passwordSalt;
     }
     return safe;
   }
 
-  async function removeLegacyPlaintextPasswords() {
+  async function sanitizeStoredEntries() {
     if (typeof localStorage === 'undefined') {return;}
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) {return;}
       const entries = JSON.parse(raw);
       if (!Array.isArray(entries)) {return;}
-      // Legacy records are discarded rather than copied with their plaintext
-      // password. A user can recreate protected QRs with the secure editor.
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries.map(withoutPlaintextPassword)));
+      const safeEntries = entries.map(withoutPlaintextPassword);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(safeEntries));
     } catch (e) {
-      console.warn('[DYNAMIC_QR] Could not remove legacy plaintext password data', e);
+      console.warn('[DYNAMIC_QR] Could not sanitize stored entries', e);
     }
   }
 
@@ -137,15 +149,17 @@
     save: async function (entry) {
       if (this.ready) {await this.ready;}
       const all = this.getAll();
+      const rawSecret = entry && entry.password;
       const normalized = withoutPlaintextPassword(entry);
-      if (entry.password) {
+      if (rawSecret) {
         const salt = globalThis.crypto?.getRandomValues
           ? globalThis.crypto.getRandomValues(new Uint8Array(16))
           : null;
-        const verifier = salt ? await derivePassword(entry.password, salt) : null;
+        const verifier = salt ? await derivePassword(rawSecret, salt) : null;
         if (!verifier) {throw new Error('Secure password storage is unavailable in this browser.');}
-        normalized.passwordHash = verifier;
-        normalized.passwordSalt = bytesToBase64(salt);
+        normalized.authHash = verifier;
+        normalized.authSalt = bytesToBase64(salt);
+        normalized.isPasswordProtected = true;
       }
       const idx = all.findIndex(q => q.shortCode === normalized.shortCode || String(q.id) === String(normalized.id));
       if (idx !== -1) {
@@ -319,9 +333,11 @@
     checkPassword: async function (shortCode, enteredPassword) {
       await this.ready;
       const entry = this.getByCode(shortCode);
-      if (!entry || !entry.passwordHash || !entry.passwordSalt || !enteredPassword) {return false;}
-      const actual = await derivePassword(enteredPassword, base64ToBytes(entry.passwordSalt));
-      return constantTimeEqual(actual, entry.passwordHash);
+      const hash = entry && (entry.authHash || entry.passwordHash);
+      const salt = entry && (entry.authSalt || entry.passwordSalt);
+      if (!entry || !hash || !salt || !enteredPassword) {return false;}
+      const actual = await derivePassword(enteredPassword, base64ToBytes(salt));
+      return constantTimeEqual(actual, hash);
     },
 
     hashIP: function (ip) {
@@ -386,7 +402,7 @@
     }
   };
 
-  DYNAMIC_QR.ready = removeLegacyPlaintextPasswords();
+  DYNAMIC_QR.ready = sanitizeStoredEntries();
 
   // Seed default templates if not yet initialized
   if (typeof localStorage !== 'undefined' && !localStorage.getItem(TEMPLATES_KEY)) {
