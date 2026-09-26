@@ -53,10 +53,6 @@ document.addEventListener('DOMContentLoaded', () => {
             #global-toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #0a0d14; border: 1px solid #00ffcc; color: #00ffcc; font-family: 'Space Mono', monospace; font-size: 0.8rem; font-weight: 700; padding: 8px 16px; border-radius: 6px; opacity: 0; transition: opacity 0.3s; z-index: 999999; pointer-events: none; box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
             #global-toast.visible { opacity: 1; }
             
-            /* Floating Action Button */
-            #gesture-fab { position: fixed; bottom: 30px; right: 30px; background: rgba(10, 13, 20, 0.9); border: 1px solid #00ffcc; color: #00ffcc; font-family: 'Space Mono', monospace; font-size: 0.8rem; font-weight: 700; padding: 12px 20px; border-radius: 30px; cursor: pointer; z-index: 99999; box-shadow: 0 0 15px rgba(0, 255, 204, 0.2); backdrop-filter: blur(10px); transition: 0.3s; display: flex; align-items: center; gap: 10px;}
-            #gesture-fab:hover { background: #00ffcc; color: #000; box-shadow: 0 0 25px #00ffcc; }
-            
             /* Picture-in-Picture Camera Popout */
             #pip-camera { position: fixed; bottom: 30px; left: 30px; width: 280px; height: 157px; background: #020408; border: 1px solid #161d2b; border-radius: 8px; box-shadow: 0 15px 40px rgba(0,0,0,0.8); overflow: hidden; z-index: 99998; display: none; }
             #pip-header { position: absolute; top: 0; left: 0; right: 0; background: rgba(10, 13, 20, 0.9); padding: 4px 8px; font-family: 'Space Mono', monospace; font-size: 0.65rem; color: #00ffcc; z-index: 10; border-bottom: 1px solid #161d2b;}
@@ -67,7 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
         </style>
         <div id="global-cursor"></div>
         <div id="global-toast">ACTION</div>
-        <button id="gesture-fab" onclick="window.startGlobalGesture && window.startGlobalGesture()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>Enable Perceptus Flow</button>
         <div id="shutdown-flash"></div>
         
         <div id="pip-camera">
@@ -156,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 3. Start Engine Function (EXPOSED TO WINDOW)
   window.startGlobalGesture = async function () {
     if (isEngineRunning) {return}
-    fab.innerText = 'Loading Engine...'
+    if (fab) {fab.innerText = 'Loading Engine...'}
 
     try {
       await loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js')
@@ -306,16 +301,20 @@ document.addEventListener('DOMContentLoaded', () => {
       await cameraInstance.start()
       isEngineRunning = true
       pipCamera.style.display = 'block'
-      fab.innerHTML = '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#000;margin-right:6px;"></span>Perceptus Active'
-      fab.style.background = COLORS.POINT
-      fab.style.color = '#000'
+      if (fab) {
+        fab.innerHTML = '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#000;margin-right:6px;"></span>Perceptus Active'
+        fab.style.background = COLORS.POINT
+        fab.style.color = '#000'
+      }
       showToast('Global Gesture Control Activated!', COLORS.POINT)
       syncLocalUI('START')
     } catch (e) {
       console.error(e)
-      fab.innerHTML = '<span style="color:#ef4444;margin-right:6px;font-weight:bold;">!</span>Camera Error'
+      if (fab) {
+        fab.innerHTML = '<span style="color:#ef4444;margin-right:6px;font-weight:bold;">!</span>Camera Error'
+        fab.innerText = 'Enable Gestures'
+      }
       try { if (window.toast) {toast('Gesture Camera Unavailable — Check Connection', 'error');} } catch (_e) {}
-      fab.innerText = 'Enable Gestures';
       try { alert('Gesture engine failed to start. Check camera permission and connection.'); } catch (_e) {}
     }
   }
@@ -335,9 +334,11 @@ document.addEventListener('DOMContentLoaded', () => {
       cameraInstance.stop()
     }
 
-    fab.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>Enable Perceptus Flow'
-    fab.style.background = 'rgba(10, 13, 20, 0.9)'
-    fab.style.color = COLORS.POINT
+    if (fab) {
+      fab.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>Enable Perceptus Flow'
+      fab.style.background = 'rgba(10, 13, 20, 0.9)'
+      fab.style.color = COLORS.POINT
+    }
     syncLocalUI('STOP')
   }
 })

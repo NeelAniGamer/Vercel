@@ -23,7 +23,7 @@ const excludedFiles = new Set([
   'render_production_videos.py', 'perceptus_agent.py', 'local_server.js',
   'serve.js', 'server.js', 'package.json', 'package-lock.json', 'tsconfig.json',
   'opencode.json', 'skills-lock.json', 'eslint.config.js', 'AdvancedTypingInstructor.exe', 'AdvancedTypingInstructor_Setup.exe',
-  'AdvancedTypingInstructor_1.4.0_all.deb', 'AdvancedTypingInstructor-Linux.tar.gz'
+  'AdvancedTypingInstructor_1.4.0_all.deb', 'AdvancedTypingInstructor-Linux.tar.gz', 'bmcbrand.zip'
 ]);
 
 const excludedFilePatterns = [

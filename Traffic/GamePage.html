@@ -28,5 +28,6 @@
   <!-- Load the bundled React app (present in dist/ after build; 404-safe in root) -->
   <script>fetch('simulator-bundle.js',{method:'HEAD'}).then(function(r){if(r.ok){var s=document.createElement('script');s.type='module';s.src='simulator-bundle.js';document.body.appendChild(s);var fb=document.getElementById('root');}}).catch(function(){});</script>
   <script src="welcome-back.js"></script>
+  <script defer src="../col-ui.js"></script>
 </body>
 </html>

@@ -732,6 +732,116 @@ function initBottomBar() {
 }
 initBottomBar()
 
+// 7. Buy Me A Coffee Global Floating Action Badge
+function initBmcBadge() {
+  if (document.getElementById('bmc-floating-badge')) {return}
+
+  function injectStyles() {
+    if (document.getElementById('bmc-floating-styles')) {return}
+    const style = document.createElement('style')
+    style.id = 'bmc-floating-styles'
+    style.textContent = [
+      '.bmc-floating-badge {',
+      '  position: fixed;',
+      '  bottom: 24px;',
+      '  right: 24px;',
+      '  z-index: 99999;',
+      '  display: flex;',
+      '  align-items: center;',
+      '  justify-content: center;',
+      '  border-radius: 12px;',
+      '  filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.35));',
+      '  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease;',
+      '  line-height: 0;',
+      '  text-decoration: none;',
+      '}',
+      '.bmc-floating-badge:hover {',
+      '  transform: translateY(-2px) scale(1.02);',
+      '  filter: drop-shadow(0 8px 20px rgba(95, 127, 255, 0.45));',
+      '}',
+      '.bmc-floating-badge:active {',
+      '  transform: translateY(0) scale(0.98);',
+      '}',
+      'body.nav-lock .bmc-floating-badge {',
+      '  opacity: 0 !important;',
+      '  pointer-events: none !important;',
+      '  transform: translateY(20px) !important;',
+      '}',
+      '.bmc-floating-badge a {',
+      '  display: inline-block;',
+      '  line-height: 0;',
+      '  border-radius: 10px;',
+      '}',
+      '.bmc-floating-badge img {',
+      '  height: 42px;',
+      '  width: auto;',
+      '  border-radius: 8px;',
+      '  display: block;',
+      '}',
+      '@media (max-width: 900px) {',
+      '  .bmc-floating-badge {',
+      '    bottom: calc(76px + env(safe-area-inset-bottom, 0px));',
+      '    right: 14px;',
+      '    filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.4));',
+      '  }',
+      '  .bmc-floating-badge img {',
+      '    height: 36px;',
+      '  }',
+      '}',
+      '@media (max-width: 480px) {',
+      '  .bmc-floating-badge {',
+      '    bottom: calc(72px + env(safe-area-inset-bottom, 0px));',
+      '    right: 10px;',
+      '  }',
+      '  .bmc-floating-badge img {',
+      '    height: 32px;',
+      '  }',
+      '}',
+      '@media (prefers-reduced-motion: reduce) {',
+      '  .bmc-floating-badge,',
+      '  .bmc-floating-badge:hover,',
+      '  .bmc-floating-badge:active {',
+      '    transition: none;',
+      '    transform: none;',
+      '  }',
+      '}',
+      '@media print {',
+      '  .bmc-floating-badge {',
+      '    display: none !important;',
+      '  }',
+      '}'
+    ].join('\n')
+    if (document.head) {
+      document.head.appendChild(style)
+    } else {
+      document.addEventListener('DOMContentLoaded', function () {
+        if (document.head) {document.head.appendChild(style)}
+      })
+    }
+  }
+
+  function createBadge() {
+    if (document.getElementById('bmc-floating-badge')) {return}
+    if (!document.body) {return}
+    injectStyles()
+
+    const badge = document.createElement('aside')
+    badge.id = 'bmc-floating-badge'
+    badge.className = 'bmc-floating-badge'
+    badge.setAttribute('aria-label', 'Support Creator')
+    badge.innerHTML = '<a href="https://www.buymeacoffee.com/NeelAniGamer" target="_blank" rel="noopener noreferrer" title="Buy Me A Coffee" aria-label="Buy Me A Coffee"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=NeelAniGamer&button_colour=5F7FFF&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00" alt="Buy Me A Coffee" width="180" height="40" loading="lazy" /></a>'
+
+    document.body.appendChild(badge)
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', createBadge)
+  } else {
+    createBadge()
+  }
+}
+initBmcBadge()
+
 // Global theme helpers for all pages
 window.safeThemeGet = function () {
   try {
