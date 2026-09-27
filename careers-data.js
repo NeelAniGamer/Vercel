@@ -1485,7 +1485,7 @@ window.CAREERS_ALL = [
   {
     "id": "aerospace-space",
     "cat": "space",
-    "catName": "Aviation, Defense & Space",
+    "catName": "Aviation & Aerospace",
     "icon": "🚀",
     "title": "Aerospace & Astronautical Engineering",
     "tagline": "Propel humanity beyond Earth’s atmosphere to the stars",
@@ -1722,7 +1722,7 @@ window.CAREERS_ALL = [
   {
     "id": "renewable-cleantech",
     "cat": "eco",
-    "catName": "Sustainability, Agri & Energy",
+    "catName": "Sustainability & Energy",
     "icon": "☀️",
     "title": "Renewable Energy & CleanTech Engineering",
     "tagline": "Engineer the zero-carbon energy transition for planet Earth",
@@ -1959,7 +1959,7 @@ window.CAREERS_ALL = [
   {
     "id": "astrophysics-space",
     "cat": "space",
-    "catName": "Science & DeepTech",
+    "catName": "Aviation & Aerospace",
     "icon": "🔭",
     "title": "Astrophysics & Space Science",
     "tagline": "Decode the origins, evolution, and mysteries of the cosmos",
@@ -2075,7 +2075,7 @@ window.CAREERS_ALL = [
   {
     "id": "quant-finance",
     "cat": "biz",
-    "catName": "Business, Finance & Law",
+    "catName": "Business & Finance",
     "icon": "📈",
     "title": "Quantitative Finance & Algorithmic Trading",
     "tagline": "Engineer mathematical trading models and arbitrage global financial markets",
@@ -2192,7 +2192,7 @@ window.CAREERS_ALL = [
   {
     "id": "corporate-law",
     "cat": "law",
-    "catName": "Business, Finance & Law",
+    "catName": "Law & Public Safety",
     "icon": "⚖️",
     "title": "Corporate, Tech & Cyber Law",
     "tagline": "Navigate complex multi-billion dollar mergers, IP disputes, and tech governance",
@@ -2310,7 +2310,7 @@ window.CAREERS_ALL = [
   {
     "id": "product-management",
     "cat": "biz",
-    "catName": "Business, Finance & Law",
+    "catName": "Business & Finance",
     "icon": "🎯",
     "title": "Product Management & Tech Strategy",
     "tagline": "Define the vision, strategy, and roadmap for world-changing products",
@@ -2432,7 +2432,7 @@ window.CAREERS_ALL = [
   {
     "id": "ui-ux-design",
     "cat": "creative",
-    "catName": "Creative, Design & Media",
+    "catName": "Creative Arts & Design",
     "icon": "🎨",
     "title": "UI/UX & Product Design",
     "tagline": "Craft delightful, intuitive digital experiences for millions of users",
@@ -2551,7 +2551,7 @@ window.CAREERS_ALL = [
   {
     "id": "architecture-spatial",
     "cat": "creative",
-    "catName": "Creative, Design & Media",
+    "catName": "Creative Arts & Design",
     "icon": "🏛️",
     "title": "Architecture & Sustainable Urban Planning",
     "tagline": "Sculpt skylines and design sustainable smart cities for the future",
@@ -2668,7 +2668,7 @@ window.CAREERS_ALL = [
   {
     "id": "investment-banking",
     "cat": "biz",
-    "catName": "Business, Finance & Law",
+    "catName": "Business & Finance",
     "icon": "💼",
     "title": "Investment Banking & Private Equity",
     "tagline": "Orchestrate multi-billion dollar capital markets, IPOs, and acquisitions",
@@ -2784,7 +2784,7 @@ window.CAREERS_ALL = [
   {
     "id": "civil-services-diplomacy",
     "cat": "law",
-    "catName": "Business, Finance & Law",
+    "catName": "Law & Public Safety",
     "icon": "🏛️",
     "title": "Civil Services, Diplomacy & Public Policy",
     "tagline": "Lead sovereign governance, public administration, and foreign diplomacy",
@@ -4999,7 +4999,7 @@ window.CAREERS_ALL = [
   {
     "id": "pure-mathematics-cryptography",
     "cat": "space",
-    "catName": "Science & Space",
+    "catName": "Aviation & Aerospace",
     "icon": "🔢",
     "title": "Pure & Applied Mathematics, Cryptography & Combinatorics",
     "tagline": "Uncover the fundamental laws of mathematical reality and cryptographic security",
@@ -5122,7 +5122,7 @@ window.CAREERS_ALL = [
   {
     "id": "marine-biology-oceanography",
     "cat": "space",
-    "catName": "Science & Space",
+    "catName": "Aviation & Aerospace",
     "icon": "🌊",
     "title": "Oceanography, Marine Biology & Deep-Sea Exploration",
     "tagline": "Explore Earth's final frontier: the mysteries, ecosystems, and depths of our oceans",
@@ -5243,7 +5243,7 @@ window.CAREERS_ALL = [
   {
     "id": "climate-meteorology-earth",
     "cat": "space",
-    "catName": "Science & Space",
+    "catName": "Aviation & Aerospace",
     "icon": "🌦️",
     "title": "Meteorology, Atmospheric Physics & Planetary Climate Modeling",
     "tagline": "Forecast severe weather and simulate the Earth's future climate systems",
@@ -5366,7 +5366,7 @@ window.CAREERS_ALL = [
   {
     "id": "criminal-litigation-judiciary",
     "cat": "law",
-    "catName": "Law & Governance",
+    "catName": "Law & Public Safety",
     "icon": "⚖️",
     "title": "Criminal Litigation, Constitutional Advocacy & Judiciary",
     "tagline": "Champion justice, defend fundamental constitutional rights, and uphold the rule of law",
@@ -5486,7 +5486,7 @@ window.CAREERS_ALL = [
   {
     "id": "international-diplomacy-un",
     "cat": "law",
-    "catName": "Law & Governance",
+    "catName": "Law & Public Safety",
     "icon": "🕊️",
     "title": "International Relations, Foreign Diplomacy & United Nations",
     "tagline": "Negotiate international treaties, manage peace diplomacy, and shape global affairs",
@@ -5610,7 +5610,7 @@ window.CAREERS_ALL = [
   {
     "id": "public-policy-thinktank",
     "cat": "law",
-    "catName": "Law & Governance",
+    "catName": "Law & Public Safety",
     "icon": "📜",
     "title": "Public Policy, Legislative Drafting & Economic Governance",
     "tagline": "Architect national laws, economic policies, and governance systems",
@@ -5736,7 +5736,7 @@ window.CAREERS_ALL = [
   {
     "id": "filmmaking-cinematography",
     "cat": "creative",
-    "catName": "Creative & Design",
+    "catName": "Creative Arts & Design",
     "icon": "🎬",
     "title": "Filmmaking, Directing, Cinematography & Screenwriting",
     "tagline": "Direct visual cinematic epics, author timeless stories, and move global audiences",
@@ -5860,7 +5860,7 @@ window.CAREERS_ALL = [
   {
     "id": "animation-vfx-cgi",
     "cat": "creative",
-    "catName": "Creative & Design",
+    "catName": "Creative Arts & Design",
     "icon": "✨",
     "title": "3D Animation, Visual Effects (VFX) & Virtual Production",
     "tagline": "Build hyper-realistic CGI creatures, explosions, and digital worlds for Hollywood and gaming",
@@ -6109,7 +6109,7 @@ window.CAREERS_ALL = [
   {
     "id": "academic-professorship-research",
     "cat": "space",
-    "catName": "Science & Space",
+    "catName": "Aviation & Aerospace",
     "icon": "🎓",
     "title": "University Professorship, Tenured Research & Higher Education",
     "tagline": "Expand the boundaries of human knowledge and mentor future generations",
@@ -6599,7 +6599,7 @@ window.CAREERS_ALL = [
   {
     "id": "space-traffic-orbital",
     "cat": "space",
-    "catName": "Science & Space",
+    "catName": "Aviation & Aerospace",
     "icon": "🛰️",
     "title": "Space Traffic Management, Orbital Mechanics & Satellite Safety",
     "tagline": "Protect low Earth orbit from catastrophic collisions and coordinate the orbital highway",
@@ -6844,7 +6844,7 @@ window.CAREERS_ALL = [
   {
     "id": "acoustical-architecture-physics",
     "cat": "creative",
-    "catName": "Creative & Design",
+    "catName": "Creative Arts & Design",
     "icon": "🔊",
     "title": "Architectural Acoustics, Audio Physics & Noise Vibration Control",
     "tagline": "Sculpt the physics of sound for concert halls, opera houses, and silent environments",
@@ -7091,7 +7091,7 @@ window.CAREERS_ALL = [
   {
     "id": "maritime-admiralty-law",
     "cat": "law",
-    "catName": "Law & Governance",
+    "catName": "Law & Public Safety",
     "icon": "⚓",
     "title": "Maritime Admiralty Law, High-Seas Salvage & Shipping Litigation",
     "tagline": "Litigate international ship collisions, marine cargo disputes, and high-seas salvage rights",
@@ -7213,7 +7213,7 @@ window.CAREERS_ALL = [
   {
     "id": "art-conservation-forensics",
     "cat": "creative",
-    "catName": "Creative & Design",
+    "catName": "Creative Arts & Design",
     "icon": "🖼️",
     "title": "Fine Art Conservation, Provenance Investigation & Heritage Science",
     "tagline": "Preserve priceless cultural masterpieces and investigate historical art provenance",
@@ -7464,7 +7464,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $60K / ₹6-11 LPA · Mid: $84K / ₹16-30 LPA · Lead: $159K+ / ₹46 LPA+",
     "growth": "5% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Accountants and auditors prepare and examine financial records, identify potential areas of opportunity and risk, and provide solutions for businesses and individuals. They ensure that financial records are accurate, that financial and data risks are evaluated, and that taxes are paid properly. They also assess financial operations and work to help ensure that organizations run efficiently.",
     "url": "https://www.bls.gov/ooh/business-and-financial/accountants-and-auditors.htm",
@@ -7580,7 +7580,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "1,595,200",
+    "openings": "115,300",
     "medianPay": 83680,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -7591,12 +7591,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "13-2011",
+      "baseYear": "2025",
+      "medianPay": 83680,
+      "medianPayHourly": 40.23,
+      "payP10": 56020,
+      "payP90": 144090,
+      "numberOfJobs": 1595200,
+      "growthPct": 5,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 79400,
+      "annualOpenings": 115300,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most accountants and auditors work full time. Overtime hours are typical at certain periods of the year, such as for quarterly audits or during tax season."
+    }
   },
   {
     "id": "ooh-1-actors",
     "cat": "creative",
-    "catName": "Sports & Entertainment",
+    "catName": "Creative Arts & Design",
     "icon": "🎨",
     "title": "Actors",
     "tagline": "Express ideas and portray characters in theater, film, television, and other performing arts media.",
@@ -7604,7 +7623,7 @@ window.CAREERS_ALL = [
     "stream": "Arts & Humanities",
     "salary": "Entry: $55K / ₹6-12 LPA · Mid: $105K / ₹16-30 LPA · Lead: $175K+ / ₹50 LPA+",
     "growth": "0% (Little or no change)",
-    "demand": "Steady",
+    "demand": "Declining",
     "aiImpact": "Options Are Cheap Now — Generative tools produce a hundred variations in minutes, so the value has moved to taste: knowing which one is right and why. Direction, briefs and client trust are the parts that hold up.",
     "overview": "Actors express ideas and portray characters in theater, film, television, and other performing arts media. They interpret a writer's script to entertain or inform an audience.",
     "url": "https://www.bls.gov/ooh/entertainment-and-sports/actors.htm",
@@ -7718,7 +7737,7 @@ window.CAREERS_ALL = [
       "Awwwards & Behance Portals",
       "Nielsen Norman Group UX Articles"
     ],
-    "growthYears": "",
+    "growthYears": "2025–2035",
     "openings": "67,500",
     "aiTag": "automation",
     "edu": "diploma",
@@ -7731,12 +7750,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "design",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "27-2011",
+      "baseYear": "2025",
+      "medianPay": null,
+      "medianPayHourly": null,
+      "payP10": null,
+      "payP90": 143,
+      "numberOfJobs": 67500,
+      "growthPct": 0,
+      "growthLabel": "Little or no change",
+      "growthYears": "2025–2035",
+      "employmentChange": 0,
+      "annualOpenings": null,
+      "entryEducation": "Some college, no degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Long-term on-the-job training",
+      "workEnvironment": "Actors work in various settings, including production studios, theaters, and theme parks, or on location. Work assignments are usually short, ranging from 1 day to a few months. Part-time work is common, and work schedules may vary."
+    }
   },
   {
     "id": "ooh-2-actuaries",
     "cat": "tech",
-    "catName": "Math & Statistics",
+    "catName": "Technology & AI",
     "icon": "💻",
     "title": "Actuaries",
     "tagline": "Use mathematics, statistics, and financial theory to analyze the economic costs of risk and uncertainty.",
@@ -7744,7 +7782,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $94K / ₹10-15 LPA · Mid: $130K / ₹23-40 LPA · Lead: $247K+ / ₹63 LPA+",
     "growth": "9% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Tools Write More Of The Code — Copilots and agents draft, test and refactor code, which raises what a developer is expected to ship. Designing the system, reviewing what the machine produced, and owning failures still sit with a person.",
     "overview": "Actuaries analyze the financial costs of risk and uncertainty. They use mathematics, statistics, and financial theory to assess the risk of potential events, and they help businesses and clients develop policies that minimize the cost of that risk. Actuaries' work is essential to the insurance industry.",
     "url": "https://www.bls.gov/ooh/math/actuaries.htm",
@@ -7851,7 +7889,7 @@ window.CAREERS_ALL = [
       "O’Reilly Learning Platform"
     ],
     "growthYears": "2025–2035",
-    "openings": "31,200",
+    "openings": "1,500",
     "medianPay": 130000,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -7866,12 +7904,31 @@ window.CAREERS_ALL = [
       "computing",
       "science",
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "15-2011",
+      "baseYear": "2025",
+      "medianPay": 130000,
+      "medianPayHourly": 62.5,
+      "payP10": 78570,
+      "payP90": 215100,
+      "numberOfJobs": 31200,
+      "growthPct": 9,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 2900,
+      "annualOpenings": 1500,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Long-term on-the-job training",
+      "workEnvironment": "Most actuaries work for insurance companies. Although most work full time in an office setting, some actuaries who work as consultants travel to meet with clients."
+    }
   },
   {
     "id": "ooh-3-administrative-services-and-facilities-managers",
     "cat": "biz",
-    "catName": "Management",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Administrative Services and Facilities Managers",
     "tagline": "Plan, direct, and coordinate activities that help an organization run efficiently.",
@@ -7879,7 +7936,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $80K / ₹8-15 LPA · Mid: $111K / ₹21-40 LPA · Lead: $210K+ / ₹60 LPA+",
     "growth": "5% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Administrative services and facilities managers plan, direct, and coordinate activities that help an organization run efficiently.",
     "url": "https://www.bls.gov/ooh/management/administrative-services-managers.htm",
@@ -7989,7 +8046,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "444,800",
+    "openings": "36,100",
     "medianPay": 110500,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -7999,12 +8056,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "11-3010",
+      "baseYear": "2025",
+      "medianPay": 110500,
+      "medianPayHourly": 53.13,
+      "payP10": 67100,
+      "payP90": 207720,
+      "numberOfJobs": 444800,
+      "growthPct": 5,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 22000,
+      "annualOpenings": 36100,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "Less than 5 years",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most administrative services and facilities managers work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-4-adult-basic-and-secondary-education-and-esl-teachers",
     "cat": "edu",
-    "catName": "Education & Library",
+    "catName": "Education & Academia",
     "icon": "🎓",
     "title": "Adult Basic and Secondary Education and Esl Teachers",
     "tagline": "Basic and secondary education and ESL (English as a Second Language) teachers instruct adults in fundamental skills, such as reading and speaking English.",
@@ -8136,12 +8212,31 @@ window.CAREERS_ALL = [
       "education",
       "design",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "25-3011",
+      "baseYear": "2025",
+      "medianPay": 61540,
+      "medianPayHourly": 29.59,
+      "payP10": 41810,
+      "payP90": 98030,
+      "numberOfJobs": 41100,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Adult basic and secondary education and ESL teachers are often employed by community colleges, community-based organizations, and public schools. Part-time work is common."
+    }
   },
   {
     "id": "ooh-5-advertising-promotions-and-marketing-managers",
     "cat": "biz",
-    "catName": "Management",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Advertising, Promotions, and Marketing Managers",
     "tagline": "Plan programs to generate interest in products or services.",
@@ -8149,7 +8244,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $119K / ₹12-22 LPA · Mid: $166K / ₹32-60 LPA · Lead: $315K+ / ₹90 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Advertising, promotions, and marketing managers plan programs to generate interest in products or services. They work with art directors , advertising sales agents , financial staff, and others to develop strategies and materials.",
     "url": "https://www.bls.gov/ooh/management/advertising-promotions-and-marketing-managers.htm",
@@ -8263,7 +8358,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "454,800",
+    "openings": "36,300",
     "medianPay": 165780,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -8275,12 +8370,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "11-2011",
+      "baseYear": "2025",
+      "medianPay": 165780,
+      "medianPayHourly": 79.7,
+      "payP10": 63300,
+      "payP90": 286240,
+      "numberOfJobs": 454800,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 27900,
+      "annualOpenings": 36300,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": null,
+      "onTheJobTraining": "None",
+      "workEnvironment": "Advertising, promotions, and marketing managers typically work in an office setting. They may travel to meet with clients or media representatives. Most of these managers work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-6-advertising-sales-agents",
     "cat": "biz",
-    "catName": "Sales",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Advertising Sales Agents",
     "tagline": "Sell promotional space to businesses and individuals.",
@@ -8410,12 +8524,31 @@ window.CAREERS_ALL = [
       "commerce",
       "management",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "41-3011",
+      "baseYear": "2025",
+      "medianPay": 64820,
+      "medianPayHourly": 31.16,
+      "payP10": 35240,
+      "payP90": 146010,
+      "numberOfJobs": 99300,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Advertising sales agents work under pressure to meet sales quotas. They may travel to visit current and prospective clients. Most work full time."
+    }
   },
   {
     "id": "ooh-7-aerospace-engineering-and-operations-technologists-and-technicians",
     "cat": "eng",
-    "catName": "Engineering",
+    "catName": "Engineering & Robotics",
     "icon": "⚙️",
     "title": "Aerospace Engineering and Operations Technologists and Technicians",
     "tagline": "Run and maintain equipment used to develop, test, produce, and sustain aircraft and spacecraft.",
@@ -8423,7 +8556,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $60K / ₹6-10 LPA · Mid: $83K / ₹14-24 LPA · Lead: $157K+ / ₹38 LPA+",
     "growth": "12% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Software Explores The Options — Generative design and simulation run thousands of variants quickly. Choosing one, checking it against physics, safety rules and cost, and signing it off stays human.",
     "overview": "Aerospace engineering and operations technologists and technicians install, run, and maintain equipment used to develop, test, produce, and sustain aircraft and spacecraft. Their work is critical to ensuring the safety and precision of key parts of these vehicles and systems.",
     "url": "https://www.bls.gov/ooh/architecture-and-engineering/aerospace-engineering-and-operations-technicians.htm",
@@ -8527,7 +8660,7 @@ window.CAREERS_ALL = [
       "National Society of Professional Engineers (NSPE)"
     ],
     "growthYears": "2025–2035",
-    "openings": "11,600",
+    "openings": "1,100",
     "medianPay": 82890,
     "aiTag": "automation",
     "edu": "diploma",
@@ -8538,7 +8671,26 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "17-3021",
+      "baseYear": "2025",
+      "medianPay": 82890,
+      "medianPayHourly": 39.85,
+      "payP10": 59050,
+      "payP90": 125160,
+      "numberOfJobs": 11600,
+      "growthPct": 12,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 1400,
+      "annualOpenings": 1100,
+      "entryEducation": "Associate's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Aerospace engineering and operations technologists and technicians usually work in manufacturing plants, laboratories, and offices. Most work full time."
+    }
   },
   {
     "id": "ooh-8-aerospace-engineers",
@@ -8551,7 +8703,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $97K / ₹9-16 LPA · Mid: $135K / ₹22-39 LPA · Lead: $256K+ / ₹62 LPA+",
     "growth": "8% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Computational Design & Flight Physics — Computational fluid dynamics and finite element tools simulate airflow and stress, but validating structural margins and flight safety certifications remains human work.",
     "overview": "Aerospace engineers design, develop, and test aircraft, spacecraft, satellites, and missiles. In addition, they create and test prototypes to make sure that they function according to design.",
     "url": "https://www.bls.gov/ooh/architecture-and-engineering/aerospace-engineers.htm",
@@ -8663,7 +8815,7 @@ window.CAREERS_ALL = [
       "National Society of Professional Engineers (NSPE)"
     ],
     "growthYears": "2025–2035",
-    "openings": "68,700",
+    "openings": "3,800",
     "medianPay": 134960,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -8676,12 +8828,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "science"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "17-2011",
+      "baseYear": "2025",
+      "medianPay": 134960,
+      "medianPayHourly": 64.89,
+      "payP10": 86700,
+      "payP90": 205890,
+      "numberOfJobs": 68700,
+      "growthPct": 8,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 5700,
+      "annualOpenings": 3800,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Aerospace engineers typically work in an office setting, often using a computer. Most work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-9-agricultural-and-food-science-technicians",
     "cat": "space",
-    "catName": "Science & Research",
+    "catName": "Aviation & Aerospace",
     "icon": "🔭",
     "title": "Agricultural and Food Science Technicians",
     "tagline": "Help scientists with testing and research related to plants, animals, fibers, and food and beverage products.",
@@ -8689,7 +8860,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $37K / ₹4-6 LPA · Mid: $51K / ₹9-15 LPA · Lead: $97K+ / ₹24 LPA+",
     "growth": "5% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Models Read The Data First — Machine learning sifts through survey data, images and signals faster than any team. Framing the question, checking the result and deciding what it means is where people stay involved.",
     "overview": "Agricultural and food science technicians help agricultural and food scientists with testing and research related to plants, animals, fibers, and food and beverage products.",
     "url": "https://www.bls.gov/ooh/life-physical-and-social-science/agricultural-and-food-science-technicians.htm",
@@ -8801,7 +8972,7 @@ window.CAREERS_ALL = [
       "European Space Agency (ESA) Portals"
     ],
     "growthYears": "2025–2035",
-    "openings": "40,400",
+    "openings": "5,900",
     "medianPay": 51160,
     "aiTag": "automation",
     "edu": "diploma",
@@ -8815,12 +8986,31 @@ window.CAREERS_ALL = [
       "engineering",
       "science",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "19-4010",
+      "baseYear": "2025",
+      "medianPay": 51160,
+      "medianPayHourly": 24.6,
+      "payP10": 35980,
+      "payP90": 76480,
+      "numberOfJobs": 40400,
+      "growthPct": 5,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 2100,
+      "annualOpenings": 5900,
+      "entryEducation": "Associate's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Agricultural and food science technicians work in laboratories, processing plants, farms and ranches, greenhouses, and offices. Most agricultural and food science technicians work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-10-agricultural-and-food-scientists",
     "cat": "space",
-    "catName": "Science & Research",
+    "catName": "Aviation & Aerospace",
     "icon": "🔭",
     "title": "Agricultural and Food Scientists",
     "tagline": "Research ways to improve the efficiency, quality, and safety of agricultural and food production establishments.",
@@ -8828,7 +9018,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $59K / ₹6-10 LPA · Mid: $82K / ₹14-24 LPA · Lead: $156K+ / ₹38 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Models Read The Data First — Machine learning sifts through survey data, images and signals faster than any team. Framing the question, checking the result and deciding what it means is where people stay involved.",
     "overview": "Agricultural and food scientists research ways to improve the efficiency, quality, and safety of agricultural and food production establishments.",
     "url": "https://www.bls.gov/ooh/life-physical-and-social-science/agricultural-and-food-scientists.htm",
@@ -8954,7 +9144,7 @@ window.CAREERS_ALL = [
       "European Space Agency (ESA) Portals"
     ],
     "growthYears": "2025–2035",
-    "openings": "37,400",
+    "openings": "2,700",
     "medianPay": 81970,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -8968,12 +9158,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "science"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "19-1010",
+      "baseYear": "2025",
+      "medianPay": 81970,
+      "medianPayHourly": 39.41,
+      "payP10": 48730,
+      "payP90": 142300,
+      "numberOfJobs": 37400,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 2400,
+      "annualOpenings": 2700,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Agricultural and food scientists work in laboratories, in offices, and in the field. Most agricultural and food scientists work full time."
+    }
   },
   {
     "id": "ooh-11-agricultural-engineers",
     "cat": "eng",
-    "catName": "Engineering",
+    "catName": "Engineering & Robotics",
     "icon": "⚙️",
     "title": "Agricultural Engineers",
     "tagline": "Solve problems concerning power supplies, machine efficiency, the use of structures and facilities, pollution and environmental issues, and the storage and processing of agricultural products.",
@@ -8981,7 +9190,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $71K / ₹7-12 LPA · Mid: $99K / ₹16-29 LPA · Lead: $187K+ / ₹45 LPA+",
     "growth": "7% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Software Explores The Options — Generative design and simulation run thousands of variants quickly. Choosing one, checking it against physics, safety rules and cost, and signing it off stays human.",
     "overview": "Agricultural engineers attempt to solve agricultural problems concerning power supplies, the efficiency of machinery, the use of structures and facilities, pollution and environmental issues, and the storage and processing of agricultural products.",
     "url": "https://www.bls.gov/ooh/architecture-and-engineering/agricultural-engineers.htm",
@@ -9087,7 +9296,7 @@ window.CAREERS_ALL = [
       "National Society of Professional Engineers (NSPE)"
     ],
     "growthYears": "2025–2035",
-    "openings": "1,500",
+    "openings": "100",
     "medianPay": 98590,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -9101,12 +9310,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "science"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "17-2021",
+      "baseYear": "2025",
+      "medianPay": 98590,
+      "medianPayHourly": 47.4,
+      "payP10": 68060,
+      "payP90": 166460,
+      "numberOfJobs": 1500,
+      "growthPct": 7,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 100,
+      "annualOpenings": 100,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Agricultural engineers work mostly in offices, but may spend time traveling to agricultural settings. Agricultural engineers typically work full time."
+    }
   },
   {
     "id": "ooh-12-agricultural-workers",
     "cat": "eco",
-    "catName": "Farming & Forestry",
+    "catName": "Sustainability & Energy",
     "icon": "🌿",
     "title": "Agricultural Workers",
     "tagline": "Maintain crops and tend livestock.",
@@ -9298,7 +9526,26 @@ window.CAREERS_ALL = [
       "science",
       "commerce",
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "45-2021",
+      "baseYear": "2025",
+      "medianPay": 35890,
+      "medianPayHourly": 17.25,
+      "payP10": 31270,
+      "payP90": 47880,
+      "numberOfJobs": 831900,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": null,
+      "relatedExperience": "None",
+      "onTheJobTraining": null,
+      "workEnvironment": "Agricultural workers usually do their tasks outdoors in all kinds of weather. Most work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-13-aircraft-and-avionics-equipment-mechanics-and-technicians",
@@ -9311,7 +9558,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $58K / ₹5-8 LPA · Mid: $80K / ₹13-22 LPA · Lead: $152K+ / ₹35 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "FAA-Certified Airworthiness Inspection — Diagnostic sensors flag error codes, but crawling inside wing spars, borescoping turbine blades, and signing off legal logbooks requires licensed A&P mechanics.",
     "overview": "Aircraft and avionics equipment mechanics and technicians install, test, adjust, and repair equipment and systems in aircraft.",
     "url": "https://www.bls.gov/ooh/installation-maintenance-and-repair/aircraft-and-avionics-equipment-mechanics-and-technicians.htm",
@@ -9433,7 +9680,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "159,800",
+    "openings": "13,100",
     "medianPay": 80180,
     "aiTag": "protected",
     "edu": "diploma",
@@ -9445,7 +9692,26 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "49-2091",
+      "baseYear": "2025",
+      "medianPay": 80180,
+      "medianPayHourly": 38.55,
+      "payP10": 48780,
+      "payP90": 128890,
+      "numberOfJobs": 159800,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 9400,
+      "annualOpenings": 13100,
+      "entryEducation": "Postsecondary nondegree award",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Aircraft and avionics equipment mechanics and technicians work in hangars, in repair stations, or on airfields. The environment may be loud because of aircraft engines and equipment."
+    }
   },
   {
     "id": "ooh-14-airline-and-commercial-pilots",
@@ -9458,7 +9724,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $151K / ₹17-25 LPA · Mid: $210K / ₹40-74 LPA · Lead: $399K+ / ₹96 LPA+",
     "growth": "7% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Legally Mandated Dual Human Flight Deck — FAA and international aviation laws require two certified pilots in every commercial cockpit. While autopilot handles routine high-altitude cruise, pilots manage severe weather diversions, system faults, rapid decompression, and emergency landings.",
     "overview": "Airline and commercial pilots fly and navigate airplanes, helicopters, and other aircraft.",
     "url": "https://www.bls.gov/ooh/transportation-and-material-moving/airline-and-commercial-pilots.htm",
@@ -9583,7 +9849,7 @@ window.CAREERS_ALL = [
       "Air Line Pilots Association (ALPA)"
     ],
     "growthYears": "2025–2035",
-    "openings": "154,900",
+    "openings": "16,400",
     "medianPay": 210020,
     "aiTag": "protected",
     "edu": "master",
@@ -9597,7 +9863,26 @@ window.CAREERS_ALL = [
       "science",
       "vocational",
       "any"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "53-2010",
+      "baseYear": "2025",
+      "medianPay": 210020,
+      "medianPayHourly": null,
+      "payP10": 106710,
+      "payP90": 463830,
+      "numberOfJobs": 154900,
+      "growthPct": 7,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 11300,
+      "annualOpenings": 16400,
+      "entryEducation": null,
+      "relatedExperience": null,
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Pilots usually have variable work schedules, with overnight layovers that are more common for airline pilots."
+    }
   },
   {
     "id": "ooh-15-air-traffic-controllers",
@@ -9729,12 +10014,31 @@ window.CAREERS_ALL = [
       "engineering",
       "computing",
       "any"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "53-2021",
+      "baseYear": "2025",
+      "medianPay": 148080,
+      "medianPayHourly": 71.19,
+      "payP10": 78420,
+      "payP90": 215610,
+      "numberOfJobs": 24000,
+      "growthPct": 2,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 400,
+      "annualOpenings": null,
+      "entryEducation": "Associate's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Long-term on-the-job training",
+      "workEnvironment": "Air traffic controllers work in control towers, approach control facilities, or en route centers. Their work can be stressful because maximum concentration is required at all times. Night, weekend, and rotating shifts are common."
+    }
   },
   {
     "id": "ooh-16-animal-care-and-service-workers",
     "cat": "health",
-    "catName": "Personal Care & Service",
+    "catName": "Healthcare & Medicine",
     "icon": "🐾",
     "title": "Animal Care and Service Workers",
     "tagline": "Attend to or train animals.",
@@ -9742,7 +10046,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $26K / ₹2-4 LPA · Mid: $36K / ₹5-8 LPA · Lead: $68K+ / ₹12 LPA+",
     "growth": "11% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Presence Is The Job — Comfort, trust and physical care are the reason the role exists. Tools can monitor and remind, but they cannot sit with someone or speak for the family.",
     "overview": "Animal care and service workers attend to or train animals. Working with pets and other nonfarm animals, these caretakers and trainers feed, groom, and exercise the animals or teach them to respond to human commands.",
     "url": "https://www.bls.gov/ooh/personal-care-and-service/animal-care-and-service-workers.htm",
@@ -9877,7 +10181,7 @@ window.CAREERS_ALL = [
       "The New Social Worker Magazine"
     ],
     "growthYears": "2025–2035",
-    "openings": "413,000",
+    "openings": "69,400",
     "medianPay": 35530,
     "aiTag": "people",
     "edu": "nodegree",
@@ -9893,12 +10197,31 @@ window.CAREERS_ALL = [
       "science",
       "arts",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "39-2000",
+      "baseYear": "2025",
+      "medianPay": 35530,
+      "medianPayHourly": 17.08,
+      "payP10": 27250,
+      "payP90": 50060,
+      "numberOfJobs": 413000,
+      "growthPct": 11,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 46100,
+      "annualOpenings": 69400,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": null,
+      "workEnvironment": "Animal care and service workers are employed in a variety of settings, including kennels, zoos, stables, animal shelters, pet stores, veterinary clinics, and aquariums. Some parts of the job may be physically or emotionally demanding, and workers risk injury when caring for animals."
+    }
   },
   {
     "id": "ooh-17-announcers-and-djs",
     "cat": "creative",
-    "catName": "Media & Communication",
+    "catName": "Creative Arts & Design",
     "icon": "🎨",
     "title": "Announcers and Djs",
     "tagline": "Present news and sports or may interview guests on media such as radio and television.",
@@ -10044,12 +10367,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "27-2091",
+      "baseYear": "2025",
+      "medianPay": null,
+      "medianPayHourly": null,
+      "payP10": null,
+      "payP90": 66,
+      "numberOfJobs": 38700,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": null,
+      "relatedExperience": "None",
+      "onTheJobTraining": null,
+      "workEnvironment": "Many announcers and DJs work in radio and television studios or are self-employed. Some work part time, and schedules might include early mornings, nights, weekends, and holidays."
+    }
   },
   {
     "id": "ooh-18-anthropologists-and-archeologists",
     "cat": "edu",
-    "catName": "Anthropology & Archeology",
+    "catName": "Education & Academia",
     "icon": "🏺",
     "title": "Anthropologists and Archeologists",
     "tagline": "Investigate the origins, cultural development, and physical remains of human civilization.",
@@ -10057,7 +10399,7 @@ window.CAREERS_ALL = [
     "stream": "Arts & Humanities",
     "salary": "Entry: $51K / ₹5-9 LPA · Mid: $71K / ₹12-21 LPA · Lead: $134K+ / ₹33 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Archaeological Excavation & Cultural Immersion — Satellite imaging identifies buried ruins, but delicate trench trowel excavation, artifact conservation, and field ethnographic interviews require human researchers.",
     "overview": "Anthropologists and archeologists study the origin, development, and behavior of humans. They study the culture and characteristics of living or past civilizations throughout the world.",
     "url": "https://www.bls.gov/ooh/life-physical-and-social-science/anthropologists-and-archeologists.htm",
@@ -10167,7 +10509,7 @@ window.CAREERS_ALL = [
       "European Space Agency (ESA) Portals"
     ],
     "growthYears": "2025–2035",
-    "openings": "10,200",
+    "openings": "800",
     "medianPay": 70770,
     "aiTag": "protected",
     "edu": "master",
@@ -10179,12 +10521,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "arts",
       "science"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "19-3091",
+      "baseYear": "2025",
+      "medianPay": 70770,
+      "medianPayHourly": 34.02,
+      "payP10": 49050,
+      "payP90": 108060,
+      "numberOfJobs": 10200,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 600,
+      "annualOpenings": 800,
+      "entryEducation": "Master's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Anthropologists and archeologists typically work in offices, in laboratories, or in the field. Fieldwork may require travel for extended periods."
+    }
   },
   {
     "id": "ooh-19-arbitrators-mediators-and-conciliators",
     "cat": "law",
-    "catName": "Legal",
+    "catName": "Law & Public Safety",
     "icon": "⚖️",
     "title": "Arbitrators, Mediators, and Conciliators",
     "tagline": "Facilitate negotiation through dialogue to help resolve conflicts outside of the court system.",
@@ -10192,7 +10553,7 @@ window.CAREERS_ALL = [
     "stream": "Arts & Humanities",
     "salary": "Entry: $54K / ₹4-8 LPA · Mid: $76K / ₹12-24 LPA · Lead: $144K+ / ₹40 LPA+",
     "growth": "5% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Search And Summary Are Automated — AI reads contracts and case history in seconds. Argument, strategy, ethics and the responsibility of advising a client stay with the lawyer.",
     "overview": "Arbitrators, mediators, and conciliators facilitate negotiation and conflict resolution through dialogue. They resolve conflicts outside of the court system by mutual consent of the parties involved.",
     "url": "https://www.bls.gov/ooh/legal/arbitrators-mediators-and-conciliators.htm",
@@ -10291,7 +10652,7 @@ window.CAREERS_ALL = [
       "Supreme Court Cases (SCC Online)"
     ],
     "growthYears": "2025–2035",
-    "openings": "10,500",
+    "openings": "300",
     "medianPay": 75530,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -10303,12 +10664,31 @@ window.CAREERS_ALL = [
       "arts",
       "law",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "23-1022",
+      "baseYear": "2025",
+      "medianPay": 75530,
+      "medianPayHourly": 36.31,
+      "payP10": 47220,
+      "payP90": 155440,
+      "numberOfJobs": 10500,
+      "growthPct": 5,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 500,
+      "annualOpenings": 300,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "Less than 5 years",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Many arbitrators, mediators, and conciliators work in the legal services industry and for state or local governments. Most work full time."
+    }
   },
   {
     "id": "ooh-20-architects",
     "cat": "eng",
-    "catName": "Engineering",
+    "catName": "Engineering & Robotics",
     "icon": "⚙️",
     "title": "Architects",
     "tagline": "Plan and design houses, factories, office buildings, and other structures.",
@@ -10316,7 +10696,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $71K / ₹7-12 LPA · Mid: $99K / ₹17-29 LPA · Lead: $189K+ / ₹46 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "Software Explores The Options — Generative design and simulation run thousands of variants quickly. Choosing one, checking it against physics, safety rules and cost, and signing it off stays human.",
     "overview": "Architects plan and design houses, factories, office buildings, and other structures.",
     "url": "https://www.bls.gov/ooh/architecture-and-engineering/architects.htm",
@@ -10418,7 +10798,7 @@ window.CAREERS_ALL = [
       "National Society of Professional Engineers (NSPE)"
     ],
     "growthYears": "2025–2035",
-    "openings": "124,600",
+    "openings": "6,900",
     "medianPay": 99280,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -10429,12 +10809,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "engineering"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "17-1011",
+      "baseYear": "2025",
+      "medianPay": 99280,
+      "medianPayHourly": 47.73,
+      "payP10": 62300,
+      "payP90": 161420,
+      "numberOfJobs": 124600,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 5300,
+      "annualOpenings": 6900,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Internship/residency",
+      "workEnvironment": "Architects spend much of their time in offices, where they develop plans, meet with clients, and consult with engineers and other architects. They also visit construction sites to prepare initial drawings and review the progress of projects to ensure that clients&rsquo; objectives are met."
+    }
   },
   {
     "id": "ooh-21-architectural-and-engineering-managers",
     "cat": "biz",
-    "catName": "Management",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Architectural and Engineering Managers",
     "tagline": "Plan, direct, and coordinate activities in the fields of architecture and engineering.",
@@ -10442,7 +10841,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $123K / ₹12-23 LPA · Mid: $171K / ₹33-62 LPA · Lead: $325K+ / ₹93 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Architectural and engineering managers plan, direct, and coordinate activities in the fields of architecture and engineering.",
     "url": "https://www.bls.gov/ooh/management/architectural-and-engineering-managers.htm",
@@ -10551,7 +10950,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "220,900",
+    "openings": "14,900",
     "medianPay": 171270,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -10565,12 +10964,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "11-9041",
+      "baseYear": "2025",
+      "medianPay": 171270,
+      "medianPayHourly": 82.34,
+      "payP10": 120810,
+      "payP90": 262760,
+      "numberOfJobs": 220900,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 12200,
+      "annualOpenings": 14900,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "5 years or more",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Architectural and engineering managers typically work in offices, although some work in other settings, such as research laboratories or industrial production plants. Most work full time, and some work more than 40 hours a week."
+    }
   },
   {
     "id": "ooh-22-archivists-curators-and-museum-workers",
     "cat": "edu",
-    "catName": "Education & Library",
+    "catName": "Education & Academia",
     "icon": "🎓",
     "title": "Archivists, Curators, and Museum Workers",
     "tagline": "Archivists and curators oversee collections of historic items or artwork.",
@@ -10578,7 +10996,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $43K / ₹4-6 LPA · Mid: $60K / ₹8-14 LPA · Lead: $115K+ / ₹22 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "Lesson Plans Are Easy To Generate — Outlines, worksheets and quizzes take seconds to produce. Motivation, reading a room and holding a class together are not things software does.",
     "overview": "Archivists appraise, process, catalog, and preserve permanent records and historically valuable documents. Curators oversee collections of artwork and historical items and may conduct public service activities for an institution. Museum technicians and conservators prepare and restore objects and documents in museum collections and exhibits.",
     "url": "https://www.bls.gov/ooh/education-training-and-library/curators-museum-technicians-and-conservators.htm",
@@ -10703,7 +11121,7 @@ window.CAREERS_ALL = [
       "Edutopia Learning Platform"
     ],
     "growthYears": "2025–2035",
-    "openings": "38,500",
+    "openings": "4,300",
     "medianPay": 60330,
     "aiTag": "people",
     "edu": "doctorate",
@@ -10717,12 +11135,31 @@ window.CAREERS_ALL = [
       "education",
       "design",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "25-4010",
+      "baseYear": "2025",
+      "medianPay": 60330,
+      "medianPayHourly": 29,
+      "payP10": 37030,
+      "payP90": 101400,
+      "numberOfJobs": 38500,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 1600,
+      "annualOpenings": 4300,
+      "entryEducation": null,
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Archivists, curators, museum technicians, and conservators work in museums, historical sites, governments, colleges and universities, corporations, and other institutions. Most work full time."
+    }
   },
   {
     "id": "ooh-23-art-directors",
     "cat": "creative",
-    "catName": "Arts & Design",
+    "catName": "Creative Arts & Design",
     "icon": "🎨",
     "title": "Art Directors",
     "tagline": "Are responsible for the visual style and images in magazines, newspapers, product packaging, and movie and television productions.",
@@ -10730,7 +11167,7 @@ window.CAREERS_ALL = [
     "stream": "Arts & Humanities",
     "salary": "Entry: $83K / ₹7-13 LPA · Mid: $115K / ₹18-33 LPA · Lead: $218K+ / ₹55 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "Options Are Cheap Now — Generative tools produce a hundred variations in minutes, so the value has moved to taste: knowing which one is right and why. Direction, briefs and client trust are the parts that hold up.",
     "overview": "Art directors are responsible for the visual style and images in magazines, newspapers, product packaging, and movie and television productions. They create the overall design and direct others who develop artwork or layouts.",
     "url": "https://www.bls.gov/ooh/arts-and-design/art-directors.htm",
@@ -10835,7 +11272,7 @@ window.CAREERS_ALL = [
       "Nielsen Norman Group UX Articles"
     ],
     "growthYears": "2025–2035",
-    "openings": "140,200",
+    "openings": "12,200",
     "medianPay": 114850,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -10844,12 +11281,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "27-1011",
+      "baseYear": "2025",
+      "medianPay": 114850,
+      "medianPayHourly": 55.22,
+      "payP10": 64900,
+      "payP90": 213050,
+      "numberOfJobs": 140200,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 5900,
+      "annualOpenings": 12200,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "5 years or more",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most art directors are self-employed. Others work for advertising and public relations firms, newspaper and magazine publishers, motion picture and video industries, and specialized design services firms."
+    }
   },
   {
     "id": "ooh-24-assemblers-and-fabricators",
     "cat": "trades",
-    "catName": "Production & Manufacturing",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Assemblers and Fabricators",
     "tagline": "Build finished products and the parts that go into them.",
@@ -11049,12 +11505,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "51-2011",
+      "baseYear": "2025",
+      "medianPay": 45450,
+      "medianPayHourly": 21.85,
+      "payP10": 34020,
+      "payP90": 67440,
+      "numberOfJobs": 1799500,
+      "growthPct": 1,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 16700,
+      "annualOpenings": null,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Most assemblers and fabricators work in manufacturing plants. Their duties may involve long periods of standing or sitting. Most work full time, including some evenings and weekends."
+    }
   },
   {
     "id": "ooh-25-athletes-and-sports-competitors",
     "cat": "creative",
-    "catName": "Sports & Entertainment",
+    "catName": "Creative Arts & Design",
     "icon": "🎨",
     "title": "Athletes and Sports Competitors",
     "tagline": "Participate in organized, officiated sporting events to entertain spectators.",
@@ -11062,7 +11537,7 @@ window.CAREERS_ALL = [
     "stream": "Arts & Humanities",
     "salary": "Entry: $48K / ₹4-8 LPA · Mid: $67K / ₹10-19 LPA · Lead: $127K+ / ₹32 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Options Are Cheap Now — Generative tools produce a hundred variations in minutes, so the value has moved to taste: knowing which one is right and why. Direction, briefs and client trust are the parts that hold up.",
     "overview": "Athletes and sports competitors participate in organized, officiated sporting events to entertain spectators.",
     "url": "https://www.bls.gov/ooh/entertainment-and-sports/athletes-and-sports-competitors.htm",
@@ -11205,7 +11680,7 @@ window.CAREERS_ALL = [
       "Nielsen Norman Group UX Articles"
     ],
     "growthYears": "2025–2035",
-    "openings": "22,900",
+    "openings": "2,200",
     "medianPay": 66710,
     "aiTag": "automation",
     "edu": "nodegree",
@@ -11218,12 +11693,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "design",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "27-2021",
+      "baseYear": "2025",
+      "medianPay": 66710,
+      "medianPayHourly": null,
+      "payP10": 26500,
+      "payP90": 742310,
+      "numberOfJobs": 22900,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 1300,
+      "annualOpenings": 2200,
+      "entryEducation": "No formal educational credential",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Long-term on-the-job training",
+      "workEnvironment": "Athletes and sports competitors may work irregular schedules, including evenings, weekends, and holidays. They typically work more than 40 hours per week for several months during their particular sports season. They frequently work outside, so they may be exposed to all weather conditions."
+    }
   },
   {
     "id": "ooh-26-athletic-trainers",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Athletic Trainers",
     "tagline": "Specialize in preventing, diagnosing, and treating muscle and bone injuries and illnesses.",
@@ -11231,7 +11725,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $45K / ₹4-6 LPA · Mid: $63K / ₹10-17 LPA · Lead: $119K+ / ₹28 LPA+",
     "growth": "13% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Diagnostics Are Assisted — Imaging, lab results and records are increasingly read by software first. Examination, procedures, consent and the conversation with the patient are not.",
     "overview": "Athletic trainers specialize in preventing, diagnosing, and treating muscle and bone injuries and illnesses.",
     "url": "https://www.bls.gov/ooh/healthcare/athletic-trainers.htm",
@@ -11333,7 +11827,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "35,200",
+    "openings": "2,400",
     "medianPay": 62520,
     "aiTag": "people",
     "edu": "master",
@@ -11346,12 +11840,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "health"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-9091",
+      "baseYear": "2025",
+      "medianPay": 62520,
+      "medianPayHourly": null,
+      "payP10": 48180,
+      "payP90": 88760,
+      "numberOfJobs": 35200,
+      "growthPct": 13,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 4400,
+      "annualOpenings": 2400,
+      "entryEducation": "Master's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Many athletic trainers work in educational settings, such as colleges, universities, elementary schools, and secondary schools. Others work in hospitals, fitness centers, or physicians&rsquo; offices, or for professional sports teams."
+    }
   },
   {
     "id": "ooh-27-atmospheric-scientists-including-meteorologists",
     "cat": "space",
-    "catName": "Science & Research",
+    "catName": "Aviation & Aerospace",
     "icon": "🔭",
     "title": "Atmospheric Scientists, Including Meteorologists",
     "tagline": "Scientists study, report on, and forecast the weather and climate.",
@@ -11473,7 +11986,7 @@ window.CAREERS_ALL = [
       "European Space Agency (ESA) Portals"
     ],
     "growthYears": "2025–2035",
-    "openings": "10,700",
+    "openings": "800",
     "medianPay": 99070,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -11485,12 +11998,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "science"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "19-2021",
+      "baseYear": "2025",
+      "medianPay": 99070,
+      "medianPayHourly": 47.63,
+      "payP10": 53060,
+      "payP90": 161890,
+      "numberOfJobs": 10700,
+      "growthPct": 3,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 300,
+      "annualOpenings": 800,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most atmospheric scientists work indoors in weather stations, offices, or laboratories. They may work outdoors to observe the weather. Most atmospheric scientists are full time and may work extended hours during weather emergencies."
+    }
   },
   {
     "id": "ooh-28-audiologists",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Audiologists",
     "tagline": "Diagnose, manage, and treat patients who have hearing, balance, or related problems.",
@@ -11498,7 +12030,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $69K / ₹6-10 LPA · Mid: $96K / ₹15-27 LPA · Lead: $182K+ / ₹43 LPA+",
     "growth": "11% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Diagnostics Are Assisted — Imaging, lab results and records are increasingly read by software first. Examination, procedures, consent and the conversation with the patient are not.",
     "overview": "Audiologists diagnose, manage, and treat patients who have hearing, balance, or related problems.",
     "url": "https://www.bls.gov/ooh/healthcare/audiologists.htm",
@@ -11606,7 +12138,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "14,200",
+    "openings": "600",
     "medianPay": 95780,
     "aiTag": "people",
     "edu": "doctorate",
@@ -11615,12 +12147,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "health"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-1181",
+      "baseYear": "2025",
+      "medianPay": 95780,
+      "medianPayHourly": 46.05,
+      "payP10": 64610,
+      "payP90": 133120,
+      "numberOfJobs": 14200,
+      "growthPct": 11,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 1600,
+      "annualOpenings": 600,
+      "entryEducation": "Doctoral or professional degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most audiologists work in healthcare facilities, such as physicians&rsquo; offices, audiology clinics, and hospitals. Some work in schools or for school districts and travel between facilities."
+    }
   },
   {
     "id": "ooh-29-automotive-body-and-glass-repairers",
     "cat": "trades",
-    "catName": "Installation & Repair",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Automotive Body and Glass Repairers",
     "tagline": "Restore, refinish, and replace vehicle bodies and frames, windshields, and window glass.",
@@ -11628,7 +12179,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $38K / ₹3-5 LPA · Mid: $53K / ₹8-14 LPA · Lead: $100K+ / ₹23 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "The Work Is Physical — Every job is a different room, a different fault, a different set of tools. Work in unstandardised physical spaces is the hardest thing for software to take over.",
     "overview": "Automotive body and glass repairers restore, refinish, and replace vehicle bodies and frames, windshields, and window glass.",
     "url": "https://www.bls.gov/ooh/installation-maintenance-and-repair/automotive-body-and-glass-repairers.htm",
@@ -11743,7 +12294,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "185,800",
+    "openings": "13,900",
     "medianPay": 52530,
     "aiTag": "protected",
     "edu": "nodegree",
@@ -11753,12 +12304,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "49-3021",
+      "baseYear": "2025",
+      "medianPay": 52530,
+      "medianPayHourly": 25.25,
+      "payP10": 36910,
+      "payP90": 87940,
+      "numberOfJobs": 185800,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 7400,
+      "annualOpenings": 13900,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": null,
+      "workEnvironment": "Automotive body repairers work indoors in body shops, which are often noisy. Shops are typically well ventilated, so that dust and paint fumes can be dispersed. Repairers sometimes work in awkward and cramped positions, and their work can be physically demanding. Automotive glass installers and repairers often travel to the customer&rsquo;s location to repair damaged windshields and window glass."
+    }
   },
   {
     "id": "ooh-30-automotive-service-technicians-and-mechanics",
     "cat": "trades",
-    "catName": "Installation & Repair",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Automotive Service Technicians and Mechanics",
     "tagline": "Inspect, maintain, and repair cars and light trucks.",
@@ -11766,7 +12336,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $36K / ₹3-5 LPA · Mid: $51K / ₹8-14 LPA · Lead: $96K+ / ₹22 LPA+",
     "growth": "5% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "The Work Is Physical — Every job is a different room, a different fault, a different set of tools. Work in unstandardised physical spaces is the hardest thing for software to take over.",
     "overview": "Automotive service technicians and mechanics, often called service technicians or service techs , inspect, maintain, and repair cars and light trucks.",
     "url": "https://www.bls.gov/ooh/installation-maintenance-and-repair/automotive-service-technicians-and-mechanics.htm",
@@ -11880,7 +12450,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "825,800",
+    "openings": "66,200",
     "medianPay": 50620,
     "aiTag": "protected",
     "edu": "diploma",
@@ -11892,12 +12462,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "49-3023",
+      "baseYear": "2025",
+      "medianPay": 50620,
+      "medianPayHourly": 24.34,
+      "payP10": 34660,
+      "payP90": 81790,
+      "numberOfJobs": 825800,
+      "growthPct": 5,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 40900,
+      "annualOpenings": 66200,
+      "entryEducation": "Postsecondary nondegree award",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Short-term on-the-job training",
+      "workEnvironment": "Automotive service technicians and mechanics usually work in well-ventilated and well-lit repair shops. Although technicians often identify and fix automotive problems with computers, they commonly work with greasy parts and tools, sometimes in uncomfortable positions. Most work full-time, which may include evenings or weekends."
+    }
   },
   {
     "id": "ooh-31-bakers",
     "cat": "service",
-    "catName": "Food & Culinary Arts",
+    "catName": "Human Care & Services",
     "icon": "🥖",
     "title": "Bakers",
     "tagline": "Craft artisan breads, pastries, and baked goods using precise dough handling and ovens.",
@@ -11905,7 +12494,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $27K / ₹2-4 LPA · Mid: $37K / ₹6-10 LPA · Lead: $71K+ / ₹16 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Tactile Dough Fermentation & Artisan Craft — Commercial proofers and deck ovens assist production, but judging dough hydration by touch, monitoring sourdough fermentation aroma, and hand-shaping pastries are artisan craft skills.",
     "overview": "Bakers mix ingredients according to recipes in order to make breads, pastries, and other baked goods.",
     "url": "https://www.bls.gov/ooh/production/bakers.htm",
@@ -12012,7 +12601,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "262,400",
+    "openings": "36,500",
     "medianPay": 37160,
     "aiTag": "protected",
     "edu": "nodegree",
@@ -12023,12 +12612,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "vocational",
       "any"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "51-3011",
+      "baseYear": "2025",
+      "medianPay": 37160,
+      "medianPayHourly": 17.86,
+      "payP10": 28120,
+      "payP90": 49020,
+      "numberOfJobs": 262400,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 14500,
+      "annualOpenings": 36500,
+      "entryEducation": "No formal educational credential",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Most bakers work in retail or commercial bakeries (manufacturing facilities), grocery stores or wholesale club stores, and restaurants. Work shifts often include early mornings, nights, weekends, and holidays."
+    }
   },
   {
     "id": "ooh-32-barbers-hairstylists-and-cosmetologists",
     "cat": "service",
-    "catName": "Personal Care & Service",
+    "catName": "Human Care & Services",
     "icon": "🤝",
     "title": "Barbers, Hairstylists, and Cosmetologists",
     "tagline": "Provide haircutting, hairstyling, and other services related to personal appearance.",
@@ -12036,7 +12644,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $26K / ₹2-4 LPA · Mid: $36K / ₹5-8 LPA · Lead: $68K+ / ₹12 LPA+",
     "growth": "7% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Presence Is The Job — Comfort, trust and physical care are the reason the role exists. Tools can monitor and remind, but they cannot sit with someone or speak for the family.",
     "overview": "Barbers, hairstylists, and cosmetologists provide haircutting, hairstyling, and other services related to personal appearance.",
     "url": "https://www.bls.gov/ooh/personal-care-and-service/barbers-hairstylists-and-cosmetologists.htm",
@@ -12148,7 +12756,7 @@ window.CAREERS_ALL = [
       "The New Social Worker Magazine"
     ],
     "growthYears": "2025–2035",
-    "openings": "670,800",
+    "openings": "80,300",
     "medianPay": 35880,
     "aiTag": "people",
     "edu": "diploma",
@@ -12162,12 +12770,31 @@ window.CAREERS_ALL = [
       "science",
       "arts",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "39-5010",
+      "baseYear": "2025",
+      "medianPay": 35880,
+      "medianPayHourly": 17.25,
+      "payP10": null,
+      "payP90": 36,
+      "numberOfJobs": 670800,
+      "growthPct": 7,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 48400,
+      "annualOpenings": 80300,
+      "entryEducation": "Postsecondary nondegree award",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Barbers, hairstylists, and cosmetologists work mostly in barbershops or salons. Most are full time, although part-time work is common. Work schedules may vary and often include evenings and weekends."
+    }
   },
   {
     "id": "ooh-33-bartenders",
     "cat": "service",
-    "catName": "Food & Culinary Arts",
+    "catName": "Human Care & Services",
     "icon": "🍷",
     "title": "Bartenders",
     "tagline": "Mix craft cocktails, serve beverages, and manage hospitality at bars and restaurants.",
@@ -12175,7 +12802,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $25K / ₹2-4 LPA · Mid: $34K / ₹5-8 LPA · Lead: $65K+ / ₹12 LPA+",
     "growth": "5% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Hospitality Presence & Social Connection — Automated cocktail dispensers exist in high-volume venues, but reading guest mood, crafting personalized drinks, creating bar atmosphere, and checking intoxication levels remain human.",
     "overview": "Bartenders mix drinks and serve them directly to customers or through wait staff.",
     "url": "https://www.bls.gov/ooh/food-preparation-and-serving/bartenders.htm",
@@ -12276,7 +12903,7 @@ window.CAREERS_ALL = [
       "The New Social Worker Magazine"
     ],
     "growthYears": "2025–2035",
-    "openings": "762,600",
+    "openings": "121,200",
     "medianPay": 34340,
     "aiTag": "people",
     "edu": "nodegree",
@@ -12287,12 +12914,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "vocational",
       "any"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "35-3011",
+      "baseYear": "2025",
+      "medianPay": 34340,
+      "medianPayHourly": 16.51,
+      "payP10": null,
+      "payP90": 35,
+      "numberOfJobs": 762600,
+      "growthPct": 5,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 37900,
+      "annualOpenings": 121200,
+      "entryEducation": "No formal educational credential",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Short-term on-the-job training",
+      "workEnvironment": "Bartenders work at restaurants, hotels, and other food service and drinking establishments. During busy hours, they are under pressure to serve customers quickly and efficiently. They often work late evenings, on weekends, and on holidays. Part-time work is common, and schedules may vary."
+    }
   },
   {
     "id": "ooh-34-bill-and-account-collectors",
     "cat": "biz",
-    "catName": "Office & Admin",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Bill and Account Collectors",
     "tagline": "Try to recover payment on overdue bills.",
@@ -12425,12 +13071,31 @@ window.CAREERS_ALL = [
       "commerce",
       "management",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "43-3011",
+      "baseYear": "2025",
+      "medianPay": 47030,
+      "medianPayHourly": 22.61,
+      "payP10": 34400,
+      "payP90": 65580,
+      "numberOfJobs": 160200,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Many bill and account collectors work in a call center for a third-party collection agency rather than for the original creditor. Most work full time."
+    }
   },
   {
     "id": "ooh-35-biochemists-and-biophysicists",
     "cat": "space",
-    "catName": "Science & Research",
+    "catName": "Aviation & Aerospace",
     "icon": "🔭",
     "title": "Biochemists and Biophysicists",
     "tagline": "Study the chemical and physical principles of living things and of biological processes.",
@@ -12438,7 +13103,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $92K / ₹10-16 LPA · Mid: $127K / ₹22-37 LPA · Lead: $242K+ / ₹59 LPA+",
     "growth": "12% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Models Read The Data First — Machine learning sifts through survey data, images and signals faster than any team. Framing the question, checking the result and deciding what it means is where people stay involved.",
     "overview": "Biochemists and biophysicists study the chemical and physical principles of living things and of biological processes, such as cell development, growth, heredity, and disease.",
     "url": "https://www.bls.gov/ooh/life-physical-and-social-science/biochemists-and-biophysicists.htm",
@@ -12542,7 +13207,7 @@ window.CAREERS_ALL = [
       "European Space Agency (ESA) Portals"
     ],
     "growthYears": "2025–2035",
-    "openings": "35,200",
+    "openings": "2,900",
     "medianPay": 127410,
     "aiTag": "automation",
     "edu": "doctorate",
@@ -12554,12 +13219,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "science"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "19-1021",
+      "baseYear": "2025",
+      "medianPay": 127410,
+      "medianPayHourly": 61.26,
+      "payP10": 74290,
+      "payP90": 201110,
+      "numberOfJobs": 35200,
+      "growthPct": 12,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 4300,
+      "annualOpenings": 2900,
+      "entryEducation": "Doctoral or professional degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Biochemists and biophysicists typically work in laboratories and offices to conduct experiments and analyze the results. Most work full time."
+    }
   },
   {
     "id": "ooh-36-bioengineers-and-biomedical-engineers",
     "cat": "eng",
-    "catName": "Engineering",
+    "catName": "Engineering & Robotics",
     "icon": "⚙️",
     "title": "Bioengineers and Biomedical Engineers",
     "tagline": "Combine engineering principles with sciences to design and create equipment, devices, computer systems, and software.",
@@ -12567,7 +13251,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $79K / ₹7-13 LPA · Mid: $109K / ₹18-32 LPA · Lead: $208K+ / ₹50 LPA+",
     "growth": "8% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Software Explores The Options — Generative design and simulation run thousands of variants quickly. Choosing one, checking it against physics, safety rules and cost, and signing it off stays human.",
     "overview": "Bioengineers and biomedical engineers combine engineering principles with sciences to design and create equipment, devices, computer systems, and software.",
     "url": "https://www.bls.gov/ooh/architecture-and-engineering/biomedical-engineers.htm",
@@ -12675,7 +13359,7 @@ window.CAREERS_ALL = [
       "National Society of Professional Engineers (NSPE)"
     ],
     "growthYears": "2025–2035",
-    "openings": "23,800",
+    "openings": "1,200",
     "medianPay": 109370,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -12687,12 +13371,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "engineering"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "17-2031",
+      "baseYear": "2025",
+      "medianPay": 109370,
+      "medianPayHourly": 52.58,
+      "payP10": 71850,
+      "payP90": 168180,
+      "numberOfJobs": 23800,
+      "growthPct": 8,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 1800,
+      "annualOpenings": 1200,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Bioengineers and biomedical engineers work in manufacturing, in research facilities, and for a variety of other employers. Most work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-37-biological-technicians",
     "cat": "space",
-    "catName": "Science & Research",
+    "catName": "Aviation & Aerospace",
     "icon": "🔭",
     "title": "Biological Technicians",
     "tagline": "Assist biological and medical scientists with tasks such as laboratory setup, data collection, and observation.",
@@ -12700,7 +13403,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $41K / ₹4-7 LPA · Mid: $58K / ₹10-17 LPA · Lead: $109K+ / ₹27 LPA+",
     "growth": "7% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Models Read The Data First — Machine learning sifts through survey data, images and signals faster than any team. Framing the question, checking the result and deciding what it means is where people stay involved.",
     "overview": "Biological technicians help biological and medical scientists with tasks such as laboratory setup, data collection, and observation. They also may analyze organic substances, such as blood, food, and drugs.",
     "url": "https://www.bls.gov/ooh/life-physical-and-social-science/biological-technicians.htm",
@@ -12806,7 +13509,7 @@ window.CAREERS_ALL = [
       "European Space Agency (ESA) Portals"
     ],
     "growthYears": "2025–2035",
-    "openings": "74,400",
+    "openings": "9,400",
     "medianPay": 57510,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -12819,12 +13522,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "science"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "19-4021",
+      "baseYear": "2025",
+      "medianPay": 57510,
+      "medianPayHourly": 27.65,
+      "payP10": 40330,
+      "payP90": 84940,
+      "numberOfJobs": 74400,
+      "growthPct": 7,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 5500,
+      "annualOpenings": 9400,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Biological technicians typically work in laboratories and offices. Most work full time."
+    }
   },
   {
     "id": "ooh-38-boilermakers",
     "cat": "trades",
-    "catName": "Construction & Trades",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Boilermakers",
     "tagline": "Assemble, install, maintain, and repair boilers, closed vats, and other large vessels or containers that hold liquids and gases.",
@@ -12948,12 +13670,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "47-2011",
+      "baseYear": "2025",
+      "medianPay": 76410,
+      "medianPayHourly": 36.74,
+      "payP10": 50490,
+      "payP90": 110370,
+      "numberOfJobs": 10200,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Apprenticeship",
+      "workEnvironment": "Boilermakers do physically demanding work. They may travel to worksites and be away from home for extended periods."
+    }
   },
   {
     "id": "ooh-39-bookkeeping-accounting-and-auditing-clerks",
     "cat": "biz",
-    "catName": "Office & Admin",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Bookkeeping, Accounting, and Auditing Clerks",
     "tagline": "Compute, classify, and record data to help organizations keep complete and accurate financial records.",
@@ -13083,12 +13824,31 @@ window.CAREERS_ALL = [
       "commerce",
       "management",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "43-3031",
+      "baseYear": "2025",
+      "medianPay": 50670,
+      "medianPayHourly": 24.36,
+      "payP10": 36000,
+      "payP90": 74550,
+      "numberOfJobs": 1532400,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "Some college, no degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Bookkeeping, accounting, and auditing clerks usually work in an office setting. Most work full time."
+    }
   },
   {
     "id": "ooh-40-broadcast-sound-and-video-technicians",
     "cat": "creative",
-    "catName": "Media & Communication",
+    "catName": "Creative Arts & Design",
     "icon": "🎨",
     "title": "Broadcast, Sound, and Video Technicians",
     "tagline": "Set up, operate, and maintain the electrical equipment for media programs.",
@@ -13239,7 +13999,26 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "27-4010",
+      "baseYear": "2025",
+      "medianPay": 60150,
+      "medianPayHourly": 28.92,
+      "payP10": 37130,
+      "payP90": 108440,
+      "numberOfJobs": 136600,
+      "growthPct": 1,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 1700,
+      "annualOpenings": null,
+      "entryEducation": null,
+      "relatedExperience": "None",
+      "onTheJobTraining": "Short-term on-the-job training",
+      "workEnvironment": "Broadcast, sound, and video technicians typically work indoors in radio, television, movie, and recording studios. They may also work in hotels, arenas, offices, or schools."
+    }
   },
   {
     "id": "ooh-41-budget-analysts",
@@ -13368,12 +14147,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "13-2031",
+      "baseYear": "2025",
+      "medianPay": 91640,
+      "medianPayHourly": 44.06,
+      "payP10": 62250,
+      "payP90": 136660,
+      "numberOfJobs": 50400,
+      "growthPct": 2,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 1000,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Budget analysts work in government agencies, private companies, and universities. Most work full time."
+    }
   },
   {
     "id": "ooh-42-bus-drivers",
     "cat": "trades",
-    "catName": "Transportation & Logistics",
+    "catName": "Skilled Trades & Craft",
     "icon": "🚌",
     "title": "Bus Drivers",
     "tagline": "Transport passengers safely along scheduled municipal transit or school routes.",
@@ -13501,12 +14299,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "vocational",
       "any"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "53-3051",
+      "baseYear": "2025",
+      "medianPay": 49390,
+      "medianPayHourly": 23.75,
+      "payP10": 29240,
+      "payP90": 65730,
+      "numberOfJobs": 563200,
+      "growthPct": 2,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 9800,
+      "annualOpenings": null,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": null,
+      "workEnvironment": "Part-time work is common for bus drivers. Drivers&rsquo; schedules may vary and include early mornings, evenings, or weekends. Many bus drivers work for schools, and they work only when schools are in session. Driving through heavy traffic or bad weather and dealing with unruly passengers can be stressful for bus drivers."
+    }
   },
   {
     "id": "ooh-43-calibration-technologists-and-technicians",
     "cat": "trades",
-    "catName": "Installation & Repair",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Calibration Technologists and Technicians",
     "tagline": "Inspect, adjust, and test measurement devices against standards, such as those used in manufacturing, healthcare, and other industries.",
@@ -13514,7 +14331,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $49K / ₹4-7 LPA · Mid: $68K / ₹11-18 LPA · Lead: $129K+ / ₹29 LPA+",
     "growth": "5% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "The Work Is Physical — Every job is a different room, a different fault, a different set of tools. Work in unstandardised physical spaces is the hardest thing for software to take over.",
     "overview": "Calibration technologists and technicians inspect, adjust, and test measurement devices against standards, such as those used in manufacturing, healthcare, and other industries.",
     "url": "https://www.bls.gov/ooh/installation-maintenance-and-repair/calibration-technologists-and-technicians.htm",
@@ -13613,7 +14430,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "17,000",
+    "openings": "1,500",
     "medianPay": 67820,
     "aiTag": "protected",
     "edu": "diploma",
@@ -13624,12 +14441,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "17-3028",
+      "baseYear": "2025",
+      "medianPay": 67820,
+      "medianPayHourly": 32.61,
+      "payP10": 46680,
+      "payP90": 106550,
+      "numberOfJobs": 17000,
+      "growthPct": 5,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 800,
+      "annualOpenings": 1500,
+      "entryEducation": "Associate's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Calibration technologists and technicians work in a variety of settings. Most work full time."
+    }
   },
   {
     "id": "ooh-44-cardiovascular-technologists-and-technicians",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Cardiovascular Technologists and Technicians",
     "tagline": "Conduct tests and assist in procedures involving the heart or lungs.",
@@ -13637,7 +14473,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $54K / ₹5-7 LPA · Mid: $74K / ₹12-21 LPA · Lead: $141K+ / ₹33 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "Direct Patient Care & Equipment Operation — Electronic charts log patient records, but physically positioning patients, applying sterile dressings, and calming nervous patients require compassionate hands-on care.",
     "overview": "Cardiovascular technologists and technicians conduct tests and assist in procedures involving the heart or lungs. They work closely with physicians and surgeons , who use the test results to assess and diagnose medical conditions.",
     "url": "https://www.bls.gov/ooh/healthcare/cardiovascular-technologists-and-technicians.htm",
@@ -13751,7 +14587,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "64,500",
+    "openings": "3,400",
     "medianPay": 74310,
     "aiTag": "people",
     "edu": "diploma",
@@ -13763,12 +14599,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "health",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-2031",
+      "baseYear": "2025",
+      "medianPay": 74310,
+      "medianPayHourly": 35.73,
+      "payP10": 39000,
+      "payP90": 121350,
+      "numberOfJobs": 64500,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 2400,
+      "annualOpenings": 3400,
+      "entryEducation": "Associate's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most cardiovascular technologists and technicians work in healthcare settings, such as hospitals and physicians&rsquo; offices. Although most are full time, part-time work is common."
+    }
   },
   {
     "id": "ooh-45-career-and-technical-education-teachers",
     "cat": "edu",
-    "catName": "Education & Library",
+    "catName": "Education & Academia",
     "icon": "🎓",
     "title": "Career and Technical Education Teachers",
     "tagline": "Instruct students in various technical and vocational subjects, such as auto repair, healthcare, and culinary arts.",
@@ -13776,7 +14631,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $47K / ₹4-7 LPA · Mid: $65K / ₹8-15 LPA · Lead: $124K+ / ₹23 LPA+",
     "growth": "0% (Little or no change)",
-    "demand": "Steady",
+    "demand": "Declining",
     "aiImpact": "Lesson Plans Are Easy To Generate — Outlines, worksheets and quizzes take seconds to produce. Motivation, reading a room and holding a class together are not things software does.",
     "overview": "Career and technical education (CTE) teachers provide training in subjects such as auto repair, cosmetology, and culinary arts. They teach vocational and technical content to give students the skills and knowledge necessary to enter an occupation.",
     "url": "https://www.bls.gov/ooh/education-training-and-library/career-and-technical-education-teachers.htm",
@@ -13902,7 +14757,7 @@ window.CAREERS_ALL = [
       "Educational Leadership Magazine (ASCD)",
       "Edutopia Learning Platform"
     ],
-    "growthYears": "",
+    "growthYears": "2025–2035",
     "openings": "250,200",
     "medianPay": 65150,
     "aiTag": "people",
@@ -13918,12 +14773,31 @@ window.CAREERS_ALL = [
       "education",
       "design",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "25-1194",
+      "baseYear": "2025",
+      "medianPay": 65150,
+      "medianPayHourly": null,
+      "payP10": 47220,
+      "payP90": 103620,
+      "numberOfJobs": 250200,
+      "growthPct": 0,
+      "growthLabel": "Little or no change",
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "Less than 5 years",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most career and technical education teachers work in middle, high, and postsecondary schools, such as 2-year colleges. Others work in technical, trade, and business schools. Although they generally work during school hours, some teach evening or weekend classes."
+    }
   },
   {
     "id": "ooh-46-carpenters",
     "cat": "trades",
-    "catName": "Construction & Trades",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Carpenters",
     "tagline": "Construct, repair, and install building frameworks and structures made from wood and other materials.",
@@ -13931,7 +14805,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $44K / ₹3-6 LPA · Mid: $61K / ₹10-17 LPA · Lead: $115K+ / ₹26 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "The Work Is Physical — Every job is a different room, a different fault, a different set of tools. Work in unstandardised physical spaces is the hardest thing for software to take over.",
     "overview": "Carpenters construct, repair, and install building frameworks and structures made from wood and other materials.",
     "url": "https://www.bls.gov/ooh/construction-and-extraction/carpenters.htm",
@@ -14040,7 +14914,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "889,700",
+    "openings": "62,800",
     "medianPay": 60580,
     "aiTag": "protected",
     "edu": "nodegree",
@@ -14051,12 +14925,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "47-2031",
+      "baseYear": "2025",
+      "medianPay": 60580,
+      "medianPayHourly": 29.12,
+      "payP10": 40410,
+      "payP90": 99910,
+      "numberOfJobs": 889700,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 35000,
+      "annualOpenings": 62800,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Apprenticeship",
+      "workEnvironment": "Carpenters work indoors and outdoors on many types of construction projects, from installing kitchen cabinets to building highways and bridges."
+    }
   },
   {
     "id": "ooh-47-cartographers-and-photogrammetrists",
     "cat": "eng",
-    "catName": "Engineering",
+    "catName": "Engineering & Robotics",
     "icon": "⚙️",
     "title": "Cartographers and Photogrammetrists",
     "tagline": "Collect, analyze, and interpret geographic information to create and update maps and related products.",
@@ -14064,7 +14957,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $59K / ₹5-9 LPA · Mid: $81K / ₹14-24 LPA · Lead: $155K+ / ₹37 LPA+",
     "growth": "7% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Software Explores The Options — Generative design and simulation run thousands of variants quickly. Choosing one, checking it against physics, safety rules and cost, and signing it off stays human.",
     "overview": "Cartographers and photogrammetrists collect, analyze, and interpret geographic information to create and update maps and related products.",
     "url": "https://www.bls.gov/ooh/architecture-and-engineering/cartographers-and-photogrammetrists.htm",
@@ -14176,7 +15069,7 @@ window.CAREERS_ALL = [
       "National Society of Professional Engineers (NSPE)"
     ],
     "growthYears": "2025–2035",
-    "openings": "14,700",
+    "openings": "900",
     "medianPay": 81390,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -14186,12 +15079,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "engineering"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "17-1021",
+      "baseYear": "2025",
+      "medianPay": 81390,
+      "medianPayHourly": 39.13,
+      "payP10": 53740,
+      "payP90": 126950,
+      "numberOfJobs": 14700,
+      "growthPct": 7,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 1100,
+      "annualOpenings": 900,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Although cartographers and photogrammetrists spend much of their time in an office setting, some jobs require travel to locations that are being mapped. Most work full time."
+    }
   },
   {
     "id": "ooh-48-cashiers",
     "cat": "biz",
-    "catName": "Retail & Consumer Services",
+    "catName": "Business & Finance",
     "icon": "🛒",
     "title": "Cashiers",
     "tagline": "Process customer transactions, manage checkout registers, and assist retail shoppers.",
@@ -14319,12 +15231,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "any"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "41-2011",
+      "baseYear": "2025",
+      "medianPay": 32880,
+      "medianPayHourly": 15.81,
+      "payP10": null,
+      "payP90": 19,
+      "numberOfJobs": 3106300,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "No formal educational credential",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Short-term on-the-job training",
+      "workEnvironment": "Most cashiers work in establishments such as grocery stores, gasoline stations, and restaurants. Work schedules may vary to include evenings, weekends and holidays. Part-time work is common."
+    }
   },
   {
     "id": "ooh-49-chefs-and-head-cooks",
     "cat": "service",
-    "catName": "Food & Culinary Arts",
+    "catName": "Human Care & Services",
     "icon": "👨‍🍳",
     "title": "Chefs and Head Cooks",
     "tagline": "Direct commercial kitchen operations, develop recipes, and lead dinner rush service.",
@@ -14332,7 +15263,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $45K / ₹4-7 LPA · Mid: $62K / ₹8-14 LPA · Lead: $119K+ / ₹22 LPA+",
     "growth": "7% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Palate Tasting & Live Rush Execution — Software tracks ingredient costs and recipe specs, but tasting seasoning balance on the fly, directing a hot line station during dinner service, and creating memorable dining experiences are entirely human.",
     "overview": "Chefs and head cooks oversee the daily food preparation at restaurants and other places where food is served. They direct kitchen staff and handle any food-related concerns.",
     "url": "https://www.bls.gov/ooh/food-preparation-and-serving/chefs-and-head-cooks.htm",
@@ -14450,7 +15381,7 @@ window.CAREERS_ALL = [
       "The New Social Worker Magazine"
     ],
     "growthYears": "2025–2035",
-    "openings": "220,300",
+    "openings": "25,200",
     "medianPay": 62470,
     "aiTag": "people",
     "edu": "nodegree",
@@ -14462,12 +15393,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "vocational",
       "any"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "35-1011",
+      "baseYear": "2025",
+      "medianPay": 62470,
+      "medianPayHourly": 30.03,
+      "payP10": 37900,
+      "payP90": 98560,
+      "numberOfJobs": 220300,
+      "growthPct": 7,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 14400,
+      "annualOpenings": 25200,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "5 years or more",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Chefs and head cooks work in restaurants, hotels, and other food service establishments. They often work early mornings, late evenings, weekends, and holidays. The work can be hectic and fast-paced. Most chefs and head cooks work full time."
+    }
   },
   {
     "id": "ooh-50-chemical-engineers",
     "cat": "eng",
-    "catName": "Engineering",
+    "catName": "Engineering & Robotics",
     "icon": "⚙️",
     "title": "Chemical Engineers",
     "tagline": "Apply the principles of chemistry, physics, and engineering to design equipment and processes for manufacturing products such as gasoline, detergents, and paper.",
@@ -14475,7 +15425,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $90K / ₹8-15 LPA · Mid: $125K / ₹21-36 LPA · Lead: $238K+ / ₹57 LPA+",
     "growth": "5% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Software Explores The Options — Generative design and simulation run thousands of variants quickly. Choosing one, checking it against physics, safety rules and cost, and signing it off stays human.",
     "overview": "Chemical engineers apply the principles of chemistry, physics, and engineering to design equipment and processes for manufacturing products such as gasoline, detergents, and paper.",
     "url": "https://www.bls.gov/ooh/architecture-and-engineering/chemical-engineers.htm",
@@ -14585,7 +15535,7 @@ window.CAREERS_ALL = [
       "National Society of Professional Engineers (NSPE)"
     ],
     "growthYears": "2025–2035",
-    "openings": "21,900",
+    "openings": "1,100",
     "medianPay": 125040,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -14596,12 +15546,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "engineering"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "17-2041",
+      "baseYear": "2025",
+      "medianPay": 125040,
+      "medianPayHourly": 60.12,
+      "payP10": 79420,
+      "payP90": 182880,
+      "numberOfJobs": 21900,
+      "growthPct": 5,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 1000,
+      "annualOpenings": 1100,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Chemical engineers typically work in an office setting or in laboratories. Most chemical engineers work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-51-chemical-technicians",
     "cat": "space",
-    "catName": "Science & Research",
+    "catName": "Aviation & Aerospace",
     "icon": "🔭",
     "title": "Chemical Technicians",
     "tagline": "Conduct laboratory tests to help scientists analyze the properties of materials.",
@@ -14609,7 +15578,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $43K / ₹5-7 LPA · Mid: $60K / ₹10-18 LPA · Lead: $115K+ / ₹28 LPA+",
     "growth": "5% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Models Read The Data First — Machine learning sifts through survey data, images and signals faster than any team. Framing the question, checking the result and deciding what it means is where people stay involved.",
     "overview": "Chemical technicians use laboratory instruments and techniques to help scientists analyze the properties of materials.",
     "url": "https://www.bls.gov/ooh/life-physical-and-social-science/chemical-technicians.htm",
@@ -14709,7 +15678,7 @@ window.CAREERS_ALL = [
       "European Space Agency (ESA) Portals"
     ],
     "growthYears": "2025–2035",
-    "openings": "60,000",
+    "openings": "7,600",
     "medianPay": 60390,
     "aiTag": "automation",
     "edu": "diploma",
@@ -14721,12 +15690,31 @@ window.CAREERS_ALL = [
       "engineering",
       "science",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "19-4031",
+      "baseYear": "2025",
+      "medianPay": 60390,
+      "medianPayHourly": 29.03,
+      "payP10": 41740,
+      "payP90": 92040,
+      "numberOfJobs": 60000,
+      "growthPct": 5,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 3000,
+      "annualOpenings": 7600,
+      "entryEducation": "Associate's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Chemical technicians often work in laboratories or in manufacturing facilities, such as chemical manufacturing plants. Most technicians work full time."
+    }
   },
   {
     "id": "ooh-52-chemists-and-materials-scientists",
     "cat": "space",
-    "catName": "Science & Research",
+    "catName": "Aviation & Aerospace",
     "icon": "🔭",
     "title": "Chemists and Materials Scientists",
     "tagline": "Research and analyze the chemical properties of substances to develop new materials, products, or knowledge.",
@@ -14734,7 +15722,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $68K / ₹7-12 LPA · Mid: $95K / ₹16-28 LPA · Lead: $181K+ / ₹44 LPA+",
     "growth": "7% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Models Read The Data First — Machine learning sifts through survey data, images and signals faster than any team. Framing the question, checking the result and deciding what it means is where people stay involved.",
     "overview": "Chemists and materials scientists research and analyze the chemical properties of substances to develop new materials, products, or knowledge.",
     "url": "https://www.bls.gov/ooh/life-physical-and-social-science/chemists-and-materials-scientists.htm",
@@ -14849,7 +15837,7 @@ window.CAREERS_ALL = [
       "European Space Agency (ESA) Portals"
     ],
     "growthYears": "2025–2035",
-    "openings": "93,500",
+    "openings": "6,500",
     "medianPay": 95060,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -14862,12 +15850,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "science"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "19-2030",
+      "baseYear": "2025",
+      "medianPay": 95060,
+      "medianPayHourly": 45.7,
+      "payP10": 58460,
+      "payP90": 160830,
+      "numberOfJobs": 93500,
+      "growthPct": 7,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 6200,
+      "annualOpenings": 6500,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Chemists and materials scientists work in laboratories, offices, and manufacturing facilities. Most work full time."
+    }
   },
   {
     "id": "ooh-53-childcare-workers",
     "cat": "service",
-    "catName": "Personal Care & Service",
+    "catName": "Human Care & Services",
     "icon": "🤝",
     "title": "Childcare Workers",
     "tagline": "Attend to children's needs while helping to foster early development.",
@@ -15009,12 +16016,31 @@ window.CAREERS_ALL = [
       "science",
       "arts",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "39-9011",
+      "baseYear": "2025",
+      "medianPay": 34980,
+      "medianPayHourly": 16.82,
+      "payP10": null,
+      "payP90": 22,
+      "numberOfJobs": 1010300,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Short-term on-the-job training",
+      "workEnvironment": "Childcare workers typically work in childcare centers, their own home, or private households. Part-time work and irregular hours are common."
+    }
   },
   {
     "id": "ooh-54-chiropractors",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Chiropractors",
     "tagline": "Assess, treat, and care for patients by manipulating the spine and musculoskeletal system.",
@@ -15022,7 +16048,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $57K / ₹5-8 LPA · Mid: $79K / ₹12-22 LPA · Lead: $150K+ / ₹35 LPA+",
     "growth": "9% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Diagnostics Are Assisted — Imaging, lab results and records are increasingly read by software first. Examination, procedures, consent and the conversation with the patient are not.",
     "overview": "Chiropractors assess, treat, and care for patients by manipulating the spine and musculoskeletal system. They may provide spinal adjustment or address sacral or pelvic misalignment.",
     "url": "https://www.bls.gov/ooh/healthcare/chiropractors.htm",
@@ -15122,7 +16148,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "61,700",
+    "openings": "2,600",
     "medianPay": 79200,
     "aiTag": "people",
     "edu": "doctorate",
@@ -15131,12 +16157,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "health"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-1011",
+      "baseYear": "2025",
+      "medianPay": 79200,
+      "medianPayHourly": 38.08,
+      "payP10": 43460,
+      "payP90": 146080,
+      "numberOfJobs": 61700,
+      "growthPct": 9,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 5300,
+      "annualOpenings": 2600,
+      "entryEducation": "Doctoral or professional degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most chiropractors work in a solo or group chiropractic practice. Some are self-employed. Chiropractors usually work full time, but part-time work is common."
+    }
   },
   {
     "id": "ooh-55-civil-engineering-technologists-and-technicians",
     "cat": "eng",
-    "catName": "Engineering",
+    "catName": "Engineering & Robotics",
     "icon": "⚙️",
     "title": "Civil Engineering Technologists and Technicians",
     "tagline": "Help civil engineers plan, design, and build infrastructure and development projects.",
@@ -15254,7 +16299,7 @@ window.CAREERS_ALL = [
       "National Society of Professional Engineers (NSPE)"
     ],
     "growthYears": "2025–2035",
-    "openings": "70,900",
+    "openings": "6,100",
     "medianPay": 64950,
     "aiTag": "automation",
     "edu": "diploma",
@@ -15266,12 +16311,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "17-3022",
+      "baseYear": "2025",
+      "medianPay": 64950,
+      "medianPayHourly": 31.23,
+      "payP10": 44220,
+      "payP90": 98980,
+      "numberOfJobs": 70900,
+      "growthPct": 3,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 2300,
+      "annualOpenings": 6100,
+      "entryEducation": "Associate's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Civil engineering technologists and technicians work in offices, helping civil engineers plan and design projects. They also visit construction jobsites to collect or test materials or to observe activities as a project inspector."
+    }
   },
   {
     "id": "ooh-56-civil-engineers",
     "cat": "eng",
-    "catName": "Engineering",
+    "catName": "Engineering & Robotics",
     "icon": "⚙️",
     "title": "Civil Engineers",
     "tagline": "Plan, design, and supervise the construction and maintenance of building and infrastructure projects.",
@@ -15279,7 +16343,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $73K / ₹7-12 LPA · Mid: $101K / ₹17-29 LPA · Lead: $192K+ / ₹46 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Software Explores The Options — Generative design and simulation run thousands of variants quickly. Choosing one, checking it against physics, safety rules and cost, and signing it off stays human.",
     "overview": "Civil engineers plan, design, and supervise the construction and maintenance of building and infrastructure projects. These projects may include facilities, bridges, roads, tunnels, and water and sewage systems.",
     "url": "https://www.bls.gov/ooh/architecture-and-engineering/civil-engineers.htm",
@@ -15392,7 +16456,7 @@ window.CAREERS_ALL = [
       "National Society of Professional Engineers (NSPE)"
     ],
     "growthYears": "2025–2035",
-    "openings": "380,600",
+    "openings": "22,700",
     "medianPay": 100840,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -15403,7 +16467,26 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "engineering"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "17-2051",
+      "baseYear": "2025",
+      "medianPay": 100840,
+      "medianPayHourly": 48.48,
+      "payP10": 68240,
+      "payP90": 163220,
+      "numberOfJobs": 380600,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 24500,
+      "annualOpenings": 22700,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Civil engineers work in a variety of locations and conditions, commonly splitting their time between an office setting and construction sites. Most civil engineers work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-57-claims-adjusters-appraisers-examiners-and-investigators",
@@ -15548,12 +16631,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "13-1030",
+      "baseYear": "2025",
+      "medianPay": 78020,
+      "medianPayHourly": 37.51,
+      "payP10": 48850,
+      "payP90": 117040,
+      "numberOfJobs": 389700,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": null,
+      "relatedExperience": "None",
+      "onTheJobTraining": null,
+      "workEnvironment": "Most claims adjusters, appraisers, examiners, and investigators work full time. They often work outside the office, inspecting properties on which insurance claims have been made, such as damaged automobiles and buildings."
+    }
   },
   {
     "id": "ooh-58-clinical-laboratory-technologists-and-technicians",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Clinical Laboratory Technologists and Technicians",
     "tagline": "Perform medical laboratory tests for the diagnosis, treatment, and prevention of disease.",
@@ -15686,7 +16788,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "343,000",
+    "openings": "20,800",
     "medianPay": 62930,
     "aiTag": "people",
     "edu": "bachelor",
@@ -15697,12 +16799,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "health"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-2010",
+      "baseYear": "2025",
+      "medianPay": 62930,
+      "medianPayHourly": 30.26,
+      "payP10": 38910,
+      "payP90": 100990,
+      "numberOfJobs": 343000,
+      "growthPct": 3,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 9400,
+      "annualOpenings": 20800,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most clinical laboratory technologists and technicians work in healthcare settings such as hospitals, medical and diagnostic laboratories, and doctor&rsquo;s offices. Most work full time."
+    }
   },
   {
     "id": "ooh-59-coaches-and-scouts",
     "cat": "creative",
-    "catName": "Sports & Entertainment",
+    "catName": "Creative Arts & Design",
     "icon": "🎨",
     "title": "Coaches and Scouts",
     "tagline": "Teach amateur or professional athletes the skills they need to succeed at their sport.",
@@ -15710,7 +16831,7 @@ window.CAREERS_ALL = [
     "stream": "Arts & Humanities",
     "salary": "Entry: $34K / ₹3-5 LPA · Mid: $47K / ₹7-14 LPA · Lead: $90K+ / ₹23 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Options Are Cheap Now — Generative tools produce a hundred variations in minutes, so the value has moved to taste: knowing which one is right and why. Direction, briefs and client trust are the parts that hold up.",
     "overview": "Coaches teach amateur and professional athletes the skills they need to succeed at their sport. Scouts look for new players, evaluating their skills and likelihood for success at the amateur, college, or professional level. Many coaches also are involved in scouting potential athletes for their team.",
     "url": "https://www.bls.gov/ooh/entertainment-and-sports/coaches-and-scouts.htm",
@@ -15824,7 +16945,7 @@ window.CAREERS_ALL = [
       "Nielsen Norman Group UX Articles"
     ],
     "growthYears": "2025–2035",
-    "openings": "298,800",
+    "openings": "36,400",
     "medianPay": 47320,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -15835,12 +16956,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "27-2022",
+      "baseYear": "2025",
+      "medianPay": 47320,
+      "medianPayHourly": null,
+      "payP10": 28790,
+      "payP90": 98860,
+      "numberOfJobs": 298800,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 18100,
+      "annualOpenings": 36400,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Part-time work is common for coaches and scouts. Full-time coaches may work more than 40 hours a week for several months during the sports season. Work schedules for coaches and scouts vary and may involve irregular hours, including evenings, weekends, and holidays. They may need to travel frequently."
+    }
   },
   {
     "id": "ooh-60-community-health-workers",
     "cat": "service",
-    "catName": "Community & Social Service",
+    "catName": "Human Care & Services",
     "icon": "🤝",
     "title": "Community Health Workers",
     "tagline": "Promote wellness by helping people in their communities adopt healthy behaviors.",
@@ -15848,7 +16988,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $37K / ₹3-6 LPA · Mid: $52K / ₹7-12 LPA · Lead: $99K+ / ₹18 LPA+",
     "growth": "13% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Presence Is The Job — Comfort, trust and physical care are the reason the role exists. Tools can monitor and remind, but they cannot sit with someone or speak for the family.",
     "overview": "Community health workers promote wellness by helping people adopt healthy behaviors. They implement programs and advocate for people who may have limited access to health resources and social services.",
     "url": "https://www.bls.gov/ooh/community-and-social-service/community-health-workers.htm",
@@ -15959,7 +17099,7 @@ window.CAREERS_ALL = [
       "The New Social Worker Magazine"
     ],
     "growthYears": "2025–2035",
-    "openings": "64,700",
+    "openings": "7,000",
     "medianPay": 51850,
     "aiTag": "people",
     "edu": "nodegree",
@@ -15972,7 +17112,26 @@ window.CAREERS_ALL = [
       "science",
       "arts",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "21-1094",
+      "baseYear": "2025",
+      "medianPay": 51850,
+      "medianPayHourly": 24.93,
+      "payP10": 38810,
+      "payP90": 77180,
+      "numberOfJobs": 64700,
+      "growthPct": 13,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 8200,
+      "annualOpenings": 7000,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Short-term on-the-job training",
+      "workEnvironment": "Community health workers are employed in a variety of settings, including hospitals, public health departments, and community-based organizations. Most work full time."
+    }
   },
   {
     "id": "ooh-61-compensation-benefits-and-job-analysis-specialists",
@@ -15985,7 +17144,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $56K / ₹6-10 LPA · Mid: $78K / ₹15-28 LPA · Lead: $149K+ / ₹43 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Compensation, benefits, and job analysis specialists oversee wage and nonwage programs that an organization provides to its employees in return for their work. They also evaluate position descriptions to determine details such as classification and salary.",
     "url": "https://www.bls.gov/ooh/business-and-financial/compensation-benefits-and-job-analysis-specialists.htm",
@@ -16097,7 +17256,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "118,100",
+    "openings": "9,000",
     "medianPay": 78210,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -16109,12 +17268,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "13-1141",
+      "baseYear": "2025",
+      "medianPay": 78210,
+      "medianPayHourly": 37.6,
+      "payP10": 49480,
+      "payP90": 128920,
+      "numberOfJobs": 118100,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 7100,
+      "annualOpenings": 9000,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "Less than 5 years",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Compensation, benefits, and job analysis specialists are employed in nearly every industry. They typically work in offices, and most are full time."
+    }
   },
   {
     "id": "ooh-62-compensation-and-benefits-managers",
     "cat": "biz",
-    "catName": "Management",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Compensation and Benefits Managers",
     "tagline": "Plan, develop, and oversee programs to pay employees.",
@@ -16237,7 +17415,26 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "11-3111",
+      "baseYear": "2025",
+      "medianPay": 149230,
+      "medianPayHourly": 71.75,
+      "payP10": 89160,
+      "payP90": 256570,
+      "numberOfJobs": 23700,
+      "growthPct": 1,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 300,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "5 years or more",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Compensation and benefits managers work in nearly every industry. Some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-63-compliance-officers",
@@ -16250,7 +17447,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $58K / ₹6-11 LPA · Mid: $81K / ₹16-29 LPA · Lead: $153K+ / ₹44 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Compliance officers make sure that people and organizations meet legal and regulatory requirements.",
     "url": "https://www.bls.gov/ooh/business-and-financial/compliance-officers.htm",
@@ -16365,7 +17562,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "436,400",
+    "openings": "32,700",
     "medianPay": 80730,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -16379,12 +17576,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "13-1041",
+      "baseYear": "2025",
+      "medianPay": 80730,
+      "medianPayHourly": 38.81,
+      "payP10": 48220,
+      "payP90": 133720,
+      "numberOfJobs": 436400,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 16700,
+      "annualOpenings": 32700,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Compliance officers work for a variety of employers, usually in an office setting. Most work full time."
+    }
   },
   {
     "id": "ooh-64-computer-and-information-research-scientists",
     "cat": "tech",
-    "catName": "Technology & IT",
+    "catName": "Technology & AI",
     "icon": "💻",
     "title": "Computer and Information Research Scientists",
     "tagline": "Design innovative uses for new and existing computing technology.",
@@ -16392,7 +17608,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $101K / ₹10-17 LPA · Mid: $140K / ₹25-44 LPA · Lead: $267K+ / ₹68 LPA+",
     "growth": "22% (Much faster than average)",
-    "demand": "Extreme",
+    "demand": "Very High",
     "aiImpact": "Tools Write More Of The Code — Copilots and agents draft, test and refactor code, which raises what a developer is expected to ship. Designing the system, reviewing what the machine produced, and owning failures still sit with a person.",
     "overview": "Computer and information research scientists design innovative uses for new and existing technology. They study and solve complex problems in computing for business, science, medicine, and other fields.",
     "url": "https://www.bls.gov/ooh/computer-and-information-technology/computer-and-information-research-scientists.htm",
@@ -16495,7 +17711,7 @@ window.CAREERS_ALL = [
       "O’Reilly Learning Platform"
     ],
     "growthYears": "2025–2035",
-    "openings": "38,600",
+    "openings": "2,900",
     "medianPay": 140300,
     "aiTag": "automation",
     "edu": "master",
@@ -16509,12 +17725,31 @@ window.CAREERS_ALL = [
       "computing",
       "science",
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "15-1221",
+      "baseYear": "2025",
+      "medianPay": 140300,
+      "medianPayHourly": 67.45,
+      "payP10": 82200,
+      "payP90": 230630,
+      "numberOfJobs": 38600,
+      "growthPct": 22,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 8400,
+      "annualOpenings": 2900,
+      "entryEducation": "Master's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most computer and information research scientists work full time."
+    }
   },
   {
     "id": "ooh-65-computer-and-information-systems-managers",
     "cat": "biz",
-    "catName": "Management",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Computer and Information Systems Managers",
     "tagline": "Plan, coordinate, and direct computer-related activities in an organization.",
@@ -16522,7 +17757,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $126K / ₹13-23 LPA · Mid: $175K / ₹34-64 LPA · Lead: $333K+ / ₹96 LPA+",
     "growth": "16% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Computer and information systems managers, often called information technology (IT) managers, plan, coordinate, and direct computer-related activities in an organization. They help determine the IT goals of an organization and are responsible for implementing computer systems to meet those goals.",
     "url": "https://www.bls.gov/ooh/management/computer-and-information-systems-managers.htm",
@@ -16637,7 +17872,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "685,800",
+    "openings": "53,500",
     "medianPay": 175140,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -16649,12 +17884,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "11-3021",
+      "baseYear": "2025",
+      "medianPay": 175140,
+      "medianPayHourly": 84.2,
+      "payP10": 107550,
+      "payP90": 297510,
+      "numberOfJobs": 685800,
+      "growthPct": 16,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 108100,
+      "annualOpenings": 53500,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "5 years or more",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Computer and information systems managers are employed in many industries. They usually work in an office setting. Most work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-66-computer-hardware-engineers",
     "cat": "eng",
-    "catName": "Engineering",
+    "catName": "Engineering & Robotics",
     "icon": "⚙️",
     "title": "Computer Hardware Engineers",
     "tagline": "Research, design, develop, and test computers and related equipment.",
@@ -16662,7 +17916,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $116K / ₹11-19 LPA · Mid: $162K / ₹27-47 LPA · Lead: $307K+ / ₹74 LPA+",
     "growth": "9% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Software Explores The Options — Generative design and simulation run thousands of variants quickly. Choosing one, checking it against physics, safety rules and cost, and signing it off stays human.",
     "overview": "Computer hardware engineers research, design, develop, and test computers and related equipment, such as processors, circuit boards, and memory devices.",
     "url": "https://www.bls.gov/ooh/architecture-and-engineering/computer-hardware-engineers.htm",
@@ -16762,7 +18016,7 @@ window.CAREERS_ALL = [
       "National Society of Professional Engineers (NSPE)"
     ],
     "growthYears": "2025–2035",
-    "openings": "76,100",
+    "openings": "4,100",
     "medianPay": 161740,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -16773,12 +18027,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "engineering"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "17-2061",
+      "baseYear": "2025",
+      "medianPay": 161740,
+      "medianPayHourly": 77.76,
+      "payP10": 92940,
+      "payP90": 225330,
+      "numberOfJobs": 76100,
+      "growthPct": 9,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 6900,
+      "annualOpenings": 4100,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Computer hardware engineers work in a variety of settings, such as laboratories and manufacturing facilities. Most work full time."
+    }
   },
   {
     "id": "ooh-67-computer-network-architects",
     "cat": "tech",
-    "catName": "Technology & IT",
+    "catName": "Technology & AI",
     "icon": "💻",
     "title": "Computer Network Architects",
     "tagline": "Design and implement data communication networks, including local area networks (LANs), wide area networks (WANs), and intranets.",
@@ -16786,7 +18059,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $97K / ₹10-16 LPA · Mid: $134K / ₹24-42 LPA · Lead: $255K+ / ₹65 LPA+",
     "growth": "8% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Tools Write More Of The Code — Copilots and agents draft, test and refactor code, which raises what a developer is expected to ship. Designing the system, reviewing what the machine produced, and owning failures still sit with a person.",
     "overview": "Computer network architects design and implement data communication networks, including local area networks (LANs), wide area networks (WANs), and intranets. These networks range from small connections between two offices to virtual capabilities such as a cloud infrastructure that serves multiple customers.",
     "url": "https://www.bls.gov/ooh/computer-and-information-technology/computer-network-architects.htm",
@@ -16889,7 +18162,7 @@ window.CAREERS_ALL = [
       "O’Reilly Learning Platform"
     ],
     "growthYears": "2025–2035",
-    "openings": "181,800",
+    "openings": "9,600",
     "medianPay": 134050,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -16904,12 +18177,31 @@ window.CAREERS_ALL = [
       "computing",
       "science",
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "15-1241",
+      "baseYear": "2025",
+      "medianPay": 134050,
+      "medianPayHourly": 64.45,
+      "payP10": 79900,
+      "payP90": 202680,
+      "numberOfJobs": 181800,
+      "growthPct": 8,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 14100,
+      "annualOpenings": 9600,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "5 years or more",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most computer network architects work full time, and some work more than 40 hours per week. Network architects work in a variety of industries, usually in an office setting."
+    }
   },
   {
     "id": "ooh-68-computer-programmers",
     "cat": "tech",
-    "catName": "Technology & IT",
+    "catName": "Technology & AI",
     "icon": "💻",
     "title": "Computer Programmers",
     "tagline": "Write, modify, and test code and scripts that allow computer software and applications to function properly.",
@@ -17040,12 +18332,31 @@ window.CAREERS_ALL = [
       "computing",
       "science",
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "15-1251",
+      "baseYear": "2025",
+      "medianPay": 100390,
+      "medianPayHourly": 48.26,
+      "payP10": 57710,
+      "payP90": 160460,
+      "numberOfJobs": 110800,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Programmers usually work in office settings, most commonly in the computer systems design and related services industry. Most computer programmers work full time."
+    }
   },
   {
     "id": "ooh-69-computer-support-specialists",
     "cat": "tech",
-    "catName": "Technology & IT",
+    "catName": "Technology & AI",
     "icon": "💻",
     "title": "Computer Support Specialists",
     "tagline": "Maintain computer networks and provide technical help to computer users.",
@@ -17179,12 +18490,31 @@ window.CAREERS_ALL = [
       "computing",
       "science",
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "15-1230",
+      "baseYear": "2025",
+      "medianPay": 62890,
+      "medianPayHourly": 30.24,
+      "payP10": 47120,
+      "payP90": 127780,
+      "numberOfJobs": 903100,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": null,
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Most computer support specialists work full time. Because computer support services may need to be available 24 hours a day, some specialists work nights or weekends."
+    }
   },
   {
     "id": "ooh-70-computer-systems-analysts",
     "cat": "tech",
-    "catName": "Technology & IT",
+    "catName": "Technology & AI",
     "icon": "💻",
     "title": "Computer Systems Analysts",
     "tagline": "Study an organization’s current computer systems and design ways to improve efficiency.",
@@ -17192,7 +18522,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $76K / ₹8-13 LPA · Mid: $106K / ₹19-33 LPA · Lead: $201K+ / ₹51 LPA+",
     "growth": "8% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Tools Write More Of The Code — Copilots and agents draft, test and refactor code, which raises what a developer is expected to ship. Designing the system, reviewing what the machine produced, and owning failures still sit with a person.",
     "overview": "Computer systems analysts, sometimes called systems architects , study an organization's current computer systems and procedures and design improvements to them. In doing so, these analysts help the organization operate more efficiently.",
     "url": "https://www.bls.gov/ooh/computer-and-information-technology/computer-systems-analysts.htm",
@@ -17301,7 +18631,7 @@ window.CAREERS_ALL = [
       "O’Reilly Learning Platform"
     ],
     "growthYears": "2025–2035",
-    "openings": "544,400",
+    "openings": "32,900",
     "medianPay": 105850,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -17315,12 +18645,31 @@ window.CAREERS_ALL = [
       "computing",
       "science",
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "15-1211",
+      "baseYear": "2025",
+      "medianPay": 105850,
+      "medianPayHourly": 50.89,
+      "payP10": 67340,
+      "payP90": 167710,
+      "numberOfJobs": 544400,
+      "growthPct": 8,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 42900,
+      "annualOpenings": 32900,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most computer systems analysts work full time."
+    }
   },
   {
     "id": "ooh-71-concierges",
     "cat": "service",
-    "catName": "Personal Care & Service",
+    "catName": "Human Care & Services",
     "icon": "🤝",
     "title": "Concierges",
     "tagline": "Help people at hotels, apartments, or office buildings with a variety of personal services.",
@@ -17440,7 +18789,7 @@ window.CAREERS_ALL = [
       "The New Social Worker Magazine"
     ],
     "growthYears": "2025–2035",
-    "openings": "50,200",
+    "openings": "6,900",
     "medianPay": 38950,
     "aiTag": "people",
     "edu": "nodegree",
@@ -17455,12 +18804,31 @@ window.CAREERS_ALL = [
       "science",
       "arts",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "39-6012",
+      "baseYear": "2025",
+      "medianPay": 38950,
+      "medianPayHourly": 18.73,
+      "payP10": 31620,
+      "payP90": 57570,
+      "numberOfJobs": 50200,
+      "growthPct": 3,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 1300,
+      "annualOpenings": 6900,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Concierges usually work indoors at a front desk or other location where they have frequent contact with others. Most work full time. They may work shifts that include evenings, weekends, and holidays."
+    }
   },
   {
     "id": "ooh-72-conservation-scientists-and-foresters",
     "cat": "space",
-    "catName": "Science & Research",
+    "catName": "Aviation & Aerospace",
     "icon": "🔭",
     "title": "Conservation Scientists and Foresters",
     "tagline": "Manage the land quality of forests, parks, rangelands, and other natural resources.",
@@ -17468,7 +18836,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $53K / ₹6-9 LPA · Mid: $74K / ₹13-22 LPA · Lead: $140K+ / ₹34 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "Models Read The Data First — Machine learning sifts through survey data, images and signals faster than any team. Framing the question, checking the result and deciding what it means is where people stay involved.",
     "overview": "Conservation scientists and foresters manage the land quality of forests, parks, rangelands, and other natural resources.",
     "url": "https://www.bls.gov/ooh/life-physical-and-social-science/conservation-scientists.htm",
@@ -17588,7 +18956,7 @@ window.CAREERS_ALL = [
       "European Space Agency (ESA) Portals"
     ],
     "growthYears": "2025–2035",
-    "openings": "40,900",
+    "openings": "3,000",
     "medianPay": 73920,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -17602,12 +18970,31 @@ window.CAREERS_ALL = [
       "engineering",
       "science",
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "19-1030",
+      "baseYear": "2025",
+      "medianPay": 73920,
+      "medianPayHourly": 35.54,
+      "payP10": 47550,
+      "payP90": 110410,
+      "numberOfJobs": 40900,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 1700,
+      "annualOpenings": 3000,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Conservation scientists and foresters work for federal, state, and local governments; on privately owned lands; or in social advocacy organizations. Most conservation scientists and foresters work full time, and schedules may vary."
+    }
   },
   {
     "id": "ooh-73-construction-and-building-inspectors",
     "cat": "trades",
-    "catName": "Construction & Trades",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Construction and Building Inspectors",
     "tagline": "Ensure that construction meets building codes and ordinances, zoning regulations, and contract specifications.",
@@ -17615,7 +19002,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $54K / ₹4-8 LPA · Mid: $75K / ₹12-20 LPA · Lead: $142K+ / ₹32 LPA+",
     "growth": "0% (Little or no change)",
-    "demand": "Steady",
+    "demand": "Declining",
     "aiImpact": "The Work Is Physical — Every job is a different room, a different fault, a different set of tools. Work in unstandardised physical spaces is the hardest thing for software to take over.",
     "overview": "Construction and building inspectors ensure that construction meets local and national building codes and ordinances, zoning regulations, and contract specifications.",
     "url": "https://www.bls.gov/ooh/construction-and-extraction/construction-and-building-inspectors.htm",
@@ -17726,7 +19113,7 @@ window.CAREERS_ALL = [
       "Mike Holt Electrical Code Forums",
       "National Center for Construction Education and Research (NCCER)"
     ],
-    "growthYears": "",
+    "growthYears": "2025–2035",
     "openings": "153,900",
     "medianPay": 74690,
     "aiTag": "protected",
@@ -17741,12 +19128,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "47-4011",
+      "baseYear": "2025",
+      "medianPay": 74690,
+      "medianPayHourly": 35.91,
+      "payP10": 47140,
+      "payP90": 114200,
+      "numberOfJobs": 153900,
+      "growthPct": 0,
+      "growthLabel": "Little or no change",
+      "growthYears": "2025–2035",
+      "employmentChange": 0,
+      "annualOpenings": null,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "5 years or more",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Construction and building inspectors examine worksites, both alone and as part of a team. Some inspectors climb ladders or crawl in tight spaces. Most work full time during regular business hours."
+    }
   },
   {
     "id": "ooh-74-construction-equipment-operators",
     "cat": "trades",
-    "catName": "Construction & Trades",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Construction Equipment Operators",
     "tagline": "Drive, maneuver, or control the heavy machinery used to construct roads, buildings and other structures.",
@@ -17754,7 +19160,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $43K / ₹3-6 LPA · Mid: $60K / ₹9-16 LPA · Lead: $113K+ / ₹26 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "The Work Is Physical — Every job is a different room, a different fault, a different set of tools. Work in unstandardised physical spaces is the hardest thing for software to take over.",
     "overview": "Construction equipment operators drive, maneuver, or control the heavy machinery used to construct roads, bridges, buildings, and other structures.",
     "url": "https://www.bls.gov/ooh/construction-and-extraction/construction-equipment-operators.htm",
@@ -17878,7 +19284,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "534,100",
+    "openings": "42,500",
     "medianPay": 59600,
     "aiTag": "protected",
     "edu": "nodegree",
@@ -17889,12 +19295,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "47-2070",
+      "baseYear": "2025",
+      "medianPay": 59600,
+      "medianPayHourly": 28.66,
+      "payP10": 41550,
+      "payP90": 100660,
+      "numberOfJobs": 534100,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 21800,
+      "annualOpenings": 42500,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Construction equipment operators may work even in unpleasant weather. Most operators work full time, and some have irregular work schedules that include nights."
+    }
   },
   {
     "id": "ooh-75-construction-laborers-and-helpers",
     "cat": "trades",
-    "catName": "Construction & Trades",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Construction Laborers and Helpers",
     "tagline": "Perform tasks, such as using, supplying, or holding materials or tools and cleaning work areas and equipment, on construction sites.",
@@ -17902,7 +19327,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $34K / ₹3-5 LPA · Mid: $47K / ₹7-13 LPA · Lead: $89K+ / ₹20 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "The Work Is Physical — Every job is a different room, a different fault, a different set of tools. Work in unstandardised physical spaces is the hardest thing for software to take over.",
     "overview": "Construction laborers and helpers perform tasks, such as using, supplying, or holding materials or tools and cleaning work areas and equipment, on construction sites.",
     "url": "https://www.bls.gov/ooh/construction-and-extraction/construction-laborers-and-helpers.htm",
@@ -18089,7 +19514,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "1,674,400",
+    "openings": "137,000",
     "medianPay": 46680,
     "aiTag": "protected",
     "edu": "master",
@@ -18100,12 +19525,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "47-2061",
+      "baseYear": "2025",
+      "medianPay": 46680,
+      "medianPayHourly": 22.44,
+      "payP10": 34820,
+      "payP90": 76400,
+      "numberOfJobs": 1674400,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 108600,
+      "annualOpenings": 137000,
+      "entryEducation": null,
+      "relatedExperience": "None",
+      "onTheJobTraining": "Short-term on-the-job training",
+      "workEnvironment": "Most construction laborers and helpers work full time, and schedules may vary. Their jobs are often physically demanding and may require being outdoors in all weather conditions."
+    }
   },
   {
     "id": "ooh-76-construction-managers",
     "cat": "biz",
-    "catName": "Management",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Construction Managers",
     "tagline": "Plan, coordinate, budget, and supervise construction projects from start to finish.",
@@ -18113,7 +19557,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $83K / ₹8-15 LPA · Mid: $115K / ₹22-42 LPA · Lead: $218K+ / ₹63 LPA+",
     "growth": "9% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Construction managers plan, coordinate, budget, and supervise construction projects from start to finish.",
     "url": "https://www.bls.gov/ooh/management/construction-managers.htm",
@@ -18216,7 +19660,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "609,100",
+    "openings": "49,700",
     "medianPay": 114990,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -18229,12 +19673,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "11-9021",
+      "baseYear": "2025",
+      "medianPay": 114990,
+      "medianPayHourly": 55.28,
+      "payP10": 69690,
+      "payP90": 189440,
+      "numberOfJobs": 609100,
+      "growthPct": 9,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 55200,
+      "annualOpenings": 49700,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Construction managers may have a main office but spend most of their time in a field office onsite, where they monitor projects and make decisions about construction activities. Their schedules may vary."
+    }
   },
   {
     "id": "ooh-77-cooks",
     "cat": "service",
-    "catName": "Food & Culinary Arts",
+    "catName": "Human Care & Services",
     "icon": "👨‍🍳",
     "title": "Cooks",
     "tagline": "Prepare, season, and cook dishes to order in restaurants, hotels, and cafeterias.",
@@ -18242,7 +19705,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $26K / ₹2-4 LPA · Mid: $37K / ₹5-8 LPA · Lead: $70K+ / ₹13 LPA+",
     "growth": "7% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Active Cook Line Execution — Automated fryers and kitchen display monitors organize orders, but multi-tasking across griddles, searing proteins to exact doneness, and plating orders quickly remain human work.",
     "overview": "Cooks season and prepare foods, including soups, salads, entrees, and desserts.",
     "url": "https://www.bls.gov/ooh/food-preparation-and-serving/cooks.htm",
@@ -18383,7 +19846,7 @@ window.CAREERS_ALL = [
       "The New Social Worker Magazine"
     ],
     "growthYears": "2025–2035",
-    "openings": "2,705,800",
+    "openings": "393,200",
     "medianPay": 36640,
     "aiTag": "protected",
     "edu": "doctorate",
@@ -18393,12 +19856,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "vocational",
       "any"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "35-2010",
+      "baseYear": "2025",
+      "medianPay": 36640,
+      "medianPayHourly": 17.62,
+      "payP10": null,
+      "payP90": 22,
+      "numberOfJobs": 2705800,
+      "growthPct": 7,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 183200,
+      "annualOpenings": 393200,
+      "entryEducation": null,
+      "relatedExperience": null,
+      "onTheJobTraining": null,
+      "workEnvironment": "Cooks work in restaurants, schools, hospitals, private households, and other places where food is prepared and served. Their work hours may include early mornings, late evenings, holidays, and weekends. Most cooks work full time, although part-time work is common."
+    }
   },
   {
     "id": "ooh-78-correctional-officers-and-bailiffs",
     "cat": "law",
-    "catName": "Public Safety & Defense",
+    "catName": "Law & Public Safety",
     "icon": "🛡️",
     "title": "Correctional Officers and Bailiffs",
     "tagline": "Oversee individuals awaiting trial or serving sentences in correctional facilities.",
@@ -18535,7 +20017,26 @@ window.CAREERS_ALL = [
     "degrees": [
       "law",
       "any"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "33-3010",
+      "baseYear": "2025",
+      "medianPay": 58850,
+      "medianPayHourly": 28.3,
+      "payP10": 32140,
+      "payP90": 96770,
+      "numberOfJobs": 415800,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Working in a correctional institution can be stressful and dangerous. Correctional officers work in shifts that cover all hours of the day and night, including weekends and holidays. Bailiffs usually work when court is in session."
+    }
   },
   {
     "id": "ooh-79-cost-estimators",
@@ -18668,12 +20169,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "13-1051",
+      "baseYear": "2025",
+      "medianPay": 78740,
+      "medianPayHourly": 37.86,
+      "payP10": 48530,
+      "payP90": 130820,
+      "numberOfJobs": 226400,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Cost estimators work mostly in office settings, and some estimators also visit construction sites and factory assembly lines. Most cost estimators work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-80-court-reporters-and-simultaneous-captioners",
     "cat": "law",
-    "catName": "Legal",
+    "catName": "Law & Public Safety",
     "icon": "⚖️",
     "title": "Court Reporters and Simultaneous Captioners",
     "tagline": "Reporters create word-for-word transcriptions at trials, depositions, and other legal proceedings.",
@@ -18681,7 +20201,7 @@ window.CAREERS_ALL = [
     "stream": "Arts & Humanities",
     "salary": "Entry: $52K / ₹4-8 LPA · Mid: $72K / ₹11-23 LPA · Lead: $138K+ / ₹39 LPA+",
     "growth": "0% (Little or no change)",
-    "demand": "Steady",
+    "demand": "Declining",
     "aiImpact": "Search And Summary Are Automated — AI reads contracts and case history in seconds. Argument, strategy, ethics and the responsibility of advising a client stay with the lawyer.",
     "overview": "Court reporters create word-for-word transcriptions at trials, depositions, administrative hearings, and other legal proceedings. Simultaneous captioners provide similar transcriptions for television or for presentations in other settings, such as press conferences and business meetings, for people who are deaf or hard of hearing.",
     "url": "https://www.bls.gov/ooh/legal/court-reporters.htm",
@@ -18787,7 +20307,7 @@ window.CAREERS_ALL = [
       "Harvard Law Review",
       "Supreme Court Cases (SCC Online)"
     ],
-    "growthYears": "",
+    "growthYears": "2025–2035",
     "openings": "19,900",
     "medianPay": 72420,
     "aiTag": "automation",
@@ -18802,12 +20322,31 @@ window.CAREERS_ALL = [
       "arts",
       "law",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "27-3092",
+      "baseYear": "2025",
+      "medianPay": 72420,
+      "medianPayHourly": 34.82,
+      "payP10": 42130,
+      "payP90": 130560,
+      "numberOfJobs": 19900,
+      "growthPct": 0,
+      "growthLabel": "Little or no change",
+      "growthYears": "2025–2035",
+      "employmentChange": 0,
+      "annualOpenings": null,
+      "entryEducation": "Postsecondary nondegree award",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Short-term on-the-job training",
+      "workEnvironment": "Most court reporters work in courts or legislatures; simultaneous captioners may work from their home or a central office. Some court reporters and simultaneous captioners travel to other locations, such as meeting sites or public events."
+    }
   },
   {
     "id": "ooh-81-craft-and-fine-artists",
     "cat": "creative",
-    "catName": "Arts & Design",
+    "catName": "Creative Arts & Design",
     "icon": "🎨",
     "title": "Craft and Fine Artists",
     "tagline": "Use a variety of materials and techniques to create art for sale and exhibition.",
@@ -18960,7 +20499,26 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "27-1012",
+      "baseYear": "2025",
+      "medianPay": 55290,
+      "medianPayHourly": 26.58,
+      "payP10": 31490,
+      "payP90": 131810,
+      "numberOfJobs": 53400,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": null,
+      "relatedExperience": "None",
+      "onTheJobTraining": "Long-term on-the-job training",
+      "workEnvironment": "Many artists work in fine- or commercial-art studios located in office buildings, warehouses, or lofts. Others work in private studios in their homes. Some artists share studio space, where they also may exhibit their work."
+    }
   },
   {
     "id": "ooh-82-credit-counselors",
@@ -19076,7 +20634,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "31,200",
+    "openings": "2,000",
     "medianPay": 52230,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -19088,12 +20646,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "13-2071",
+      "baseYear": "2025",
+      "medianPay": 52230,
+      "medianPayHourly": 25.11,
+      "payP10": 38350,
+      "payP90": 80440,
+      "numberOfJobs": 31200,
+      "growthPct": 3,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 1000,
+      "annualOpenings": 2000,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Most credit counselors work full time. They usually work standard business hours but may need to work in the evenings or on weekends to meet with clients."
+    }
   },
   {
     "id": "ooh-83-customer-service-representatives",
     "cat": "biz",
-    "catName": "Business & Operations",
+    "catName": "Business & Finance",
     "icon": "🎧",
     "title": "Customer Service Representatives",
     "tagline": "Resolve customer account inquiries, handle product complaints, and provide support.",
@@ -19223,12 +20800,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "any"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "43-4051",
+      "baseYear": "2025",
+      "medianPay": 44770,
+      "medianPayHourly": 21.53,
+      "payP10": null,
+      "payP90": 30,
+      "numberOfJobs": 2666000,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Short-term on-the-job training",
+      "workEnvironment": "Customer service representatives are employed in nearly every industry. Most work full time."
+    }
   },
   {
     "id": "ooh-84-dancers-and-choreographers",
     "cat": "creative",
-    "catName": "Sports & Entertainment",
+    "catName": "Creative Arts & Design",
     "icon": "🎨",
     "title": "Dancers and Choreographers",
     "tagline": "Use dance performances to express ideas and stories.",
@@ -19361,12 +20957,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "27-2030",
+      "baseYear": "2025",
+      "medianPay": null,
+      "medianPayHourly": null,
+      "payP10": null,
+      "payP90": 66,
+      "numberOfJobs": 18600,
+      "growthPct": 2,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 400,
+      "annualOpenings": null,
+      "entryEducation": null,
+      "relatedExperience": null,
+      "onTheJobTraining": "Long-term on-the-job training",
+      "workEnvironment": "Part-time work is common for dancers and choreographers. Work schedules may vary and include early mornings, evenings, and weekends. Dancers&rsquo; jobs are often physically demanding. Travel may be required."
+    }
   },
   {
     "id": "ooh-85-database-administrators-and-architects",
     "cat": "tech",
-    "catName": "Technology & IT",
+    "catName": "Technology & AI",
     "icon": "💻",
     "title": "Database Administrators and Architects",
     "tagline": "Create or organize systems to store and secure data.",
@@ -19374,7 +20989,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $91K / ₹9-15 LPA · Mid: $127K / ₹23-39 LPA · Lead: $241K+ / ₹61 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "Tools Write More Of The Code — Copilots and agents draft, test and refactor code, which raises what a developer is expected to ship. Designing the system, reviewing what the machine produced, and owning failures still sit with a person.",
     "overview": "Database administrators and architects create or organize systems to store and secure a variety of data, such as financial information and customer shipping records. They also make sure that the data are available to authorized users.",
     "url": "https://www.bls.gov/ooh/computer-and-information-technology/database-administrators.htm",
@@ -19485,7 +21100,7 @@ window.CAREERS_ALL = [
       "O’Reilly Learning Platform"
     ],
     "growthYears": "2025–2035",
-    "openings": "144,500",
+    "openings": "7,300",
     "medianPay": 126760,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -19500,12 +21115,31 @@ window.CAREERS_ALL = [
       "computing",
       "science",
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "15-1242",
+      "baseYear": "2025",
+      "medianPay": 126760,
+      "medianPayHourly": 60.94,
+      "payP10": 60230,
+      "payP90": 163320,
+      "numberOfJobs": 144500,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 6500,
+      "annualOpenings": 7300,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": null,
+      "onTheJobTraining": "None",
+      "workEnvironment": "Many database administrators and architects work in firms that provide computer design services or in industries that have large databases, such educational institutions and insurance companies. Most database administrators and architects work full time."
+    }
   },
   {
     "id": "ooh-86-data-scientists",
     "cat": "tech",
-    "catName": "Math & Statistics",
+    "catName": "Technology & AI",
     "icon": "💻",
     "title": "Data Scientists",
     "tagline": "Use analytical tools and techniques to extract meaningful insights from data.",
@@ -19513,7 +21147,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $87K / ₹9-14 LPA · Mid: $120K / ₹21-37 LPA · Lead: $228K+ / ₹58 LPA+",
     "growth": "35% (Much faster than average)",
-    "demand": "Extreme",
+    "demand": "Very High",
     "aiImpact": "Tools Write More Of The Code — Copilots and agents draft, test and refactor code, which raises what a developer is expected to ship. Designing the system, reviewing what the machine produced, and owning failures still sit with a person.",
     "overview": "Data scientists use analytical tools and techniques to extract meaningful insights from data.",
     "url": "https://www.bls.gov/ooh/math/data-scientists.htm",
@@ -19616,7 +21250,7 @@ window.CAREERS_ALL = [
       "O’Reilly Learning Platform"
     ],
     "growthYears": "2025–2035",
-    "openings": "275,600",
+    "openings": "24,800",
     "medianPay": 120230,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -19632,12 +21266,31 @@ window.CAREERS_ALL = [
       "computing",
       "science",
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "15-2051",
+      "baseYear": "2025",
+      "medianPay": 120230,
+      "medianPayHourly": 57.8,
+      "payP10": 67240,
+      "payP90": 199130,
+      "numberOfJobs": 275600,
+      "growthPct": 35,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 95400,
+      "annualOpenings": 24800,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Data scientists spend much of their time in an office setting. Most work full time."
+    }
   },
   {
     "id": "ooh-87-delivery-truck-drivers-and-driversales-workers",
     "cat": "trades",
-    "catName": "Transportation & Logistics",
+    "catName": "Skilled Trades & Craft",
     "icon": "🚚",
     "title": "Delivery Truck Drivers and Driver/sales Workers",
     "tagline": "Transport merchandise, parcels, and food products across local and regional delivery routes.",
@@ -19645,7 +21298,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $32K / ₹2-4 LPA · Mid: $44K / ₹7-12 LPA · Lead: $84K+ / ₹19 LPA+",
     "growth": "7% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Dock Navigation & Last-Mile Handling — Routing software plans optimal delivery order, but maneuvering tight alleys, hand-carrying packages through apartment stairwells, and securing customer sign-offs require human physical presence.",
     "overview": "Delivery truck drivers and driver/sales workers pick up, transport, and drop off packages and small shipments within a local region or urban area. They drive trucks weighing less than 26,001 pounds total for vehicle, passengers, and cargo. Delivery truck drivers usually transport merchandise from a distribution center to businesses and households.",
     "url": "https://www.bls.gov/ooh/transportation-and-material-moving/delivery-truck-drivers-and-driver-sales-workers.htm",
@@ -19755,7 +21408,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "1,511,400",
+    "openings": "152,700",
     "medianPay": 43950,
     "aiTag": "protected",
     "edu": "nodegree",
@@ -19765,12 +21418,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "vocational",
       "any"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "53-3031",
+      "baseYear": "2025",
+      "medianPay": 43950,
+      "medianPayHourly": 21.13,
+      "payP10": 22590,
+      "payP90": 59980,
+      "numberOfJobs": 1511400,
+      "growthPct": 7,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 103000,
+      "annualOpenings": 152700,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Short-term on-the-job training",
+      "workEnvironment": "Delivery truck drivers and driver/sales workers have a physically demanding job. Driving a truck for long periods can be tiring. When loading and unloading cargo, drivers do a lot of lifting, carrying, and walking."
+    }
   },
   {
     "id": "ooh-88-dental-and-ophthalmic-laboratory-technicians-and-medical-appliance-technicians",
     "cat": "health",
-    "catName": "Healthcare Technology",
+    "catName": "Healthcare & Medicine",
     "icon": "🦷",
     "title": "Dental and Ophthalmic Laboratory Technicians and Medical Appliance Technicians",
     "tagline": "Fabricate custom dental crowns, orthodontic bridges, prescription eyeglasses, and prostheses.",
@@ -19921,12 +21593,31 @@ window.CAREERS_ALL = [
       "vocational",
       "health",
       "engineering"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "51-9080",
+      "baseYear": "2025",
+      "medianPay": 47060,
+      "medianPayHourly": 22.63,
+      "payP10": 35230,
+      "payP90": 74440,
+      "numberOfJobs": 64300,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Dental and ophthalmic laboratory technicians and medical appliance technicians usually work in clean, well-lighted spaces and may spend time standing or bending. Most work full time, and schedules may vary."
+    }
   },
   {
     "id": "ooh-89-dental-assistants",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🦷",
     "title": "Dental Assistants",
     "tagline": "Provide patient care, take x rays, keep records, and schedule appointments.",
@@ -19934,7 +21625,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $35K / ₹3-5 LPA · Mid: $48K / ₹7-13 LPA · Lead: $91K+ / ₹21 LPA+",
     "growth": "7% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Direct Patient Care & Equipment Operation — Electronic charts log patient records, but physically positioning patients, applying sterile dressings, and calming nervous patients require compassionate hands-on care.",
     "overview": "Dental assistants have many tasks, including patient care, recordkeeping, and appointment scheduling. Their duties vary by state and by the dentists' offices in which they work.",
     "url": "https://www.bls.gov/ooh/healthcare/dental-assistants.htm",
@@ -20052,7 +21743,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "388,600",
+    "openings": "53,000",
     "medianPay": 48070,
     "aiTag": "people",
     "edu": "diploma",
@@ -20062,12 +21753,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "health",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "31-9091",
+      "baseYear": "2025",
+      "medianPay": 48070,
+      "medianPayHourly": 23.11,
+      "payP10": 37130,
+      "payP90": 62250,
+      "numberOfJobs": 388600,
+      "growthPct": 7,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 28800,
+      "annualOpenings": 53000,
+      "entryEducation": "Postsecondary nondegree award",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Almost all dental assistants work in dentists&rsquo; offices. Most work full time."
+    }
   },
   {
     "id": "ooh-90-dental-hygienists",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🦷",
     "title": "Dental Hygienists",
     "tagline": "Examine patients for signs of oral diseases, such as gingivitis, and provide preventive care, including oral hygiene.",
@@ -20075,7 +21785,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $71K / ₹7-10 LPA · Mid: $98K / ₹15-27 LPA · Lead: $186K+ / ₹44 LPA+",
     "growth": "8% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Diagnostics Are Assisted — Imaging, lab results and records are increasingly read by software first. Examination, procedures, consent and the conversation with the patient are not.",
     "overview": "Dental hygienists examine patients for signs of oral diseases, such as gingivitis, and provide preventive care, including oral hygiene. They also educate patients about oral health.",
     "url": "https://www.bls.gov/ooh/healthcare/dental-hygienists.htm",
@@ -20185,7 +21895,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "225,300",
+    "openings": "15,000",
     "medianPay": 98100,
     "aiTag": "people",
     "edu": "diploma",
@@ -20195,7 +21905,26 @@ window.CAREERS_ALL = [
     "degrees": [
       "health",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-1292",
+      "baseYear": "2025",
+      "medianPay": 98100,
+      "medianPayHourly": 47.16,
+      "payP10": 74880,
+      "payP90": 126050,
+      "numberOfJobs": 225300,
+      "growthPct": 8,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 17900,
+      "annualOpenings": 15000,
+      "entryEducation": "Associate's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Nearly all dental hygienists work in dentists&rsquo; offices, and many work part time."
+    }
   },
   {
     "id": "ooh-91-dentists",
@@ -20208,7 +21937,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $127K / ₹12-18 LPA · Mid: $176K / ₹27-49 LPA · Lead: $335K+ / ₹78 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Micro-Surgical Tactile Precision — Digital intraoral scanners create 3D tooth models, but excavating decay within millimeters of nerve pulp, placing implants, and crown preparations require micro-millimeter tactile touch.",
     "overview": "Dentists diagnose and treat problems with patients' teeth, gums, and related parts of the mouth. They provide advice and instruction on taking care of the teeth and gums and on diet choices that affect oral health.",
     "url": "https://www.bls.gov/ooh/healthcare/dentists.htm",
@@ -20328,7 +22057,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "161,400",
+    "openings": "4,800",
     "medianPay": 176110,
     "aiTag": "protected",
     "edu": "doctorate",
@@ -20339,12 +22068,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "health"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-1020",
+      "baseYear": "2025",
+      "medianPay": 176110,
+      "medianPayHourly": 84.67,
+      "payP10": 89100,
+      "payP90": 337210,
+      "numberOfJobs": 161400,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 9000,
+      "annualOpenings": 4800,
+      "entryEducation": "Doctoral or professional degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": null,
+      "workEnvironment": "Some dentists have their own business and work alone or with a small staff. Other dentists have partners in their practice. Still others work as associate dentists for established dental practices."
+    }
   },
   {
     "id": "ooh-92-desktop-publishers",
     "cat": "biz",
-    "catName": "Office & Admin",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Desktop Publishers",
     "tagline": "Use computer software to design page layouts for items that are printed or published online.",
@@ -20475,12 +22223,31 @@ window.CAREERS_ALL = [
       "commerce",
       "management",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "43-9031",
+      "baseYear": "2025",
+      "medianPay": 55290,
+      "medianPayHourly": 26.58,
+      "payP10": 35680,
+      "payP90": 96170,
+      "numberOfJobs": 4600,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "Associate's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Short-term on-the-job training",
+      "workEnvironment": "Most desktop publishers work full time. They usually work in an office setting."
+    }
   },
   {
     "id": "ooh-93-diagnostic-medical-sonographers",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Diagnostic Medical Sonographers",
     "tagline": "Operate ultrasound equipment to create images of inside the body.",
@@ -20488,7 +22255,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $70K / ₹6-10 LPA · Mid: $97K / ₹15-27 LPA · Lead: $184K+ / ₹43 LPA+",
     "growth": "14% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Diagnostics Are Assisted — Imaging, lab results and records are increasingly read by software first. Examination, procedures, consent and the conversation with the patient are not.",
     "overview": "Diagnostic medical sonographers, also called ultrasound technicians, operate special equipment to create images of inside the body. They work closely with physicians and surgeons , who view the images to assess and diagnose medical conditions.",
     "url": "https://www.bls.gov/ooh/healthcare/diagnostic-medical-sonographers.htm",
@@ -20602,7 +22369,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "92,200",
+    "openings": "6,000",
     "medianPay": 96590,
     "aiTag": "people",
     "edu": "diploma",
@@ -20613,12 +22380,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "health",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-2032",
+      "baseYear": "2025",
+      "medianPay": 96590,
+      "medianPayHourly": 46.44,
+      "payP10": 67820,
+      "payP90": 129370,
+      "numberOfJobs": 92200,
+      "growthPct": 14,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 12900,
+      "annualOpenings": 6000,
+      "entryEducation": "Associate's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Diagnostic medical sonographers usually work in healthcare settings, such as hospitals and offices of physicians. Most work full time."
+    }
   },
   {
     "id": "ooh-94-diesel-service-technicians-and-mechanics",
     "cat": "trades",
-    "catName": "Installation & Repair",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Diesel Service Technicians and Mechanics",
     "tagline": "Inspect, repair, and overhaul buses, trucks, or any vehicle with a diesel engine.",
@@ -20626,7 +22412,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $44K / ₹4-6 LPA · Mid: $62K / ₹10-17 LPA · Lead: $117K+ / ₹27 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "The Work Is Physical — Every job is a different room, a different fault, a different set of tools. Work in unstandardised physical spaces is the hardest thing for software to take over.",
     "overview": "Diesel service technicians and mechanics (also known as diesel technicians) inspect, repair, or overhaul buses and trucks, or maintain and repair any type of diesel engine.",
     "url": "https://www.bls.gov/ooh/installation-maintenance-and-repair/diesel-service-technicians-and-mechanics.htm",
@@ -20733,7 +22519,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "316,000",
+    "openings": "24,400",
     "medianPay": 61770,
     "aiTag": "protected",
     "edu": "nodegree",
@@ -20745,12 +22531,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "49-3031",
+      "baseYear": "2025",
+      "medianPay": 61770,
+      "medianPayHourly": 29.7,
+      "payP10": 44530,
+      "payP90": 88740,
+      "numberOfJobs": 316000,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 11400,
+      "annualOpenings": 24400,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Long-term on-the-job training",
+      "workEnvironment": "Diesel service technicians and mechanics usually work in well-ventilated and sometimes noisy repair shops. They occasionally repair vehicles on roadsides or at worksites. Most diesel technicians work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-95-dietitians-and-nutritionists",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Dietitians and Nutritionists",
     "tagline": "Plan and conduct food service or nutritional programs to help people lead healthy lives.",
@@ -20758,7 +22563,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $55K / ₹5-8 LPA · Mid: $76K / ₹12-21 LPA · Lead: $145K+ / ₹34 LPA+",
     "growth": "8% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Diagnostics Are Assisted — Imaging, lab results and records are increasingly read by software first. Examination, procedures, consent and the conversation with the patient are not.",
     "overview": "Dietitians and nutritionists are experts in the use of food and nutrition to promote health and manage disease. They plan and conduct food service or nutritional programs to help people lead healthy lives.",
     "url": "https://www.bls.gov/ooh/healthcare/dietitians-and-nutritionists.htm",
@@ -20870,7 +22675,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "86,300",
+    "openings": "5,700",
     "medianPay": 76400,
     "aiTag": "people",
     "edu": "bachelor",
@@ -20881,12 +22686,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "health"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-1031",
+      "baseYear": "2025",
+      "medianPay": 76400,
+      "medianPayHourly": 36.73,
+      "payP10": 49090,
+      "payP90": 103720,
+      "numberOfJobs": 86300,
+      "growthPct": 8,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 6700,
+      "annualOpenings": 5700,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Internship/residency",
+      "workEnvironment": "Dietitians and nutritionists work in many settings, including hospitals, nursing homes, clinics, cafeterias, and for state and local governments."
+    }
   },
   {
     "id": "ooh-96-drafters",
     "cat": "eng",
-    "catName": "Engineering",
+    "catName": "Engineering & Robotics",
     "icon": "⚙️",
     "title": "Drafters",
     "tagline": "Use software to convert the designs of engineers and architects into technical drawings.",
@@ -21033,12 +22857,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "17-3010",
+      "baseYear": "2025",
+      "medianPay": 68090,
+      "medianPayHourly": 32.74,
+      "payP10": 46700,
+      "payP90": 102590,
+      "numberOfJobs": 180200,
+      "growthPct": 1,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 1100,
+      "annualOpenings": null,
+      "entryEducation": "Associate's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Although drafters spend much of their time working on computers in an office, some may visit jobsites in order to collaborate with architects and engineers. Most drafters work full time."
+    }
   },
   {
     "id": "ooh-97-drywall-installers-ceiling-tile-installers-and-tapers",
     "cat": "trades",
-    "catName": "Construction & Trades",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Drywall Installers, Ceiling Tile Installers, and Tapers",
     "tagline": "And ceiling tile installers hang wallboard and install ceiling tile inside buildings.",
@@ -21174,12 +23017,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "47-2080",
+      "baseYear": "2025",
+      "medianPay": 59780,
+      "medianPayHourly": 28.74,
+      "payP10": 38460,
+      "payP90": 102010,
+      "numberOfJobs": 118000,
+      "growthPct": 2,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 2300,
+      "annualOpenings": null,
+      "entryEducation": "No formal educational credential",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Drywall installers, ceiling tile installers, and tapers work indoors. Workers spend most of the day standing, bending, or reaching, and they often must lift and maneuver heavy wallboard."
+    }
   },
   {
     "id": "ooh-98-economists",
     "cat": "biz",
-    "catName": "Economics & Financial Risk",
+    "catName": "Business & Finance",
     "icon": "📈",
     "title": "Economists",
     "tagline": "Model macroeconomic trends, evaluate public policies, and forecast market behaviour.",
@@ -21187,7 +23049,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $90K / ₹10-15 LPA · Mid: $125K / ₹21-36 LPA · Lead: $237K+ / ₹58 LPA+",
     "growth": "5% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Policy Interpretation & Incentive Modeling — Econometric algorithms run regressions rapidly, but framing behavioral hypotheses, interpreting market shocks, and advising policy makers remain expert human domains.",
     "overview": "Economists conduct research, prepare reports, and evaluate issues related to monetary and fiscal policy. They also may collect and analyze statistical data.",
     "url": "https://www.bls.gov/ooh/life-physical-and-social-science/economists.htm",
@@ -21299,7 +23161,7 @@ window.CAREERS_ALL = [
       "European Space Agency (ESA) Portals"
     ],
     "growthYears": "2025–2035",
-    "openings": "18,600",
+    "openings": "1,100",
     "medianPay": 124720,
     "aiTag": "automation",
     "edu": "master",
@@ -21312,12 +23174,31 @@ window.CAREERS_ALL = [
       "commerce",
       "science",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "19-3011",
+      "baseYear": "2025",
+      "medianPay": 124720,
+      "medianPayHourly": 59.96,
+      "payP10": 67360,
+      "payP90": 238060,
+      "numberOfJobs": 18600,
+      "growthPct": 5,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 900,
+      "annualOpenings": 1100,
+      "entryEducation": "Master's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Economists typically work in an office setting, either independently or collaborating with a variety of other workers. Most economists work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-99-editors",
     "cat": "creative",
-    "catName": "Media & Communication",
+    "catName": "Creative Arts & Design",
     "icon": "🎨",
     "title": "Editors",
     "tagline": "Plan, review, and revise content for publication.",
@@ -21451,12 +23332,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "27-3041",
+      "baseYear": "2025",
+      "medianPay": 77920,
+      "medianPayHourly": 37.46,
+      "payP10": 41250,
+      "payP90": 153700,
+      "numberOfJobs": 105000,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "Less than 5 years",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most editors work in offices, whether onsite with their employer or from a remote location. The work can be stressful because editors often have tight deadlines."
+    }
   },
   {
     "id": "ooh-100-electrical-and-electronic-engineering-technologists-and-technicians",
     "cat": "eng",
-    "catName": "Engineering",
+    "catName": "Engineering & Robotics",
     "icon": "⚙️",
     "title": "Electrical and Electronic Engineering Technologists and Technicians",
     "tagline": "Help engineers design and develop equipment that is powered by electricity or electric current.",
@@ -21587,12 +23487,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "17-3023",
+      "baseYear": "2025",
+      "medianPay": 78190,
+      "medianPayHourly": 37.59,
+      "payP10": 49510,
+      "payP90": 115700,
+      "numberOfJobs": 96900,
+      "growthPct": 2,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 2300,
+      "annualOpenings": null,
+      "entryEducation": "Associate's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Electrical and electronic engineering technologists and technicians work on teams with electrical engineers. They may work in offices, laboratories, or factories. Most work full time."
+    }
   },
   {
     "id": "ooh-101-electrical-and-electronics-engineers",
     "cat": "eng",
-    "catName": "Engineering",
+    "catName": "Engineering & Robotics",
     "icon": "⚙️",
     "title": "Electrical and Electronics Engineers",
     "tagline": "Design, develop, and test electrical and electronic equipment, components, and systems.",
@@ -21600,7 +23519,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $90K / ₹8-15 LPA · Mid: $125K / ₹21-36 LPA · Lead: $238K+ / ₹57 LPA+",
     "growth": "8% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Software Explores The Options — Generative design and simulation run thousands of variants quickly. Choosing one, checking it against physics, safety rules and cost, and signing it off stays human.",
     "overview": "Electrical and electronics engineers design, develop, and test electrical and electronic equipment, components, and systems.",
     "url": "https://www.bls.gov/ooh/architecture-and-engineering/electrical-and-electronics-engineers.htm",
@@ -21713,7 +23632,7 @@ window.CAREERS_ALL = [
       "National Society of Professional Engineers (NSPE)"
     ],
     "growthYears": "2025–2035",
-    "openings": "297,900",
+    "openings": "16,300",
     "medianPay": 125040,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -21724,12 +23643,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "engineering"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "17-2070",
+      "baseYear": "2025",
+      "medianPay": 125040,
+      "medianPayHourly": 60.12,
+      "payP10": 76550,
+      "payP90": 184300,
+      "numberOfJobs": 297900,
+      "growthPct": 8,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 23400,
+      "annualOpenings": 16300,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Electrical and electronics engineers generally work in an office setting. Travel may be required, such as to visit project sites. Most work full time."
+    }
   },
   {
     "id": "ooh-102-electrical-and-electronics-installers-and-repairers",
     "cat": "trades",
-    "catName": "Installation & Repair",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Electrical and Electronics Installers and Repairers",
     "tagline": "Install, adjust, or maintain a variety of electrical and electronic equipment.",
@@ -21876,12 +23814,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "49-2092",
+      "baseYear": "2025",
+      "medianPay": 74490,
+      "medianPayHourly": 35.81,
+      "payP10": 44940,
+      "payP90": 114240,
+      "numberOfJobs": 117700,
+      "growthPct": 2,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 2000,
+      "annualOpenings": null,
+      "entryEducation": null,
+      "relatedExperience": null,
+      "onTheJobTraining": null,
+      "workEnvironment": "Many electrical and electronics installers and repairers work in repair shops or in factories. Installers and repairers may have to lift heavy equipment and work in awkward positions. Most work full time."
+    }
   },
   {
     "id": "ooh-103-electrical-power-line-installers-and-repairers",
     "cat": "trades",
-    "catName": "Installation & Repair",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Electrical Power-line Installers and Repairers",
     "tagline": "Install or repair cables or wires used in electrical power or distribution systems.",
@@ -21889,7 +23846,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $69K / ₹5-10 LPA · Mid: $95K / ₹15-26 LPA · Lead: $181K+ / ₹41 LPA+",
     "growth": "10% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "The Work Is Physical — Every job is a different room, a different fault, a different set of tools. Work in unstandardised physical spaces is the hardest thing for software to take over.",
     "overview": "Electrical power-line installers and repairers install or repair cables or wires used in electrical power or distribution systems. They also may erect poles or transmission towers.",
     "url": "https://www.bls.gov/ooh/installation-maintenance-and-repair/line-installers-and-repairers.htm",
@@ -21994,7 +23951,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "131,900",
+    "openings": "10,900",
     "medianPay": 95320,
     "aiTag": "protected",
     "edu": "nodegree",
@@ -22005,12 +23962,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "49-9051",
+      "baseYear": "2025",
+      "medianPay": 95320,
+      "medianPayHourly": 45.83,
+      "payP10": 51470,
+      "payP90": 128690,
+      "numberOfJobs": 131900,
+      "growthPct": 10,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 13600,
+      "annualOpenings": 10900,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Long-term on-the-job training",
+      "workEnvironment": "Electrical power-line installers and repairers encounter serious hazards on the job, including working with high-voltage electricity, often at great heights. The work also can be physically demanding. Most electrical power-line installers and repairers work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-104-electricians",
     "cat": "trades",
-    "catName": "Construction & Trades",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Electricians",
     "tagline": "Install, maintain, and repair electrical power, communications, lighting, and control systems.",
@@ -22018,7 +23994,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $45K / ₹4-6 LPA · Mid: $63K / ₹10-17 LPA · Lead: $120K+ / ₹27 LPA+",
     "growth": "9% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "The Work Is Physical — Every job is a different room, a different fault, a different set of tools. Work in unstandardised physical spaces is the hardest thing for software to take over.",
     "overview": "Electricians install, maintain, and repair electrical power, communications, lighting, and control systems in homes, businesses, and factories.",
     "url": "https://www.bls.gov/ooh/construction-and-extraction/electricians.htm",
@@ -22129,7 +24105,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "821,000",
+    "openings": "72,700",
     "medianPay": 63190,
     "aiTag": "protected",
     "edu": "nodegree",
@@ -22140,12 +24116,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "47-2111",
+      "baseYear": "2025",
+      "medianPay": 63190,
+      "medianPayHourly": 30.38,
+      "payP10": 42640,
+      "payP90": 108510,
+      "numberOfJobs": 821000,
+      "growthPct": 9,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 75900,
+      "annualOpenings": 72700,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Apprenticeship",
+      "workEnvironment": "Almost all electricians work full time. Work schedules may include evenings and weekends. Overtime is common."
+    }
   },
   {
     "id": "ooh-105-electro-mechanical-and-mechatronics-technologists-and-technicians",
     "cat": "eng",
-    "catName": "Engineering",
+    "catName": "Engineering & Robotics",
     "icon": "⚙️",
     "title": "Electro-mechanical and Mechatronics Technologists and Technicians",
     "tagline": "Operate, test, and maintain electromechanical or robotic equipment.",
@@ -22261,7 +24256,7 @@ window.CAREERS_ALL = [
       "National Society of Professional Engineers (NSPE)"
     ],
     "growthYears": "2025–2035",
-    "openings": "15,700",
+    "openings": "1,400",
     "medianPay": 73900,
     "aiTag": "automation",
     "edu": "diploma",
@@ -22272,12 +24267,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "17-3024",
+      "baseYear": "2025",
+      "medianPay": 73900,
+      "medianPayHourly": 35.53,
+      "payP10": 47840,
+      "payP90": 109890,
+      "numberOfJobs": 15700,
+      "growthPct": 3,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 400,
+      "annualOpenings": 1400,
+      "entryEducation": "Associate's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Electro-mechanical and mechatronics technologists and technicians work with electrical and mechanical engineers. Most work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-106-elementary-middle-and-high-school-principals",
     "cat": "biz",
-    "catName": "Management",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Elementary, Middle, and High School Principals",
     "tagline": "Oversee all school operations, including daily school activities.",
@@ -22285,7 +24299,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $76K / ₹8-14 LPA · Mid: $106K / ₹21-38 LPA · Lead: $201K+ / ₹58 LPA+",
     "growth": "0% (Little or no change)",
-    "demand": "Steady",
+    "demand": "Declining",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Elementary, middle, and high school principals oversee all school operations, including daily school activities. They coordinate curriculums, manage staff, and provide a safe and productive learning environment for students.",
     "url": "https://www.bls.gov/ooh/management/elementary-middle-and-high-school-principals.htm",
@@ -22393,7 +24407,7 @@ window.CAREERS_ALL = [
       "Financial Times",
       "Wall Street Journal"
     ],
-    "growthYears": "",
+    "growthYears": "2025–2035",
     "openings": "343,800",
     "medianPay": 105870,
     "aiTag": "automation",
@@ -22406,12 +24420,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "11-9032",
+      "baseYear": "2025",
+      "medianPay": 105870,
+      "medianPayHourly": null,
+      "payP10": 76280,
+      "payP90": 167770,
+      "numberOfJobs": 343800,
+      "growthPct": 0,
+      "growthLabel": "Little or no change",
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "Master's degree",
+      "relatedExperience": "5 years or more",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Principals work in public and private elementary, middle, and high schools. Typically, principals work year round."
+    }
   },
   {
     "id": "ooh-107-elevator-and-escalator-installers-and-repairers",
     "cat": "trades",
-    "catName": "Construction & Trades",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Elevator and Escalator Installers and Repairers",
     "tagline": "Install, maintain, and fix elevators, escalators, moving walkways, and other lifts.",
@@ -22419,7 +24452,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $79K / ₹6-11 LPA · Mid: $110K / ₹17-30 LPA · Lead: $209K+ / ₹47 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "The Work Is Physical — Every job is a different room, a different fault, a different set of tools. Work in unstandardised physical spaces is the hardest thing for software to take over.",
     "overview": "Elevator and escalator installers and repairers install, maintain, and fix elevators, escalators, moving walkways, and other lifts.",
     "url": "https://www.bls.gov/ooh/construction-and-extraction/elevator-installers-and-repairers.htm",
@@ -22530,7 +24563,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "24,700",
+    "openings": "1,900",
     "medianPay": 109910,
     "aiTag": "protected",
     "edu": "nodegree",
@@ -22541,12 +24574,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "47-4021",
+      "baseYear": "2025",
+      "medianPay": 109910,
+      "medianPayHourly": 52.84,
+      "payP10": 59270,
+      "payP90": 158890,
+      "numberOfJobs": 24700,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 1400,
+      "annualOpenings": 1900,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Apprenticeship",
+      "workEnvironment": "Elevator and escalator installers and repairers often work in cramped areas inside crawl spaces and machine rooms, and they may work at heights in elevator shafts. Most elevator and escalator installers and repairers work full time. Repairers may be on call 24 hours a day or may need to work overtime."
+    }
   },
   {
     "id": "ooh-108-emergency-management-directors",
     "cat": "biz",
-    "catName": "Management",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Emergency Management Directors",
     "tagline": "Prepare plans and procedures for responding to natural disasters or other emergencies.",
@@ -22554,7 +24606,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $67K / ₹7-12 LPA · Mid: $93K / ₹18-34 LPA · Lead: $177K+ / ₹51 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Emergency management directors prepare plans and procedures for responding to natural disasters and other emergencies. They also help lead the response during and after emergencies, often in coordination with public safety officials, elected officials, nonprofit organizations, and government agencies.",
     "url": "https://www.bls.gov/ooh/management/emergency-management-directors.htm",
@@ -22666,7 +24718,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "14,000",
+    "openings": "1,100",
     "medianPay": 93330,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -22676,12 +24728,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "11-9161",
+      "baseYear": "2025",
+      "medianPay": 93330,
+      "medianPayHourly": 44.87,
+      "payP10": 54210,
+      "payP90": 166430,
+      "numberOfJobs": 14000,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 500,
+      "annualOpenings": 1100,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "5 years or more",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most emergency management directors work for local or state governments. Others work for organizations such as hospitals, colleges and universities, or private companies."
+    }
   },
   {
     "id": "ooh-109-emts-and-paramedics",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Emts and Paramedics",
     "tagline": "Emergency medical technicians (EMTs) and paramedics assess injuries and illnesses, provide emergency medical care, and may transport patients to medical facilities.",
@@ -22689,7 +24760,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $35K / ₹3-5 LPA · Mid: $48K / ₹7-13 LPA · Lead: $91K+ / ₹21 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Diagnostics Are Assisted — Imaging, lab results and records are increasingly read by software first. Examination, procedures, consent and the conversation with the patient are not.",
     "overview": "Emergency medical technicians (EMTs) and paramedics assess injuries and illnesses, provide emergency medical care, and may transport patients to medical facilities.",
     "url": "https://www.bls.gov/ooh/healthcare/emts-and-paramedics.htm",
@@ -22805,7 +24876,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "284,100",
+    "openings": "18,200",
     "medianPay": 48150,
     "aiTag": "people",
     "edu": "diploma",
@@ -22816,12 +24887,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "health",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-2040",
+      "baseYear": "2025",
+      "medianPay": 48150,
+      "medianPayHourly": 23.15,
+      "payP10": 34130,
+      "payP90": 62500,
+      "numberOfJobs": 284100,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 16400,
+      "annualOpenings": 18200,
+      "entryEducation": "Postsecondary nondegree award",
+      "relatedExperience": null,
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most EMTs and paramedics work full time, and some work more than 40 hours per week. Schedules may vary to include nights, weekends, and holidays. Their work may be physically strenuous and stressful, sometimes involving life-or-death situations."
+    }
   },
   {
     "id": "ooh-110-entertainment-and-recreation-managers",
     "cat": "biz",
-    "catName": "Management",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Entertainment and Recreation Managers",
     "tagline": "Plan, direct, and coordinate activities and operations related to fitness and leisure.",
@@ -22829,7 +24919,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $57K / ₹6-11 LPA · Mid: $80K / ₹15-29 LPA · Lead: $151K+ / ₹43 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Entertainment and recreation managers plan, direct, or coordinate activities and operations related to fitness and leisure.",
     "url": "https://www.bls.gov/ooh/management/entertainment-and-recreation-managers.htm",
@@ -22940,7 +25030,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "43,900",
+    "openings": "5,100",
     "medianPay": 79520,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -22953,12 +25043,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "11-9072",
+      "baseYear": "2025",
+      "medianPay": 79520,
+      "medianPayHourly": 38.23,
+      "payP10": 46270,
+      "payP90": 139110,
+      "numberOfJobs": 43900,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 2700,
+      "annualOpenings": 5100,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "Less than 5 years",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Entertainment and recreation managers typically work in various office settings, such as in recreational facilities or on cruise ships. However, many also spend time at event sites or outdoors, such as in parks. Most work full time. Work schedules may vary and can include nights, weekends, and holidays."
+    }
   },
   {
     "id": "ooh-111-environmental-engineering-technologists-and-technicians",
     "cat": "eng",
-    "catName": "Engineering",
+    "catName": "Engineering & Robotics",
     "icon": "⚙️",
     "title": "Environmental Engineering Technologists and Technicians",
     "tagline": "Implement the plans that environmental engineers develop.",
@@ -23072,7 +25181,7 @@ window.CAREERS_ALL = [
       "National Society of Professional Engineers (NSPE)"
     ],
     "growthYears": "2025–2035",
-    "openings": "12,500",
+    "openings": "1,100",
     "medianPay": 59920,
     "aiTag": "automation",
     "edu": "diploma",
@@ -23084,12 +25193,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "17-3025",
+      "baseYear": "2025",
+      "medianPay": 59920,
+      "medianPayHourly": 28.81,
+      "payP10": 39910,
+      "payP90": 96660,
+      "numberOfJobs": 12500,
+      "growthPct": 3,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 400,
+      "annualOpenings": 1100,
+      "entryEducation": "Associate's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most environmental engineering technologists and technicians work full time. They may work both indoors and outside and often have regular working hours."
+    }
   },
   {
     "id": "ooh-112-environmental-engineers",
     "cat": "eng",
-    "catName": "Engineering",
+    "catName": "Engineering & Robotics",
     "icon": "⚙️",
     "title": "Environmental Engineers",
     "tagline": "Use engineering disciplines in developing solutions to problems of planetary health.",
@@ -23097,7 +25225,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $77K / ₹7-12 LPA · Mid: $107K / ₹18-31 LPA · Lead: $204K+ / ₹49 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Software Explores The Options — Generative design and simulation run thousands of variants quickly. Choosing one, checking it against physics, safety rules and cost, and signing it off stays human.",
     "overview": "Environmental engineers use engineering disciplines in developing solutions to problems of planetary health. Their work may involve concerns such as waste treatment, site remediation, and pollution control technology.",
     "url": "https://www.bls.gov/ooh/architecture-and-engineering/environmental-engineers.htm",
@@ -23209,7 +25337,7 @@ window.CAREERS_ALL = [
       "National Society of Professional Engineers (NSPE)"
     ],
     "growthYears": "2025–2035",
-    "openings": "39,100",
+    "openings": "2,300",
     "medianPay": 107110,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -23220,12 +25348,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "engineering"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "17-2081",
+      "baseYear": "2025",
+      "medianPay": 107110,
+      "medianPayHourly": 51.5,
+      "payP10": 69990,
+      "payP90": 162220,
+      "numberOfJobs": 39100,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 2400,
+      "annualOpenings": 2300,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Environmental engineers work both in an office setting and in the field. Most work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-113-environmental-science-and-protection-technicians",
     "cat": "space",
-    "catName": "Science & Research",
+    "catName": "Aviation & Aerospace",
     "icon": "🔭",
     "title": "Environmental Science and Protection Technicians",
     "tagline": "Monitor the environment and investigate sources of pollution and contamination, including those affecting public health.",
@@ -23233,7 +25380,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $40K / ₹4-7 LPA · Mid: $55K / ₹9-16 LPA · Lead: $105K+ / ₹25 LPA+",
     "growth": "7% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Models Read The Data First — Machine learning sifts through survey data, images and signals faster than any team. Framing the question, checking the result and deciding what it means is where people stay involved.",
     "overview": "Environmental science and protection technicians monitor the environment and investigate sources of pollution and contamination, including those affecting public health.",
     "url": "https://www.bls.gov/ooh/life-physical-and-social-science/environmental-science-and-protection-technicians.htm",
@@ -23341,7 +25488,7 @@ window.CAREERS_ALL = [
       "European Space Agency (ESA) Portals"
     ],
     "growthYears": "2025–2035",
-    "openings": "36,400",
+    "openings": "5,300",
     "medianPay": 55090,
     "aiTag": "automation",
     "edu": "diploma",
@@ -23356,12 +25503,31 @@ window.CAREERS_ALL = [
       "engineering",
       "science",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "19-4042",
+      "baseYear": "2025",
+      "medianPay": 55090,
+      "medianPayHourly": 26.49,
+      "payP10": 38170,
+      "payP90": 94160,
+      "numberOfJobs": 36400,
+      "growthPct": 7,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 2500,
+      "annualOpenings": 5300,
+      "entryEducation": "Associate's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Environmental science and protection technicians typically work in offices, laboratories, and the field. Most environmental science and protection technicians work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-114-environmental-scientists-and-specialists",
     "cat": "space",
-    "catName": "Science & Research",
+    "catName": "Aviation & Aerospace",
     "icon": "🔭",
     "title": "Environmental Scientists and Specialists",
     "tagline": "Conduct research or investigations to protect the environment or human health.",
@@ -23369,7 +25535,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $59K / ₹6-10 LPA · Mid: $82K / ₹14-24 LPA · Lead: $156K+ / ₹38 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Models Read The Data First — Machine learning sifts through survey data, images and signals faster than any team. Framing the question, checking the result and deciding what it means is where people stay involved.",
     "overview": "Environmental scientists and specialists conduct research or investigations to protect the environment or human health. They may collect, study, and report on data of air, food, water and other sources and then recommend action.",
     "url": "https://www.bls.gov/ooh/life-physical-and-social-science/environmental-scientists-and-specialists.htm",
@@ -23477,7 +25643,7 @@ window.CAREERS_ALL = [
       "European Space Agency (ESA) Portals"
     ],
     "growthYears": "2025–2035",
-    "openings": "93,400",
+    "openings": "7,300",
     "medianPay": 82220,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -23490,12 +25656,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "science"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "19-2041",
+      "baseYear": "2025",
+      "medianPay": 82220,
+      "medianPayHourly": 39.53,
+      "payP10": 52520,
+      "payP90": 140010,
+      "numberOfJobs": 93400,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 5700,
+      "annualOpenings": 7300,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Environmental scientists and specialists typically work in office settings and laboratories but may spend time in the field. Most environmental scientists and specialists work full time."
+    }
   },
   {
     "id": "ooh-115-epidemiologists",
     "cat": "space",
-    "catName": "Science & Research",
+    "catName": "Aviation & Aerospace",
     "icon": "🔭",
     "title": "Epidemiologists",
     "tagline": "Are public health workers who investigate patterns and causes of disease and injury.",
@@ -23503,7 +25688,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $63K / ₹7-11 LPA · Mid: $87K / ₹15-25 LPA · Lead: $166K+ / ₹40 LPA+",
     "growth": "19% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Models Read The Data First — Machine learning sifts through survey data, images and signals faster than any team. Framing the question, checking the result and deciding what it means is where people stay involved.",
     "overview": "Epidemiologists are public health workers who investigate patterns and causes of disease and injury. They seek to reduce the risk and occurrence of negative health outcomes through research, community education and health policy.",
     "url": "https://www.bls.gov/ooh/life-physical-and-social-science/epidemiologists.htm",
@@ -23611,7 +25796,7 @@ window.CAREERS_ALL = [
       "European Space Agency (ESA) Portals"
     ],
     "growthYears": "2025–2035",
-    "openings": "12,800",
+    "openings": "800",
     "medianPay": 87220,
     "aiTag": "automation",
     "edu": "master",
@@ -23625,12 +25810,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "science"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "19-1041",
+      "baseYear": "2025",
+      "medianPay": 87220,
+      "medianPayHourly": 41.93,
+      "payP10": 61270,
+      "payP90": 138800,
+      "numberOfJobs": 12800,
+      "growthPct": 19,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 2400,
+      "annualOpenings": 800,
+      "entryEducation": "Master's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Epidemiologists work in offices and laboratories, usually at health departments for state and local governments, in hospitals, and at colleges and universities."
+    }
   },
   {
     "id": "ooh-116-exercise-physiologists",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Exercise Physiologists",
     "tagline": "Develop fitness and exercise programs to help people improve their health.",
@@ -23638,7 +25842,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $43K / ₹4-6 LPA · Mid: $59K / ₹9-17 LPA · Lead: $113K+ / ₹26 LPA+",
     "growth": "13% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Diagnostics Are Assisted — Imaging, lab results and records are increasingly read by software first. Examination, procedures, consent and the conversation with the patient are not.",
     "overview": "Exercise physiologists develop physical activity programs to help people improve components of their fitness, such as cardiovascular function, muscular strength, or flexibility.",
     "url": "https://www.bls.gov/ooh/healthcare/exercise-physiologists.htm",
@@ -23740,7 +25944,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "21,200",
+    "openings": "1,400",
     "medianPay": 59460,
     "aiTag": "people",
     "edu": "bachelor",
@@ -23753,12 +25957,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "health"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-1128",
+      "baseYear": "2025",
+      "medianPay": 59460,
+      "medianPayHourly": 28.59,
+      "payP10": 42760,
+      "payP90": 80560,
+      "numberOfJobs": 21200,
+      "growthPct": 13,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 2700,
+      "annualOpenings": 1400,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most exercise physiologists are self-employed or work for hospitals. Exercise physiologists usually work full time, but part-time work may be common."
+    }
   },
   {
     "id": "ooh-117-farmers-ranchers-and-other-agricultural-managers",
     "cat": "biz",
-    "catName": "Management",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Farmers, Ranchers, and Other Agricultural Managers",
     "tagline": "Run establishments that produce crops, livestock, and dairy products.",
@@ -23892,12 +26115,31 @@ window.CAREERS_ALL = [
       "commerce",
       "management",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "11-9013",
+      "baseYear": "2025",
+      "medianPay": 89900,
+      "medianPayHourly": 43.22,
+      "payP10": 54320,
+      "payP90": 160020,
+      "numberOfJobs": 788700,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "5 years or more",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Farmers, ranchers, and other agricultural managers typically work outdoors but also may spend time in an office. Their work is often physically demanding."
+    }
   },
   {
     "id": "ooh-118-fashion-designers",
     "cat": "creative",
-    "catName": "Arts & Design",
+    "catName": "Creative Arts & Design",
     "icon": "🎨",
     "title": "Fashion Designers",
     "tagline": "Create clothing, accessories, and footwear.",
@@ -23905,7 +26147,7 @@ window.CAREERS_ALL = [
     "stream": "Arts & Humanities",
     "salary": "Entry: $58K / ₹5-9 LPA · Mid: $81K / ₹12-23 LPA · Lead: $154K+ / ₹39 LPA+",
     "growth": "0% (Little or no change)",
-    "demand": "Steady",
+    "demand": "Declining",
     "aiImpact": "Options Are Cheap Now — Generative tools produce a hundred variations in minutes, so the value has moved to taste: knowing which one is right and why. Direction, briefs and client trust are the parts that hold up.",
     "overview": "Fashion designers create original clothing, accessories, and footwear. They sketch designs, select fabrics and patterns, and give instructions on how to make the products they design.",
     "url": "https://www.bls.gov/ooh/arts-and-design/fashion-designers.htm",
@@ -24016,7 +26258,7 @@ window.CAREERS_ALL = [
       "Awwwards & Behance Portals",
       "Nielsen Norman Group UX Articles"
     ],
-    "growthYears": "",
+    "growthYears": "2025–2035",
     "openings": "32,700",
     "medianPay": 80960,
     "aiTag": "automation",
@@ -24027,12 +26269,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "27-1022",
+      "baseYear": "2025",
+      "medianPay": 80960,
+      "medianPayHourly": 38.92,
+      "payP10": 39490,
+      "payP90": 146870,
+      "numberOfJobs": 32700,
+      "growthPct": 0,
+      "growthLabel": "Little or no change",
+      "growthYears": "2025–2035",
+      "employmentChange": 0,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Fashion designers work in wholesale or manufacturing establishments, apparel companies, retailers, theater or dance companies, and design firms. Most fashion designers work in New York and California."
+    }
   },
   {
     "id": "ooh-119-film-and-video-editors-and-camera-operators",
     "cat": "creative",
-    "catName": "Media & Communication",
+    "catName": "Creative Arts & Design",
     "icon": "🎨",
     "title": "Film and Video Editors and Camera Operators",
     "tagline": "Manipulate moving images that entertain or inform an audience.",
@@ -24158,7 +26419,7 @@ window.CAREERS_ALL = [
       "Nielsen Norman Group UX Articles"
     ],
     "growthYears": "2025–2035",
-    "openings": "72,000",
+    "openings": "5,600",
     "medianPay": 75100,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -24168,7 +26429,26 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "27-4030",
+      "baseYear": "2025",
+      "medianPay": 75100,
+      "medianPayHourly": 36.1,
+      "payP10": 38520,
+      "payP90": 135180,
+      "numberOfJobs": 72000,
+      "growthPct": 3,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 1900,
+      "annualOpenings": 5600,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Film and video editors and camera operators typically work in studios or in offices. Camera operators and videographers often shoot raw footage on location."
+    }
   },
   {
     "id": "ooh-120-financial-analysts",
@@ -24181,7 +26461,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $75K / ₹8-14 LPA · Mid: $104K / ₹20-38 LPA · Lead: $197K+ / ₹56 LPA+",
     "growth": "7% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Financial analysts research and evaluate financial data, forecast future trends, and prepare reports containing recommendations for businesses and investors.",
     "url": "https://www.bls.gov/ooh/business-and-financial/financial-analysts.htm",
@@ -24288,7 +26568,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "443,100",
+    "openings": "29,500",
     "medianPay": 103570,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -24300,12 +26580,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "13-2051",
+      "baseYear": "2025",
+      "medianPay": 103570,
+      "medianPayHourly": 49.79,
+      "payP10": 63720,
+      "payP90": 180860,
+      "numberOfJobs": 443100,
+      "growthPct": 7,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 32000,
+      "annualOpenings": 29500,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Financial analysts typically work in an office setting. Most work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-121-financial-clerks",
     "cat": "biz",
-    "catName": "Office & Admin",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Financial Clerks",
     "tagline": "Do administrative work, help customers, and carry out transactions that involve money.",
@@ -24479,7 +26778,26 @@ window.CAREERS_ALL = [
       "commerce",
       "management",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "43-3021",
+      "baseYear": "2025",
+      "medianPay": 49990,
+      "medianPayHourly": 24.04,
+      "payP10": 37440,
+      "payP90": 73760,
+      "numberOfJobs": 1144900,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": null,
+      "workEnvironment": "Financial clerks usually work in offices, including bank branches, medical practices, and government agencies. Most work full time."
+    }
   },
   {
     "id": "ooh-122-financial-examiners",
@@ -24492,7 +26810,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $68K / ₹7-13 LPA · Mid: $94K / ₹18-34 LPA · Lead: $179K+ / ₹51 LPA+",
     "growth": "9% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Financial examiners ensure compliance with laws that govern institutions handling monetary transactions. They review balance sheets, evaluate the risk level of loans, and assess bank management.",
     "url": "https://www.bls.gov/ooh/business-and-financial/financial-examiners.htm",
@@ -24599,7 +26917,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "70,000",
+    "openings": "4,500",
     "medianPay": 94160,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -24611,12 +26929,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "13-2061",
+      "baseYear": "2025",
+      "medianPay": 94160,
+      "medianPayHourly": 45.27,
+      "payP10": 56230,
+      "payP90": 174200,
+      "numberOfJobs": 70000,
+      "growthPct": 9,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 6500,
+      "annualOpenings": 4500,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Long-term on-the-job training",
+      "workEnvironment": "Most financial examiners work for the finance and insurance industry, the federal government, or state governments. Most financial examiners work full time."
+    }
   },
   {
     "id": "ooh-123-financial-managers",
     "cat": "biz",
-    "catName": "Management",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Financial Managers",
     "tagline": "Create financial reports, direct investment activities, and develop plans for the long-term financial goals of their organization.",
@@ -24624,7 +26961,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $120K / ₹12-22 LPA · Mid: $167K / ₹32-61 LPA · Lead: $316K+ / ₹91 LPA+",
     "growth": "10% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Financial managers are responsible for the financial health of an organization. They create financial reports, direct investment activities, and develop plans for the long-term financial goals of their organization.",
     "url": "https://www.bls.gov/ooh/management/financial-managers.htm",
@@ -24738,7 +27075,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "879,700",
+    "openings": "65,600",
     "medianPay": 166570,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -24749,12 +27086,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "11-3031",
+      "baseYear": "2025",
+      "medianPay": 166570,
+      "medianPayHourly": 80.08,
+      "payP10": 94310,
+      "payP90": 323270,
+      "numberOfJobs": 879700,
+      "growthPct": 10,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 84900,
+      "annualOpenings": 65600,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "5 years or more",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Financial managers work in many industries, including banks, investment firms, and insurance companies. Most financial managers work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-124-firefighters",
     "cat": "law",
-    "catName": "Public Safety & Defense",
+    "catName": "Law & Public Safety",
     "icon": "🚒",
     "title": "Firefighters",
     "tagline": "Respond to structural fires, medical emergencies, and hazardous material crises.",
@@ -24762,7 +27118,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $43K / ₹4-7 LPA · Mid: $59K / ₹9-14 LPA · Lead: $113K+ / ₹23 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "Unpredictable Physical Hazard Rescue — Real fires involve thermal flashovers, structural collapse, toxic zero-visibility smoke, and extricating trapped victims where software cannot operate.",
     "overview": "Firefighters control and put out fires and respond to emergencies involving life, property, or the environment.",
     "url": "https://www.bls.gov/ooh/protective-service/firefighters.htm",
@@ -24867,7 +27223,7 @@ window.CAREERS_ALL = [
       "National Fallen Firefighters Foundation"
     ],
     "growthYears": "2025–2035",
-    "openings": "355,300",
+    "openings": "26,800",
     "medianPay": 59280,
     "aiTag": "protected",
     "edu": "diploma",
@@ -24879,12 +27235,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "vocational",
       "any"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "33-2011",
+      "baseYear": "2025",
+      "medianPay": 59280,
+      "medianPayHourly": 28.5,
+      "payP10": 34910,
+      "payP90": 101040,
+      "numberOfJobs": 355300,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 13100,
+      "annualOpenings": 26800,
+      "entryEducation": "Postsecondary nondegree award",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Long-term on-the-job training",
+      "workEnvironment": "On the scene of a fire or other emergency, firefighters&rsquo; work may be dangerous. On call at fire stations, firefighters sleep, eat, and perform other duties during shifts that often last 24 hours. Most paid firefighters work full time."
+    }
   },
   {
     "id": "ooh-125-fire-inspectors",
     "cat": "law",
-    "catName": "Protective Service",
+    "catName": "Law & Public Safety",
     "icon": "⚖️",
     "title": "Fire Inspectors",
     "tagline": "Detect fire hazards, recommend prevention measures, ensure compliance with state and local fire regulations, and investigate causes of fires.",
@@ -24892,7 +27267,7 @@ window.CAREERS_ALL = [
     "stream": "Arts & Humanities",
     "salary": "Entry: $53K / ₹4-8 LPA · Mid: $74K / ₹12-24 LPA · Lead: $140K+ / ₹39 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Search And Summary Are Automated — AI reads contracts and case history in seconds. Argument, strategy, ethics and the responsibility of advising a client stay with the lawyer.",
     "overview": "Fire inspectors detect fire hazards, recommend prevention measures, ensure compliance with state and local fire codes, and investigate causes of fires.",
     "url": "https://www.bls.gov/ooh/protective-service/fire-inspectors-and-investigators.htm",
@@ -25016,7 +27391,7 @@ window.CAREERS_ALL = [
       "Supreme Court Cases (SCC Online)"
     ],
     "growthYears": "2025–2035",
-    "openings": "17,600",
+    "openings": "1,900",
     "medianPay": 73680,
     "aiTag": "automation",
     "edu": "doctorate",
@@ -25031,12 +27406,31 @@ window.CAREERS_ALL = [
       "arts",
       "law",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "33-2020",
+      "baseYear": "2025",
+      "medianPay": 73680,
+      "medianPayHourly": 35.42,
+      "payP10": 46530,
+      "payP90": 118750,
+      "numberOfJobs": 17600,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 1000,
+      "annualOpenings": 1900,
+      "entryEducation": null,
+      "relatedExperience": null,
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Fire inspectors work in office settings and onsite, including outdoors. Most work full time, and some work more than 40 hours per week. Their schedules may include evenings, weekends, and holidays because they must be ready to respond when fires occur."
+    }
   },
   {
     "id": "ooh-126-fishing-and-hunting-workers",
     "cat": "eco",
-    "catName": "Farming & Forestry",
+    "catName": "Sustainability & Energy",
     "icon": "🌿",
     "title": "Fishing and Hunting Workers",
     "tagline": "Catch and trap various types of animal life.",
@@ -25177,12 +27571,31 @@ window.CAREERS_ALL = [
       "commerce",
       "design",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "45-3031",
+      "baseYear": "2025",
+      "medianPay": null,
+      "medianPayHourly": null,
+      "payP10": 18710,
+      "payP90": 48170,
+      "numberOfJobs": 28200,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "No formal educational credential",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "The work environment for fishing and hunting operations varies with the region, body of water or land, and kinds of animals sought. Fishing and hunting workers often work under hazardous conditions that can lead to injuries or fatalities."
+    }
   },
   {
     "id": "ooh-127-fitness-trainers-and-instructors",
     "cat": "service",
-    "catName": "Personal Care & Service",
+    "catName": "Human Care & Services",
     "icon": "🤝",
     "title": "Fitness Trainers and Instructors",
     "tagline": "Lead, instruct, and motivate individuals or groups in exercise activities.",
@@ -25190,7 +27603,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $34K / ₹3-5 LPA · Mid: $47K / ₹6-11 LPA · Lead: $90K+ / ₹16 LPA+",
     "growth": "7% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Presence Is The Job — Comfort, trust and physical care are the reason the role exists. Tools can monitor and remind, but they cannot sit with someone or speak for the family.",
     "overview": "Fitness trainers and instructors lead, instruct, and motivate individuals or groups in exercise activities, including cardiovascular workouts (for the heart and blood circulation), strength training, and stretching. They work with people of all ages and skill levels.",
     "url": "https://www.bls.gov/ooh/personal-care-and-service/fitness-trainers-and-instructors.htm",
@@ -25301,7 +27714,7 @@ window.CAREERS_ALL = [
       "The New Social Worker Magazine"
     ],
     "growthYears": "2025–2035",
-    "openings": "388,400",
+    "openings": "68,000",
     "medianPay": 47160,
     "aiTag": "people",
     "edu": "nodegree",
@@ -25316,7 +27729,26 @@ window.CAREERS_ALL = [
       "science",
       "arts",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "39-9031",
+      "baseYear": "2025",
+      "medianPay": 47160,
+      "medianPayHourly": 22.67,
+      "payP10": 28800,
+      "payP90": 83100,
+      "numberOfJobs": 388400,
+      "growthPct": 7,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 28500,
+      "annualOpenings": 68000,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Short-term on-the-job training",
+      "workEnvironment": "Fitness trainers and instructors work in facilities such as recreation centers, health clubs, and yoga studios. Many work variable or part-time schedules that may include nights, weekends, or holidays."
+    }
   },
   {
     "id": "ooh-128-flight-attendants",
@@ -25329,7 +27761,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $46K / ₹4-7 LPA · Mid: $64K / ₹10-17 LPA · Lead: $121K+ / ₹27 LPA+",
     "growth": "9% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "The Work Is Physical — Every job is a different room, a different fault, a different set of tools. Work in unstandardised physical spaces is the hardest thing for software to take over.",
     "overview": "Flight attendants provide routine services and respond to emergencies to ensure the safety and comfort of airline passengers.",
     "url": "https://www.bls.gov/ooh/transportation-and-material-moving/flight-attendants.htm",
@@ -25428,7 +27860,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "133,700",
+    "openings": "18,500",
     "medianPay": 63580,
     "aiTag": "protected",
     "edu": "nodegree",
@@ -25439,12 +27871,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "53-2031",
+      "baseYear": "2025",
+      "medianPay": 63580,
+      "medianPayHourly": null,
+      "payP10": 35110,
+      "payP90": 136430,
+      "numberOfJobs": 133700,
+      "growthPct": 9,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 11800,
+      "annualOpenings": 18500,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "Less than 5 years",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Flight attendants have variable work schedules, including evenings, weekends, and holidays, because airlines operate every day, and some offer overnight flights. Attendants work in an aircraft and may be away from home several nights per week."
+    }
   },
   {
     "id": "ooh-129-flooring-installers-and-tile-and-stone-setters",
     "cat": "trades",
-    "catName": "Construction & Trades",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Flooring Installers and Tile and Stone Setters",
     "tagline": "Lay and finish carpet, wood, vinyl, tile, and other materials.",
@@ -25452,7 +27903,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $39K / ₹3-6 LPA · Mid: $54K / ₹9-15 LPA · Lead: $103K+ / ₹23 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "The Work Is Physical — Every job is a different room, a different fault, a different set of tools. Work in unstandardised physical spaces is the hardest thing for software to take over.",
     "overview": "Flooring installers and tile and stone setters lay and finish carpet, wood, vinyl, and other materials, such as ceramic, glass, marble, and granite.",
     "url": "https://www.bls.gov/ooh/construction-and-extraction/tile-and-marble-setters.htm",
@@ -25577,7 +28028,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "97,000",
+    "openings": "6,400",
     "medianPay": 54390,
     "aiTag": "protected",
     "edu": "nodegree",
@@ -25588,12 +28039,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "47-2040",
+      "baseYear": "2025",
+      "medianPay": 54390,
+      "medianPayHourly": 26.15,
+      "payP10": 36910,
+      "payP90": 89320,
+      "numberOfJobs": 97000,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 4300,
+      "annualOpenings": 6400,
+      "entryEducation": "No formal educational credential",
+      "relatedExperience": "None",
+      "onTheJobTraining": null,
+      "workEnvironment": "Installing flooring, tile, and stone is physically demanding, with workers spending much of their time reaching, bending, and kneeling. Most work full time, although schedules may vary."
+    }
   },
   {
     "id": "ooh-130-floral-designers",
     "cat": "creative",
-    "catName": "Arts & Design",
+    "catName": "Creative Arts & Design",
     "icon": "🎨",
     "title": "Floral Designers",
     "tagline": "Arrange live, dried, and silk flowers and greenery to make decorative displays.",
@@ -25721,12 +28191,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "design",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "27-1023",
+      "baseYear": "2025",
+      "medianPay": 37360,
+      "medianPayHourly": 17.96,
+      "payP10": 28600,
+      "payP90": 51000,
+      "numberOfJobs": 45200,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Most floral designers work in retail businesses, usually flower shops and grocery stores."
+    }
   },
   {
     "id": "ooh-131-food-and-beverage-serving-and-related-workers",
     "cat": "service",
-    "catName": "Food Service",
+    "catName": "Human Care & Services",
     "icon": "🤝",
     "title": "Food and Beverage Serving and Related Workers",
     "tagline": "Take and prepare orders, clear tables, and do other tasks associated with providing food and drink to customers.",
@@ -25734,7 +28223,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $23K / ₹2-3 LPA · Mid: $32K / ₹4-7 LPA · Lead: $60K+ / ₹11 LPA+",
     "growth": "5% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Presence Is The Job — Comfort, trust and physical care are the reason the role exists. Tools can monitor and remind, but they cannot sit with someone or speak for the family.",
     "overview": "Food and beverage serving and related workers take and prepare orders, clear tables, and do other tasks associated with providing food and drink to customers.",
     "url": "https://www.bls.gov/ooh/food-preparation-and-serving/food-and-beverage-serving-and-related-workers.htm",
@@ -25868,7 +28357,7 @@ window.CAREERS_ALL = [
       "The New Social Worker Magazine"
     ],
     "growthYears": "2025–2035",
-    "openings": "5,143,000",
+    "openings": "1,078,500",
     "medianPay": 31710,
     "aiTag": "people",
     "edu": "nodegree",
@@ -25881,12 +28370,31 @@ window.CAREERS_ALL = [
       "science",
       "arts",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "35-3023",
+      "baseYear": "2025",
+      "medianPay": 31710,
+      "medianPayHourly": 15.24,
+      "payP10": null,
+      "payP90": 20,
+      "numberOfJobs": 5143000,
+      "growthPct": 5,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 280800,
+      "annualOpenings": 1078500,
+      "entryEducation": "No formal educational credential",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Short-term on-the-job training",
+      "workEnvironment": "Food and beverage serving and related workers are employed in restaurants, schools, and other dining places. Work shifts often include early mornings, late evenings, weekends, and holidays. Part-time work is common."
+    }
   },
   {
     "id": "ooh-132-food-preparation-workers",
     "cat": "service",
-    "catName": "Food & Culinary Arts",
+    "catName": "Human Care & Services",
     "icon": "🍳",
     "title": "Food Preparation Workers",
     "tagline": "Chop vegetables, slice deli meats, prepare cold dressings, and support kitchen inventory.",
@@ -26009,12 +28517,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "vocational",
       "any"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "35-2021",
+      "baseYear": "2025",
+      "medianPay": 35320,
+      "medianPayHourly": 16.98,
+      "payP10": null,
+      "payP90": 21,
+      "numberOfJobs": 908500,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "No formal educational credential",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Short-term on-the-job training",
+      "workEnvironment": "Food preparation workers are employed in places where food is made or served, such as cafeterias, grocery stores, hospitals, and schools. Part-time work is common. Work schedules may vary to include early mornings, late evenings, weekends, or holidays."
+    }
   },
   {
     "id": "ooh-133-food-processing-equipment-workers",
     "cat": "trades",
-    "catName": "Production & Manufacturing",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Food Processing Equipment Workers",
     "tagline": "Operate machinery that mixes, cooks, or processes ingredients for manufacturing food products.",
@@ -26022,7 +28549,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $30K / ₹2-4 LPA · Mid: $41K / ₹7-11 LPA · Lead: $78K+ / ₹18 LPA+",
     "growth": "5% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Tactile Sensory Preparation — Kitchen machinery mixes ingredients, but judging dough consistency, tasting seasoning, and hand-finishing dishes require human senses.",
     "overview": "Food processing equipment workers operate machinery that mixes, cooks, or processes ingredients for manufacturing food products.",
     "url": "https://www.bls.gov/ooh/production/food-and-tobacco-processing-workers.htm",
@@ -26159,7 +28686,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "297,000",
+    "openings": "36,600",
     "medianPay": 41230,
     "aiTag": "protected",
     "edu": "master",
@@ -26170,12 +28697,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "51-3091",
+      "baseYear": "2025",
+      "medianPay": 41230,
+      "medianPayHourly": 19.82,
+      "payP10": 32100,
+      "payP90": 57630,
+      "numberOfJobs": 297000,
+      "growthPct": 5,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 15100,
+      "annualOpenings": 36600,
+      "entryEducation": null,
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Most food processing equipment workers are employed in manufacturing facilities. Because of production schedules, shift work is common and may include early mornings, evenings, or nights. Most food processing equipment workers are employed full time."
+    }
   },
   {
     "id": "ooh-134-food-service-managers",
     "cat": "biz",
-    "catName": "Management",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Food Service Managers",
     "tagline": "Are responsible for the daily operation of restaurants or other establishments that prepare and serve food and beverages.",
@@ -26183,7 +28729,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $50K / ₹5-9 LPA · Mid: $69K / ₹13-25 LPA · Lead: $132K+ / ₹38 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Food service managers are responsible for the daily operation of restaurants or other establishments that prepare and serve food and beverages. They direct staff to ensure that customers are satisfied with their dining experience, and they manage the business to ensure that it runs efficiently.",
     "url": "https://www.bls.gov/ooh/management/food-service-managers.htm",
@@ -26292,7 +28838,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "344,300",
+    "openings": "38,800",
     "medianPay": 69390,
     "aiTag": "automation",
     "edu": "nodegree",
@@ -26304,12 +28850,31 @@ window.CAREERS_ALL = [
       "commerce",
       "management",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "11-9051",
+      "baseYear": "2025",
+      "medianPay": 69390,
+      "medianPayHourly": 33.36,
+      "payP10": 45960,
+      "payP90": 107640,
+      "numberOfJobs": 344300,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 19900,
+      "annualOpenings": 38800,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "Less than 5 years",
+      "onTheJobTraining": "Short-term on-the-job training",
+      "workEnvironment": "Food service managers work in restaurants, hotels, school cafeterias, and other establishments where food is prepared and served. They often work evenings, weekends, and holidays. The work is often hectic, and dealing with dissatisfied customers may be stressful."
+    }
   },
   {
     "id": "ooh-135-forensic-science-technicians",
     "cat": "space",
-    "catName": "Science & Research",
+    "catName": "Aviation & Aerospace",
     "icon": "🔭",
     "title": "Forensic Science Technicians",
     "tagline": "Aid criminal investigations by collecting and analyzing evidence.",
@@ -26317,7 +28882,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $52K / ₹6-9 LPA · Mid: $72K / ₹12-21 LPA · Lead: $137K+ / ₹33 LPA+",
     "growth": "13% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Models Read The Data First — Machine learning sifts through survey data, images and signals faster than any team. Framing the question, checking the result and deciding what it means is where people stay involved.",
     "overview": "Forensic science technicians aid criminal investigations by collecting and analyzing evidence. Technicians often specialize in either crime scene or laboratory analysis.",
     "url": "https://www.bls.gov/ooh/life-physical-and-social-science/forensic-science-technicians.htm",
@@ -26429,7 +28994,7 @@ window.CAREERS_ALL = [
       "European Space Agency (ESA) Portals"
     ],
     "growthYears": "2025–2035",
-    "openings": "20,100",
+    "openings": "2,800",
     "medianPay": 72060,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -26440,12 +29005,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "science"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "19-4092",
+      "baseYear": "2025",
+      "medianPay": 72060,
+      "medianPayHourly": 34.65,
+      "payP10": 48250,
+      "payP90": 117250,
+      "numberOfJobs": 20100,
+      "growthPct": 13,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 2700,
+      "annualOpenings": 2800,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Most laboratory forensic science technicians work during standard business hours. Some work extended or nonstandard hours and travel to crime scenes within their jurisdiction."
+    }
   },
   {
     "id": "ooh-136-forest-and-conservation-workers",
     "cat": "eco",
-    "catName": "Farming & Forestry",
+    "catName": "Sustainability & Energy",
     "icon": "🌿",
     "title": "Forest and Conservation Workers",
     "tagline": "Perform physical labor to improve the quality of natural areas such as forests, rangelands, and wetlands.",
@@ -26586,7 +29170,26 @@ window.CAREERS_ALL = [
       "commerce",
       "design",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "45-4011",
+      "baseYear": "2025",
+      "medianPay": 43680,
+      "medianPayHourly": 21,
+      "payP10": 33780,
+      "payP90": 57220,
+      "numberOfJobs": 14700,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Forest and conservation workers often work outdoors, sometimes in remote locations and in all types of weather. Most forest and conservation workers are employed full time, although part-time or seasonal work is common."
+    }
   },
   {
     "id": "ooh-137-fundraisers",
@@ -26599,7 +29202,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $52K / ₹5-10 LPA · Mid: $73K / ₹14-26 LPA · Lead: $138K+ / ₹40 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Fundraisers organize activities to raise money and other kinds of donations for an organization. They also may design promotional materials and increase awareness of an organization's work, goals, and financial needs.",
     "url": "https://www.bls.gov/ooh/business-and-financial/fundraisers.htm",
@@ -26700,7 +29303,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "140,900",
+    "openings": "10,000",
     "medianPay": 72550,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -26712,12 +29315,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "13-1131",
+      "baseYear": "2025",
+      "medianPay": 72550,
+      "medianPayHourly": 34.88,
+      "payP10": 46630,
+      "payP90": 115820,
+      "numberOfJobs": 140900,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 7800,
+      "annualOpenings": 10000,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Fundraisers work primarily for nonprofit organizations. They spend time in an office setting, although they also may travel to meet with prospective donors or to attend events. Most fundraisers work full time."
+    }
   },
   {
     "id": "ooh-138-funeral-service-workers",
     "cat": "service",
-    "catName": "Personal Care & Service",
+    "catName": "Human Care & Services",
     "icon": "🤝",
     "title": "Funeral Service Workers",
     "tagline": "Organize and manage the details of a ceremony honoring a deceased person.",
@@ -26725,7 +29347,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $44K / ₹4-7 LPA · Mid: $61K / ₹8-14 LPA · Lead: $117K+ / ₹21 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "Presence Is The Job — Comfort, trust and physical care are the reason the role exists. Tools can monitor and remind, but they cannot sit with someone or speak for the family.",
     "overview": "Funeral service workers organize and manage the details of a ceremony honoring a deceased person.",
     "url": "https://www.bls.gov/ooh/personal-care-and-service/funeral-service-occupations.htm",
@@ -26830,7 +29452,7 @@ window.CAREERS_ALL = [
       "The New Social Worker Magazine"
     ],
     "growthYears": "2025–2035",
-    "openings": "61,500",
+    "openings": "5,600",
     "medianPay": 61410,
     "aiTag": "people",
     "edu": "diploma",
@@ -26843,12 +29465,31 @@ window.CAREERS_ALL = [
       "science",
       "arts",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "11-9171",
+      "baseYear": "2025",
+      "medianPay": 61410,
+      "medianPayHourly": 29.52,
+      "payP10": 49700,
+      "payP90": 156400,
+      "numberOfJobs": 61500,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 2200,
+      "annualOpenings": 5600,
+      "entryEducation": "Associate's degree",
+      "relatedExperience": null,
+      "onTheJobTraining": null,
+      "workEnvironment": "Funeral service workers are employed in funeral homes and crematories. They are often on call; irregular hours, including evenings and weekends, are common. Most work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-139-gambling-services-workers",
     "cat": "service",
-    "catName": "Personal Care & Service",
+    "catName": "Human Care & Services",
     "icon": "🤝",
     "title": "Gambling Services Workers",
     "tagline": "Serve customers in gambling establishments, such as casinos or racetracks.",
@@ -27004,7 +29645,7 @@ window.CAREERS_ALL = [
       "The New Social Worker Magazine"
     ],
     "growthYears": "2025–2035",
-    "openings": "146,500",
+    "openings": "20,200",
     "medianPay": 37460,
     "aiTag": "people",
     "edu": "nodegree",
@@ -27018,12 +29659,31 @@ window.CAREERS_ALL = [
       "science",
       "arts",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "11-9071",
+      "baseYear": "2025",
+      "medianPay": 37460,
+      "medianPayHourly": 18.01,
+      "payP10": 24960,
+      "payP90": 83620,
+      "numberOfJobs": 146500,
+      "growthPct": 3,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 5000,
+      "annualOpenings": 20200,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": null,
+      "onTheJobTraining": null,
+      "workEnvironment": "Most gambling services workers are employed in gambling industries. Because most of these establishments are open 24 hours a day, 7 days a week, employees often work nights, weekends, and holidays. Most work full time, although part-time work is common."
+    }
   },
   {
     "id": "ooh-140-general-maintenance-and-repair-workers",
     "cat": "trades",
-    "catName": "Installation & Repair",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "General Maintenance and Repair Workers",
     "tagline": "Fix and maintain machines, mechanical equipment, and buildings.",
@@ -27031,7 +29691,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $36K / ₹3-5 LPA · Mid: $50K / ₹8-14 LPA · Lead: $94K+ / ₹21 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "The Work Is Physical — Every job is a different room, a different fault, a different set of tools. Work in unstandardised physical spaces is the hardest thing for software to take over.",
     "overview": "General maintenance and repair workers fix and maintain machines, mechanical equipment, and buildings. They paint, repair flooring, and work on plumbing, electrical, and air-conditioning and heating systems.",
     "url": "https://www.bls.gov/ooh/installation-maintenance-and-repair/general-maintenance-and-repair-workers.htm",
@@ -27139,7 +29799,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "1,621,800",
+    "openings": "148,700",
     "medianPay": 49590,
     "aiTag": "protected",
     "edu": "nodegree",
@@ -27151,12 +29811,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "49-9071",
+      "baseYear": "2025",
+      "medianPay": 49590,
+      "medianPayHourly": 23.84,
+      "payP10": 35350,
+      "payP90": 77180,
+      "numberOfJobs": 1621800,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 68600,
+      "annualOpenings": 148700,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "General maintenance and repair workers carry out tasks in varied indoor or outdoor locations. They might work inside a single building, such as a hotel, or be responsible for the maintenance of many buildings, such as those in an apartment complex. Most work full time, and they may be on call for emergency repairs."
+    }
   },
   {
     "id": "ooh-141-general-office-clerks",
     "cat": "biz",
-    "catName": "Office & Admin",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "General Office Clerks",
     "tagline": "Perform a variety of clerical tasks, including answering telephones, typing documents, and filing records.",
@@ -27279,12 +29958,31 @@ window.CAREERS_ALL = [
       "commerce",
       "management",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "43-9061",
+      "baseYear": "2025",
+      "medianPay": 45010,
+      "medianPayHourly": 21.64,
+      "payP10": null,
+      "payP90": 31,
+      "numberOfJobs": 2600000,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Short-term on-the-job training",
+      "workEnvironment": "Although general office clerks are employed in nearly every industry, many work in schools, healthcare facilities, and government offices."
+    }
   },
   {
     "id": "ooh-142-genetic-counselors",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Genetic Counselors",
     "tagline": "Assess clients&apos; risk for a variety of inherited conditions, such as birth defects.",
@@ -27292,7 +29990,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $72K / ₹7-10 LPA · Mid: $100K / ₹16-28 LPA · Lead: $190K+ / ₹44 LPA+",
     "growth": "10% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Diagnostics Are Assisted — Imaging, lab results and records are increasingly read by software first. Examination, procedures, consent and the conversation with the patient are not.",
     "overview": "Genetic counselors assess clients' risk for a variety of inherited conditions, such as birth defects. They review genetic test results with individuals and families and support them in making decisions based on those results. They also offer information to other healthcare providers.",
     "url": "https://www.bls.gov/ooh/healthcare/genetic-counselors.htm",
@@ -27396,7 +30094,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "4,200",
+    "openings": "300",
     "medianPay": 100040,
     "aiTag": "people",
     "edu": "master",
@@ -27407,12 +30105,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "health"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-9092",
+      "baseYear": "2025",
+      "medianPay": 100040,
+      "medianPayHourly": 48.09,
+      "payP10": 78270,
+      "payP90": 138760,
+      "numberOfJobs": 4200,
+      "growthPct": 10,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 400,
+      "annualOpenings": 300,
+      "entryEducation": "Master's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Genetic counselors work primarily in hospitals, physicians&rsquo; offices, outpatient care centers, university medical centers, and diagnostic laboratories. Most work full time."
+    }
   },
   {
     "id": "ooh-143-geographers",
     "cat": "space",
-    "catName": "Science & Research",
+    "catName": "Aviation & Aerospace",
     "icon": "🔭",
     "title": "Geographers",
     "tagline": "Study the Earth and the distribution of its land, features, and inhabitants.",
@@ -27538,12 +30255,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "science"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "19-3092",
+      "baseYear": "2025",
+      "medianPay": 102040,
+      "medianPayHourly": 49.06,
+      "payP10": 66770,
+      "payP90": 136660,
+      "numberOfJobs": 1500,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": 0,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most geographers work full time. Geographers who do fieldwork may travel to foreign countries or remote locations."
+    }
   },
   {
     "id": "ooh-144-geological-and-hydrologic-technicians",
     "cat": "space",
-    "catName": "Science & Research",
+    "catName": "Aviation & Aerospace",
     "icon": "🔭",
     "title": "Geological and Hydrologic Technicians",
     "tagline": "Support scientists and engineers in exploring, extracting, and monitoring natural resources.",
@@ -27677,12 +30413,31 @@ window.CAREERS_ALL = [
       "engineering",
       "science",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "19-4043",
+      "baseYear": "2025",
+      "medianPay": 57150,
+      "medianPayHourly": 27.48,
+      "payP10": 35770,
+      "payP90": 99560,
+      "numberOfJobs": 10300,
+      "growthPct": 2,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 200,
+      "annualOpenings": null,
+      "entryEducation": "Associate's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Geological and hydrologic technicians work in offices, laboratories, and the field. Most geological and hydrologic technicians work full time."
+    }
   },
   {
     "id": "ooh-145-geoscientists",
     "cat": "space",
-    "catName": "Science & Research",
+    "catName": "Aviation & Aerospace",
     "icon": "🔭",
     "title": "Geoscientists",
     "tagline": "Study the physical aspects of the Earth.",
@@ -27690,7 +30445,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $73K / ₹8-13 LPA · Mid: $102K / ₹17-30 LPA · Lead: $194K+ / ₹47 LPA+",
     "growth": "5% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Models Read The Data First — Machine learning sifts through survey data, images and signals faster than any team. Framing the question, checking the result and deciding what it means is where people stay involved.",
     "overview": "Geoscientists study the physical aspects of the Earth, such as its composition, structure, and processes, to learn about its past and present and to predict future events.",
     "url": "https://www.bls.gov/ooh/life-physical-and-social-science/geoscientists.htm",
@@ -27814,7 +30569,7 @@ window.CAREERS_ALL = [
       "European Space Agency (ESA) Portals"
     ],
     "growthYears": "2025–2035",
-    "openings": "25,400",
+    "openings": "1,800",
     "medianPay": 101920,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -27826,12 +30581,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "science"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "19-2042",
+      "baseYear": "2025",
+      "medianPay": 101920,
+      "medianPayHourly": 49,
+      "payP10": 59330,
+      "payP90": 200230,
+      "numberOfJobs": 25400,
+      "growthPct": 5,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 1300,
+      "annualOpenings": 1800,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Geoscientists usually split their time between work in an office setting, in laboratories, and outdoors. Most geoscientists work full time, and some work more than 40 hours per week. Schedules vary to include irregular hours when doing fieldwork."
+    }
   },
   {
     "id": "ooh-146-glaziers",
     "cat": "trades",
-    "catName": "Construction & Trades",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Glaziers",
     "tagline": "Install glass in windows, skylights, and other fixtures in buildings.",
@@ -27955,12 +30729,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "47-2121",
+      "baseYear": "2025",
+      "medianPay": 57080,
+      "medianPayHourly": 27.44,
+      "payP10": 37300,
+      "payP90": 89790,
+      "numberOfJobs": 59200,
+      "growthPct": 2,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 1100,
+      "annualOpenings": null,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Apprenticeship",
+      "workEnvironment": "As in many other construction trades, the work of glaziers is physically demanding. They may experience cuts from tools and glass, falls from ladders and scaffolding, and exposure to solvents. Most work full time."
+    }
   },
   {
     "id": "ooh-147-graphic-designers",
     "cat": "creative",
-    "catName": "Arts & Design",
+    "catName": "Creative Arts & Design",
     "icon": "🎨",
     "title": "Graphic Designers",
     "tagline": "Create visual concepts, using computer software or by hand, to communicate ideas that inspire, inform, and captivate consumers.",
@@ -28078,12 +30871,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "27-1024",
+      "baseYear": "2025",
+      "medianPay": 62960,
+      "medianPayHourly": 30.27,
+      "payP10": 39520,
+      "payP90": 104910,
+      "numberOfJobs": 253100,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Many of these workers are employed in specialized design services, publishing, or advertising, public relations, and related services industries."
+    }
   },
   {
     "id": "ooh-148-grounds-maintenance-workers",
     "cat": "eco",
-    "catName": "Grounds & Maintenance",
+    "catName": "Sustainability & Energy",
     "icon": "🌿",
     "title": "Grounds Maintenance Workers",
     "tagline": "Install and maintain landscapes, prune trees or shrubs, and do other tasks to ensure that vegetation is attractive, orderly, and safe.",
@@ -28091,7 +30903,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $29K / ₹2-5 LPA · Mid: $40K / ₹6-11 LPA · Lead: $76K+ / ₹17 LPA+",
     "growth": "5% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Forecasting Keeps Improving — Climate and energy models now simulate scenarios that once took teams months. Field work, local knowledge and policy negotiation are much slower to automate.",
     "overview": "Grounds maintenance workers install and maintain landscapes, prune trees or shrubs, and do other tasks to ensure that vegetation is attractive, orderly, and safe.",
     "url": "https://www.bls.gov/ooh/building-and-grounds-cleaning/grounds-maintenance-workers.htm",
@@ -28223,7 +31035,7 @@ window.CAREERS_ALL = [
       "Renewable Energy World Platform"
     ],
     "growthYears": "2025–2035",
-    "openings": "1,299,200",
+    "openings": "162,500",
     "medianPay": 40080,
     "aiTag": "automation",
     "edu": "doctorate",
@@ -28237,12 +31049,31 @@ window.CAREERS_ALL = [
       "science",
       "commerce",
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "37-3000",
+      "baseYear": "2025",
+      "medianPay": 40080,
+      "medianPayHourly": 19.27,
+      "payP10": null,
+      "payP90": 28,
+      "numberOfJobs": 1299200,
+      "growthPct": 5,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 60100,
+      "annualOpenings": 162500,
+      "entryEducation": null,
+      "relatedExperience": "None",
+      "onTheJobTraining": null,
+      "workEnvironment": "Most grounds maintenance work is done outdoors in all weather conditions. Some work is seasonal, available mainly in the spring, summer, and fall. The work may be repetitive and physically demanding, requiring frequent bending, kneeling, lifting, or shoveling."
+    }
   },
   {
     "id": "ooh-149-hand-laborers-and-material-movers",
     "cat": "trades",
-    "catName": "Transportation",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Hand Laborers and Material Movers",
     "tagline": "Manually move freight, stock, or other materials.",
@@ -28250,7 +31081,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $28K / ₹2-4 LPA · Mid: $38K / ₹6-10 LPA · Lead: $73K+ / ₹17 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "The Work Is Physical — Every job is a different room, a different fault, a different set of tools. Work in unstandardised physical spaces is the hardest thing for software to take over.",
     "overview": "Hand laborers and material movers manually move freight, stock, or other materials. Some of these workers feed or remove material to or from machines, clean vehicles, pick up unwanted household goods, and pack materials for moving.",
     "url": "https://www.bls.gov/ooh/transportation-and-material-moving/hand-laborers-and-material-movers.htm",
@@ -28406,7 +31237,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "6,917,800",
+    "openings": "904,200",
     "medianPay": 38220,
     "aiTag": "protected",
     "edu": "nodegree",
@@ -28416,12 +31247,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "53-7061",
+      "baseYear": "2025",
+      "medianPay": 38220,
+      "medianPayHourly": 18.38,
+      "payP10": 30190,
+      "payP90": 52340,
+      "numberOfJobs": 6917800,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 288900,
+      "annualOpenings": 904200,
+      "entryEducation": "No formal educational credential",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Short-term on-the-job training",
+      "workEnvironment": "Hand laborers and material movers work in stockrooms, warehouses, manufacturing plants, and other settings. Most work full time, although part-time work is common. Work schedules vary and may include nights and weekends."
+    }
   },
   {
     "id": "ooh-150-hazardous-materials-removal-workers",
     "cat": "trades",
-    "catName": "Construction & Trades",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Hazardous Materials Removal Workers",
     "tagline": "Identify and dispose of harmful substances such as asbestos, lead, and radioactive waste.",
@@ -28548,12 +31398,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "47-4041",
+      "baseYear": "2025",
+      "medianPay": 49450,
+      "medianPayHourly": 23.78,
+      "payP10": 38460,
+      "payP90": 82410,
+      "numberOfJobs": 52700,
+      "growthPct": 2,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 800,
+      "annualOpenings": null,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Work environments for hazmat removal workers vary. Completing projects may require night and weekend work. Overtime is common for some workers, particularly for those who respond to emergencies or disasters."
+    }
   },
   {
     "id": "ooh-151-health-and-safety-engineers",
     "cat": "eng",
-    "catName": "Engineering",
+    "catName": "Engineering & Robotics",
     "icon": "⚙️",
     "title": "Health and Safety Engineers",
     "tagline": "Apply their knowledge of industrial processes, mechanics, psychology, and other disciplines to promote worksite or product safety.",
@@ -28561,7 +31430,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $83K / ₹8-13 LPA · Mid: $115K / ₹19-34 LPA · Lead: $219K+ / ₹53 LPA+",
     "growth": "5% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Software Explores The Options — Generative design and simulation run thousands of variants quickly. Choosing one, checking it against physics, safety rules and cost, and signing it off stays human.",
     "overview": "Health and safety engineers apply their knowledge of industrial processes, mechanics, psychology, and other disciplines to promote worksite or product safety.",
     "url": "https://www.bls.gov/ooh/architecture-and-engineering/health-and-safety-engineers.htm",
@@ -28669,7 +31538,7 @@ window.CAREERS_ALL = [
       "National Society of Professional Engineers (NSPE)"
     ],
     "growthYears": "2025–2035",
-    "openings": "22,300",
+    "openings": "1,200",
     "medianPay": 115160,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -28680,12 +31549,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "engineering"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "17-2111",
+      "baseYear": "2025",
+      "medianPay": 115160,
+      "medianPayHourly": 55.36,
+      "payP10": 68420,
+      "payP90": 171250,
+      "numberOfJobs": 22300,
+      "growthPct": 5,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 1200,
+      "annualOpenings": 1200,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Health and safety engineers typically work in an office setting, and most are full time. They also may need to travel to worksites."
+    }
   },
   {
     "id": "ooh-152-health-education-specialists",
     "cat": "service",
-    "catName": "Community & Social Service",
+    "catName": "Human Care & Services",
     "icon": "🤝",
     "title": "Health Education Specialists",
     "tagline": "Develop programs to teach people about conditions affecting well-being.",
@@ -28693,7 +31581,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $46K / ₹4-7 LPA · Mid: $64K / ₹9-15 LPA · Lead: $122K+ / ₹22 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Presence Is The Job — Comfort, trust and physical care are the reason the role exists. Tools can monitor and remind, but they cannot sit with someone or speak for the family.",
     "overview": "Health education specialists teach people about behaviors that promote wellness. They develop strategies to improve the well-being of individuals and communities.",
     "url": "https://www.bls.gov/ooh/community-and-social-service/health-educators.htm",
@@ -28798,7 +31686,7 @@ window.CAREERS_ALL = [
       "The New Social Worker Magazine"
     ],
     "growthYears": "2025–2035",
-    "openings": "70,400",
+    "openings": "6,900",
     "medianPay": 64070,
     "aiTag": "people",
     "edu": "bachelor",
@@ -28811,12 +31699,31 @@ window.CAREERS_ALL = [
       "health",
       "science",
       "arts"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "21-1091",
+      "baseYear": "2025",
+      "medianPay": 64070,
+      "medianPayHourly": 30.8,
+      "payP10": 42990,
+      "payP90": 118200,
+      "numberOfJobs": 70400,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 3900,
+      "annualOpenings": 6900,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Health education specialists are employed in a variety of settings, including hospitals, nonprofit organizations, and government agencies. Most work full time."
+    }
   },
   {
     "id": "ooh-153-health-information-technologists-and-medical-registrars",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Health Information Technologists and Medical Registrars",
     "tagline": "Advise organizations on computerized healthcare systems and analyze clinical data.",
@@ -28824,7 +31731,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $49K / ₹5-7 LPA · Mid: $68K / ₹11-19 LPA · Lead: $129K+ / ₹30 LPA+",
     "growth": "16% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Diagnostics Are Assisted — Imaging, lab results and records are increasingly read by software first. Examination, procedures, consent and the conversation with the patient are not.",
     "overview": "Health information technologists and medical registrars advise organizations on computerized healthcare systems and analyze clinical data.",
     "url": "https://www.bls.gov/ooh/healthcare/health-information-technologists-and-medical-registrars.htm",
@@ -28930,7 +31837,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "42,000",
+    "openings": "3,000",
     "medianPay": 68020,
     "aiTag": "people",
     "edu": "diploma",
@@ -28942,12 +31849,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "health",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-9021",
+      "baseYear": "2025",
+      "medianPay": 68020,
+      "medianPayHourly": 32.7,
+      "payP10": 39830,
+      "payP90": 117420,
+      "numberOfJobs": 42000,
+      "growthPct": 16,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 6700,
+      "annualOpenings": 3000,
+      "entryEducation": "Associate's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Health information technologists and medical registrars usually work in an office setting and may spend many hours at a computer. Most work full time."
+    }
   },
   {
     "id": "ooh-154-heating-air-conditioning-and-refrigeration-mechanics-and-installers",
     "cat": "trades",
-    "catName": "Installation & Repair",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Heating, Air Conditioning, and Refrigeration Mechanics and Installers",
     "tagline": "Work on heating, ventilation, cooling, and refrigeration systems.",
@@ -28955,7 +31881,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $44K / ₹3-6 LPA · Mid: $61K / ₹10-17 LPA · Lead: $116K+ / ₹26 LPA+",
     "growth": "11% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "The Work Is Physical — Every job is a different room, a different fault, a different set of tools. Work in unstandardised physical spaces is the hardest thing for software to take over.",
     "overview": "Heating, air conditioning, and refrigeration mechanics and installers work on heating, ventilation, air conditioning, and refrigeration (HVACR) systems that control the temperature and air quality in buildings.",
     "url": "https://www.bls.gov/ooh/installation-maintenance-and-repair/heating-air-conditioning-and-refrigeration-mechanics-and-installers.htm",
@@ -29066,7 +31992,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "440,900",
+    "openings": "40,600",
     "medianPay": 61010,
     "aiTag": "protected",
     "edu": "diploma",
@@ -29076,12 +32002,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "49-9021",
+      "baseYear": "2025",
+      "medianPay": 61010,
+      "medianPayHourly": 29.33,
+      "payP10": 40050,
+      "payP90": 95210,
+      "numberOfJobs": 440900,
+      "growthPct": 11,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 48200,
+      "annualOpenings": 40600,
+      "entryEducation": "Postsecondary nondegree award",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Long-term on-the-job training",
+      "workEnvironment": "These workers install and repair systems in homes, schools, hospitals, and other buildings. They may need to work in cramped spaces, outdoors, or in extreme temperatures. Most work full time, and schedules may vary."
+    }
   },
   {
     "id": "ooh-155-heavy-and-tractor-trailer-truck-drivers",
     "cat": "trades",
-    "catName": "Transportation & Logistics",
+    "catName": "Skilled Trades & Craft",
     "icon": "🚛",
     "title": "Heavy and Tractor-trailer Truck Drivers",
     "tagline": "Haul freight across interstate highways and industrial distribution corridors.",
@@ -29089,7 +32034,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $42K / ₹3-6 LPA · Mid: $59K / ₹9-16 LPA · Lead: $111K+ / ₹25 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "Inclement Highway Driving & Cargo Security — Highway cruise assist helps highway lane-keeping, but chaining tires in winter blizzards, managing weight stations, maneuvering 53-foot trailers into tight warehouse bays, and securing straps are human responsibilities.",
     "overview": "Heavy and tractor-trailer truck drivers transport goods from one location to another. Most tractor-trailer drivers are long-haul drivers and operate trucks with a total weight exceeding 26,000 pounds for the vehicle, passengers, and cargo. These drivers deliver goods over intercity routes that sometimes span several states.",
     "url": "https://www.bls.gov/ooh/transportation-and-material-moving/heavy-and-tractor-trailer-truck-drivers.htm",
@@ -29205,7 +32150,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "2,221,200",
+    "openings": "214,500",
     "medianPay": 58640,
     "aiTag": "protected",
     "edu": "diploma",
@@ -29216,12 +32161,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "vocational",
       "any"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "53-3032",
+      "baseYear": "2025",
+      "medianPay": 58640,
+      "medianPayHourly": 28.19,
+      "payP10": 40140,
+      "payP90": 79380,
+      "numberOfJobs": 2221200,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 83800,
+      "annualOpenings": 214500,
+      "entryEducation": "Postsecondary nondegree award",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Short-term on-the-job training",
+      "workEnvironment": "Working as a long-haul truck driver is a lifestyle choice because these drivers can be away from home for days or weeks at a time."
+    }
   },
   {
     "id": "ooh-156-heavy-vehicle-and-mobile-equipment-service-technicians",
     "cat": "trades",
-    "catName": "Installation & Repair",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Heavy Vehicle and Mobile Equipment Service Technicians",
     "tagline": "Inspect, maintain, and repair vehicles and machinery used in construction, farming, and other industries.",
@@ -29229,7 +32193,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $46K / ₹4-7 LPA · Mid: $64K / ₹10-17 LPA · Lead: $121K+ / ₹28 LPA+",
     "growth": "7% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "The Work Is Physical — Every job is a different room, a different fault, a different set of tools. Work in unstandardised physical spaces is the hardest thing for software to take over.",
     "overview": "Heavy vehicle and mobile equipment service technicians, also called mechanics , inspect, maintain, and repair vehicles and machinery used in construction, farming, rail transportation, and other industries.",
     "url": "https://www.bls.gov/ooh/installation-maintenance-and-repair/heavy-vehicle-and-mobile-equipment-service-technicians.htm",
@@ -29352,7 +32316,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "242,400",
+    "openings": "20,300",
     "medianPay": 63850,
     "aiTag": "protected",
     "edu": "nodegree",
@@ -29366,12 +32330,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "49-3040",
+      "baseYear": "2025",
+      "medianPay": 63850,
+      "medianPayHourly": 30.7,
+      "payP10": 45460,
+      "payP90": 93450,
+      "numberOfJobs": 242400,
+      "growthPct": 7,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 17100,
+      "annualOpenings": 20300,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Long-term on-the-job training",
+      "workEnvironment": "Service technicians usually work indoors in noisy repair shops. They often lift heavy parts and tools, handle greasy and dirty equipment, and stand or lie in uncomfortable positions. Most service technicians work full time, and many work evenings and weekends."
+    }
   },
   {
     "id": "ooh-157-high-school-teachers",
     "cat": "edu",
-    "catName": "Education & Library",
+    "catName": "Education & Academia",
     "icon": "🎓",
     "title": "High School Teachers",
     "tagline": "Teach academic lessons and various skills that students will need to attend college and to enter the job market.",
@@ -29379,7 +32362,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $52K / ₹5-7 LPA · Mid: $72K / ₹9-17 LPA · Lead: $137K+ / ₹26 LPA+",
     "growth": "0% (Little or no change)",
-    "demand": "Steady",
+    "demand": "Declining",
     "aiImpact": "Lesson Plans Are Easy To Generate — Outlines, worksheets and quizzes take seconds to produce. Motivation, reading a room and holding a class together are not things software does.",
     "overview": "High school teachers help prepare students for life after graduation. They teach academic lessons and various skills that students will need to attend college or to enter the job market.",
     "url": "https://www.bls.gov/ooh/education-training-and-library/high-school-teachers.htm",
@@ -29486,7 +32469,7 @@ window.CAREERS_ALL = [
       "Educational Leadership Magazine (ASCD)",
       "Edutopia Learning Platform"
     ],
-    "growthYears": "",
+    "growthYears": "2025–2035",
     "openings": "1,087,500",
     "medianPay": 72040,
     "aiTag": "people",
@@ -29500,12 +32483,31 @@ window.CAREERS_ALL = [
       "education",
       "design",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "25-2031",
+      "baseYear": "2025",
+      "medianPay": 72040,
+      "medianPayHourly": null,
+      "payP10": 48780,
+      "payP90": 107600,
+      "numberOfJobs": 1087500,
+      "growthPct": 0,
+      "growthLabel": "Little or no change",
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "High school teachers work in schools. They work during school hours but may also work evenings and weekends to prepare lessons and grade papers. Most do not teach during the summer."
+    }
   },
   {
     "id": "ooh-158-historians",
     "cat": "edu",
-    "catName": "History & Humanities",
+    "catName": "Education & Academia",
     "icon": "📜",
     "title": "Historians",
     "tagline": "Research, analyze, and interpret past human events through archival records and artifacts.",
@@ -29613,7 +32615,7 @@ window.CAREERS_ALL = [
       "European Space Agency (ESA) Portals"
     ],
     "growthYears": "2025–2035",
-    "openings": "3,800",
+    "openings": "300",
     "medianPay": 76750,
     "aiTag": "automation",
     "edu": "master",
@@ -29625,12 +32627,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "arts",
       "education"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "19-3093",
+      "baseYear": "2025",
+      "medianPay": 76750,
+      "medianPayHourly": 36.9,
+      "payP10": 42730,
+      "payP90": 131810,
+      "numberOfJobs": 3800,
+      "growthPct": 3,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 100,
+      "annualOpenings": 300,
+      "entryEducation": "Master's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Historians work in museums, archives, historical societies, and research organizations. Historians may travel to carry out research. Most historians work full time."
+    }
   },
   {
     "id": "ooh-159-home-health-and-personal-care-aides",
     "cat": "health",
-    "catName": "Healthcare & Nursing",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Home Health and Personal Care Aides",
     "tagline": "Assist elderly and disabled individuals with daily living activities in their own homes.",
@@ -29638,7 +32659,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $26K / ₹2-4 LPA · Mid: $36K / ₹6-10 LPA · Lead: $68K+ / ₹16 LPA+",
     "growth": "18% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Dignified Physical Human Presence — Health wearables track vitals, but assisting frail seniors with bathing, dressing, medication management, and warm companionship cannot be automated.",
     "overview": "Home health and personal care aides monitor the condition of people with disabilities or chronic illnesses and help them with daily living activities. They often help older adults who need assistance. Under the direction of a nurse or other healthcare practitioner, home health aides may be allowed to give a client medication or to check the client's vital signs.",
     "url": "https://www.bls.gov/ooh/healthcare/home-health-aides-and-personal-care-aides.htm",
@@ -29756,7 +32777,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "4,677,100",
+    "openings": "760,500",
     "medianPay": 35800,
     "aiTag": "people",
     "edu": "nodegree",
@@ -29768,12 +32789,31 @@ window.CAREERS_ALL = [
       "health",
       "vocational",
       "any"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "31-1120",
+      "baseYear": "2025",
+      "medianPay": 35800,
+      "medianPayHourly": 17.21,
+      "payP10": 27040,
+      "payP90": 45040,
+      "numberOfJobs": 4677100,
+      "growthPct": 18,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 847300,
+      "annualOpenings": 760500,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Short-term on-the-job training",
+      "workEnvironment": "Home health and personal care aides work in a variety of settings, including clients&rsquo; homes, group homes, and day services programs. Most aides work full time, although part-time work is common. Work schedules may vary."
+    }
   },
   {
     "id": "ooh-160-human-resources-managers",
     "cat": "biz",
-    "catName": "Management",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Human Resources Managers",
     "tagline": "Plan, coordinate, and direct the administrative functions of an organization.",
@@ -29781,7 +32821,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $107K / ₹11-20 LPA · Mid: $149K / ₹29-54 LPA · Lead: $284K+ / ₹81 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Human resources managers plan, coordinate, and direct the administrative functions of an organization. They oversee the recruiting, interviewing, and hiring of new staff; consult with top executives on strategic planning; and serve as a link between an organization's management and its employees.",
     "url": "https://www.bls.gov/ooh/management/human-resources-managers.htm",
@@ -29890,7 +32930,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "224,900",
+    "openings": "16,800",
     "medianPay": 149280,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -29901,7 +32941,26 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "11-3121",
+      "baseYear": "2025",
+      "medianPay": 149280,
+      "medianPayHourly": 71.77,
+      "payP10": 88200,
+      "payP90": 267810,
+      "numberOfJobs": 224900,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 12500,
+      "annualOpenings": 16800,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "5 years or more",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Human resources managers are employed in nearly every industry. They work in offices, and most work full time during regular business hours. Some travel to attend professional meetings or to recruit employees."
+    }
   },
   {
     "id": "ooh-161-human-resources-specialists",
@@ -29914,7 +32973,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $55K / ₹6-10 LPA · Mid: $76K / ₹15-28 LPA · Lead: $144K+ / ₹41 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Human resources specialists recruit, screen, and interview job applicants and place newly hired workers in jobs. They also may handle compensation and benefits, training, and employee relations.",
     "url": "https://www.bls.gov/ooh/business-and-financial/human-resources-specialists.htm",
@@ -30030,7 +33089,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "939,700",
+    "openings": "73,700",
     "medianPay": 75940,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -30043,12 +33102,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "13-1071",
+      "baseYear": "2025",
+      "medianPay": 75940,
+      "medianPayHourly": 36.51,
+      "payP10": 47180,
+      "payP90": 128720,
+      "numberOfJobs": 939700,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 60100,
+      "annualOpenings": 73700,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Human resources specialists generally work in office settings. Some, particularly recruitment specialists, travel to attend job fairs, visit college campuses, and meet with applicants. Most human resources specialists work full time during regular business hours. Some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-162-hydrologists",
     "cat": "space",
-    "catName": "Science & Research",
+    "catName": "Aviation & Aerospace",
     "icon": "🔭",
     "title": "Hydrologists",
     "tagline": "Study water and how it moves across and through the Earth’s crust.",
@@ -30167,12 +33245,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "science"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "19-2043",
+      "baseYear": "2025",
+      "medianPay": 96600,
+      "medianPayHourly": 46.44,
+      "payP10": 64020,
+      "payP90": 153130,
+      "numberOfJobs": 6300,
+      "growthPct": 1,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 100,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Hydrologists typically work in an office setting and in the field. They may need to travel to lakes, streams, and other locations and work outdoors in all types of weather. Most hydrologists work full time, and some work more than 40 hours a week."
+    }
   },
   {
     "id": "ooh-163-industrial-designers",
     "cat": "creative",
-    "catName": "Arts & Design",
+    "catName": "Creative Arts & Design",
     "icon": "🎨",
     "title": "Industrial Designers",
     "tagline": "Combine art, business, and engineering to develop the concepts for manufactured products.",
@@ -30306,12 +33403,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "27-1021",
+      "baseYear": "2025",
+      "medianPay": 83910,
+      "medianPayHourly": 40.34,
+      "payP10": 53460,
+      "payP90": 139770,
+      "numberOfJobs": 35400,
+      "growthPct": 2,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 900,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Industrial designers work in a variety of industries. Although industrial designers work primarily in offices, they may travel to testing facilities, design centers, clients&rsquo; exhibit sites, users&rsquo; homes or workplaces, and places where the product is manufactured."
+    }
   },
   {
     "id": "ooh-164-industrial-engineering-technologists-and-technicians",
     "cat": "eng",
-    "catName": "Engineering",
+    "catName": "Engineering & Robotics",
     "icon": "⚙️",
     "title": "Industrial Engineering Technologists and Technicians",
     "tagline": "Help engineers solve problems affecting manufacturing layout or production.",
@@ -30427,7 +33543,7 @@ window.CAREERS_ALL = [
       "National Society of Professional Engineers (NSPE)"
     ],
     "growthYears": "2025–2035",
-    "openings": "76,700",
+    "openings": "6,600",
     "medianPay": 66120,
     "aiTag": "automation",
     "edu": "diploma",
@@ -30438,12 +33554,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "17-3026",
+      "baseYear": "2025",
+      "medianPay": 66120,
+      "medianPayHourly": 31.79,
+      "payP10": 47300,
+      "payP90": 99150,
+      "numberOfJobs": 76700,
+      "growthPct": 3,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 2400,
+      "annualOpenings": 6600,
+      "entryEducation": "Associate's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most industrial engineering technologists and technicians work in manufacturing industries. Most work full time."
+    }
   },
   {
     "id": "ooh-165-industrial-engineers",
     "cat": "eng",
-    "catName": "Engineering",
+    "catName": "Engineering & Robotics",
     "icon": "⚙️",
     "title": "Industrial Engineers",
     "tagline": "Design, develop, and test integrated systems for managing industrial production processes.",
@@ -30451,7 +33586,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $74K / ₹7-12 LPA · Mid: $102K / ₹17-30 LPA · Lead: $195K+ / ₹47 LPA+",
     "growth": "12% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Software Explores The Options — Generative design and simulation run thousands of variants quickly. Choosing one, checking it against physics, safety rules and cost, and signing it off stays human.",
     "overview": "Industrial engineers devise efficient systems that integrate workers, machines, materials, information, and energy to make a product or provide a service. They assess workers, quality control, logistics, and other factors involved in coordinating production.",
     "url": "https://www.bls.gov/ooh/architecture-and-engineering/industrial-engineers.htm",
@@ -30555,7 +33690,7 @@ window.CAREERS_ALL = [
       "National Society of Professional Engineers (NSPE)"
     ],
     "growthYears": "2025–2035",
-    "openings": "365,100",
+    "openings": "23,100",
     "medianPay": 102440,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -30565,12 +33700,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "engineering"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "17-2112",
+      "baseYear": "2025",
+      "medianPay": 102440,
+      "medianPayHourly": 49.25,
+      "payP10": 74370,
+      "payP90": 159860,
+      "numberOfJobs": 365100,
+      "growthPct": 12,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 45400,
+      "annualOpenings": 23100,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Industrial engineers work in a variety of settings, such as offices and manufacturing plants. Most work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-166-industrial-machinery-mechanics-machinery-maintenance-workers-and-millwrights",
     "cat": "trades",
-    "catName": "Installation & Repair",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Industrial Machinery Mechanics, Machinery Maintenance Workers, and Millwrights",
     "tagline": "Install, maintain, and repair factory equipment and other industrial machinery.",
@@ -30578,7 +33732,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $46K / ₹4-7 LPA · Mid: $64K / ₹10-17 LPA · Lead: $122K+ / ₹28 LPA+",
     "growth": "14% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "The Work Is Physical — Every job is a different room, a different fault, a different set of tools. Work in unstandardised physical spaces is the hardest thing for software to take over.",
     "overview": "Industrial machinery mechanics and machinery maintenance workers maintain and repair factory equipment and other industrial machinery, such as conveying systems, production machinery, and packaging equipment. Millwrights install, dismantle, repair, reassemble, and move machinery in factories, power plants, and construction sites.",
     "url": "https://www.bls.gov/ooh/installation-maintenance-and-repair/industrial-machinery-mechanics-and-maintenance-workers-and-millwrights.htm",
@@ -30691,7 +33845,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "547,300",
+    "openings": "51,900",
     "medianPay": 64100,
     "aiTag": "protected",
     "edu": "nodegree",
@@ -30702,12 +33856,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "49-9041",
+      "baseYear": "2025",
+      "medianPay": 64100,
+      "medianPayHourly": 30.82,
+      "payP10": 45760,
+      "payP90": 94530,
+      "numberOfJobs": 547300,
+      "growthPct": 14,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 78900,
+      "annualOpenings": 51900,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": null,
+      "workEnvironment": "Workers in this occupation must follow safety precautions and use protective equipment, such as hardhats, safety glasses, and hearing protectors. Most work full time in manufacturing facilities. However, they may be on call and work night or weekend shifts. Overtime is common."
+    }
   },
   {
     "id": "ooh-167-industrial-production-managers",
     "cat": "biz",
-    "catName": "Management",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Industrial Production Managers",
     "tagline": "Oversee the operations of manufacturing and related plants.",
@@ -30822,7 +33995,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "252,100",
+    "openings": "17,000",
     "medianPay": 126060,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -30834,12 +34007,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "11-3051",
+      "baseYear": "2025",
+      "medianPay": 126060,
+      "medianPayHourly": 60.61,
+      "payP10": 78000,
+      "payP90": 205520,
+      "numberOfJobs": 252100,
+      "growthPct": 3,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 6500,
+      "annualOpenings": 17000,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "5 years or more",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most industrial production managers work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-168-information-clerks",
     "cat": "biz",
-    "catName": "Office & Admin",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Information Clerks",
     "tagline": "Perform routine clerical duties, maintain records, collect data, and provide information to customers.",
@@ -31032,12 +34224,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "43-4021",
+      "baseYear": "2025",
+      "medianPay": 45430,
+      "medianPayHourly": 21.84,
+      "payP10": 30790,
+      "payP90": 67790,
+      "numberOfJobs": 1287600,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": null,
+      "relatedExperience": "None",
+      "onTheJobTraining": null,
+      "workEnvironment": "Although information clerks are employed in nearly every industry, many work in government agencies, hotels, and healthcare facilities. Most information clerks work full time."
+    }
   },
   {
     "id": "ooh-169-information-security-analysts",
     "cat": "tech",
-    "catName": "Technology & IT",
+    "catName": "Technology & AI",
     "icon": "💻",
     "title": "Information Security Analysts",
     "tagline": "Plan and carry out security measures to protect an organization’s computer networks and systems.",
@@ -31045,7 +34256,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $93K / ₹10-15 LPA · Mid: $129K / ₹23-40 LPA · Lead: $245K+ / ₹62 LPA+",
     "growth": "21% (Much faster than average)",
-    "demand": "Extreme",
+    "demand": "Very High",
     "aiImpact": "Tools Write More Of The Code — Copilots and agents draft, test and refactor code, which raises what a developer is expected to ship. Designing the system, reviewing what the machine produced, and owning failures still sit with a person.",
     "overview": "Information security analysts plan and carry out security measures to protect an organization's computer networks and systems.",
     "url": "https://www.bls.gov/ooh/computer-and-information-technology/information-security-analysts.htm",
@@ -31152,7 +34363,7 @@ window.CAREERS_ALL = [
       "O’Reilly Learning Platform"
     ],
     "growthYears": "2025–2035",
-    "openings": "192,900",
+    "openings": "14,100",
     "medianPay": 129180,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -31166,12 +34377,31 @@ window.CAREERS_ALL = [
       "computing",
       "science",
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "15-1212",
+      "baseYear": "2025",
+      "medianPay": 129180,
+      "medianPayHourly": 62.11,
+      "payP10": 75090,
+      "payP90": 199850,
+      "numberOfJobs": 192900,
+      "growthPct": 21,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 40600,
+      "annualOpenings": 14100,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "Less than 5 years",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most information security analysts work for computer companies, consulting firms, or business and financial companies."
+    }
   },
   {
     "id": "ooh-170-instructional-coordinators",
     "cat": "edu",
-    "catName": "Education & Library",
+    "catName": "Education & Academia",
     "icon": "🎓",
     "title": "Instructional Coordinators",
     "tagline": "Oversee school curriculums and teaching standards.",
@@ -31301,12 +34531,31 @@ window.CAREERS_ALL = [
       "education",
       "design",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "25-9031",
+      "baseYear": "2025",
+      "medianPay": 77440,
+      "medianPayHourly": 37.23,
+      "payP10": 47980,
+      "payP90": 121670,
+      "numberOfJobs": 248700,
+      "growthPct": 2,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 4100,
+      "annualOpenings": null,
+      "entryEducation": "Master's degree",
+      "relatedExperience": "5 years or more",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most instructional coordinators work in elementary and secondary schools, colleges, professional schools, or educational support services or for state and local governments. They typically work year round."
+    }
   },
   {
     "id": "ooh-171-insulation-workers",
     "cat": "trades",
-    "catName": "Construction & Trades",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Insulation Workers",
     "tagline": "Install and replace the materials used to insulate buildings or mechanical systems.",
@@ -31427,7 +34676,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "71,900",
+    "openings": "4,800",
     "medianPay": 51330,
     "aiTag": "protected",
     "edu": "master",
@@ -31439,12 +34688,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "47-2130",
+      "baseYear": "2025",
+      "medianPay": 51330,
+      "medianPayHourly": 24.68,
+      "payP10": 37030,
+      "payP90": 78190,
+      "numberOfJobs": 71900,
+      "growthPct": 3,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 2500,
+      "annualOpenings": 4800,
+      "entryEducation": null,
+      "relatedExperience": "None",
+      "onTheJobTraining": null,
+      "workEnvironment": "Insulators generally work indoors. Mechanical insulators work both indoors and outdoors, sometimes in extreme temperatures. They spend most of their workday standing, bending, or kneeling, often in confined spaces."
+    }
   },
   {
     "id": "ooh-172-insurance-sales-agents",
     "cat": "biz",
-    "catName": "Sales",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Insurance Sales Agents",
     "tagline": "Contact potential customers and sell one or more types of insurance.",
@@ -31559,7 +34827,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "572,600",
+    "openings": "43,100",
     "medianPay": 62280,
     "aiTag": "automation",
     "edu": "nodegree",
@@ -31571,7 +34839,26 @@ window.CAREERS_ALL = [
       "commerce",
       "management",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "41-3021",
+      "baseYear": "2025",
+      "medianPay": 62280,
+      "medianPayHourly": 29.94,
+      "payP10": 37330,
+      "payP90": 138140,
+      "numberOfJobs": 572600,
+      "growthPct": 3,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 18800,
+      "annualOpenings": 43100,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Most insurance sales agents work in office settings, although they may spend time traveling to meet with clients."
+    }
   },
   {
     "id": "ooh-173-insurance-underwriters",
@@ -31706,12 +34993,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "13-2053",
+      "baseYear": "2025",
+      "medianPay": 81370,
+      "medianPayHourly": 39.12,
+      "payP10": 55530,
+      "payP90": 145160,
+      "numberOfJobs": 125600,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Insurance underwriters work in an office setting during regular business hours. Most work full time."
+    }
   },
   {
     "id": "ooh-174-interior-designers",
     "cat": "creative",
-    "catName": "Arts & Design",
+    "catName": "Creative Arts & Design",
     "icon": "🎨",
     "title": "Interior Designers",
     "tagline": "Make indoor spaces functional, safe, and beautiful by determining space requirements and selecting essential and decorative items.",
@@ -31828,7 +35134,7 @@ window.CAREERS_ALL = [
       "Nielsen Norman Group UX Articles"
     ],
     "growthYears": "2025–2035",
-    "openings": "97,100",
+    "openings": "7,700",
     "medianPay": 67190,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -31839,12 +35145,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "27-1025",
+      "baseYear": "2025",
+      "medianPay": 67190,
+      "medianPayHourly": 32.31,
+      "payP10": 41420,
+      "payP90": 114140,
+      "numberOfJobs": 97100,
+      "growthPct": 3,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 2600,
+      "annualOpenings": 7700,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Many interior designers work in specialized design services or in architectural, engineering, and related services."
+    }
   },
   {
     "id": "ooh-175-interpreters-and-translators",
     "cat": "creative",
-    "catName": "Media & Communication",
+    "catName": "Creative Arts & Design",
     "icon": "🎨",
     "title": "Interpreters and Translators",
     "tagline": "Convert information from one language into another language.",
@@ -31970,12 +35295,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "27-3091",
+      "baseYear": "2025",
+      "medianPay": 60170,
+      "medianPayHourly": 28.93,
+      "payP10": 37070,
+      "payP90": 103660,
+      "numberOfJobs": 73900,
+      "growthPct": 2,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 1500,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Interpreters and translators work in settings such as schools, hospitals, courtrooms, meeting rooms, and conference centers. Part-time work is common, and work schedules may vary."
+    }
   },
   {
     "id": "ooh-176-ironworkers",
     "cat": "trades",
-    "catName": "Construction & Trades",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Ironworkers",
     "tagline": "Install structural and reinforcing iron and steel to form and support buildings, bridges, and roads.",
@@ -32112,12 +35456,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "47-2171",
+      "baseYear": "2025",
+      "medianPay": 61910,
+      "medianPayHourly": 29.77,
+      "payP10": 43310,
+      "payP90": 104540,
+      "numberOfJobs": 84800,
+      "growthPct": 1,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 1300,
+      "annualOpenings": null,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Apprenticeship",
+      "workEnvironment": "Ironworkers perform physically demanding and dangerous work, often at great heights. Workers must wear safety equipment to reduce the risk of falls or other injuries."
+    }
   },
   {
     "id": "ooh-177-janitors-and-building-cleaners",
     "cat": "eco",
-    "catName": "Grounds & Maintenance",
+    "catName": "Sustainability & Energy",
     "icon": "🌿",
     "title": "Janitors and Building Cleaners",
     "tagline": "Keep many types of buildings clean, sanitary, orderly, and in good condition.",
@@ -32254,12 +35617,31 @@ window.CAREERS_ALL = [
       "commerce",
       "design",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "37-2011",
+      "baseYear": "2025",
+      "medianPay": 36840,
+      "medianPayHourly": 17.71,
+      "payP10": null,
+      "payP90": 24,
+      "numberOfJobs": 2432600,
+      "growthPct": 2,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 53600,
+      "annualOpenings": null,
+      "entryEducation": "No formal educational credential",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Short-term on-the-job training",
+      "workEnvironment": "Janitors and building cleaners usually work indoors, but they may also work outdoors on tasks such as sweeping walkways or removing snow. Most janitors and building cleaners work full time, although part-time work is common. Work schedules may vary to include evenings, nights, or weekends."
+    }
   },
   {
     "id": "ooh-178-jewelers-and-precious-stone-and-metal-workers",
     "cat": "trades",
-    "catName": "Production & Manufacturing",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Jewelers and Precious Stone and Metal Workers",
     "tagline": "Design, construct, adjust, repair, appraise and sell jewelry and related products.",
@@ -32390,12 +35772,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "51-9071",
+      "baseYear": "2025",
+      "medianPay": 52540,
+      "medianPayHourly": 25.26,
+      "payP10": 35580,
+      "payP90": 87540,
+      "numberOfJobs": 32800,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Long-term on-the-job training",
+      "workEnvironment": "Jewelers and precious stone and metal workers may spend much of their time at a workbench or polishing station, using tools and chemicals. Most work full time."
+    }
   },
   {
     "id": "ooh-179-judges-and-hearing-officers",
     "cat": "law",
-    "catName": "Legal",
+    "catName": "Law & Public Safety",
     "icon": "⚖️",
     "title": "Judges and Hearing Officers",
     "tagline": "Oversee legal matters in court or administrative proceedings.",
@@ -32535,12 +35936,31 @@ window.CAREERS_ALL = [
       "arts",
       "law",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "23-1021",
+      "baseYear": "2025",
+      "medianPay": 132800,
+      "medianPayHourly": 63.85,
+      "payP10": 61110,
+      "payP90": 207480,
+      "numberOfJobs": 42700,
+      "growthPct": 2,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 700,
+      "annualOpenings": null,
+      "entryEducation": "Doctoral or professional degree",
+      "relatedExperience": "5 years or more",
+      "onTheJobTraining": "Short-term on-the-job training",
+      "workEnvironment": "Judges and hearing officers are employed by the federal government or by local and state governments. Most judges and hearing officers work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-180-kindergarten-and-elementary-school-teachers",
     "cat": "edu",
-    "catName": "Education & Library",
+    "catName": "Education & Academia",
     "icon": "🎓",
     "title": "Kindergarten and Elementary School Teachers",
     "tagline": "Instruct young students in basic subjects in order to prepare them for future schooling.",
@@ -32548,7 +35968,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $46K / ₹4-7 LPA · Mid: $64K / ₹8-15 LPA · Lead: $121K+ / ₹23 LPA+",
     "growth": "0% (Little or no change)",
-    "demand": "Steady",
+    "demand": "Declining",
     "aiImpact": "Lesson Plans Are Easy To Generate — Outlines, worksheets and quizzes take seconds to produce. Motivation, reading a room and holding a class together are not things software does.",
     "overview": "Kindergarten and elementary school teachers instruct young students in basic subjects, such as math and reading, in order to prepare them for middle school.",
     "url": "https://www.bls.gov/ooh/education-training-and-library/kindergarten-and-elementary-school-teachers.htm",
@@ -32655,7 +36075,7 @@ window.CAREERS_ALL = [
       "Educational Leadership Magazine (ASCD)",
       "Edutopia Learning Platform"
     ],
-    "growthYears": "",
+    "growthYears": "2025–2035",
     "openings": "1,530,500",
     "medianPay": 63820,
     "aiTag": "people",
@@ -32669,7 +36089,26 @@ window.CAREERS_ALL = [
       "education",
       "design",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "25-2012",
+      "baseYear": "2025",
+      "medianPay": 63820,
+      "medianPayHourly": null,
+      "payP10": 47960,
+      "payP90": 104340,
+      "numberOfJobs": 1530500,
+      "growthPct": 0,
+      "growthLabel": "Little or no change",
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Kindergarten and elementary school teachers work in public and private schools. They generally work during school hours when students are present and use nights and weekends to prepare lessons and grade papers. Most kindergarten and elementary school teachers do not work during the summer."
+    }
   },
   {
     "id": "ooh-181-labor-relations-specialists",
@@ -32801,12 +36240,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "13-1075",
+      "baseYear": "2025",
+      "medianPay": 95420,
+      "medianPayHourly": 45.87,
+      "payP10": 50490,
+      "payP90": 156180,
+      "numberOfJobs": 66300,
+      "growthPct": 2,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 1400,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "Less than 5 years",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Labor relations specialists typically work in an office setting. Most work full time."
+    }
   },
   {
     "id": "ooh-182-landscape-architects",
     "cat": "eng",
-    "catName": "Engineering",
+    "catName": "Engineering & Robotics",
     "icon": "⚙️",
     "title": "Landscape Architects",
     "tagline": "Design parks and other outdoor spaces.",
@@ -32814,7 +36272,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $58K / ₹5-9 LPA · Mid: $80K / ₹13-23 LPA · Lead: $152K+ / ₹37 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "Software Explores The Options — Generative design and simulation run thousands of variants quickly. Choosing one, checking it against physics, safety rules and cost, and signing it off stays human.",
     "overview": "Landscape architects design parks and the outdoor spaces of campuses, recreational facilities, businesses, private homes, and other open spaces.",
     "url": "https://www.bls.gov/ooh/architecture-and-engineering/landscape-architects.htm",
@@ -32918,7 +36376,7 @@ window.CAREERS_ALL = [
       "National Society of Professional Engineers (NSPE)"
     ],
     "growthYears": "2025–2035",
-    "openings": "23,500",
+    "openings": "1,700",
     "medianPay": 79870,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -32930,12 +36388,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "engineering"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "17-1012",
+      "baseYear": "2025",
+      "medianPay": 79870,
+      "medianPayHourly": 38.4,
+      "payP10": 54770,
+      "payP90": 130190,
+      "numberOfJobs": 23500,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 1000,
+      "annualOpenings": 1700,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Internship/residency",
+      "workEnvironment": "Landscape architects spend much of their time in offices, where they create designs, prepare models, and meet with clients. They spend the rest of their time at jobsites."
+    }
   },
   {
     "id": "ooh-183-lawyers",
     "cat": "law",
-    "catName": "Legal",
+    "catName": "Law & Public Safety",
     "icon": "⚖️",
     "title": "Lawyers",
     "tagline": "Advise and represent clients on legal proceedings or transactions.",
@@ -32943,7 +36420,7 @@ window.CAREERS_ALL = [
     "stream": "Arts & Humanities",
     "salary": "Entry: $115K / ₹9-17 LPA · Mid: $160K / ₹25-51 LPA · Lead: $303K+ / ₹86 LPA+",
     "growth": "5% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Search And Summary Are Automated — AI reads contracts and case history in seconds. Argument, strategy, ethics and the responsibility of advising a client stay with the lawyer.",
     "overview": "Lawyers advise and represent clients on legal proceedings or transactions.",
     "url": "https://www.bls.gov/ooh/legal/lawyers.htm",
@@ -33076,7 +36553,7 @@ window.CAREERS_ALL = [
       "Supreme Court Cases (SCC Online)"
     ],
     "growthYears": "2025–2035",
-    "openings": "863,700",
+    "openings": "28,700",
     "medianPay": 159670,
     "aiTag": "automation",
     "edu": "doctorate",
@@ -33089,12 +36566,31 @@ window.CAREERS_ALL = [
       "arts",
       "law",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "23-1011",
+      "baseYear": "2025",
+      "medianPay": 159670,
+      "medianPayHourly": 76.76,
+      "payP10": 78360,
+      "payP90": 351600,
+      "numberOfJobs": 863700,
+      "growthPct": 5,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 40600,
+      "annualOpenings": 28700,
+      "entryEducation": "Doctoral or professional degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Lawyers work for a variety of organizations, usually in office settings. Some work for federal, local, or state governments. Most work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-184-librarians-and-library-media-specialists",
     "cat": "edu",
-    "catName": "Education & Library",
+    "catName": "Education & Academia",
     "icon": "🎓",
     "title": "Librarians and Library Media Specialists",
     "tagline": "Help people find information and conduct research for personal and professional use.",
@@ -33228,7 +36724,7 @@ window.CAREERS_ALL = [
       "Edutopia Learning Platform"
     ],
     "growthYears": "2025–2035",
-    "openings": "142,300",
+    "openings": "12,600",
     "medianPay": 68270,
     "aiTag": "people",
     "edu": "master",
@@ -33242,12 +36738,31 @@ window.CAREERS_ALL = [
       "education",
       "design",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "25-4022",
+      "baseYear": "2025",
+      "medianPay": 68270,
+      "medianPayHourly": 32.82,
+      "payP10": 43660,
+      "payP90": 103990,
+      "numberOfJobs": 142300,
+      "growthPct": 3,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 3600,
+      "annualOpenings": 12600,
+      "entryEducation": "Master's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Librarians and library media specialists work for local governments, schools, and other organizations. Most work full time, although part-time work is common."
+    }
   },
   {
     "id": "ooh-185-library-technicians-and-assistants",
     "cat": "edu",
-    "catName": "Education & Library",
+    "catName": "Education & Academia",
     "icon": "🎓",
     "title": "Library Technicians and Assistants",
     "tagline": "Help librarians with all aspects of running a library.",
@@ -33385,12 +36900,31 @@ window.CAREERS_ALL = [
       "education",
       "design",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "25-4031",
+      "baseYear": "2025",
+      "medianPay": 38760,
+      "medianPayHourly": 18.64,
+      "payP10": null,
+      "payP90": 26,
+      "numberOfJobs": 162300,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": null,
+      "relatedExperience": "None",
+      "onTheJobTraining": null,
+      "workEnvironment": "Library technicians and assistants work in local public libraries, corporate and specialty libraries, and school and university libraries."
+    }
   },
   {
     "id": "ooh-186-licensed-practical-and-licensed-vocational-nurses",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Licensed Practical and Licensed Vocational Nurses",
     "tagline": "Practical nurses (LPNs) and licensed vocational nurses (LVNs) provide basic medical care..",
@@ -33516,7 +37050,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "666,900",
+    "openings": "51,800",
     "medianPay": 64400,
     "aiTag": "people",
     "edu": "diploma",
@@ -33526,7 +37060,26 @@ window.CAREERS_ALL = [
     "degrees": [
       "health",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-2061",
+      "baseYear": "2025",
+      "medianPay": 64400,
+      "medianPayHourly": 30.96,
+      "payP10": 49740,
+      "payP90": 83440,
+      "numberOfJobs": 666900,
+      "growthPct": 3,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 19700,
+      "annualOpenings": 51800,
+      "entryEducation": "Postsecondary nondegree award",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Licensed practical and licensed vocational nurses work in a variety of settings, including nursing and residential care facilities, hospitals, physicians&rsquo; offices, and private homes. Most work full time."
+    }
   },
   {
     "id": "ooh-187-loan-officers",
@@ -33660,12 +37213,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "13-2072",
+      "baseYear": "2025",
+      "medianPay": 76690,
+      "medianPayHourly": 36.87,
+      "payP10": 39430,
+      "payP90": 153180,
+      "numberOfJobs": 283000,
+      "growthPct": 1,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 3100,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "Less than 5 years",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Most loan officers are employed by commercial banks, credit unions, mortgage companies, and other financial institutions. Most loan officers work full time, and some work more than 40 hours per week. Except for consumer loan officers, who spend most of their time in offices, these workers may travel to visit clients."
+    }
   },
   {
     "id": "ooh-188-lodging-managers",
     "cat": "biz",
-    "catName": "Management",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Lodging Managers",
     "tagline": "Ensure that guests have a pleasant experience at an accommodations facility.",
@@ -33673,7 +37245,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $50K / ₹5-9 LPA · Mid: $69K / ₹13-25 LPA · Lead: $132K+ / ₹38 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Lodging managers ensure that guests have a pleasant experience at a hotel, motel, or other type of facility with accommodations. Lodging managers also plan, direct, or coordinate activities to ensure that the facility is efficient and profitable.",
     "url": "https://www.bls.gov/ooh/management/lodging-managers.htm",
@@ -33782,7 +37354,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "54,800",
+    "openings": "5,500",
     "medianPay": 69250,
     "aiTag": "automation",
     "edu": "nodegree",
@@ -33793,12 +37365,31 @@ window.CAREERS_ALL = [
       "commerce",
       "management",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "11-9081",
+      "baseYear": "2025",
+      "medianPay": 69250,
+      "medianPayHourly": 33.29,
+      "payP10": 40070,
+      "payP90": 128880,
+      "numberOfJobs": 54800,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 2100,
+      "annualOpenings": 5500,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "Less than 5 years",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most lodging managers work full time. Work schedules may vary and often include evenings, weekends, and holidays. Because these facilities are open around the clock, some managers are on call 24 hours a day."
+    }
   },
   {
     "id": "ooh-189-logging-workers",
     "cat": "eco",
-    "catName": "Farming & Forestry",
+    "catName": "Sustainability & Energy",
     "icon": "🌿",
     "title": "Logging Workers",
     "tagline": "Harvest trees to provide the raw material for many consumer goods and industrial products.",
@@ -33965,7 +37556,26 @@ window.CAREERS_ALL = [
       "commerce",
       "design",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "45-4020",
+      "baseYear": "2025",
+      "medianPay": 49660,
+      "medianPayHourly": 23.88,
+      "payP10": 35170,
+      "payP90": 74080,
+      "numberOfJobs": 40400,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Logging is physically demanding and can be dangerous. Workers spend all their time outdoors, sometimes in poor weather and often in isolated areas. Most work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-190-logisticians",
@@ -33978,7 +37588,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $59K / ₹6-11 LPA · Mid: $82K / ₹16-30 LPA · Lead: $156K+ / ₹45 LPA+",
     "growth": "18% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Logisticians analyze and coordinate an organization's supply chain, the system that moves a product from supplier to consumer. They manage a product's entire life cycle, from design to disposal.",
     "url": "https://www.bls.gov/ooh/business-and-financial/logisticians.htm",
@@ -34083,7 +37693,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "255,100",
+    "openings": "26,600",
     "medianPay": 82320,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -34096,12 +37706,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "13-1081",
+      "baseYear": "2025",
+      "medianPay": 82320,
+      "medianPayHourly": 39.58,
+      "payP10": 50890,
+      "payP90": 133160,
+      "numberOfJobs": 255100,
+      "growthPct": 18,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 44900,
+      "annualOpenings": 26600,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Logisticians work in many industries. Most work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-191-machinists-and-tool-and-die-makers",
     "cat": "trades",
-    "catName": "Production & Manufacturing",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Machinists and Tool and Die Makers",
     "tagline": "Set up and operate equipment to produce precision metal parts, instruments, and tools.",
@@ -34234,7 +37863,26 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "51-4041",
+      "baseYear": "2025",
+      "medianPay": 59620,
+      "medianPayHourly": 28.66,
+      "payP10": 39200,
+      "payP90": 80010,
+      "numberOfJobs": 344900,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": null,
+      "relatedExperience": "None",
+      "onTheJobTraining": "Long-term on-the-job training",
+      "workEnvironment": "Machinists and tool and die makers work in machine shops and factories. Many work full time during regular business hours. However, working overtime, as well as nights and weekends, may be common."
+    }
   },
   {
     "id": "ooh-192-management-analysts",
@@ -34247,7 +37895,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $73K / ₹7-14 LPA · Mid: $102K / ₹20-37 LPA · Lead: $194K+ / ₹56 LPA+",
     "growth": "10% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Management analysts, often called management consultants , recommend ways to improve an organization's efficiency. They advise managers on how to make organizations more profitable through reduced costs and increased revenues.",
     "url": "https://www.bls.gov/ooh/business-and-financial/management-analysts.htm",
@@ -34359,7 +38007,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "1,077,100",
+    "openings": "94,100",
     "medianPay": 101860,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -34371,12 +38019,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "13-1111",
+      "baseYear": "2025",
+      "medianPay": 101860,
+      "medianPayHourly": 48.97,
+      "payP10": 60640,
+      "payP90": 171640,
+      "numberOfJobs": 1077100,
+      "growthPct": 10,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 109200,
+      "annualOpenings": 94100,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "Less than 5 years",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Management analysts may travel frequently to meet with clients. Some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-193-manicurists-and-pedicurists",
     "cat": "service",
-    "catName": "Personal Care & Service",
+    "catName": "Human Care & Services",
     "icon": "🤝",
     "title": "Manicurists and Pedicurists",
     "tagline": "Clean, shape, and beautify fingernails and toenails.",
@@ -34384,7 +38051,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $26K / ₹2-4 LPA · Mid: $36K / ₹5-8 LPA · Lead: $68K+ / ₹12 LPA+",
     "growth": "9% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Presence Is The Job — Comfort, trust and physical care are the reason the role exists. Tools can monitor and remind, but they cannot sit with someone or speak for the family.",
     "overview": "Manicurists and pedicurists clean, shape, and beautify fingernails and toenails.",
     "url": "https://www.bls.gov/ooh/personal-care-and-service/manicurists-and-pedicurists.htm",
@@ -34483,7 +38150,7 @@ window.CAREERS_ALL = [
       "The New Social Worker Magazine"
     ],
     "growthYears": "2025–2035",
-    "openings": "201,800",
+    "openings": "21,900",
     "medianPay": 35760,
     "aiTag": "people",
     "edu": "diploma",
@@ -34497,12 +38164,31 @@ window.CAREERS_ALL = [
       "science",
       "arts",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "39-5092",
+      "baseYear": "2025",
+      "medianPay": 35760,
+      "medianPayHourly": 17.19,
+      "payP10": null,
+      "payP90": 24,
+      "numberOfJobs": 201800,
+      "growthPct": 9,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 18600,
+      "annualOpenings": 21900,
+      "entryEducation": "Postsecondary nondegree award",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Manicurists and pedicurists usually work in a nail salon, spa, or hair salon. Most manicurists and pedicurists work full time, although part-time work is common. Work schedules may vary and often include evenings and weekends."
+    }
   },
   {
     "id": "ooh-194-marine-engineers-and-naval-architects",
     "cat": "eng",
-    "catName": "Engineering",
+    "catName": "Engineering & Robotics",
     "icon": "⚙️",
     "title": "Marine Engineers and Naval Architects",
     "tagline": "Design, develop, and evaluate the operation of marine vessels, ship machinery, and related equipment.",
@@ -34510,7 +38196,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $81K / ₹7-13 LPA · Mid: $112K / ₹19-33 LPA · Lead: $213K+ / ₹51 LPA+",
     "growth": "7% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Software Explores The Options — Generative design and simulation run thousands of variants quickly. Choosing one, checking it against physics, safety rules and cost, and signing it off stays human.",
     "overview": "Marine engineers and naval architects design, develop, and evaluate the operation of marine vessels, ship machinery, and related equipment, such as power supply and propulsion systems.",
     "url": "https://www.bls.gov/ooh/architecture-and-engineering/marine-engineers-and-naval-architects.htm",
@@ -34616,7 +38302,7 @@ window.CAREERS_ALL = [
       "National Society of Professional Engineers (NSPE)"
     ],
     "growthYears": "2025–2035",
-    "openings": "8,400",
+    "openings": "500",
     "medianPay": 112230,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -34628,7 +38314,26 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "engineering"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "17-2121",
+      "baseYear": "2025",
+      "medianPay": 112230,
+      "medianPayHourly": 53.96,
+      "payP10": 83010,
+      "payP90": 173330,
+      "numberOfJobs": 8400,
+      "growthPct": 7,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 600,
+      "annualOpenings": 500,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Marine engineers and naval architects may work in a variety of settings, such as in offices, on manufacturing shop floors, or at sea. Most marine engineers and naval architects work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-195-market-research-analysts",
@@ -34641,7 +38346,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $57K / ₹6-11 LPA · Mid: $79K / ₹15-29 LPA · Lead: $150K+ / ₹43 LPA+",
     "growth": "7% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Market research analysts study consumer preferences, business conditions, and other factors to assess potential sales of a product or service. They help companies understand what products people want, who will buy them, and at what price.",
     "url": "https://www.bls.gov/ooh/business-and-financial/market-research-analysts.htm",
@@ -34751,7 +38456,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "952,700",
+    "openings": "82,000",
     "medianPay": 78760,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -34763,12 +38468,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "13-1161",
+      "baseYear": "2025",
+      "medianPay": 78760,
+      "medianPayHourly": 37.87,
+      "payP10": 43390,
+      "payP90": 155480,
+      "numberOfJobs": 952700,
+      "growthPct": 7,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 66300,
+      "annualOpenings": 82000,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Because most industries use market research, these analysts are employed throughout the economy. Most analysts work full time during regular business hours."
+    }
   },
   {
     "id": "ooh-196-marriage-and-family-therapists",
     "cat": "service",
-    "catName": "Community & Social Service",
+    "catName": "Human Care & Services",
     "icon": "🤝",
     "title": "Marriage and Family Therapists",
     "tagline": "Diagnose and treat cognitive, behavioral, or similar disorders in the context of couples and other relationships.",
@@ -34776,7 +38500,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $48K / ₹4-7 LPA · Mid: $67K / ₹9-15 LPA · Lead: $127K+ / ₹23 LPA+",
     "growth": "14% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Presence Is The Job — Comfort, trust and physical care are the reason the role exists. Tools can monitor and remind, but they cannot sit with someone or speak for the family.",
     "overview": "Marriage and family therapists diagnose and treat cognitive, behavioral, or similar disorders in the context of couples and other relationships.",
     "url": "https://www.bls.gov/ooh/community-and-social-service/marriage-and-family-therapists.htm",
@@ -34883,7 +38607,7 @@ window.CAREERS_ALL = [
       "The New Social Worker Magazine"
     ],
     "growthYears": "2025–2035",
-    "openings": "76,300",
+    "openings": "6,900",
     "medianPay": 66940,
     "aiTag": "people",
     "edu": "master",
@@ -34895,12 +38619,31 @@ window.CAREERS_ALL = [
       "health",
       "science",
       "arts"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "21-1013",
+      "baseYear": "2025",
+      "medianPay": 66940,
+      "medianPayHourly": 32.18,
+      "payP10": 44650,
+      "payP90": 123730,
+      "numberOfJobs": 76300,
+      "growthPct": 14,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 10300,
+      "annualOpenings": 6900,
+      "entryEducation": "Master's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Internship/residency",
+      "workEnvironment": "Marriage and family therapists work in a variety of settings, such as offices and mental health centers. Most work full time, but part-time work is common. Some therapists work evenings and weekends."
+    }
   },
   {
     "id": "ooh-197-masonry-workers",
     "cat": "trades",
-    "catName": "Construction & Trades",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Masonry Workers",
     "tagline": "Use bricks, concrete and concrete blocks, and natural and manmade stones to build structures.",
@@ -35058,12 +38801,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "47-2021",
+      "baseYear": "2025",
+      "medianPay": 58270,
+      "medianPayHourly": 28.02,
+      "payP10": 39670,
+      "payP90": 91350,
+      "numberOfJobs": 277700,
+      "growthPct": 1,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 3300,
+      "annualOpenings": null,
+      "entryEducation": null,
+      "relatedExperience": "None",
+      "onTheJobTraining": null,
+      "workEnvironment": "Masonry work is physically demanding, requiring heavy lifting and long periods of standing, kneeling, and bending. Most masons work full time."
+    }
   },
   {
     "id": "ooh-198-massage-therapists",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Massage Therapists",
     "tagline": "Treat clients by applying pressure to manipulate the body&apos soft tissues and joints.",
@@ -35071,7 +38833,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $42K / ₹4-6 LPA · Mid: $58K / ₹9-16 LPA · Lead: $111K+ / ₹26 LPA+",
     "growth": "15% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Diagnostics Are Assisted — Imaging, lab results and records are increasingly read by software first. Examination, procedures, consent and the conversation with the patient are not.",
     "overview": "Massage therapists treat clients by applying pressure to manipulate the body's soft tissues and joints. This treatment may help to relieve pain, heal injuries, relieve stress, and aid in the general wellness of clients.",
     "url": "https://www.bls.gov/ooh/healthcare/massage-therapists.htm",
@@ -35182,7 +38944,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "155,400",
+    "openings": "20,400",
     "medianPay": 58450,
     "aiTag": "people",
     "edu": "diploma",
@@ -35192,12 +38954,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "health",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "31-9011",
+      "baseYear": "2025",
+      "medianPay": 58450,
+      "medianPayHourly": 28.1,
+      "payP10": 33640,
+      "payP90": 100200,
+      "numberOfJobs": 155400,
+      "growthPct": 15,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 23700,
+      "annualOpenings": 20400,
+      "entryEducation": "Postsecondary nondegree award",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Massage therapists work in an array of settings, such as spas and offices of other health practitioners. Some also travel to local events, clients&rsquo; homes, or other sites. Part-time work is common, and work schedules may vary. Many massage therapists are self-employed."
+    }
   },
   {
     "id": "ooh-199-material-moving-machine-operators",
     "cat": "trades",
-    "catName": "Transportation",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Material Moving Machine Operators",
     "tagline": "Use equipment to transport objects.",
@@ -35351,12 +39132,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "53-7011",
+      "baseYear": "2025",
+      "medianPay": 46670,
+      "medianPayHourly": 22.44,
+      "payP10": 36900,
+      "payP90": 64230,
+      "numberOfJobs": 841500,
+      "growthPct": 1,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 12000,
+      "annualOpenings": null,
+      "entryEducation": null,
+      "relatedExperience": null,
+      "onTheJobTraining": null,
+      "workEnvironment": "Most material moving machine operators work full time, and some work more than 40 hours per week. Because materials are shipped around the clock, some operators work overnight shifts."
+    }
   },
   {
     "id": "ooh-200-material-recording-clerks",
     "cat": "biz",
-    "catName": "Office & Admin",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Material Recording Clerks",
     "tagline": "Track product information in order to keep businesses and supply chains on schedule.",
@@ -35513,12 +39313,31 @@ window.CAREERS_ALL = [
       "commerce",
       "management",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "43-5061",
+      "baseYear": "2025",
+      "medianPay": 47600,
+      "medianPayHourly": 22.89,
+      "payP10": 35620,
+      "payP90": 75160,
+      "numberOfJobs": 1273500,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": null,
+      "workEnvironment": "Most material recording clerks work full time."
+    }
   },
   {
     "id": "ooh-201-materials-engineers",
     "cat": "eng",
-    "catName": "Engineering",
+    "catName": "Engineering & Robotics",
     "icon": "⚙️",
     "title": "Materials Engineers",
     "tagline": "Develop, process, and test materials used to create a wide range of products.",
@@ -35526,7 +39345,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $81K / ₹8-13 LPA · Mid: $113K / ₹19-33 LPA · Lead: $214K+ / ₹52 LPA+",
     "growth": "8% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Software Explores The Options — Generative design and simulation run thousands of variants quickly. Choosing one, checking it against physics, safety rules and cost, and signing it off stays human.",
     "overview": "Materials engineers develop, process, and test materials used to create a range of products. They study the properties and structures of metals, polymers, and other substances to develop new materials. They also help select materials for specific products and identify ways to use existing materials.",
     "url": "https://www.bls.gov/ooh/architecture-and-engineering/materials-engineers.htm",
@@ -35637,7 +39456,7 @@ window.CAREERS_ALL = [
       "National Society of Professional Engineers (NSPE)"
     ],
     "growthYears": "2025–2035",
-    "openings": "23,800",
+    "openings": "1,300",
     "medianPay": 112860,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -35647,12 +39466,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "engineering"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "17-2131",
+      "baseYear": "2025",
+      "medianPay": 112860,
+      "medianPayHourly": 54.26,
+      "payP10": 72300,
+      "payP90": 175720,
+      "numberOfJobs": 23800,
+      "growthPct": 8,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 1800,
+      "annualOpenings": 1300,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Materials engineers work in offices, factories, and research and development laboratories. Most work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-202-mathematicians-and-statisticians",
     "cat": "tech",
-    "catName": "Math & Statistics",
+    "catName": "Technology & AI",
     "icon": "💻",
     "title": "Mathematicians and Statisticians",
     "tagline": "Analyze data and apply computational techniques to solve problems.",
@@ -35660,7 +39498,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $76K / ₹8-13 LPA · Mid: $106K / ₹19-33 LPA · Lead: $201K+ / ₹51 LPA+",
     "growth": "10% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Tools Write More Of The Code — Copilots and agents draft, test and refactor code, which raises what a developer is expected to ship. Designing the system, reviewing what the machine produced, and owning failures still sit with a person.",
     "overview": "Mathematicians and statisticians analyze data and apply computational techniques to solve problems.",
     "url": "https://www.bls.gov/ooh/math/mathematicians-and-statisticians.htm",
@@ -35780,7 +39618,7 @@ window.CAREERS_ALL = [
       "O’Reilly Learning Platform"
     ],
     "growthYears": "2025–2035",
-    "openings": "33,500",
+    "openings": "2,000",
     "medianPay": 105720,
     "aiTag": "automation",
     "edu": "master",
@@ -35796,12 +39634,31 @@ window.CAREERS_ALL = [
       "computing",
       "science",
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "15-2021",
+      "baseYear": "2025",
+      "medianPay": 105720,
+      "medianPayHourly": 50.83,
+      "payP10": 69240,
+      "payP90": 195190,
+      "numberOfJobs": 33500,
+      "growthPct": 10,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 3400,
+      "annualOpenings": 2000,
+      "entryEducation": "Master's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "The top employers of mathematicians and statisticians are the federal government and scientific research and development companies. Mathematicians and statisticians may work on teams with engineers, scientists, and other specialists."
+    }
   },
   {
     "id": "ooh-203-meat-poultry-and-fish-processing-workers",
     "cat": "trades",
-    "catName": "Production & Manufacturing",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Meat, Poultry, and Fish Processing Workers",
     "tagline": "Cut, trim, and prepare meat and seafood for wholesale and retail sale.",
@@ -35809,7 +39666,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $28K / ₹2-4 LPA · Mid: $39K / ₹6-11 LPA · Lead: $74K+ / ₹17 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "The Work Is Physical — Every job is a different room, a different fault, a different set of tools. Work in unstandardised physical spaces is the hardest thing for software to take over.",
     "overview": "Meat, poultry, and fish processing workers cut, trim, and prepare meat and seafood for wholesale and retail sale.",
     "url": "https://www.bls.gov/ooh/production/butchers-and-meat-cutters.htm",
@@ -35937,7 +39794,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "359,300",
+    "openings": "39,800",
     "medianPay": 39190,
     "aiTag": "protected",
     "edu": "nodegree",
@@ -35950,12 +39807,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "51-3021",
+      "baseYear": "2025",
+      "medianPay": 39190,
+      "medianPayHourly": 18.84,
+      "payP10": 30230,
+      "payP90": 51730,
+      "numberOfJobs": 359300,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 13300,
+      "annualOpenings": 39800,
+      "entryEducation": "No formal educational credential",
+      "relatedExperience": "None",
+      "onTheJobTraining": null,
+      "workEnvironment": "Meat, poultry, and fish processing workers are employed in a variety of settings, such as grocery stores and food manufacturing establishments. The work can be physically demanding and may include exposure to repetitive motions, dangerous equipment, and cold temperatures."
+    }
   },
   {
     "id": "ooh-204-mechanical-engineering-technologists-and-technicians",
     "cat": "eng",
-    "catName": "Engineering",
+    "catName": "Engineering & Robotics",
     "icon": "⚙️",
     "title": "Mechanical Engineering Technologists and Technicians",
     "tagline": "Help mechanical engineers design, develop, test, and manufacture machines and other devices.",
@@ -36081,12 +39957,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "17-3027",
+      "baseYear": "2025",
+      "medianPay": 74510,
+      "medianPayHourly": 35.82,
+      "payP10": 48400,
+      "payP90": 106050,
+      "numberOfJobs": 36900,
+      "growthPct": 1,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 500,
+      "annualOpenings": null,
+      "entryEducation": "Associate's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Mechanical engineering technologists and technicians work primarily in factories or in research and development labs. Most work full time."
+    }
   },
   {
     "id": "ooh-205-mechanical-engineers",
     "cat": "eng",
-    "catName": "Engineering",
+    "catName": "Engineering & Robotics",
     "icon": "⚙️",
     "title": "Mechanical Engineers",
     "tagline": "Design, develop, build, and test mechanical and thermal sensors and devices.",
@@ -36094,7 +39989,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $75K / ₹7-12 LPA · Mid: $104K / ₹17-30 LPA · Lead: $198K+ / ₹48 LPA+",
     "growth": "11% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Software Explores The Options — Generative design and simulation run thousands of variants quickly. Choosing one, checking it against physics, safety rules and cost, and signing it off stays human.",
     "overview": "Mechanical engineers research, design, develop, build, and test mechanical and thermal sensors and devices, including tools, engines, and machines.",
     "url": "https://www.bls.gov/ooh/architecture-and-engineering/mechanical-engineers.htm",
@@ -36202,7 +40097,7 @@ window.CAREERS_ALL = [
       "National Society of Professional Engineers (NSPE)"
     ],
     "growthYears": "2025–2035",
-    "openings": "298,500",
+    "openings": "17,800",
     "medianPay": 104110,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -36214,12 +40109,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "engineering"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "17-2141",
+      "baseYear": "2025",
+      "medianPay": 104110,
+      "medianPayHourly": 50.05,
+      "payP10": 73990,
+      "payP90": 164340,
+      "numberOfJobs": 298500,
+      "growthPct": 11,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 33500,
+      "annualOpenings": 17800,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Mechanical engineers generally work in offices. They may occasionally visit worksites where a problem or piece of equipment needs their personal attention. Mechanical engineers work mostly in engineering services, research and development, and manufacturing."
+    }
   },
   {
     "id": "ooh-206-medical-and-health-services-managers",
     "cat": "biz",
-    "catName": "Management",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Medical and Health Services Managers",
     "tagline": "Plan, direct, and coordinate the business activities of healthcare providers.",
@@ -36227,7 +40141,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $89K / ₹9-17 LPA · Mid: $124K / ₹24-45 LPA · Lead: $235K+ / ₹68 LPA+",
     "growth": "24% (Much faster than average)",
-    "demand": "Extreme",
+    "demand": "Very High",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Medical and health services managers, also called healthcare executives or healthcare administrators , plan, direct, and coordinate medical and health services. They may manage an entire facility, a specific clinical area or department, or a medical practice for a group of physicians. Medical and health services managers must adapt to changes in healthcare laws, regulations, and technology.",
     "url": "https://www.bls.gov/ooh/management/medical-and-health-services-managers.htm",
@@ -36356,7 +40270,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "640,400",
+    "openings": "62,300",
     "medianPay": 123860,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -36367,12 +40281,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "11-9111",
+      "baseYear": "2025",
+      "medianPay": 123860,
+      "medianPayHourly": 59.55,
+      "payP10": 73390,
+      "payP90": 224340,
+      "numberOfJobs": 640400,
+      "growthPct": 24,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 155100,
+      "annualOpenings": 62300,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "Less than 5 years",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most medical and health services managers work in healthcare facilities, including hospitals and nursing homes, and group medical practices. Most work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-207-medical-assistants",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Medical Assistants",
     "tagline": "Complete administrative and clinical tasks, such as scheduling appointments and taking patients’ vital signs.",
@@ -36380,7 +40313,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $33K / ₹3-5 LPA · Mid: $46K / ₹7-13 LPA · Lead: $87K+ / ₹20 LPA+",
     "growth": "13% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Direct Patient Care & Equipment Operation — Electronic charts log patient records, but physically positioning patients, applying sterile dressings, and calming nervous patients require compassionate hands-on care.",
     "overview": "Medical assistants complete administrative and clinical tasks, such as scheduling appointments and taking patients' vital signs. Their duties vary by location, specialty, and employer.",
     "url": "https://www.bls.gov/ooh/healthcare/medical-assistants.htm",
@@ -36494,7 +40427,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "833,900",
+    "openings": "109,700",
     "medianPay": 45690,
     "aiTag": "people",
     "edu": "diploma",
@@ -36505,12 +40438,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "health",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "31-9092",
+      "baseYear": "2025",
+      "medianPay": 45690,
+      "medianPayHourly": 21.97,
+      "payP10": 36050,
+      "payP90": 59310,
+      "numberOfJobs": 833900,
+      "growthPct": 13,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 107600,
+      "annualOpenings": 109700,
+      "entryEducation": "Postsecondary nondegree award",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most medical assistants work full time. They are employed in physicians&rsquo; offices, hospitals, outpatient clinics, and other healthcare facilities."
+    }
   },
   {
     "id": "ooh-208-medical-dosimetrists",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Medical Dosimetrists",
     "tagline": "Calculate doses of radiation and design and oversee treatment plans for patients with cancer and other serious diseases.",
@@ -36518,7 +40470,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $106K / ₹10-15 LPA · Mid: $147K / ₹23-41 LPA · Lead: $280K+ / ₹66 LPA+",
     "growth": "5% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Diagnostics Are Assisted — Imaging, lab results and records are increasingly read by software first. Examination, procedures, consent and the conversation with the patient are not.",
     "overview": "Medical dosimetrists calculate doses of radiation and design and oversee treatment plans for patients with cancer and other serious diseases.",
     "url": "https://www.bls.gov/ooh/healthcare/medical-dosimetrists.htm",
@@ -36618,7 +40570,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "3,500",
+    "openings": "200",
     "medianPay": 147470,
     "aiTag": "people",
     "edu": "bachelor",
@@ -36629,12 +40581,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "health"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-2036",
+      "baseYear": "2025",
+      "medianPay": 147470,
+      "medianPayHourly": 70.9,
+      "payP10": 111670,
+      "payP90": 185450,
+      "numberOfJobs": 3500,
+      "growthPct": 5,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 200,
+      "annualOpenings": 200,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most medical dosimetrists work in healthcare settings, such as hospitals and physicians' offices. They may spend much of their time working at a computer."
+    }
   },
   {
     "id": "ooh-209-medical-equipment-repairers",
     "cat": "trades",
-    "catName": "Installation & Repair",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Medical Equipment Repairers",
     "tagline": "Install, maintain, and repair patient care equipment.",
@@ -36642,7 +40613,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $44K / ₹4-6 LPA · Mid: $62K / ₹10-17 LPA · Lead: $117K+ / ₹27 LPA+",
     "growth": "13% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "The Work Is Physical — Every job is a different room, a different fault, a different set of tools. Work in unstandardised physical spaces is the hardest thing for software to take over.",
     "overview": "Medical equipment repairers install, maintain, and repair patient care equipment.",
     "url": "https://www.bls.gov/ooh/installation-maintenance-and-repair/medical-equipment-repairers.htm",
@@ -36760,7 +40731,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "71,800",
+    "openings": "8,200",
     "medianPay": 61660,
     "aiTag": "protected",
     "edu": "diploma",
@@ -36771,12 +40742,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "49-9062",
+      "baseYear": "2025",
+      "medianPay": 61660,
+      "medianPayHourly": 29.64,
+      "payP10": 38490,
+      "payP90": 98280,
+      "numberOfJobs": 71800,
+      "growthPct": 13,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 9100,
+      "annualOpenings": 8200,
+      "entryEducation": "Associate's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Although medical equipment repairers usually work during the day, they are sometimes expected to be on call, including evenings and weekends. Because repairing vital medical equipment is urgent, the work is sometimes stressful. Those who work around patients may be exposed to germs, diseases, and other health risks."
+    }
   },
   {
     "id": "ooh-210-medical-records-specialists",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Medical Records Specialists",
     "tagline": "Compile, process, and maintain patient files.",
@@ -36784,7 +40774,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $37K / ₹3-5 LPA · Mid: $51K / ₹8-14 LPA · Lead: $97K+ / ₹23 LPA+",
     "growth": "8% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Diagnostics Are Assisted — Imaging, lab results and records are increasingly read by software first. Examination, procedures, consent and the conversation with the patient are not.",
     "overview": "Medical records specialists compile, process, and maintain patient files. They also may classify and enter patients' medical information into the healthcare industry's numerical coding system.",
     "url": "https://www.bls.gov/ooh/healthcare/medical-records-and-health-information-technicians.htm",
@@ -36886,7 +40876,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "200,700",
+    "openings": "14,000",
     "medianPay": 51140,
     "aiTag": "people",
     "edu": "diploma",
@@ -36898,12 +40888,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "health",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-2072",
+      "baseYear": "2025",
+      "medianPay": 51140,
+      "medianPayHourly": 24.59,
+      "payP10": 37000,
+      "payP90": 81150,
+      "numberOfJobs": 200700,
+      "growthPct": 8,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 15600,
+      "annualOpenings": 14000,
+      "entryEducation": "Postsecondary nondegree award",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Medical records specialists typically spend many hours at a computer. Most work full time."
+    }
   },
   {
     "id": "ooh-211-medical-scientists",
     "cat": "space",
-    "catName": "Science & Research",
+    "catName": "Aviation & Aerospace",
     "icon": "🔭",
     "title": "Medical Scientists",
     "tagline": "Conduct research aimed at improving overall human health.",
@@ -36911,7 +40920,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $74K / ₹8-13 LPA · Mid: $103K / ₹18-30 LPA · Lead: $196K+ / ₹48 LPA+",
     "growth": "13% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Models Read The Data First — Machine learning sifts through survey data, images and signals faster than any team. Framing the question, checking the result and deciding what it means is where people stay involved.",
     "overview": "Medical scientists conduct research aimed at improving overall human health. They often use clinical trials and other investigative methods to reach their findings.",
     "url": "https://www.bls.gov/ooh/life-physical-and-social-science/medical-scientists.htm",
@@ -37025,7 +41034,7 @@ window.CAREERS_ALL = [
       "European Space Agency (ESA) Portals"
     ],
     "growthYears": "2025–2035",
-    "openings": "181,000",
+    "openings": "10,500",
     "medianPay": 103410,
     "aiTag": "automation",
     "edu": "doctorate",
@@ -37037,12 +41046,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "science"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "19-1042",
+      "baseYear": "2025",
+      "medianPay": 103410,
+      "medianPayHourly": 49.72,
+      "payP10": 64800,
+      "payP90": 177780,
+      "numberOfJobs": 181000,
+      "growthPct": 13,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 22700,
+      "annualOpenings": 10500,
+      "entryEducation": "Doctoral or professional degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Medical scientists typically work in offices and laboratories. Most work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-212-medical-transcriptionists",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Medical Transcriptionists",
     "tagline": "Use electronic devices to convert voice recordings from physicians and other healthcare workers into formal reports.",
@@ -37171,7 +41199,26 @@ window.CAREERS_ALL = [
     "degrees": [
       "health",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "31-9094",
+      "baseYear": "2025",
+      "medianPay": 40410,
+      "medianPayHourly": 19.43,
+      "payP10": 28250,
+      "payP90": 55950,
+      "numberOfJobs": 42000,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "Postsecondary nondegree award",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Many medical transcriptionists work for hospitals, physicians' offices, and third-party transcription companies that provide services to healthcare establishments. Most are full time, but part-time work is common."
+    }
   },
   {
     "id": "ooh-213-meeting-convention-and-event-planners",
@@ -37184,7 +41231,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $44K / ₹4-8 LPA · Mid: $61K / ₹12-22 LPA · Lead: $116K+ / ₹33 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Meeting, convention, and event planners arrange all aspects of events and professional gatherings. They arrange meeting locations, transportation, and other details.",
     "url": "https://www.bls.gov/ooh/business-and-financial/meeting-convention-and-event-planners.htm",
@@ -37298,7 +41345,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "172,100",
+    "openings": "16,800",
     "medianPay": 61160,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -37309,12 +41356,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "13-1121",
+      "baseYear": "2025",
+      "medianPay": 61160,
+      "medianPayHourly": 29.41,
+      "payP10": 36830,
+      "payP90": 101700,
+      "numberOfJobs": 172100,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 10000,
+      "annualOpenings": 16800,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Meeting, convention, and event planners work in their offices and onsite at hotels or conference centers. They often travel to attend events and visit meeting sites. During meetings or conventions, planners may work many more hours than usual."
+    }
   },
   {
     "id": "ooh-214-metal-and-plastic-machine-workers",
     "cat": "trades",
-    "catName": "Production & Manufacturing",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Metal and Plastic Machine Workers",
     "tagline": "Set up and operate machines that cut, shape, and form metal and plastic materials or pieces.",
@@ -37543,12 +41609,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "51-4021",
+      "baseYear": "2025",
+      "medianPay": 47700,
+      "medianPayHourly": 22.94,
+      "payP10": 36020,
+      "payP90": 69790,
+      "numberOfJobs": 963000,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": null,
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Metal and plastic machine workers are employed mainly in factories. Workers must adhere to safety standards to protect themselves from workplace hazards. Most work full time, which for some includes evenings and weekends."
+    }
   },
   {
     "id": "ooh-215-microbiologists",
     "cat": "space",
-    "catName": "Science & Research",
+    "catName": "Aviation & Aerospace",
     "icon": "🔭",
     "title": "Microbiologists",
     "tagline": "Study microorganisms such as bacteria, viruses, algae, fungi, and some types of parasites.",
@@ -37556,7 +41641,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $63K / ₹7-11 LPA · Mid: $88K / ₹15-26 LPA · Lead: $167K+ / ₹41 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Models Read The Data First — Machine learning sifts through survey data, images and signals faster than any team. Framing the question, checking the result and deciding what it means is where people stay involved.",
     "overview": "Microbiologists study microorganisms such as bacteria, algae, and fungi. They investigate the growth, structure, and other characteristics of these organisms.",
     "url": "https://www.bls.gov/ooh/life-physical-and-social-science/microbiologists.htm",
@@ -37664,7 +41749,7 @@ window.CAREERS_ALL = [
       "European Space Agency (ESA) Portals"
     ],
     "growthYears": "2025–2035",
-    "openings": "20,100",
+    "openings": "1,500",
     "medianPay": 87990,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -37675,12 +41760,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "science"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "19-1022",
+      "baseYear": "2025",
+      "medianPay": 87990,
+      "medianPayHourly": 42.3,
+      "payP10": 54670,
+      "payP90": 150000,
+      "numberOfJobs": 20100,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 1300,
+      "annualOpenings": 1500,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Microbiologists work in primarily in laboratories and offices. Most work full time."
+    }
   },
   {
     "id": "ooh-216-middle-school-teachers",
     "cat": "edu",
-    "catName": "Education & Library",
+    "catName": "Education & Academia",
     "icon": "🎓",
     "title": "Middle School Teachers",
     "tagline": "Educate students, typically in sixth through eighth grades.",
@@ -37688,7 +41792,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $46K / ₹4-7 LPA · Mid: $64K / ₹8-15 LPA · Lead: $122K+ / ₹23 LPA+",
     "growth": "0% (Little or no change)",
-    "demand": "Steady",
+    "demand": "Declining",
     "aiImpact": "Lesson Plans Are Easy To Generate — Outlines, worksheets and quizzes take seconds to produce. Motivation, reading a room and holding a class together are not things software does.",
     "overview": "Middle school teachers educate students, typically in sixth through eighth grade. Middle school teachers help students build on the fundamentals taught in elementary school and prepare students for high school.",
     "url": "https://www.bls.gov/ooh/education-training-and-library/middle-school-teachers.htm",
@@ -37789,7 +41893,7 @@ window.CAREERS_ALL = [
       "Educational Leadership Magazine (ASCD)",
       "Edutopia Learning Platform"
     ],
-    "growthYears": "",
+    "growthYears": "2025–2035",
     "openings": "630,100",
     "medianPay": 64370,
     "aiTag": "people",
@@ -37802,12 +41906,31 @@ window.CAREERS_ALL = [
       "education",
       "design",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "25-2022",
+      "baseYear": "2025",
+      "medianPay": 64370,
+      "medianPayHourly": null,
+      "payP10": 48080,
+      "payP90": 102540,
+      "numberOfJobs": 630100,
+      "growthPct": 0,
+      "growthLabel": "Little or no change",
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Middle school teachers work in public and private schools. They generally work during school hours when students are present and use nights and weekends to prepare lessons and grade papers. Most do not work during the summer."
+    }
   },
   {
     "id": "ooh-217-military-careers",
     "cat": "law",
-    "catName": "Military",
+    "catName": "Law & Public Safety",
     "icon": "⚖️",
     "title": "Military Careers",
     "tagline": "Members of the U.",
@@ -37957,12 +42080,31 @@ window.CAREERS_ALL = [
       "arts",
       "law",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": null,
+      "baseYear": "2025",
+      "medianPay": null,
+      "medianPayHourly": null,
+      "payP10": null,
+      "payP90": null,
+      "numberOfJobs": null,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": null,
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": null,
+      "relatedExperience": null,
+      "onTheJobTraining": "Additional training needed (postemployment) to attain competency in the skills needed in this occupation. Entry-level Education Typical level of education that most workers need to enter this occupation. Work experience in a related occupation Work experience that is commonly considered necessary by employers, or is a commonly accepted substitute for more formal types of training or education.",
+      "workEnvironment": "How to Become One Pay Job Outlook Similar Occupations More Info What They Do About this section Some members of the military are deployed to other countries or regions to defend U.S. national interests. Members of the U.S. military service maintain the U.S. national defense. Although some service members work in occupations specific to the military, such as fighter pilots or infantrymen, many work in occupations that also exist in the civilian workplace, such as nurses, doctors, and lawyers. Members serve in the Army, Navy, Air Force, Space Force, Marine Corps, or Coast Guard, or in the Reserv"
+    }
   },
   {
     "id": "ooh-218-mining-and-geological-engineers",
     "cat": "eng",
-    "catName": "Engineering",
+    "catName": "Engineering & Robotics",
     "icon": "⚙️",
     "title": "Mining and Geological Engineers",
     "tagline": "Use geological and engineering principles to design ways to safely and efficiently extract minerals and other resources.",
@@ -37970,7 +42112,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $76K / ₹7-12 LPA · Mid: $106K / ₹18-31 LPA · Lead: $202K+ / ₹49 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "Software Explores The Options — Generative design and simulation run thousands of variants quickly. Choosing one, checking it against physics, safety rules and cost, and signing it off stays human.",
     "overview": "Mining and geological engineers use geological and engineering principles to design ways to safely and efficiently extract minerals and other resources.",
     "url": "https://www.bls.gov/ooh/architecture-and-engineering/mining-and-geological-engineers.htm",
@@ -38074,7 +42216,7 @@ window.CAREERS_ALL = [
       "National Society of Professional Engineers (NSPE)"
     ],
     "growthYears": "2025–2035",
-    "openings": "6,200",
+    "openings": "300",
     "medianPay": 106220,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -38088,12 +42230,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "science"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "17-2151",
+      "baseYear": "2025",
+      "medianPay": 106220,
+      "medianPayHourly": 51.07,
+      "payP10": 67490,
+      "payP90": 169990,
+      "numberOfJobs": 6200,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 200,
+      "annualOpenings": 300,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Many mining and geological engineers work at mining operations, such as mineral mines or sand-and-gravel quarries, in remote areas or near cities and towns. Others work in offices or onsite for engineering services firms. Most work full time."
+    }
   },
   {
     "id": "ooh-219-models",
     "cat": "biz",
-    "catName": "Sales",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Models",
     "tagline": "Pose for artists, photographers, and other clients to help advertise products.",
@@ -38224,12 +42385,31 @@ window.CAREERS_ALL = [
       "commerce",
       "management",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "41-9012",
+      "baseYear": "2025",
+      "medianPay": 48470,
+      "medianPayHourly": 23.3,
+      "payP10": null,
+      "payP90": 63,
+      "numberOfJobs": 4200,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "No formal educational credential",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Models work in a variety of conditions, from comfortable indoor studios and runway fashion shows to outdoors in all weather conditions. Most models work part time and have unpredictable work schedules. Many also experience periods of unemployment."
+    }
   },
   {
     "id": "ooh-220-music-directors-and-composers",
     "cat": "creative",
-    "catName": "Sports & Entertainment",
+    "catName": "Creative Arts & Design",
     "icon": "🎨",
     "title": "Music Directors and Composers",
     "tagline": "Directors lead musical groups during performances and recording sessions.",
@@ -38364,12 +42544,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "27-2041",
+      "baseYear": "2025",
+      "medianPay": 73710,
+      "medianPayHourly": 35.44,
+      "payP10": 39880,
+      "payP90": 165760,
+      "numberOfJobs": 51100,
+      "growthPct": 1,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 600,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "Less than 5 years",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Music directors and composers may work in churches, concert halls, recording studios, or offices. Some workers travel to performances. Part-time work is common. Work schedules may vary and can include evenings and weekends."
+    }
   },
   {
     "id": "ooh-221-musicians-and-singers",
     "cat": "creative",
-    "catName": "Sports & Entertainment",
+    "catName": "Creative Arts & Design",
     "icon": "🎨",
     "title": "Musicians and Singers",
     "tagline": "Play instruments or sing for live audiences and in recording studios.",
@@ -38377,7 +42576,7 @@ window.CAREERS_ALL = [
     "stream": "Arts & Humanities",
     "salary": "Entry: $55K / ₹6-12 LPA · Mid: $105K / ₹16-30 LPA · Lead: $175K+ / ₹50 LPA+",
     "growth": "0% (Little or no change)",
-    "demand": "Steady",
+    "demand": "Declining",
     "aiImpact": "Options Are Cheap Now — Generative tools produce a hundred variations in minutes, so the value has moved to taste: knowing which one is right and why. Direction, briefs and client trust are the parts that hold up.",
     "overview": "Musicians and singers play instruments or sing for live audiences and in recording studios. They perform a variety of genres, such as classical, jazz, and rock.",
     "url": "https://www.bls.gov/ooh/entertainment-and-sports/musicians-and-singers.htm",
@@ -38514,7 +42713,7 @@ window.CAREERS_ALL = [
       "Awwwards & Behance Portals",
       "Nielsen Norman Group UX Articles"
     ],
-    "growthYears": "",
+    "growthYears": "2025–2035",
     "openings": "170,400",
     "aiTag": "automation",
     "edu": "nodegree",
@@ -38525,12 +42724,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "design",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "27-2042",
+      "baseYear": "2025",
+      "medianPay": null,
+      "medianPayHourly": null,
+      "payP10": null,
+      "payP90": 132,
+      "numberOfJobs": 170400,
+      "growthPct": 0,
+      "growthLabel": "Little or no change",
+      "growthYears": "2025–2035",
+      "employmentChange": 600,
+      "annualOpenings": null,
+      "entryEducation": "No formal educational credential",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Long-term on-the-job training",
+      "workEnvironment": "Musicians and singers often perform in settings such as concert halls, churches, and clubs. Part-time work is common, and work schedules may vary and include mornings, nights, or weekends."
+    }
   },
   {
     "id": "ooh-222-natural-sciences-managers",
     "cat": "biz",
-    "catName": "Management",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Natural Sciences Managers",
     "tagline": "Plan, supervise, or coordinate research and other activities in fields such as life sciences, physical sciences, mathematics, and statistics.",
@@ -38538,7 +42756,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $120K / ₹12-22 LPA · Mid: $167K / ₹32-61 LPA · Lead: $318K+ / ₹91 LPA+",
     "growth": "8% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Natural sciences managers plan, supervise, or coordinate activities in fields such as life sciences, physical sciences, mathematics, and statistics. They direct work related to research and development and coordinate activities such as testing, quality control, and production.",
     "url": "https://www.bls.gov/ooh/management/natural-sciences-managers.htm",
@@ -38641,7 +42859,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "112,200",
+    "openings": "9,200",
     "medianPay": 167220,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -38654,12 +42872,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "11-9121",
+      "baseYear": "2025",
+      "medianPay": 167220,
+      "medianPayHourly": 80.39,
+      "payP10": 79710,
+      "payP90": 316850,
+      "numberOfJobs": 112200,
+      "growthPct": 8,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 9200,
+      "annualOpenings": 9200,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "5 years or more",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Natural sciences managers work primarily in an office setting or in laboratories. Most work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-223-network-and-computer-systems-administrators",
     "cat": "tech",
-    "catName": "Technology & IT",
+    "catName": "Technology & AI",
     "icon": "💻",
     "title": "Network and Computer Systems Administrators",
     "tagline": "Are responsible for the day-to-day operation of computer networks.",
@@ -38794,12 +43031,31 @@ window.CAREERS_ALL = [
       "computing",
       "science",
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "15-1244",
+      "baseYear": "2025",
+      "medianPay": 99130,
+      "medianPayHourly": 47.66,
+      "payP10": 62640,
+      "payP90": 155050,
+      "numberOfJobs": 323600,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Network and computer systems administrators work for a variety of organizations, including computer systems design firms, schools, and financial institutions. Most work full time, and some work more than 40 hours per week. Administrators may work evenings, nights, and weekends to monitor, maintain, or update networks and systems."
+    }
   },
   {
     "id": "ooh-224-news-analysts-reporters-and-journalists",
     "cat": "creative",
-    "catName": "Media & Communication",
+    "catName": "Creative Arts & Design",
     "icon": "🎨",
     "title": "News Analysts, Reporters, and Journalists",
     "tagline": "Keep the public updated about current events and noteworthy information.",
@@ -38940,12 +43196,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "27-3023",
+      "baseYear": "2025",
+      "medianPay": 62200,
+      "medianPayHourly": 29.91,
+      "payP10": 36240,
+      "payP90": 144140,
+      "numberOfJobs": 47100,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most news analysts, reporters, and journalists work for newspaper, website, or magazine publishers or in television or radio broadcasting. Others are self-employed. Most work full time, and their schedules vary."
+    }
   },
   {
     "id": "ooh-225-nuclear-engineers",
     "cat": "eng",
-    "catName": "Engineering",
+    "catName": "Engineering & Robotics",
     "icon": "⚙️",
     "title": "Nuclear Engineers",
     "tagline": "Research and develop projects or address problems concerning the release, control, and use of nuclear energy and nuclear waste disposal.",
@@ -38953,7 +43228,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $96K / ₹9-16 LPA · Mid: $134K / ₹22-39 LPA · Lead: $255K+ / ₹61 LPA+",
     "growth": "0% (Little or no change)",
-    "demand": "Steady",
+    "demand": "Declining",
     "aiImpact": "Software Explores The Options — Generative design and simulation run thousands of variants quickly. Choosing one, checking it against physics, safety rules and cost, and signing it off stays human.",
     "overview": "Nuclear engineers research and develop projects or address problems concerning the release, control, and use of nuclear energy and nuclear waste disposal. Some of these engineers research new reactor designs. Others may specialize in the development of safety regulations related to the handling of nuclear materials or operation of nuclear power.",
     "url": "https://www.bls.gov/ooh/architecture-and-engineering/nuclear-engineers.htm",
@@ -39062,7 +43337,7 @@ window.CAREERS_ALL = [
       "IEEE Xplore",
       "National Society of Professional Engineers (NSPE)"
     ],
-    "growthYears": "",
+    "growthYears": "2025–2035",
     "openings": "16,600",
     "medianPay": 133970,
     "aiTag": "automation",
@@ -39074,12 +43349,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "engineering"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "17-2161",
+      "baseYear": "2025",
+      "medianPay": 133970,
+      "medianPayHourly": 64.41,
+      "payP10": 92960,
+      "payP90": 196290,
+      "numberOfJobs": 16600,
+      "growthPct": 0,
+      "growthLabel": "Little or no change",
+      "growthYears": "2025–2035",
+      "employmentChange": 100,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Nuclear engineers typically work in office settings, but it may vary by employer. Most nuclear engineers work full time."
+    }
   },
   {
     "id": "ooh-226-nuclear-medicine-technologists",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Nuclear Medicine Technologists",
     "tagline": "Prepare and administer radioactive drugs for imaging or treatment.",
@@ -39087,7 +43381,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $73K / ₹7-10 LPA · Mid: $101K / ₹16-28 LPA · Lead: $193K+ / ₹45 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "Diagnostics Are Assisted — Imaging, lab results and records are increasingly read by software first. Examination, procedures, consent and the conversation with the patient are not.",
     "overview": "Nuclear medicine technologists prepare radioactive drugs and administer them to patients for imaging or treatment. They provide technical support to physicians or others who diagnose, care for, and treat patients and to researchers who investigate uses of radioactive drugs. They also may act as emergency responders in the event of a nuclear disaster.",
     "url": "https://www.bls.gov/ooh/healthcare/nuclear-medicine-technologists.htm",
@@ -39195,7 +43489,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "17,400",
+    "openings": "800",
     "medianPay": 101370,
     "aiTag": "people",
     "edu": "diploma",
@@ -39206,12 +43500,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "health",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-2033",
+      "baseYear": "2025",
+      "medianPay": 101370,
+      "medianPayHourly": 48.74,
+      "payP10": 78080,
+      "payP90": 134500,
+      "numberOfJobs": 17400,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 800,
+      "annualOpenings": 800,
+      "entryEducation": "Associate's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most nuclear medicine technologists work in hospitals. Some work in physicians&rsquo; offices, diagnostic laboratories, or imaging clinics. Most nuclear medicine technologists work full time."
+    }
   },
   {
     "id": "ooh-227-nuclear-technicians",
     "cat": "space",
-    "catName": "Science & Research",
+    "catName": "Aviation & Aerospace",
     "icon": "🔭",
     "title": "Nuclear Technicians",
     "tagline": "Assist physicists, engineers, and other scientists in nuclear power generation and production activities, such as operating or maintaining nuclear testing equipment.",
@@ -39331,12 +43644,31 @@ window.CAREERS_ALL = [
       "engineering",
       "science",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "19-4051",
+      "baseYear": "2025",
+      "medianPay": 110240,
+      "medianPayHourly": 53,
+      "payP10": 73150,
+      "payP90": 133600,
+      "numberOfJobs": 6700,
+      "growthPct": 1,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 100,
+      "annualOpenings": null,
+      "entryEducation": "Associate's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Nuclear technicians typically work in nuclear power plants or in laboratories. Most work full-time. In power plants, their work schedules may vary to include nights, holidays, and weekends. Nuclear technicians must take precautions to avoid exposure to radiation."
+    }
   },
   {
     "id": "ooh-228-nurse-anesthetists-nurse-midwives-and-nurse-practitioners",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Nurse Anesthetists, Nurse Midwives, and Nurse Practitioners",
     "tagline": "Coordinate patient care and may provide primary and specialty healthcare.",
@@ -39344,7 +43676,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $97K / ₹9-13 LPA · Mid: $135K / ₹21-37 LPA · Lead: $256K+ / ₹60 LPA+",
     "growth": "36% (Much faster than average)",
-    "demand": "Extreme",
+    "demand": "Very High",
     "aiImpact": "Diagnostics Are Assisted — Imaging, lab results and records are increasingly read by software first. Examination, procedures, consent and the conversation with the patient are not.",
     "overview": "Nurse anesthetists, nurse midwives, and nurse practitioners, also referred to as advanced practice registered nurses (APRNs) , coordinate patient care and may provide primary and specialty healthcare. The scope of practice varies from state to state.",
     "url": "https://www.bls.gov/ooh/healthcare/nurse-anesthetists-nurse-midwives-and-nurse-practitioners.htm",
@@ -39474,7 +43806,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "399,000",
+    "openings": "32,200",
     "medianPay": 134920,
     "aiTag": "people",
     "edu": "master",
@@ -39483,12 +43815,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "health"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-1151",
+      "baseYear": "2025",
+      "medianPay": 134920,
+      "medianPayHourly": 64.87,
+      "payP10": 102190,
+      "payP90": 224490,
+      "numberOfJobs": 399000,
+      "growthPct": 36,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 144000,
+      "annualOpenings": 32200,
+      "entryEducation": "Master's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Nurse anesthetists, nurse midwives, and nurse practitioners work in a variety of healthcare settings, including hospitals, physicians' offices, and clinics. Most advanced practice registered nurses (APRNs) work full time."
+    }
   },
   {
     "id": "ooh-229-nursing-assistants-and-orderlies",
     "cat": "health",
-    "catName": "Healthcare & Nursing",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Nursing Assistants and Orderlies",
     "tagline": "Provide basic bedside nursing care, transport hospital patients, and measure vital signs.",
@@ -39627,7 +43978,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "1,558,700",
+    "openings": "203,300",
     "medianPay": 41870,
     "aiTag": "people",
     "edu": "doctorate",
@@ -39639,12 +43990,31 @@ window.CAREERS_ALL = [
       "health",
       "vocational",
       "any"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "31-1131",
+      "baseYear": "2025",
+      "medianPay": 41870,
+      "medianPayHourly": 20.13,
+      "payP10": 33940,
+      "payP90": 51980,
+      "numberOfJobs": 1558700,
+      "growthPct": 3,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 41100,
+      "annualOpenings": 203300,
+      "entryEducation": null,
+      "relatedExperience": "None",
+      "onTheJobTraining": null,
+      "workEnvironment": "Most nursing assistants and orderlies work in nursing and residential care facilities and in hospitals. They are physically active and may need to help lift or move patients."
+    }
   },
   {
     "id": "ooh-230-occupational-health-and-safety-specialists-and-technicians",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Occupational Health and Safety Specialists and Technicians",
     "tagline": "Collect data on, analyze, and design improvements to work environments and procedures.",
@@ -39652,7 +44022,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $60K / ₹6-8 LPA · Mid: $84K / ₹13-23 LPA · Lead: $159K+ / ₹37 LPA+",
     "growth": "19% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Direct Patient Care & Equipment Operation — Electronic charts log patient records, but physically positioning patients, applying sterile dressings, and calming nervous patients require compassionate hands-on care.",
     "overview": "Occupational health and safety specialists and technicians collect data on, analyze, and design improvements to many types of work environments and procedures. Specialists inspect workplaces and enforce adherence to regulations on safety, health, and the environment. Technicians work with specialists to implement and evaluate programs aimed at mitigating risks to workers, property, the environment, and the public.",
     "url": "https://www.bls.gov/ooh/healthcare/occupational-health-and-safety-specialists-and-technicians.htm",
@@ -39777,7 +44147,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "174,300",
+    "openings": "20,900",
     "medianPay": 83740,
     "aiTag": "people",
     "edu": "doctorate",
@@ -39790,12 +44160,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "health"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "19-5000",
+      "baseYear": "2025",
+      "medianPay": 83740,
+      "medianPayHourly": 40.26,
+      "payP10": 55000,
+      "payP90": 134950,
+      "numberOfJobs": 174300,
+      "growthPct": 19,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 32500,
+      "annualOpenings": 20900,
+      "entryEducation": null,
+      "relatedExperience": "None",
+      "onTheJobTraining": null,
+      "workEnvironment": "Occupational health and safety specialists and technicians work in a variety of indoor or outdoor settings, such as offices and factories or construction sites. Their jobs may involve considerable travel and fieldwork. Most work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-231-occupational-therapists",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Occupational Therapists",
     "tagline": "Evaluate and treat people who have injuries, illnesses, or disabilities to help them with vocational, daily living, and other skills that promote independence.",
@@ -39803,7 +44192,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $72K / ₹7-10 LPA · Mid: $100K / ₹16-28 LPA · Lead: $191K+ / ₹45 LPA+",
     "growth": "15% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Diagnostics Are Assisted — Imaging, lab results and records are increasingly read by software first. Examination, procedures, consent and the conversation with the patient are not.",
     "overview": "Occupational therapists evaluate and treat people who have injuries, illnesses, or disabilities. They help clients meet goals to develop, recover, improve, and maintain skills needed for daily living and working.",
     "url": "https://www.bls.gov/ooh/healthcare/occupational-therapists.htm",
@@ -39913,7 +44302,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "169,600",
+    "openings": "10,000",
     "medianPay": 100330,
     "aiTag": "people",
     "edu": "master",
@@ -39922,12 +44311,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "health"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-1122",
+      "baseYear": "2025",
+      "medianPay": 100330,
+      "medianPayHourly": 48.24,
+      "payP10": 71690,
+      "payP90": 131950,
+      "numberOfJobs": 169600,
+      "growthPct": 15,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 25200,
+      "annualOpenings": 10000,
+      "entryEducation": "Master's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Occupational therapists work in a variety of settings, such as hospitals, schools, and outpatient clinics. They stand for long periods and may need to lift or move clients."
+    }
   },
   {
     "id": "ooh-232-occupational-therapy-assistants-and-aides",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Occupational Therapy Assistants and Aides",
     "tagline": "Help occupational therapists provide treatments and procedures to clients, or they do routine tasks such as preparing treatment rooms.",
@@ -39935,7 +44343,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $51K / ₹5-7 LPA · Mid: $71K / ₹11-20 LPA · Lead: $135K+ / ₹31 LPA+",
     "growth": "20% (Much faster than average)",
-    "demand": "Extreme",
+    "demand": "Very High",
     "aiImpact": "Direct Patient Care & Equipment Operation — Electronic charts log patient records, but physically positioning patients, applying sterile dressings, and calming nervous patients require compassionate hands-on care.",
     "overview": "Occupational therapy assistants help occupational therapists provide treatments and procedures to clients. Occupational therapy aides do select or routine tasks, such as preparing treatment rooms, under the direction of occupational therapists or occupational therapy assistants.",
     "url": "https://www.bls.gov/ooh/healthcare/occupational-therapy-assistants-and-aides.htm",
@@ -40063,7 +44471,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "56,600",
+    "openings": "8,600",
     "medianPay": 70800,
     "aiTag": "people",
     "edu": "doctorate",
@@ -40072,12 +44480,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "health"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "31-2010",
+      "baseYear": "2025",
+      "medianPay": 70800,
+      "medianPayHourly": 34.04,
+      "payP10": 29430,
+      "payP90": 70200,
+      "numberOfJobs": 56600,
+      "growthPct": 20,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 11400,
+      "annualOpenings": 8600,
+      "entryEducation": null,
+      "relatedExperience": "None",
+      "onTheJobTraining": null,
+      "workEnvironment": "Occupational therapy assistants and aides work primarily in occupational therapists&rsquo; offices, in hospitals, and in nursing care facilities. Occupational therapy assistants and aides spend much of their time standing while setting up equipment and, in the case of assistants, providing therapy to clients."
+    }
   },
   {
     "id": "ooh-233-oil-and-gas-workers",
     "cat": "trades",
-    "catName": "Construction & Trades",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Oil and Gas Workers",
     "tagline": "Assemble, operate, and maintain equipment used for oil and gas exploration, extraction, and related activities.",
@@ -40223,12 +44650,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "47-5011",
+      "baseYear": "2025",
+      "medianPay": 51650,
+      "medianPayHourly": 24.83,
+      "payP10": 37280,
+      "payP90": 82360,
+      "numberOfJobs": 112700,
+      "growthPct": 2,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 2400,
+      "annualOpenings": null,
+      "entryEducation": "No formal educational credential",
+      "relatedExperience": null,
+      "onTheJobTraining": null,
+      "workEnvironment": "Most oil and gas workers are full time, and some work more than 40 hours per week. Schedules vary and may require workers to spend long periods away from home. Their jobs are often physically demanding and may require being outdoors in all weather conditions."
+    }
   },
   {
     "id": "ooh-234-operations-research-analysts",
     "cat": "tech",
-    "catName": "Math & Statistics",
+    "catName": "Technology & AI",
     "icon": "💻",
     "title": "Operations Research Analysts",
     "tagline": "Use mathematics and logic to help solve complex issues.",
@@ -40236,7 +44682,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $64K / ₹7-11 LPA · Mid: $89K / ₹16-28 LPA · Lead: $169K+ / ₹43 LPA+",
     "growth": "12% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Tools Write More Of The Code — Copilots and agents draft, test and refactor code, which raises what a developer is expected to ship. Designing the system, reviewing what the machine produced, and owning failures still sit with a person.",
     "overview": "Operations research analysts use mathematics and logic to help organizations make informed decisions and solve problems.",
     "url": "https://www.bls.gov/ooh/math/operations-research-analysts.htm",
@@ -40337,7 +44783,7 @@ window.CAREERS_ALL = [
       "O’Reilly Learning Platform"
     ],
     "growthYears": "2025–2035",
-    "openings": "113,100",
+    "openings": "7,500",
     "medianPay": 88940,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -40353,12 +44799,31 @@ window.CAREERS_ALL = [
       "computing",
       "science",
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "15-2031",
+      "baseYear": "2025",
+      "medianPay": 88940,
+      "medianPayHourly": 42.76,
+      "payP10": 57060,
+      "payP90": 159910,
+      "numberOfJobs": 113100,
+      "growthPct": 12,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 13500,
+      "annualOpenings": 7500,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Operations research analysts spend much of their time in office settings, although travel may be necessary to meet with clients. Most operations research analysts work full time."
+    }
   },
   {
     "id": "ooh-235-opticians",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Opticians",
     "tagline": "Help fit eyeglasses and contact lenses, following prescriptions from ophthalmologists and optometrists.",
@@ -40366,7 +44831,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $34K / ₹3-5 LPA · Mid: $47K / ₹7-13 LPA · Lead: $90K+ / ₹21 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "Diagnostics Are Assisted — Imaging, lab results and records are increasingly read by software first. Examination, procedures, consent and the conversation with the patient are not.",
     "overview": "Opticians fit customers for eyeglasses and contact lenses and help them select which frames and lenses to buy.",
     "url": "https://www.bls.gov/ooh/healthcare/opticians-dispensing.htm",
@@ -40477,7 +44942,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "74,300",
+    "openings": "5,600",
     "medianPay": 47260,
     "aiTag": "people",
     "edu": "nodegree",
@@ -40487,12 +44952,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "health",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-2081",
+      "baseYear": "2025",
+      "medianPay": 47260,
+      "medianPayHourly": 22.72,
+      "payP10": 35610,
+      "payP90": 76750,
+      "numberOfJobs": 74300,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 3100,
+      "annualOpenings": 5600,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Long-term on-the-job training",
+      "workEnvironment": "Opticians work in a variety of settings. Some work in offices of optometrists or ophthalmologists. Others work in stores that sell eyeglasses, contact lenses, visual aids, and other optical goods."
+    }
   },
   {
     "id": "ooh-236-optometrists",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Optometrists",
     "tagline": "Diagnose, manage, and treat conditions and diseases of the human eye and visual system, including examining eyes and prescribing corrective lenses.",
@@ -40500,7 +44984,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $98K / ₹9-14 LPA · Mid: $137K / ₹21-38 LPA · Lead: $259K+ / ₹61 LPA+",
     "growth": "10% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Diagnostics Are Assisted — Imaging, lab results and records are increasingly read by software first. Examination, procedures, consent and the conversation with the patient are not.",
     "overview": "Optometrists diagnose, manage, and treat conditions and diseases of the human eye and visual system, including examining eyes and prescribing corrective lenses.",
     "url": "https://www.bls.gov/ooh/healthcare/optometrists.htm",
@@ -40605,7 +45089,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "45,100",
+    "openings": "2,000",
     "medianPay": 136570,
     "aiTag": "people",
     "edu": "doctorate",
@@ -40616,12 +45100,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "health"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-1041",
+      "baseYear": "2025",
+      "medianPay": 136570,
+      "medianPayHourly": 65.66,
+      "payP10": 74870,
+      "payP90": 202180,
+      "numberOfJobs": 45100,
+      "growthPct": 10,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 4300,
+      "annualOpenings": 2000,
+      "entryEducation": "Doctoral or professional degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most optometrists work in offices or in optical goods stores. Optometrists usually work full time, but part-time work is common. Schedules may vary to include evenings and weekends."
+    }
   },
   {
     "id": "ooh-237-orthotists-and-prosthetists",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Orthotists and Prosthetists",
     "tagline": "Measure, design, fit, and adapt medical devices, such as supportive braces and artificial limbs, for patients who have disabling conditions.",
@@ -40629,7 +45132,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $58K / ₹5-8 LPA · Mid: $81K / ₹13-23 LPA · Lead: $154K+ / ₹36 LPA+",
     "growth": "13% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Diagnostics Are Assisted — Imaging, lab results and records are increasingly read by software first. Examination, procedures, consent and the conversation with the patient are not.",
     "overview": "Orthotists and prosthetists measure, design, fit, and adapt musculoskeletal devices for patients who have disabling conditions. These devices include artificial limbs and orthopedic braces.",
     "url": "https://www.bls.gov/ooh/healthcare/orthotists-and-prosthetists.htm",
@@ -40741,7 +45244,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "9,500",
+    "openings": "700",
     "medianPay": 81110,
     "aiTag": "people",
     "edu": "master",
@@ -40750,12 +45253,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "health"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-2091",
+      "baseYear": "2025",
+      "medianPay": 81110,
+      "medianPayHourly": 38.99,
+      "payP10": 46350,
+      "payP90": 119810,
+      "numberOfJobs": 9500,
+      "growthPct": 13,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 1200,
+      "annualOpenings": 700,
+      "entryEducation": "Master's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Internship/residency",
+      "workEnvironment": "Orthotists and prosthetists usually work in healthcare settings and in laboratories. Most work full time."
+    }
   },
   {
     "id": "ooh-238-painters-construction-and-maintenance",
     "cat": "trades",
-    "catName": "Construction & Trades",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Painters, Construction and Maintenance",
     "tagline": "Painters apply paint, stain, and coatings to walls and ceilings, buildings, large machinery and equipment, and bridges and other structures.",
@@ -40871,7 +45393,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "326,900",
+    "openings": "24,900",
     "medianPay": 49400,
     "aiTag": "protected",
     "edu": "nodegree",
@@ -40885,12 +45407,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "47-2141",
+      "baseYear": "2025",
+      "medianPay": 49400,
+      "medianPayHourly": 23.75,
+      "payP10": 37440,
+      "payP90": 78810,
+      "numberOfJobs": 326900,
+      "growthPct": 3,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 9800,
+      "annualOpenings": 24900,
+      "entryEducation": "No formal educational credential",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Painters work indoors and outdoors. Painting is physically demanding and requires a lot of bending, kneeling, reaching, and climbing. Those who paint bridges or buildings may work at extreme heights or in uncomfortable positions."
+    }
   },
   {
     "id": "ooh-239-painting-and-coating-workers",
     "cat": "trades",
-    "catName": "Production & Manufacturing",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Painting and Coating Workers",
     "tagline": "Apply finishes, often using machines, to a range of products.",
@@ -41030,12 +45571,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "51-9120",
+      "baseYear": "2025",
+      "medianPay": 48060,
+      "medianPayHourly": 23.1,
+      "payP10": 36260,
+      "payP90": 74730,
+      "numberOfJobs": 173000,
+      "growthPct": 2,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 4200,
+      "annualOpenings": null,
+      "entryEducation": null,
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Most painting and coating workers are employed full time. They frequently stand for long periods in specially ventilated areas."
+    }
   },
   {
     "id": "ooh-240-paralegals-and-legal-assistants",
     "cat": "law",
-    "catName": "Legal",
+    "catName": "Law & Public Safety",
     "icon": "⚖️",
     "title": "Paralegals and Legal Assistants",
     "tagline": "Perform a variety of tasks to support lawyers.",
@@ -41043,7 +45603,7 @@ window.CAREERS_ALL = [
     "stream": "Arts & Humanities",
     "salary": "Entry: $45K / ₹4-7 LPA · Mid: $63K / ₹10-20 LPA · Lead: $119K+ / ₹34 LPA+",
     "growth": "0% (Little or no change)",
-    "demand": "Steady",
+    "demand": "Declining",
     "aiImpact": "Search And Summary Are Automated — AI reads contracts and case history in seconds. Argument, strategy, ethics and the responsibility of advising a client stay with the lawyer.",
     "overview": "Paralegals and legal assistants support lawyers by performing a variety of tasks, such as maintaining and organizing files, conducting legal research, and drafting documents.",
     "url": "https://www.bls.gov/ooh/legal/paralegals-and-legal-assistants.htm",
@@ -41153,7 +45713,7 @@ window.CAREERS_ALL = [
       "Harvard Law Review",
       "Supreme Court Cases (SCC Online)"
     ],
-    "growthYears": "",
+    "growthYears": "2025–2035",
     "openings": "404,900",
     "medianPay": 62890,
     "aiTag": "automation",
@@ -41167,7 +45727,26 @@ window.CAREERS_ALL = [
       "arts",
       "law",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "23-2011",
+      "baseYear": "2025",
+      "medianPay": 62890,
+      "medianPayHourly": 30.24,
+      "payP10": 44740,
+      "payP90": 101500,
+      "numberOfJobs": 404900,
+      "growthPct": 0,
+      "growthLabel": "Little or no change",
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "Associate's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Paralegals and legal assistants typically work in offices for a variety of employers, including law firms and government agencies. Most work full time."
+    }
   },
   {
     "id": "ooh-241-personal-financial-advisors",
@@ -41302,12 +45881,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "13-2052",
+      "baseYear": "2025",
+      "medianPay": 105070,
+      "medianPayHourly": 50.51,
+      "payP10": 50190,
+      "payP90": 357020,
+      "numberOfJobs": 299400,
+      "growthPct": 1,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 4100,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Long-term on-the-job training",
+      "workEnvironment": "Most personal financial advisors work in the finance and insurance industry or are self-employed. They typically work full time, and some work more than 40 hours per week. They also may meet with clients in the evenings or on weekends."
+    }
   },
   {
     "id": "ooh-242-pest-control-workers",
     "cat": "eco",
-    "catName": "Grounds & Maintenance",
+    "catName": "Sustainability & Energy",
     "icon": "🌿",
     "title": "Pest Control Workers",
     "tagline": "Remove insects, rodents, and other pests that infest buildings and surrounding areas.",
@@ -41315,7 +45913,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $33K / ₹3-5 LPA · Mid: $45K / ₹7-13 LPA · Lead: $86K+ / ₹20 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Forecasting Keeps Improving — Climate and energy models now simulate scenarios that once took teams months. Field work, local knowledge and policy negotiation are much slower to automate.",
     "overview": "Pest control workers remove unwanted pests, such as roaches, rodents, ants, and termites, that infest buildings and surrounding areas.",
     "url": "https://www.bls.gov/ooh/building-and-grounds-cleaning/pest-control-workers.htm",
@@ -41426,7 +46024,7 @@ window.CAREERS_ALL = [
       "Renewable Energy World Platform"
     ],
     "growthYears": "2025–2035",
-    "openings": "108,700",
+    "openings": "13,700",
     "medianPay": 45250,
     "aiTag": "automation",
     "edu": "nodegree",
@@ -41441,12 +46039,31 @@ window.CAREERS_ALL = [
       "commerce",
       "design",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "37-2021",
+      "baseYear": "2025",
+      "medianPay": 45250,
+      "medianPayHourly": 21.75,
+      "payP10": 34680,
+      "payP90": 61890,
+      "numberOfJobs": 108700,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 6000,
+      "annualOpenings": 13700,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Pest control workers often kneel, bend, and crawl in tight spaces to inspect sites. Because there are health risks associated with pesticide use, workers are trained in pesticide safety and typically wear protective gear, which may include gloves, goggles, and respirators. Most pest control workers are employed full time. Working evenings and weekends is common."
+    }
   },
   {
     "id": "ooh-243-petroleum-engineers",
     "cat": "eng",
-    "catName": "Engineering",
+    "catName": "Engineering & Robotics",
     "icon": "⚙️",
     "title": "Petroleum Engineers",
     "tagline": "Devise methods to improve oil and gas extraction and production.",
@@ -41569,12 +46186,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "engineering"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "17-2171",
+      "baseYear": "2025",
+      "medianPay": 144910,
+      "medianPayHourly": 69.67,
+      "payP10": 81440,
+      "payP90": 253200,
+      "numberOfJobs": 18500,
+      "growthPct": 2,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 400,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Petroleum engineers generally work in offices or at drilling and well sites. Travel may be required to visit these sites or to meet with other engineers, oilfield workers, and customers."
+    }
   },
   {
     "id": "ooh-244-pharmacists",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Pharmacists",
     "tagline": "Dispense prescription medications and provide information to patients about the drugs and their use.",
@@ -41582,7 +46218,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $101K / ₹9-14 LPA · Mid: $141K / ₹22-39 LPA · Lead: $268K+ / ₹63 LPA+",
     "growth": "5% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Diagnostics Are Assisted — Imaging, lab results and records are increasingly read by software first. Examination, procedures, consent and the conversation with the patient are not.",
     "overview": "Pharmacists dispense prescription medications and provide information to patients about the drugs and their use. They also advise physicians and other healthcare workers on the selection, dosage, interactions, and side effects of medications to treat health problems. They may help patients with their overall health through activities such as providing immunizations.",
     "url": "https://www.bls.gov/ooh/healthcare/pharmacists.htm",
@@ -41688,7 +46324,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "325,200",
+    "openings": "12,500",
     "medianPay": 140910,
     "aiTag": "people",
     "edu": "doctorate",
@@ -41697,12 +46333,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "health"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-1051",
+      "baseYear": "2025",
+      "medianPay": 140910,
+      "medianPayHourly": 67.75,
+      "payP10": 99290,
+      "payP90": 174230,
+      "numberOfJobs": 325200,
+      "growthPct": 5,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 17100,
+      "annualOpenings": 12500,
+      "entryEducation": "Doctoral or professional degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Pharmacists work in pharmacies, including those in drug, general merchandise, and grocery stores. They also work in hospitals and other healthcare facilities that are open 24 hours. Most pharmacists work full time, and some work nights, weekends, and holidays."
+    }
   },
   {
     "id": "ooh-245-pharmacy-technicians",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Pharmacy Technicians",
     "tagline": "Help pharmacists dispense prescription medication to patients or health professionals.",
@@ -41710,7 +46365,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $33K / ₹3-5 LPA · Mid: $46K / ₹7-13 LPA · Lead: $87K+ / ₹20 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Direct Patient Care & Equipment Operation — Electronic charts log patient records, but physically positioning patients, applying sterile dressings, and calming nervous patients require compassionate hands-on care.",
     "overview": "Pharmacy technicians help pharmacists dispense medications, manage inventory, and provide customer service in various healthcare settings.",
     "url": "https://www.bls.gov/ooh/healthcare/pharmacy-technicians.htm",
@@ -41822,7 +46477,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "471,200",
+    "openings": "44,700",
     "medianPay": 45750,
     "aiTag": "people",
     "edu": "nodegree",
@@ -41834,12 +46489,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "health",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-2052",
+      "baseYear": "2025",
+      "medianPay": 45750,
+      "medianPayHourly": 22,
+      "payP10": 36020,
+      "payP90": 61040,
+      "numberOfJobs": 471200,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 30100,
+      "annualOpenings": 44700,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Pharmacy technicians work in pharmacies, including those found in drug, general merchandise, and grocery stores, as well as hospitals. Most work full time, but part-time work is common."
+    }
   },
   {
     "id": "ooh-246-phlebotomists",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Phlebotomists",
     "tagline": "Draw blood for tests, transfusions, research, or blood donations.",
@@ -41847,7 +46521,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $33K / ₹3-5 LPA · Mid: $45K / ₹7-13 LPA · Lead: $86K+ / ₹20 LPA+",
     "growth": "7% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Diagnostics Are Assisted — Imaging, lab results and records are increasingly read by software first. Examination, procedures, consent and the conversation with the patient are not.",
     "overview": "Phlebotomists draw blood for purposes such as tests, research, or donations. They help patients or donors who are anxious before or have an adverse reaction after the blood draw.",
     "url": "https://www.bls.gov/ooh/healthcare/phlebotomists.htm",
@@ -41949,7 +46623,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "143,900",
+    "openings": "18,000",
     "medianPay": 45230,
     "aiTag": "people",
     "edu": "diploma",
@@ -41961,12 +46635,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "health",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "31-9097",
+      "baseYear": "2025",
+      "medianPay": 45230,
+      "medianPayHourly": 21.75,
+      "payP10": 35780,
+      "payP90": 58780,
+      "numberOfJobs": 143900,
+      "growthPct": 7,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 9800,
+      "annualOpenings": 18000,
+      "entryEducation": "Postsecondary nondegree award",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Phlebotomists are employed in a variety of settings, including hospitals, medical and diagnostic laboratories, blood donor centers, and doctors&rsquo; offices."
+    }
   },
   {
     "id": "ooh-247-photographers",
     "cat": "creative",
-    "catName": "Media & Communication",
+    "catName": "Creative Arts & Design",
     "icon": "🎨",
     "title": "Photographers",
     "tagline": "Use their technical expertise and creativity to produce and preserve images of people, landscapes, merchandise, or other subjects.",
@@ -42100,12 +46793,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "design",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "27-4021",
+      "baseYear": "2025",
+      "medianPay": 44660,
+      "medianPayHourly": 21.47,
+      "payP10": null,
+      "payP90": 44,
+      "numberOfJobs": 145000,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Many photographers are self-employed. They work in varied settings, including in studios and on location. Travel may be required. Part-time work is common, and work schedules may vary."
+    }
   },
   {
     "id": "ooh-248-physical-therapist-assistants-and-aides",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Physical Therapist Assistants and Aides",
     "tagline": "Work under the direction and supervision of physical therapists.",
@@ -42113,7 +46825,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $44K / ₹4-6 LPA · Mid: $61K / ₹10-17 LPA · Lead: $116K+ / ₹27 LPA+",
     "growth": "17% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Direct Patient Care & Equipment Operation — Electronic charts log patient records, but physically positioning patients, applying sterile dressings, and calming nervous patients require compassionate hands-on care.",
     "overview": "Physical therapist assistants, sometimes called PTAs , and physical therapist aides work under the direction and supervision of physical therapists. They help patients who are recovering from injuries and illnesses to regain movement and manage pain.",
     "url": "https://www.bls.gov/ooh/healthcare/physical-therapist-assistants-and-aides.htm",
@@ -42240,7 +46952,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "163,200",
+    "openings": "24,900",
     "medianPay": 61200,
     "aiTag": "people",
     "edu": "doctorate",
@@ -42250,12 +46962,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "health"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "31-2020",
+      "baseYear": "2025",
+      "medianPay": 61200,
+      "medianPayHourly": 29.42,
+      "payP10": 25360,
+      "payP90": 47780,
+      "numberOfJobs": 163200,
+      "growthPct": 17,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 28200,
+      "annualOpenings": 24900,
+      "entryEducation": null,
+      "relatedExperience": "None",
+      "onTheJobTraining": null,
+      "workEnvironment": "Most physical therapist assistants and aides work in physical therapists&rsquo; offices or in hospitals. They are frequently on their feet as they set up equipment and help care for patients."
+    }
   },
   {
     "id": "ooh-249-physical-therapists",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Physical Therapists",
     "tagline": "Help injured or ill people improve movement and manage pain.",
@@ -42263,7 +46994,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $74K / ₹7-10 LPA · Mid: $103K / ₹16-29 LPA · Lead: $195K+ / ₹46 LPA+",
     "growth": "12% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Diagnostics Are Assisted — Imaging, lab results and records are increasingly read by software first. Examination, procedures, consent and the conversation with the patient are not.",
     "overview": "Physical therapists help injured or ill people improve movement and manage pain. They are often an important part of preventive care, rehabilitation, and treatment for patients with chronic conditions, illnesses, or injuries.",
     "url": "https://www.bls.gov/ooh/healthcare/physical-therapists.htm",
@@ -42374,7 +47105,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "283,700",
+    "openings": "13,400",
     "medianPay": 102760,
     "aiTag": "people",
     "edu": "doctorate",
@@ -42383,12 +47114,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "health"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-1123",
+      "baseYear": "2025",
+      "medianPay": 102760,
+      "medianPayHourly": 49.4,
+      "payP10": 77140,
+      "payP90": 135140,
+      "numberOfJobs": 283700,
+      "growthPct": 12,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 33800,
+      "annualOpenings": 13400,
+      "entryEducation": "Doctoral or professional degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Physical therapists typically work in private offices and clinics, hospitals, patients&rsquo; homes, and nursing homes. They spend much of their time on their feet, actively working with patients."
+    }
   },
   {
     "id": "ooh-250-physician-assistants",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Physician Assistants",
     "tagline": "Examine, diagnose, and treat patients under the supervision of a physician.",
@@ -42396,7 +47146,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $98K / ₹9-14 LPA · Mid: $136K / ₹21-38 LPA · Lead: $258K+ / ₹60 LPA+",
     "growth": "21% (Much faster than average)",
-    "demand": "Extreme",
+    "demand": "Very High",
     "aiImpact": "Direct Patient Care & Equipment Operation — Electronic charts log patient records, but physically positioning patients, applying sterile dressings, and calming nervous patients require compassionate hands-on care.",
     "overview": "Physician assistants, also known as PAs , examine, diagnose, and treat patients under the supervision of a physician.",
     "url": "https://www.bls.gov/ooh/healthcare/physician-assistants.htm",
@@ -42506,7 +47256,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "168,900",
+    "openings": "11,500",
     "medianPay": 135880,
     "aiTag": "people",
     "edu": "master",
@@ -42516,12 +47266,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "health"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-1071",
+      "baseYear": "2025",
+      "medianPay": 135880,
+      "medianPayHourly": 65.33,
+      "payP10": 99380,
+      "payP90": 190280,
+      "numberOfJobs": 168900,
+      "growthPct": 21,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 35700,
+      "annualOpenings": 11500,
+      "entryEducation": "Master's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Physician assistants work in physicians&rsquo; offices, hospitals, outpatient clinics, and other healthcare settings. Most work full time."
+    }
   },
   {
     "id": "ooh-251-physicians-and-surgeons",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Physicians and Surgeons",
     "tagline": "Diagnose and treat injuries or illnesses and address health maintenance.",
@@ -42529,7 +47298,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $199K / ₹18-28 LPA · Mid: $276K / ₹43-77 LPA · Lead: $524K+ / ₹123 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "Diagnostics Are Assisted — Imaging, lab results and records are increasingly read by software first. Examination, procedures, consent and the conversation with the patient are not.",
     "overview": "Physicians and surgeons diagnose and treat injuries or illnesses and address health maintenance. Physicians examine patients; take medical histories; prescribe medications; and order, perform, and interpret diagnostic tests. They often counsel patients on diet, hygiene, and preventive healthcare. Surgeons operate on patients to treat injuries, such as broken bones; diseases, such as cancerous tumors; and deformities, such as cleft palates.",
     "url": "https://www.bls.gov/ooh/healthcare/physicians-and-surgeons.htm",
@@ -42718,7 +47487,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "862,800",
+    "openings": "22,100",
     "medianPay": 275930,
     "aiTag": "people",
     "edu": "doctorate",
@@ -42730,12 +47499,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "health"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-1210",
+      "baseYear": "2025",
+      "medianPay": 275930,
+      "medianPayHourly": 132.66,
+      "payP10": 76560,
+      "payP90": 488320,
+      "numberOfJobs": 862800,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 31300,
+      "annualOpenings": 22100,
+      "entryEducation": "Doctoral or professional degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Internship/residency",
+      "workEnvironment": "Physicians and surgeons work in both clinical and nonclinical settings. Clinical settings include physicians' offices and hospitals; nonclinical settings include government agencies, nonprofit organizations, and insurance companies."
+    }
   },
   {
     "id": "ooh-252-physicists-and-astronomers",
     "cat": "space",
-    "catName": "Science & Research",
+    "catName": "Aviation & Aerospace",
     "icon": "🔭",
     "title": "Physicists and Astronomers",
     "tagline": "Study the interactions of matter and energy.",
@@ -42743,7 +47531,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $120K / ₹13-21 LPA · Mid: $167K / ₹28-49 LPA · Lead: $317K+ / ₹77 LPA+",
     "growth": "7% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Models Read The Data First — Machine learning sifts through survey data, images and signals faster than any team. Framing the question, checking the result and deciding what it means is where people stay involved.",
     "overview": "Physicists and astronomers study the interactions of matter and energy. Theoretical physicists and astronomers may study the nature of time or the origin of the universe. Some physicists design and perform experiments with sophisticated equipment such as particle accelerators, electron microscopes, and lasers.",
     "url": "https://www.bls.gov/ooh/life-physical-and-social-science/physicists-and-astronomers.htm",
@@ -42869,7 +47657,7 @@ window.CAREERS_ALL = [
       "European Space Agency (ESA) Portals"
     ],
     "growthYears": "2025–2035",
-    "openings": "25,600",
+    "openings": "1,500",
     "medianPay": 166880,
     "aiTag": "automation",
     "edu": "doctorate",
@@ -42882,12 +47670,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "science"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "19-2010",
+      "baseYear": "2025",
+      "medianPay": 166880,
+      "medianPayHourly": 80.23,
+      "payP10": 78010,
+      "payP90": 195190,
+      "numberOfJobs": 25600,
+      "growthPct": 7,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 1900,
+      "annualOpenings": 1500,
+      "entryEducation": "Doctoral or professional degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Physicists and astronomers may work in offices, research laboratories, and observatories. Most physicists and astronomers work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-253-plumbers-pipefitters-and-steamfitters",
     "cat": "trades",
-    "catName": "Construction & Trades",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Plumbers, Pipefitters, and Steamfitters",
     "tagline": "Install and repair piping fixtures and systems.",
@@ -42895,7 +47702,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $46K / ₹4-7 LPA · Mid: $64K / ₹10-17 LPA · Lead: $121K+ / ₹28 LPA+",
     "growth": "7% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "The Work Is Physical — Every job is a different room, a different fault, a different set of tools. Work in unstandardised physical spaces is the hardest thing for software to take over.",
     "overview": "Plumbers, pipefitters, and steamfitters install and repair piping fixtures and systems.",
     "url": "https://www.bls.gov/ooh/construction-and-extraction/plumbers-pipefitters-and-steamfitters.htm",
@@ -43009,7 +47816,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "510,600",
+    "openings": "42,000",
     "medianPay": 63800,
     "aiTag": "protected",
     "edu": "nodegree",
@@ -43020,12 +47827,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "47-2152",
+      "baseYear": "2025",
+      "medianPay": 63800,
+      "medianPayHourly": 30.67,
+      "payP10": 44150,
+      "payP90": 108420,
+      "numberOfJobs": 510600,
+      "growthPct": 7,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 34500,
+      "annualOpenings": 42000,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Apprenticeship",
+      "workEnvironment": "Plumbers, pipefitters, and steamfitters work in factories, homes, businesses, and other places where there are pipes and related systems. Plumbers are often on call for emergencies, so evening and weekend work is common."
+    }
   },
   {
     "id": "ooh-254-podiatrists",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Podiatrists",
     "tagline": "Provide medical and surgical care for people with foot, ankle, and lower leg problems.",
@@ -43154,12 +47980,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "health"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-1081",
+      "baseYear": "2025",
+      "medianPay": 160300,
+      "medianPayHourly": 77.07,
+      "payP10": 66010,
+      "payP90": 309670,
+      "numberOfJobs": 10000,
+      "growthPct": 2,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 200,
+      "annualOpenings": null,
+      "entryEducation": "Doctoral or professional degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Internship/residency",
+      "workEnvironment": "Podiatrists usually work in offices of podiatry, other medical offices, or hospitals. Most work full time, and some need to be on call for emergencies."
+    }
   },
   {
     "id": "ooh-255-police-and-detectives",
     "cat": "law",
-    "catName": "Public Safety & Defense",
+    "catName": "Law & Public Safety",
     "icon": "👮",
     "title": "Police and Detectives",
     "tagline": "Protect communities, enforce criminal statutes, investigate crimes, and maintain order.",
@@ -43301,7 +48146,7 @@ window.CAREERS_ALL = [
       "Supreme Court Cases (SCC Online)"
     ],
     "growthYears": "2025–2035",
-    "openings": "824,200",
+    "openings": "60,100",
     "medianPay": 77310,
     "aiTag": "protected",
     "edu": "doctorate",
@@ -43313,12 +48158,31 @@ window.CAREERS_ALL = [
       "law",
       "arts",
       "any"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "33-3021",
+      "baseYear": "2025",
+      "medianPay": 77310,
+      "medianPayHourly": 37.17,
+      "payP10": 48160,
+      "payP90": 121600,
+      "numberOfJobs": 824200,
+      "growthPct": 3,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 24200,
+      "annualOpenings": 60100,
+      "entryEducation": null,
+      "relatedExperience": null,
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Police and detective work can be physically demanding, stressful, and dangerous. Police and sheriff's patrol officers and transit and railroad police have some of the highest rates of injuries and illnesses of all occupations. Working around the clock in shifts is common."
+    }
   },
   {
     "id": "ooh-256-political-scientists",
     "cat": "law",
-    "catName": "Public Policy & Governance",
+    "catName": "Law & Public Safety",
     "icon": "🏛️",
     "title": "Political Scientists",
     "tagline": "Examine political systems, election trends, public policies, and international relations.",
@@ -43444,12 +48308,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "law",
       "arts"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "19-3094",
+      "baseYear": "2025",
+      "medianPay": 142080,
+      "medianPayHourly": 68.31,
+      "payP10": 83350,
+      "payP90": 195190,
+      "numberOfJobs": 6100,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "Master's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most political scientists work full time in an office setting. They sometimes work additional hours."
+    }
   },
   {
     "id": "ooh-257-postal-service-workers",
     "cat": "biz",
-    "catName": "Office & Admin",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Postal Service Workers",
     "tagline": "Sell postal products and collect, sort, and deliver mail.",
@@ -43592,12 +48475,31 @@ window.CAREERS_ALL = [
       "commerce",
       "management",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "43-5050",
+      "baseYear": "2025",
+      "medianPay": 59880,
+      "medianPayHourly": 28.79,
+      "payP10": 42390,
+      "payP90": 81040,
+      "numberOfJobs": 488500,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "No formal educational credential",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Short-term on-the-job training",
+      "workEnvironment": "Postal service clerks and mail sorters, processors, and processing machine operators work indoors, typically in a post office. Mail carriers mostly work outdoors, delivering mail."
+    }
   },
   {
     "id": "ooh-258-postsecondary-education-administrators",
     "cat": "biz",
-    "catName": "Management",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Postsecondary Education Administrators",
     "tagline": "Oversee student services, academics, and faculty research at colleges and universities.",
@@ -43725,12 +48627,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "11-9033",
+      "baseYear": "2025",
+      "medianPay": 104590,
+      "medianPayHourly": 50.29,
+      "payP10": 64560,
+      "payP90": 215620,
+      "numberOfJobs": 231800,
+      "growthPct": 2,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 4100,
+      "annualOpenings": null,
+      "entryEducation": "Master's degree",
+      "relatedExperience": "Less than 5 years",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Postsecondary education administrators work for public and private schools. Most work full time."
+    }
   },
   {
     "id": "ooh-259-postsecondary-teachers",
     "cat": "edu",
-    "catName": "Education & Library",
+    "catName": "Education & Academia",
     "icon": "🎓",
     "title": "Postsecondary Teachers",
     "tagline": "Instruct students in a variety of academic subjects beyond the high school level.",
@@ -43738,7 +48659,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $61K / ₹5-9 LPA · Mid: $85K / ₹11-20 LPA · Lead: $162K+ / ₹31 LPA+",
     "growth": "7% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Lesson Plans Are Easy To Generate — Outlines, worksheets and quizzes take seconds to produce. Motivation, reading a room and holding a class together are not things software does.",
     "overview": "Postsecondary teachers instruct students in a variety of academic subjects beyond the high school level. They may also conduct research and publish scholarly papers and books.",
     "url": "https://www.bls.gov/ooh/education-training-and-library/postsecondary-teachers.htm",
@@ -44067,7 +48988,7 @@ window.CAREERS_ALL = [
       "Edutopia Learning Platform"
     ],
     "growthYears": "2025–2035",
-    "openings": "1,378,200",
+    "openings": "103,300",
     "medianPay": 85330,
     "aiTag": "people",
     "edu": "doctorate",
@@ -44082,12 +49003,31 @@ window.CAREERS_ALL = [
       "education",
       "design",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "25-1011",
+      "baseYear": "2025",
+      "medianPay": 85330,
+      "medianPayHourly": null,
+      "payP10": 49540,
+      "payP90": 203580,
+      "numberOfJobs": 1378200,
+      "growthPct": 7,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 98200,
+      "annualOpenings": 103300,
+      "entryEducation": null,
+      "relatedExperience": null,
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most postsecondary teachers work in public and private colleges and universities, professional schools, and junior or community colleges. Most work full time, although part-time work is common."
+    }
   },
   {
     "id": "ooh-260-power-plant-operators-distributors-and-dispatchers",
     "cat": "trades",
-    "catName": "Production & Manufacturing",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Power Plant Operators, Distributors, and Dispatchers",
     "tagline": "Control the systems that generate and distribute electric power.",
@@ -44217,12 +49157,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "51-8010",
+      "baseYear": "2025",
+      "medianPay": 105080,
+      "medianPayHourly": 50.52,
+      "payP10": 64160,
+      "payP90": 136550,
+      "numberOfJobs": 43700,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Long-term on-the-job training",
+      "workEnvironment": "Most power plant operators, distributors, and dispatchers work full time, and some work more than 40 hours per week. They typically work rotating 8- or 12-hour shifts."
+    }
   },
   {
     "id": "ooh-261-preschool-and-childcare-center-directors",
     "cat": "biz",
-    "catName": "Management",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Preschool and Childcare Center Directors",
     "tagline": "Supervise and lead their staffs, design program plans, oversee daily activities, and prepare budgets.",
@@ -44349,12 +49308,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "11-9031",
+      "baseYear": "2025",
+      "medianPay": 59300,
+      "medianPayHourly": 28.51,
+      "payP10": 38580,
+      "payP90": 98240,
+      "numberOfJobs": 91900,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "Less than 5 years",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Preschool and childcare center directors work primarily in child daycare services. Most work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-262-preschool-teachers",
     "cat": "edu",
-    "catName": "Education & Library",
+    "catName": "Education & Academia",
     "icon": "🎓",
     "title": "Preschool Teachers",
     "tagline": "Educate and care for children younger than age 5 who have not yet entered kindergarten.",
@@ -44362,7 +49340,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $27K / ₹2-4 LPA · Mid: $38K / ₹5-9 LPA · Lead: $72K+ / ₹14 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "Lesson Plans Are Easy To Generate — Outlines, worksheets and quizzes take seconds to produce. Motivation, reading a room and holding a class together are not things software does.",
     "overview": "Preschool teachers educate and care for children younger than age 5 who have not yet entered kindergarten. They teach language, motor, and social skills to young children.",
     "url": "https://www.bls.gov/ooh/education-training-and-library/preschool-teachers.htm",
@@ -44472,7 +49450,7 @@ window.CAREERS_ALL = [
       "Edutopia Learning Platform"
     ],
     "growthYears": "2025–2035",
-    "openings": "583,200",
+    "openings": "66,700",
     "medianPay": 38140,
     "aiTag": "people",
     "edu": "diploma",
@@ -44485,12 +49463,31 @@ window.CAREERS_ALL = [
       "education",
       "design",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "25-2011",
+      "baseYear": "2025",
+      "medianPay": 38140,
+      "medianPayHourly": 18.34,
+      "payP10": 28990,
+      "payP90": 61390,
+      "numberOfJobs": 583200,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 26200,
+      "annualOpenings": 66700,
+      "entryEducation": "Associate's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Preschool teachers typically work in public and private schools or childcare centers. Many work the traditional 10-month school year, but some work year-round."
+    }
   },
   {
     "id": "ooh-263-private-detectives-and-investigators",
     "cat": "law",
-    "catName": "Protective Service",
+    "catName": "Law & Public Safety",
     "icon": "👮",
     "title": "Private Detectives and Investigators",
     "tagline": "Gather, analyze, and report information to clients regarding legal or personal matters.",
@@ -44498,7 +49495,7 @@ window.CAREERS_ALL = [
     "stream": "Arts & Humanities",
     "salary": "Entry: $37K / ₹3-5 LPA · Mid: $51K / ₹8-16 LPA · Lead: $97K+ / ₹27 LPA+",
     "growth": "5% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Search And Summary Are Automated — AI reads contracts and case history in seconds. Argument, strategy, ethics and the responsibility of advising a client stay with the lawyer.",
     "overview": "Private detectives and investigators gather, analyze, and report information to clients regarding legal or personal matters. Their services include verifying people's backgrounds, finding missing persons, and investigating crimes.",
     "url": "https://www.bls.gov/ooh/protective-service/private-detectives-and-investigators.htm",
@@ -44606,7 +49603,7 @@ window.CAREERS_ALL = [
       "Supreme Court Cases (SCC Online)"
     ],
     "growthYears": "2025–2035",
-    "openings": "39,500",
+    "openings": "3,200",
     "medianPay": 51220,
     "aiTag": "automation",
     "edu": "nodegree",
@@ -44618,12 +49615,31 @@ window.CAREERS_ALL = [
       "arts",
       "law",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "33-9021",
+      "baseYear": "2025",
+      "medianPay": 51220,
+      "medianPayHourly": 24.62,
+      "payP10": 36740,
+      "payP90": 97630,
+      "numberOfJobs": 39500,
+      "growthPct": 5,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 2200,
+      "annualOpenings": 3200,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "Less than 5 years",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Private detectives&rsquo; and investigators&rsquo; work settings may depend on their assignment or case. For example, they may spend time in offices to research cases, or they may work in the field while doing surveillance. Most work full time, and schedules may vary to include early mornings, nights, and weekends."
+    }
   },
   {
     "id": "ooh-264-probation-officers-and-correctional-treatment-specialists",
     "cat": "law",
-    "catName": "Public Safety & Defense",
+    "catName": "Law & Public Safety",
     "icon": "🛡️",
     "title": "Probation Officers and Correctional Treatment Specialists",
     "tagline": "Assist in rehabilitating law offenders in custody or on probation or parole.",
@@ -44734,7 +49750,7 @@ window.CAREERS_ALL = [
       "The New Social Worker Magazine"
     ],
     "growthYears": "2025–2035",
-    "openings": "93,700",
+    "openings": "7,900",
     "medianPay": 66270,
     "aiTag": "people",
     "edu": "bachelor",
@@ -44747,12 +49763,31 @@ window.CAREERS_ALL = [
       "health",
       "science",
       "arts"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "21-1092",
+      "baseYear": "2025",
+      "medianPay": 66270,
+      "medianPayHourly": 31.86,
+      "payP10": 46840,
+      "payP90": 107790,
+      "numberOfJobs": 93700,
+      "growthPct": 3,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 2800,
+      "annualOpenings": 7900,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Most probation officers and correctional treatment specialists work full time. Their jobs may involve traveling to meet with probationers and parolees. Working in high-crime areas or in institutions may be stressful and dangerous."
+    }
   },
   {
     "id": "ooh-265-producers-and-directors",
     "cat": "creative",
-    "catName": "Sports & Entertainment",
+    "catName": "Creative Arts & Design",
     "icon": "🎨",
     "title": "Producers and Directors",
     "tagline": "Make business and creative decisions about film, television, stage, and other productions.",
@@ -44760,7 +49795,7 @@ window.CAREERS_ALL = [
     "stream": "Arts & Humanities",
     "salary": "Entry: $65K / ₹5-10 LPA · Mid: $90K / ₹14-26 LPA · Lead: $172K+ / ₹43 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "Options Are Cheap Now — Generative tools produce a hundred variations in minutes, so the value has moved to taste: knowing which one is right and why. Direction, briefs and client trust are the parts that hold up.",
     "overview": "Producers and directors make business and creative decisions about, film, television, stage, and other productions. They interpret a writer's script to entertain, inform, or instruct an audience.",
     "url": "https://www.bls.gov/ooh/entertainment-and-sports/producers-and-directors.htm",
@@ -44885,7 +49920,7 @@ window.CAREERS_ALL = [
       "Nielsen Norman Group UX Articles"
     ],
     "growthYears": "2025–2035",
-    "openings": "181,000",
+    "openings": "12,100",
     "medianPay": 90360,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -44896,7 +49931,26 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "27-2012",
+      "baseYear": "2025",
+      "medianPay": 90360,
+      "medianPayHourly": 43.44,
+      "payP10": 45780,
+      "payP90": 198540,
+      "numberOfJobs": 181000,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 7300,
+      "annualOpenings": 12100,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "Less than 5 years",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Producers and directors are often under pressure to finish their work on time. Most producers and directors work full time, and some work more than 40 hours per week. Their schedules may vary."
+    }
   },
   {
     "id": "ooh-266-project-management-specialists",
@@ -44909,7 +49963,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $74K / ₹7-14 LPA · Mid: $102K / ₹20-37 LPA · Lead: $194K+ / ₹56 LPA+",
     "growth": "7% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Project management specialists coordinate the budget, schedule, and other details of a project. They lead and guide the work of technical staff. Project management specialists also may serve as a point of contact for the client or customer.",
     "url": "https://www.bls.gov/ooh/business-and-financial/project-management-specialists.htm",
@@ -45008,7 +50062,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "1,094,300",
+    "openings": "76,500",
     "medianPay": 102320,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -45020,12 +50074,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "13-1082",
+      "baseYear": "2025",
+      "medianPay": 102320,
+      "medianPayHourly": 49.19,
+      "payP10": 61580,
+      "payP90": 167970,
+      "numberOfJobs": 1094300,
+      "growthPct": 7,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 73200,
+      "annualOpenings": 76500,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Project management specialists usually work in an office setting, but they occasionally travel to visit clients. Most work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-267-property-real-estate-and-community-association-managers",
     "cat": "biz",
-    "catName": "Management",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Property, Real Estate, and Community Association Managers",
     "tagline": "Oversee many aspects of residential, commercial, or industrial properties.",
@@ -45033,7 +50106,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $50K / ₹5-9 LPA · Mid: $70K / ₹14-25 LPA · Lead: $133K+ / ₹38 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Property, real estate, and community association managers oversee many aspects of residential, commercial, or industrial properties. They ensure that the property is well maintained, has a nice appearance, operates smoothly, and preserves its resale value.",
     "url": "https://www.bls.gov/ooh/management/property-real-estate-and-community-association-managers.htm",
@@ -45144,7 +50217,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "460,400",
+    "openings": "36,900",
     "medianPay": 69990,
     "aiTag": "automation",
     "edu": "nodegree",
@@ -45158,7 +50231,26 @@ window.CAREERS_ALL = [
       "commerce",
       "management",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "11-9141",
+      "baseYear": "2025",
+      "medianPay": 69990,
+      "medianPayHourly": 33.65,
+      "payP10": 41010,
+      "payP90": 139680,
+      "numberOfJobs": 460400,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 17100,
+      "annualOpenings": 36900,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "Less than 5 years",
+      "onTheJobTraining": "Short-term on-the-job training",
+      "workEnvironment": "Most property, real estate, and community association managers work full time. They usually work in an office setting but may spend part of their workday on tasks away from the office, such as showing apartments, inspecting the grounds, or meeting with owners."
+    }
   },
   {
     "id": "ooh-268-property-appraisers-and-assessors",
@@ -45280,7 +50372,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "68,400",
+    "openings": "5,200",
     "medianPay": 67960,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -45294,12 +50386,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "13-2020",
+      "baseYear": "2025",
+      "medianPay": 67960,
+      "medianPayHourly": 32.67,
+      "payP10": 40030,
+      "payP90": 122660,
+      "numberOfJobs": 68400,
+      "growthPct": 3,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 2400,
+      "annualOpenings": 5200,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Long-term on-the-job training",
+      "workEnvironment": "Although property appraisers and assessors work in offices, they may spend a large part of their time conducting site visits. Most work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-269-psychiatric-technicians-and-aides",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Psychiatric Technicians and Aides",
     "tagline": "Care for people who have mental conditions or developmental disabilities.",
@@ -45307,7 +50418,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $32K / ₹3-5 LPA · Mid: $45K / ₹7-13 LPA · Lead: $86K+ / ₹20 LPA+",
     "growth": "18% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Direct Patient Care & Equipment Operation — Electronic charts log patient records, but physically positioning patients, applying sterile dressings, and calming nervous patients require compassionate hands-on care.",
     "overview": "Psychiatric technicians and aides care for people who have mental or emotional conditions or developmental disabilities. Technicians typically monitor patients' conditions and provide therapeutic care, such as overseeing their medications. Aides help patients in their daily activities and ensure a safe and clean environment.",
     "url": "https://www.bls.gov/ooh/healthcare/psychiatric-technicians-and-aides.htm",
@@ -45415,7 +50526,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "198,400",
+    "openings": "21,900",
     "medianPay": 45100,
     "aiTag": "people",
     "edu": "doctorate",
@@ -45426,12 +50537,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "health"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-2053",
+      "baseYear": "2025",
+      "medianPay": 45100,
+      "medianPayHourly": 21.68,
+      "payP10": 32090,
+      "payP90": 60440,
+      "numberOfJobs": 198400,
+      "growthPct": 18,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 36700,
+      "annualOpenings": 21900,
+      "entryEducation": null,
+      "relatedExperience": null,
+      "onTheJobTraining": "Short-term on-the-job training",
+      "workEnvironment": "Psychiatric technicians and aides work primarily in healthcare settings, such as psychiatric hospitals and residential mental health facilities. The work may be physically demanding, and technicians and aides risk injury on the job. Most are full time, but part-time work is common; schedules may include nights, weekends, or holidays in facilities that are open 24 hours."
+    }
   },
   {
     "id": "ooh-270-psychologists",
     "cat": "health",
-    "catName": "Psychology & Mental Health",
+    "catName": "Healthcare & Medicine",
     "icon": "🧠",
     "title": "Psychologists",
     "tagline": "Assess cognitive processes, diagnose mental disorders, and provide clinical therapy.",
@@ -45439,7 +50569,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $71K / ₹8-12 LPA · Mid: $99K / ₹17-29 LPA · Lead: $188K+ / ₹46 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Confidential Human Therapeutic Rapport — While AI tools transcribe session notes, building deep therapeutic trust, parsing non-verbal trauma cues, and guiding emotional healing are fundamentally human.",
     "overview": "Psychologists study cognitive, emotional, and social processes and behavior by observing, interpreting, and recording how people relate to one another and to their environments. They use their findings to help improve processes and behaviors.",
     "url": "https://www.bls.gov/ooh/life-physical-and-social-science/psychologists.htm",
@@ -45559,7 +50689,7 @@ window.CAREERS_ALL = [
       "European Space Agency (ESA) Portals"
     ],
     "growthYears": "2025–2035",
-    "openings": "209,400",
+    "openings": "11,300",
     "medianPay": 99110,
     "aiTag": "people",
     "edu": "doctorate",
@@ -45572,12 +50702,31 @@ window.CAREERS_ALL = [
       "health",
       "science",
       "arts"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "19-3030",
+      "baseYear": "2025",
+      "medianPay": 99110,
+      "medianPayHourly": 47.65,
+      "payP10": 59080,
+      "payP90": 163380,
+      "numberOfJobs": 209400,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 11600,
+      "annualOpenings": 11300,
+      "entryEducation": null,
+      "relatedExperience": "None",
+      "onTheJobTraining": "Internship/residency",
+      "workEnvironment": "Psychologists work in a variety of settings, such as schools, hospitals, and private practice. Most are full time, but part-time work is common. Some work evenings or weekends to accommodate their clients' schedules."
+    }
   },
   {
     "id": "ooh-271-public-relations-and-fundraising-managers",
     "cat": "biz",
-    "catName": "Management",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Public Relations and Fundraising Managers",
     "tagline": "Relations managers direct the creation of materials that will enhance the public image of their employer or client.",
@@ -45585,7 +50734,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $98K / ₹10-18 LPA · Mid: $136K / ₹26-50 LPA · Lead: $259K+ / ₹74 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Public relations managers plan and direct the creation of material that will enhance the public image of their employer or client. Fundraising managers coordinate campaigns that bring in donations for their organization.",
     "url": "https://www.bls.gov/ooh/management/public-relations-managers.htm",
@@ -45698,7 +50847,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "129,600",
+    "openings": "9,800",
     "medianPay": 136470,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -45708,12 +50857,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "11-2030",
+      "baseYear": "2025",
+      "medianPay": 136470,
+      "medianPayHourly": 65.61,
+      "payP10": 75130,
+      "payP90": 222350,
+      "numberOfJobs": 129600,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 7200,
+      "annualOpenings": 9800,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "5 years or more",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Public relations and fundraising managers generally work in offices during regular business hours. However, many of these managers travel to give speeches and to attend meetings and community activities. Some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-272-public-relations-specialists",
     "cat": "creative",
-    "catName": "Media & Communication",
+    "catName": "Creative Arts & Design",
     "icon": "🎨",
     "title": "Public Relations Specialists",
     "tagline": "Create and maintain a positive public image for the clients they represent.",
@@ -45847,12 +51015,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "27-3031",
+      "baseYear": "2025",
+      "medianPay": 74750,
+      "medianPayHourly": 35.94,
+      "payP10": 44110,
+      "payP90": 135150,
+      "numberOfJobs": 314500,
+      "growthPct": 2,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 5700,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Public relations specialists work for a variety of organizations, including schools, media buyers, and professional associations. They usually work in offices, but they also deliver speeches, attend meetings and community activities, and occasionally travel."
+    }
   },
   {
     "id": "ooh-273-public-safety-telecommunicators",
     "cat": "biz",
-    "catName": "Office & Admin",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Public Safety Telecommunicators",
     "tagline": "Including 911 operators and fire dispatchers, answer emergency and nonemergency calls and provide resources to assist those in need.",
@@ -45860,7 +51047,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $38K / ₹4-7 LPA · Mid: $53K / ₹10-19 LPA · Lead: $101K+ / ₹29 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Public safety telecommunicators, including 911 operators and fire dispatchers , answer emergency and nonemergency calls and provide resources to assist those in need.",
     "url": "https://www.bls.gov/ooh/office-and-administrative-support/police-fire-and-ambulance-dispatchers.htm",
@@ -45974,7 +51161,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "105,600",
+    "openings": "9,000",
     "medianPay": 53040,
     "aiTag": "automation",
     "edu": "nodegree",
@@ -45986,7 +51173,26 @@ window.CAREERS_ALL = [
       "commerce",
       "management",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "43-5031",
+      "baseYear": "2025",
+      "medianPay": 53040,
+      "medianPayHourly": 25.5,
+      "payP10": 37320,
+      "payP90": 79830,
+      "numberOfJobs": 105600,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 3900,
+      "annualOpenings": 9000,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Public safety telecommunicators work in emergency communication centers called public safety answering points (PSAPs). These workers usually have shifts that include evenings, weekends, and holidays to provide round-the-clock coverage. The pressure to respond quickly and calmly in alarming situations may be stressful."
+    }
   },
   {
     "id": "ooh-274-purchasing-managers-buyers-and-purchasing-agents",
@@ -45999,7 +51205,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $59K / ₹6-11 LPA · Mid: $82K / ₹16-30 LPA · Lead: $155K+ / ₹45 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Buyers and purchasing agents buy products and services for organizations to use or resell. They evaluate suppliers, negotiate contracts, and review the quality of products. Purchasing managers oversee the work of buyers and purchasing agents and typically handle more complex procurement tasks.",
     "url": "https://www.bls.gov/ooh/business-and-financial/purchasing-managers-buyers-and-purchasing-agents.htm",
@@ -46124,7 +51330,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "604,400",
+    "openings": "53,600",
     "medianPay": 81670,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -46136,12 +51342,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "11-3061",
+      "baseYear": "2025",
+      "medianPay": 81670,
+      "medianPayHourly": 39.27,
+      "payP10": 48380,
+      "payP90": 128870,
+      "numberOfJobs": 604400,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 34400,
+      "annualOpenings": 53600,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": null,
+      "onTheJobTraining": null,
+      "workEnvironment": "Purchasing managers and buyers and purchasing agents usually work in an office setting. Most work full time. Travel may be required."
+    }
   },
   {
     "id": "ooh-275-quality-control-inspectors",
     "cat": "trades",
-    "catName": "Production & Manufacturing",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Quality Control Inspectors",
     "tagline": "Examine products and materials for defects or deviations from specifications.",
@@ -46259,7 +51484,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "602,000",
+    "openings": "66,700",
     "medianPay": 48570,
     "aiTag": "protected",
     "edu": "nodegree",
@@ -46269,12 +51494,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "51-9061",
+      "baseYear": "2025",
+      "medianPay": 48570,
+      "medianPayHourly": 23.35,
+      "payP10": 35510,
+      "payP90": 77860,
+      "numberOfJobs": 602000,
+      "growthPct": 3,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 15200,
+      "annualOpenings": 66700,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Many quality control inspectors work in manufacturing. Most work full time, and overtime may be required to meet production deadlines."
+    }
   },
   {
     "id": "ooh-276-radiation-therapists",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Radiation Therapists",
     "tagline": "Administer doses of radiation to patients who have cancer or other serious diseases.",
@@ -46382,7 +51626,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "17,400",
+    "openings": "700",
     "medianPay": 105310,
     "aiTag": "people",
     "edu": "diploma",
@@ -46392,12 +51636,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "health",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-1124",
+      "baseYear": "2025",
+      "medianPay": 105310,
+      "medianPayHourly": 50.63,
+      "payP10": 80560,
+      "payP90": 156710,
+      "numberOfJobs": 17400,
+      "growthPct": 3,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 500,
+      "annualOpenings": 700,
+      "entryEducation": "Associate's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Radiation therapists work in hospitals, offices of physicians, and outpatient centers. Most radiation therapists work full time."
+    }
   },
   {
     "id": "ooh-277-radiologic-and-mri-technologists",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Radiologic and Mri Technologists",
     "tagline": "Technologists perform diagnostic imaging examinations on patients.",
@@ -46405,7 +51668,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $59K / ₹5-8 LPA · Mid: $81K / ₹13-23 LPA · Lead: $155K+ / ₹36 LPA+",
     "growth": "5% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Diagnostics Are Assisted — Imaging, lab results and records are increasingly read by software first. Examination, procedures, consent and the conversation with the patient are not.",
     "overview": "Radiologic technologists, also known as radiographers , perform x rays and other diagnostic imaging examinations on patients. MRI technologists operate magnetic resonance imaging (MRI) scanners to create diagnostic images.",
     "url": "https://www.bls.gov/ooh/healthcare/radiologic-technologists.htm",
@@ -46516,7 +51779,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "278,100",
+    "openings": "15,300",
     "medianPay": 81390,
     "aiTag": "people",
     "edu": "diploma",
@@ -46527,12 +51790,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "health",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-2034",
+      "baseYear": "2025",
+      "medianPay": 81390,
+      "medianPayHourly": 39.13,
+      "payP10": 68890,
+      "payP90": 127670,
+      "numberOfJobs": 278100,
+      "growthPct": 5,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 15100,
+      "annualOpenings": 15300,
+      "entryEducation": "Associate's degree",
+      "relatedExperience": null,
+      "onTheJobTraining": "None",
+      "workEnvironment": "Radiologic and MRI technologists work in healthcare facilities, and more than half work in hospitals. Most radiologic and MRI technologists work full time."
+    }
   },
   {
     "id": "ooh-278-railroad-workers",
     "cat": "trades",
-    "catName": "Transportation",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Railroad Workers",
     "tagline": "Ensure that passenger and freight trains operate safely.",
@@ -46676,12 +51958,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "53-4011",
+      "baseYear": "2025",
+      "medianPay": 78820,
+      "medianPayHourly": 37.9,
+      "payP10": 56050,
+      "payP90": 106800,
+      "numberOfJobs": 80500,
+      "growthPct": 1,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 600,
+      "annualOpenings": null,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": null,
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Nearly all railroad workers are employed in the rail transportation industry. Most work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-279-real-estate-brokers-and-sales-agents",
     "cat": "biz",
-    "catName": "Sales",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Real Estate Brokers and Sales Agents",
     "tagline": "Help clients buy, sell, and rent properties.",
@@ -46809,12 +52110,31 @@ window.CAREERS_ALL = [
       "commerce",
       "management",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "41-9020",
+      "baseYear": "2025",
+      "medianPay": 57400,
+      "medianPayHourly": 27.59,
+      "payP10": 37110,
+      "payP90": 143300,
+      "numberOfJobs": 530600,
+      "growthPct": 2,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 8300,
+      "annualOpenings": null,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": null,
+      "onTheJobTraining": null,
+      "workEnvironment": "Most real estate brokers and sales agents are self-employed. Although they often work irregular hours, many are able to set their own schedules."
+    }
   },
   {
     "id": "ooh-280-receptionists",
     "cat": "biz",
-    "catName": "Office & Admin",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Receptionists",
     "tagline": "Do tasks such as answering phones, receiving visitors, and providing information about their organization to the public.",
@@ -46939,12 +52259,31 @@ window.CAREERS_ALL = [
       "commerce",
       "management",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "43-4171",
+      "baseYear": "2025",
+      "medianPay": 38010,
+      "medianPayHourly": 18.27,
+      "payP10": null,
+      "payP90": 24,
+      "numberOfJobs": 947500,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Short-term on-the-job training",
+      "workEnvironment": "Receptionists are employed in nearly every industry."
+    }
   },
   {
     "id": "ooh-281-recreational-protective-service-workers",
     "cat": "law",
-    "catName": "Protective Service",
+    "catName": "Law & Public Safety",
     "icon": "⚖️",
     "title": "Recreational Protective Service Workers",
     "tagline": "Monitor recreational areas, such as pools, beaches, or ski slopes, to provide aid and protection to participants.",
@@ -46952,7 +52291,7 @@ window.CAREERS_ALL = [
     "stream": "Arts & Humanities",
     "salary": "Entry: $24K / ₹2-4 LPA · Mid: $34K / ₹5-11 LPA · Lead: $64K+ / ₹18 LPA+",
     "growth": "5% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Search And Summary Are Automated — AI reads contracts and case history in seconds. Argument, strategy, ethics and the responsibility of advising a client stay with the lawyer.",
     "overview": "Recreational protective service workers monitor recreational areas, such as pools, beaches, or ski slopes, to provide aid and protection to participants.",
     "url": "https://www.bls.gov/ooh/protective-service/recreational-protective-service-workers.htm",
@@ -47061,7 +52400,7 @@ window.CAREERS_ALL = [
       "Supreme Court Cases (SCC Online)"
     ],
     "growthYears": "2025–2035",
-    "openings": "162,000",
+    "openings": "45,400",
     "medianPay": 33580,
     "aiTag": "automation",
     "edu": "nodegree",
@@ -47076,12 +52415,31 @@ window.CAREERS_ALL = [
       "arts",
       "law",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "33-9092",
+      "baseYear": "2025",
+      "medianPay": 33580,
+      "medianPayHourly": 16.14,
+      "payP10": 25780,
+      "payP90": 43970,
+      "numberOfJobs": 162000,
+      "growthPct": 5,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 8900,
+      "annualOpenings": 45400,
+      "entryEducation": "No formal educational credential",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Short-term on-the-job training",
+      "workEnvironment": "Many recreational protective service workers spend much of their time outdoors and are exposed to varied weather conditions. Part-time work is common, and jobs are often seasonal."
+    }
   },
   {
     "id": "ooh-282-recreational-therapists",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Recreational Therapists",
     "tagline": "Plan, direct, and coordinate recreation-based medical treatment programs for people with disabilities, injuries, or illnesses.",
@@ -47089,7 +52447,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $45K / ₹4-6 LPA · Mid: $62K / ₹10-17 LPA · Lead: $118K+ / ₹28 LPA+",
     "growth": "5% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Diagnostics Are Assisted — Imaging, lab results and records are increasingly read by software first. Examination, procedures, consent and the conversation with the patient are not.",
     "overview": "Recreational therapists plan, direct, and coordinate recreation-based medical treatment programs to help maintain or improve patients' physical, social, and emotional well-being. These therapists use a variety of techniques, including art expression; drama, music, and dance; sports and games; aquatics; and community outings.",
     "url": "https://www.bls.gov/ooh/healthcare/recreational-therapists.htm",
@@ -47203,7 +52561,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "15,600",
+    "openings": "1,400",
     "medianPay": 61960,
     "aiTag": "people",
     "edu": "bachelor",
@@ -47214,12 +52572,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "health"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-1125",
+      "baseYear": "2025",
+      "medianPay": 61960,
+      "medianPayHourly": 29.79,
+      "payP10": 40990,
+      "payP90": 100420,
+      "numberOfJobs": 15600,
+      "growthPct": 5,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 800,
+      "annualOpenings": 1400,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Recreational therapists work in a variety of settings, including hospitals, nursing homes, and government parks and recreation departments. Most work full time."
+    }
   },
   {
     "id": "ooh-283-recreation-workers",
     "cat": "service",
-    "catName": "Personal Care & Service",
+    "catName": "Human Care & Services",
     "icon": "🤝",
     "title": "Recreation Workers",
     "tagline": "Organize, conduct, and promote a variety of group activities for leisure and other purposes.",
@@ -47227,7 +52604,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $26K / ₹2-4 LPA · Mid: $37K / ₹5-8 LPA · Lead: $69K+ / ₹13 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "Presence Is The Job — Comfort, trust and physical care are the reason the role exists. Tools can monitor and remind, but they cannot sit with someone or speak for the family.",
     "overview": "Recreation workers organize, conduct, and promote a variety of group activities for leisure and other purposes. Activities may include arts and crafts, sports, or music.",
     "url": "https://www.bls.gov/ooh/personal-care-and-service/recreation-workers.htm",
@@ -47330,7 +52707,7 @@ window.CAREERS_ALL = [
       "The New Social Worker Magazine"
     ],
     "growthYears": "2025–2035",
-    "openings": "346,900",
+    "openings": "67,000",
     "medianPay": 36560,
     "aiTag": "people",
     "edu": "nodegree",
@@ -47344,12 +52721,31 @@ window.CAREERS_ALL = [
       "science",
       "arts",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "39-9032",
+      "baseYear": "2025",
+      "medianPay": 36560,
+      "medianPayHourly": 17.58,
+      "payP10": 27600,
+      "payP90": 50410,
+      "numberOfJobs": 346900,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 15000,
+      "annualOpenings": 67000,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Short-term on-the-job training",
+      "workEnvironment": "Recreation workers are employed in a variety of settings, including recreation centers, parks, and summer camps. Most work full time, but many work part-time, irregular, or seasonal hours."
+    }
   },
   {
     "id": "ooh-284-registered-nurses",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Registered Nurses",
     "tagline": "(RNs) provide and coordinate patient care and educate patients and the public about various health conditions.",
@@ -47357,7 +52753,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $70K / ₹7-10 LPA · Mid: $98K / ₹15-27 LPA · Lead: $185K+ / ₹43 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Diagnostics Are Assisted — Imaging, lab results and records are increasingly read by software first. Examination, procedures, consent and the conversation with the patient are not.",
     "overview": "Registered nurses (RNs) provide and coordinate patient care, educate patients and the public about various health conditions, and provide advice and emotional support to patients and their families.",
     "url": "https://www.bls.gov/ooh/healthcare/registered-nurses.htm",
@@ -47484,7 +52880,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "3,465,400",
+    "openings": "180,800",
     "medianPay": 97550,
     "aiTag": "people",
     "edu": "bachelor",
@@ -47494,12 +52890,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "health"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-1141",
+      "baseYear": "2025",
+      "medianPay": 97550,
+      "medianPayHourly": 46.9,
+      "payP10": 68940,
+      "payP90": 137470,
+      "numberOfJobs": 3465400,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 194700,
+      "annualOpenings": 180800,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Registered nurses work in hospitals, physicians&rsquo; offices, home healthcare services, and nursing care facilities. Others work in outpatient clinics and schools."
+    }
   },
   {
     "id": "ooh-285-rehabilitation-counselors",
     "cat": "service",
-    "catName": "Community & Social Service",
+    "catName": "Human Care & Services",
     "icon": "🤝",
     "title": "Rehabilitation Counselors",
     "tagline": "Work with clients to overcome or manage the personal, social, or psychological effects of disabilities on employment or independent living.",
@@ -47636,12 +53051,31 @@ window.CAREERS_ALL = [
       "health",
       "science",
       "arts"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "21-1015",
+      "baseYear": "2025",
+      "medianPay": 46850,
+      "medianPayHourly": 22.52,
+      "payP10": 35060,
+      "payP90": 77170,
+      "numberOfJobs": 96900,
+      "growthPct": 2,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 2200,
+      "annualOpenings": null,
+      "entryEducation": "Master's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Rehabilitation counselors work in a variety of settings. Most work full time."
+    }
   },
   {
     "id": "ooh-286-respiratory-therapists",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Respiratory Therapists",
     "tagline": "Care for patients who have trouble breathing—for example, because of a chronic condition such as asthma.",
@@ -47649,7 +53083,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $59K / ₹5-8 LPA · Mid: $82K / ₹13-23 LPA · Lead: $156K+ / ₹37 LPA+",
     "growth": "9% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Diagnostics Are Assisted — Imaging, lab results and records are increasingly read by software first. Examination, procedures, consent and the conversation with the patient are not.",
     "overview": "Respiratory therapists care for patients who have trouble breathing--for example, because of conditions such as asthma or chronic obstructive pulmonary disease (COPD). Their patients range from premature infants with undeveloped lungs to older adults whose lungs are diseased.",
     "url": "https://www.bls.gov/ooh/healthcare/respiratory-therapists.htm",
@@ -47767,7 +53201,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "142,000",
+    "openings": "8,600",
     "medianPay": 82280,
     "aiTag": "people",
     "edu": "diploma",
@@ -47777,12 +53211,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "health",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-1126",
+      "baseYear": "2025",
+      "medianPay": 82280,
+      "medianPayHourly": 39.56,
+      "payP10": 63660,
+      "payP90": 118050,
+      "numberOfJobs": 142000,
+      "growthPct": 9,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 12100,
+      "annualOpenings": 8600,
+      "entryEducation": "Associate's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most respiratory therapists work full time. Because they may work in medical facilities that are always open, such as hospitals, they may have shifts that include nights, weekends, or holidays."
+    }
   },
   {
     "id": "ooh-287-retail-sales-workers",
     "cat": "biz",
-    "catName": "Sales",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Retail Sales Workers",
     "tagline": "Sell merchandise, spare and replacement parts, and equipment to customers.",
@@ -47790,7 +53243,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $26K / ₹3-5 LPA · Mid: $36K / ₹7-13 LPA · Lead: $68K+ / ₹19 LPA+",
     "growth": "0% (Little or no change)",
-    "demand": "Steady",
+    "demand": "Declining",
     "aiImpact": "Customer Resolution & Financial Discretion — Digital payment readers process card taps, but answering product questions, processing returns, resolving billing errors, and customer assistance stay human.",
     "overview": "Retail sales workers sell merchandise, such as furniture, motor vehicles, appliances, or apparel, to customers. They also sell spare and replacement parts and equipment.",
     "url": "https://www.bls.gov/ooh/sales/retail-sales-workers.htm",
@@ -47905,7 +53358,7 @@ window.CAREERS_ALL = [
       "Financial Times",
       "Wall Street Journal"
     ],
-    "growthYears": "",
+    "growthYears": "2025–2035",
     "openings": "4,271,400",
     "medianPay": 35560,
     "aiTag": "people",
@@ -47919,12 +53372,31 @@ window.CAREERS_ALL = [
       "commerce",
       "management",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "41-2022",
+      "baseYear": "2025",
+      "medianPay": 35560,
+      "medianPayHourly": 17.1,
+      "payP10": null,
+      "payP90": 30,
+      "numberOfJobs": 4271400,
+      "growthPct": 0,
+      "growthLabel": "Little or no change",
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "No formal educational credential",
+      "relatedExperience": "None",
+      "onTheJobTraining": null,
+      "workEnvironment": "Retail sales workers usually work in clean, well-lit stores. Most are employed full time. Schedules may vary, with evening and weekend work required in some jobs."
+    }
   },
   {
     "id": "ooh-288-roofers",
     "cat": "trades",
-    "catName": "Construction & Trades",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Roofers",
     "tagline": "Replace, repair, and install the roofs of buildings.",
@@ -47932,7 +53404,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $40K / ₹3-6 LPA · Mid: $55K / ₹9-15 LPA · Lead: $105K+ / ₹24 LPA+",
     "growth": "5% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "The Work Is Physical — Every job is a different room, a different fault, a different set of tools. Work in unstandardised physical spaces is the hardest thing for software to take over.",
     "overview": "Roofers replace, repair, and install the roofs of buildings, using a variety of materials, including shingles, bitumen, and metal.",
     "url": "https://www.bls.gov/ooh/construction-and-extraction/roofers.htm",
@@ -48041,7 +53513,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "166,900",
+    "openings": "12,000",
     "medianPay": 55440,
     "aiTag": "protected",
     "edu": "nodegree",
@@ -48052,12 +53524,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "47-2181",
+      "baseYear": "2025",
+      "medianPay": 55440,
+      "medianPayHourly": 26.65,
+      "payP10": 37460,
+      "payP90": 81720,
+      "numberOfJobs": 166900,
+      "growthPct": 5,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 8800,
+      "annualOpenings": 12000,
+      "entryEducation": "No formal educational credential",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Roofing work is physically demanding because it involves climbing, bending, kneeling, and heavy lifting. Roofers may work overtime in order to finish a particular job, especially during busy summer months."
+    }
   },
   {
     "id": "ooh-289-sales-engineers",
     "cat": "biz",
-    "catName": "Sales",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Sales Engineers",
     "tagline": "Sell business products or services, such as software or support, that require technical expertise.",
@@ -48166,7 +53657,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "51,600",
+    "openings": "3,800",
     "medianPay": 124900,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -48177,12 +53668,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "41-9031",
+      "baseYear": "2025",
+      "medianPay": 124900,
+      "medianPayHourly": 60.05,
+      "payP10": 73870,
+      "payP90": 195270,
+      "numberOfJobs": 51600,
+      "growthPct": 3,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 1400,
+      "annualOpenings": 3800,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Sales engineers typically work in an office setting and often travel to meet with customers. Most sales engineers work full time."
+    }
   },
   {
     "id": "ooh-290-sales-managers",
     "cat": "biz",
-    "catName": "Management",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Sales Managers",
     "tagline": "Plan, direct, or coordinate the delivery of a product or service to the customer.",
@@ -48190,7 +53700,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $107K / ₹11-20 LPA · Mid: $148K / ₹29-54 LPA · Lead: $282K+ / ₹81 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Sales managers plan, direct, or coordinate the delivery of a product or service to the customer. They set sales goals, analyze data, and develop training programs for organizations' sales representatives.",
     "url": "https://www.bls.gov/ooh/management/sales-managers.htm",
@@ -48299,7 +53809,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "650,100",
+    "openings": "47,300",
     "medianPay": 148270,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -48310,12 +53820,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "11-2022",
+      "baseYear": "2025",
+      "medianPay": 148270,
+      "medianPayHourly": 71.28,
+      "payP10": 73170,
+      "payP90": 290540,
+      "numberOfJobs": 650100,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 29000,
+      "annualOpenings": 47300,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "Less than 5 years",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Sales managers typically work in an office or retail setting. Most work full time, and some work more than 40 hours per week. They often are required to travel."
+    }
   },
   {
     "id": "ooh-291-school-and-career-counselors-and-advisors",
     "cat": "service",
-    "catName": "Community & Social Service",
+    "catName": "Human Care & Services",
     "icon": "🤝",
     "title": "School and Career Counselors and Advisors",
     "tagline": "Counselors help students develop academic and social skills.",
@@ -48437,7 +53966,7 @@ window.CAREERS_ALL = [
       "The New Social Worker Magazine"
     ],
     "growthYears": "2025–2035",
-    "openings": "389,500",
+    "openings": "27,800",
     "medianPay": 64330,
     "aiTag": "people",
     "edu": "master",
@@ -48449,12 +53978,31 @@ window.CAREERS_ALL = [
       "health",
       "science",
       "arts"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "21-1012",
+      "baseYear": "2025",
+      "medianPay": 64330,
+      "medianPayHourly": 30.93,
+      "payP10": 45020,
+      "payP90": 104770,
+      "numberOfJobs": 389500,
+      "growthPct": 3,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 11400,
+      "annualOpenings": 27800,
+      "entryEducation": "Master's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "School counselors work in public and private schools. Career counselors and advisors are employed primarily in colleges and universities but also work in career centers and private practice. Both types of counselors usually work full time."
+    }
   },
   {
     "id": "ooh-292-secretaries-and-administrative-assistants",
     "cat": "biz",
-    "catName": "Office & Admin",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Secretaries and Administrative Assistants",
     "tagline": "Do routine clerical and organizational tasks.",
@@ -48590,12 +54138,31 @@ window.CAREERS_ALL = [
       "commerce",
       "management",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "43-6000",
+      "baseYear": "2025",
+      "medianPay": 48310,
+      "medianPayHourly": 23.23,
+      "payP10": 35360,
+      "payP90": 77720,
+      "numberOfJobs": 3515600,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": null,
+      "onTheJobTraining": null,
+      "workEnvironment": "Although secretaries and administrative assistants work in nearly every industry, about half of all workers in the occupation are employed in healthcare; education; and professional, scientific, and technical services. Most work full time."
+    }
   },
   {
     "id": "ooh-293-securities-commodities-and-financial-services-sales-agents",
     "cat": "biz",
-    "catName": "Sales",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Securities, Commodities, and Financial Services Sales Agents",
     "tagline": "Connect buyers and sellers in financial markets.",
@@ -48726,12 +54293,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "41-3031",
+      "baseYear": "2025",
+      "medianPay": 78660,
+      "medianPayHourly": 37.82,
+      "payP10": 48040,
+      "payP90": 212880,
+      "numberOfJobs": 531000,
+      "growthPct": 1,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 7500,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Most securities, commodities, and financial services sales agents work full time, and some work more than 40 hours per week. They typically work in an office setting."
+    }
   },
   {
     "id": "ooh-294-security-guards-and-gambling-surveillance-officers",
     "cat": "law",
-    "catName": "Protective Service",
+    "catName": "Law & Public Safety",
     "icon": "⚖️",
     "title": "Security Guards and Gambling Surveillance Officers",
     "tagline": "Patrol and protect property from illegal activity.",
@@ -48862,12 +54448,31 @@ window.CAREERS_ALL = [
       "arts",
       "law",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "33-9030",
+      "baseYear": "2025",
+      "medianPay": 38050,
+      "medianPayHourly": 18.29,
+      "payP10": 32730,
+      "payP90": 61970,
+      "numberOfJobs": 1304000,
+      "growthPct": 1,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 11200,
+      "annualOpenings": null,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": null,
+      "onTheJobTraining": null,
+      "workEnvironment": "Security guards work in a variety of places, including industrial settings, retail stores, and office buildings. Gambling surveillance officers work mostly in casinos. Because many buildings and casinos are open 24 hours a day, security guards and officers often must work around the clock."
+    }
   },
   {
     "id": "ooh-295-semiconductor-processing-technicians",
     "cat": "trades",
-    "catName": "Production & Manufacturing",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Semiconductor Processing Technicians",
     "tagline": "Perform tasks in the manufacture of electronic semiconductors, commonly known as integrated circuits or microchips, that are used in cars, smartphones, and other everyday devices.",
@@ -48875,7 +54480,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $37K / ₹3-5 LPA · Mid: $51K / ₹8-14 LPA · Lead: $98K+ / ₹22 LPA+",
     "growth": "8% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "The Work Is Physical — Every job is a different room, a different fault, a different set of tools. Work in unstandardised physical spaces is the hardest thing for software to take over.",
     "overview": "Semiconductor processing technicians perform tasks in the manufacture of electronic semiconductors, commonly known as integrated circuits or microchips, that are used in cars, smartphones, and other everyday devices. Throughout production, these workers process silicon crystals into flat wafers, the primary material used in manufacturing semiconductors.",
     "url": "https://www.bls.gov/ooh/production/semiconductor-processing-technicians.htm",
@@ -48978,7 +54583,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "31,200",
+    "openings": "3,400",
     "medianPay": 51430,
     "aiTag": "protected",
     "edu": "nodegree",
@@ -48988,12 +54593,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "51-9141",
+      "baseYear": "2025",
+      "medianPay": 51430,
+      "medianPayHourly": 24.73,
+      "payP10": 37690,
+      "payP90": 82540,
+      "numberOfJobs": 31200,
+      "growthPct": 8,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 2600,
+      "annualOpenings": 3400,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Most semiconductor processing technicians are employed full time, primarily in manufacturing plants. They work in &ldquo;cleanrooms&rdquo; and must wear special garments over their clothing to keep the cleanroom free from contamination."
+    }
   },
   {
     "id": "ooh-296-set-and-exhibit-designers",
     "cat": "creative",
-    "catName": "Arts & Design",
+    "catName": "Creative Arts & Design",
     "icon": "🎨",
     "title": "Set and Exhibit Designers",
     "tagline": "Develop visual and tactile spaces for entertainment productions or for a variety of displays.",
@@ -49116,12 +54740,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "27-1027",
+      "baseYear": "2025",
+      "medianPay": 75240,
+      "medianPayHourly": 36.17,
+      "payP10": 41750,
+      "payP90": 135410,
+      "numberOfJobs": 31600,
+      "growthPct": 1,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 500,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Many set and exhibit designers are self-employed. They may move from one short-term, full-time job to another, working for a series of employers rather than only one. These workers may be hired on a per-project or contract basis."
+    }
   },
   {
     "id": "ooh-297-sheet-metal-workers",
     "cat": "trades",
-    "catName": "Construction & Trades",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Sheet Metal Workers",
     "tagline": "Fabricate or install products that are made from thin metal sheets.",
@@ -49238,7 +54881,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "131,100",
+    "openings": "9,800",
     "medianPay": 61800,
     "aiTag": "protected",
     "edu": "nodegree",
@@ -49250,12 +54893,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "47-2211",
+      "baseYear": "2025",
+      "medianPay": 61800,
+      "medianPayHourly": 29.71,
+      "payP10": 38630,
+      "payP90": 105650,
+      "numberOfJobs": 131100,
+      "growthPct": 3,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 3300,
+      "annualOpenings": 9800,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Apprenticeship",
+      "workEnvironment": "Sheet metal workers often lift heavy materials and stand for long periods of time. Those who install sheet metal must often bend, climb, and squat. Most work full time."
+    }
   },
   {
     "id": "ooh-298-skincare-specialists",
     "cat": "service",
-    "catName": "Personal Care & Service",
+    "catName": "Human Care & Services",
     "icon": "🤝",
     "title": "Skincare Specialists",
     "tagline": "Provide cleansing and other face and body treatments to enhance a person’s appearance.",
@@ -49263,7 +54925,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $33K / ₹3-5 LPA · Mid: $45K / ₹6-10 LPA · Lead: $86K+ / ₹16 LPA+",
     "growth": "9% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Presence Is The Job — Comfort, trust and physical care are the reason the role exists. Tools can monitor and remind, but they cannot sit with someone or speak for the family.",
     "overview": "Skincare specialists, also known as estheticians , provide cleansing and other face and body treatments to enhance a person's appearance.",
     "url": "https://www.bls.gov/ooh/personal-care-and-service/skincare-specialists.htm",
@@ -49371,7 +55033,7 @@ window.CAREERS_ALL = [
       "The New Social Worker Magazine"
     ],
     "growthYears": "2025–2035",
-    "openings": "104,200",
+    "openings": "14,200",
     "medianPay": 45330,
     "aiTag": "people",
     "edu": "diploma",
@@ -49386,12 +55048,31 @@ window.CAREERS_ALL = [
       "science",
       "arts",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "39-5094",
+      "baseYear": "2025",
+      "medianPay": 45330,
+      "medianPayHourly": 21.79,
+      "payP10": null,
+      "payP90": 39,
+      "numberOfJobs": 104200,
+      "growthPct": 9,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 9100,
+      "annualOpenings": 14200,
+      "entryEducation": "Postsecondary nondegree award",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Skincare specialists usually work in salons and beauty and health spas, and some are self-employed. Part-time work is common, and work schedules may vary and include evenings and weekends."
+    }
   },
   {
     "id": "ooh-299-small-engine-mechanics",
     "cat": "trades",
-    "catName": "Installation & Repair",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Small Engine Mechanics",
     "tagline": "Inspect, service, and repair motorized power equipment.",
@@ -49524,7 +55205,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "77,500",
+    "openings": "7,700",
     "medianPay": 49710,
     "aiTag": "protected",
     "edu": "master",
@@ -49535,12 +55216,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "49-3050",
+      "baseYear": "2025",
+      "medianPay": 49710,
+      "medianPayHourly": 23.9,
+      "payP10": 35360,
+      "payP90": 74460,
+      "numberOfJobs": 77500,
+      "growthPct": 3,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 2400,
+      "annualOpenings": 7700,
+      "entryEducation": null,
+      "relatedExperience": "None",
+      "onTheJobTraining": null,
+      "workEnvironment": "Small engine mechanics generally work in well-ventilated but noisy repair shops. They sometimes make onsite repair calls, which may require working in poor weather conditions. Although most work full time, seasonal workers often see their hours fluctuate. Workers frequently are busiest during the spring and summer, when equipment use is the highest."
+    }
   },
   {
     "id": "ooh-300-social-and-community-service-managers",
     "cat": "biz",
-    "catName": "Management",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Social and Community Service Managers",
     "tagline": "Coordinate and supervise programs and organizations that support public well-being.",
@@ -49548,7 +55248,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $58K / ₹6-11 LPA · Mid: $80K / ₹16-29 LPA · Lead: $153K+ / ₹44 LPA+",
     "growth": "7% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Social and community service managers coordinate and supervise programs and organizations that support public well-being. They direct workers who provide these services to the public.",
     "url": "https://www.bls.gov/ooh/management/social-and-community-service-managers.htm",
@@ -49658,7 +55358,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "231,000",
+    "openings": "18,500",
     "medianPay": 80390,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -49669,12 +55369,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "11-9151",
+      "baseYear": "2025",
+      "medianPay": 80390,
+      "medianPayHourly": 38.65,
+      "payP10": 53150,
+      "payP90": 132260,
+      "numberOfJobs": 231000,
+      "growthPct": 7,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 16600,
+      "annualOpenings": 18500,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "Less than 5 years",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Social and community service managers work for nonprofit organizations, for-profit social service companies, and government agencies. Most work full time."
+    }
   },
   {
     "id": "ooh-301-social-and-human-service-assistants",
     "cat": "service",
-    "catName": "Community & Social Service",
+    "catName": "Human Care & Services",
     "icon": "🤝",
     "title": "Social and Human Service Assistants",
     "tagline": "Provide client services in a variety of fields, such as psychology, rehabilitation, and social work.",
@@ -49682,7 +55401,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $33K / ₹3-5 LPA · Mid: $46K / ₹6-10 LPA · Lead: $87K+ / ₹16 LPA+",
     "growth": "7% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Presence Is The Job — Comfort, trust and physical care are the reason the role exists. Tools can monitor and remind, but they cannot sit with someone or speak for the family.",
     "overview": "Social and human service assistants provide client services, including support for families, in a wide variety of fields, such as psychology, rehabilitation, and social work. They assist other workers, such as social workers , and they help clients find benefits or community services.",
     "url": "https://www.bls.gov/ooh/community-and-social-service/social-and-human-service-assistants.htm",
@@ -49795,7 +55514,7 @@ window.CAREERS_ALL = [
       "The New Social Worker Magazine"
     ],
     "growthYears": "2025–2035",
-    "openings": "463,400",
+    "openings": "48,900",
     "medianPay": 45930,
     "aiTag": "people",
     "edu": "nodegree",
@@ -49808,12 +55527,31 @@ window.CAREERS_ALL = [
       "science",
       "arts",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "21-1093",
+      "baseYear": "2025",
+      "medianPay": 45930,
+      "medianPayHourly": 22.08,
+      "payP10": 34200,
+      "payP90": 63290,
+      "numberOfJobs": 463400,
+      "growthPct": 7,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 34200,
+      "annualOpenings": 48900,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Short-term on-the-job training",
+      "workEnvironment": "Many social and human service assistants work for nonprofit organizations, for-profit social service agencies, and state and local governments. Most work full time, and some work evenings and weekends."
+    }
   },
   {
     "id": "ooh-302-social-workers",
     "cat": "service",
-    "catName": "Community & Social Service",
+    "catName": "Human Care & Services",
     "icon": "🤝",
     "title": "Social Workers",
     "tagline": "Help people prevent and cope with problems in their everyday lives.",
@@ -49821,7 +55559,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $44K / ₹4-7 LPA · Mid: $62K / ₹8-14 LPA · Lead: $117K+ / ₹21 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Presence Is The Job — Comfort, trust and physical care are the reason the role exists. Tools can monitor and remind, but they cannot sit with someone or speak for the family.",
     "overview": "Social workers help individuals, groups, and families prevent and cope with problems in their everyday lives. Clinical social workers diagnose and treat mental, behavioral, and emotional problems.",
     "url": "https://www.bls.gov/ooh/community-and-social-service/social-workers.htm",
@@ -49956,7 +55694,7 @@ window.CAREERS_ALL = [
       "The New Social Worker Magazine"
     ],
     "growthYears": "2025–2035",
-    "openings": "816,100",
+    "openings": "69,100",
     "medianPay": 61780,
     "aiTag": "people",
     "edu": "doctorate",
@@ -49968,12 +55706,31 @@ window.CAREERS_ALL = [
       "health",
       "science",
       "arts"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "21-1020",
+      "baseYear": "2025",
+      "medianPay": 61780,
+      "medianPayHourly": 29.7,
+      "payP10": 42790,
+      "payP90": 100090,
+      "numberOfJobs": 816100,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 50400,
+      "annualOpenings": 69100,
+      "entryEducation": null,
+      "relatedExperience": "None",
+      "onTheJobTraining": null,
+      "workEnvironment": "Social workers are employed in a variety of settings, including child welfare and human service agencies, healthcare providers, and schools. Most work full time, and some work evenings, weekends, and holidays."
+    }
   },
   {
     "id": "ooh-303-sociologists",
     "cat": "service",
-    "catName": "Social Science & Research",
+    "catName": "Human Care & Services",
     "icon": "👥",
     "title": "Sociologists",
     "tagline": "Study human society, social behavior, cultural institutions, and community dynamics.",
@@ -49981,7 +55738,7 @@ window.CAREERS_ALL = [
     "stream": "Arts & Humanities",
     "salary": "Entry: $76K / ₹8-13 LPA · Mid: $106K / ₹18-31 LPA · Lead: $201K+ / ₹49 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "Social Theory & Fieldwork Synthesis — Statistical packages analyze census surveys, but designing ethnographic field studies, conducting deep participant interviews, and theorizing cultural shifts require human sociologists.",
     "overview": "Sociologists study society and social behavior by examining the groups, cultures, social institutions, and processes that develop when people interact and work together. They also may study specific groups, trace their origin and growth, and analyze the influence of group activities on individual members.",
     "url": "https://www.bls.gov/ooh/life-physical-and-social-science/sociologists.htm",
@@ -50085,7 +55842,7 @@ window.CAREERS_ALL = [
       "European Space Agency (ESA) Portals"
     ],
     "growthYears": "2025–2035",
-    "openings": "2,700",
+    "openings": "200",
     "medianPay": 106030,
     "aiTag": "automation",
     "edu": "master",
@@ -50097,12 +55854,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "arts",
       "science"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "19-3041",
+      "baseYear": "2025",
+      "medianPay": 106030,
+      "medianPayHourly": 50.98,
+      "payP10": 65160,
+      "payP90": 172550,
+      "numberOfJobs": 2700,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 100,
+      "annualOpenings": 200,
+      "entryEducation": "Master's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Sociologists usually work in an office setting, although they may work elsewhere when conducting research or presenting results. Most sociologists work full time."
+    }
   },
   {
     "id": "ooh-304-software-developers-quality-assurance-analysts-and-testers",
     "cat": "tech",
-    "catName": "Technology & IT",
+    "catName": "Technology & AI",
     "icon": "💻",
     "title": "Software Developers, Quality Assurance Analysts, and Testers",
     "tagline": "Developers design computer applications or programs.",
@@ -50110,7 +55886,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $97K / ₹10-16 LPA · Mid: $134K / ₹24-42 LPA · Lead: $255K+ / ₹65 LPA+",
     "growth": "10% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Tools Write More Of The Code — Copilots and agents draft, test and refactor code, which raises what a developer is expected to ship. Designing the system, reviewing what the machine produced, and owning failures still sit with a person.",
     "overview": "Software developers create the computer applications that allow users to do specific tasks and the underlying systems that run the devices or control networks. Software quality assurance analysts and testers design and execute software tests to identify problems and learn how the software works.",
     "url": "https://www.bls.gov/ooh/computer-and-information-technology/software-developers.htm",
@@ -50235,7 +56011,7 @@ window.CAREERS_ALL = [
       "O’Reilly Learning Platform"
     ],
     "growthYears": "2025–2035",
-    "openings": "1,905,400",
+    "openings": "106,100",
     "medianPay": 134040,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -50250,12 +56026,31 @@ window.CAREERS_ALL = [
       "computing",
       "science",
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "15-1252",
+      "baseYear": "2025",
+      "medianPay": 134040,
+      "medianPayHourly": 64.44,
+      "payP10": 82460,
+      "payP90": 214670,
+      "numberOfJobs": 1905400,
+      "growthPct": 10,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 185400,
+      "annualOpenings": 106100,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Many software developers, quality assurance analysts, and testers work in computer systems design and related services, in manufacturing, or for software publishers. They often work in offices and on teams with other software developers or quality assurance analysts and testers."
+    }
   },
   {
     "id": "ooh-305-solar-photovoltaic-installers",
     "cat": "trades",
-    "catName": "Construction & Trades",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Solar Photovoltaic Installers",
     "tagline": "Photovoltaic (PV) installers assemble, set up, and maintain rooftop or other systems that convert sunlight into energy.",
@@ -50263,7 +56058,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $38K / ₹3-5 LPA · Mid: $53K / ₹8-14 LPA · Lead: $101K+ / ₹23 LPA+",
     "growth": "37% (Much faster than average)",
-    "demand": "Extreme",
+    "demand": "Very High",
     "aiImpact": "The Work Is Physical — Every job is a different room, a different fault, a different set of tools. Work in unstandardised physical spaces is the hardest thing for software to take over.",
     "overview": "Solar photovoltaic (PV) installers, also known as PV installers , assemble, set up, and maintain rooftop or other systems that convert sunlight into energy.",
     "url": "https://www.bls.gov/ooh/construction-and-extraction/solar-photovoltaic-installers.htm",
@@ -50364,7 +56159,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "31,100",
+    "openings": "4,200",
     "medianPay": 53140,
     "aiTag": "protected",
     "edu": "nodegree",
@@ -50375,12 +56170,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "47-2231",
+      "baseYear": "2025",
+      "medianPay": 53140,
+      "medianPayHourly": 25.55,
+      "payP10": 41600,
+      "payP90": 79970,
+      "numberOfJobs": 31100,
+      "growthPct": 37,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 11300,
+      "annualOpenings": 4200,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Most solar panel installations are done outdoors, but PV installers sometimes work in attics and crawl spaces to connect panels to the electrical grid. Installers also must travel to jobsites."
+    }
   },
   {
     "id": "ooh-306-special-education-teachers",
     "cat": "edu",
-    "catName": "Education & Library",
+    "catName": "Education & Academia",
     "icon": "🎓",
     "title": "Special Education Teachers",
     "tagline": "Work with students who have a wide range of learning, mental, emotional, and physical disabilities.",
@@ -50388,7 +56202,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $48K / ₹4-7 LPA · Mid: $67K / ₹9-16 LPA · Lead: $128K+ / ₹24 LPA+",
     "growth": "0% (Little or no change)",
-    "demand": "Steady",
+    "demand": "Declining",
     "aiImpact": "Lesson Plans Are Easy To Generate — Outlines, worksheets and quizzes take seconds to produce. Motivation, reading a room and holding a class together are not things software does.",
     "overview": "Special education teachers work with students who have learning, mental, emotional, or physical disabilities. They adapt general education lessons and teach various subjects to students with mild to moderate disabilities. They also teach basic skills to students with severe disabilities.",
     "url": "https://www.bls.gov/ooh/education-training-and-library/special-education-teachers.htm",
@@ -50500,7 +56314,7 @@ window.CAREERS_ALL = [
       "Educational Leadership Magazine (ASCD)",
       "Edutopia Learning Platform"
     ],
-    "growthYears": "",
+    "growthYears": "2025–2035",
     "openings": "584,100",
     "medianPay": 67170,
     "aiTag": "people",
@@ -50513,12 +56327,31 @@ window.CAREERS_ALL = [
       "education",
       "design",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "25-2050",
+      "baseYear": "2025",
+      "medianPay": 67170,
+      "medianPayHourly": null,
+      "payP10": 49230,
+      "payP90": 105020,
+      "numberOfJobs": 584100,
+      "growthPct": 0,
+      "growthLabel": "Little or no change",
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most special education teachers work in public schools, teaching students from preschool to high school. Many work the traditional 10-month school year, but some work year round."
+    }
   },
   {
     "id": "ooh-307-special-effects-artists-and-animators",
     "cat": "creative",
-    "catName": "Arts & Design",
+    "catName": "Creative Arts & Design",
     "icon": "🎨",
     "title": "Special Effects Artists and Animators",
     "tagline": "Create images that appear to move and visual effects for various forms of media and entertainment.",
@@ -50526,7 +56359,7 @@ window.CAREERS_ALL = [
     "stream": "Arts & Humanities",
     "salary": "Entry: $73K / ₹6-12 LPA · Mid: $102K / ₹16-29 LPA · Lead: $194K+ / ₹49 LPA+",
     "growth": "0% (Little or no change)",
-    "demand": "Steady",
+    "demand": "Declining",
     "aiImpact": "Options Are Cheap Now — Generative tools produce a hundred variations in minutes, so the value has moved to taste: knowing which one is right and why. Direction, briefs and client trust are the parts that hold up.",
     "overview": "Special effects artists and animators create two- and three-dimensional models, images that appear to move, and visual effects for television, movies, video games, and other forms of media.",
     "url": "https://www.bls.gov/ooh/arts-and-design/multimedia-artists-and-animators.htm",
@@ -50628,7 +56461,7 @@ window.CAREERS_ALL = [
       "Awwwards & Behance Portals",
       "Nielsen Norman Group UX Articles"
     ],
-    "growthYears": "",
+    "growthYears": "2025–2035",
     "openings": "51,900",
     "medianPay": 102030,
     "aiTag": "automation",
@@ -50640,12 +56473,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "27-1014",
+      "baseYear": "2025",
+      "medianPay": 102030,
+      "medianPayHourly": 49.06,
+      "payP10": 58600,
+      "payP90": 177110,
+      "numberOfJobs": 51900,
+      "growthPct": 0,
+      "growthLabel": "Little or no change",
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Many artists and animators work in offices; others work from home."
+    }
   },
   {
     "id": "ooh-308-speech-language-pathologists",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Speech-language Pathologists",
     "tagline": "Assess and treat people who have communication disorders.",
@@ -50653,7 +56505,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $70K / ₹7-10 LPA · Mid: $98K / ₹15-27 LPA · Lead: $186K+ / ₹43 LPA+",
     "growth": "17% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Diagnostics Are Assisted — Imaging, lab results and records are increasingly read by software first. Examination, procedures, consent and the conversation with the patient are not.",
     "overview": "Speech-language pathologists (sometimes called speech therapists ) assess and treat people who have speech, language, voice, and fluency disorders. They also treat clients who have problems swallowing.",
     "url": "https://www.bls.gov/ooh/healthcare/speech-language-pathologists.htm",
@@ -50763,7 +56615,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "193,400",
+    "openings": "12,500",
     "medianPay": 97870,
     "aiTag": "people",
     "edu": "master",
@@ -50774,12 +56626,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "health"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-1127",
+      "baseYear": "2025",
+      "medianPay": 97870,
+      "medianPayHourly": 47.05,
+      "payP10": 62900,
+      "payP90": 134160,
+      "numberOfJobs": 193400,
+      "growthPct": 17,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 32100,
+      "annualOpenings": 12500,
+      "entryEducation": "Master's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Internship/residency",
+      "workEnvironment": "Some speech-language pathologists work in schools. Others work in private practice or in hospitals or nursing and residential care facilities. Most speech-language pathologists are full time, but part-time work is common."
+    }
   },
   {
     "id": "ooh-309-stationary-engineers-and-boiler-operators",
     "cat": "trades",
-    "catName": "Production & Manufacturing",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Stationary Engineers and Boiler Operators",
     "tagline": "Control stationary engines, boilers, or other mechanical equipment.",
@@ -50892,7 +56763,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "31,200",
+    "openings": "3,200",
     "medianPay": 78620,
     "aiTag": "protected",
     "edu": "nodegree",
@@ -50902,12 +56773,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "51-8021",
+      "baseYear": "2025",
+      "medianPay": 78620,
+      "medianPayHourly": 37.8,
+      "payP10": 50590,
+      "payP90": 125390,
+      "numberOfJobs": 31200,
+      "growthPct": 3,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 1000,
+      "annualOpenings": 3200,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Long-term on-the-job training",
+      "workEnvironment": "The majority of stationary engineers and boiler operators work in manufacturing, government, educational services, and hospitals. Those who work in facilities that operate around the clock often work evenings and weekends. Shift work also is common."
+    }
   },
   {
     "id": "ooh-310-substance-abuse-behavioral-disorder-and-mental-health-counselors",
     "cat": "service",
-    "catName": "Community & Social Service",
+    "catName": "Human Care & Services",
     "icon": "🤝",
     "title": "Substance Abuse, Behavioral Disorder, and Mental Health Counselors",
     "tagline": "Advise people on a range of issues, such as those relating to alcoholism, addictions, or depression.",
@@ -50915,7 +56805,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $43K / ₹4-6 LPA · Mid: $59K / ₹8-13 LPA · Lead: $113K+ / ₹21 LPA+",
     "growth": "18% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Presence Is The Job — Comfort, trust and physical care are the reason the role exists. Tools can monitor and remind, but they cannot sit with someone or speak for the family.",
     "overview": "Substance abuse, behavioral disorder, and mental health counselors advise people on a range of issues, such as those relating to alcoholism, addictions, or depression. They provide support, including for prevention, to help clients recover from addiction, modify problem behaviors, or improve mental health.",
     "url": "https://www.bls.gov/ooh/community-and-social-service/substance-abuse-behavioral-disorder-and-mental-health-counselors.htm",
@@ -51029,7 +56919,7 @@ window.CAREERS_ALL = [
       "The New Social Worker Magazine"
     ],
     "growthYears": "2025–2035",
-    "openings": "533,400",
+    "openings": "50,500",
     "medianPay": 59350,
     "aiTag": "people",
     "edu": "master",
@@ -51041,12 +56931,31 @@ window.CAREERS_ALL = [
       "health",
       "science",
       "arts"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "21-1018",
+      "baseYear": "2025",
+      "medianPay": 59350,
+      "medianPayHourly": 28.53,
+      "payP10": 38940,
+      "payP90": 97590,
+      "numberOfJobs": 533400,
+      "growthPct": 18,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 98000,
+      "annualOpenings": 50500,
+      "entryEducation": "Master's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Internship/residency",
+      "workEnvironment": "Substance abuse, behavioral disorder, and mental health counselors work in a variety of settings, such as mental health centers, community health centers, and private practice. Most work full time, although part-time work is common."
+    }
   },
   {
     "id": "ooh-311-surgical-assistants-and-technologists",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🩺",
     "title": "Surgical Assistants and Technologists",
     "tagline": "Help with surgical operations.",
@@ -51054,7 +56963,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $47K / ₹4-6 LPA · Mid: $65K / ₹10-18 LPA · Lead: $123K+ / ₹29 LPA+",
     "growth": "5% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Direct Patient Care & Equipment Operation — Electronic charts log patient records, but physically positioning patients, applying sterile dressings, and calming nervous patients require compassionate hands-on care.",
     "overview": "Surgical assistants and technologists help with surgical operations. Surgical assistants, also called surgical first assistants , help surgeons with tasks such as making incisions, placing clamps, and closing surgical sites. Surgical technologists, also called operating room technicians , prepare operating rooms, arrange equipment, and help doctors and first assistants during surgeries.",
     "url": "https://www.bls.gov/ooh/healthcare/surgical-technologists.htm",
@@ -51168,7 +57077,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "142,800",
+    "openings": "8,600",
     "medianPay": 64700,
     "aiTag": "people",
     "edu": "diploma",
@@ -51179,12 +57088,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "health",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-9093",
+      "baseYear": "2025",
+      "medianPay": 64700,
+      "medianPayHourly": 31.1,
+      "payP10": 39690,
+      "payP90": 107610,
+      "numberOfJobs": 142800,
+      "growthPct": 5,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 7400,
+      "annualOpenings": 8600,
+      "entryEducation": "Postsecondary nondegree award",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most surgical assistants and technologists work in hospitals. They spend much of their time on their feet."
+    }
   },
   {
     "id": "ooh-312-surveying-and-mapping-technicians",
     "cat": "eng",
-    "catName": "Engineering",
+    "catName": "Engineering & Robotics",
     "icon": "⚙️",
     "title": "Surveying and Mapping Technicians",
     "tagline": "Collect data and make maps of the Earth&apos; surface.",
@@ -51192,7 +57120,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $39K / ₹4-6 LPA · Mid: $54K / ₹9-16 LPA · Lead: $103K+ / ₹25 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Software Explores The Options — Generative design and simulation run thousands of variants quickly. Choosing one, checking it against physics, safety rules and cost, and signing it off stays human.",
     "overview": "Surveying and mapping technicians collect data and make maps of the Earth's surface. They may calculate mapmaking information and create maps from surveying notes, satellite data, or other sources to show features such as topography and boundaries. They assist surveyors and cartographers and photogrammetrists .",
     "url": "https://www.bls.gov/ooh/architecture-and-engineering/surveying-and-mapping-technicians.htm",
@@ -51312,7 +57240,7 @@ window.CAREERS_ALL = [
       "National Society of Professional Engineers (NSPE)"
     ],
     "growthYears": "2025–2035",
-    "openings": "58,800",
+    "openings": "6,900",
     "medianPay": 54240,
     "aiTag": "automation",
     "edu": "nodegree",
@@ -51324,12 +57252,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "17-3031",
+      "baseYear": "2025",
+      "medianPay": 54240,
+      "medianPayHourly": 26.08,
+      "payP10": 37520,
+      "payP90": 81630,
+      "numberOfJobs": 58800,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 3400,
+      "annualOpenings": 6900,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Although they spend some time in an office setting, surveying and mapping technicians may work outdoors in all types of weather to conduct fieldwork. Most surveying and mapping technicians work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-313-surveyors",
     "cat": "eng",
-    "catName": "Engineering",
+    "catName": "Engineering & Robotics",
     "icon": "⚙️",
     "title": "Surveyors",
     "tagline": "Make precise measurements to determine property boundaries.",
@@ -51337,7 +57284,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $54K / ₹5-9 LPA · Mid: $75K / ₹13-22 LPA · Lead: $143K+ / ₹35 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Software Explores The Options — Generative design and simulation run thousands of variants quickly. Choosing one, checking it against physics, safety rules and cost, and signing it off stays human.",
     "overview": "Surveyors make precise measurements to determine property boundaries. They provide data relevant to features of the Earth's surface, such as shape and contour, for engineering, mapmaking, construction, and other purposes.",
     "url": "https://www.bls.gov/ooh/architecture-and-engineering/surveyors.htm",
@@ -51449,7 +57396,7 @@ window.CAREERS_ALL = [
       "National Society of Professional Engineers (NSPE)"
     ],
     "growthYears": "2025–2035",
-    "openings": "52,000",
+    "openings": "3,100",
     "medianPay": 75440,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -51460,12 +57407,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "engineering"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "17-1022",
+      "baseYear": "2025",
+      "medianPay": 75440,
+      "medianPayHourly": 36.27,
+      "payP10": 46880,
+      "payP90": 125590,
+      "numberOfJobs": 52000,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 3000,
+      "annualOpenings": 3100,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Internship/residency",
+      "workEnvironment": "Surveying involves both fieldwork and office work. When working outside, surveyors may stand for long periods and walk long distances, sometimes in bad weather. Most surveyors work full time."
+    }
   },
   {
     "id": "ooh-314-survey-researchers",
     "cat": "space",
-    "catName": "Science & Research",
+    "catName": "Aviation & Aerospace",
     "icon": "🔭",
     "title": "Survey Researchers",
     "tagline": "Design and conduct surveys and analyze data.",
@@ -51584,7 +57550,26 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "science"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "19-3022",
+      "baseYear": "2025",
+      "medianPay": 69460,
+      "medianPayHourly": 33.4,
+      "payP10": 39260,
+      "payP90": 130860,
+      "numberOfJobs": 9800,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "Master's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most survey researchers work in research firms, polling organizations, nonprofits, corporations, colleges and universities, and government agencies. The majority work full time during regular business hours."
+    }
   },
   {
     "id": "ooh-315-tax-examiners-and-collectors-and-revenue-agents",
@@ -51723,12 +57708,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "13-2081",
+      "baseYear": "2025",
+      "medianPay": 62370,
+      "medianPayHourly": 29.98,
+      "payP10": 42000,
+      "payP90": 114550,
+      "numberOfJobs": 60100,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Tax examiners and collectors, and revenue agents work for federal, state, and local governments. Many work primarily in an office setting; others spend most of their time doing field audits in taxpayers&rsquo; homes or places of business. Most tax examiners and collectors, and revenue agents work full time."
+    }
   },
   {
     "id": "ooh-316-taxi-drivers-shuttle-drivers-and-chauffeurs",
     "cat": "trades",
-    "catName": "Transportation",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Taxi Drivers, Shuttle Drivers, and Chauffeurs",
     "tagline": "Drivers (including ride-hailing drivers), shuttle drivers, and chauffeurs transport people to and from the places they need to go.",
@@ -51736,7 +57740,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $27K / ₹2-4 LPA · Mid: $38K / ₹6-10 LPA · Lead: $72K+ / ₹16 LPA+",
     "growth": "9% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Unstandardized Transit Navigation & Safety — GPS systems plot routes, but maneuvering tight intersections, managing adverse weather roads, and ensuring cargo or passenger safety require human vigilance.",
     "overview": "Taxi drivers (including ride-hailing drivers), shuttle drivers, and chauffeurs drive people to and from the places they need to go, such as homes, workplaces, airports, and shopping centers.",
     "url": "https://www.bls.gov/ooh/transportation-and-material-moving/taxi-drivers-and-chauffeurs.htm",
@@ -51847,7 +57851,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "455,700",
+    "openings": "55,900",
     "medianPay": 37960,
     "aiTag": "protected",
     "edu": "nodegree",
@@ -51861,12 +57865,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "53-3053",
+      "baseYear": "2025",
+      "medianPay": 37960,
+      "medianPayHourly": 18.25,
+      "payP10": 28090,
+      "payP90": 55070,
+      "numberOfJobs": 455700,
+      "growthPct": 9,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 41400,
+      "annualOpenings": 55900,
+      "entryEducation": "No formal educational credential",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Short-term on-the-job training",
+      "workEnvironment": "Some taxi drivers, shuttle drivers, and chauffeurs work part time. Work schedules vary and may include early mornings, evenings, or weekends."
+    }
   },
   {
     "id": "ooh-317-teacher-assistants",
     "cat": "edu",
-    "catName": "Education & Library",
+    "catName": "Education & Academia",
     "icon": "🎓",
     "title": "Teacher Assistants",
     "tagline": "Work with a licensed teacher to give students additional attention and instruction.",
@@ -51874,7 +57897,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $26K / ₹2-4 LPA · Mid: $37K / ₹5-8 LPA · Lead: $70K+ / ₹13 LPA+",
     "growth": "0% (Little or no change)",
-    "demand": "Steady",
+    "demand": "Declining",
     "aiImpact": "Lesson Plans Are Easy To Generate — Outlines, worksheets and quizzes take seconds to produce. Motivation, reading a room and holding a class together are not things software does.",
     "overview": "Teacher assistants work with a licensed teacher to give students additional attention and instruction.",
     "url": "https://www.bls.gov/ooh/education-training-and-library/teacher-assistants.htm",
@@ -52004,7 +58027,7 @@ window.CAREERS_ALL = [
       "Educational Leadership Magazine (ASCD)",
       "Edutopia Learning Platform"
     ],
-    "growthYears": "",
+    "growthYears": "2025–2035",
     "openings": "1,463,000",
     "medianPay": 36780,
     "aiTag": "people",
@@ -52017,12 +58040,31 @@ window.CAREERS_ALL = [
       "education",
       "design",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "25-9045",
+      "baseYear": "2025",
+      "medianPay": 36780,
+      "medianPayHourly": null,
+      "payP10": 27150,
+      "payP90": 50040,
+      "numberOfJobs": 1463000,
+      "growthPct": 0,
+      "growthLabel": "Little or no change",
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "Some college, no degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Teacher assistants typically work in schools, at childcare centers, and for religious organizations. Most work full time, although part-time work is common. They generally do not work during the summer."
+    }
   },
   {
     "id": "ooh-318-technical-writers",
     "cat": "creative",
-    "catName": "Media & Communication",
+    "catName": "Creative Arts & Design",
     "icon": "🎨",
     "title": "Technical Writers",
     "tagline": "Prepare instruction manuals, how-to guides, journal articles, and other supporting documents to communicate complex and technical information more easily.",
@@ -52148,12 +58190,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "27-3042",
+      "baseYear": "2025",
+      "medianPay": 90390,
+      "medianPayHourly": 43.46,
+      "payP10": 57440,
+      "payP90": 145270,
+      "numberOfJobs": 46400,
+      "growthPct": 1,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 400,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "Less than 5 years",
+      "onTheJobTraining": "Short-term on-the-job training",
+      "workEnvironment": "Most technical writers work full time. Although technical writers work in a variety of industries, they are concentrated in the computer and management, scientific, and technical industries."
+    }
   },
   {
     "id": "ooh-319-telecommunications-technicians",
     "cat": "trades",
-    "catName": "Installation & Repair",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Telecommunications Technicians",
     "tagline": "Install, maintain, and repair radio, internet, and other telecommunications infrastructure.",
@@ -52289,12 +58350,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "49-2021",
+      "baseYear": "2025",
+      "medianPay": 66200,
+      "medianPayHourly": 31.83,
+      "payP10": 44770,
+      "payP90": 100730,
+      "numberOfJobs": 257800,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": null,
+      "relatedExperience": "None",
+      "onTheJobTraining": null,
+      "workEnvironment": "Most telecommunications technicians work full time. They may have to work night or weekend shifts to maintain or repair telecommunications networks. Technicians travel frequently to installation and repair sites."
+    }
   },
   {
     "id": "ooh-320-tellers",
     "cat": "biz",
-    "catName": "Office & Admin",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Tellers",
     "tagline": "Process routine transactions, such as cashing checks and depositing money, at a bank or credit union.",
@@ -52426,12 +58506,31 @@ window.CAREERS_ALL = [
       "commerce",
       "management",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "43-3071",
+      "baseYear": "2025",
+      "medianPay": 43030,
+      "medianPayHourly": 20.69,
+      "payP10": 34360,
+      "payP90": 49680,
+      "numberOfJobs": 339200,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Short-term on-the-job training",
+      "workEnvironment": "Tellers usually work in branches of banks or credit unions. Most work full time."
+    }
   },
   {
     "id": "ooh-321-top-executives",
     "cat": "biz",
-    "catName": "Management",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Top Executives",
     "tagline": "Plan strategies and policies to ensure that an organization meets its goals.",
@@ -52439,7 +58538,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $78K / ₹8-15 LPA · Mid: $109K / ₹21-40 LPA · Lead: $207K+ / ₹59 LPA+",
     "growth": "5% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Top executives plan strategies and policies to ensure that an organization meets its goals. They coordinate and direct work activities of companies and organizations.",
     "url": "https://www.bls.gov/ooh/management/top-executives.htm",
@@ -52572,7 +58671,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "3,890,600",
+    "openings": "304,100",
     "medianPay": 108780,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -52583,12 +58682,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "11-1011",
+      "baseYear": "2025",
+      "medianPay": 108780,
+      "medianPayHourly": 52.3,
+      "payP10": 75700,
+      "payP90": 507730,
+      "numberOfJobs": 3890600,
+      "growthPct": 5,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 190600,
+      "annualOpenings": 304100,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "5 years or more",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Top executives work in nearly every industry, for both small and large organizations. They often have irregular schedules, which may include working evenings and weekends. Travel is common, particularly for chief executives."
+    }
   },
   {
     "id": "ooh-322-tour-and-travel-guides",
     "cat": "service",
-    "catName": "Personal Care & Service",
+    "catName": "Human Care & Services",
     "icon": "🤝",
     "title": "Tour and Travel Guides",
     "tagline": "Lead individuals or groups on excursions to various points of interest, including historical locations, museums, and monuments.",
@@ -52596,7 +58714,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $27K / ₹3-4 LPA · Mid: $38K / ₹5-9 LPA · Lead: $72K+ / ₹13 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Presence Is The Job — Comfort, trust and physical care are the reason the role exists. Tools can monitor and remind, but they cannot sit with someone or speak for the family.",
     "overview": "Tour and travel guides lead individuals or groups on excursions to various points of interest, including historical locations, museums, and monuments.",
     "url": "https://www.bls.gov/ooh/personal-care-and-service/tour-and-travel-guides.htm",
@@ -52707,7 +58825,7 @@ window.CAREERS_ALL = [
       "The New Social Worker Magazine"
     ],
     "growthYears": "2025–2035",
-    "openings": "62,200",
+    "openings": "11,900",
     "medianPay": 38120,
     "aiTag": "people",
     "edu": "nodegree",
@@ -52721,12 +58839,31 @@ window.CAREERS_ALL = [
       "science",
       "arts",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "39-7010",
+      "baseYear": "2025",
+      "medianPay": 38120,
+      "medianPayHourly": 18.33,
+      "payP10": 28520,
+      "payP90": 60930,
+      "numberOfJobs": 62200,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 3900,
+      "annualOpenings": 11900,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Tour and travel guides work in a variety of settings, both indoors and outdoors. They may spend long periods of time standing or walking. Part-time work is common. Work schedules may vary and can include weekends, evenings, and holidays."
+    }
   },
   {
     "id": "ooh-323-training-and-development-managers",
     "cat": "biz",
-    "catName": "Management",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Training and Development Managers",
     "tagline": "Plan, coordinate, and direct skills- and knowledge-enhancement programs for an organization’s staff.",
@@ -52734,7 +58871,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $96K / ₹10-18 LPA · Mid: $133K / ₹26-48 LPA · Lead: $253K+ / ₹73 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Training and development managers plan, coordinate, and direct skills- and knowledge-enhancement programs for an organization's staff.",
     "url": "https://www.bls.gov/ooh/management/training-and-development-managers.htm",
@@ -52837,7 +58974,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "50,200",
+    "openings": "4,100",
     "medianPay": 133000,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -52848,7 +58985,26 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "11-3131",
+      "baseYear": "2025",
+      "medianPay": 133000,
+      "medianPayHourly": 63.94,
+      "payP10": 79550,
+      "payP90": 233600,
+      "numberOfJobs": 50200,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 3200,
+      "annualOpenings": 4100,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "5 years or more",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Training and development managers work in nearly every industry. They typically work full time, spending much of their day with people. Some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-324-training-and-development-specialists",
@@ -52861,7 +59017,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $50K / ₹5-9 LPA · Mid: $69K / ₹13-25 LPA · Lead: $132K+ / ₹38 LPA+",
     "growth": "11% (Much faster than average)",
-    "demand": "Very High",
+    "demand": "High",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Training and development specialists plan and administer programs that train employees and improve their skills and knowledge.",
     "url": "https://www.bls.gov/ooh/business-and-financial/training-and-development-specialists.htm",
@@ -52971,7 +59127,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "472,500",
+    "openings": "46,000",
     "medianPay": 69280,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -52985,12 +59141,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "13-1151",
+      "baseYear": "2025",
+      "medianPay": 69280,
+      "medianPayHourly": 33.31,
+      "payP10": 38760,
+      "payP90": 123250,
+      "numberOfJobs": 472500,
+      "growthPct": 11,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 51100,
+      "annualOpenings": 46000,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "Less than 5 years",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Training and development specialists work in nearly every industry. They spend much of their time working with people, giving presentations, and leading training activities."
+    }
   },
   {
     "id": "ooh-325-transportation-storage-and-distribution-managers",
     "cat": "biz",
-    "catName": "Management",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Transportation, Storage, and Distribution Managers",
     "tagline": "Plan, direct, or coordinate the movement of people and goods.",
@@ -52998,7 +59173,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $77K / ₹8-14 LPA · Mid: $107K / ₹21-39 LPA · Lead: $204K+ / ₹58 LPA+",
     "growth": "6% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Transportation, storage, and distribution managers plan, direct, or coordinate transportation, storage, or distribution activities.",
     "url": "https://www.bls.gov/ooh/management/transportation-storage-and-distribution-managers.htm",
@@ -53110,7 +59285,7 @@ window.CAREERS_ALL = [
       "Wall Street Journal"
     ],
     "growthYears": "2025–2035",
-    "openings": "228,100",
+    "openings": "18,300",
     "medianPay": 107230,
     "aiTag": "automation",
     "edu": "nodegree",
@@ -53124,12 +59299,31 @@ window.CAREERS_ALL = [
       "commerce",
       "management",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "11-3071",
+      "baseYear": "2025",
+      "medianPay": 107230,
+      "medianPayHourly": 51.55,
+      "payP10": 65120,
+      "payP90": 194900,
+      "numberOfJobs": 228100,
+      "growthPct": 6,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 14000,
+      "annualOpenings": 18300,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "5 years or more",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most transportation, storage, and distribution managers work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-326-travel-agents",
     "cat": "biz",
-    "catName": "Sales",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Travel Agents",
     "tagline": "Sell transportation, lodging, and entertainment activities to individuals and groups planning trips.",
@@ -53137,7 +59331,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $36K / ₹4-7 LPA · Mid: $50K / ₹10-18 LPA · Lead: $95K+ / ₹27 LPA+",
     "growth": "0% (Little or no change)",
-    "demand": "Steady",
+    "demand": "Declining",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Travel agents sell transportation, lodging, and admission to entertainment activities to individuals and groups planning trips. They offer advice on destinations, plan trip itineraries, and make travel arrangements for clients.",
     "url": "https://www.bls.gov/ooh/sales/travel-agents.htm",
@@ -53245,7 +59439,7 @@ window.CAREERS_ALL = [
       "Financial Times",
       "Wall Street Journal"
     ],
-    "growthYears": "",
+    "growthYears": "2025–2035",
     "openings": "61,500",
     "medianPay": 50160,
     "aiTag": "automation",
@@ -53258,12 +59452,31 @@ window.CAREERS_ALL = [
       "commerce",
       "management",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "41-3041",
+      "baseYear": "2025",
+      "medianPay": 50160,
+      "medianPayHourly": 24.11,
+      "payP10": 34610,
+      "payP90": 76660,
+      "numberOfJobs": 61500,
+      "growthPct": 0,
+      "growthLabel": "Little or no change",
+      "growthYears": "2025–2035",
+      "employmentChange": 100,
+      "annualOpenings": null,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Travel agents typically spend much of their day sitting, working on the phone and on the computer. Most travel agents work for travel agencies; many are self-employed."
+    }
   },
   {
     "id": "ooh-327-tutors",
     "cat": "edu",
-    "catName": "Education & Library",
+    "catName": "Education & Academia",
     "icon": "🎓",
     "title": "Tutors",
     "tagline": "Instruct students individually or in small groups to support formal class instruction or improve academic performance.",
@@ -53271,7 +59484,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $31K / ₹3-4 LPA · Mid: $43K / ₹6-10 LPA · Lead: $82K+ / ₹16 LPA+",
     "growth": "0% (Little or no change)",
-    "demand": "Steady",
+    "demand": "Declining",
     "aiImpact": "Lesson Plans Are Easy To Generate — Outlines, worksheets and quizzes take seconds to produce. Motivation, reading a room and holding a class together are not things software does.",
     "overview": "Tutors instruct students individually or in small groups to support formal class instruction or improve academic performance. Some tutors prepare students for standardized or admissions tests.",
     "url": "https://www.bls.gov/ooh/education-training-and-library/tutors.htm",
@@ -53372,7 +59585,7 @@ window.CAREERS_ALL = [
       "Educational Leadership Magazine (ASCD)",
       "Edutopia Learning Platform"
     ],
-    "growthYears": "",
+    "growthYears": "2025–2035",
     "openings": "208,400",
     "medianPay": 43350,
     "aiTag": "people",
@@ -53385,12 +59598,31 @@ window.CAREERS_ALL = [
       "education",
       "design",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "25-3041",
+      "baseYear": "2025",
+      "medianPay": 43350,
+      "medianPayHourly": 20.84,
+      "payP10": 29430,
+      "payP90": 75990,
+      "numberOfJobs": 208400,
+      "growthPct": 0,
+      "growthLabel": "Little or no change",
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "Some college, no degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most tutors work part time, and their schedules may vary. For example, they may work evenings and weekends and may have more hours during the school year or leading up to standardized test dates."
+    }
   },
   {
     "id": "ooh-328-umpires-referees-and-other-sports-officials",
     "cat": "creative",
-    "catName": "Sports & Entertainment",
+    "catName": "Creative Arts & Design",
     "icon": "🎨",
     "title": "Umpires, Referees, and Other Sports Officials",
     "tagline": "Preside over competitive athletic or sporting events to help maintain standards of play.",
@@ -53398,7 +59630,7 @@ window.CAREERS_ALL = [
     "stream": "Arts & Humanities",
     "salary": "Entry: $29K / ₹2-5 LPA · Mid: $41K / ₹6-12 LPA · Lead: $77K+ / ₹19 LPA+",
     "growth": "5% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Options Are Cheap Now — Generative tools produce a hundred variations in minutes, so the value has moved to taste: knowing which one is right and why. Direction, briefs and client trust are the parts that hold up.",
     "overview": "Umpires, referees, and other sports officials preside over competitive athletic or sporting events to help maintain standards of play. They detect infractions and decide penalties according to the rules of the game.",
     "url": "https://www.bls.gov/ooh/entertainment-and-sports/umpires-referees-and-other-sports-officials.htm",
@@ -53511,7 +59743,7 @@ window.CAREERS_ALL = [
       "Nielsen Norman Group UX Articles"
     ],
     "growthYears": "2025–2035",
-    "openings": "18,200",
+    "openings": "4,300",
     "medianPay": 40710,
     "aiTag": "automation",
     "edu": "nodegree",
@@ -53523,12 +59755,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "design",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "27-2023",
+      "baseYear": "2025",
+      "medianPay": 40710,
+      "medianPayHourly": null,
+      "payP10": 26540,
+      "payP90": 82960,
+      "numberOfJobs": 18200,
+      "growthPct": 5,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 900,
+      "annualOpenings": 4300,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Part-time, seasonal work is common for umpires, referees, and other sports officials. Schedules may vary, and they often work irregular hours that including evenings, weekends, and holidays. Officials working outdoors are exposed to all types of weather conditions."
+    }
   },
   {
     "id": "ooh-329-urban-and-regional-planners",
     "cat": "space",
-    "catName": "Science & Research",
+    "catName": "Aviation & Aerospace",
     "icon": "🔭",
     "title": "Urban and Regional Planners",
     "tagline": "Develop comprehensive plans and programs for use of land and physical facilities in cities, counties, metropolitan areas, and other jurisdictions.",
@@ -53536,7 +59787,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $64K / ₹7-11 LPA · Mid: $89K / ₹15-26 LPA · Lead: $170K+ / ₹41 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "Models Read The Data First — Machine learning sifts through survey data, images and signals faster than any team. Framing the question, checking the result and deciding what it means is where people stay involved.",
     "overview": "Urban and regional planners develop comprehensive plans and programs for use of land and physical facilities in cities, counties, metropolitan areas, and other jurisdictions.",
     "url": "https://www.bls.gov/ooh/life-physical-and-social-science/urban-and-regional-planners.htm",
@@ -53638,7 +59889,7 @@ window.CAREERS_ALL = [
       "European Space Agency (ESA) Portals"
     ],
     "growthYears": "2025–2035",
-    "openings": "45,800",
+    "openings": "3,200",
     "medianPay": 89320,
     "aiTag": "automation",
     "edu": "master",
@@ -53650,12 +59901,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "science"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "19-3051",
+      "baseYear": "2025",
+      "medianPay": 89320,
+      "medianPayHourly": 42.94,
+      "payP10": 60010,
+      "payP90": 134490,
+      "numberOfJobs": 45800,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 1800,
+      "annualOpenings": 3200,
+      "entryEducation": "Master's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Urban and regional planners usually work in an office setting and may travel to visit proposed sites. Most work full time, and some work evenings or weekends to attend meetings."
+    }
   },
   {
     "id": "ooh-330-veterinarians",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🐾",
     "title": "Veterinarians",
     "tagline": "Care for the health of animals and work to protect public health.",
@@ -53663,7 +59933,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $94K / ₹8-14 LPA · Mid: $130K / ₹18-30 LPA · Lead: $247K+ / ₹55 LPA+",
     "growth": "9% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Diagnostics Are Assisted — Imaging, lab results and records are increasingly read by software first. Examination, procedures, consent and the conversation with the patient are not.",
     "overview": "Veterinarians care for the health of animals and work to protect public health. They diagnose, treat, and research medical conditions and diseases of pets, livestock, and other animals.",
     "url": "https://www.bls.gov/ooh/healthcare/veterinarians.htm",
@@ -53774,7 +60044,7 @@ window.CAREERS_ALL = [
       "Merck Veterinary Manual"
     ],
     "growthYears": "2025–2035",
-    "openings": "91,100",
+    "openings": "3,100",
     "medianPay": 130100,
     "aiTag": "people",
     "edu": "doctorate",
@@ -53784,12 +60054,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "health"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-1131",
+      "baseYear": "2025",
+      "medianPay": 130100,
+      "medianPayHourly": 62.55,
+      "payP10": 73920,
+      "payP90": 215700,
+      "numberOfJobs": 91100,
+      "growthPct": 9,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 8600,
+      "annualOpenings": 3100,
+      "entryEducation": "Doctoral or professional degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most veterinarians work in private clinics and hospitals. Others travel to farms or work in settings such as laboratories, classrooms, or zoos."
+    }
   },
   {
     "id": "ooh-331-veterinary-assistants-and-laboratory-animal-caretakers",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🐾",
     "title": "Veterinary Assistants and Laboratory Animal Caretakers",
     "tagline": "Handle routine animal care and help scientists, veterinarians, and others with their daily tasks.",
@@ -53797,7 +60086,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $27K / ₹3-4 LPA · Mid: $38K / ₹6-11 LPA · Lead: $72K+ / ₹17 LPA+",
     "growth": "9% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Direct Patient Care & Equipment Operation — Electronic charts log patient records, but physically positioning patients, applying sterile dressings, and calming nervous patients require compassionate hands-on care.",
     "overview": "Veterinary assistants and laboratory animal caretakers handle routine animal care and help scientists, veterinarians , and veterinary technologists and technicians with their daily tasks.",
     "url": "https://www.bls.gov/ooh/healthcare/veterinary-assistants-and-laboratory-animal-caretakers.htm",
@@ -53901,7 +60190,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "132,100",
+    "openings": "23,200",
     "medianPay": 38150,
     "aiTag": "people",
     "edu": "nodegree",
@@ -53913,12 +60202,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "health",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "31-9096",
+      "baseYear": "2025",
+      "medianPay": 38150,
+      "medianPayHourly": 18.34,
+      "payP10": 30120,
+      "payP90": 49150,
+      "numberOfJobs": 132100,
+      "growthPct": 9,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 12000,
+      "annualOpenings": 23200,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Short-term on-the-job training",
+      "workEnvironment": "Veterinary assistants and laboratory animal caretakers work mainly in clinics, animal hospitals, and research laboratories. Their work may be physically and emotionally demanding."
+    }
   },
   {
     "id": "ooh-332-veterinary-technologists-and-technicians",
     "cat": "health",
-    "catName": "Healthcare",
+    "catName": "Healthcare & Medicine",
     "icon": "🐾",
     "title": "Veterinary Technologists and Technicians",
     "tagline": "Do medical tests that help diagnose animals’ injuries and illnesses.",
@@ -53926,7 +60234,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCB / Bio)",
     "salary": "Entry: $34K / ₹3-5 LPA · Mid: $47K / ₹7-13 LPA · Lead: $90K+ / ₹21 LPA+",
     "growth": "9% (Much faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Direct Patient Care & Equipment Operation — Electronic charts log patient records, but physically positioning patients, applying sterile dressings, and calming nervous patients require compassionate hands-on care.",
     "overview": "Veterinary technologists and technicians, supervised by licensed veterinarians , do medical tests that help diagnose animals' injuries and illnesses.",
     "url": "https://www.bls.gov/ooh/healthcare/veterinary-technologists-and-technicians.htm",
@@ -54047,7 +60355,7 @@ window.CAREERS_ALL = [
       "UpToDate Clinical Knowledge Base"
     ],
     "growthYears": "2025–2035",
-    "openings": "131,400",
+    "openings": "13,400",
     "medianPay": 47380,
     "aiTag": "people",
     "edu": "diploma",
@@ -54059,12 +60367,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "health",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "29-2056",
+      "baseYear": "2025",
+      "medianPay": 47380,
+      "medianPayHourly": 22.78,
+      "payP10": 35710,
+      "payP90": 63180,
+      "numberOfJobs": 131400,
+      "growthPct": 9,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 12300,
+      "annualOpenings": 13400,
+      "entryEducation": "Associate's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Veterinary technologists and technicians work in private clinics, laboratories, and animal hospitals. Their jobs may be physically or emotionally demanding. Many work evenings, weekends, or holidays."
+    }
   },
   {
     "id": "ooh-333-waiters-and-waitresses",
     "cat": "service",
-    "catName": "Food Service",
+    "catName": "Human Care & Services",
     "icon": "🤝",
     "title": "Waiters and Waitresses",
     "tagline": "Take orders and serve food and beverages to customers in dining establishments.",
@@ -54188,12 +60515,31 @@ window.CAREERS_ALL = [
       "science",
       "arts",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "35-3031",
+      "baseYear": "2025",
+      "medianPay": 35230,
+      "medianPayHourly": 16.94,
+      "payP10": null,
+      "payP90": null,
+      "numberOfJobs": 2284400,
+      "growthPct": 2,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 46500,
+      "annualOpenings": null,
+      "entryEducation": "No formal educational credential",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Short-term on-the-job training",
+      "workEnvironment": "Waiters and waitresses work in restaurants, bars, hotels, and other food-serving and drinking establishments. Part-time work is common, and schedules may vary to include early mornings, late evenings, weekends, and holidays."
+    }
   },
   {
     "id": "ooh-334-water-and-wastewater-treatment-plant-and-system-operators",
     "cat": "trades",
-    "catName": "Production & Manufacturing",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Water and Wastewater Treatment Plant and System Operators",
     "tagline": "Manage a system of machines to transfer or treat water or wastewater.",
@@ -54319,12 +60665,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "51-8031",
+      "baseYear": "2025",
+      "medianPay": 60020,
+      "medianPayHourly": 28.86,
+      "payP10": 39110,
+      "payP90": 91060,
+      "numberOfJobs": 131000,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Long-term on-the-job training",
+      "workEnvironment": "Most water and wastewater treatment plant and system operators are employed by local government. They typically work full time. Rotating shifts, including days, nights, and weekends, are common."
+    }
   },
   {
     "id": "ooh-335-water-transportation-workers",
     "cat": "trades",
-    "catName": "Transportation & Logistics",
+    "catName": "Skilled Trades & Craft",
     "icon": "🚢",
     "title": "Water Transportation Workers",
     "tagline": "Navigate container ships, tugboats, ferries, and barges across coastal and inland waters.",
@@ -54332,7 +60697,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $52K / ₹4-7 LPA · Mid: $72K / ₹11-20 LPA · Lead: $137K+ / ₹31 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "Maritime Seamanship & Vessel Maneuvering — Electronic chart displays (ECDIS) guide open-ocean routes, but docking in heavy tidal currents, managing rough ocean swells, line handling, and onboard damage control require experienced mariners.",
     "overview": "Water transportation workers operate and maintain vessels that take cargo and people over water. The vessels travel to and from foreign ports across the ocean and to domestic ports along the coasts, across the Great Lakes, and along the country's many inland waterways.",
     "url": "https://www.bls.gov/ooh/transportation-and-material-moving/water-transportation-occupations.htm",
@@ -54479,7 +60844,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "85,900",
+    "openings": "8,600",
     "medianPay": 71860,
     "aiTag": "protected",
     "edu": "master",
@@ -54490,12 +60855,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "vocational",
       "any"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "53-5000",
+      "baseYear": "2025",
+      "medianPay": 71860,
+      "medianPayHourly": 34.55,
+      "payP10": 37810,
+      "payP90": 145560,
+      "numberOfJobs": 85900,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 3100,
+      "annualOpenings": 8600,
+      "entryEducation": null,
+      "relatedExperience": null,
+      "onTheJobTraining": null,
+      "workEnvironment": "Most water transportation workers are full time, and many work more than 40 hours per week. Schedules vary and may require workers to spend long periods away from home. These workers may be exposed to all kinds of weather."
+    }
   },
   {
     "id": "ooh-336-web-developers-and-digital-designers",
     "cat": "tech",
-    "catName": "Technology & IT",
+    "catName": "Technology & AI",
     "icon": "💻",
     "title": "Web Developers and Digital Designers",
     "tagline": "Web developers design and create websites.",
@@ -54503,7 +60887,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $72K / ₹7-12 LPA · Mid: $100K / ₹18-31 LPA · Lead: $189K+ / ₹48 LPA+",
     "growth": "5% (Faster than average)",
-    "demand": "High",
+    "demand": "Moderate",
     "aiImpact": "Tools Write More Of The Code — Copilots and agents draft, test and refactor code, which raises what a developer is expected to ship. Designing the system, reviewing what the machine produced, and owning failures still sit with a person.",
     "overview": "Web developers create and maintain websites. They are also responsible for the site's technical aspects, such as its performance and capacity, which are measures of a website's speed and how much traffic the site can handle. In addition, web developers may create content for the site. Digital designers develop, create, and test website or interface layout, functions, and navigation for usability. They are responsible for the look and functionality of the website or interface.",
     "url": "https://www.bls.gov/ooh/computer-and-information-technology/web-developers.htm",
@@ -54613,7 +60997,7 @@ window.CAREERS_ALL = [
       "O’Reilly Learning Platform"
     ],
     "growthYears": "2025–2035",
-    "openings": "220,100",
+    "openings": "13,600",
     "medianPay": 99520,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -54628,12 +61012,31 @@ window.CAREERS_ALL = [
       "computing",
       "science",
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "15-1254",
+      "baseYear": "2025",
+      "medianPay": 99520,
+      "medianPayHourly": 47.85,
+      "payP10": 53750,
+      "payP90": 201550,
+      "numberOfJobs": 220100,
+      "growthPct": 5,
+      "growthLabel": "Faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 11300,
+      "annualOpenings": 13600,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Some web developers and digital designers work in the computer systems design and related services industry. Others are self-employed. Still others work in industries including publishing, management consulting, and advertising."
+    }
   },
   {
     "id": "ooh-337-welders-cutters-solderers-and-brazers",
     "cat": "trades",
-    "catName": "Production & Manufacturing",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Welders, Cutters, Solderers, and Brazers",
     "tagline": "Use hand-held or remotely controlled equipment to join, repair, or cut metal parts and products.",
@@ -54761,12 +61164,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "51-4121",
+      "baseYear": "2025",
+      "medianPay": 53750,
+      "medianPayHourly": 25.84,
+      "payP10": 39240,
+      "payP90": 77530,
+      "numberOfJobs": 437700,
+      "growthPct": 2,
+      "growthLabel": "Slower than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 10300,
+      "annualOpenings": null,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Welders, cutters, solderers, and brazers may work outdoors in all types of weather, or they may work indoors, sometimes in a confined area. Most work full time, and some work more than 40 hours per week."
+    }
   },
   {
     "id": "ooh-338-wholesale-and-manufacturing-sales-representatives",
     "cat": "biz",
-    "catName": "Sales",
+    "catName": "Business & Finance",
     "icon": "📊",
     "title": "Wholesale and Manufacturing Sales Representatives",
     "tagline": "Sell goods for wholesalers or manufacturers to businesses, government agencies, and other organizations.",
@@ -54774,7 +61196,7 @@ window.CAREERS_ALL = [
     "stream": "Commerce & Math",
     "salary": "Entry: $55K / ₹6-10 LPA · Mid: $76K / ₹15-28 LPA · Lead: $145K+ / ₹42 LPA+",
     "growth": "0% (Little or no change)",
-    "demand": "Steady",
+    "demand": "Declining",
     "aiImpact": "Routine Drafting Is Automated — Spreadsheets, standard reports and first drafts are already generated by software. What clients still pay for is judgement: reading a situation, deciding what matters, and standing behind the answer.",
     "overview": "Wholesale and manufacturing sales representatives sell goods for wholesalers or manufacturers to businesses, government agencies, and other organizations. They contact customers, explain the features of the products they are selling, negotiate prices, and answer any questions that their customers may have about the products.",
     "url": "https://www.bls.gov/ooh/sales/wholesale-and-manufacturing-sales-representatives.htm",
@@ -54889,7 +61311,7 @@ window.CAREERS_ALL = [
       "Financial Times",
       "Wall Street Journal"
     ],
-    "growthYears": "",
+    "growthYears": "2025–2035",
     "openings": "1,571,400",
     "medianPay": 76460,
     "aiTag": "automation",
@@ -54902,12 +61324,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "commerce",
       "management"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "41-4000",
+      "baseYear": "2025",
+      "medianPay": 76460,
+      "medianPayHourly": 36.76,
+      "payP10": 39090,
+      "payP90": 137550,
+      "numberOfJobs": 1571400,
+      "growthPct": 0,
+      "growthLabel": "Little or no change",
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": null,
+      "relatedExperience": "None",
+      "onTheJobTraining": "Moderate-term on-the-job training",
+      "workEnvironment": "Wholesale and manufacturing sales representatives work under pressure because their income and job security depend on the amount of merchandise they sell. Some sales representatives travel frequently."
+    }
   },
   {
     "id": "ooh-339-wind-turbine-technicians",
     "cat": "trades",
-    "catName": "Installation & Repair",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Wind Turbine Technicians",
     "tagline": "Turbine service technicians maintain and repair wind turbines.",
@@ -54915,7 +61356,7 @@ window.CAREERS_ALL = [
     "stream": "Any Stream",
     "salary": "Entry: $46K / ₹4-7 LPA · Mid: $64K / ₹10-17 LPA · Lead: $122K+ / ₹28 LPA+",
     "growth": "30% (Much faster than average)",
-    "demand": "Extreme",
+    "demand": "Very High",
     "aiImpact": "The Work Is Physical — Every job is a different room, a different fault, a different set of tools. Work in unstandardised physical spaces is the hardest thing for software to take over.",
     "overview": "Wind turbine service technicians, also known as windtechs , maintain and repair wind turbines.",
     "url": "https://www.bls.gov/ooh/installation-maintenance-and-repair/wind-turbine-technicians.htm",
@@ -55016,7 +61457,7 @@ window.CAREERS_ALL = [
       "National Center for Construction Education and Research (NCCER)"
     ],
     "growthYears": "2025–2035",
-    "openings": "11,800",
+    "openings": "1,500",
     "medianPay": 64120,
     "aiTag": "protected",
     "edu": "diploma",
@@ -55028,12 +61469,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "49-9081",
+      "baseYear": "2025",
+      "medianPay": 64120,
+      "medianPayHourly": 30.83,
+      "payP10": 49230,
+      "payP90": 92460,
+      "numberOfJobs": 11800,
+      "growthPct": 30,
+      "growthLabel": "Much faster than average",
+      "growthYears": "2025–2035",
+      "employmentChange": 3500,
+      "annualOpenings": 1500,
+      "entryEducation": "Postsecondary nondegree award",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Long-term on-the-job training",
+      "workEnvironment": "Wind turbine service technicians generally work outdoors, in confined spaces, and often at great heights. Most windtechs work full time, and they also may be on call in the evening or on weekends."
+    }
   },
   {
     "id": "ooh-340-woodworkers",
     "cat": "trades",
-    "catName": "Production & Manufacturing",
+    "catName": "Skilled Trades & Craft",
     "icon": "🛠️",
     "title": "Woodworkers",
     "tagline": "Manufacture a variety of products, such as cabinets and furniture, using wood, veneers, and laminates.",
@@ -55184,12 +61644,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "vocational"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "51-7011",
+      "baseYear": "2025",
+      "medianPay": 45310,
+      "medianPayHourly": 21.79,
+      "payP10": 33280,
+      "payP90": 60240,
+      "numberOfJobs": 199900,
+      "growthPct": null,
+      "growthLabel": null,
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "High school diploma or equivalent",
+      "relatedExperience": "None",
+      "onTheJobTraining": null,
+      "workEnvironment": "Most woodworkers are employed in manufacturing industries. Although their working conditions vary, woodworkers may encounter machinery noise and wood dust."
+    }
   },
   {
     "id": "ooh-341-writers-and-authors",
     "cat": "creative",
-    "catName": "Media & Communication",
+    "catName": "Creative Arts & Design",
     "icon": "🎨",
     "title": "Writers and Authors",
     "tagline": "Develop written content for various types of media.",
@@ -55197,7 +61676,7 @@ window.CAREERS_ALL = [
     "stream": "Arts & Humanities",
     "salary": "Entry: $55K / ₹4-9 LPA · Mid: $77K / ₹12-22 LPA · Lead: $146K+ / ₹37 LPA+",
     "growth": "0% (Little or no change)",
-    "demand": "Steady",
+    "demand": "Declining",
     "aiImpact": "Options Are Cheap Now — Generative tools produce a hundred variations in minutes, so the value has moved to taste: knowing which one is right and why. Direction, briefs and client trust are the parts that hold up.",
     "overview": "Writers and authors develop content for various types of media, including advertisements; blogs; books; magazines; and movie, play, and television scripts.",
     "url": "https://www.bls.gov/ooh/media-and-communication/writers-and-authors.htm",
@@ -55315,7 +61794,7 @@ window.CAREERS_ALL = [
       "Awwwards & Behance Portals",
       "Nielsen Norman Group UX Articles"
     ],
-    "growthYears": "",
+    "growthYears": "2025–2035",
     "openings": "140,300",
     "medianPay": 76910,
     "aiTag": "automation",
@@ -55328,12 +61807,31 @@ window.CAREERS_ALL = [
     ],
     "degrees": [
       "design"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "27-3043",
+      "baseYear": "2025",
+      "medianPay": 76910,
+      "medianPayHourly": 36.98,
+      "payP10": 44310,
+      "payP90": 139870,
+      "numberOfJobs": 140300,
+      "growthPct": 0,
+      "growthLabel": "Little or no change",
+      "growthYears": "2025–2035",
+      "employmentChange": null,
+      "annualOpenings": null,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "Long-term on-the-job training",
+      "workEnvironment": "Writers and authors may work anywhere they have access to a computer. Many writers and authors are self-employed."
+    }
   },
   {
     "id": "ooh-342-zoologists-and-wildlife-biologists",
     "cat": "space",
-    "catName": "Science & Research",
+    "catName": "Aviation & Aerospace",
     "icon": "🔭",
     "title": "Zoologists and Wildlife Biologists",
     "tagline": "Study animals, those both in captivity and in the wild, and how they interact with their ecosystems.",
@@ -55341,7 +61839,7 @@ window.CAREERS_ALL = [
     "stream": "Science (PCM / Math)",
     "salary": "Entry: $55K / ₹6-9 LPA · Mid: $77K / ₹13-22 LPA · Lead: $146K+ / ₹35 LPA+",
     "growth": "4% (As fast as average)",
-    "demand": "Steady",
+    "demand": "Moderate",
     "aiImpact": "Models Read The Data First — Machine learning sifts through survey data, images and signals faster than any team. Framing the question, checking the result and deciding what it means is where people stay involved.",
     "overview": "Zoologists and wildlife biologists study animals, those both in captivity and in the wild, and how they interact with their ecosystems. They focus primarily on undomesticated animals and their behavior, as well as on the impact humans have on wildlife and natural habitats.",
     "url": "https://www.bls.gov/ooh/life-physical-and-social-science/zoologists-and-wildlife-biologists.htm",
@@ -55454,7 +61952,7 @@ window.CAREERS_ALL = [
       "European Space Agency (ESA) Portals"
     ],
     "growthYears": "2025–2035",
-    "openings": "19,500",
+    "openings": "1,400",
     "medianPay": 76780,
     "aiTag": "automation",
     "edu": "bachelor",
@@ -55465,12 +61963,31 @@ window.CAREERS_ALL = [
     "degrees": [
       "engineering",
       "science"
-    ]
+    ],
+    "bls": {
+      "source": "U.S. Bureau of Labor Statistics, Occupational Outlook Handbook",
+      "socCode": "19-1023",
+      "baseYear": "2025",
+      "medianPay": 76780,
+      "medianPayHourly": 36.91,
+      "payP10": 49100,
+      "payP90": 126440,
+      "numberOfJobs": 19500,
+      "growthPct": 4,
+      "growthLabel": "As fast as average",
+      "growthYears": "2025–2035",
+      "employmentChange": 700,
+      "annualOpenings": 1400,
+      "entryEducation": "Bachelor's degree",
+      "relatedExperience": "None",
+      "onTheJobTraining": "None",
+      "workEnvironment": "Most zoologists and wildlife biologists work full time. Zoologists and wildlife biologists work in a variety of settings, including offices and laboratories. Depending on their job, they also may spend time outdoors, gathering data and studying animals in their natural habitats."
+    }
   },
   {
     "id": "x-content-creator",
     "cat": "creative",
-    "catName": "Media & Communication",
+    "catName": "Creative Arts & Design",
     "icon": "📹",
     "title": "Content Creator & YouTuber",
     "tagline": "Make things people choose to watch.",
@@ -55588,7 +62105,7 @@ window.CAREERS_ALL = [
   {
     "id": "x-podcast-producer",
     "cat": "creative",
-    "catName": "Media & Communication",
+    "catName": "Creative Arts & Design",
     "icon": "🎤",
     "title": "Podcast Producer & Audio Storytelling",
     "tagline": "Turn a conversation into something worth an hour.",
@@ -55703,7 +62220,7 @@ window.CAREERS_ALL = [
   {
     "id": "x-esports-streamer",
     "cat": "creative",
-    "catName": "Media & Communication",
+    "catName": "Creative Arts & Design",
     "icon": "🎮",
     "title": "Esports Athlete & Streamer",
     "tagline": "Play competitively, or play in public.",
@@ -55819,7 +62336,7 @@ window.CAREERS_ALL = [
   {
     "id": "x-voice-actor",
     "cat": "creative",
-    "catName": "Media & Communication",
+    "catName": "Creative Arts & Design",
     "icon": "🗣",
     "title": "Voice Actor & Dubbing Artist",
     "tagline": "Be a whole cast of people with one voice.",
@@ -55935,7 +62452,7 @@ window.CAREERS_ALL = [
   {
     "id": "x-sommelier",
     "cat": "service",
-    "catName": "Food & Culinary Arts",
+    "catName": "Human Care & Services",
     "icon": "🍷",
     "title": "Sommelier & Beverage Director",
     "tagline": "Know the bottle, and know the table.",
@@ -56050,7 +62567,7 @@ window.CAREERS_ALL = [
   {
     "id": "x-craft-brewer",
     "cat": "trades",
-    "catName": "Food & Craft Production",
+    "catName": "Skilled Trades & Craft",
     "icon": "🍺",
     "title": "Craft Brewer & Distiller",
     "tagline": "Biology, patience and a very clean floor.",
@@ -56168,7 +62685,7 @@ window.CAREERS_ALL = [
   {
     "id": "x-beekeeper",
     "cat": "eco",
-    "catName": "Agriculture & Outdoors",
+    "catName": "Sustainability & Energy",
     "icon": "🐝",
     "title": "Beekeeper & Apiary Manager",
     "tagline": "Keep forty thousand insects alive and working.",
@@ -56510,7 +63027,7 @@ window.CAREERS_ALL = [
   {
     "id": "x-park-ranger",
     "cat": "eco",
-    "catName": "Conservation & Outdoors",
+    "catName": "Sustainability & Energy",
     "icon": "🌳",
     "title": "Park Ranger & Conservation Officer",
     "tagline": "Protect the place, and the people in it.",
@@ -56741,7 +63258,7 @@ window.CAREERS_ALL = [
   {
     "id": "x-doula",
     "cat": "health",
-    "catName": "Healthcare & Wellness",
+    "catName": "Healthcare & Medicine",
     "icon": "👶",
     "title": "Doula & Birth Support Worker",
     "tagline": "Be the calm person in the room.",
@@ -57223,7 +63740,7 @@ window.CAREERS_ALL = [
   {
     "id": "game-designer",
     "cat": "creative",
-    "catName": "Creative & Design",
+    "catName": "Creative Arts & Design",
     "icon": "🎮",
     "title": "Video Game Designer & Gameplay Mechanics Lead",
     "tagline": "Architect interactive worlds, player motivation systems, and emergent game mechanics",
@@ -59536,7 +66053,7 @@ window.CAREERS_ALL = [
   {
     "id": "music-producer-sound",
     "cat": "creative",
-    "catName": "Creative & Design",
+    "catName": "Creative Arts & Design",
     "icon": "🎧",
     "title": "Music Producer, Audio Engineer & Sound Designer",
     "tagline": "Sculpt sonic landscapes, track multi-instrument recordings, and engineer immersive Dolby Atmos mixes",
@@ -59715,7 +66232,7 @@ window.CAREERS_ALL = [
   {
     "id": "space-mission-ops",
     "cat": "space",
-    "catName": "Aviation, Defense & Space",
+    "catName": "Aviation & Aerospace",
     "icon": "🛰️",
     "title": "Space Operations & Mission Control Flight Director",
     "tagline": "Direct orbital satellite constellations, deep-space telemetry links, and crewed spacecraft trajectory operations",

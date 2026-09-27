@@ -98,7 +98,64 @@
         --radius-sm: 12px;
         --radius-xs: 8px;
         --transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        /* Shared content width. The navbar, the filter bar and the card grid all
+           resolve to this, so their left and right edges stay aligned. */
+        --shell: 1360px;
+        --gutter: 20px;
+        /* Scrollbar, themed through the same tokens. */
+        --scroll-track: transparent;
+        --scroll-thumb: rgba(242, 184, 75, 0.28);
+        --scroll-thumb-hover: rgba(242, 184, 75, 0.5);
       }
+
+      /* The page itself scrolls on <html>, and the scrollbar pseudo-elements
+         resolve their tokens against <html>, not <body>. The .lm class lives on
+         <body>, so without this the light theme would keep the dark thumb. */
+      html:has(body.lm) {
+        --scroll-thumb: rgba(120, 90, 30, 0.26);
+        --scroll-thumb-hover: rgba(120, 90, 30, 0.45);
+      }
+
+      /* Custom scrollbar
+         Firefox takes scrollbar-width/scrollbar-color; WebKit needs the
+         pseudo-elements. Both read the tokens above, so the light theme only
+         has to override those values. */
+      html {
+        scrollbar-width: thin;
+        scrollbar-color: var(--scroll-thumb) var(--scroll-track);
+      }
+      body {
+        scrollbar-width: thin;
+        scrollbar-color: var(--scroll-thumb) var(--scroll-track);
+      }
+      ::-webkit-scrollbar { width: 11px; height: 11px; }
+      ::-webkit-scrollbar-track { background: var(--scroll-track); }
+      ::-webkit-scrollbar-corner { background: transparent; }
+      ::-webkit-scrollbar-thumb {
+        background: var(--scroll-thumb);
+        border: 3px solid transparent;
+        background-clip: content-box;
+        border-radius: 999px;
+      }
+      ::-webkit-scrollbar-thumb:hover { background: var(--scroll-thumb-hover); background-clip: content-box; }
+      /* Anything that scrolls internally inherits the same treatment. */
+      .modal-body, .compare-table-wrap, .dossier-doc-container {
+        scrollbar-width: thin;
+        scrollbar-color: var(--scroll-thumb) transparent;
+      }
+      .modal-body::-webkit-scrollbar,
+      .compare-table-wrap::-webkit-scrollbar { width: 10px; height: 10px; }
+      .modal-body::-webkit-scrollbar-track,
+      .compare-table-wrap::-webkit-scrollbar-track { background: transparent; }
+      .modal-body::-webkit-scrollbar-thumb,
+      .compare-table-wrap::-webkit-scrollbar-thumb {
+        background: var(--scroll-thumb);
+        border: 3px solid transparent;
+        background-clip: content-box;
+        border-radius: 999px;
+      }
+      .modal-body::-webkit-scrollbar-thumb:hover,
+      .compare-table-wrap::-webkit-scrollbar-thumb:hover { background: var(--scroll-thumb-hover); background-clip: content-box; }
 
       /* LIGHT MODE DESIGN SYSTEM */
       body.lm {
@@ -116,6 +173,9 @@
         --teal: #0a8c7a;
         --plasma: #6f4fe0;
         --em: #1b9d66;
+        --scroll-track: transparent;
+        --scroll-thumb: rgba(120, 90, 30, 0.26);
+        --scroll-thumb-hover: rgba(120, 90, 30, 0.45);
 
         --bg: #f3f2eb;
         --surface: rgba(255, 255, 255, 0.95);
@@ -137,23 +197,26 @@
       }
 
       body.lm .navbar {
-        background: rgba(243, 242, 235, 0.92);
-        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+        background: rgba(243, 242, 235, 0.8);
+        border-bottom-color: transparent;
+        box-shadow: none;
       }
       body.lm .navbar.scrolled {
-        background: rgba(243, 242, 235, 0.98);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        background: rgba(243, 242, 235, 0.96);
+        border-bottom-color: rgba(0, 0, 0, 0.08);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
       }
       body.lm .nav-btn {
-        background: rgba(0, 0, 0, 0.04);
-        border-color: rgba(0, 0, 0, 0.08);
-        color: #334155;
+        background: transparent;
+        border-color: transparent;
+        color: #475569;
       }
       body.lm .nav-btn:hover {
-        background: rgba(0, 0, 0, 0.08);
+        background: rgba(0, 0, 0, 0.05);
         color: #0f172a;
+        border-color: rgba(0, 0, 0, 0.08);
       }
+      body.lm .nav-btn svg { opacity: 0.7; }
       body.lm .nav-btn.primary {
         background: #b8720a;
         color: #ffffff;
@@ -330,83 +393,111 @@
       }
 
       /* Top Navbar */
+      /* Sticky, blurred, with a hairline that only appears once you scroll and
+         a reading-progress line along the bottom edge. The inner container
+         shares the page's content width so the brand lines up with the cards. */
       .navbar {
         position: sticky;
         top: 0;
         z-index: 100;
         width: 100%;
-        padding: 14px 24px;
-        border-bottom: 1px solid var(--glass-border);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        background: rgba(7, 10, 20, 0.88);
-        transition: var(--transition);
+        padding: 0;
+        border-bottom: 1px solid transparent;
+        backdrop-filter: blur(20px) saturate(140%);
+        -webkit-backdrop-filter: blur(20px) saturate(140%);
+        background: rgba(7, 10, 20, 0.72);
+        transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
       }
       .navbar.scrolled {
-        background: rgba(7, 10, 20, 0.98);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+        background: rgba(7, 10, 20, 0.94);
+        border-bottom-color: var(--glass-border);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+      }
+      /* Reading progress along the bottom edge of the bar. */
+      .navbar-progress {
+        position: absolute;
+        left: 0;
+        bottom: -1px;
+        height: 2px;
+        width: 0;
+        background: linear-gradient(90deg, var(--signal), #f7d9a0);
+        border-radius: 2px;
+        transition: width 0.1s linear;
+        pointer-events: none;
       }
       .navbar-inner {
-        max-width: 1240px;
+        max-width: var(--shell);
         margin: 0 auto;
         width: 100%;
+        padding: 0 20px;
+        min-height: 62px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        gap: 16px;
+        gap: 20px;
       }
       .nav-brand {
         display: flex;
         align-items: center;
         gap: 10px;
         font-weight: 800;
-        font-size: 20px;
-        letter-spacing: -0.5px;
+        font-size: 19px;
+        letter-spacing: -0.4px;
         color: var(--text);
         text-decoration: none;
         flex-shrink: 0;
+        transition: opacity 0.2s ease;
       }
+      .nav-brand:hover { opacity: 0.78; }
       .brand-dot {
-        width: 10px;
-        height: 10px;
+        width: 9px;
+        height: 9px;
         border-radius: 50%;
         background: var(--signal);
         box-shadow: 0 0 10px rgba(242, 184, 75, 0.6);
+        flex-shrink: 0;
       }
       .nav-actions {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
         flex-wrap: nowrap;
       }
+      /* Secondary actions sit quieter than the one primary action, so the bar
+         reads as a hierarchy instead of six buttons of equal weight. */
       .nav-btn {
-        padding: 8px 14px;
-        border-radius: var(--radius-sm);
+        padding: 8px 13px;
+        border-radius: 10px;
         font-size: 13px;
         font-weight: 600;
-        border: 1px solid var(--glass-border);
-        background: rgba(255, 255, 255, 0.04);
-        color: var(--text);
+        border: 1px solid transparent;
+        background: transparent;
+        color: var(--text-secondary);
         cursor: pointer;
-        transition: var(--transition);
+        transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
         display: inline-flex;
         align-items: center;
-        gap: 6px;
+        gap: 7px;
         text-decoration: none;
         white-space: nowrap;
       }
       .nav-btn:hover {
-        background: rgba(255, 255, 255, 0.08);
-        border-color: var(--glass-border-hover);
-        transform: translateY(-1px);
-        color: #ffffff;
+        background: rgba(255, 255, 255, 0.07);
+        color: var(--text);
+        border-color: var(--glass-border);
       }
+      .nav-btn:focus-visible {
+        outline: 2px solid var(--signal);
+        outline-offset: 2px;
+      }
+      .nav-btn svg { opacity: 0.75; flex-shrink: 0; }
+      .nav-btn:hover svg { opacity: 1; }
       .nav-btn.primary {
-        background: #f2b84b;
+        background: var(--signal);
         color: #070a14;
         font-weight: 700;
-        border: 1px solid #f2b84b;
-        box-shadow: 0 4px 15px rgba(242, 184, 75, 0.25);
+        border: 1px solid var(--signal);
+        box-shadow: 0 4px 15px rgba(242, 184, 75, 0.22);
       }
       .nav-btn.primary:hover {
         background: #e5a837;
@@ -429,10 +520,15 @@
         .nav-btn {
           padding: 8px 10px;
         }
+        /* The progress line tracks the scrollbar position, so let the thumb sit
+           closer to the edge on narrow screens. */
+        ::-webkit-scrollbar { width: 8px; }
       }
       @media (max-width: 640px) {
-        .navbar {
-          padding: 10px 14px;
+        .navbar-inner {
+          padding: 0 14px;
+          min-height: 56px;
+          gap: 10px;
         }
         .nav-brand {
           font-size: 17px;
@@ -474,7 +570,24 @@
         max-width: 720px; margin: 0 auto 44px;
       }
       .hero-actions {
-        display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-bottom: 40px;
+        display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; margin-bottom: 40px;
+      }
+      /* The nav bar's secondary buttons are borderless by design. The hero
+         actions are larger and need a visible edge of their own, otherwise the
+         secondary one reads as loose text. */
+      .hero-actions .nav-btn:not(.primary) {
+        border-color: var(--glass-border);
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--text-secondary);
+      }
+      .hero-actions .nav-btn:not(.primary):hover {
+        background: rgba(255, 255, 255, 0.07);
+        color: var(--text);
+        border-color: var(--glass-border-hover);
+      }
+      body.lm .hero-actions .nav-btn:not(.primary) {
+        background: rgba(255, 255, 255, 0.7);
+        border-color: rgba(0, 0, 0, 0.1);
       }
       /* Hero Minimal Metric Strip */
       .hero-metric-strip {
@@ -498,7 +611,7 @@
       @keyframes pulseDot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.85); } }
 
       /* Search & Controls Section */
-      .controls-section { max-width: 1240px; margin: 0 auto 96px; padding: 0 24px; width: 100%; box-sizing: border-box; }
+      .controls-section { max-width: var(--shell); margin: 0 auto 88px; padding: 0 var(--gutter); width: 100%; box-sizing: border-box; }
       .search-box-wrap {
         position: relative; margin-bottom: 24px;
       }
@@ -545,25 +658,42 @@
 
       /* Unified Filter Toolbar */
       .filters-toolbar {
-        display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px;
-        padding: 20px 22px; border-radius: 18px; background: #0c1224;
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px;
+        padding: 18px 20px; border-radius: 16px; background: var(--surface-card);
         border: 1px solid var(--glass-border); backdrop-filter: blur(16px); margin-bottom: 20px;
       }
-      .filter-select-wrap { display: flex; flex-direction: column; gap: 6px; }
+      .filter-select-wrap { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
       .filter-select-label {
-        font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px;
+        font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px;
         color: var(--text-dim); display: flex; align-items: center; gap: 6px;
       }
+      /* Native select, restyled as far as the platform allows: custom chevron,
+         real focus ring, and enough right padding that long option text never
+         runs under the arrow. */
       .styled-select {
-        width: 100%; padding: 11px 14px; border-radius: 10px; background: rgba(255, 255, 255, 0.04);
-        border: 1px solid var(--glass-border); color: var(--text); font-family: inherit; font-size: 13px;
-        font-weight: 600; outline: none; cursor: pointer; transition: var(--transition);
+        width: 100%; padding: 11px 34px 11px 13px; border-radius: 10px;
+        background-color: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--glass-border); color: var(--text);
+        font-family: inherit; font-size: 13px; font-weight: 600;
+        outline: none; cursor: pointer;
+        transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
         appearance: none; -webkit-appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(232,227,216,0.6)' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-        background-repeat: no-repeat; background-position: right 14px center; padding-right: 32px;
+        text-overflow: ellipsis;
+        background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(232,227,216,0.55)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat; background-position: right 12px center;
       }
-      .styled-select:focus, .styled-select:hover {
-        border-color: var(--primary); background-color: rgba(255, 255, 255, 0.08);
+      .styled-select:hover {
+        border-color: var(--glass-border-hover);
+        background-color: rgba(255, 255, 255, 0.07);
+      }
+      .styled-select:focus {
+        border-color: var(--signal);
+        background-color: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 0 0 3px rgba(242, 184, 75, 0.16);
+      }
+      .styled-select:focus-visible { outline: none; }
+      .styled-select option {
+        background: #0c1224; color: #e8e3d8;
       }
 
       /* Active Filters Tray & Count */
@@ -587,7 +717,7 @@
 
       /* Career Cards Grid */
       .career-grid {
-        display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 28px;
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px;
         margin-top: 20px;
       }
       .career-card {
@@ -722,7 +852,7 @@
       .modal-overlay.open { opacity: 1; pointer-events: auto; }
       .modal-card {
         background: #0c1224; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 24px;
-        width: 95%; max-width: 1240px; max-height: 90vh; display: flex; flex-direction: column;
+        width: 95%; max-width: var(--shell); max-height: 90vh; display: flex; flex-direction: column;
         overflow: hidden; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.95), 0 0 50px rgba(7, 10, 20, 0.6);
         transform: translateY(20px); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         z-index: 100001;
@@ -1115,6 +1245,37 @@
         from { opacity: 0; transform: translateY(6px); }
         to { opacity: 1; transform: translateY(0); }
       }
+
+      /* Sourced BLS figures */
+      .dossier-facts {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+        gap: 10px;
+      }
+      .dossier-fact {
+        padding: 12px 14px;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 10px;
+        min-width: 0;
+      }
+      .dossier-fact .fact-label {
+        font-size: 10.5px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--text-dim);
+        margin-bottom: 4px;
+      }
+      .dossier-fact .fact-value {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text);
+        line-height: 1.3;
+        overflow-wrap: anywhere;
+      }
+      body.lm .dossier-fact { background: #fbfaf6; border-color: rgba(0, 0, 0, 0.08); }
+      body.lm .dossier-fact .fact-value { color: #111827; }
 
       /* Day in the Life Timeline */
       .dossier-timeline {
@@ -1991,6 +2152,7 @@
     <div class="app">
       <!-- Top Navbar -->
       <nav class="navbar" id="navbar">
+        <div class="navbar-progress" id="navbarProgress" aria-hidden="true"></div>
         <div class="navbar-inner">
           <a href="/home" class="nav-brand" title="Return to Class Of Learners Home">
             <span class="brand-dot"></span>
@@ -3505,7 +3667,9 @@
         html += '<div class="dossier-hero-metric-card">';
         html += '<div class="label">10-Year Outlook</div>';
         html += '<div class="value" style="color:#f2b84b;">' + growthNum + '</div>';
-        html += '<div class="sub">' + demandText + ' (BLS 2024–2034)</div>';
+        // The projection window is the one BLS publishes for this occupation,
+        // not a fixed string: the current handbook edition runs 2025-2035.
+        html += '<div class="sub">' + demandText + (c.bls && c.bls.growthYears ? ' (BLS ' + c.bls.growthYears + ')' : '') + '</div>';
         html += '</div>';
 
         html += '<div class="dossier-hero-metric-card">';
@@ -3552,6 +3716,38 @@
           html += '</div>';
         }
         html += '</div>';
+
+        // Section: Pay & Job Outlook (sourced)
+        // Every figure here comes from the BLS profile for this occupation. It
+        // is shown only when the scrape actually returned the value, so an empty
+        // cell means BLS does not publish one, not that the number is zero.
+        if (c.bls && (c.bls.medianPay || c.bls.numberOfJobs || c.bls.growthPct != null)) {
+          const money = n => (n == null ? null : '$' + n.toLocaleString('en-US'));
+          const row = (label, value) => (value == null || value === '' ? '' :
+            '<div class="dossier-fact"><div class="fact-label">' + label + '</div><div class="fact-value">' + value + '</div></div>');
+          let facts = '';
+          facts += row('Median Annual Pay', money(c.bls.medianPay) +
+            (c.bls.medianPayHourly ? ' <span style="color:var(--text-dim); font-weight:500;">($' + c.bls.medianPayHourly.toFixed(2) + '/hr)</span>' : ''));
+          facts += row('10th – 90th Percentile', (c.bls.payP10 && c.bls.payP90)
+            ? money(c.bls.payP10) + ' – ' + money(c.bls.payP90) : null);
+          facts += row('Jobs In The Economy', c.bls.numberOfJobs != null
+            ? c.bls.numberOfJobs.toLocaleString('en-US') + (c.bls.baseYear ? ' <span style="color:var(--text-dim); font-weight:500;">(' + c.bls.baseYear + ')</span>' : '') : null);
+          facts += row('Projected Growth', c.bls.growthPct != null
+            ? c.bls.growthPct + '% <span style="color:var(--text-dim); font-weight:500;">' + (c.bls.growthLabel || '') + (c.bls.growthYears ? ', ' + c.bls.growthYears : '') + '</span>' : null);
+          facts += row('Openings Per Year', c.bls.annualOpenings != null ? c.bls.annualOpenings.toLocaleString('en-US') : null);
+          facts += row('Employment Change', c.bls.employmentChange != null ? c.bls.employmentChange.toLocaleString('en-US') + (c.bls.growthYears ? ' by ' + c.bls.growthYears.split('\u2013')[1] : '') : null);
+          facts += row('SOC Code', c.bls.socCode);
+
+          html += '<div class="dossier-section">';
+          html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><line x1="17" y1="5" x2="17" y2="19"/><line x1="7" y1="2" x2="7" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Pay &amp; Job Outlook</div>';
+          html += '<div class="dossier-facts">' + facts + '</div>';
+          if (c.bls.workEnvironment) {
+            html += '<div class="dossier-callout" style="margin-top:14px;"><div style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.6px; color:#5ed4f5; margin-bottom:4px;">Where The Work Actually Happens</div>' + c.bls.workEnvironment + '</div>';
+          }
+          html += '<p style="font-size:12px; color:var(--text-dim); margin-top:12px; line-height:1.6;">Figures are U.S. figures from the Bureau of Labor Statistics Occupational Outlook Handbook' + (c.bls.socCode ? ' (SOC ' + c.bls.socCode + ')' : '') + '. Indian pay is shown on the card and is not covered by this source.' +
+            (c.url ? ' <a href="' + c.url + '" target="_blank" rel="noopener" style="color:var(--ion);">Read the BLS profile \u2197</a>' : '') + '</p>';
+          html += '</div>';
+        }
 
         // Section: Workplace Flexibility & Environment
         html += '<div class="dossier-section">';
@@ -3656,6 +3852,25 @@
           html += '<div style="font-size:15px; font-weight:700; color:#e8e3d8; margin-bottom:4px;">' + c.education.entranceExams + '</div>';
           html += '<div style="font-size:13px; color:#8891aa; line-height:1.5;">Evaluated for university admissions, state board licensing, and professional accreditation.</div>';
           html += '</div>';
+          html += '</div>';
+        }
+
+        // Section: What The Bureau Actually Reports About Getting In
+        // BLS states entry education, prior experience and on-the-job training
+        // in its own words. Where it publishes them they beat a generic summary.
+        if (c.bls && (c.bls.entryEducation || c.bls.relatedExperience || c.bls.onTheJobTraining)) {
+          html += '<div class="dossier-section">';
+          html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>What Employers Report About Entry</div>';
+          html += '<div class="dossier-facts">';
+          const fact = (label, value) => {
+            if (value == null || value === '' || /^none$/i.test(value)) return '';
+            return '<div class="dossier-fact"><div class="fact-label">' + label + '</div><div class="fact-value" style="font-size:13.5px; font-weight:600;">' + value + '</div></div>';
+          };
+          html += fact('Typical Entry Education', c.bls.entryEducation);
+          html += fact('Related Experience Asked For', c.bls.relatedExperience);
+          html += fact('On-The-Job Training', c.bls.onTheJobTraining);
+          html += '</div>';
+          html += '<p style="font-size:12px; color:var(--text-dim); margin-top:12px;">Sourced from the Bureau of Labor Statistics profile for this occupation. A blank field means the Bureau does not publish one for this role, which is common for occupations with no formal credential.</p>';
           html += '</div>';
         }
 
@@ -4097,11 +4312,31 @@
       }
 
 
-      // Navbar scroll effect
+      // Navbar scroll effect: a hairline once you leave the top, plus a reading
+      // progress line. Both are driven from one passive listener and one rAF
+      // write, so scrolling does not thrash layout.
+      const navbarEl = document.getElementById('navbar');
+      const progressEl = document.getElementById('navbarProgress');
+      let scrollTicking = false;
+      function onScrollFrame() {
+        scrollTicking = false;
+        const y = window.scrollY || document.documentElement.scrollTop || 0;
+        if (navbarEl) navbarEl.classList.toggle('scrolled', y > 12);
+        if (progressEl) {
+          const doc = document.documentElement;
+          const max = (doc.scrollHeight - window.innerHeight) || 1;
+          progressEl.style.width = Math.min(100, (y / max) * 100) + '%';
+        }
+      }
       window.addEventListener('scroll', () => {
-        const nb = document.getElementById('navbar');
-        if (nb) nb.classList.toggle('scrolled', window.scrollY > 40);
-      });
+        if (scrollTicking) return;
+        scrollTicking = true;
+        requestAnimationFrame(onScrollFrame);
+      }, { passive: true });
+      window.addEventListener('resize', () => {
+        if (!scrollTicking) { scrollTicking = true; requestAnimationFrame(onScrollFrame); }
+      }, { passive: true });
+      onScrollFrame();
 
       // Deep Linking via URL Hash
       function checkHashLink() {
