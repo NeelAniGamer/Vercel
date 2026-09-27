@@ -17,17 +17,38 @@ const all = global.window.CAREERS_ALL.filter(c => c.id.startsWith('ooh-'));
 const done = fs.existsSync(OUT) ? JSON.parse(fs.readFileSync(OUT, 'utf8')) : {};
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
+const NAMED_ENTITIES = {
+  amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ',
+  ndash: '-', mdash: '--', lsquo: "'", rsquo: "'", ldquo: '"', rdquo: '"'
+};
+
+// Fold typographic punctuation down to the plain characters the dataset stores.
+function normalizeChar(ch) {
+  if (ch === '\u2018' || ch === '\u2019' || ch === "'") return "'";
+  if (ch === '\u201C' || ch === '\u201D' || ch === '"') return '"';
+  if (ch === '\u00A0' || ch === '\u2007' || ch === '\u202F') return ' ';
+  if (ch === '\u2013') return '-';
+  if (ch === '\u2014') return '--';
+  return ch;
+}
+
+// Decode entities in a single pass. A chain of .replace() calls decodes "&amp;lt;" into "<",
+// which is a double-unescape; one pass turns it into "&lt;" and stops there.
+function decodeEntities(s) {
+  return s.replace(/&(#x[0-9a-f]+|#\d+|[a-z][a-z0-9]*);/gi, function (match, body) {
+    if (body[0] === '#') {
+      const hex = body[1] === 'x' || body[1] === 'X';
+      const code = parseInt(hex ? body.slice(2) : body.slice(1), hex ? 16 : 10);
+      if (!Number.isFinite(code) || code < 0 || code > 0x10ffff || (code >= 0xd800 && code <= 0xdfff)) return match;
+      return normalizeChar(String.fromCodePoint(code));
+    }
+    const named = NAMED_ENTITIES[body.toLowerCase()];
+    return named === undefined ? match : named;
+  });
+}
+
 function stripTags(s) {
-  return s
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;|&rsquo;/g, "'")
-    .replace(/&ndash;/g, '-')
-    .replace(/&mdash;/g, '--')
-    .replace(/&#8217;|&lsquo;/g, "'")
-    .replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+  return decodeEntities(String(s).replace(/<[^>]+>/g, ' '))
     .replace(/\s+/g, ' ')
     .trim();
 }

@@ -28,12 +28,41 @@ const MIME_TYPES = {
   '.wasm': 'application/wasm'
 };
 
+// decodeURIComponent throws a URIError on malformed input such as "/%zz", which would take the
+// whole server down, so decode defensively and refuse anything unusable.
+function decodeUrlPath(urlPath) {
+  const raw = String(urlPath == null ? '' : urlPath).split('?')[0];
+  let decoded;
+  try {
+    decoded = decodeURIComponent(raw);
+  } catch (e) {
+    return null;
+  }
+  return decoded.indexOf('\0') === -1 ? decoded : null;
+}
+
+// Rebuild the request as a relative path from its real segments, rejecting ".." instead of
+// trying to strip it. Refusing traversal outright means the value handed to path.resolve()
+// only ever contains literal child segments, so it stays normalized and relative and the
+// containment check below is the single authority on whether a request may leave the root.
+function toSafeRelative(decoded) {
+  const segments = [];
+  for (const segment of decoded.split(/[\\/]+/)) {
+    if (segment === '' || segment === '.') {continue;}
+    if (segment === '..') {return null;}
+    segments.push(segment);
+  }
+  return segments.join(path.sep);
+}
+
 function resolvePath(urlPath) {
-  let clean = decodeURIComponent(urlPath.split('?')[0]);
+  let clean = decodeUrlPath(urlPath);
+  if (clean === null) {return null;}
   if (clean === '/' || clean === '') {clean = '/home.html';}
 
-  // Strip traversal segments to guarantee relative safety
-  const safeRel = path.normalize(clean).replace(/^(\.\.[\/\\])+/g, '').replace(/^[\/\\]+/, '');
+  const safeRel = toSafeRelative(clean);
+  if (safeRel === null) {return null;}
+
   const rootDirResolved = path.resolve(ROOT_DIR);
   const directPath = path.resolve(rootDirResolved, safeRel);
   if (!directPath.startsWith(rootDirResolved + path.sep) && directPath !== rootDirResolved) {

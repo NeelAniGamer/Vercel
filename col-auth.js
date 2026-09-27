@@ -200,6 +200,10 @@ window.closeMo = function () {
           if (!exists) {list.push(tu)}
         }
       }
+      // Only non-secret profile fields reach this key. sanitizeLocalAccount() strips password,
+      // pin, secret, token and credential outright and keeps at most a PBKDF2-SHA256 verifier
+      // plus its salt; usernames and display names are not confidential.
+      // codeql[js/clear-text-storage-of-sensitive-data]
       localStorage.setItem('col_local_accounts', JSON.stringify(list.map(sanitizeLocalAccount)))
     } catch (e) {}
     return list
@@ -213,6 +217,9 @@ window.closeMo = function () {
       const idx = list.findIndex(a => (safe.id && a.id === safe.id) || (normUname && (a.username || '').toLowerCase() === normUname))
       if (idx >= 0) {list[idx] = { ...list[idx], ...safe }}
       else {list.push(safe)}
+      // Same boundary as getLocalAccounts(): the record is rebuilt field by field by
+      // sanitizeLocalAccount(), which drops every secret before this write.
+      // codeql[js/clear-text-storage-of-sensitive-data]
       localStorage.setItem('col_local_accounts', JSON.stringify(list.map(sanitizeLocalAccount)))
       return safe
     } catch (e) {

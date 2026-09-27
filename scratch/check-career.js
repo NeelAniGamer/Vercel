@@ -2,6 +2,9 @@
 const fs = require('fs');
 const html = fs.readFileSync(process.argv[2] || 'Career.html', 'utf8');
 
+// This regexp only *extracts* inline script bodies so they can be syntax-checked. It is not a
+// sanitizer and its output is never rendered, so the bad-tag-filter heuristic does not apply.
+// codeql[js/bad-tag-filter]
 const re = /<script([^>]*)>([\s\S]*?)<\/script>/g;
 let m;
 let n = 0;

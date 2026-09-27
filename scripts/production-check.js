@@ -30,6 +30,7 @@ function isExternalOrNonFileUrl(url) {
     url.startsWith('mailto:') ||
     url.startsWith('tel:') ||
     url.startsWith('javascript:') ||
+    url.startsWith('vbscript:') ||
     url.startsWith('//') ||
     /^[a-z][a-z\d+.-]*:/i.test(url)
   )

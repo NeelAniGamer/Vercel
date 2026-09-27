@@ -20,8 +20,21 @@ while ((m = liRe.exec(html))) {
   }
 }
 
+const NAMED_ENTITIES = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ' };
+
+// Single-pass decode: a chain of .replace() calls turns "&amp;lt;" into "<", which is a
+// double-unescape. One pass yields "&lt;" and leaves it alone.
 function decode(s) {
-  return s.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+  return String(s).replace(/&(#x[0-9a-f]+|#\d+|[a-z][a-z0-9]*);/gi, function (match, body) {
+    if (body[0] === '#') {
+      const hex = body[1] === 'x' || body[1] === 'X';
+      const code = parseInt(hex ? body.slice(2) : body.slice(1), hex ? 16 : 10);
+      if (!Number.isFinite(code) || code < 0 || code > 0x10ffff || (code >= 0xd800 && code <= 0xdfff)) return match;
+      return String.fromCodePoint(code);
+    }
+    const named = NAMED_ENTITIES[body.toLowerCase()];
+    return named === undefined ? match : named;
+  });
 }
 
 console.log('canonical occupations:', canonical.size);

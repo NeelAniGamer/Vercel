@@ -871,6 +871,9 @@ var ui = window.ui = Object.assign(window.ui || {}, {
       role: String(localUser.role || 'student'),
       updatedAt: new Date().toISOString()
     }
+    // Display name, handle and avatar path only. No credential, PIN, or session token is part of
+    // safeTrafficProfile, so the heuristic match on the `username` property is a false positive.
+    // codeql[js/clear-text-storage-of-sensitive-data]
     localStorage.setItem('traffic_local_user', JSON.stringify(safeTrafficProfile))
     
 
