@@ -862,15 +862,16 @@ var ui = window.ui = Object.assign(window.ui || {}, {
     
 
     const localUser = JSON.parse(localStorage.getItem('traffic_local_user') || '{}')
-    localStorage.setItem('traffic_local_user', JSON.stringify({
-      id: localUser.id,
-      name: localUser.name,
-      username: localUser.username,
-      picture: localUser.picture,
-      vehicle: v,
-      role: localUser.role,
+    const safeTrafficProfile = {
+      id: String(localUser.id || 'local_' + Date.now()),
+      name: String(localUser.name || n || ''),
+      username: String(localUser.username || ''),
+      picture: typeof localUser.picture === 'string' ? localUser.picture : null,
+      vehicle: String(v || 'Car'),
+      role: String(localUser.role || 'student'),
       updatedAt: new Date().toISOString()
-    }))
+    }
+    localStorage.setItem('traffic_local_user', JSON.stringify(safeTrafficProfile))
     
 
     if (window.supabaseClient && window.colUser) {

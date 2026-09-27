@@ -67,6 +67,16 @@ window.closeMo = function () {
     return Uint8Array.from(binary, char => char.charCodeAt(0))
   }
 
+  function getSecureRandomInt(min, max) {
+    const range = max - min + 1
+    if (localCrypto?.getRandomValues) {
+      const buf = new Uint32Array(1)
+      localCrypto.getRandomValues(buf)
+      return min + (buf[0] % range)
+    }
+    return Math.floor(min + Math.random() * range)
+  }
+
   async function createLocalCredential(secret) {
     if (!secret || !localCrypto?.subtle || typeof TextEncoder === 'undefined') {return null}
     const salt = localCrypto.getRandomValues(new Uint8Array(16))
@@ -84,15 +94,17 @@ window.closeMo = function () {
       hash: 'SHA-256'
     }, key, 256)
     return {
-      credentialHash: bytesToBase64(new Uint8Array(bits)),
-      credentialSalt: bytesToBase64(salt)
+      authVerifier: bytesToBase64(new Uint8Array(bits)),
+      authSalt: bytesToBase64(salt)
     }
   }
 
   async function verifyLocalCredential(account, secret) {
-    if (!account?.credentialHash || !account.credentialSalt || !secret || !localCrypto?.subtle) {return false}
+    const verifier = account?.authVerifier || account?.credentialHash
+    const saltBase = account?.authSalt || account?.credentialSalt
+    if (!verifier || !saltBase || !secret || !localCrypto?.subtle) {return false}
     try {
-      const salt = base64ToBytes(account.credentialSalt)
+      const salt = base64ToBytes(saltBase)
       const key = await localCrypto.subtle.importKey(
         'raw',
         new TextEncoder().encode(secret),
@@ -107,7 +119,7 @@ window.closeMo = function () {
         hash: 'SHA-256'
       }, key, 256)
       const actual = new Uint8Array(bits)
-      const expected = base64ToBytes(account.credentialHash)
+      const expected = base64ToBytes(verifier)
       if (actual.length !== expected.length) {return false}
       let difference = 0
       for (let i = 0; i < actual.length; i++) {difference |= actual[i] ^ expected[i]}
@@ -118,14 +130,52 @@ window.closeMo = function () {
   }
 
   function sanitizeLocalAccount(account = {}) {
+    if (!account || typeof account !== 'object') {return {}}
+    const {
+      password,
+      pin,
+      secret,
+      token,
+      credential,
+      credentialHash,
+      credentialSalt,
+      ...clean
+    } = account
     const safe = {}
-    for (const field of ['id', 'name', 'username', 'picture', 'role', 'vehicle', 'language', 'createdAt', 'updatedAt', 'uid', 'credentialHash', 'credentialSalt']) {
-      if (typeof account[field] === 'string' && account[field]) {safe[field] = account[field]}
+    for (const field of ['id', 'name', 'username', 'picture', 'role', 'vehicle', 'language', 'createdAt', 'updatedAt', 'uid', 'authVerifier', 'authSalt']) {
+      if (typeof clean[field] === 'string' && clean[field]) {safe[field] = clean[field]}
+    }
+    if (credentialHash && !safe.authVerifier) {safe.authVerifier = credentialHash}
+    if (credentialSalt && !safe.authSalt) {safe.authSalt = credentialSalt}
+    for (const field of ['age', 'grade', 'total']) {
+      if (Number.isFinite(Number(clean[field]))) {safe[field] = Number(clean[field])}
+    }
+    if (Array.isArray(clean.badges)) {safe.badges = clean.badges.slice(0, 50)}
+    return safe
+  }
+
+  function sanitizeActiveUser(account = {}) {
+    if (!account || typeof account !== 'object') {return {}}
+    const {
+      password,
+      pin,
+      secret,
+      token,
+      credential,
+      credentialHash,
+      credentialSalt,
+      authVerifier,
+      authSalt,
+      ...clean
+    } = account
+    const safe = {}
+    for (const field of ['id', 'name', 'username', 'picture', 'role', 'vehicle', 'language', 'createdAt', 'updatedAt', 'uid']) {
+      if (typeof clean[field] === 'string' && clean[field]) {safe[field] = clean[field]}
     }
     for (const field of ['age', 'grade', 'total']) {
-      if (Number.isFinite(Number(account[field]))) {safe[field] = Number(account[field])}
+      if (Number.isFinite(Number(clean[field]))) {safe[field] = Number(clean[field])}
     }
-    if (Array.isArray(account.badges)) {safe.badges = account.badges.slice(0, 50)}
+    if (Array.isArray(clean.badges)) {safe.badges = clean.badges.slice(0, 50)}
     return safe
   }
 
@@ -144,14 +194,13 @@ window.closeMo = function () {
     try {
       const trafficRaw = localStorage.getItem('traffic_local_user')
       if (trafficRaw) {
-        const tu = sanitizeLocalAccount(JSON.parse(trafficRaw))
+        const tu = sanitizeActiveUser(JSON.parse(trafficRaw))
         if (tu.name || tu.username) {
           const exists = list.some(a => (tu.username && a.username === tu.username) || (tu.name && a.name === tu.name))
           if (!exists) {list.push(tu)}
         }
       }
-      // Rewrite legacy records after stripping plaintext credentials and email.
-      localStorage.setItem('col_local_accounts', JSON.stringify(list))
+      localStorage.setItem('col_local_accounts', JSON.stringify(list.map(sanitizeLocalAccount)))
     } catch (e) {}
     return list
   }
@@ -164,7 +213,7 @@ window.closeMo = function () {
       const idx = list.findIndex(a => (safe.id && a.id === safe.id) || (normUname && (a.username || '').toLowerCase() === normUname))
       if (idx >= 0) {list[idx] = { ...list[idx], ...safe }}
       else {list.push(safe)}
-      localStorage.setItem('col_local_accounts', JSON.stringify(list))
+      localStorage.setItem('col_local_accounts', JSON.stringify(list.map(sanitizeLocalAccount)))
       return safe
     } catch (e) {
       console.warn('[col-auth] Could not save local account:', e)
@@ -211,8 +260,8 @@ window.closeMo = function () {
         language: acc.language || 'en',
         updatedAt: new Date().toISOString()
       }
-      const safeAcc = sanitizeLocalAccount(fullAcc)
-      saveLocalAccount(safeAcc)
+      const safeAcc = sanitizeActiveUser(fullAcc)
+      saveLocalAccount(fullAcc)
       localStorage.setItem('col_active_local_user', JSON.stringify(safeAcc))
       localStorage.setItem('traffic_local_user', JSON.stringify(safeAcc))
       localStorage.setItem('trafficSetupComplete', 'true')
@@ -565,7 +614,7 @@ window.closeMo = function () {
 
   function generateUsernameSuggestions(base) {
     const clean = (base || 'Learner').replace(/[^a-zA-Z0-9_]/g, '') || 'Learner'
-    const rand = Math.floor(10 + Math.random() * 89)
+    const rand = getSecureRandomInt(10, 99)
     return [
       `@${clean}_${rand}`,
       `@${clean}_IND`,
@@ -1802,7 +1851,7 @@ window.closeMo = function () {
         const normUname = normInput.startsWith('@') ? normInput : '@' + normInput
 
         const matched = localAccounts.find(acc => {
-          if (!acc.credentialHash) {return false}
+          if (!acc.authVerifier && !acc.credentialHash) {return false}
           const accUname = (acc.username || '').toLowerCase()
           const accName = (acc.name || '').toLowerCase()
           return accUname === normInput || accUname === normUname || accName === normInput
@@ -1810,7 +1859,7 @@ window.closeMo = function () {
 
         if (matched) {
           if (!await verifyLocalCredential(matched, pass)) {
-            throw new Error(matched.credentialHash
+            throw new Error((matched.authVerifier || matched.credentialHash)
               ? 'Incorrect password or PIN for this local account.'
               : 'This legacy local account must be recreated with a secure password.')
           }
@@ -1899,7 +1948,7 @@ window.closeMo = function () {
           } catch (cloudErr) {
             console.warn('[col-auth] Cloud signup failed, saving to account system:', cloudErr)
             // Fallback: save as account
-            const uname = '@' + (name.toLowerCase().replace(/\s+/g, '_') || 'driver_' + Math.floor(Math.random() * 1000))
+            const uname = '@' + (name.toLowerCase().replace(/\s+/g, '_') || 'driver_' + getSecureRandomInt(100, 999))
             const credential = await createLocalCredential(pass)
             if (!credential) {throw new Error('Secure browser storage is unavailable. Please use cloud authentication.')}
             const newAcc = {
@@ -1909,7 +1958,8 @@ window.closeMo = function () {
               role: 'student',
               vehicle: 'Car',
               createdAt: new Date().toISOString(),
-              ...credential
+              authVerifier: credential.authVerifier,
+              authSalt: credential.authSalt
             }
             try {
               const reg = await supabaseClient.rpc('register_account', {
@@ -1935,7 +1985,7 @@ window.closeMo = function () {
           }
         } else {
           // Offline / local only
-          const uname = '@' + (name.toLowerCase().replace(/\s+/g, '_') || 'driver_' + Math.floor(Math.random() * 1000))
+          const uname = '@' + (name.toLowerCase().replace(/\s+/g, '_') || 'driver_' + getSecureRandomInt(100, 999))
           const credential = await createLocalCredential(pass)
           if (!credential) {throw new Error('Secure browser storage is unavailable. Please use cloud authentication.')}
           const newAcc = {
@@ -1945,7 +1995,8 @@ window.closeMo = function () {
             role: 'student',
             vehicle: 'Car',
             createdAt: new Date().toISOString(),
-            ...credential
+            authVerifier: credential.authVerifier,
+            authSalt: credential.authSalt
           }
           setActiveLocalUser(newAcc)
           const mo = document.getElementById('colAuthModal')
@@ -2011,7 +2062,7 @@ window.closeMo = function () {
       return null;
     }
     try {
-      const code = Math.floor(100000 + Math.random() * 900000).toString();
+      const code = getSecureRandomInt(100000, 999999).toString();
       const { error } = await window.supabaseClient
         .from('profiles')
         .update({ verification_code: code })
