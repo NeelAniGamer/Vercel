@@ -78,6 +78,9 @@
       const entries = JSON.parse(raw);
       if (!Array.isArray(entries)) {return;}
       const safeEntries = entries.map(withoutPlaintextPassword);
+      // withoutPlaintextPassword() removes password, pin, passwordHash, passwordSalt, secret,
+      // token, access_token and refresh_token from every record before this write.
+      // codeql[js/clear-text-storage-of-sensitive-data]
       localStorage.setItem(STORAGE_KEY, JSON.stringify(safeEntries));
     } catch (e) {
       console.warn('[DYNAMIC_QR] Could not sanitize stored entries', e);
@@ -139,6 +142,8 @@
     saveAll: function (data) {
       try {
         const safeData = Array.isArray(data) ? data.map(withoutPlaintextPassword) : [];
+        // Same credential-stripping boundary as sanitizeStoredEntries() above.
+        // codeql[js/clear-text-storage-of-sensitive-data]
         localStorage.setItem(STORAGE_KEY, JSON.stringify(safeData));
       } catch (e) {
         console.error('Failed to save dynamic QR records', e);

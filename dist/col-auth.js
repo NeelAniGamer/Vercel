@@ -269,7 +269,12 @@ window.closeMo = function () {
       }
       const safeAcc = sanitizeActiveUser(fullAcc)
       saveLocalAccount(fullAcc)
+      // safeAcc comes from sanitizeActiveUser(), which drops password, pin, secret, token and
+      // credential before this write. What remains is a display profile, and a username is not
+      // a secret.
+      // codeql[js/clear-text-storage-of-sensitive-data]
       localStorage.setItem('col_active_local_user', JSON.stringify(safeAcc))
+      // codeql[js/clear-text-storage-of-sensitive-data]
       localStorage.setItem('traffic_local_user', JSON.stringify(safeAcc))
       localStorage.setItem('trafficSetupComplete', 'true')
       window.colLocalUser = {
@@ -841,6 +846,9 @@ window.closeMo = function () {
         const trProfRaw = localStorage.getItem('traffic_profile')
         const trProf = trProfRaw ? JSON.parse(trProfRaw) : {}
         trProf.username = username
+        // Only the display handle is merged into the cached traffic profile; no credential or
+        // session token is present in trProf.
+        // codeql[js/clear-text-storage-of-sensitive-data]
         localStorage.setItem('traffic_profile', JSON.stringify(trProf))
       } catch (stErr) {}
 
@@ -1685,6 +1693,8 @@ window.closeMo = function () {
         trProf.preferred_vehicle = newVeh
         trProf.vehicle = newVeh
         if (newAv) {trProf.avatar = newAv}
+        // Display name, vehicle choice and avatar path only.
+        // codeql[js/clear-text-storage-of-sensitive-data]
         localStorage.setItem('traffic_profile', JSON.stringify(trProf))
       } catch (e) {}
 

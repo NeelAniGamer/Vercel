@@ -772,6 +772,8 @@
 
   window._saveCustomize = function() {
     _current._updated = Date.now();
+    // _current is a character-appearance config (skin, hair, outfit, accessories). No credential.
+    // codeql[js/clear-text-storage-of-sensitive-data]
     localStorage.setItem('traffic_appearance', JSON.stringify(_current));
     _syncAppearanceToCloud();
 
