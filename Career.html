@@ -1430,6 +1430,31 @@
         background: rgba(0, 0, 0, 0.02);
       }
 
+      /* Where a number came from, or why there isn't one. */
+      .dossier-source-note,
+      .dossier-empty-note {
+        margin-top: 12px;
+        padding: 11px 14px;
+        border-radius: 8px;
+        font-size: 12.5px;
+        line-height: 1.6;
+        border: 1px solid rgba(148, 163, 184, 0.16);
+        background: rgba(148, 163, 184, 0.06);
+        color: var(--muted, #8891aa);
+      }
+      .dossier-empty-note {
+        border-style: dashed;
+        border-color: rgba(148, 163, 184, 0.24);
+      }
+      body.lm .dossier-source-note,
+      body.lm .dossier-empty-note {
+        background: rgba(15, 23, 42, 0.04);
+        border-color: rgba(15, 23, 42, 0.1);
+      }
+      body.lm .dossier-empty-note {
+        border-color: rgba(15, 23, 42, 0.16);
+      }
+
       /* Projects List (What Gets You Hired) */
       .dossier-projects-list {
         display: flex;
@@ -3437,17 +3462,22 @@
             { country: 'United Kingdom', code: 'GBP', entry: ukP.entry, median: ukP.median, top10: ukP.top10 },
             { country: 'United Arab Emirates', code: 'AED', entry: uaeP.entry, median: uaeP.median, top10: uaeP.top10 }
           ];
-        } else {
-          const baseMatch = (c.salary || '').match(/\$(\d+)K.*?₹(\d+)/);
-          const baseUsd = baseMatch ? parseInt(baseMatch[1], 10) : 75;
-          const baseInr = baseMatch ? parseInt(baseMatch[2], 10) : 10;
+        } else if (c.bls) {
+          // Real Bureau of Labor Statistics figures, converted for display.
+          const bls = c.bls;
+          const usd = k => '$' + Math.round(k) + 'K';
+          const baseUsd = (bls.medianPay || 60000) / 1000;
           globalPay = [
-            { country: 'United States', code: 'USD', entry: '$' + Math.round(baseUsd * 0.68) + 'K', median: '$' + baseUsd + 'K', top10: '$' + Math.round(baseUsd * 1.6) + 'K' },
-            { country: 'India', code: 'INR', entry: '₹' + Math.round(baseInr * 0.65) + ' LPA', median: '₹' + baseInr + ' LPA', top10: '₹' + Math.round(baseInr * 2.1) + ' LPA' },
-            { country: 'United Kingdom', code: 'GBP', entry: '£' + Math.round(baseUsd * 0.52) + 'K', median: '£' + Math.round(baseUsd * 0.74) + 'K', top10: '£' + Math.round(baseUsd * 1.25) + 'K' },
-            { country: 'United Arab Emirates', code: 'AED', entry: 'AED ' + Math.round(baseUsd * 0.85) + 'K/mo', median: 'AED ' + Math.round(baseUsd * 1.35) + 'K/mo', top10: 'AED ' + Math.round(baseUsd * 2.3) + 'K/mo' }
+            { country: 'United States', code: 'USD', entry: usd((bls.payP10 || bls.medianPay) / 1000), median: usd(baseUsd), top10: usd((bls.payP90 || bls.medianPay) / 1000) },
+            { country: 'India', code: 'INR', entry: 'Not published', median: 'Not published', top10: 'Not published' },
+            { country: 'United Kingdom', code: 'GBP', entry: 'Not published', median: 'Not published', top10: 'Not published' },
+            { country: 'United Arab Emirates', code: 'AED', entry: 'Not published', median: 'Not published', top10: 'Not published' }
           ];
         }
+        // No globalPay and no BLS profile: globalPay stays empty and the table
+        // is not rendered at all. Sizing four countries off a free-text salary
+        // string used to happen here, which meant every unsourced career
+        // silently showed an invented number. A blank is better than a guess.
 
         // 4. Who Should Avoid
         let whoAvoids = c.whoAvoids;
@@ -3658,18 +3688,29 @@
 
         // 4-Card Responsive Hero Metrics Ribbon
         html += '<div class="dossier-hero-metrics-grid">';
+        // Say where a number came from, or say plainly that there isn't one.
+        // "Benchmarked across US & Global markets" used to be printed under
+        // every salary on the page, including careers where no survey exists.
+        const hasBLS = !!(c.bls && c.bls.medianPay);
+        const noPay = c.salary === 'Not published';
         html += '<div class="dossier-hero-metric-card">';
         html += '<div class="label">Median Compensation</div>';
-        html += '<div class="value" style="color:#34d399;">' + c.salary + '</div>';
-        html += '<div class="sub">Benchmarked across US &amp; Global markets</div>';
+        html += '<div class="value" style="color:' + (noPay ? '#8891aa' : '#34d399') + ';">' + c.salary + '</div>';
+        html += '<div class="sub">' + (noPay
+          ? 'No published pay survey covers this role'
+          : (hasBLS
+            ? 'US median, Bureau of Labor Statistics'
+            : 'Indicative range, not from a published survey')) + '</div>';
         html += '</div>';
 
         html += '<div class="dossier-hero-metric-card">';
         html += '<div class="label">10-Year Outlook</div>';
-        html += '<div class="value" style="color:#f2b84b;">' + growthNum + '</div>';
+        html += '<div class="value" style="color:' + (noPay ? '#8891aa' : '#f2b84b') + ';">' + growthNum + '</div>';
         // The projection window is the one BLS publishes for this occupation,
         // not a fixed string: the current handbook edition runs 2025-2035.
-        html += '<div class="sub">' + demandText + (c.bls && c.bls.growthYears ? ' (BLS ' + c.bls.growthYears + ')' : '') + '</div>';
+        html += '<div class="sub">' + (noPay
+          ? 'No published projection for this role'
+          : demandText + (c.bls && c.bls.growthYears ? ' (BLS ' + c.bls.growthYears + ')' : '')) + '</div>';
         html += '</div>';
 
         html += '<div class="dossier-hero-metric-card">';
@@ -3985,23 +4026,34 @@
         html += '</div>';
 
         // Section: Global Salary Table
-        html += '<div class="dossier-section">';
-        html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Multi-Currency Global Compensation Benchmarks</div>';
-        html += '<div style="overflow-x:auto;">';
-        html += '<table class="dossier-salary-table">';
-        html += '<thead><tr><th>Geography</th><th>Currency</th><th>Entry-Level (0–2 Yrs)</th><th>Median Professional</th><th>Top 10% / Principal</th></tr></thead>';
-        html += '<tbody>';
-        data.globalPay.forEach(gp => {
-          html += '<tr>';
-          html += '<td><strong>' + gp.country + '</strong></td>';
-          html += '<td><span style="font-family:\'Space Mono\', monospace; font-size:11px; padding:2px 6px; border-radius:4px; background:rgba(255,255,255,0.05); color:#8891aa;">' + gp.code + '</span></td>';
-          html += '<td style="color:#8891aa;">' + gp.entry + '</td>';
-          html += '<td style="color:#34d399; font-weight:700;">' + gp.median + '</td>';
-          html += '<td style="color:#f2b84b; font-weight:700;">' + gp.top10 + '</td>';
-          html += '</tr>';
-        });
-        html += '</tbody></table></div>';
-        html += '</div>';
+        // Only rendered when there is real data behind it. Careers with no BLS
+        // profile and no hand-supplied globalPay get an honest note instead of
+        // a table of numbers derived from nothing.
+        if (data.globalPay && data.globalPay.length) {
+          html += '<div class="dossier-section">';
+          html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Pay Benchmarks (BLS Occupational Outlook Handbook)</div>';
+          html += '<div style="overflow-x:auto;">';
+          html += '<table class="dossier-salary-table">';
+          html += '<thead><tr><th>Geography</th><th>Currency</th><th>Entry-Level (0–2 Yrs)</th><th>Median Professional</th><th>Top 10% / Principal</th></tr></thead>';
+          html += '<tbody>';
+          data.globalPay.forEach(gp => {
+            html += '<tr>';
+            html += '<td><strong>' + gp.country + '</strong></td>';
+            html += '<td><span style="font-family:\'Space Mono\', monospace; font-size:11px; padding:2px 6px; border-radius:4px; background:rgba(255,255,255,0.05); color:#8891aa;">' + gp.code + '</span></td>';
+            html += '<td style="color:#8891aa;">' + gp.entry + '</td>';
+            html += '<td style="color:#34d399; font-weight:700;">' + gp.median + '</td>';
+            html += '<td style="color:#f2b84b; font-weight:700;">' + gp.top10 + '</td>';
+            html += '</tr>';
+          });
+          html += '</tbody></table></div>';
+          html += '<div class="dossier-source-note">Figures are for the nearest BLS occupation, in the United States only. BLS does not publish Indian pay for this occupation.</div>';
+          html += '</div>';
+        } else {
+          html += '<div class="dossier-section">';
+          html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Pay Benchmarks</div>';
+          html += '<div class="dossier-empty-note">No published pay survey covers this role yet, so there is no number here to show you. Ask a working professional in the field, or check a platform that publishes per-city rates for this job.</div>';
+          html += '</div>';
+        }
 
         // Section: 3-Phase Roadmap
         if (c.roadmap) {
