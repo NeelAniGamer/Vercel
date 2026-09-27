@@ -5,18 +5,18 @@
      crossorigin="anonymous"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Explore 436 career pathways and 50,000+ job titles, with degree roadmaps, entrance exams, salary bands, and plain-language notes on AI exposure." />
+    <meta name="description" content="Explore 436 career pathways and 5,900+ real job titles, with degree roadmaps, entrance exams, salary bands, and plain-language notes on AI exposure." />
     <meta name="keywords" content="all careers in the world, 20000 careers, career guidance, career pathways India, stream selection after 10th, career options after 12th, IIT JEE preparation guide, NEET career path, USMLE guide, CLAT preparation, CAT exam, salary guide, AI career assessment, student career planner, engineering career guide, medical career guide, free career counseling">
     <meta property="og:site_name" content="Class Of Learners" />
     <meta property="og:title" content="FutureScape | World Career &amp; Education Guide" />
-    <meta property="og:description" content="Explore 436 career pathways and 50,000+ job titles, with degree roadmaps, entrance exams, salary bands, and plain-language notes on AI exposure." />
+    <meta property="og:description" content="Explore 436 career pathways and 5,900+ real job titles, with degree roadmaps, entrance exams, salary bands, and plain-language notes on AI exposure." />
     <meta property="og:url" content="https://advancedlogiclabs.dpdns.org/Career" />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://advancedlogiclabs.dpdns.org/og/default.jpg" />
     <meta property="og:image:alt" content="FutureScape World Career and Education Guide" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="FutureScape | World Career &amp; Education Guide" />
-    <meta name="twitter:description" content="Explore 436 career pathways and 50,000+ job titles, with degree roadmaps, entrance exams, salary bands, and plain-language notes on AI exposure." />
+    <meta name="twitter:description" content="Explore 436 career pathways and 5,900+ real job titles, with degree roadmaps, entrance exams, salary bands, and plain-language notes on AI exposure." />
     <meta name="twitter:image" content="https://advancedlogiclabs.dpdns.org/og/default.jpg" />
     <meta name="twitter:image:alt" content="FutureScape World Career and Education Guide" />
     <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
@@ -29,7 +29,7 @@
         "@type": "WebApplication",
         "name": "FutureScape World Career & Education Guide",
         "url": "https://advancedlogiclabs.dpdns.org/Career",
-        "description": "An interactive career encyclopedia with 436 career pathways and 50,000+ job titles, each with degree roadmaps, entrance exams, salary bands, and a plain-language read on AI exposure.",
+        "description": "An interactive career encyclopedia with 436 career pathways and 5,900+ real job titles, each with degree roadmaps, entrance exams, salary bands, and a plain-language read on AI exposure.",
         "applicationCategory": "EducationalApplication",
         "operatingSystem": "Web browser",
         "browserRequirements": "Requires JavaScript.",
@@ -45,7 +45,7 @@
       "@context": "https://schema.org",
       "@type": "FAQPage",
       "mainEntity": [
-        {"@type": "Question", "name": "What career options are available across the world?", "acceptedAnswer": {"@type": "Answer", "text": "FutureScape covers 436 career pathways, each written out in full, and indexes more than 50,000 job titles across Technology, Healthcare, Engineering, Space, Business, Law, Creative Arts, Science & DeepTech, Sustainability, Skilled Trades, Education, and Public Safety."}},
+        {"@type": "Question", "name": "What career options are available across the world?", "acceptedAnswer": {"@type": "Answer", "text": "FutureScape covers 436 career pathways, each written out in full, and indexes more than 5,900 job titles across Technology, Healthcare, Engineering, Space, Business, Law, Creative Arts, Science & DeepTech, Sustainability, Skilled Trades, Education, and Public Safety."}},
         {"@type": "Question", "name": "How does FutureScape help students choose a high school stream?", "acceptedAnswer": {"@type": "Answer", "text": "FutureScape provides stream-specific filters for Science PCM, Science PCB, Commerce, Arts/Humanities, and Vocational routes, along with an interactive 60-Second Career Compass assessment that matches individual interests to actionable degrees and entrance exams."}},
         {"@type": "Question", "name": "Is FutureScape free to use?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, FutureScape is completely free and accessible directly in your browser with no sign-ups or downloads required."}}
       ]
@@ -448,7 +448,7 @@
 
       /* Hero Section */
       .hero {
-        padding: 88px 24px 60px;
+        padding: 76px 24px 48px;
         text-align: center;
         max-width: 960px;
         margin: 0 auto;
@@ -474,7 +474,7 @@
         max-width: 720px; margin: 0 auto 44px;
       }
       .hero-actions {
-        display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-bottom: 56px;
+        display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-bottom: 40px;
       }
       /* Hero Minimal Metric Strip */
       .hero-metric-strip {
@@ -1050,19 +1050,20 @@
       }
 
       /* Segmented Dossier Tab Bar */
+      /* Wraps rather than scrolls. It used to be overflow-x:auto with the
+         scrollbar hidden, which left "Full Blueprint" clipped off the right
+         edge with no affordance telling anyone it existed. */
       .dossier-tab-bar {
         display: flex;
         align-items: center;
+        flex-wrap: wrap;
         gap: 6px;
-        margin: 32px 0 36px;
+        margin: 32px 0 24px;
         padding: 6px;
         background: rgba(255, 255, 255, 0.03);
         border: 1px solid rgba(255, 255, 255, 0.07);
         border-radius: 12px;
-        overflow-x: auto;
-        scrollbar-width: none;
       }
-      .dossier-tab-bar::-webkit-scrollbar { display: none; }
       body.lm .dossier-tab-bar {
         background: rgba(0, 0, 0, 0.03);
         border-color: rgba(0, 0, 0, 0.08);
@@ -2008,9 +2009,9 @@
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
               <span class="nav-btn-text">Career Compass</span>
             </button>
-            <button class="nav-btn" onclick="openInternshipHub()" title="Explore 50,000+ Job Titles">
+            <button class="nav-btn" onclick="openInternshipHub()" title="How people get their first job in these fields">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-              <span class="nav-btn-text">Job Titles Map</span>
+              <span class="nav-btn-text">First Job Routes</span>
             </button>
             <button class="nav-btn" onclick="openShortlist()" title="View Shortlisted Careers">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
@@ -2032,7 +2033,8 @@
         <p class="hero-sub">
           436 careers written out properly: what the work actually involves, which degree gets you there,
           the entrance exams, real salary bands, and how exposed the job is to AI. Every occupation in the
-          U.S. Bureau of Labor Statistics handbook is covered, plus 50,000+ job titles you can search by name.
+          U.S. Bureau of Labor Statistics handbook is covered, along with 5,900+ real job titles you can
+          search by name.
         </p>
         <div class="hero-actions">
           <button class="nav-btn primary" style="padding:14px 28px; font-size:15px;" onclick="openCompassModal()">
@@ -2045,7 +2047,7 @@
         </div>
         <div class="hero-metric-strip">
           <div class="metric-pill"><span class="metric-dot live"></span><strong id="stat-careers">436</strong> Detailed Roadmaps</div>
-          <div class="metric-pill"><strong>50,000+</strong> Searchable Job Titles</div>
+          <div class="metric-pill"><strong>5,900+</strong> Real Job Titles</div>
           <div class="metric-pill"><strong>343</strong> Official BLS Occupations</div>
           <div class="metric-pill"><strong>100%</strong> Free &amp; Open Access</div>
         </div>
@@ -2313,19 +2315,19 @@
         </div>
       </div>
 
-      <!-- Internships & 20,000 Careers Blueprint Modal -->
+      <!-- Internships & First-Job Blueprint Modal -->
       <div class="modal-overlay" id="internship-modal" role="dialog" aria-modal="true">
         <div class="modal-card" style="max-width: 1040px;">
           <div class="modal-header">
             <div class="modal-top-row">
-              <span class="cat-tag cat-tech">Job Titles Explained</span>
+              <span class="cat-tag cat-tech">Getting Started</span>
               <button class="modal-close" onclick="closeInternshipHub()">✕</button>
             </div>
             <div class="modal-title-row">
               <div class="modal-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
               <div>
-                <h2 class="modal-title">Where 20,000+ Job Titles Come From</h2>
-                <div class="modal-tagline">Most titles are a base occupation plus a specialty, a seniority level, or an employer type</div>
+                <h2 class="modal-title">Six Ways People Get Their First Job In These Fields</h2>
+                <div class="modal-tagline">The routes that actually convert into a full-time offer, and how long each one takes</div>
               </div>
             </div>
           </div>
@@ -2364,7 +2366,7 @@
             <div class="detail-box" style="margin-top: 20px;">
               <div class="detail-box-title"><span class="box-dot"></span>Turning An Internship Into A Job Offer</div>
               <ul style="padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.9;">
-                <li><strong style="color: var(--text);">Agree on what \u201cdone\u201d means in week one:</strong> confirm the exact feature, report or experiment you will be judged on.</li>
+                <li><strong style="color: var(--text);">Agree on what &ldquo;done&rdquo; means in week one:</strong> confirm the exact feature, report or experiment you will be judged on.</li>
                 <li><strong style="color: var(--text);">Write things down in public:</strong> clean pull requests, a short weekly summary, no surprises at review time.</li>
                 <li><strong style="color: var(--text);">Fix something nobody asked you to fix:</strong> broken tests, missing docs, a stale data pipeline.</li>
                 <li><strong style="color: var(--text);">Finish with a real demo:</strong> show the result, the numbers behind it, and what you would do next.</li>
@@ -3122,32 +3124,8 @@
       // Detail Dossier View & Tabbed Architecture
       let activeDetailTab = 'overview';
 
-      function switchDetailTab(tabKey) {
-        activeDetailTab = tabKey;
-        const card = document.getElementById('modal-card');
-        if (!card) return;
-
-        // Toggle active class on tab buttons
-        card.querySelectorAll('.dossier-tab-btn').forEach(btn => {
-          btn.classList.toggle('active', btn.dataset.tab === tabKey);
-        });
-
-        // Show/hide panes
-        const panes = card.querySelectorAll('.dossier-tab-pane');
-        panes.forEach(pane => {
-          if (tabKey === 'full') {
-            pane.style.display = 'block';
-          } else {
-            pane.style.display = pane.dataset.pane === tabKey ? 'block' : 'none';
-          }
-        });
-
-        // Scroll to tab bar if scrolled far down
-        const tabBar = card.querySelector('.dossier-tab-bar');
-        if (tabBar) {
-          tabBar.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-      }
+      // Note: switchDetailTab is defined once, further down, next to the rest of
+      // the modal plumbing. Only the later definition is live.
 
       // Comprehensive Data Enrichment Helper for all 436 careers
       function getCareerEnrichment(c) {
@@ -3706,14 +3684,72 @@
         }
 
         // Section: Getting Your First Break
+        // Keyed off the career's real entry level. It used to tell every one of
+        // the 436 careers to apply in "penultimate college year", which is
+        // actively wrong for the 156 that need no degree at all.
+        const BREAK = {
+          nodegree: {
+            window: 'Any time — there is no degree to wait for',
+            signal: 'A certification, a licence, or work you can point at',
+            lead: 'Nobody is going to hand you a college offer here, so the entry ticket is proof you can already do the work.',
+            steps: [
+              'Get the specific licence or ticket the trade actually requires.',
+              'Take work that is paid even if it is not the job you want yet.',
+              'Build a small portfolio — a repaired engine, a finished set, a season of footage.',
+            ],
+          },
+          diploma: {
+            window: 'While you finish the diploma, and the semester after',
+            signal: 'Practical work experience, plus the tools you already know how to use',
+            lead: 'The diploma opens the door, but the practical hours are what get you through it.',
+            steps: [
+              'Do your industrial training or internship while the diploma is still running.',
+              'Learn the tooling properly rather than just enough to get by.',
+              'Apply where the qualification is formally required, then where it is merely useful.',
+            ],
+          },
+          bachelor: {
+            window: 'Penultimate year through the final summer',
+            signal: 'Completed projects you can walk someone through',
+            lead: 'By this point nobody is selecting on your potential. They are selecting on work you have already finished.',
+            steps: [
+              'Ship something real, even small, and be able to explain your decisions in it.',
+              'Write short weekly updates to whoever is supervising you.',
+              'Ask mid-term how you are being judged against the full-time bar.',
+            ],
+          },
+          master: {
+            window: 'Between the bachelor degree and the thesis, or during it',
+            signal: 'Research or analysis you produced, not coursework you sat through',
+            lead: 'A masters is treated as a year of work, so treat it like one.',
+            steps: [
+              'Take on research assistant or analyst work early in the degree.',
+              'Get a co-authored paper, working paper, or a real dataset study.',
+              'Present the work at a conference or seminar rather than only submitting it.',
+            ],
+          },
+          doctorate: {
+            window: 'The first one to three years of the doctorate',
+            signal: 'Original research, a named supervisor, and teaching experience',
+            lead: 'Doctoral hiring runs on research output and who trained you, not on a transcript.',
+            steps: [
+              'Publish or get accepted somewhere reputable, even early.',
+              'Build a relationship with your supervisor that outlasts the enrolment.',
+              'Take a teaching assistantship — it is the cheapest way to prove you can explain research.',
+            ],
+          },
+        };
+        // The dataset spells the top level two ways; treat them the same.
+        BREAK.phd = BREAK.doctorate;
+        const brk = BREAK[c.edu] || BREAK.bachelor;
         html += '<div class="dossier-section">';
         html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Getting Your First Break (Apprenticeships &amp; Internships)</div>';
-        html += '<p class="dossier-prose dim" style="margin-bottom:14px;">How early-career candidates convert applications into paid offers in <strong>' + c.title + '</strong>:</p>';
+        html += '<p class="dossier-prose dim" style="margin-bottom:14px;">' + brk.lead + '</p>';
         html += '<div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">';
-        html += '<div style="padding:12px 16px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:10px;"><div style="font-size:10.5px; color:#f2b84b; font-weight:800; text-transform:uppercase;">Best Application Window</div><div style="font-size:13.5px; color:#e8e3d8; font-weight:600; margin-top:3px;">Penultimate college year / Final 2 terms</div></div>';
-        html += '<div style="padding:12px 16px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:10px;"><div style="font-size:10.5px; color:#34d399; font-weight:800; text-transform:uppercase;">Decisive Selection Signal</div><div style="font-size:13.5px; color:#e8e3d8; font-weight:600; margin-top:3px;">Demonstrated proof of completed work</div></div>';
+        html += '<div style="padding:12px 16px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:10px;"><div style="font-size:10.5px; color:#f2b84b; font-weight:800; text-transform:uppercase;">When To Start Applying</div><div style="font-size:13.5px; color:#e8e3d8; font-weight:600; margin-top:3px;">' + brk.window + '</div></div>';
+        html += '<div style="padding:12px 16px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:10px;"><div style="font-size:10.5px; color:#34d399; font-weight:800; text-transform:uppercase;">What Actually Decides It</div><div style="font-size:13.5px; color:#e8e3d8; font-weight:600; margin-top:3px;">' + brk.signal + '</div></div>';
         html += '</div>';
-        html += '<ul style="padding-left:18px; color:#8891aa; font-size:13.5px; line-height:1.7; display:flex; flex-direction:column; gap:6px;"><li><strong>Ship tangible proof:</strong> Replace generic course certificates with a public, verifiable project or case study.</li><li><strong>Weekly written cadence:</strong> Structured asynchronous updates during junior tenure signal high ownership and reliability.</li><li><strong>Align conversion metrics:</strong> Request a mid-term review to agree explicitly on full-time return criteria.</li></ul>';
+        html += '<ul style="padding-left:18px; color:#8891aa; font-size:13.5px; line-height:1.7; display:flex; flex-direction:column; gap:6px;">' + brk.steps.map(s => '<li>' + s + '</li>').join('') + '</ul>';
         html += '</div>';
 
         html += '</div>'; // End Tab 3
@@ -3955,11 +3991,6 @@
       }
       window.switchDetailTab = switchDetailTab;
 
-      function switchTab(idx, btn) {
-        document.querySelectorAll('.modal-tab-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
-        document.querySelectorAll('.tab-pane').forEach((p, i) => p.classList.toggle('active', i === idx));
-      }
-
       // Close modals on backdrop click or Escape
       document.getElementById('detail-modal').addEventListener('click', e => {
         if (e.target === document.getElementById('detail-modal')) closeDetail();
@@ -4044,66 +4075,11 @@
         if (e.target === document.getElementById('internship-modal')) closeInternshipHub();
       });
 
-      // Filter Pill Event Listeners
-      document.querySelectorAll('#view-mode-bar .mode-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          document.querySelectorAll('#view-mode-bar .mode-btn').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          activeSource = btn.dataset.mode;
-          renderActiveFiltersTray();
-          renderCards();
-        });
-      });
-
-      document.querySelectorAll('#domain-filters .pill-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          document.querySelectorAll('#domain-filters .pill-btn').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          currentCat = btn.dataset.cat;
-          renderActiveFiltersTray();
-          renderCards();
-        });
-      });
-
-      document.querySelectorAll('#stream-filters .pill-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          document.querySelectorAll('#stream-filters .pill-btn').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          currentStream = btn.dataset.stream;
-          renderActiveFiltersTray();
-          renderCards();
-        });
-      });
-
-      document.querySelectorAll('#edu-filters .pill-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          document.querySelectorAll('#edu-filters .pill-btn').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          currentEdu = btn.dataset.edu;
-          renderActiveFiltersTray();
-          renderCards();
-        });
-      });
-
-      document.querySelectorAll('#degree-filters .pill-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          document.querySelectorAll('#degree-filters .pill-btn').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          currentDegree = btn.dataset.degree;
-          renderActiveFiltersTray();
-          renderCards();
-        });
-      });
-
-      document.querySelectorAll('#interest-filters .pill-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          document.querySelectorAll('#interest-filters .pill-btn').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          currentInterest = btn.dataset.interest;
-          renderActiveFiltersTray();
-          renderCards();
-        });
-      });
+      // Filtering is driven by the <select> elements in .filters-toolbar, which
+      // each call their setter inline (setCategory, setDegree, setInterest,
+      // setStream, setEdu, changeSort). The segmented view bar calls
+      // setActiveSource. There are no pill buttons to bind, so nothing to
+      // listen for here.
 
       // Search input listener
       const searchInput = document.getElementById('search-input');
@@ -4153,7 +4129,8 @@
           ai: 'Harder To Automate',
           high_earning: 'High Earning $150K+'
         };
-        document.querySelectorAll('#view-mode-bar .mode-btn').forEach(btn => {
+        // The segmented bar renders .seg-btn (not the old .pill-btn/.mode-btn).
+        document.querySelectorAll('#view-mode-bar .seg-btn').forEach(btn => {
           const key = btn.dataset.mode;
           if (labels[key]) btn.textContent = labels[key] + ' (' + counts[key] + ')';
         });
