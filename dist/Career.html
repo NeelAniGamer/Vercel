@@ -1847,6 +1847,63 @@
       .quiz-card-title { font-weight: 700; color: var(--text); font-size: 14px; margin-bottom: 4px; }
       .quiz-card-desc { font-size: 12px; color: var(--text-dim); line-height: 1.4; }
 
+      /* Questions 2 and 3 accept more than one answer, so the card has to show
+         its own state rather than relying on the parent's .selected rule. */
+      .quiz-card.multi .quiz-card-head { display: flex; align-items: flex-start; gap: 10px; }
+      .quiz-card .tick {
+        flex: 0 0 auto; width: 18px; height: 18px; margin-top: 1px; border-radius: 5px;
+        border: 1.5px solid var(--glass-border); display: flex; align-items: center;
+        justify-content: center; font-size: 11px; font-weight: 900; color: transparent;
+        transition: var(--transition);
+      }
+      .quiz-card.multi.selected .tick {
+        background: var(--primary); border-color: var(--primary); color: #070a14;
+      }
+      .quiz-hint {
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        margin: 0 0 4px; font-size: 12px; color: var(--text-dim);
+      }
+      .quiz-count { font-weight: 700; color: var(--primary); white-space: nowrap; }
+      .quiz-progress { display: flex; gap: 6px; margin-bottom: 18px; }
+      .quiz-progress-seg { height: 3px; flex: 1; border-radius: 2px; background: var(--glass-border); }
+      .quiz-progress-seg.done { background: var(--primary); }
+
+      /* Results: the reasoning matters more than the number, so each match
+         shows the score and then the specific answers that produced it. */
+      .compass-results { display: flex; flex-direction: column; gap: 12px; }
+      .compass-result {
+        border: 1px solid var(--glass-border); border-radius: var(--radius-sm);
+        padding: 16px 18px; background: rgba(255, 255, 255, 0.025);
+        display: flex; gap: 14px; align-items: flex-start;
+      }
+      .compass-result-rank {
+        flex: 0 0 auto; width: 30px; height: 30px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 12px; font-weight: 800; background: rgba(242, 184, 75, 0.14);
+        color: var(--primary);
+      }
+      .compass-result-body { flex: 1; min-width: 0; }
+      .compass-result-top { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+      .compass-result-title { font-weight: 700; color: var(--text); font-size: 15px; cursor: pointer; }
+      .compass-result-title:hover { color: var(--primary); }
+      .compass-fit {
+        font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700;
+        padding: 2px 8px; border-radius: 10px; background: rgba(52, 211, 153, 0.14); color: #34d399;
+      }
+      .compass-fit.mid { background: rgba(242, 184, 75, 0.14); color: var(--primary); }
+      .compass-fit.low { background: rgba(148, 163, 184, 0.14); color: #94a3b8; }
+      .compass-why { margin-top: 7px; display: flex; flex-wrap: wrap; gap: 6px; }
+      .compass-why span {
+        font-size: 11px; padding: 3px 9px; border-radius: 10px;
+        background: rgba(255, 255, 255, 0.045); color: var(--text-dim);
+      }
+      .compass-why span.negative { background: rgba(248, 113, 113, 0.1); color: #f87171; }
+      .compass-note {
+        margin-top: 14px; padding: 12px 14px; border-radius: 8px; font-size: 12.5px;
+        line-height: 1.6; color: var(--text-dim);
+        border: 1px dashed var(--glass-border); background: rgba(148, 163, 184, 0.05);
+      }
+
       /* Mobile Navigation Bar & Global Clearance */
       @media (max-width: 900px) {
         body { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)) !important; }
@@ -2392,112 +2449,427 @@
             </div>
           </div>
           <div class="modal-body" style="padding: 24px 36px;">
-            
+
+            <div class="quiz-progress" id="compass-progress">
+
+              <span class="quiz-progress-seg" data-seg="1"></span>
+
+              <span class="quiz-progress-seg" data-seg="2"></span>
+
+              <span class="quiz-progress-seg" data-seg="3"></span>
+
+              <span class="quiz-progress-seg" data-seg="4"></span>
+
+              <span class="quiz-progress-seg" data-seg="5"></span>
+
+            </div>
+
+
             <!-- Step 1 -->
             <div class="compass-step active" id="c-step-1">
-              <h3 style="font-size:18px; margin-bottom:8px; color:var(--text);">1. Which stream are you in?</h3>
-              <p style="color:var(--text-secondary); font-size:14px; margin-bottom:16px;">Pick the one closest to what you are studying now.</p>
-              <div class="quiz-option-grid">
-                <div class="quiz-card selected" onclick="selectCompassOption(1, 'pcm', this)">
-                  <div class="quiz-card-title">Science (PCM / Math)</div>
-                  <div class="quiz-card-desc">Physics, Chemistry, Higher Mathematics, Computing, Logic</div>
-                </div>
-                <div class="quiz-card" onclick="selectCompassOption(1, 'pcb', this)">
-                  <div class="quiz-card-title">Science (PCB / Bio)</div>
-                  <div class="quiz-card-desc">Biology, Chemistry, Anatomy, Physiology, Clinical Sciences</div>
-                </div>
-                <div class="quiz-card" onclick="selectCompassOption(1, 'commerce', this)">
-                  <div class="quiz-card-title">Commerce &amp; Math</div>
-                  <div class="quiz-card-desc">Accountancy, Economics, Business Markets, Statistics</div>
-                </div>
-                <div class="quiz-card" onclick="selectCompassOption(1, 'arts', this)">
-                  <div class="quiz-card-title">Arts &amp; Humanities</div>
-                  <div class="quiz-card-desc">History, Political Science, Psychology, Literature, Design</div>
-                </div>
-                <div class="quiz-card" onclick="selectCompassOption(1, 'any', this)">
-                  <div class="quiz-card-title">Any Stream / Vocational</div>
-                  <div class="quiz-card-desc">Hands-on technology, skilled trades, entrepreneurship</div>
-                </div>
-              </div>
-              <div style="display:flex; justify-content:flex-end; margin-top:20px;">
-                <button class="nav-btn primary" onclick="goToCompassStep(2)">Next: Interests →</button>
+              <h3 style="font-size:18px; margin-bottom:6px; color:var(--text);">1. Where are you right now?</h3>
+              <p style="color:var(--text-secondary); font-size:14px; margin-bottom:14px;">Pick the stream you are studying, or the closest thing to where you are.</p>
+                <div class="quiz-option-grid">
+                    <div class="quiz-card" onclick="selectCompassOption(1, 'pcm', this)">
+                    <div class="quiz-card-head">
+                      <div>
+                        <div class="quiz-card-title">Science (PCM / Maths)</div>
+                        <div class="quiz-card-desc">Engineering, Science, Computing</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card" onclick="selectCompassOption(1, 'pcb', this)">
+                    <div class="quiz-card-head">
+                      <div>
+                        <div class="quiz-card-title">Science (PCB / Biology)</div>
+                        <div class="quiz-card-desc">Health, Science, Any</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card" onclick="selectCompassOption(1, 'commerce', this)">
+                    <div class="quiz-card-head">
+                      <div>
+                        <div class="quiz-card-title">Commerce &amp; Maths</div>
+                        <div class="quiz-card-desc">Commerce, Management, Any</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card" onclick="selectCompassOption(1, 'arts', this)">
+                    <div class="quiz-card-head">
+                      <div>
+                        <div class="quiz-card-title">Arts &amp; Humanities</div>
+                        <div class="quiz-card-desc">Arts, Design, Law, Any</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card" onclick="selectCompassOption(1, 'voc', this)">
+                    <div class="quiz-card-head">
+                      <div>
+                        <div class="quiz-card-title">Vocational / Any Stream</div>
+                        <div class="quiz-card-desc">Vocational, Any, Design</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; gap:12px;">
+                <span></span>
+                <button class="nav-btn primary" onclick="goToCompassStep(2)">Next: Degree &rarr;</button>
               </div>
             </div>
 
             <!-- Step 2 -->
             <div class="compass-step" id="c-step-2">
-              <h3 style="font-size:18px; margin-bottom:8px; color:var(--text);">2. What are you actually interested in?</h3>
-              <p style="color:var(--text-secondary); font-size:14px; margin-bottom:16px;">Pick the one you would happily read about for an hour.</p>
-              <div class="quiz-option-grid">
-                <div class="quiz-card selected" onclick="selectCompassOption(2, 'tech', this)">
-                  <div class="quiz-card-title">Software, AI &amp; Code</div>
-                  <div class="quiz-card-desc">Algorithms, machine learning, software architecture, data</div>
-                </div>
-                <div class="quiz-card" onclick="selectCompassOption(2, 'health', this)">
-                  <div class="quiz-card-title">Healing &amp; Medicine</div>
-                  <div class="quiz-card-desc">Saving lives, surgical precision, therapy, clinical research</div>
-                </div>
-                <div class="quiz-card" onclick="selectCompassOption(2, 'eng', this)">
-                  <div class="quiz-card-title">Machines &amp; Space</div>
-                  <div class="quiz-card-desc">Robotics, aerospace flight, physical engines, megaprojects</div>
-                </div>
-                <div class="quiz-card" onclick="selectCompassOption(2, 'biz', this)">
-                  <div class="quiz-card-title">Finance &amp; Strategy</div>
-                  <div class="quiz-card-desc">Capital markets, startup ventures, corporate consulting</div>
-                </div>
-                <div class="quiz-card" onclick="selectCompassOption(2, 'law', this)">
-                  <div class="quiz-card-title">Justice &amp; Governance</div>
-                  <div class="quiz-card-desc">Constitutional advocacy, courtroom litigation, diplomacy</div>
-                </div>
-                <div class="quiz-card" onclick="selectCompassOption(2, 'creative', this)">
-                  <div class="quiz-card-title">Design &amp; Media</div>
-                  <div class="quiz-card-desc">Visual design, architecture, filmmaking, 3D animation</div>
-                </div>
-                <div class="quiz-card" onclick="selectCompassOption(2, 'eco', this)">
-                  <div class="quiz-card-title">Ecology &amp; Clean Energy</div>
-                  <div class="quiz-card-desc">Renewable energy, climate solutions, sustainable planet</div>
-                </div>
-                <div class="quiz-card" onclick="selectCompassOption(2, 'trades', this)">
-                  <div class="quiz-card-title">Hands-On Craft &amp; Industry</div>
-                  <div class="quiz-card-desc">High-voltage electrical, precision mechanics, welding</div>
-                </div>
-              </div>
-              <div style="display:flex; justify-content:space-between; margin-top:20px;">
-                <button class="nav-btn" onclick="goToCompassStep(1)">← Back</button>
-                <button class="nav-btn primary" onclick="goToCompassStep(3)">Next: Work Style →</button>
+              <h3 style="font-size:18px; margin-bottom:6px; color:var(--text);">2. What would you like to study?</h3>
+              <p style="color:var(--text-secondary); font-size:14px; margin-bottom:14px;">Choose up to three. Pick what you would actually enjoy, not only what is open to you.</p>
+                <div class="quiz-hint"><span>Pick up to 3</span><span class="quiz-count" id="count-degrees">0 of 3 chosen</span></div>
+                <div class="quiz-option-grid">
+                    <div class="quiz-card multi" onclick="selectCompassOption(2, 'engineering', this)">
+                    <div class="quiz-card-head">
+                      <span class="tick">&#10003;</span>
+                      <div>
+                        <div class="quiz-card-title">Engineering &amp; Technology</div>
+                        <div class="quiz-card-desc">Machines, circuits, structures, how things work</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card multi" onclick="selectCompassOption(2, 'science', this)">
+                    <div class="quiz-card-head">
+                      <span class="tick">&#10003;</span>
+                      <div>
+                        <div class="quiz-card-title">Science &amp; Research</div>
+                        <div class="quiz-card-desc">Biology, chemistry, physics, earth, space</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card multi" onclick="selectCompassOption(2, 'computing', this)">
+                    <div class="quiz-card-head">
+                      <span class="tick">&#10003;</span>
+                      <div>
+                        <div class="quiz-card-title">Computing &amp; Data</div>
+                        <div class="quiz-card-desc">Code, algorithms, data, networks, security</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card multi" onclick="selectCompassOption(2, 'health', this)">
+                    <div class="quiz-card-head">
+                      <span class="tick">&#10003;</span>
+                      <div>
+                        <div class="quiz-card-title">Medicine &amp; Allied Health</div>
+                        <div class="quiz-card-desc">Clinical care, therapy, pharmacy, public health</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card multi" onclick="selectCompassOption(2, 'commerce', this)">
+                    <div class="quiz-card-head">
+                      <span class="tick">&#10003;</span>
+                      <div>
+                        <div class="quiz-card-title">Commerce, Finance &amp; Law</div>
+                        <div class="quiz-card-desc">Accounts, markets, regulation, courts</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card multi" onclick="selectCompassOption(2, 'arts', this)">
+                    <div class="quiz-card-head">
+                      <span class="tick">&#10003;</span>
+                      <div>
+                        <div class="quiz-card-title">Arts, Design &amp; Education</div>
+                        <div class="quiz-card-desc">Design, media, writing, teaching, humanities</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card multi" onclick="selectCompassOption(2, 'vocational', this)">
+                    <div class="quiz-card-head">
+                      <span class="tick">&#10003;</span>
+                      <div>
+                        <div class="quiz-card-title">Skilled Trades &amp; Craft</div>
+                        <div class="quiz-card-desc">Hands-on technical work, on site or in a workshop</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card multi" onclick="selectCompassOption(2, 'management', this)">
+                    <div class="quiz-card-head">
+                      <span class="tick">&#10003;</span>
+                      <div>
+                        <div class="quiz-card-title">Business &amp; Management</div>
+                        <div class="quiz-card-desc">Operations, product, marketing, supply chain</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; gap:12px;">
+                <button class="nav-btn" onclick="goToCompassStep(1)">&larr; Back</button>
+                <button class="nav-btn primary" onclick="goToCompassStep(3)">Next: Interests &rarr;</button>
               </div>
             </div>
 
             <!-- Step 3 -->
             <div class="compass-step" id="c-step-3">
-              <h3 style="font-size:18px; margin-bottom:8px; color:var(--text);">3. What kind of day suits you?</h3>
-              <p style="color:var(--text-secondary); font-size:14px; margin-bottom:16px;">Where do you do your best work?</p>
-              <div class="quiz-option-grid">
-                <div class="quiz-card selected" onclick="selectCompassOption(3, 'analytical', this)">
-                  <div class="quiz-card-title">Deep Focus &amp; Remote</div>
-                  <div class="quiz-card-desc">Quiet uninterrupted concentration, systems modeling, code</div>
-                </div>
-                <div class="quiz-card" onclick="selectCompassOption(3, 'empathy', this)">
-                  <div class="quiz-card-title">Empathetic Human Care</div>
-                  <div class="quiz-card-desc">Direct bedside interaction, teaching, counseling, patient trust</div>
-                </div>
-                <div class="quiz-card" onclick="selectCompassOption(3, 'fast', this)">
-                  <div class="quiz-card-title">Fast-Paced High Stakes</div>
-                  <div class="quiz-card-desc">Executive decision-making, trading floors, courtroom debates</div>
-                </div>
-                <div class="quiz-card" onclick="selectCompassOption(3, 'hands_on', this)">
-                  <div class="quiz-card-title">Physical &amp; Outdoor Active</div>
-                  <div class="quiz-card-desc">Job sites, flight cockpits, surgical theaters, nature reserves</div>
-                </div>
-              </div>
-              <div style="display:flex; justify-content:space-between; margin-top:20px;">
-                <button class="nav-btn" onclick="goToCompassStep(2)">← Back</button>
-                <button class="nav-btn primary" style="background:linear-gradient(135deg, #10b981, #059669);" onclick="runCompassMatch()">
-                  Calculate My Matches →
-                </button>
+              <h3 style="font-size:18px; margin-bottom:6px; color:var(--text);">3. What do you want to spend your days on?</h3>
+              <p style="color:var(--text-secondary); font-size:14px; margin-bottom:14px;">Choose up to three. Be honest here - this is the answer that changes the results most.</p>
+                <div class="quiz-hint"><span>Pick up to 3</span><span class="quiz-count" id="count-interests">0 of 3 chosen</span></div>
+                <div class="quiz-option-grid">
+                    <div class="quiz-card multi" onclick="selectCompassOption(3, 'tech', this)">
+                    <div class="quiz-card-head">
+                      <span class="tick">&#10003;</span>
+                      <div>
+                        <div class="quiz-card-title">Technology &amp; Code</div>
+                        <div class="quiz-card-desc">Software, systems, networks, data</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card multi" onclick="selectCompassOption(3, 'build', this)">
+                    <div class="quiz-card-head">
+                      <span class="tick">&#10003;</span>
+                      <div>
+                        <div class="quiz-card-title">Making &amp; Engineering</div>
+                        <div class="quiz-card-desc">Building, machines, fabrication, infrastructure</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card multi" onclick="selectCompassOption(3, 'health', this)">
+                    <div class="quiz-card-head">
+                      <span class="tick">&#10003;</span>
+                      <div>
+                        <div class="quiz-card-title">Health &amp; Biology</div>
+                        <div class="quiz-card-desc">Medicine, care, therapy, life sciences</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card multi" onclick="selectCompassOption(3, 'design', this)">
+                    <div class="quiz-card-head">
+                      <span class="tick">&#10003;</span>
+                      <div>
+                        <div class="quiz-card-title">Design &amp; Art</div>
+                        <div class="quiz-card-desc">Visual work, craft, making things look right</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card multi" onclick="selectCompassOption(3, 'people', this)">
+                    <div class="quiz-card-head">
+                      <span class="tick">&#10003;</span>
+                      <div>
+                        <div class="quiz-card-title">People &amp; Teaching</div>
+                        <div class="quiz-card-desc">Working with people, teaching, caring, leading</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card multi" onclick="selectCompassOption(3, 'business', this)">
+                    <div class="quiz-card-head">
+                      <span class="tick">&#10003;</span>
+                      <div>
+                        <div class="quiz-card-title">Business &amp; Money</div>
+                        <div class="quiz-card-desc">Markets, strategy, operations, growth</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card multi" onclick="selectCompassOption(3, 'words', this)">
+                    <div class="quiz-card-head">
+                      <span class="tick">&#10003;</span>
+                      <div>
+                        <div class="quiz-card-title">Writing &amp; Communication</div>
+                        <div class="quiz-card-desc">Language, media, law, persuasion</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card multi" onclick="selectCompassOption(3, 'outdoors', this)">
+                    <div class="quiz-card-head">
+                      <span class="tick">&#10003;</span>
+                      <div>
+                        <div class="quiz-card-title">Outdoors, Transport &amp; Sport</div>
+                        <div class="quiz-card-desc">Fieldwork, driving, sport, land, air</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card multi" onclick="selectCompassOption(3, 'eco', this)">
+                    <div class="quiz-card-head">
+                      <span class="tick">&#10003;</span>
+                      <div>
+                        <div class="quiz-card-title">Ecology &amp; Food</div>
+                        <div class="quiz-card-desc">Environment, agriculture, climate, food systems</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; gap:12px;">
+                <button class="nav-btn" onclick="goToCompassStep(2)">&larr; Back</button>
+                <button class="nav-btn primary" onclick="goToCompassStep(4)">Next: Study &rarr;</button>
               </div>
             </div>
 
+            <!-- Step 4 -->
+            <div class="compass-step" id="c-step-4">
+              <h3 style="font-size:18px; margin-bottom:6px; color:var(--text);">4. How much study are you willing to do?</h3>
+              <p style="color:var(--text-secondary); font-size:14px; margin-bottom:14px;">There is no wrong answer. Plenty of good careers need no degree at all.</p>
+                <div class="quiz-option-grid">
+                    <div class="quiz-card" onclick="selectCompassOption(4, 'nodegree', this)">
+                    <div class="quiz-card-head">
+                      <div>
+                        <div class="quiz-card-title">Start working now</div>
+                        <div class="quiz-card-desc">No degree needed, or learn while you earn</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card" onclick="selectCompassOption(4, 'diploma', this)">
+                    <div class="quiz-card-head">
+                      <div>
+                        <div class="quiz-card-title">Diploma or ITI</div>
+                        <div class="quiz-card-desc">A focused 1-3 year qualification</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card" onclick="selectCompassOption(4, 'bachelor', this)">
+                    <div class="quiz-card-head">
+                      <div>
+                        <div class="quiz-card-title">Bachelor's degree</div>
+                        <div class="quiz-card-desc">A standard 3 or 4 year degree</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card" onclick="selectCompassOption(4, 'master', this)">
+                    <div class="quiz-card-head">
+                      <div>
+                        <div class="quiz-card-title">Master's Degree</div>
+                        <div class="quiz-card-desc">A specialisation after your bachelor's</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card" onclick="selectCompassOption(4, 'doctorate', this)">
+                    <div class="quiz-card-head">
+                      <div>
+                        <div class="quiz-card-title">Doctorate or research</div>
+                        <div class="quiz-card-desc">A PhD, or a professional doctorate</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; gap:12px;">
+                <button class="nav-btn" onclick="goToCompassStep(3)">&larr; Back</button>
+                <button class="nav-btn primary" onclick="goToCompassStep(5)">Next: Field &rarr;</button>
+              </div>
+            </div>
+
+            <!-- Step 5 -->
+            <div class="compass-step" id="c-step-5">
+              <h3 style="font-size:18px; margin-bottom:6px; color:var(--text);">5. What kind of work do you want to be doing?</h3>
+              <p style="color:var(--text-secondary); font-size:14px; margin-bottom:14px;">This is the strongest filter. If you are not sure, say so and we will show you the best option from every area.</p>
+                <div class="quiz-option-grid">
+                    <div class="quiz-card" onclick="selectCompassOption(5, 'Technology & AI', this)">
+                    <div class="quiz-card-head">
+                      <div>
+                        <div class="quiz-card-title">Technology &amp; Computing</div>
+                        <div class="quiz-card-desc">Software, data, security, electronics</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card" onclick="selectCompassOption(5, 'Engineering & Robotics', this)">
+                    <div class="quiz-card-head">
+                      <div>
+                        <div class="quiz-card-title">Engineering &amp; Industry</div>
+                        <div class="quiz-card-desc">Machines, construction, manufacturing, energy</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card" onclick="selectCompassOption(5, 'Healthcare & Medicine', this)">
+                    <div class="quiz-card-head">
+                      <div>
+                        <div class="quiz-card-title">Health &amp; Medicine</div>
+                        <div class="quiz-card-desc">Clinical care, therapy, pharmacy, research</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card" onclick="selectCompassOption(5, 'Business & Finance', this)">
+                    <div class="quiz-card-head">
+                      <div>
+                        <div class="quiz-card-title">Business &amp; Finance</div>
+                        <div class="quiz-card-desc">Management, markets, consulting, commerce</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card" onclick="selectCompassOption(5, 'Law & Public Safety', this)">
+                    <div class="quiz-card-head">
+                      <div>
+                        <div class="quiz-card-title">Law, Government &amp; Safety</div>
+                        <div class="quiz-card-desc">Courts, policing, armed forces, regulation</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card" onclick="selectCompassOption(5, 'Education & Academia', this)">
+                    <div class="quiz-card-head">
+                      <div>
+                        <div class="quiz-card-title">Education &amp; Teaching</div>
+                        <div class="quiz-card-desc">Schools, universities, training, research</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card" onclick="selectCompassOption(5, 'Skilled Trades & Craft', this)">
+                    <div class="quiz-card-head">
+                      <div>
+                        <div class="quiz-card-title">Skilled Trades &amp; Craft</div>
+                        <div class="quiz-card-desc">Hands-on technical and craft work</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card" onclick="selectCompassOption(5, 'Creative Arts & Design', this)">
+                    <div class="quiz-card-head">
+                      <div>
+                        <div class="quiz-card-title">Creative Arts &amp; Media</div>
+                        <div class="quiz-card-desc">Design, media, writing, performance</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card" onclick="selectCompassOption(5, 'Aviation & Aerospace', this)">
+                    <div class="quiz-card-head">
+                      <div>
+                        <div class="quiz-card-title">Aviation &amp; Aerospace</div>
+                        <div class="quiz-card-desc">Flight, space, aviation services</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card" onclick="selectCompassOption(5, 'Sustainability & Energy', this)">
+                    <div class="quiz-card-head">
+                      <div>
+                        <div class="quiz-card-title">Energy &amp; Environment</div>
+                        <div class="quiz-card-desc">Renewables, climate, sustainability</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card" onclick="selectCompassOption(5, 'Science & DeepTech', this)">
+                    <div class="quiz-card-head">
+                      <div>
+                        <div class="quiz-card-title">Science &amp; Deep Tech</div>
+                        <div class="quiz-card-desc">Research, quantum, biotech, advanced materials</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card" onclick="selectCompassOption(5, 'Human Care & Services', this)">
+                    <div class="quiz-card-head">
+                      <div>
+                        <div class="quiz-card-title">Care &amp; Personal Services</div>
+                        <div class="quiz-card-desc">Hospitality, protection, personal service</div>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="quiz-card" onclick="selectCompassOption(5, '', this)">
+                    <div class="quiz-card-head">
+                      <div>
+                        <div class="quiz-card-title">Not Sure Yet</div>
+                        <div class="quiz-card-desc">Show me the best option from every area instead of picking one</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; gap:12px;">
+                <button class="nav-btn" onclick="goToCompassStep(4)">&larr; Back</button>
+                <button class="nav-btn primary" onclick="runCompassMatch()">Show My Matches &rarr;</button>
+              </div>
+            </div>
+
+            <!-- Results -->
+            <div class="compass-step" id="c-step-6">
+              <h3 style="font-size:18px; margin-bottom:6px; color:var(--text);">Your strongest matches</h3>
+              <p style="color:var(--text-secondary); font-size:14px; margin-bottom:16px;">Ranked against the other options that suit you. The chips under each one are the answers that put it there.</p>
+              <div class="compass-results" id="compass-results"></div>
+              <div class="compass-note" id="compass-note"></div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; gap:12px;">
+                <button class="nav-btn" onclick="goToCompassStep(1)">&larr; Change my answers</button>
+                <button class="nav-btn primary" onclick="closeCompassModal(); document.getElementById('explore').scrollIntoView({ behavior: 'smooth' });">Browse All 441 Careers &rarr;</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -2605,6 +2977,10 @@
 
     <!-- Career Data -->
     <script src="careers-data.js"></script>
+<!-- Career Compass scoring. Kept out of the inline block so the same file can
+     be required by scripts/compass_scoring.js, which calibrates it against the
+     dataset without a browser. -->
+<script src="compass-scoring.js"></script>
 
     <!-- App Engine Logic -->
     <script>
@@ -2623,7 +2999,13 @@
       let renderLimit = 36;
       let compassScores = {};
       let activeDetailCareer = null;
-      let compassAnswers = { stream: 'pcm', interest: 'tech', style: 'analytical' };
+      // Why each career scored what it did, for the results panel. Populated by
+      // runCompassMatch alongside compassScores, and cleared with it.
+      let compassReasons = {};
+      // A sensible default for the single-answer questions so nothing starts
+      // blank, but both multi-selects start empty: a default there would be an
+      // answer the student never gave.
+      let compassAnswers = { stream: 'pcm', degrees: [], interests: [], edu: 'bachelor', field: '', diversify: true };
 
       // Initialize Career Data
       function initData() {
@@ -3036,10 +3418,25 @@
         arts: 'Arts & Humanities', any: 'No Stream Preference'
       };
 
+      // Chips are assembled with DOM nodes and textContent rather than string-concatenated
+      // innerHTML: every label below originates from a <select>.value or the search box, so
+      // building markup by hand would let that text be re-parsed as HTML (CodeQL js/xss-through-dom).
+      function makeFilterChip(label, onClear) {
+        const chip = document.createElement('div');
+        chip.className = 'active-tag';
+        chip.appendChild(document.createTextNode(label));
+        const remove = document.createElement('span');
+        remove.className = 'active-tag-remove';
+        remove.textContent = '✕';
+        chip.appendChild(remove);
+        chip.addEventListener('click', onClear);
+        return chip;
+      }
+
       function renderActiveFiltersTray() {
         const tray = document.getElementById('active-chips');
         if (!tray) return;
-        tray.innerHTML = '';
+        tray.textContent = '';
         let hasActive = false;
 
         if (activeSource !== 'all') {
@@ -3051,35 +3448,39 @@
             high_earning: 'High Earning $150K+',
             shortlist: 'Saved Shortlist'
           };
-          tray.innerHTML += '<div class="active-tag" onclick="setActiveSource(\'all\')">View: ' + (modeLabels[activeSource] || activeSource) + ' <span class="active-tag-remove">✕</span></div>';
+          tray.appendChild(makeFilterChip('View: ' + (modeLabels[activeSource] || activeSource), function () { setActiveSource('all'); }));
         }
         if (currentCat !== 'all') {
           hasActive = true;
-          tray.innerHTML += '<div class="active-tag" onclick="setCategory(\'all\')">Domain: ' + (DOMAIN_LABELS[currentCat] || currentCat) + ' <span class="active-tag-remove">✕</span></div>';
+          tray.appendChild(makeFilterChip('Domain: ' + (DOMAIN_LABELS[currentCat] || currentCat), function () { setCategory('all'); }));
         }
         if (currentStream !== 'all') {
           hasActive = true;
-          tray.innerHTML += '<div class="active-tag" onclick="setStream(\'all\')">Stream: ' + (STREAM_LABELS[currentStream] || currentStream.toUpperCase()) + ' <span class="active-tag-remove">✕</span></div>';
+          tray.appendChild(makeFilterChip('Stream: ' + (STREAM_LABELS[currentStream] || currentStream.toUpperCase()), function () { setStream('all'); }));
         }
         if (currentEdu !== 'all') {
           hasActive = true;
-          tray.innerHTML += '<div class="active-tag" onclick="setEdu(\'all\')">Education: ' + (EDU_LABELS[currentEdu] || currentEdu) + ' <span class="active-tag-remove">✕</span></div>';
+          tray.appendChild(makeFilterChip('Education: ' + (EDU_LABELS[currentEdu] || currentEdu), function () { setEdu('all'); }));
         }
         if (currentDegree !== 'all') {
           hasActive = true;
-          tray.innerHTML += '<div class="active-tag" onclick="setDegree(\'all\')">Degree: ' + (DEGREE_LABELS[currentDegree] || currentDegree) + ' <span class="active-tag-remove">✕</span></div>';
+          tray.appendChild(makeFilterChip('Degree: ' + (DEGREE_LABELS[currentDegree] || currentDegree), function () { setDegree('all'); }));
         }
         if (currentInterest !== 'all') {
           hasActive = true;
-          tray.innerHTML += '<div class="active-tag" onclick="setInterest(\'all\')">Interest: ' + (INTEREST_LABELS[currentInterest] || currentInterest) + ' <span class="active-tag-remove">✕</span></div>';
+          tray.appendChild(makeFilterChip('Interest: ' + (INTEREST_LABELS[currentInterest] || currentInterest), function () { setInterest('all'); }));
         }
         if (searchQuery) {
           hasActive = true;
-          tray.innerHTML += '<div class="active-tag" onclick="clearSearch()">Search: "' + searchQuery + '" <span class="active-tag-remove">✕</span></div>';
+          tray.appendChild(makeFilterChip('Search: "' + searchQuery + '"', clearSearch));
         }
 
         if (hasActive) {
-          tray.innerHTML += '<button class="reset-filters-btn" onclick="resetAllFilters()">Clear All Filters</button>';
+          const reset = document.createElement('button');
+          reset.className = 'reset-filters-btn';
+          reset.textContent = 'Clear All Filters';
+          reset.addEventListener('click', resetAllFilters);
+          tray.appendChild(reset);
         }
       }
 
@@ -3097,6 +3498,7 @@
         const clearBtn = document.getElementById('search-clear-btn');
         if (clearBtn) clearBtn.style.display = 'none';
         compassScores = {};
+        compassReasons = {};
         updateFilterUI();
         renderCards();
       }
@@ -3265,7 +3667,13 @@
           inner += '</div></div>';
 
           if (matchScore) {
-            inner += '<div class="match-score-badge">🎯 ' + matchScore + '% Fit Match</div><br />';
+            // The old badge read "NN% Fit Match" and was the only visible output
+            // of the quiz. It now says what the number is relative to, because
+            // "92% fit" read as a claim about the career rather than about this
+            // ranking, and a tooltip carries the answers that produced it.
+            const why = (compassReasons[c.id] || []).filter(x => x.pts > 0).map(x => x.text);
+            const tip = why.length ? ' title="' + escHtml(why.join(' · ')) + '"' : '';
+            inner += '<div class="match-score-badge"' + tip + '>' + matchScore + '% fit for you</div>';
           }
 
           if (item.matchedAlias) {
@@ -4278,10 +4686,18 @@
       });
 
       // Career Compass Quiz Engine
+      //
+      // The scoring itself lives in compass-scoring.js so it can be calibrated
+      // against the dataset without a browser. scripts/compass_scoring.js is the
+      // harness and asserts that the top results for ten different answer
+      // profiles are plausible for that profile.
+      const COMPASS_MAX_CHOICES = 3;
+
       function openCompassModal() {
         document.getElementById('compass-modal').classList.add('open');
         document.body.style.overflow = 'hidden';
         document.body.classList.add('modal-open');
+        paintCompassProgress();
       }
       function closeCompassModal() {
         document.getElementById('compass-modal').classList.remove('open');
@@ -4290,41 +4706,129 @@
       }
       function goToCompassStep(step) {
         document.querySelectorAll('.compass-step').forEach((s, i) => s.classList.toggle('active', i + 1 === step));
+        document.querySelector('.compass-step.active').scrollIntoView({ block: 'nearest' });
+        paintCompassProgress();
       }
+      function paintCompassProgress() {
+        // Step 6 is the results view, so it fills the bar like a finished form.
+        const active = [...document.querySelectorAll('.compass-step')].findIndex(s => s.classList.contains('active')) + 1;
+        document.querySelectorAll('.quiz-progress-seg').forEach((seg, i) => {
+          seg.classList.toggle('done', i < active);
+        });
+      }
+
+      // Questions 2 and 3 take several answers. A cap is not decoration: without
+      // it a student can tick everything and the scoring has nothing to
+      // discriminate with, which is how the old quiz ended up ranking noise.
+      function toggleCompassMulti(key, val, el) {
+        const list = compassAnswers[key];
+        const at = list.indexOf(val);
+        if (at >= 0) {
+          list.splice(at, 1);
+        } else {
+          if (list.length >= COMPASS_MAX_CHOICES) {
+            const note = document.getElementById('count-' + key);
+            if (note) {
+              note.textContent = 'Maximum of ' + COMPASS_MAX_CHOICES + ' - deselect one first';
+              clearTimeout(toggleCompassMulti._t);
+              toggleCompassMulti._t = setTimeout(() => paintCompassCount(key), 1800);
+            }
+            return;
+          }
+          list.push(val);
+        }
+        el.classList.toggle('selected', at < 0);
+        paintCompassCount(key);
+      }
+      function paintCompassCount(key) {
+        const el = document.getElementById('count-' + key);
+        if (el) el.textContent = compassAnswers[key].length + ' of ' + COMPASS_MAX_CHOICES + ' chosen';
+      }
+
       function selectCompassOption(step, val, el) {
+        if (step === 2) return toggleCompassMulti('degrees', val, el);
+        if (step === 3) return toggleCompassMulti('interests', val, el);
         el.parentElement.querySelectorAll('.quiz-card').forEach(c => c.classList.remove('selected'));
         el.classList.add('selected');
         if (step === 1) compassAnswers.stream = val;
-        if (step === 2) compassAnswers.interest = val;
-        if (step === 3) compassAnswers.style = val;
+        if (step === 4) compassAnswers.edu = val;
+        if (step === 5) {
+          compassAnswers.field = val;
+          // Answering "not sure" is a real answer, not an empty one, so it gets
+          // its own handling rather than falling through as no field chosen.
+          compassAnswers.diversify = (val === '');
+        }
       }
+
       function runCompassMatch() {
-        closeCompassModal();
+        const results = COMPASS.runCompass(allCareers, compassAnswers);
+
         compassScores = {};
+        results.forEach(r => { compassScores[r.id] = r.fit; });
+        compassReasons = {};
+        results.slice(0, 24).forEach(r => { compassReasons[r.id] = r.reasons; });
 
-        allCareers.forEach(c => {
-          let score = 50;
-          // Match stream
-          const sLower = c.stream.toLowerCase();
-          if (compassAnswers.stream === 'pcm' && (sLower.includes('pcm') || sLower.includes('math'))) score += 25;
-          if (compassAnswers.stream === 'pcb' && (sLower.includes('pcb') || sLower.includes('bio'))) score += 25;
-          if (compassAnswers.stream === 'commerce' && (sLower.includes('commerce') || sLower.includes('math'))) score += 25;
-          if (compassAnswers.stream === 'arts' && (sLower.includes('arts') || sLower.includes('humanities'))) score += 25;
-          if (sLower.includes('any')) score += 15;
-
-          // Match interest / category
-          if (c.cat === compassAnswers.interest) score += 25;
-
-          compassScores[c.id] = Math.min(score, 99);
-        });
-
-        // Set sort to match and reset view
+        // Put the ranking into effect behind the results panel.
         activeSource = 'all';
         currentSort = 'match';
-        document.getElementById('sort-select').value = 'match';
+        const sortSel = document.getElementById('sort-select');
+        if (sortSel) sortSel.value = 'match';
         updateFilterUI();
         renderCards();
-        document.getElementById('explore').scrollIntoView({ behavior: 'smooth' });
+
+        renderCompassResults(results);
+        goToCompassStep(6);
+      }
+
+      function renderCompassResults(results) {
+        const wrap = document.getElementById('compass-results');
+        const top = results.slice(0, 12);
+        wrap.innerHTML = top.map((r, i) => {
+          const c = allCareers.find(x => x.id === r.id);
+          if (!c) return '';
+          const band = r.fit >= 80 ? '' : (r.fit >= 55 ? 'mid' : 'low');
+          // Positive reasons first, then the honest negatives. Showing only the
+          // positives would make a weak match look as good as a strong one.
+          const pos = r.reasons.filter(x => x.pts > 0);
+          const neg = r.reasons.filter(x => x.pts < 0);
+          const chips = pos.concat(neg).map(x =>
+            '<span class="' + (x.pts < 0 ? 'negative' : '') + '">' + x.text + '</span>'
+          ).join('');
+          return '<div class="compass-result">' +
+            '<div class="compass-result-rank">' + (i + 1) + '</div>' +
+            '<div class="compass-result-body">' +
+              '<div class="compass-result-top">' +
+                '<span class="compass-result-title" onclick="closeCompassModal(); openDetail(\'' + c.id + '\')">' + c.title + '</span>' +
+                '<span class="compass-fit ' + band + '">' + r.fit + '% fit</span>' +
+                '<span style="font-size:11px; color:var(--text-dim);">' + escHtml(c.catName) + '</span>' +
+              '</div>' +
+              '<div class="compass-why">' + chips + '</div>' +
+            '</div>' +
+          '</div>';
+        }).join('');
+
+        const note = document.getElementById('compass-note');
+        const answered = [];
+        if (compassAnswers.stream) answered.push('you study ' + COMPASS.STREAMS[compassAnswers.stream].label);
+        if (compassAnswers.degrees.length) answered.push('you want ' + compassAnswers.degrees.length + ' of these fields');
+        if (compassAnswers.interests.length) answered.push('you picked ' + compassAnswers.interests.length + ' interest ' + (compassAnswers.interests.length === 1 ? 'group' : 'groups'));
+        if (compassAnswers.edu) answered.push('you are willing to study to ' + COMPASS.EDU_LEVELS.find(e => e.id === compassAnswers.edu).label.toLowerCase());
+
+        if (compassAnswers.diversify) {
+          // Count what actually happened rather than claiming all twelve areas.
+          // With a narrow set of answers only a few areas have anything that
+          // matches, and promising twelve would be a promise the data cannot keep.
+          const spread = new Set(top.map(r => r.catName)).size;
+          note.textContent = 'You told us you are not sure about the field, so the list leads with the strongest single option from each area your answers actually reach - ' +
+            spread + ' of the ' + COMPASS.FIELDS.length + ' here, because the degrees and interests you picked rule the rest out. ' +
+            'Widen question 2 or 3 to see more areas. All ' + allCareers.length + ' careers stay in the list below, ranked by fit.';
+        } else {
+          note.textContent = 'This ranking comes from ' + answered.join(', ') + '. Your field choice is the strongest filter, so careers outside it sit lower even when the degree and interests match. ' +
+            'The percentages are relative to your own best option, not a measure of how good a career is. All ' + allCareers.length + ' careers stay in the list below - change your answers if the field feels wrong.';
+        }
+      }
+      function escHtml(s) {
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
       }
 
       // Internships Modal
