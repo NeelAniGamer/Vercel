@@ -1,0 +1,217 @@
+{
+  "$schema": "https://fundingjson.org/schema/v1.1.0.json",
+  "version": "v1.1.0",
+  "entity": {
+    "type": "group",
+    "role": "owner",
+    "name": "Class Of Learners",
+    "email": "neelgbadri@col.dpdns.org",
+    "phone": "",
+    "description": "Class Of Learners is a student-led engineering studio from Mumbai creating interactive 3D simulations, educational platforms, and open-source software tools.",
+    "webpageUrl": {
+      "url": "https://advancedlogiclabs.dpdns.org",
+      "wellKnown": "https://advancedlogiclabs.dpdns.org/.well-known/funding-manifest-urls"
+    }
+  },
+  "projects": [
+    {
+      "guid": "class-of-learners",
+      "name": "Class Of Learners",
+      "description": "Interactive digital engineering studio and educational web platform hosting 3D simulations, learning modules, and open-source web tools.",
+      "webpageUrl": {
+        "url": "https://advancedlogiclabs.dpdns.org",
+        "wellKnown": "https://advancedlogiclabs.dpdns.org/.well-known/funding-manifest-urls"
+      },
+      "repositoryUrl": {
+        "url": "https://github.com/NeelAniGamer/Vercel",
+        "wellKnown": "https://github.com/NeelAniGamer/Vercel/blob/main/.well-known/funding-manifest-urls"
+      },
+      "licenses": [
+        "spdx:MIT"
+      ],
+      "tags": [
+        "education",
+        "web-development",
+        "programming",
+        "graphics",
+        "3d-modeling"
+      ]
+    },
+    {
+      "guid": "traffic-hero-academy",
+      "name": "Mumbai Traffic Hero & Academy",
+      "description": "Interactive 3D driving simulation and road-safety learning platform tailored to Mumbai traffic dynamics, civic rules, and driver education.",
+      "webpageUrl": {
+        "url": "https://advancedlogiclabs.dpdns.org/Traffic/Academy",
+        "wellKnown": "https://advancedlogiclabs.dpdns.org/.well-known/funding-manifest-urls"
+      },
+      "repositoryUrl": {
+        "url": "https://github.com/NeelAniGamer/Vercel",
+        "wellKnown": "https://github.com/NeelAniGamer/Vercel/blob/main/.well-known/funding-manifest-urls"
+      },
+      "licenses": [
+        "spdx:MIT"
+      ],
+      "tags": [
+        "gaming",
+        "education",
+        "graphics",
+        "3d-modeling",
+        "mobility"
+      ]
+    },
+    {
+      "guid": "advanced-typing-instructor",
+      "name": "Advanced Typing Instructor (ATI)",
+      "description": "Cross-platform touch-typing tutor, real-time multiplayer racing engine, mechanical keyboard switch acoustics simulator, and gamified curriculum.",
+      "webpageUrl": {
+        "url": "https://advancedlogiclabs.dpdns.org/ati",
+        "wellKnown": "https://advancedlogiclabs.dpdns.org/.well-known/funding-manifest-urls"
+      },
+      "repositoryUrl": {
+        "url": "https://github.com/NeelAniGamer/Advanced-Typing-Instructor",
+        "wellKnown": "https://github.com/NeelAniGamer/Advanced-Typing-Instructor/blob/main/.well-known/funding-manifest-urls"
+      },
+      "licenses": [
+        "spdx:MIT"
+      ],
+      "tags": [
+        "education",
+        "productivity",
+        "gaming",
+        "developer-tools"
+      ]
+    },
+    {
+      "guid": "terra3d",
+      "name": "Terra3D",
+      "description": "High-performance 3D geospatial globe and country knowledge engine rendered directly in the browser with interactive telemetry.",
+      "webpageUrl": {
+        "url": "https://advancedlogiclabs.dpdns.org/Terra3D",
+        "wellKnown": "https://advancedlogiclabs.dpdns.org/.well-known/funding-manifest-urls"
+      },
+      "repositoryUrl": {
+        "url": "https://github.com/NeelAniGamer/Terra3D",
+        "wellKnown": "https://github.com/NeelAniGamer/Terra3D/blob/main/.well-known/funding-manifest-urls"
+      },
+      "licenses": [
+        "spdx:MIT"
+      ],
+      "tags": [
+        "maps",
+        "education",
+        "graphics",
+        "3d-modeling",
+        "data-visualization"
+      ]
+    },
+    {
+      "guid": "solar-system",
+      "name": "Solar System 3D Engine",
+      "description": "Real-time 3D orbital simulation showcasing Keplerian mechanics, astronomical telemetry, planetary physics, and spacecraft trajectories.",
+      "webpageUrl": {
+        "url": "https://advancedlogiclabs.dpdns.org/solar",
+        "wellKnown": "https://advancedlogiclabs.dpdns.org/.well-known/funding-manifest-urls"
+      },
+      "repositoryUrl": {
+        "url": "https://github.com/NeelAniGamer/Solar-System",
+        "wellKnown": "https://github.com/NeelAniGamer/Solar-System/blob/main/.well-known/funding-manifest-urls"
+      },
+      "licenses": [
+        "spdx:MIT"
+      ],
+      "tags": [
+        "astronomy",
+        "education",
+        "science",
+        "graphics",
+        "3d-modeling"
+      ]
+    },
+    {
+      "guid": "gesture-control",
+      "name": "Gesture Control (Perceptus)",
+      "description": "Touchless browser and desktop navigation powered by computer vision hand-landmark tracking and MediaPipe gesture heuristics.",
+      "webpageUrl": {
+        "url": "https://advancedlogiclabs.dpdns.org/gesture",
+        "wellKnown": "https://advancedlogiclabs.dpdns.org/.well-known/funding-manifest-urls"
+      },
+      "repositoryUrl": {
+        "url": "https://github.com/NeelAniGamer/Hand-Gestures",
+        "wellKnown": "https://github.com/NeelAniGamer/Hand-Gestures/blob/main/.well-known/funding-manifest-urls"
+      },
+      "licenses": [
+        "spdx:MIT"
+      ],
+      "tags": [
+        "artificial-intelligence",
+        "user-experience",
+        "developer-tools",
+        "productivity"
+      ]
+    }
+  ],
+  "funding": {
+    "channels": [
+      {
+        "guid": "github-sponsors",
+        "type": "payment-provider",
+        "address": "https://github.com/sponsors/NeelAniGamer",
+        "description": "Sponsor student open source development and maintenance on GitHub Sponsors."
+      },
+      {
+        "guid": "buymeacoffee",
+        "type": "payment-provider",
+        "address": "https://www.buymeacoffee.com/NeelAniGamer",
+        "description": "Support our projects with a one-time coffee or recurring contribution."
+      },
+      {
+        "guid": "patreon",
+        "type": "payment-provider",
+        "address": "https://patreon.com/AdvancedLogicLabs",
+        "description": "Monthly patron support for infrastructure, hosting, and educational research."
+      }
+    ],
+    "plans": [
+      {
+        "guid": "hosting-infra",
+        "status": "active",
+        "name": "Infrastructure & Hosting Support",
+        "description": "Covers monthly domain registration, CDN bandwidth, and database hosting costs for Class Of Learners platforms.",
+        "amount": 25,
+        "currency": "USD",
+        "frequency": "monthly",
+        "channels": [
+          "github-sponsors",
+          "patreon"
+        ]
+      },
+      {
+        "guid": "student-supporter",
+        "status": "active",
+        "name": "Student Community Supporter",
+        "description": "A monthly micro-sponsorship to encourage student open-source software innovation and educational modules.",
+        "amount": 5,
+        "currency": "USD",
+        "frequency": "monthly",
+        "channels": [
+          "github-sponsors",
+          "patreon"
+        ]
+      },
+      {
+        "guid": "goodwill-angel",
+        "status": "active",
+        "name": "Goodwill Support",
+        "description": "Support our educational tools and open-source learning software with an open contribution of any amount.",
+        "amount": 0,
+        "currency": "USD",
+        "frequency": "one-time",
+        "channels": [
+          "github-sponsors",
+          "buymeacoffee"
+        ]
+      }
+    ]
+  }
+}

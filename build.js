@@ -30,6 +30,7 @@ const excludedFilePatterns = [
   /^\.env(?:\..*)?$/i,
   /\.(?:db|sqlite|sqlite3)$/i,
   /\.(?:exe|msi|dmg|appimage|pkg)$/i,
+  /\.bak$/i,
   /^vite\.config\.(?:ts|mts|cts|js|mjs|cjs)$/i
 ];
 
