@@ -69,7 +69,8 @@
         "wellKnown": "https://advancedlogiclabs.dpdns.org/.well-known/funding-manifest-urls"
       },
       "repositoryUrl": {
-        "url": "https://github.com/NeelAniGamer/Advanced-Typing-Instructor"
+        "url": "https://github.com/NeelAniGamer/Advanced-Typing-Instructor",
+        "wellKnown": "https://github.com/NeelAniGamer/Advanced-Typing-Instructor/blob/main/.well-known/funding-manifest-urls"
       },
       "licenses": [
         "spdx:MIT"
@@ -90,7 +91,8 @@
         "wellKnown": "https://advancedlogiclabs.dpdns.org/.well-known/funding-manifest-urls"
       },
       "repositoryUrl": {
-        "url": "https://github.com/NeelAniGamer/Terra3D"
+        "url": "https://github.com/NeelAniGamer/Terra3D",
+        "wellKnown": "https://github.com/NeelAniGamer/Terra3D/blob/main/.well-known/funding-manifest-urls"
       },
       "licenses": [
         "spdx:MIT"
@@ -112,7 +114,8 @@
         "wellKnown": "https://advancedlogiclabs.dpdns.org/.well-known/funding-manifest-urls"
       },
       "repositoryUrl": {
-        "url": "https://github.com/NeelAniGamer/Solar-System"
+        "url": "https://github.com/NeelAniGamer/Solar-System",
+        "wellKnown": "https://github.com/NeelAniGamer/Solar-System/blob/main/.well-known/funding-manifest-urls"
       },
       "licenses": [
         "spdx:MIT"
@@ -134,7 +137,8 @@
         "wellKnown": "https://advancedlogiclabs.dpdns.org/.well-known/funding-manifest-urls"
       },
       "repositoryUrl": {
-        "url": "https://github.com/NeelAniGamer/Hand-Gestures"
+        "url": "https://github.com/NeelAniGamer/Hand-Gestures",
+        "wellKnown": "https://github.com/NeelAniGamer/Hand-Gestures/blob/main/.well-known/funding-manifest-urls"
       },
       "licenses": [
         "spdx:MIT"
