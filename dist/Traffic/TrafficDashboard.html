@@ -20,9 +20,14 @@
     <link rel="icon" type="image/png" href="../Icon.png" />
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,600;1,400&family=Space+Mono&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script defer src="libs/html2pdf.bundle.min.js"></script>
+    <script defer src="libs/chart.umd.min.js"></script>
     <script defer src="traffic-charts.js"></script>
+    <!-- Blocking on purpose: a ~7 KB generated data file that the inline app
+         script below reads synchronously at parse time. With `defer` it would
+         execute after that inline script and every lookup would silently fall
+         back to the hardcoded default. -->
+    <script src="level-catalog.js"></script>
     <link rel="stylesheet" href="traffic-charts.css" />
     <link rel="stylesheet" href="welcome-back.css" />
 
@@ -1599,7 +1604,7 @@
                 <div id="cert-progress-text" style="font-size:0.6rem; color:var(--muted); margin-top:4px; text-transform:uppercase; letter-spacing:0.05em;">Start!</div>
               </div>
             </div>
-            <div id="s-prog" style="margin-top:24px; font-size:1.5rem; font-weight:700; color:var(--text);">0/52</div>
+            <div id="s-prog" style="margin-top:24px; font-size:1.5rem; font-weight:700; color:var(--text);">0/<span id="s-prog-total">53</span></div>
             <div style="font-size:0.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-top:4px;">Completed</div>
           </div>
         </div>
@@ -1647,7 +1652,7 @@
 
         <div id="no-cert-msg" style="display: none; padding: 40px; text-align: center; background: rgba(255, 255, 255, 0.1); border-radius: 24px; margin: 20px auto; max-width: 600px; border: 1px solid var(--border);">
           <h3 style="margin-top: 0; color: var(--muted)">Certificate Locked</h3>
-          <p>Complete all 52 modules to unlock your Traffic Hero Certification.</p>
+          <p>Complete all <span data-level-total>53</span> lessons to unlock your Traffic Hero Certification.</p>
         </div>
 
         <button class="btn-reward" id="btn-dl-cert" onclick="dlCert()">🎓 Download Certificate</button>
@@ -1772,11 +1777,31 @@
       let _isReadOnlyMode = !!(_uidParam || _studentIdParam || _userParam)
       let _resolvedUserId = _uidParam
 
+      // Escape display names before they touch innerHTML. Names come from the
+      // database, so they are untrusted. Declared at page scope because both
+      // the leaderboard renderer and the player/level search functions need it;
+      // it used to be declared inside loadLeaderboard(), where searchPlayerLb
+      // could not see it and every search fell into the catch-all error branch.
+      function escLb(s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
+      }
+
+      // Canonical level count, generated from levels/*.js by
+      // tools/gen-level-catalog.js. Replaces the hardcoded "/52" literals.
+      // Read through a getter rather than captured once, so the value is always
+      // current even if the catalogue script loads late.
+      const LEVEL_TOTAL = (typeof window.LEVEL_CATALOG === 'undefined' || !window.LEVEL_CATALOG)
+        ? 53
+        : window.LEVEL_CATALOG.numberedTotal
+
       let S = {}
       try {
         const raw = localStorage.getItem('mth4')
         if (raw) S = JSON.parse(raw)
       } catch (e) {}
+
+// Static "all N lessons" copy has to match the generated catalogue.
+      document.querySelectorAll('[data-level-total]').forEach(el => { el.textContent = String(LEVEL_TOTAL) })
 
       let tUser = {}
       try {
@@ -1872,7 +1897,7 @@
       }
 
       async function _syncOwnCertificate(name, completedCount, scoreTotal) {
-        if (completedCount < 52) return null
+        if (completedCount < LEVEL_TOTAL) return null
         const client = await _initSupabase()
         if (!client || !window.colUser || !window.colUser.id) {
           console.warn('Certificate Sync failed: User not logged in or Supabase client missing.')
@@ -1880,7 +1905,7 @@
         }
         try {
           const { data, error } = await client.from('certificates').upsert(
-            { user_id: window.colUser.id, display_name: name, modules_completed: completedCount, total_modules: 52, score: scoreTotal, updated_at: new Date().toISOString() },
+            { user_id: window.colUser.id, display_name: name, modules_completed: completedCount, total_modules: LEVEL_TOTAL, score: scoreTotal, updated_at: new Date().toISOString() },
             { onConflict: 'user_id' }
           ).select().maybeSingle()
           if (error) {
@@ -2035,15 +2060,27 @@
         const displayName = tUser.name || S.name || 'Driver'
         const userInitials = displayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
 
+        // Build the avatar with DOM calls rather than an innerHTML string.
+        // displayName can be another learner's display_name in read-only mode,
+        // so it must never reach an attribute or an inline JS string.
         ;[document.getElementById('avatar-sm'), document.getElementById('hero-avatar')].forEach(el => {
           if (!el) return;
+          el.textContent = userInitials;
           // Live session first (Google PFP); never stale snapshots or other accounts
-          let userPhoto = (_isReadOnlyMode && tUser.picture) || (window.colUser && (window.colUser.picture || (window.colUser.user_metadata && window.colUser.user_metadata.avatar_url))) || null
-          if (userPhoto) {
-            el.innerHTML = '<img src="' + String(userPhoto).replace(/"/g, '') + '" alt="' + String(displayName).replace(/"/g, '') + '" referrerpolicy="no-referrer" onerror="this.style.display=\'none\'; this.parentElement.textContent=\'' + userInitials + '\';" />'
-          } else {
-            el.textContent = userInitials
+          const userPhoto = (_isReadOnlyMode && tUser.picture) || (window.colUser && (window.colUser.picture || (window.colUser.user_metadata && window.colUser.user_metadata.avatar_url))) || null
+          if (!userPhoto) return;
+          let safeSrc = userPhoto;
+          if (typeof window.colGetSafeImageUrl === 'function') {
+            safeSrc = window.colGetSafeImageUrl(userPhoto);
+          } else if (!/^(https?:|data:image\/|blob:)/i.test(String(userPhoto))) {
+            return;
           }
+          const img = document.createElement('img');
+          img.alt = displayName;
+          img.referrerPolicy = 'no-referrer';
+          img.addEventListener('error', () => { img.remove(); });
+          img.src = safeSrc;
+          el.appendChild(img);
         })
 
         document.getElementById('top-name').innerText = displayName
@@ -2103,9 +2140,11 @@
 
         let completed = 0
         if (S.comp) completed = Object.keys(S.comp).filter((k) => S.comp[k] && S.comp[k].score > 0).length
-        document.getElementById('s-prog').innerText = `${completed}/52`
+        document.getElementById('s-prog').innerText = `${completed}/${LEVEL_TOTAL}`
+        const progTotalEl = document.getElementById('s-prog-total')
+        if (progTotalEl) progTotalEl.textContent = String(LEVEL_TOTAL)
 
-        const progressPct = Math.round((completed / 52) * 100)
+        const progressPct = Math.round((completed / LEVEL_TOTAL) * 100)
         document.getElementById('global-fill').style.width = progressPct + '%'
         document.getElementById('global-pct').innerText = progressPct + '%'
 
@@ -2114,7 +2153,7 @@
           window.TrafficCharts.createProgressRing(certProgressCanvas, progressPct, { cutout: '70%' })
         }
         document.getElementById('cert-progress-pct').textContent = progressPct + '%'
-        document.getElementById('cert-progress-text').textContent = completed >= 52 ? 'Unlocked!' : (completed > 0 ? 'Learning...' : 'Start!')
+        document.getElementById('cert-progress-text').textContent = completed >= LEVEL_TOTAL ? 'Unlocked!' : (completed > 0 ? 'Learning...' : 'Start!')
 
 
         const modulePctText = document.getElementById('cert-progress-pct')
@@ -2122,8 +2161,8 @@
         const moduleFractionText = document.getElementById('s-prog')
         const moduleBar = document.getElementById('module-svg-bar')
         if (modulePctText) modulePctText.textContent = progressPct + '%'
-        if (moduleStatusText) moduleStatusText.textContent = completed >= 52 ? 'Unlocked!' : (completed > 0 ? 'Learning...' : 'Start!')
-        if (moduleFractionText) moduleFractionText.textContent = completed + '/52'
+        if (moduleStatusText) moduleStatusText.textContent = completed >= LEVEL_TOTAL ? 'Unlocked!' : (completed > 0 ? 'Learning...' : 'Start!')
+        if (moduleFractionText) moduleFractionText.textContent = completed + '/' + LEVEL_TOTAL
         if (moduleBar) {
           const offset = 283 - (283 * progressPct) / 100;
           setTimeout(() => moduleBar.style.strokeDashoffset = offset, 100);
@@ -2176,7 +2215,7 @@
         const dlBtn = document.getElementById('btn-dl-cert')
         const _done = _getCompleted()
 
-        if (_done >= 52) {
+        if (_done >= LEVEL_TOTAL) {
           certWrapper.style.filter = 'none'
           certWrapper.style.opacity = '1'
           shareBar.style.display = 'flex'
@@ -2187,11 +2226,11 @@
             _syncOwnCertificate(displayName, _done, S.total || 0).then(id => { if (id) _syncedCertId = id })
           } catch (e) {}
         } else {
-          const blurPx = ((52 - _done) / 52 * 5).toFixed(1)
+          const blurPx = ((LEVEL_TOTAL - _done) / LEVEL_TOTAL * 5).toFixed(1)
           certWrapper.style.filter = `grayscale(1) blur(${blurPx}px)`
-          certWrapper.style.opacity = (0.55 + (_done / 52) * 0.45).toFixed(2)
+          certWrapper.style.opacity = (0.55 + (_done / LEVEL_TOTAL) * 0.45).toFixed(2)
           noCertMsg.style.display = 'block'
-          noCertMsg.querySelector('p').innerText = `Complete all 52 modules to unlock your certificate. (${_done}/52 done)`
+          noCertMsg.querySelector('p').innerText = `Complete all ${LEVEL_TOTAL} lessons to unlock your certificate. (${_done}/${LEVEL_TOTAL} done)`
           dlBtn.style.display = 'none'
         }
       }
@@ -2376,7 +2415,7 @@
             </div>
             <div style="text-align:right;flex-shrink:0;">
               <div style="font-size:1.2rem;font-weight:800;">${(result.total_score||0).toLocaleString()} XP</div>
-              <div style="font-size:0.7rem;color:var(--muted);">${result.modules_completed||0}/52 Modules · ${result.badges_count||0} Badges</div>
+              <div style="font-size:0.7rem;color:var(--muted);">${result.modules_completed||0}/${LEVEL_TOTAL} Lessons · ${result.badges_count||0} Badges</div>
             </div>
           </div>`
         } catch (e) {
@@ -2387,28 +2426,10 @@
 
 
 
-      const _LEVEL_NAMES = [
-        { id: 1, name: 'Free Roam', desc: 'Explore the open city', icon: '🌍' },
-        { id: 2, name: 'Pedestrian Courtesy', desc: 'Pedestrian priority rules', icon: '🚶' },
-        { id: 3, name: 'Parking Rules', desc: 'Street parking etiquette', icon: '🅿️' },
-        { id: 4, name: 'Emergency Priority', desc: 'Ambulance & fire truck yielding', icon: '🚑' },
-        { id: 5, name: 'Rain Driving', desc: 'Wet road handling', icon: '🌧️' },
-        { id: 6, name: 'Silence Zone', desc: 'No honking areas', icon: '🔇' },
-        { id: 7, name: 'Traffic Signs', desc: 'Road sign recognition', icon: '🚦' },
-        { id: 8, name: 'One Way', desc: 'One-way street navigation', icon: '➡️' },
-        { id: 9, name: 'Road Discipline', desc: 'Lane discipline & patience', icon: '😡' },
-        { id: 10, name: 'Signal Jump', desc: 'Red light running consequences', icon: '🔴' },
-        { id: 11, name: 'Cyclist Safety', desc: 'Cyclist awareness on roads', icon: '🚴' },
-        { id: 12, name: 'Narrow Streets', desc: 'Tight space navigation', icon: '🏘️' },
-        { id: 13, name: 'Rain Puddles', desc: 'Puddle splash avoidance', icon: '💦' },
-        { id: 14, name: 'Auto Rickshaw', desc: 'Auto rickshaw etiquette', icon: '🛺' },
-        { id: 15, name: 'Night Monsoon', desc: 'Night driving in rain', icon: '🌙' },
-        { id: 16, name: 'Hospital Quiet', desc: 'Hospital zone silence', icon: '🏥' },
-        { id: 17, name: 'Wildlife Crossing', desc: 'Animal crossing awareness', icon: '🐄' },
-        { id: 18, name: 'Toll Plaza', desc: 'Toll booth navigation', icon: '💰' },
-        { id: 19, name: 'Hill Driving', desc: 'Mountain road skills', icon: '⛰️' },
-        { id: 20, name: 'Highway Merge', desc: 'Highway entry & merge', icon: '🛣️' }
-      ]
+      // Real lesson titles, generated from levels/*.js by tools/gen-level-catalog.js.
+      // The previous hand-written list was fabricated (it called lesson 1 "Free
+      // Roam" when levels/level1.js is "Red Light Patience") and stopped at 20.
+      const _LEVEL_NAMES = (window.LEVEL_CATALOG && window.LEVEL_CATALOG.levels) || []
       function searchLevels() {
         const q = document.getElementById('lb-level-search').value.trim().toLowerCase()
         const clearBtn = document.getElementById('lb-level-search-clear')
@@ -2429,11 +2450,11 @@
             const isDone = S.comp && S.comp[lv.id] && S.comp[lv.id].score > 0
             return `<div style="background:var(--card);border:1px solid ${isDone?'rgba(52,211,153,0.3)':'var(--border)'};border-radius:12px;padding:14px;cursor:pointer;transition:all 0.2s;" onclick="window.location.href='Academy.html?screen=levels&lv=${lv.id}'" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
               <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-                <span style="font-size:1.3rem;">${lv.icon}</span>
-                <span style="font-size:0.7rem;padding:2px 8px;border-radius:20px;background:${isDone?'rgba(52,211,153,0.15);color:var(--green)':'rgba(255,255,255,0.06);color:var(--muted)'};font-weight:700;">${isDone?'\u2713 Done':'Level '+lv.id}</span>
+                <span style="font-size:1.3rem;">${escLb(lv.icon)}</span>
+                <span style="font-size:0.7rem;padding:2px 8px;border-radius:20px;background:${isDone?'rgba(52,211,153,0.15);color:var(--green)':'rgba(255,255,255,0.06);color:var(--muted)'};font-weight:700;">${isDone?'\u2713 Done':'Lesson '+lv.id}</span>
               </div>
-              <div style="font-weight:700;font-size:0.9rem;margin-bottom:4px;">${lv.name}</div>
-              <div style="font-size:0.75rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${lv.desc}</div>
+              <div style="font-weight:700;font-size:0.9rem;margin-bottom:4px;">${escLb(lv.name)}</div>
+              <div style="font-size:0.75rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escLb(lv.desc)}</div>
             </div>`
           }).join('') + '</div>'
         } catch (e) {
@@ -2534,7 +2555,7 @@
 
       function dlCert() {
         const _done = _getCompleted()
-        if (_done < 52) return alert('Unlock your certificate first!')
+        if (_done < LEVEL_TOTAL) return alert('Unlock your certificate first!')
         if (typeof html2pdf !== 'undefined') {
           const el = document.getElementById('cert-wrapper')
           if (!el) { alert('Certificate not rendered. Please refresh and try again.'); return; }
@@ -2552,7 +2573,7 @@
       async function getCertUrl() {
         let cid = _syncedCertId || localStorage.getItem('own_cert_id')
         const _done = _getCompleted()
-        if (!cid && _done >= 52) {
+        if (!cid && _done >= LEVEL_TOTAL) {
           const displayName = (window.colUser && window.colUser.user_metadata && window.colUser.user_metadata.full_name) || S.name || 'Driver'
           cid = await _syncOwnCertificate(displayName, _done, S.total || 0)
           if (cid) _syncedCertId = cid
@@ -2566,7 +2587,7 @@
         const n = tUser.name || S.name || 'Driver'
         let c = 0
         if (S.comp) c = Object.keys(S.comp).filter(k => S.comp[k] && S.comp[k].score > 0).length
-        return `I completed my Traffic Hero Certification! ${n} — ${c}/52 modules done.`
+        return `I completed my Traffic Hero Certification! ${n} — ${c}/${LEVEL_TOTAL} lessons done.`
       }
 
       async function _certImageFile() {
@@ -2580,7 +2601,7 @@
       async function shareWhatsApp() {
         const file = await _certImageFile()
         const url = await getCertUrl()
-        if (!url) { toast('Complete 52 modules or check connection!', '#ff4444'); return }
+        if (!url) { toast('Complete All Lessons Or Check Connection!', '#ff4444'); return }
         const textToShare = getShareText() + '\n' + url
         if (file && navigator.canShare && navigator.canShare({ files: [file], text: textToShare })) {
           try { await navigator.share({ files: [file], text: textToShare }); return } catch (e) {}
@@ -2591,7 +2612,7 @@
       async function shareInstagram() {
         const file = await _certImageFile()
         const url = await getCertUrl()
-        if (!url) { toast('Complete 52 modules or check connection!', '#ff4444'); return }
+        if (!url) { toast('Complete All Lessons Or Check Connection!', '#ff4444'); return }
         const textToShare = getShareText() + '\n' + url
         if (file && navigator.canShare && navigator.canShare({ files: [file], text: textToShare })) {
           try { await navigator.share({ files: [file], text: textToShare }); return } catch (e) {}
@@ -2601,7 +2622,7 @@
 
       async function copyCertLink() {
         const url = await getCertUrl()
-        if (!url) { toast('Complete 52 modules or check connection!', '#ff4444'); return }
+        if (!url) { toast('Complete All Lessons Or Check Connection!', '#ff4444'); return }
         navigator.clipboard.writeText(url).then(() => toast('Link copied!', '#5ed4f5'))
       }
 
@@ -2791,7 +2812,7 @@
               </div>
             `).join('')
           } else {
-            gallery.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);">No certificates yet. Complete all 52 levels to earn your first!</div>'
+            gallery.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);">No certificates yet. Complete all lessons to earn your first!</div>'
           }
         } catch (e) {
           gallery.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);">Unable to load certificates.</div>'
@@ -2877,11 +2898,6 @@
         const ERROR_MSG = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:0.85rem;">Unable To Load. Check Connection.<br><button onclick="loadLeaderboard()" style="margin-top:12px;padding:8px 18px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:var(--text);font-weight:700;cursor:pointer;">↻ Retry</button></div>'
         const AUTH_MSG  = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:0.85rem;">Sign In To View The Leaderboard.<br><button onclick="handleDashSignIn()" style="margin-top:12px;padding:8px 18px;border-radius:8px;border:none;background:var(--signal);color:#000;font-weight:700;cursor:pointer;">Sign In</button></div>'
         const OFFLINE_MSG = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:0.85rem;">Leaderboard Service Unreachable.<br><button onclick="loadLeaderboard()" style="margin-top:12px;padding:8px 18px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:var(--text);font-weight:700;cursor:pointer;">↻ Retry</button></div>'
-
-        // Escape display names (stored-XSS guard: names come from the database)
-        function escLb(s) {
-          return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
-        }
 
         if (!window.supabaseClient) {
           boards.forEach(b => { const el = document.getElementById('leaderboard-' + b); if (el) el.innerHTML = OFFLINE_MSG })
@@ -3197,7 +3213,7 @@
         if (certsByScore && certsByScore.length > 0) {
           renderBoard('leaderboard-xp', 'xp', certsByScore, u => `${(u.score || 0).toLocaleString()} XP`, u => (u.score || 0))
           const byModules = [...certsByScore].sort((a, b) => (b.modules_completed || 0) - (a.modules_completed || 0))
-          renderBoard('leaderboard-modules', 'modules', byModules, u => `${u.modules_completed || 0} / 52 Modules`, u => (u.modules_completed || 0))
+          renderBoard('leaderboard-modules', 'modules', byModules, u => `${u.modules_completed || 0} / ${LEVEL_TOTAL} Lessons`, u => (u.modules_completed || 0))
         } else {
           renderBoard('leaderboard-xp', 'xp', [], u => '0 XP', u => 0)
           renderBoard('leaderboard-modules', 'modules', [], u => '0 Modules', u => 0)
@@ -3219,7 +3235,7 @@
           if (mc >= 20) count++
           if (mc >= 30) count++
           if (mc >= 40) count++
-          if (mc >= 52) count += 2 // level_52 and traffic_hero
+          if (mc >= LEVEL_TOTAL) count += 2 // level_52 and traffic_hero
           return count
         }
 

@@ -35,14 +35,14 @@ class SceneryManager {
   // Generate scenery for a cell (grid-based streaming)
   _generateCell(cellX, cellZ) {
     const key = `${cellX},${cellZ}`;
-    if (this.activeCells.has(key)) return;
+    if (this.activeCells.has(key)) {return;}
     this.activeCells.add(key);
 
     const worldX = cellX * this.gridSize;
     const worldZ = cellZ * this.gridSize;
     const treeDensity = this.terrain.getTreeDensity(worldX, worldZ);
 
-    if (treeDensity <= 0.1) return;
+    if (treeDensity <= 0.1) {return;}
 
     // Number of trees in this cell
     const numTrees = Math.floor(treeDensity * this.density * this.gridSize * this.gridSize / 50);
@@ -55,11 +55,11 @@ class SceneryManager {
 
       // Re-check density at exact position
       const d = this.terrain.getTreeDensity(wx, wz);
-      if (d < 0.2) continue;
-      if (this.terrain.getSlope(wx, wz) > 0.35) continue;
+      if (d < 0.2) {continue;}
+      if (this.terrain.getSlope(wx, wz) > 0.35) {continue;}
 
       const h = this.terrain.getHeight(wx, wz);
-      if (h < this.terrain.waterLevel + 0.5) continue;
+      if (h < this.terrain.waterLevel + 0.5) {continue;}
 
       this._addTree(wx, h, wz, d);
     }
@@ -94,7 +94,7 @@ class SceneryManager {
       this.scene.add(mesh);
     }
 
-    if (mesh.count >= mesh.instanceMatrix.count) return; // max instances
+    if (mesh.count >= mesh.instanceMatrix.count) {return;} // max instances
 
     const dummy = new THREE.Object3D();
     const scale = 0.8 + this.rng() * 0.6;
@@ -117,7 +117,7 @@ class SceneryManager {
       this.sceneryGroups.set('rock', mesh);
       this.scene.add(mesh);
     }
-    if (mesh.count >= mesh.instanceMatrix.count) return;
+    if (mesh.count >= mesh.instanceMatrix.count) {return;}
 
     const dummy = new THREE.Object3D();
     const scale = 0.3 + this.rng() * 0.7;
@@ -149,7 +149,7 @@ class SceneryManager {
         (playerX - this._lastPlayerX) ** 2 +
         (playerZ - this._lastPlayerZ) ** 2
       );
-      if (dist < this.gridSize * 0.5) return; // too close, skip
+      if (dist < this.gridSize * 0.5) {return;} // too close, skip
     }
 
     this._lastPlayerX = playerX;
@@ -230,13 +230,13 @@ class BuildingPlacer {
 
   // Place buildings along the road
   generate() {
-    if (!this.roadData || !this.roadData.fine) return;
+    if (!this.roadData || !this.roadData.fine) {return;}
 
     const fine = this.roadData.fine;
     const interval = Math.floor(this.spacing); // every N meters
 
     for (let i = 0; i < fine.length; i += interval) {
-      if (this.rng() > this.density) continue;
+      if (this.rng() > this.density) {continue;}
 
       const p = fine[i];
       // Direction at this point
@@ -254,8 +254,8 @@ class BuildingPlacer {
       const bz = p.z + pz * side;
       const h = this.terrain.getHeight(bx, bz);
 
-      if (h < this.terrain.waterLevel + 1) continue;
-      if (this.terrain.getSlope(bx, bz) > 0.15) continue;
+      if (h < this.terrain.waterLevel + 1) {continue;}
+      if (this.terrain.getSlope(bx, bz) > 0.15) {continue;}
 
       this._addBuilding(bx, h, bz);
     }

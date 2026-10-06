@@ -15,8 +15,9 @@
     "format:check": "prettier --check .",
     "security:audit": "npm audit --audit-level=high",
     "security:fix": "npm audit fix",
-    "test": "playwright test",
-    "test:smoke": "playwright test --project=chromium"
+    "test": "npm run test:smoke && npm run test:stubs",
+    "test:smoke": "node Traffic/pw_test.js",
+    "test:stubs": "node Traffic/tools/check-startup-stubs.js"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

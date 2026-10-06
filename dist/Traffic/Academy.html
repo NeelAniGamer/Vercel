@@ -88,8 +88,8 @@
     <script defer src="../col-auth.js"></script>
 
 
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script defer src="libs/html2pdf.bundle.min.js"></script>
+    <script defer src="libs/chart.umd.min.js"></script>
     <script defer src="traffic-charts.js"></script>
     <link rel="stylesheet" href="traffic-charts.css" />
     <link rel="stylesheet" href="welcome-back.css" />
@@ -6747,7 +6747,7 @@
   <script defer src="auto.js"></script>
   <script defer src="bus.js"></script>
   <script defer src="lambo.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" onerror="if(!window.THREE){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js';document.head.appendChild(s);}"></script>
+    <script src="libs/three-bundle.js"></script>
     <script>
       window.LVS = []
     </script>
@@ -6808,7 +6808,6 @@
   <script defer src="levels/level_custom.js"></script>
   <script defer src="levels/level_freeram.js"></script>
   <script defer src="suburban_scenery.js"></script>
-  <script defer src="room-architect.js"></script>
 
     <script>
 
@@ -6821,7 +6820,6 @@
   <script defer src="ui.js?v=20260825_5"></script>
     <script defer src="npc-ai.js?v=20260825_5"></script>
     <script defer src="traffic-manager.js?v=20260825_5"></script>
-    <script defer src="rule-breaker-profiles.js?v=20260825_5"></script>
     <script defer src="scenario2d.js?v=20260825_5"></script>
     <script>
       
@@ -6939,8 +6937,13 @@
       function updateStartButton() {
         const btn = document.getElementById('enter-academy-btn');
         if (!btn) return;
-        const isLoggedIn = !!window.colUser || !!localStorage.getItem('traffic_local_user');
-        btn.textContent = isLoggedIn ? 'Start Academy' : 'Get Started';
+        // A live session OR a previously-completed offline setup both mean the
+        // learner can go straight in. Presence of a raw traffic_local_user blob
+        // is deliberately NOT a sign-in signal: window.colUser is the only
+        // authority for "signed in".
+        const hasSession = !!window.colUser;
+        const hasSetup = localStorage.getItem('trafficSetupComplete') === 'true';
+        btn.textContent = (hasSession || hasSetup) ? 'Start Academy' : 'Get Started';
       }
 
       window.addEventListener('col-auth-changed', updateStartButton);
@@ -6948,30 +6951,33 @@
       
 
       function showOnboardingFromStart() {
-        const isLoggedIn = !!window.colUser || !!localStorage.getItem('traffic_local_user');
-        if (isLoggedIn) {
+        const hasSession = !!window.colUser;
+        const localUser = (function() {
+          try {
+            return JSON.parse(localStorage.getItem('traffic_local_user') || 'null');
+          } catch(e) { return null; }
+        })();
+
+        if (hasSession || localUser) {
           const role = window.colUser?.user_metadata?.role;
           if (role === 'parent' || role === 'teacher' || role === 'parent_teacher') {
              window.location.href = '../dashboard.html';
              return;
           }
-          
+
           let userName = '';
-          try {
-            const localData = localStorage.getItem('traffic_local_user');
-            if (localData) {
-              const u = JSON.parse(localData);
-              if (u && u.name) userName = u.name;
-            }
-          } catch(e) {}
-          if (!userName && window.colUser) {
-            const uObj = window.colUser.user || window.colUser;
-            const meta = uObj.user_metadata || {};
+          if (hasSession) {
+            const meta = window.colUser.user_metadata || {};
             userName = meta.full_name || meta.name || '';
           }
-          
-          const msg = userName ? `Welcome back, ${userName}! Loading your progress...` : 'Welcome back! Loading your progress...';
-          if (typeof toast !== 'undefined') toast(msg, '#34d399');
+          if (!userName && localUser && localUser.name) { userName = localUser.name; }
+
+          if (localUser && !hasSession) {
+            if (typeof toast !== 'undefined') toast('Loading Your Offline Progress...', '#34d399');
+          } else {
+            const msg = userName ? `Welcome back, ${userName}! Loading your progress...` : 'Welcome back! Loading your progress...';
+            if (typeof toast !== 'undefined') toast(msg, '#34d399');
+          }
           if (typeof ui !== 'undefined' && ui.showLevels) ui.showLevels();
           else window.location.href = 'Academy.html?screen=levels';
           return;
@@ -6982,19 +6988,17 @@
 
 
       window.addEventListener('col-auth-changed', function(e) {
-        const user = e.detail && e.detail.user ? e.detail.user : window.colUser;
-        if (user && !localStorage.getItem('trafficSetupComplete')) {
-
-          const localUser = localStorage.getItem('traffic_local_user');
+        const detail = e.detail || {};
+        const user = detail.user || window.colUser;
+        const localUser = detail.localUser || window.colLocalUser;
+        if ((user || localUser) && !localStorage.getItem('trafficSetupComplete')) {
           if (localUser) {
-
-            if (typeof toast !== 'undefined') toast('Welcome back! Loading your progress...', '#34d399');
+            if (typeof toast !== 'undefined') toast('Loading Your Offline Progress...', '#34d399');
             setTimeout(function() {
               if (typeof ui !== 'undefined' && ui.showLevels) ui.showLevels();
               else window.location.href = 'Academy.html?screen=levels';
             }, 300);
           } else {
-
             showOnboardingFromStart();
           }
         }
@@ -7063,25 +7067,6 @@
         }
       }
 
-
-      let devClickCount = 0
-      function handleDevClick() {
-        devClickCount++
-        if (devClickCount >= 5) {
-          devClickCount = 0
-          const p = prompt('Developer Password:')
-          if (['Neel', 'Ansh', 'Sanjana'].includes(p)) {
-            if (typeof ui !== 'undefined' && ui && ui.adminUnlock) {
-              ui.adminUnlock()
-            } else {
-              toast('🔓 Developer Unlock Triggered!', '#00c851')
-              if (typeof ui !== 'undefined' && ui) ui.showLevels()
-            }
-          } else if (p) {
-            if (typeof toast !== 'undefined') toast('❌ Access Denied', '#ff3b30')
-          }
-        }
-      }
 
       function _onbUpdateAuthChips() {
         var authed = typeof ui !== 'undefined' && ui && ui._user
@@ -8095,7 +8080,7 @@ function _onbComplete() {
 
       
       <!-- Clickable Version Badge (Dev & Unlimited Health Cheat Code) -->
-      <div id="version-badge" style="position: fixed; bottom: 6px; right: 12px; font-size: 0.72rem; color: var(--muted2, #aaa); opacity: 0.45; cursor: pointer; z-index: 99999; font-weight: 700; user-select: none; transition: all 0.2s ease;" onclick="window.handleDevClick && window.handleDevClick()" onmouseover="this.style.opacity='1'; this.style.color='#ffd700';" onmouseout="this.style.opacity='0.45'; this.style.color='var(--muted2, #aaa)';" title="Click 3 times for Unlimited Health Cheat Code">v2.4.1 🛡️</div>
+      <div id="version-badge" style="position: fixed; bottom: 6px; right: 12px; font-size: 0.72rem; color: var(--muted2, #aaa); opacity: 0.45; cursor: default; z-index: 99999; font-weight: 700; user-select: none; transition: all 0.2s ease;" title="Class Of Learners Simulator v2.4.1">v2.4.1</div>
       
       
       <nav class="mobile-bottom-nav">

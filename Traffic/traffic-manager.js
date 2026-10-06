@@ -113,7 +113,7 @@ class TrafficManager {
     this._updateDensity(dt);
     this._updatePlatoons(dt);
     this._updateSignalAccumulation(dt, signals);
-    this._manageVehicleLifecycle(playerVehicle);
+    this._manageVehicleLifecycle(playerVehicle, dt);
     this._updateEdgeIndex();
     this._checkDeadlocks(dt, playerVehicle);
 
@@ -124,7 +124,14 @@ class TrafficManager {
     const rDistSq = (rDist + 35) * (rDist + 35);
     const midDistSq = isMobile ? (75 * 75) : (130 * 130);
 
-    this.vehicles.slice().forEach(vehicle => {
+    // Iterate a reused scratch array instead of vehicles.slice(). The copy exists
+    // so that despawning mid-loop cannot disturb the iteration; a persistent
+    // buffer gives the same safety without allocating every frame.
+    const frameVehicles = this._frameVehicles || (this._frameVehicles = []);
+    frameVehicles.length = 0;
+    for (let i = 0; i < this.vehicles.length; i++) { frameVehicles.push(this.vehicles[i]); }
+
+    frameVehicles.forEach(vehicle => {
       if (!vehicle.active || !vehicle.npcAI) {return;}
 
       if (vehicle.npcAI.state === COMPLETE) {
@@ -206,7 +213,7 @@ class TrafficManager {
     this.platoons = this.platoons.filter(p => p.active && p.followers && p.followers.length > 0);
   }
 
-  _manageVehicleLifecycle(playerVehicle) {
+  _manageVehicleLifecycle(playerVehicle, dt = 0.016) {
     const despawnDist = 320;
     const playerPos = playerVehicle?.position || new THREE.Vector3();
     
@@ -223,7 +230,11 @@ class TrafficManager {
       if (vehicle.npcAI) {
         const curSpd = vehicle.npcAI.currentSpeed || vehicle.speed || 0;
         if (curSpd < 0.25 && vehicle.npcAI.state !== 'PARK') {
-          vehicle._stoppedSeconds = (vehicle._stoppedSeconds || 0) + 0.05;
+          // Accumulate real elapsed time. This was a hardcoded 0.05, so the 3s
+          // nudge and 12s recycle thresholds only held true on a 20fps machine
+          // — on a 60fps device they fired after 1s and 4s, recycling traffic
+          // roughly 3x too aggressively.
+          vehicle._stoppedSeconds = (vehicle._stoppedSeconds || 0) + dt;
           // If far away from player (>90m) and stuck for >12s, quietly recycle
           if (dist > 90 && vehicle._stoppedSeconds > 12.0) {
             vehicle._stoppedSeconds = 0;
@@ -253,14 +264,26 @@ class TrafficManager {
   }
 
   _updateEdgeIndex() {
-    this.edgeVehicles.clear();
+    // Reuse the per-edge arrays rather than clearing the Map and reallocating a
+    // fresh array for every occupied edge, 60 times a second. `length = 0`
+    // truncates in place, so steady-state traffic performs no allocation here.
+    this.edgeVehicles.forEach((arr) => { arr.length = 0; });
+
     this.vehicles.forEach(v => {
       if (!v.active || !v.currentEdge) {return;}
-      if (!this.edgeVehicles.has(v.currentEdge.id)) {
-        this.edgeVehicles.set(v.currentEdge.id, []);
+      let arr = this.edgeVehicles.get(v.currentEdge.id);
+      if (!arr) {
+        arr = [];
+        this.edgeVehicles.set(v.currentEdge.id, arr);
       }
-      this.edgeVehicles.get(v.currentEdge.id).push(v);
+      arr.push(v);
     });
+
+    // Drop edges that no longer carry a vehicle, via one reused scratch array.
+    const dead = this._deadEdgeIds || (this._deadEdgeIds = []);
+    dead.length = 0;
+    this.edgeVehicles.forEach((arr, id) => { if (arr.length === 0) { dead.push(id); } });
+    for (let i = 0; i < dead.length; i++) { this.edgeVehicles.delete(dead[i]); }
   }
 
   spawnInitialTraffic(roadGraph, route, count = BASE_NPC_COUNT, levelConfig = {}) {
@@ -299,6 +322,7 @@ class TrafficManager {
   _spawnSingleVehicle() {
 
     let type, isRuleBreaker, profileKey, color, route;
+    const rulesCompliantLevel = !!(this.levelConfig && this.levelConfig.npcRulesCompliant);
 
     if (this.levelNpcs.length > 0 && this.levelNpcIndex < this.levelNpcs.length) {
 
@@ -307,7 +331,7 @@ class TrafficManager {
       route = npcConfig.route;
       color = npcConfig.color;
 
-      isRuleBreaker = ['reckless_bike', 'rulebreaker', 'aggressive'].includes(type) || Math.random() < RULE_BREAKER_PROBABILITY;
+      isRuleBreaker = !rulesCompliantLevel && (['reckless_bike', 'rulebreaker', 'aggressive'].includes(type) || Math.random() < RULE_BREAKER_PROBABILITY);
       // Scripted NPCs may force an exact driver personality (e.g. the impatient taxi in Lesson 1)
       profileKey = (npcConfig.profileKey && (window.NPC_PROFILES || {})[npcConfig.profileKey])
         ? npcConfig.profileKey
@@ -322,7 +346,7 @@ class TrafficManager {
       } else {
         type = this._pickVehicleType();
       }
-      isRuleBreaker = Math.random() < RULE_BREAKER_PROBABILITY && this.ruleBreakerCount / Math.max(1, this.totalSpawned) < RULE_BREAKER_PROBABILITY;
+      isRuleBreaker = !rulesCompliantLevel && Math.random() < RULE_BREAKER_PROBABILITY && this.ruleBreakerCount / Math.max(1, this.totalSpawned) < RULE_BREAKER_PROBABILITY;
       const mixed = this._pickMixedProfile();
       if (mixed) {
         profileKey = mixed;

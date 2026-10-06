@@ -15,13 +15,6 @@ window.addEventListener('DOMContentLoaded', () => {
 })
 
 
-document.addEventListener('keydown', (e) => {
-  if (e.ctrlKey && e.shiftKey && e.key === 'D') {
-    e.preventDefault()
-    if (window.ui && typeof window.ui.adminUnlock === 'function') {window.ui.adminUnlock()}
-  }
-})
-
 window.PRELOADED_MODELS = {}
 
 
@@ -294,15 +287,16 @@ window._expandAssets = function (assets) {  if (!assets || !assets.length) {retu
 
 
 
-// Shared DRACO decoder (downloads ~1MB WASM once, only when a Draco file loads).
+// Shared DRACO decoder (vendored locally, loaded lazily only when a Draco file loads).
 // Lets future .glb/.drc models ship 5–10× smaller; existing files load unchanged.
+// Decoder assets live in libs/draco/ and ship in the packaged app, so this works offline.
 window._dracoLoader = null;
 window._getDracoLoader = function () {
   if (window._dracoLoader) {return window._dracoLoader;}
   if (typeof THREE === 'undefined' || typeof THREE.DRACOLoader === 'undefined') {return null;}
   try {
     const dl = new THREE.DRACOLoader();
-    dl.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/draco/');
+    dl.setDecoderPath('libs/draco/');
     window._dracoLoader = dl;
     return dl;
   } catch (e) { return null; }

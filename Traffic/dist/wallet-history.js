@@ -73,12 +73,12 @@ const WalletHistory = {
     const byCategory = {};
 
     all.forEach(tx => {
-      if (tx.type === 'earn') totalEarned += tx.amount;
-      else totalDeducted += tx.amount;
+      if (tx.type === 'earn') {totalEarned += tx.amount;}
+      else {totalDeducted += tx.amount;}
 
-      if (!byCategory[tx.category]) byCategory[tx.category] = { earned: 0, deducted: 0, count: 0 };
-      if (tx.type === 'earn') byCategory[tx.category].earned += tx.amount;
-      else byCategory[tx.category].deducted += tx.amount;
+      if (!byCategory[tx.category]) {byCategory[tx.category] = { earned: 0, deducted: 0, count: 0 };}
+      if (tx.type === 'earn') {byCategory[tx.category].earned += tx.amount;}
+      else {byCategory[tx.category].deducted += tx.amount;}
       byCategory[tx.category].count++;
     });
 
@@ -96,10 +96,10 @@ const WalletHistory = {
     const mins = Math.floor(diff / 60000);
     const hours = Math.floor(diff / 3600000);
     const days = Math.floor(diff / 86400000);
-    if (mins < 1) return 'Just now';
-    if (mins < 60) return mins + 'm ago';
-    if (hours < 24) return hours + 'h ago';
-    if (days < 7) return days + 'd ago';
+    if (mins < 1) {return 'Just now';}
+    if (mins < 60) {return mins + 'm ago';}
+    if (hours < 24) {return hours + 'h ago';}
+    if (days < 7) {return days + 'd ago';}
     return new Date(ts).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
   },
 

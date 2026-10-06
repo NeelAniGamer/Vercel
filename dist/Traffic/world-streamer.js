@@ -287,15 +287,15 @@ class CityChunk {
     }
 
 
-    this.group.traverse(c => {
-      if (c.isMesh) {
-        if (c.geometry) {c.geometry.dispose();}
-        if (c.material) {
-          if (Array.isArray(c.material)) {c.material.forEach(m => m.dispose());}
-          else {c.material.dispose();}
-        }
-      }
-    });
+    // Detach from the scene but DO NOT dispose geometry or material.
+    //
+    // Every mesh here is a `.clone()` of a shared PRELOADED_MODELS entry, and in
+    // three.js Object3D.clone() shares geometry/material references with the
+    // master. Disposing them destroyed the master's GPU buffers, so the first
+    // chunk unload corrupted every other instance of that model for the rest of
+    // the session. Clones add no GPU memory of their own, so there is nothing to
+    // free; removing them from the scene and dropping the references is enough.
+    if (this.group && this.group.parent) {this.group.parent.remove(this.group);}
 
     this.objects = [];
     this.buildings = [];

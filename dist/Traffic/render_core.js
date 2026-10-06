@@ -102,7 +102,7 @@ class RenderCore {
         });
 
 
-        this.renderer.outputEncoding = THREE.sRGBEncoding;
+        this.renderer.outputColorSpace = THREE.SRGBColorSpace;
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
         this.renderer.toneMappingExposure = 0.60;
 
@@ -267,7 +267,7 @@ class RenderCore {
             minFilter: THREE.LinearFilter,
             magFilter: THREE.LinearFilter,
             format: THREE.RGBAFormat,
-            encoding: THREE.sRGBEncoding,
+            colorSpace: THREE.SRGBColorSpace,
             depthBuffer: true,
             stencilBuffer: false
         });

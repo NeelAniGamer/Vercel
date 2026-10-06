@@ -13,15 +13,15 @@ class Pool {
   get() {
     const obj = this.pool.length > 0 ? this.pool.pop() : this.factory();
     this.active.add(obj);
-    if (this.pool.length === 0) this.stats.created++;
-    else this.stats.reused++;
+    if (this.pool.length === 0) {this.stats.created++;}
+    else {this.stats.reused++;}
     return obj;
   }
 
   release(obj) {
-    if (!this.active.has(obj)) return false;
+    if (!this.active.has(obj)) {return false;}
     this.active.delete(obj);
-    if (this.resetFn) this.resetFn(obj);
+    if (this.resetFn) {this.resetFn(obj);}
     if (this.pool.length < this.maxSize) {
       this.pool.push(obj);
       this.stats.released++;
@@ -31,8 +31,8 @@ class Pool {
 
   releaseAll() {
     this.active.forEach(obj => {
-      if (this.resetFn) this.resetFn(obj);
-      if (this.pool.length < this.maxSize) this.pool.push(obj);
+      if (this.resetFn) {this.resetFn(obj);}
+      if (this.pool.length < this.maxSize) {this.pool.push(obj);}
     });
     this.active.clear();
   }
@@ -59,8 +59,8 @@ const resetMesh = (mesh) => {
   mesh.position.set(0, 0, 0);
   mesh.rotation.set(0, 0, 0);
   mesh.scale.set(1, 1, 1);
-  if (mesh.material) mesh.material.opacity = 1;
-  if (mesh.userData) mesh.userData = {};
+  if (mesh.material) {mesh.material.opacity = 1;}
+  if (mesh.userData) {mesh.userData = {};}
 };
 
 const resetGroup = (group) => {
@@ -70,7 +70,7 @@ const resetGroup = (group) => {
   group.scale.set(1, 1, 1);
   group.children.forEach(c => {
     c.visible = false;
-    if (c.material) c.material.opacity = 1;
+    if (c.material) {c.material.opacity = 1;}
   });
 };
 
@@ -167,14 +167,14 @@ class ThreePools {
   static getStats() {
     const stats = {};
     Object.entries(this).forEach(([key, pool]) => {
-      if (pool instanceof Pool) stats[key] = pool.getStats();
+      if (pool instanceof Pool) {stats[key] = pool.getStats();}
     });
     return stats;
   }
 
   static releaseAll() {
     Object.values(this).forEach(pool => {
-      if (pool instanceof Pool) pool.releaseAll();
+      if (pool instanceof Pool) {pool.releaseAll();}
     });
   }
 

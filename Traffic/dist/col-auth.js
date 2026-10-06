@@ -6,7 +6,7 @@ let supabaseClient = null
 // --- Shared Login Modal Injection ---
 // Injects the standard loginMo modal if the page doesn't already have one inline.
 function injectLoginModal() {
-  if (document.getElementById('loginMo')) return
+  if (document.getElementById('loginMo')) {return}
   const mo = document.createElement('div')
   mo.className = 'col-auth-mo'
   mo.id = 'loginMo'
@@ -14,107 +14,232 @@ function injectLoginModal() {
     '<div class="col-auth-md"><div class="col-auth-hd"><h2 id="moAuthTitle">Authenticate</h2><p id="moAuthSub">Unlock dashboard storage and cloud sync.</p></div><div class="col-auth-body"><div id="loggedOutPanel" style="display:flex; justify-content:center; align-items:center; width:100%; margin-bottom:15px;"><div id="gSignInBtnContainer" style="width:100%; display:flex; justify-content:center;"></div></div><div id="loggedInPanel" style="display: none;"><label style="display:block; margin-bottom:5px; color:var(--dim, #8891AA); font-size:0.85rem; text-align:left;">Google Email</label><input class="col-auth-inp" id="miEmail" type="email" readonly style="opacity: 0.5; cursor: not-allowed; margin-bottom: 20px;"><label style="display:block; margin-bottom:5px; color:var(--dim, #8891AA); font-size:0.85rem; text-align:left;">Display Username</label><input class="col-auth-inp" id="miName" type="text" placeholder="Choose a username..." maxlength="40" style="margin-bottom: 20px;"><button class="col-auth-btn" style="margin-bottom: 10px;" onclick="updateUsername()">Save Username</button><button class="col-auth-danger" onclick="doLogout()">Disconnect Account</button></div><button class="col-auth-btn" style="margin-top: 10px; background: transparent; color: var(--dim, #8891AA); border: 1px solid var(--line, rgba(255,255,255,.08));" onclick="closeMo()">Close / Cancel</button></div></div>'
   document.body.appendChild(mo)
   mo.addEventListener('click', function (e) {
-    if (e.target === this) closeMo()
+    if (e.target === this) {closeMo()}
   })
 }
 
-// Compatibility bridge: expose openLogin/closeMo globally so page onclick handlers work
-// even before the page's own inline scripts define them.
-if (!window.openLogin) {
-  window.openLogin = function () {
-    // Redirect to TrafficSetup for global authentication
-    var path = window.location.pathname;
-    if (path.includes('TrafficSetup.html')) {
-      var authArea = document.getElementById('authArea');
-      if (authArea) authArea.scrollIntoView({ behavior: 'smooth' });
-    } else if (path.includes('/Traffic/')) {
-      window.location.href = 'TrafficSetup.html';
+// Unified global authentication bridge: expose openLogin and closeMo globally
+window.openLogin = function () {
+  if (typeof window.openGlobalLogin === 'function') {
+    window.openGlobalLogin()
+  } else {
+    if (typeof injectAuthStyles === 'function') {injectAuthStyles()}
+    if (typeof injectAuthUI === 'function') {injectAuthUI()}
+    if (typeof window.openGlobalLogin === 'function') {
+      window.openGlobalLogin()
     } else {
-      window.location.href = 'Traffic/TrafficSetup.html';
+      const mo = document.getElementById('colAuthModal') || document.getElementById('loginMo')
+      if (mo) {
+        mo.classList.add('open')
+        mo.removeAttribute('aria-hidden')
+        mo.removeAttribute('inert')
+      }
     }
   }
 }
-if (!window.closeMo) {
-  window.closeMo = function () {
-    var mo = document.getElementById('loginMo')
-    if (mo) mo.classList.remove('open')
+window.closeMo = function () {
+  if (typeof window.closeGlobalAuth === 'function') {
+    window.closeGlobalAuth()
   }
+  const mo = document.getElementById('loginMo')
+  if (mo) {mo.classList.remove('open')}
 }
 
 ;(async function () {
-  if (window._colAuthRunning) return
+  if (window._colAuthRunning) {return}
   window._colAuthRunning = true
 
   // --- Local Account Storage Utilities ---
-  function getLocalAccounts() {
+  // Local profiles are intentionally non-sensitive. Passwords are never
+  // persisted in localStorage; offline credentials are represented only by a
+  // salted PBKDF2 verifier created by the submit handlers below.
+  const LOCAL_CREDENTIAL_ITERATIONS = 120000
+  const localCrypto = globalThis.crypto
+
+  function bytesToBase64(bytes) {
+    let binary = ''
+    for (const byte of bytes) {binary += String.fromCharCode(byte)}
+    return btoa(binary)
+  }
+
+  function base64ToBytes(value) {
+    const binary = atob(value)
+    return Uint8Array.from(binary, char => char.charCodeAt(0))
+  }
+
+  function getSecureRandomInt(min, max) {
+    const range = max - min + 1
+    if (localCrypto?.getRandomValues) {
+      const buf = new Uint32Array(1)
+      localCrypto.getRandomValues(buf)
+      return min + (buf[0] % range)
+    }
+    return Math.floor(min + Math.random() * range)
+  }
+
+  async function createLocalCredential(secret) {
+    if (!secret || !localCrypto?.subtle || typeof TextEncoder === 'undefined') {return null}
+    const salt = localCrypto.getRandomValues(new Uint8Array(16))
+    const key = await localCrypto.subtle.importKey(
+      'raw',
+      new TextEncoder().encode(secret),
+      'PBKDF2',
+      false,
+      ['deriveBits']
+    )
+    const bits = await localCrypto.subtle.deriveBits({
+      name: 'PBKDF2',
+      salt,
+      iterations: LOCAL_CREDENTIAL_ITERATIONS,
+      hash: 'SHA-256'
+    }, key, 256)
+    return {
+      authVerifier: bytesToBase64(new Uint8Array(bits)),
+      authSalt: bytesToBase64(salt)
+    }
+  }
+
+  async function verifyLocalCredential(account, secret) {
+    const verifier = account?.authVerifier || account?.credentialHash
+    const saltBase = account?.authSalt || account?.credentialSalt
+    if (!verifier || !saltBase || !secret || !localCrypto?.subtle) {return false}
+    try {
+      const salt = base64ToBytes(saltBase)
+      const key = await localCrypto.subtle.importKey(
+        'raw',
+        new TextEncoder().encode(secret),
+        'PBKDF2',
+        false,
+        ['deriveBits']
+      )
+      const bits = await localCrypto.subtle.deriveBits({
+        name: 'PBKDF2',
+        salt,
+        iterations: LOCAL_CREDENTIAL_ITERATIONS,
+        hash: 'SHA-256'
+      }, key, 256)
+      const actual = new Uint8Array(bits)
+      const expected = base64ToBytes(verifier)
+      if (actual.length !== expected.length) {return false}
+      let difference = 0
+      for (let i = 0; i < actual.length; i++) {difference |= actual[i] ^ expected[i]}
+      return difference === 0
+    } catch (e) {
+      return false
+    }
+  }
+
+  function sanitizeLocalAccount(account = {}) {
+    if (!account || typeof account !== 'object') {return {}}
+    const {
+      password,
+      pin,
+      secret,
+      token,
+      credential,
+      credentialHash,
+      credentialSalt,
+      ...clean
+    } = account
+    const safe = {}
+    for (const field of ['id', 'name', 'username', 'picture', 'role', 'vehicle', 'language', 'createdAt', 'updatedAt', 'uid', 'authVerifier', 'authSalt']) {
+      if (typeof clean[field] === 'string' && clean[field]) {safe[field] = clean[field]}
+    }
+    if (credentialHash && !safe.authVerifier) {safe.authVerifier = credentialHash}
+    if (credentialSalt && !safe.authSalt) {safe.authSalt = credentialSalt}
+    for (const field of ['age', 'grade', 'total']) {
+      if (Number.isFinite(Number(clean[field]))) {safe[field] = Number(clean[field])}
+    }
+    if (Array.isArray(clean.badges)) {safe.badges = clean.badges.slice(0, 50)}
+    return safe
+  }
+
+  function sanitizeActiveUser(account = {}) {
+    if (!account || typeof account !== 'object') {return {}}
+    const {
+      password,
+      pin,
+      secret,
+      token,
+      credential,
+      credentialHash,
+      credentialSalt,
+      authVerifier,
+      authSalt,
+      ...clean
+    } = account
+    const safe = {}
+    for (const field of ['id', 'name', 'username', 'picture', 'role', 'vehicle', 'language', 'createdAt', 'updatedAt', 'uid']) {
+      if (typeof clean[field] === 'string' && clean[field]) {safe[field] = clean[field]}
+    }
+    for (const field of ['age', 'grade', 'total']) {
+      if (Number.isFinite(Number(clean[field]))) {safe[field] = Number(clean[field])}
+    }
+    if (Array.isArray(clean.badges)) {safe.badges = clean.badges.slice(0, 50)}
+    return safe
+  }
+
+  function readLocalAccounts() {
     try {
       const raw = localStorage.getItem('col_local_accounts')
-      const list = raw ? JSON.parse(raw) : []
-      const trafficRaw = localStorage.getItem('traffic_local_user')
-      if (trafficRaw) {
-        const tu = JSON.parse(trafficRaw)
-        if (tu && (tu.name || tu.username)) {
-          const exists = list.some(a => (tu.username && a.username === tu.username) || (tu.name && a.name === tu.name))
-          if (!exists) {
-            list.push({
-              id: tu.id || ('local_' + Date.now()),
-              name: tu.name || tu.username,
-              username: tu.username || ('@' + (tu.name || 'driver').toLowerCase().replace(/\s+/g, '')),
-              email: tu.email || '',
-              pin: tu.pin || tu.password || '',
-              password: tu.pin || tu.password || '',
-              role: tu.role || 'student',
-              vehicle: tu.vehicle || 'Car',
-              age: tu.age || 18,
-              language: tu.language || 'en',
-              createdAt: tu.createdAt || new Date().toISOString()
-            })
-            localStorage.setItem('col_local_accounts', JSON.stringify(list))
-          }
-        }
-      }
-      return list
+      const parsed = raw ? JSON.parse(raw) : []
+      return Array.isArray(parsed) ? parsed.map(sanitizeLocalAccount).filter(a => a.id || a.username) : []
     } catch (e) {
       return []
     }
   }
 
+  function getLocalAccounts() {
+    const list = readLocalAccounts()
+    try {
+      const trafficRaw = localStorage.getItem('traffic_local_user')
+      if (trafficRaw) {
+        const tu = sanitizeActiveUser(JSON.parse(trafficRaw))
+        if (tu.name || tu.username) {
+          const exists = list.some(a => (tu.username && a.username === tu.username) || (tu.name && a.name === tu.name))
+          if (!exists) {list.push(tu)}
+        }
+      }
+      // Only non-secret profile fields reach this key. sanitizeLocalAccount() strips password,
+      // pin, secret, token and credential outright and keeps at most a PBKDF2-SHA256 verifier
+      // plus its salt; usernames and display names are not confidential.
+      // codeql[js/clear-text-storage-of-sensitive-data]
+      localStorage.setItem('col_local_accounts', JSON.stringify(list.map(sanitizeLocalAccount)))
+    } catch (e) {}
+    return list
+  }
+
   function saveLocalAccount(acc) {
     try {
+      const safe = sanitizeLocalAccount(acc)
       const list = getLocalAccounts()
-      const normUname = (acc.username || '').toLowerCase()
-      const normEmail = (acc.email || '').toLowerCase()
-      const idx = list.findIndex(a => 
-        (normUname && (a.username || '').toLowerCase() === normUname) ||
-        (normEmail && (a.email || '').toLowerCase() === normEmail) ||
-        (acc.id && a.id === acc.id)
-      )
-      if (idx >= 0) {
-        list[idx] = { ...list[idx], ...acc }
-      } else {
-        list.push(acc)
-      }
-      localStorage.setItem('col_local_accounts', JSON.stringify(list))
+      const normUname = (safe.username || '').toLowerCase()
+      const idx = list.findIndex(a => (safe.id && a.id === safe.id) || (normUname && (a.username || '').toLowerCase() === normUname))
+      if (idx >= 0) {list[idx] = { ...list[idx], ...safe }}
+      else {list.push(safe)}
+      // Same boundary as getLocalAccounts(): the record is rebuilt field by field by
+      // sanitizeLocalAccount(), which drops every secret before this write.
+      // codeql[js/clear-text-storage-of-sensitive-data]
+      localStorage.setItem('col_local_accounts', JSON.stringify(list.map(sanitizeLocalAccount)))
+      return safe
     } catch (e) {
       console.warn('[col-auth] Could not save local account:', e)
+      return null
     }
   }
 
   function getActiveLocalUser() {
     try {
-      let raw = localStorage.getItem('col_active_local_user')
-      if (!raw) {
-        raw = localStorage.getItem('traffic_local_user')
-      }
-      if (!raw) return null
-      const u = JSON.parse(raw)
-      if (!u || (!u.name && !u.username)) return null
+      const raw = localStorage.getItem('col_active_local_user') || localStorage.getItem('traffic_local_user')
+      if (!raw) {return null}
+      const u = sanitizeLocalAccount(JSON.parse(raw))
+      if (!u.name && !u.username) {return null}
       return {
         id: u.id || ('local_' + (u.username || u.name).replace(/[^a-zA-Z0-9_]/g, '')),
         name: u.name || u.username,
-        email: u.email || (u.username ? (u.username.replace('@','') + '@local.col') : 'local@col.io'),
+        email: u.username ? (u.username.replace('@', '') + '@local.col') : 'local@col.io',
         username: u.username || ('@' + (u.name || 'user').toLowerCase().replace(/\s+/g, '')),
-        picture: u.picture || u.avatar || null,
+        picture: u.picture || null,
         isLocal: true,
         user_metadata: {
           full_name: u.name || u.username,
@@ -131,39 +256,46 @@ if (!window.closeMo) {
   function setActiveLocalUser(acc) {
     try {
       const fullAcc = {
+        ...sanitizeLocalAccount(acc),
         id: acc.id || ('local_' + Date.now()),
         name: acc.name || acc.username,
         username: acc.username || ('@' + (acc.name || 'user').toLowerCase().replace(/\s+/g, '')),
-        email: acc.email || '',
         picture: acc.picture || acc.avatar || null,
-        pin: acc.pin || acc.password || '',
-        password: acc.pin || acc.password || '',
         role: acc.role || 'student',
         vehicle: acc.vehicle || 'Car',
         age: acc.age || 18,
         language: acc.language || 'en',
         updatedAt: new Date().toISOString()
       }
+      const safeAcc = sanitizeActiveUser(fullAcc)
       saveLocalAccount(fullAcc)
-      localStorage.setItem('col_active_local_user', JSON.stringify(fullAcc))
-      localStorage.setItem('traffic_local_user', JSON.stringify(fullAcc))
+      // safeAcc comes from sanitizeActiveUser(), which drops password, pin, secret, token and
+      // credential before this write. What remains is a display profile, and a username is not
+      // a secret.
+      // codeql[js/clear-text-storage-of-sensitive-data]
+      localStorage.setItem('col_active_local_user', JSON.stringify(safeAcc))
+      // codeql[js/clear-text-storage-of-sensitive-data]
+      localStorage.setItem('traffic_local_user', JSON.stringify(safeAcc))
       localStorage.setItem('trafficSetupComplete', 'true')
-      window.colUser = {
-        id: fullAcc.id,
-        name: fullAcc.name,
-        email: fullAcc.email || (fullAcc.username.replace('@','') + '@local.col'),
-        username: fullAcc.username,
-        picture: fullAcc.picture || null,
+      window.colLocalUser = {
+        id: safeAcc.id,
+        name: safeAcc.name,
+        email: acc.email || (safeAcc.username.replace('@', '') + '@local.col'),
+        username: safeAcc.username,
+        picture: safeAcc.picture || null,
         isLocal: true,
         user_metadata: {
-          full_name: fullAcc.name,
-          name: fullAcc.name,
-          role: fullAcc.role,
-          preferred_vehicle: fullAcc.vehicle,
-          avatar_url: fullAcc.picture || null,
-          picture: fullAcc.picture || null
+          full_name: safeAcc.name,
+          name: safeAcc.name,
+          role: safeAcc.role,
+          preferred_vehicle: safeAcc.vehicle,
+          avatar_url: safeAcc.picture || null,
+          picture: safeAcc.picture || null
         }
       }
+      // Do not populate window.colUser from local storage. Only a verified
+      // Supabase session may identify the logged-in account.
+      window.colUser = null
     } catch (e) {
       console.warn('[col-auth] Could not set active local user:', e)
     }
@@ -174,20 +306,15 @@ if (!window.closeMo) {
       localStorage.removeItem('col_active_local_user')
       localStorage.removeItem('traffic_local_user')
       localStorage.removeItem('trafficSetupComplete')
+      localStorage.removeItem('col_user')
+      window.colLocalUser = null
       window.colUser = null
     } catch (e) {}
   }
 
-  // Hydrate only from verified live session cache if present
-  try {
-    const cachedLive = localStorage.getItem('col_user')
-    if (cachedLive) {
-      const parsed = JSON.parse(cachedLive)
-      if (parsed && parsed.id && parsed.email) {
-        window.colUser = parsed
-      }
-    }
-  } catch (e) {}
+  // window.colUser is reserved for the live Supabase session. Local/offline
+  // profiles are exposed separately and must never impersonate a signed-in user.
+  window.colLocalUser = null
 
   // Expose local auth utilities for sub-apps
   window.colGetLocalAccounts = getLocalAccounts
@@ -195,6 +322,19 @@ if (!window.closeMo) {
   window.colGetActiveLocalUser = getActiveLocalUser
   window.colSetActiveLocalUser = setActiveLocalUser
   window.colClearActiveLocalUser = clearActiveLocalUser
+
+  // Inject modal styles and UI immediately if DOM is ready
+  function ensureAuthUI() {
+    try {
+      if (typeof injectAuthStyles === 'function') {injectAuthStyles()}
+      if (typeof injectAuthUI === 'function') {injectAuthUI()}
+    } catch (e) {}
+  }
+  if (document.body) {
+    ensureAuthUI()
+  } else {
+    document.addEventListener('DOMContentLoaded', ensureAuthUI)
+  }
 
   // 1. Fetch Global Configuration to get Supabase Keys (root-absolute so /Traffic/* pages resolve)
   let authConfig = null
@@ -226,26 +366,28 @@ if (!window.closeMo) {
       initSupabase(authConfig.url, authConfig.key)
     }
   } else {
-    const localUser = getActiveLocalUser()
-    window.colUser = localUser || null
+    // A local profile may exist for offline play, but it is not an
+    // authenticated account and must not populate window.colUser.
+    window.colLocalUser = getActiveLocalUser()
+    window.colUser = null
     dispatchAuthEvent()
   }
 
   window.handleGoogleOneTap = async (response) => {
-    if (!window.supabaseClient) return
+    if (!window.supabaseClient) {return}
     try {
       const { data, error } = await window.supabaseClient.auth.signInWithIdToken({
         provider: 'google',
         token: response.credential
       })
-      if (error) throw error
+      if (error) {throw error}
     } catch (error) {
       console.error('One Tap Sign-in error:', error.message)
     }
   }
 
   function initOneTap() {
-    if (window.colUser) return
+    if (window.colUser) {return}
     if (typeof google === 'undefined' || !google.accounts) {
       const script = document.createElement('script')
       script.src = 'https://accounts.google.com/gsi/client'
@@ -257,7 +399,7 @@ if (!window.closeMo) {
   }
 
   function setupOneTap() {
-    if (window.colUser) return
+    if (window.colUser) {return}
     // Don't show One Tap on Driving.html levels screen or briefing screen
     const path = window.location.pathname.toLowerCase()
     if (path.includes('driving') && (new URLSearchParams(window.location.search).get('screen') === 'levels' || new URLSearchParams(window.location.search).get('lv'))) {
@@ -280,7 +422,7 @@ if (!window.closeMo) {
     })
 
     // Re-render button if modal is open
-    var container = document.getElementById('gSignInBtnContainer')
+    const container = document.getElementById('gSignInBtnContainer')
     if (container && !window.AndroidBridge) {
       container.innerHTML = ''
       google.accounts.id.renderButton(container, { theme: 'filled_black', size: 'large', type: 'standard', shape: 'rectangular', width: 280 })
@@ -321,22 +463,22 @@ if (!window.closeMo) {
 
           if (upProfile) {
             window.colUser.uid = upProfile.id || upProfile.user_id
-            if (upProfile.display_name) window.colUser.name = upProfile.display_name
+            if (upProfile.display_name) {window.colUser.name = upProfile.display_name}
             if (upProfile.avatar_url && !window.colUser.picture) {
               window.colUser.picture = upProfile.avatar_url
             }
           } else {
             const { data: profile, error } = await supabaseClient
               .from('profiles')
-              .select('*')
+              .select('id, username, full_name, avatar_url')
               .eq('id', userId)
               .maybeSingle()
 
-            if (error && error.code !== 'PGRST116') throw error
+            if (error && error.code !== 'PGRST116') {throw error}
 
             if (profile) {
               window.colUser.uid = profile.id
-              if (profile.username && !meta.full_name) window.colUser.name = profile.username
+              if (profile.username && !meta.full_name) {window.colUser.name = profile.username}
               if (profile.avatar_url && !window.colUser.picture) {
                 window.colUser.picture = profile.avatar_url
               }
@@ -348,15 +490,8 @@ if (!window.closeMo) {
           console.error('[col-auth] Profile sync error:', e)
         }
 
-        try {
-          localStorage.setItem('col_user', JSON.stringify({
-            id: window.colUser.id,
-            email: window.colUser.email,
-            name: window.colUser.name,
-            picture: window.colUser.picture,
-            uid: window.colUser.uid
-          }))
-        } catch (e) {}
+        // Session data remains in memory only. Never persist Supabase
+        // identity or access tokens to browser storage.
       } else {
         try {
           localStorage.removeItem('col_user')
@@ -387,7 +522,7 @@ if (!window.closeMo) {
   }
 
   function formatUserFriendlyAuthError(err, context = 'general') {
-    if (!err) return 'An Unexpected Error Occurred. Please Try Again.'
+    if (!err) {return 'An Unexpected Error Occurred. Please Try Again.'}
     const raw = typeof err === 'string' ? err : (err.message || '')
     const msg = raw.toLowerCase()
     const code = err.code || ''
@@ -445,9 +580,9 @@ if (!window.closeMo) {
   }
 
   async function checkUsernameAvailability(rawUsername, currentUserId) {
-    if (!rawUsername) return { available: false, error: 'Please Enter A Username.' }
+    if (!rawUsername) {return { available: false, error: 'Please Enter A Username.' }}
     let clean = rawUsername.trim()
-    if (!clean.startsWith('@')) clean = '@' + clean
+    if (!clean.startsWith('@')) {clean = '@' + clean}
     clean = '@' + clean.slice(1).replace(/[^a-zA-Z0-9_]/g, '')
 
     const namePart = clean.slice(1)
@@ -463,14 +598,16 @@ if (!window.closeMo) {
     }
 
     try {
-      // 1. Check profiles table (checks both @handle and handle)
-      const { data: profs, error: pErr } = await supabaseClient
-        .from('profiles')
-        .select('id, username')
-        .or(`username.ilike.${clean},username.ilike.${namePart}`)
+      // 1. Check the leaderboard-safe public directory (checks both @handle and handle).
+      //    `profiles` is own-row only now, so it cannot be used for availability.
+      const { data: dirRows, error: pErr } = await supabaseClient
+        .rpc('public_profile_directory', { p_search: clean, p_limit: 50 })
 
-      if (pErr) console.warn('[col-auth] profiles check notice:', pErr)
-      const takenInProfiles = (profs || []).some(p => p.id !== currentUserId)
+      if (pErr) {console.warn('[col-auth] username availability check notice:', pErr)}
+      const wantedHandles = [clean.toLowerCase(), namePart.toLowerCase()]
+      const takenInProfiles = (dirRows || []).some(
+        p => p.user_id !== currentUserId && p.username && wantedHandles.includes(String(p.username).toLowerCase())
+      )
 
       if (takenInProfiles) {
         return {
@@ -480,35 +617,16 @@ if (!window.closeMo) {
           username: clean
         }
       }
-
-      // 2. Check user_profiles table (checks both @handle and handle)
-      const { data: upProfs, error: upErr } = await supabaseClient
-        .from('user_profiles')
-        .select('user_id, username')
-        .or(`username.ilike.${clean},username.ilike.${namePart}`)
-
-      if (upErr) console.warn('[col-auth] user_profiles check notice:', upErr)
-      const takenInUp = (upProfs || []).some(p => p.user_id !== currentUserId)
-
-      if (takenInUp) {
-        return {
-          available: false,
-          error: 'This Username Is Already Taken By Another Player.',
-          suggestions: generateUsernameSuggestions(namePart),
-          username: clean
-        }
-      }
-
-      return { available: true, username: clean }
-    } catch (err) {
-      console.warn('[col-auth] Availability check failed:', err)
-      return { available: true, username: clean }
+    } catch (e) {
+      console.warn('[col-auth] username availability check failed:', e)
     }
+
+    return { available: true, username: clean }
   }
 
   function generateUsernameSuggestions(base) {
     const clean = (base || 'Learner').replace(/[^a-zA-Z0-9_]/g, '') || 'Learner'
-    const rand = Math.floor(10 + Math.random() * 89)
+    const rand = getSecureRandomInt(10, 99)
     return [
       `@${clean}_${rand}`,
       `@${clean}_IND`,
@@ -519,9 +637,9 @@ if (!window.closeMo) {
   let usernameCheckDebounce = null
 
   window._onUsernameInput = function (input) {
-    if (!input) return
+    if (!input) {return}
     let val = input.value
-    if (!val.startsWith('@')) val = '@' + val.replace(/@/g, '')
+    if (!val.startsWith('@')) {val = '@' + val.replace(/@/g, '')}
     val = '@' + val.slice(1).replace(/[^a-zA-Z0-9_]/g, '')
     input.value = val
 
@@ -531,15 +649,15 @@ if (!window.closeMo) {
     const errDiv = document.getElementById('profileCreateError')
     const btn = document.getElementById('profileCreateBtn')
 
-    if (errDiv) errDiv.style.display = 'none'
+    if (errDiv) {errDiv.style.display = 'none'}
 
     if (val.length <= 1) {
       if (statusEl) {
         statusEl.textContent = ''
         statusEl.style.color = 'var(--dim, #8891AA)'
       }
-      if (suggBox) suggBox.style.display = 'none'
-      if (btn) btn.disabled = true
+      if (suggBox) {suggBox.style.display = 'none'}
+      if (btn) {btn.disabled = true}
       return
     }
 
@@ -549,8 +667,8 @@ if (!window.closeMo) {
         statusEl.textContent = 'Username Must Be At Least 3 Characters.'
         statusEl.style.color = 'var(--dim, #8891AA)'
       }
-      if (suggBox) suggBox.style.display = 'none'
-      if (btn) btn.disabled = true
+      if (suggBox) {suggBox.style.display = 'none'}
+      if (btn) {btn.disabled = true}
       return
     }
 
@@ -559,7 +677,7 @@ if (!window.closeMo) {
       statusEl.style.color = 'var(--dim, #8891AA)'
     }
 
-    if (usernameCheckDebounce) clearTimeout(usernameCheckDebounce)
+    if (usernameCheckDebounce) {clearTimeout(usernameCheckDebounce)}
     usernameCheckDebounce = setTimeout(async () => {
       const currentId = window.colUser ? window.colUser.id : null
       const res = await checkUsernameAvailability(val, currentId)
@@ -569,14 +687,14 @@ if (!window.closeMo) {
           statusEl.textContent = '✓ Username Available!'
           statusEl.style.color = '#10b981'
         }
-        if (suggBox) suggBox.style.display = 'none'
-        if (btn) btn.disabled = false
+        if (suggBox) {suggBox.style.display = 'none'}
+        if (btn) {btn.disabled = false}
       } else {
         if (statusEl) {
           statusEl.textContent = '✕ ' + (res.error || 'Username Taken')
           statusEl.style.color = '#ef4444'
         }
-        if (btn) btn.disabled = true
+        if (btn) {btn.disabled = true}
         if (res.suggestions && res.suggestions.length && suggBox && suggList) {
           suggList.innerHTML = res.suggestions.map(s => `
             <button type="button" class="col-uname-chip" onclick="window._pickUsernameSuggestion('${s}')">${s}</button>
@@ -610,7 +728,7 @@ if (!window.closeMo) {
         full_name: displayName,
         email: window.colUser.email
       }])
-    if (error) throw error
+    if (error) {throw error}
 
     try {
       await supabaseClient
@@ -632,12 +750,12 @@ if (!window.closeMo) {
   }
 
   function promptForUsername() {
-    if (!document.getElementById('colAuthModal')) injectAuthUI()
+    if (!document.getElementById('colAuthModal')) {injectAuthUI()}
     const body = document.getElementById('colAuthBody')
-    if (!body) return
+    if (!body) {return}
 
     const hd = document.querySelector('.col-auth-hd')
-    if (hd) hd.style.display = 'none'
+    if (hd) {hd.style.display = 'none'}
 
     body.innerHTML = `
       <div style="text-align:center; margin-bottom: 20px; margin-top: 10px; position: relative;">
@@ -670,10 +788,10 @@ if (!window.closeMo) {
   }
 
   window._handleProfileCreate = async (e) => {
-    if (e) e.preventDefault()
+    if (e) {e.preventDefault()}
     const input = document.getElementById('profileUsername')
     let username = input ? input.value.trim() : ''
-    if (!username.startsWith('@')) username = '@' + username
+    if (!username.startsWith('@')) {username = '@' + username}
     username = '@' + username.slice(1).replace(/[^a-zA-Z0-9_]/g, '')
 
     const btn = document.getElementById('profileCreateBtn')
@@ -693,7 +811,7 @@ if (!window.closeMo) {
       btn.textContent = 'Checking & Creating...'
       btn.disabled = true
     }
-    if (errDiv) errDiv.style.display = 'none'
+    if (errDiv) {errDiv.style.display = 'none'}
 
     try {
       // Final pre-flight check
@@ -722,20 +840,15 @@ if (!window.closeMo) {
       // Update colUser state
       window.colUser.uid = window.colUser.id
       window.colUser.username = username
-      if (!window.colUser.name) window.colUser.name = username.replace(/^@/, '')
+      if (!window.colUser.name) {window.colUser.name = username.replace(/^@/, '')}
 
       try {
-        localStorage.setItem('col_user', JSON.stringify({
-          id: window.colUser.id,
-          email: window.colUser.email,
-          name: window.colUser.name,
-          username: username,
-          picture: window.colUser.picture,
-          uid: window.colUser.id
-        }))
         const trProfRaw = localStorage.getItem('traffic_profile')
         const trProf = trProfRaw ? JSON.parse(trProfRaw) : {}
         trProf.username = username
+        // Only the display handle is merged into the cached traffic profile; no credential or
+        // session token is present in trProf.
+        // codeql[js/clear-text-storage-of-sensitive-data]
         localStorage.setItem('traffic_profile', JSON.stringify(trProf))
       } catch (stErr) {}
 
@@ -747,7 +860,7 @@ if (!window.closeMo) {
       }
       dispatchAuthEvent()
       updateAuthUI()
-      if (typeof toast === 'function') toast('Profile Created Successfully! Welcome, ' + username, '#10b981')
+      if (typeof toast === 'function') {toast('Profile Created Successfully! Welcome, ' + username, '#10b981')}
     } catch (error) {
       console.error('[col-auth] Profile creation error:', error)
       const friendlyMsg = formatUserFriendlyAuthError(error, 'profile')
@@ -779,7 +892,7 @@ if (!window.closeMo) {
   }
 
   function escapeColHtml(str) {
-    if (!str) return ''
+    if (!str) {return ''}
     return String(str)
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
@@ -788,8 +901,17 @@ if (!window.closeMo) {
       .replace(/'/g, '&#39;')
   }
 
+  function getSafeImageUrl(value) {
+    if (!value) {return ''}
+    try {
+      const parsed = new URL(String(value), window.location.origin)
+      if (['http:', 'https:', 'data:', 'blob:'].includes(parsed.protocol)) {return parsed.href}
+    } catch (error) {}
+    return ''
+  }
+
   function injectAuthStyles() {
-    if (document.getElementById('col-auth-styles')) return
+    if (document.getElementById('col-auth-styles')) {return}
     const style = document.createElement('style')
     style.id = 'col-auth-styles'
     style.innerHTML = `
@@ -981,7 +1103,7 @@ if (!window.closeMo) {
   }
 
   function injectAuthUI() {
-    if (document.getElementById('colAuthModal')) return
+    if (document.getElementById('colAuthModal')) {return}
 
     const modal = document.createElement('div')
     modal.className = 'col-auth-mo'
@@ -1005,11 +1127,11 @@ if (!window.closeMo) {
         `
     document.body.appendChild(modal)
     modal.addEventListener('click', function(e) {
-      if (e.target === this) window.closeGlobalAuth()
+      if (e.target === this) {window.closeGlobalAuth()}
     })
 
     window.closeGlobalAuth = function () {
-      var mo = document.getElementById('colAuthModal')
+      const mo = document.getElementById('colAuthModal')
       if (mo) {
         mo.classList.remove('open')
         mo.setAttribute('aria-hidden', 'true')
@@ -1020,15 +1142,16 @@ if (!window.closeMo) {
     // Expose global open functions
     window.openGlobalLogin = function () {
       renderAuthPanel()
-      var mo = document.getElementById('colAuthModal')
+      const mo = document.getElementById('colAuthModal')
       if (mo) {
         mo.classList.add('open')
         mo.removeAttribute('aria-hidden')
         mo.removeAttribute('inert')
         // Focus first focusable element
-        setTimeout(function(){ var f = mo.querySelector('button, input, [tabindex]:not([tabindex="-1"])'); if(f) f.focus(); }, 100)
+        setTimeout(function(){ const f = mo.querySelector('button, input, [tabindex]:not([tabindex="-1"])'); if(f) {f.focus();} }, 100)
       }
     }
+    window.openLogin = window.openGlobalLogin
 
     window.openAccountSettings = function () {
       if (!window.colUser) {
@@ -1036,12 +1159,12 @@ if (!window.closeMo) {
         return
       }
       renderAuthPanel('settings')
-      var mo = document.getElementById('colAuthModal')
+      const mo = document.getElementById('colAuthModal')
       if (mo) {
         mo.classList.add('open')
         mo.removeAttribute('aria-hidden')
         mo.removeAttribute('inert')
-        setTimeout(function(){ var f = mo.querySelector('button, input, [tabindex]:not([tabindex="-1"])'); if(f) f.focus(); }, 100)
+        setTimeout(function(){ const f = mo.querySelector('button, input, [tabindex]:not([tabindex="-1"])'); if(f) {f.focus();} }, 100)
       }
     }
 
@@ -1053,10 +1176,10 @@ if (!window.closeMo) {
     })
     // Focus trap
     modal.addEventListener('keydown', function(e){
-      if(e.key!=='Tab') return
-      var focusable = modal.querySelectorAll('button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])')
-      if(!focusable.length) return
-      var first = focusable[0], last = focusable[focusable.length-1]
+      if(e.key!=='Tab') {return}
+      const focusable = modal.querySelectorAll('button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])')
+      if(!focusable.length) {return}
+      const first = focusable[0], last = focusable[focusable.length-1]
       if(e.shiftKey){ if(document.activeElement===first){ e.preventDefault(); last.focus(); } }
       else { if(document.activeElement===last){ e.preventDefault(); first.focus(); } }
     })
@@ -1066,7 +1189,7 @@ if (!window.closeMo) {
 
   function renderAuthPanel(tab = 'login') {
     const body = document.getElementById('colAuthBody')
-    if (!body) return
+    if (!body) {return}
 
     const hdTitle = document.getElementById('colAuthTitle')
     const hdSub = document.getElementById('colAuthSub') || document.querySelector('.col-auth-hd p')
@@ -1076,10 +1199,10 @@ if (!window.closeMo) {
       const currentVeh = window.colUser.vehicle || (window.colUser.user_metadata && window.colUser.user_metadata.preferred_vehicle) || 'Car'
 
       if (tab === 'settings') {
-        if (hdTitle) hdTitle.textContent = 'Account Settings'
-        if (hdSub) hdSub.textContent = 'Customize Profile Details, Avatar, Vehicle, And Security.'
+        if (hdTitle) {hdTitle.textContent = 'Account Settings'}
+        if (hdSub) {hdSub.textContent = 'Customize Profile Details, Avatar, Vehicle, And Security.'}
 
-        const curPic = window.colUser.picture || ''
+        const curPic = getSafeImageUrl(window.colUser.picture)
         const userInitial = escapeColHtml(((window.colUser.name || window.colUser.username || '?').replace(/^@/,'').charAt(0) || '?').toUpperCase())
 
         body.innerHTML = `
@@ -1094,7 +1217,7 @@ if (!window.closeMo) {
               <div style="margin-bottom: 18px; padding: 14px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--lineb, rgba(255, 255, 255, 0.1)); border-radius: 16px;">
                 <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 14px;">
                   <div id="colSettingAvatarPreview" style="width: 72px; height: 72px; border-radius: 50%; background: var(--signal, #F2B84B); display: flex; justify-content: center; align-items: center; font-size: 1.8rem; overflow: hidden; border: 2.5px solid var(--signal, #F2B84B); color: var(--void, #070A14); font-weight: 800; flex-shrink: 0; box-shadow: 0 4px 14px rgba(0,0,0,0.3);">
-                    ${curPic ? `<img src="${curPic}" alt="Avatar Preview" style="width:100%; height:100%; object-fit:cover; display:block;" onerror="this.style.display='none'; this.parentElement.textContent='${userInitial}';">` : userInitial}
+                    ${curPic ? `<img src="${escapeColHtml(curPic)}" alt="Avatar Preview" style="width:100%; height:100%; object-fit:cover; display:block;" onerror="this.style.display='none'; this.parentElement.textContent='${userInitial}';">` : userInitial}
                   </div>
                   <div style="flex: 1; min-width: 0;">
                     <div style="font-size: 0.85rem; font-weight: 700; color: var(--ink, #E8E3D8); margin-bottom: 4px;">Profile Avatar</div>
@@ -1179,13 +1302,13 @@ if (!window.closeMo) {
       }
 
       // Default Profile Overview
-      if (hdTitle) hdTitle.textContent = 'Account'
-      if (hdSub) hdSub.textContent = 'Connected Account And Session Overview.'
+      if (hdTitle) {hdTitle.textContent = 'Account'}
+      if (hdSub) {hdSub.textContent = 'Connected Account And Session Overview.'}
 
       body.innerHTML = `
         <div style="text-align:center; margin-bottom: 22px;">
             <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--signal, #F2B84B); margin: 0 auto 14px; display: flex; justify-content: center; align-items: center; font-size: 2rem; overflow: hidden; border: 2px solid var(--signal, #F2B84B); color: var(--void, #070A14); font-weight: 800;">
-                ${window.colUser.picture ? `<img src="${window.colUser.picture}" alt="${escapeColHtml(window.colUser.name || 'User')}" referrerpolicy="no-referrer" style="width:100%; height:100%; object-fit:cover; display:block;" onerror="this.style.display='none'; this.parentElement.textContent='${escapeColHtml((window.colUser.name || '?').charAt(0).toUpperCase())}';">` : escapeColHtml((window.colUser.name || '?').charAt(0).toUpperCase())}
+                ${getSafeImageUrl(window.colUser.picture) ? `<img src="${escapeColHtml(getSafeImageUrl(window.colUser.picture))}" alt="${escapeColHtml(window.colUser.name || 'User')}" referrerpolicy="no-referrer" style="width:100%; height:100%; object-fit:cover; display:block;" onerror="this.style.display='none'; this.parentElement.textContent='${escapeColHtml((window.colUser.name || '?').charAt(0).toUpperCase())}';">` : escapeColHtml((window.colUser.name || '?').charAt(0).toUpperCase())}
             </div>
             <h3 style="margin-bottom: 4px; font-size: 1.25rem; color: var(--ink, #E8E3D8); font-weight: 700;">${escapeColHtml(window.colUser.name || 'User')}</h3>
             <p class="col-auth-email" style="color: var(--dim, #8891AA); font-size: 0.9rem; margin-bottom: 8px; text-transform: none !important;">${escapeColHtml(window.colUser.email ? window.colUser.email.toLowerCase() : (window.colUser.username || 'Local Profile'))}</p>
@@ -1203,8 +1326,8 @@ if (!window.closeMo) {
       return
     }
 
-    if (hdTitle) hdTitle.textContent = 'Authenticate'
-    if (hdSub) hdSub.textContent = 'Unlock Dashboard Storage And Cloud Sync.'
+    if (hdTitle) {hdTitle.textContent = 'Authenticate'}
+    if (hdSub) {hdSub.textContent = 'Unlock Dashboard Storage And Cloud Sync.'}
 
     const isLogin = tab === 'login'
     const isOtp = tab === 'otp'
@@ -1264,14 +1387,14 @@ if (!window.closeMo) {
 
   // Expose helpers for inline handlers
   window._renderAuthTab = (tab) => {
-    if (tab !== 'otp') colOtpState = { step: 'send', email: '' }
+    if (tab !== 'otp') {colOtpState = { step: 'send', email: '' }}
     renderAuthPanel(tab)
   }
 
   window._onSettingUsernameInput = function (input) {
-    if (!input) return
+    if (!input) {return}
     let val = input.value.trim()
-    if (val && !val.startsWith('@')) val = '@' + val
+    if (val && !val.startsWith('@')) {val = '@' + val}
     val = '@' + val.slice(1).replace(/[^a-zA-Z0-9_]/g, '')
     input.value = val
 
@@ -1280,8 +1403,8 @@ if (!window.closeMo) {
     const currentUname = (window.colUser && window.colUser.username) || ''
 
     if (!val || val === '@' || val.toLowerCase() === currentUname.toLowerCase()) {
-      if (statusEl) statusEl.textContent = ''
-      if (btn) btn.disabled = false
+      if (statusEl) {statusEl.textContent = ''}
+      if (btn) {btn.disabled = false}
       return
     }
 
@@ -1290,7 +1413,7 @@ if (!window.closeMo) {
         statusEl.textContent = 'Username Must Be At Least 3 Characters.'
         statusEl.style.color = 'var(--dim, #8891AA)'
       }
-      if (btn) btn.disabled = true
+      if (btn) {btn.disabled = true}
       return
     }
 
@@ -1299,7 +1422,7 @@ if (!window.closeMo) {
       statusEl.style.color = 'var(--dim, #8891AA)'
     }
 
-    if (usernameCheckDebounce) clearTimeout(usernameCheckDebounce)
+    if (usernameCheckDebounce) {clearTimeout(usernameCheckDebounce)}
     usernameCheckDebounce = setTimeout(async () => {
       const currentId = window.colUser ? window.colUser.id : null
       const res = await checkUsernameAvailability(val, currentId)
@@ -1308,19 +1431,19 @@ if (!window.closeMo) {
           statusEl.textContent = '✓ Username Available!'
           statusEl.style.color = '#10b981'
         }
-        if (btn) btn.disabled = false
+        if (btn) {btn.disabled = false}
       } else {
         if (statusEl) {
           statusEl.textContent = '✕ ' + (res.error || 'Username Taken')
           statusEl.style.color = '#ef4444'
         }
-        if (btn) btn.disabled = true
+        if (btn) {btn.disabled = true}
       }
     }, 280)
   }
 
   window._handleAvatarUpload = function (input) {
-    if (!input || !input.files || !input.files[0]) return
+    if (!input || !input.files || !input.files[0]) {return}
     const file = input.files[0]
     if (!file.type.startsWith('image/')) {
       alert('Please Select An Image File (JPEG, PNG, WebP).')
@@ -1350,8 +1473,8 @@ if (!window.closeMo) {
     const valInp = document.getElementById('colSettingAvatarVal')
     const urlInp = document.getElementById('colSettingAvatar')
     const preview = document.getElementById('colSettingAvatarPreview')
-    if (valInp) valInp.value = dataUrl || ''
-    if (urlInp) urlInp.value = dataUrl && dataUrl.startsWith('http') ? dataUrl : ''
+    if (valInp) {valInp.value = dataUrl || ''}
+    if (urlInp) {urlInp.value = dataUrl && dataUrl.startsWith('http') ? dataUrl : ''}
     if (preview) {
       if (dataUrl) {
         preview.innerHTML = `<img src="${dataUrl}" alt="Avatar Preview" style="width:100%; height:100%; object-fit:cover; display:block;">`
@@ -1386,7 +1509,7 @@ if (!window.closeMo) {
   }
 
   window._onSettingAvatarUrlInput = function (inp) {
-    if (!inp) return
+    if (!inp) {return}
     const url = inp.value.trim()
     window._setAvatarValue(url, 'URL')
   }
@@ -1396,8 +1519,8 @@ if (!window.closeMo) {
   }
 
   window._handleSaveAccountSettings = async (e) => {
-    if (e) e.preventDefault()
-    if (!window.colUser) return
+    if (e) {e.preventDefault()}
+    if (!window.colUser) {return}
 
     const nameInp = document.getElementById('colSettingName')
     const unameInp = document.getElementById('colSettingUsername')
@@ -1425,7 +1548,7 @@ if (!window.closeMo) {
     }
 
     if (newUname) {
-      if (!newUname.startsWith('@')) newUname = '@' + newUname
+      if (!newUname.startsWith('@')) {newUname = '@' + newUname}
       newUname = '@' + newUname.slice(1).replace(/[^a-zA-Z0-9_]/g, '')
     }
 
@@ -1471,7 +1594,7 @@ if (!window.closeMo) {
       btn.textContent = 'Saving Changes...'
       btn.disabled = true
     }
-    if (fb) fb.style.display = 'none'
+    if (fb) {fb.style.display = 'none'}
 
     try {
       // 1. Resolve live Supabase session if available
@@ -1488,7 +1611,7 @@ if (!window.closeMo) {
       if (supabaseClient && activeSession) {
         if (newPass) {
           const { error: passErr } = await supabaseClient.auth.updateUser({ password: newPass })
-          if (passErr) throw passErr
+          if (passErr) {throw passErr}
         }
 
         const metaUpdate = {
@@ -1501,7 +1624,7 @@ if (!window.closeMo) {
           metaUpdate.picture = newAv || null
         }
         const { error: metaErr } = await supabaseClient.auth.updateUser({ data: metaUpdate })
-        if (metaErr) console.warn('[col-auth] User metadata update warning:', metaErr)
+        if (metaErr) {console.warn('[col-auth] User metadata update warning:', metaErr)}
 
         const upPayload = {
           user_id: window.colUser.id,
@@ -1511,9 +1634,9 @@ if (!window.closeMo) {
           avatar_url: newAv || null,
           updated_at: new Date().toISOString()
         }
-        if (newUname) upPayload.username = newUname
+        if (newUname) {upPayload.username = newUname}
         const { error: upErr } = await supabaseClient.from('user_profiles').upsert(upPayload, { onConflict: 'user_id' })
-        if (upErr) console.warn('[col-auth] user_profiles upsert warning:', upErr)
+        if (upErr) {console.warn('[col-auth] user_profiles upsert warning:', upErr)}
 
         const profPayload = {
           id: window.colUser.id,
@@ -1521,7 +1644,7 @@ if (!window.closeMo) {
           avatar_url: newAv || null,
           updated_at: new Date().toISOString()
         }
-        if (newUname) profPayload.username = newUname
+        if (newUname) {profPayload.username = newUname}
         const { error: pErr } = await supabaseClient.from('profiles').upsert(profPayload, { onConflict: 'id' })
         if (pErr) {
           if (pErr.code === '23505' || (pErr.message && pErr.message.includes('unique'))) {
@@ -1533,37 +1656,35 @@ if (!window.closeMo) {
 
       // 2. Update live window.colUser in memory
       window.colUser.name = newName
-      if (newUname) window.colUser.username = newUname
+      if (newUname) {window.colUser.username = newUname}
       window.colUser.vehicle = newVeh
       window.colUser.picture = newAv || null
-      if (!window.colUser.user_metadata) window.colUser.user_metadata = {}
+      if (!window.colUser.user_metadata) {window.colUser.user_metadata = {}}
       window.colUser.user_metadata.full_name = newName
       window.colUser.user_metadata.name = newName
       window.colUser.user_metadata.preferred_vehicle = newVeh
       window.colUser.user_metadata.avatar_url = newAv || null
       window.colUser.user_metadata.picture = newAv || null
 
-      // 3. Persist to storage
+      // 3. Keep live identity in memory. Only an offline profile may receive
+      // a salted verifier; plaintext credentials are never written to storage.
       const storedUser = {
         id: window.colUser.id,
         name: newName,
         username: newUname || window.colUser.username,
-        email: window.colUser.email,
         vehicle: newVeh,
         picture: newAv || null,
         uid: window.colUser.uid,
         updatedAt: new Date().toISOString()
       }
-      if (newPass) {
-        storedUser.pin = newPass
-        storedUser.password = newPass
-      }
-
-      if (window.colUser.isLocal || typeof setActiveLocalUser === 'function') {
+      if (window.colLocalUser?.isLocal) {
+        if (newPass) {
+          const credential = await createLocalCredential(newPass)
+          if (!credential) {throw new Error('Secure browser storage is unavailable. Please use cloud authentication.')}
+          Object.assign(storedUser, credential)
+        }
         setActiveLocalUser(storedUser)
       }
-      localStorage.setItem('col_user', JSON.stringify(storedUser))
-      localStorage.setItem('traffic_local_user', JSON.stringify(storedUser))
 
       try {
         const trProfRaw = localStorage.getItem('traffic_profile')
@@ -1571,7 +1692,9 @@ if (!window.closeMo) {
         trProf.name = newName
         trProf.preferred_vehicle = newVeh
         trProf.vehicle = newVeh
-        if (newAv) trProf.avatar = newAv
+        if (newAv) {trProf.avatar = newAv}
+        // Display name, vehicle choice and avatar path only.
+        // codeql[js/clear-text-storage-of-sensitive-data]
         localStorage.setItem('traffic_profile', JSON.stringify(trProf))
       } catch (e) {}
 
@@ -1607,13 +1730,13 @@ if (!window.closeMo) {
   }
 
   window._handleColOtpSend = async (e) => {
-    if (e) e.preventDefault()
+    if (e) {e.preventDefault()}
     const inp = document.getElementById('colOtpEmail')
     const emailInput = (inp ? inp.value : colOtpState.email || '').trim().toLowerCase()
     const btn = document.getElementById('colOtpSendBtn')
     const errDiv = document.getElementById('colAuthError')
 
-    if (!emailInput) return
+    if (!emailInput) {return}
     if (!supabaseClient) {
       if (errDiv) {
         errDiv.textContent = 'Cloud authentication service unavailable. Check your internet connection.'
@@ -1626,7 +1749,7 @@ if (!window.closeMo) {
       btn.textContent = 'Sending Code...'
       btn.disabled = true
     }
-    if (errDiv) errDiv.style.display = 'none'
+    if (errDiv) {errDiv.style.display = 'none'}
 
     try {
       const { data, error } = await supabaseClient.auth.signInWithOtp({
@@ -1635,7 +1758,7 @@ if (!window.closeMo) {
           shouldCreateUser: true
         }
       })
-      if (error) throw error
+      if (error) {throw error}
 
       colOtpState = { step: 'verify', email: emailInput }
       renderAuthPanel('otp')
@@ -1652,13 +1775,13 @@ if (!window.closeMo) {
   }
 
   window._handleColOtpVerify = async (e) => {
-    if (e) e.preventDefault()
+    if (e) {e.preventDefault()}
     const tokenInp = document.getElementById('colOtpToken')
     const token = tokenInp ? tokenInp.value.trim() : ''
     const btn = document.getElementById('colOtpVerifyBtn')
     const errDiv = document.getElementById('colAuthError')
 
-    if (!token) return
+    if (!token) {return}
     if (!supabaseClient) {
       if (errDiv) {
         errDiv.textContent = 'Auth service unavailable.'
@@ -1671,7 +1794,7 @@ if (!window.closeMo) {
       btn.textContent = 'Verifying...'
       btn.disabled = true
     }
-    if (errDiv) errDiv.style.display = 'none'
+    if (errDiv) {errDiv.style.display = 'none'}
 
     try {
       const { data, error } = await supabaseClient.auth.verifyOtp({
@@ -1679,13 +1802,13 @@ if (!window.closeMo) {
         token: token,
         type: 'email'
       })
-      if (error) throw error
+      if (error) {throw error}
 
       colOtpState = { step: 'send', email: '' }
       const mo = document.getElementById('colAuthModal')
-      if (mo) mo.classList.remove('open')
+      if (mo) {mo.classList.remove('open')}
       const loginMo = document.getElementById('loginMo')
-      if (loginMo) loginMo.classList.remove('open')
+      if (loginMo) {loginMo.classList.remove('open')}
       dispatchAuthEvent()
       updateAuthUI()
     } catch (err) {
@@ -1710,12 +1833,12 @@ if (!window.closeMo) {
       return
     }
 
-    if (!supabaseClient) return
-    var allowedOrigin = 'https://advancedlogiclabs.dpdns.org'
-    var currentOrigin = window.location.origin
-    var isLocal = currentOrigin.includes('localhost') || currentOrigin.includes('127.0.0.1')
-    var isVercel = currentOrigin.includes('vercel.app')
-    var redirectUrl = (currentOrigin === allowedOrigin || isLocal || isVercel) ? window.location.href : allowedOrigin
+    if (!supabaseClient) {return}
+    const allowedOrigin = 'https://advancedlogiclabs.dpdns.org'
+    const currentOrigin = window.location.origin
+    const isLocal = currentOrigin.includes('localhost') || currentOrigin.includes('127.0.0.1')
+    const isVercel = currentOrigin.includes('vercel.app')
+    const redirectUrl = (currentOrigin === allowedOrigin || isLocal || isVercel) ? window.location.href : allowedOrigin
 
     await supabaseClient.auth.signInWithOAuth({
       provider: 'google',
@@ -1737,34 +1860,36 @@ if (!window.closeMo) {
 
     try {
       if (mode === 'login') {
-        // 1. Check local accounts first (by email or username or display name)
+        // 1. Check local accounts by username or display name. Local accounts
+        // only contain a salted verifier; plaintext PINs are never accepted
+        // from or written to browser storage.
         const localAccounts = getLocalAccounts()
         const normInput = emailInput.toLowerCase()
         const normUname = normInput.startsWith('@') ? normInput : '@' + normInput
 
         const matched = localAccounts.find(acc => {
-          const accEmail = (acc.email || '').toLowerCase()
+          if (!acc.authVerifier && !acc.credentialHash) {return false}
           const accUname = (acc.username || '').toLowerCase()
           const accName = (acc.name || '').toLowerCase()
-          return accEmail === normInput || accUname === normInput || accUname === normUname || accName === normInput
+          return accUname === normInput || accUname === normUname || accName === normInput
         })
 
         if (matched) {
-          const expectedPin = (matched.pin || matched.password || '').toString().trim()
-          if (!expectedPin || expectedPin === pass) {
-            setActiveLocalUser(matched)
-            const mo = document.getElementById('colAuthModal')
-            if (mo) mo.classList.remove('open')
-            const loginMo = document.getElementById('loginMo')
-            if (loginMo) loginMo.classList.remove('open')
-            dispatchAuthEvent()
-            updateAuthUI()
-            btn.textContent = 'Sign In'
-            btn.disabled = false
-            return
-          } else {
-            throw new Error('Incorrect password or PIN for this local account.')
+          if (!await verifyLocalCredential(matched, pass)) {
+            throw new Error((matched.authVerifier || matched.credentialHash)
+              ? 'Incorrect password or PIN for this local account.'
+              : 'This legacy local account must be recreated with a secure password.')
           }
+          setActiveLocalUser(matched)
+          const mo = document.getElementById('colAuthModal')
+          if (mo) {mo.classList.remove('open')}
+          const loginMo = document.getElementById('loginMo')
+          if (loginMo) {loginMo.classList.remove('open')}
+          dispatchAuthEvent()
+          updateAuthUI()
+          btn.textContent = 'Sign In'
+          btn.disabled = false
+          return
         }
 
         // 2. If not found in local accounts, try Supabase account system RPC first
@@ -1780,9 +1905,6 @@ if (!window.closeMo) {
                 id: acc.id,
                 name: acc.display_name || acc.username,
                 username: acc.username,
-                email: acc.email || '',
-                pin: pass,
-                password: pass,
                 role: acc.role || 'student',
                 vehicle: acc.preferred_vehicle || 'Car',
                 age: acc.age || 18,
@@ -1792,9 +1914,9 @@ if (!window.closeMo) {
                 updatedAt: new Date().toISOString()
               })
               const mo = document.getElementById('colAuthModal')
-              if (mo) mo.classList.remove('open')
+              if (mo) {mo.classList.remove('open')}
               const loginMo = document.getElementById('loginMo')
-              if (loginMo) loginMo.classList.remove('open')
+              if (loginMo) {loginMo.classList.remove('open')}
               dispatchAuthEvent()
               updateAuthUI()
               btn.textContent = 'Sign In'
@@ -1810,16 +1932,16 @@ if (!window.closeMo) {
           throw new Error('Local account not found. Please check your username or PIN.')
         }
 
-        let res = await supabaseClient.auth.signInWithPassword({
+        const res = await supabaseClient.auth.signInWithPassword({
           email: emailInput,
           password: pass
         })
 
-        if (res.error) throw res.error
+        if (res.error) {throw res.error}
         const mo = document.getElementById('colAuthModal')
-        if (mo) mo.classList.remove('open')
+        if (mo) {mo.classList.remove('open')}
         const loginMo = document.getElementById('loginMo')
-        if (loginMo) loginMo.classList.remove('open')
+        if (loginMo) {loginMo.classList.remove('open')}
       } else {
         // Signup mode
         const name = document.getElementById('colAuthName').value.trim()
@@ -1830,7 +1952,7 @@ if (!window.closeMo) {
               password: pass,
               options: { data: { full_name: name } }
             })
-            if (res.error) throw res.error
+            if (res.error) {throw res.error}
 
             if (res.data.user && !res.data.session) {
               errDiv.textContent = 'Please check your email to confirm registration.'
@@ -1838,22 +1960,23 @@ if (!window.closeMo) {
               errDiv.style.display = 'block'
             } else {
               const mo = document.getElementById('colAuthModal')
-              if (mo) mo.classList.remove('open')
+              if (mo) {mo.classList.remove('open')}
             }
           } catch (cloudErr) {
             console.warn('[col-auth] Cloud signup failed, saving to account system:', cloudErr)
             // Fallback: save as account
-            const uname = '@' + (name.toLowerCase().replace(/\s+/g, '_') || 'driver_' + Math.floor(Math.random() * 1000))
+            const uname = '@' + (name.toLowerCase().replace(/\s+/g, '_') || 'driver_' + getSecureRandomInt(100, 999))
+            const credential = await createLocalCredential(pass)
+            if (!credential) {throw new Error('Secure browser storage is unavailable. Please use cloud authentication.')}
             const newAcc = {
               id: 'local_' + Date.now(),
               name: name,
               username: uname,
-              email: emailInput,
-              pin: pass,
-              password: pass,
               role: 'student',
               vehicle: 'Car',
-              createdAt: new Date().toISOString()
+              createdAt: new Date().toISOString(),
+              authVerifier: credential.authVerifier,
+              authSalt: credential.authSalt
             }
             try {
               const reg = await supabaseClient.rpc('register_account', {
@@ -1872,28 +1995,29 @@ if (!window.closeMo) {
             }
             setActiveLocalUser(newAcc)
             const mo = document.getElementById('colAuthModal')
-            if (mo) mo.classList.remove('open')
+            if (mo) {mo.classList.remove('open')}
             dispatchAuthEvent()
             updateAuthUI()
             return
           }
         } else {
           // Offline / local only
-          const uname = '@' + (name.toLowerCase().replace(/\s+/g, '_') || 'driver_' + Math.floor(Math.random() * 1000))
+          const uname = '@' + (name.toLowerCase().replace(/\s+/g, '_') || 'driver_' + getSecureRandomInt(100, 999))
+          const credential = await createLocalCredential(pass)
+          if (!credential) {throw new Error('Secure browser storage is unavailable. Please use cloud authentication.')}
           const newAcc = {
             id: 'local_' + Date.now(),
             name: name,
             username: uname,
-            email: emailInput,
-            pin: pass,
-            password: pass,
             role: 'student',
             vehicle: 'Car',
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            authVerifier: credential.authVerifier,
+            authSalt: credential.authSalt
           }
           setActiveLocalUser(newAcc)
           const mo = document.getElementById('colAuthModal')
-          if (mo) mo.classList.remove('open')
+          if (mo) {mo.classList.remove('open')}
           dispatchAuthEvent()
           updateAuthUI()
         }
@@ -1908,12 +2032,12 @@ if (!window.closeMo) {
   }
 
   window.colDoLogout = async () => {
-    if (window.colUser && window.colUser.isLocal) {
+    if (window.colLocalUser?.isLocal) {
       clearActiveLocalUser()
       const modal = document.getElementById('colAuthModal')
-      if (modal) modal.classList.remove('open')
+      if (modal) {modal.classList.remove('open')}
       const loginMo = document.getElementById('loginMo')
-      if (loginMo) loginMo.classList.remove('open')
+      if (loginMo) {loginMo.classList.remove('open')}
       dispatchAuthEvent()
       updateAuthUI()
       return
@@ -1925,9 +2049,9 @@ if (!window.closeMo) {
     }
     clearActiveLocalUser()
     const modal = document.getElementById('colAuthModal')
-    if (modal) modal.classList.remove('open')
+    if (modal) {modal.classList.remove('open')}
     const loginMo = document.getElementById('loginMo')
-    if (loginMo) loginMo.classList.remove('open')
+    if (loginMo) {loginMo.classList.remove('open')}
     dispatchAuthEvent()
     updateAuthUI()
   }
@@ -1941,10 +2065,10 @@ if (!window.closeMo) {
       if (!name) { try { toast('Enter A Username First', '#ef4444'); } catch (e) {} return; }
       const cur = (typeof getActiveLocalUser === 'function' && getActiveLocalUser()) || window.colUser || {};
       const updated = Object.assign({}, cur, { name });
-      if (typeof setActiveLocalUser === 'function') setActiveLocalUser(updated);
-      if (window.colUser) window.colUser.name = name;
+      if (typeof setActiveLocalUser === 'function') {setActiveLocalUser(updated);}
+      if (window.colUser) {window.colUser.name = name;}
       try { toast('Username Saved', '#22c55e'); } catch (e) {}
-      try { if (typeof updateAuthUI === 'function') updateAuthUI(); } catch (e) {}
+      try { if (typeof updateAuthUI === 'function') {updateAuthUI();} } catch (e) {}
     } catch (e) { console.warn('[col-auth] updateUsername failed:', e); }
   };
 
@@ -1955,12 +2079,12 @@ if (!window.closeMo) {
       return null;
     }
     try {
-      const code = Math.floor(100000 + Math.random() * 900000).toString();
+      const code = getSecureRandomInt(100000, 999999).toString();
       const { error } = await window.supabaseClient
         .from('profiles')
         .update({ verification_code: code })
         .eq('id', window.colUser.id);
-      if (error) throw error;
+      if (error) {throw error;}
       return code;
     } catch (e) {
       console.error('[col-auth] Code generation failed:', e);
@@ -1969,15 +2093,15 @@ if (!window.closeMo) {
   };
 
   window.colAuthVerifyCode = async (code) => {
-    if (!window.supabaseClient) return { success: false, error: 'Auth system unavailable' };
+    if (!window.supabaseClient) {return { success: false, error: 'Auth system unavailable' };}
     try {
       const { data, error } = await window.supabaseClient
         .from('profiles')
         .select('id')
         .eq('verification_code', code)
         .maybeSingle();
-      if (error) throw error;
-      if (!data) return { success: false, error: 'Invalid or expired code' };
+      if (error) {throw error;}
+      if (!data) {return { success: false, error: 'Invalid or expired code' };}
 
       // Clear code after successful verification
       await window.supabaseClient
@@ -2040,8 +2164,8 @@ if (!window.closeMo) {
         prof.style.display = 'flex'
         if (prof.dataset.preserveClick !== 'true') {
           prof.onclick = function () {
-            if (window.openGlobalLogin) window.openGlobalLogin()
-            else if (window.openLogin) window.openLogin()
+            if (window.openGlobalLogin) {window.openGlobalLogin()}
+            else if (window.openLogin) {window.openLogin()}
           }
         }
 
@@ -2050,18 +2174,29 @@ if (!window.closeMo) {
         const avEls = prof.querySelectorAll('.nav-user-avatar, .pav')
         const emailEls = prof.querySelectorAll('.pemail')
 
-        nameEls.forEach((el) => (el.textContent = window.colUser.name.split(' ')[0]))
+        const displayName = String(window.colUser.name || window.colUser.username || 'User')
+        nameEls.forEach((el) => (el.textContent = displayName.split(' ')[0]))
         emailEls.forEach((el) => {
           el.textContent = window.colUser.email ? window.colUser.email.toLowerCase() : ''
           el.style.setProperty('text-transform', 'none', 'important')
         })
 
         avEls.forEach((av) => {
-          const initial = (window.colUser.name || 'U').charAt(0).toUpperCase()
-          if (window.colUser.picture) {
-            av.innerHTML = `<img src="${window.colUser.picture}" alt="${window.colUser.name || 'User'}" referrerpolicy="no-referrer" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;" onerror="this.style.display='none'; this.parentElement.textContent='${initial}';">`
+          const initial = displayName.replace(/^@/, '').charAt(0).toUpperCase() || 'U'
+          const picture = getSafeImageUrl(window.colUser.picture)
+          av.textContent = ''
+          if (picture) {
+            const image = document.createElement('img')
+            image.src = picture
+            image.alt = displayName
+            image.referrerPolicy = 'no-referrer'
+            image.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;'
+            image.addEventListener('error', () => {
+              image.remove()
+              av.textContent = initial
+            })
+            av.appendChild(image)
           } else {
-            av.innerHTML = ''
             av.textContent = initial
           }
         })
@@ -2070,11 +2205,28 @@ if (!window.closeMo) {
       navBtns.forEach((btn) => {
         btn.style.display = 'flex'
         btn.onclick = function () {
-          if (window.openGlobalLogin) window.openGlobalLogin()
-          else if (window.openLogin) window.openLogin()
+          if (window.openGlobalLogin) {window.openGlobalLogin()}
+          else if (window.openLogin) {window.openLogin()}
         }
       })
       navProfiles.forEach((prof) => (prof.style.display = 'none'))
+    }
+
+    // Sync Traffic UI components if present
+    if (typeof updateTrafficAuthUI === 'function') {
+      try { updateTrafficAuthUI(); } catch (e) {}
+    }
+    const topProfBtn = document.getElementById('top-profile-btn')
+    const topProfLbl = document.getElementById('top-profile-label')
+    if (topProfBtn && topProfLbl) {
+      if (window.colUser) {
+        const displayName = String(window.colUser.name || window.colUser.username || 'User').split(' ')[0]
+        topProfLbl.textContent = displayName
+        topProfBtn.title = 'Driver Dashboard: ' + (window.colUser.name || 'Driver')
+      } else {
+        topProfLbl.textContent = 'Sign In'
+        topProfBtn.title = 'Sign In'
+      }
     }
   }
 

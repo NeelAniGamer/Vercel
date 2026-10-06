@@ -52,7 +52,7 @@
       } catch(e) {}
     })();
   </script>
-    <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script defer src="libs/chart.umd.min.js"></script>
     <script defer src="traffic-charts.js"></script>
     <link rel="stylesheet" href="traffic-charts.css" />
     <link rel="stylesheet" href="welcome-back.css" />
@@ -1641,19 +1641,9 @@
 
           // 1. Check local accounts first (by email, @username, or username)
           let localAccounts = []
-          try {
-            const raw = localStorage.getItem('col_local_accounts')
-            if (raw) localAccounts = JSON.parse(raw)
-            const rawT = localStorage.getItem('traffic_local_user')
-            if (rawT) {
-              const tu = JSON.parse(rawT)
-              if (tu && (tu.name || tu.username)) {
-                if (!localAccounts.some(a => (tu.username && a.username === tu.username) || (tu.name && a.name === tu.name))) {
-                  localAccounts.push(tu)
-                }
-              }
-            }
-          } catch(e) {}
+          if (typeof window.colGetLocalAccounts === 'function') {
+            try { localAccounts = window.colGetLocalAccounts() || [] } catch(e) {}
+          }
 
           const normInput = email.toLowerCase()
           const normUname = normInput.startsWith('@') ? normInput : '@' + normInput
@@ -1666,48 +1656,53 @@
           })
 
           if (matched) {
-            const expectedPin = (matched.pin || matched.password || '').toString().trim()
-            if (!expectedPin || expectedPin === pass) {
-              errDiv.textContent = 'Success! Welcome back, ' + (matched.name || 'Driver') + '!'
-              errDiv.style.color = 'var(--em)'
-              
-              matched.updatedAt = new Date().toISOString()
-              localStorage.setItem('traffic_local_user', JSON.stringify(matched))
-              localStorage.setItem('col_active_local_user', JSON.stringify(matched))
-              localStorage.setItem('trafficSetupComplete', 'true')
-              
-              let L = {}
-              try {
-                const r = localStorage.getItem('th-save')
-                if (r) L = JSON.parse(r)
-              } catch(e) {}
-              L.name = matched.name
-              L.vehicle = matched.vehicle || 'Car'
-              // The PIN is never read back from this blob, so it has no business being here.
-              delete L.localPin
-              localStorage.setItem('th-save', JSON.stringify(L))
+            // Verify against the PBKDF2 verifier written by col-auth.js. An
+            // account with no verifier is rejected rather than waved through:
+            // the old `if (!expectedPin || expectedPin === pass)` branch let any
+            // password through for any account missing a `pin` field.
+            const verified = typeof window.colVerifyLocalCredential === 'function'
+              ? await window.colVerifyLocalCredential(matched, pass)
+              : false
 
-              window.colUser = {
-                id: matched.id || ('local_' + Date.now()),
-                name: matched.name,
-                email: matched.email || (matched.username ? (matched.username.replace('@','') + '@local.col') : 'local@col.io'),
-                username: matched.username,
-                isLocal: true,
-                user_metadata: {
-                  full_name: matched.name,
-                  name: matched.name,
-                  role: matched.role || 'student',
-                  preferred_vehicle: matched.vehicle || 'Car'
-                }
-              }
-              window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: window.colUser } }))
-              showLocalSetup()
-              return
-            } else {
-              errDiv.textContent = 'Incorrect PIN or password for local account ' + (matched.username || matched.name) + '.'
+            if (!verified) {
+              errDiv.textContent = matched.authVerifier || matched.authSalt
+                ? 'Incorrect PIN or password for local account ' + (matched.username || matched.name) + '.'
+                : 'This offline account has no PIN set. Please sign in online or create a new local profile.'
               errDiv.style.color = '#ef4444'
               return
             }
+
+            errDiv.textContent = 'Success! Welcome back, ' + (matched.name || 'Driver') + '!'
+            errDiv.style.color = 'var(--em)'
+
+            matched.updatedAt = new Date().toISOString()
+            localStorage.setItem('trafficSetupComplete', 'true')
+
+            if (typeof window.colSetActiveLocalUser === 'function') {
+              window.colSetActiveLocalUser(matched)
+            } else {
+              localStorage.setItem('traffic_local_user', JSON.stringify(matched))
+              localStorage.setItem('col_active_local_user', JSON.stringify(matched))
+              window.colLocalUser = matched
+            }
+
+            let L = {}
+            try {
+              const r = localStorage.getItem('th-save')
+              if (r) L = JSON.parse(r)
+            } catch(e) {}
+            L.name = matched.name
+            L.vehicle = matched.vehicle || 'Car'
+            // The PIN is never read back from this blob, so it has no business being here.
+            delete L.localPin
+            localStorage.setItem('th-save', JSON.stringify(L))
+
+            // Offline profiles are published on window.colLocalUser only.
+            // window.colUser is reserved for a verified Supabase session and
+            // must never be populated from local storage.
+            window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: null, localUser: matched } }))
+            showLocalSetup()
+            return
           }
 
           if (window.supabaseClient) {
@@ -1725,8 +1720,6 @@
                   name: acc.display_name || acc.username,
                   username: acc.username,
                   email: acc.email || '',
-                  pin: pass,
-                  password: pass,
                   role: acc.role || 'student',
                   vehicle: acc.preferred_vehicle || 'Car',
                   age: acc.age || 18,
@@ -1735,18 +1728,22 @@
                   studentId: acc.student_id || null,
                   updatedAt: new Date().toISOString()
                 }
-                localStorage.setItem('traffic_local_user', JSON.stringify(matchedAcc))
-                localStorage.setItem('col_active_local_user', JSON.stringify(matchedAcc))
                 localStorage.setItem('trafficSetupComplete', 'true')
-                
+
+                // Cache the profile for offline use, but keep the PIN out of it:
+                // an offline verifier is derived instead of the secret itself.
                 try {
-                  let accounts = []
-                  const rawAccs = localStorage.getItem('col_local_accounts')
-                  if (rawAccs) accounts = JSON.parse(rawAccs)
-                  const uIdx = accounts.findIndex(a => a.id === acc.id || (a.username && a.username.toLowerCase() === acc.username.toLowerCase()))
-                  if (uIdx >= 0) accounts[uIdx] = { ...accounts[uIdx], ...matchedAcc }
-                  else accounts.push(matchedAcc)
-                  localStorage.setItem('col_local_accounts', JSON.stringify(accounts))
+                  if (typeof window.colCreateLocalCredential === 'function') {
+                    const cred = await window.colCreateLocalCredential(pass)
+                    matchedAcc.authVerifier = cred.authVerifier
+                    matchedAcc.authSalt = cred.authSalt
+                  }
+                  if (typeof window.colSaveLocalAccount === 'function') {
+                    window.colSaveLocalAccount(matchedAcc)
+                  }
+                  window.colLocalUser = matchedAcc
+                  localStorage.setItem('traffic_local_user', JSON.stringify(matchedAcc))
+                  localStorage.setItem('col_active_local_user', JSON.stringify(matchedAcc))
                 } catch(e) {}
 
                 let L = {}
@@ -1759,20 +1756,9 @@
                 delete L.localPin
                 localStorage.setItem('th-save', JSON.stringify(L))
 
-                window.colUser = {
-                  id: acc.id,
-                  name: matchedAcc.name,
-                  email: matchedAcc.email || (acc.username ? (acc.username.replace('@','') + '@local.col') : 'local@col.io'),
-                  username: acc.username,
-                  isLocal: true,
-                  user_metadata: {
-                    full_name: matchedAcc.name,
-                    name: matchedAcc.name,
-                    role: matchedAcc.role,
-                    preferred_vehicle: matchedAcc.vehicle
-                  }
-                }
-                window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: window.colUser } }))
+                // The RPC already proved the PIN against the server, so this is
+                // still an offline profile. Keep it off window.colUser.
+                window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: null, localUser: matchedAcc } }))
                 showLocalSetup()
                 return
               }
@@ -2144,6 +2130,9 @@
 
 
               const studentId = 'STU-' + Math.floor(100000 + Math.random() * 900000)
+              // role is intentionally absent: it is a server-side assignment.
+              // Writing it from the client let anyone self-declare parent/teacher
+              // and reach the dashboard via Academy.html's role routing.
               await window.supabaseClient
                 .from('user_profiles')
                 .upsert({
@@ -2154,7 +2143,6 @@
                   preferred_vehicle: veh,
                   age: age,
                   language: language,
-                  role: document.getElementById('signup-role')?.value || 'student',
                   updated_at: new Date().toISOString()
                 }, { onConflict: 'user_id' })
             } catch (err) {
@@ -2163,20 +2151,27 @@
           }
         }
 
+        // Offline profiles store a PBKDF2 verifier, never the PIN itself.
         const tUser = { 
           id: 'local_' + (username.replace(/[^a-zA-Z0-9_]/g, '') || Date.now()),
           name, 
           username, 
           vehicle: veh, 
-          pin, 
-          password: pin,
           role: document.getElementById('signup-role')?.value || 'student',
           age, 
           language, 
           createdAt: new Date().toISOString() 
         }
+        if (pin && typeof window.colCreateLocalCredential === 'function') {
+          try {
+            const cred = await window.colCreateLocalCredential(pin)
+            tUser.authVerifier = cred.authVerifier
+            tUser.authSalt = cred.authSalt
+          } catch (e) { console.warn('Could not derive offline credential', e) }
+        }
         localStorage.setItem('traffic_local_user', JSON.stringify(tUser))
         localStorage.setItem('col_active_local_user', JSON.stringify(tUser))
+        window.colLocalUser = tUser
 
         try {
           let accounts = []
@@ -2196,20 +2191,9 @@
           localStorage.setItem('col_local_accounts', JSON.stringify(accounts))
         } catch(e) {}
 
-        window.colUser = {
-          id: tUser.id,
-          name: tUser.name,
-          email: tUser.username ? (tUser.username.replace('@','') + '@local.col') : 'local@col.io',
-          username: tUser.username,
-          isLocal: true,
-          user_metadata: {
-            full_name: tUser.name,
-            name: tUser.name,
-            role: tUser.role,
-            preferred_vehicle: tUser.vehicle
-          }
-        }
-        window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: window.colUser } }))
+        // Offline profile registered. window.colUser stays reserved for a verified
+        // Supabase session; subscribers should read window.colLocalUser instead.
+        window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: null, localUser: tUser } }))
 
         let L = {}
         try {
@@ -2240,25 +2224,31 @@
 
 
         if (window.supabaseClient) {
-          try {
-            const regRes = await window.supabaseClient.rpc('register_account', {
-              p_username: username,
-              p_pin: pin || '1234',
-              p_display_name: name,
-              p_email: tUser.email,
-              p_role: tUser.role || 'student',
-              p_vehicle: veh,
-              p_age: parseInt(age, 10) || 18,
-              p_language: language || 'en',
-              p_student_id: saveData.studentId || null
-            })
-            if (regRes && regRes.data && regRes.data.success) {
-              tUser.id = regRes.data.id
-              if (window.colUser) window.colUser.id = regRes.data.id
-              localStorage.setItem('traffic_local_user', JSON.stringify(tUser))
-              localStorage.setItem('col_active_local_user', JSON.stringify(tUser))
-            }
-          } catch(err) { console.warn('Could not register account to cloud DB', err) }
+          if (!pin) {
+            console.warn('Skipping cloud account registration: no PIN was supplied.')
+          } else {
+            try {
+              const regRes = await window.supabaseClient.rpc('register_account', {
+                p_username: username,
+                p_pin: pin,
+                p_display_name: name,
+                p_email: tUser.email,
+                // Role is a server-side concern. Previously this let the client
+                // self-declare p_role, which Academy.html then used to route
+                // students straight to the dashboard.
+                p_role: 'student',
+                p_vehicle: veh,
+                p_age: parseInt(age, 10) || 18,
+                p_language: language || 'en',
+                p_student_id: saveData.studentId || null
+              })
+              if (regRes && regRes.data && regRes.data.success) {
+                tUser.id = regRes.data.id
+                localStorage.setItem('traffic_local_user', JSON.stringify(tUser))
+                localStorage.setItem('col_active_local_user', JSON.stringify(tUser))
+              }
+            } catch(err) { console.warn('Could not register account to cloud DB', err) }
+          }
         }
 
         if (window.supabaseClient && window.colUser) {

@@ -545,7 +545,10 @@
     glow.addColorStop(0, 'rgba(255,255,240,0.4)'); glow.addColorStop(1, 'rgba(255,255,240,0)')
     ctx.fillStyle = glow; ctx.beginPath(); ctx.arc(x, y, 60, 0, Math.PI * 2); ctx.fill()
     ctx.fillStyle = '#F5F5DC'; ctx.beginPath(); ctx.arc(x, y, 25, 0, Math.PI * 2); ctx.fill()
-    ctx.fillStyle = colors[0] || '#1a1a2e'; ctx.beginPath(); ctx.arc(x + 8, y - 3, 20, 0, Math.PI * 2); ctx.fill()
+    // Crescent shadow. This previously read `colors[0]`, an identifier that does
+    // not exist in this scope — a ReferenceError that would kill the whole
+    // _animate loop the first time any scenario set `night: true`.
+    ctx.fillStyle = '#1a1a2e'; ctx.beginPath(); ctx.arc(x + 8, y - 3, 20, 0, Math.PI * 2); ctx.fill()
   }
 
   function drawStars(ctx, w, h, t, count = 40) {

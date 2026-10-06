@@ -25,7 +25,7 @@ window.LVS.push({
   startOutside: true,
   hasBlindCorner: true,
   tasks: [
-    { id: 'honk_warn', text: 'Honk once to warn', type: 'toggle', target: 'honk', done: false },
+    { id: 'honk_warn', text: 'Honk once to warn', type: 'avoid', target: 'honk', done: false },
     { id: 'crawl_corner', text: 'Crawl around corner', type: 'avoid', target: 'speed', done: false },
     { id: 'exit_safe', text: 'Exit corner safely', type: 'reach', target: 'destination', done: false }
   ],

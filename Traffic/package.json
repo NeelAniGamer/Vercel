@@ -46,25 +46,12 @@
     "files": [
       "dist/**/*",
       "electron/**/*.js",
-      "!electron/**/*.ts"
-    ],
-    "extraResources": [
-      {
-        "from": "Models",
-        "to": "Models"
-      },
-      {
-        "from": "textures",
-        "to": "textures"
-      },
-      {
-        "from": "levels",
-        "to": "levels"
-      },
-      {
-        "from": "skins",
-        "to": "skins"
-      }
+      "!electron/**/*.ts",
+      "col-router.js",
+      "col-ui.js",
+      "col-auth.js",
+      "col-ui.css",
+      "config.json"
     ],
     "win": {
       "target": [
@@ -75,7 +62,7 @@
     },
     "mac": {
       "target": "dmg",
-      "icon": "electron/icons/icon.icns"
+      "icon": "electron/icons/icon.png"
     },
     "linux": {
       "target": "AppImage",

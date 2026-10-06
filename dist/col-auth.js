@@ -322,6 +322,17 @@ window.closeMo = function () {
   window.colGetActiveLocalUser = getActiveLocalUser
   window.colSetActiveLocalUser = setActiveLocalUser
   window.colClearActiveLocalUser = clearActiveLocalUser
+  // Credential primitives. Sub-apps that store offline PINs must hash and
+  // verify through these rather than persisting the secret itself — the earlier
+  // TrafficSetup.html path wrote `pin`/`password` in cleartext and accepted any
+  // value when no PIN was present.
+  window.colCreateLocalCredential = createLocalCredential
+  window.colVerifyLocalCredential = verifyLocalCredential
+  // Escaping helpers. Sub-app pages should build DOM with these or with
+  // createElement/textContent rather than interpolating display names into
+  // innerHTML or inline event-handler attributes.
+  window.colEscapeHtml = escapeColHtml
+  window.colGetSafeImageUrl = getSafeImageUrl
 
   // Inject modal styles and UI immediately if DOM is ready
   function ensureAuthUI() {
@@ -1195,7 +1206,9 @@ window.closeMo = function () {
     const hdSub = document.getElementById('colAuthSub') || document.querySelector('.col-auth-hd p')
 
     if (window.colUser) {
-      const isLocal = !!window.colUser.isLocal
+      // window.colUser only ever holds a verified Supabase session. Offline
+      // profiles live on window.colLocalUser and are rendered by the panel's
+      // own else-branch further down.
       const currentVeh = window.colUser.vehicle || (window.colUser.user_metadata && window.colUser.user_metadata.preferred_vehicle) || 'Car'
 
       if (tab === 'settings') {
@@ -1313,7 +1326,7 @@ window.closeMo = function () {
             <h3 style="margin-bottom: 4px; font-size: 1.25rem; color: var(--ink, #E8E3D8); font-weight: 700;">${escapeColHtml(window.colUser.name || 'User')}</h3>
             <p class="col-auth-email" style="color: var(--dim, #8891AA); font-size: 0.9rem; margin-bottom: 8px; text-transform: none !important;">${escapeColHtml(window.colUser.email ? window.colUser.email.toLowerCase() : (window.colUser.username || 'Local Profile'))}</p>
             <div style="display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin-top:8px;">
-                ${isLocal ? `<span style="padding:4px 10px; background:rgba(94,212,245,0.15); color:var(--ion,#5ED4F5); border-radius:20px; font-size:0.75rem; font-weight:700; border:1px solid rgba(94,212,245,0.3);">💾 Local Account</span>` : `<span style="padding:4px 10px; background:rgba(242,184,75,0.15); color:var(--signal,#F2B84B); border-radius:20px; font-size:0.75rem; font-weight:700; border:1px solid rgba(242,184,75,0.3);">⚡ Cloud Account</span>`}
+                <span style="padding:4px 10px; background:rgba(242,184,75,0.15); color:var(--signal,#F2B84B); border-radius:20px; font-size:0.75rem; font-weight:700; border:1px solid rgba(242,184,75,0.3);">⚡ Cloud Account</span>
                 ${currentVeh ? `<span style="padding:4px 10px; background:rgba(255,255,255,0.06); color:var(--ink,#E8E3D8); border-radius:20px; font-size:0.75rem; font-weight:600; border:1px solid rgba(255,255,255,0.1);">🚗 ${escapeColHtml(currentVeh)}</span>` : ''}
             </div>
         </div>

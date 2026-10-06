@@ -110,11 +110,12 @@
       this._activeTimers.forEach(t => clearInterval(t));
       this._activeTimers = [];
 
-      // Remove instanced meshes
+      // Remove instanced meshes. Geometry is intentionally not disposed: InstancedMesh
+      // built here may share a geometry with the template it was cloned from, and
+      // disposing it would invalidate every other user of that geometry.
       if (this.activeScene && this._instancedMeshes.length) {
         this._instancedMeshes.forEach(mesh => {
           if (mesh.parent) {mesh.parent.remove(mesh);}
-          if (mesh.geometry) {mesh.geometry.dispose();}
         });
       }
       this._instancedMeshes = [];

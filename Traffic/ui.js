@@ -1510,7 +1510,12 @@ if (un) {
     }, 50)
   },
   showBriefing(lid) {
-    const lv = LVS.find((l) => l.id === lid)
+    const lv = (window.LVS || []).find((l) => l.id === lid)
+    // A deep link like ?lv=999 used to throw a TypeError on `lv.modes` here.
+    if (!lv) {
+      if (typeof toast === 'function') toast('Lesson Not Found', '#ff3b30')
+      return this.showLevels()
+    }
     this.cur = lv
     const availModes = lv.modes || ['car']
     const preferred = S.vehicle === 'Bike' && availModes.includes('bike') ? 'bike'
@@ -1518,7 +1523,13 @@ if (un) {
       : availModes[0]
     this.curMode = preferred
     if (history.replaceState) {
-      history.replaceState(null, '', `?screen=levels&lv=${lv.id}`)
+      // Preserve unrelated params (?signup, ?tutorial, ?mode=car, ?rain, …).
+      // Replacing the whole query string silently dropped them, so returning to
+      // the level grid lost the tutorial/signup context.
+      const _u = new URLSearchParams(window.location.search)
+      _u.set('screen', 'levels')
+      _u.set('lv', String(lv.id))
+      history.replaceState(null, '', `${window.location.pathname}?${_u.toString()}`)
     }
     document.getElementById('blt').textContent = 'Level ' + lv.id
     const bvhEl = document.getElementById('bvh')
@@ -1908,18 +1919,21 @@ if (un) {
       S.started[lv.id] = true
 
 
+      // Reading the syllabus records S.sylViewed only. It must NOT write S.comp.
+      //
+      // This used to grant `score: 100, finalQuiz: true, modes.learn` as soon as
+      // every topic was opened (or as soon as `practical`/`exam` was opened), so
+      // simply browsing a briefing completed the lesson at a perfect score. That
+      // fed Object.keys(S.comp).length, the dashboard's /N counters, the
+      // level_10/20/30/40 badges and eventually certificate eligibility.
+      //
+      // Completion is earned in exactly two places:
+      //   - ui._fq() / ui.showResults()  (quiz + driving result)
+      //   - game_core.completeLevel()     (3D run)
+      // Both write a real score. Syllabus browsing is not completion.
       const allViewed = items.every(it => S.sylViewed[lv.id].includes(it.id))
-      if (allViewed || id === 'practical' || id === 'exam') {
-        if (!S.comp) {S.comp = {}}
-        if (!S.comp[lv.id]) {
-          S.comp[lv.id] = { score: 100, time: Date.now(), finalQuiz: true, modes: { learn: true } }
-        } else {
-          S.comp[lv.id].score = Math.max(S.comp[lv.id].score || 0, 100)
-          S.comp[lv.id].finalQuiz = true
-          if (!S.comp[lv.id].modes) {S.comp[lv.id].modes = {}}
-          S.comp[lv.id].modes.learn = true
-        }
-      }
+      if (allViewed && !S.sylViewedAll) {S.sylViewedAll = {}}
+      if (allViewed) {S.sylViewedAll[lv.id] = true}
 
       if (typeof save === 'function') {save()}
 
@@ -4066,9 +4080,10 @@ if (un) {
       }
     })
     save()
-    save()
     let be = null
-    if (lv.badge && !S.badges.includes(lv.badge.id)) {
+    // `lv` can be undefined when LVS failed to populate; lv.badge was read
+    // outside the `if (lv && lv.id)` guard above and threw a TypeError.
+    if (lv && lv.badge && !S.badges.includes(lv.badge.id)) {
       S.badges.push(lv.badge.id)
       be = lv.badge
     }
@@ -4586,7 +4601,13 @@ const initGTex = () => {
   }
 }
 
-const _buildVehicle = window._buildVehicle = (type, col) => {
+const _buildVehicle = window._buildVehicle = (type, col, opts) => {
+  // `opts.exact`  — deterministic model choice (see the Kenney pool below).
+  // `opts.tintAll` — force the paint colour onto every body-ish material, not
+  //                  just ones whose material is literally named body/paint.
+  //                  Kenney GLB meshes usually are not, which is why a film's
+  //                  black Fortuner kept rendering in its baked green.
+  opts = opts || {}
   let baseModel = null
   let s = 1.20
   const normalizedType = (type || 'car').toLowerCase()
@@ -4720,7 +4741,16 @@ const _buildVehicle = window._buildVehicle = (type, col) => {
     }
 
     const available = candidateKeys.filter(k => window.PRELOADED_MODELS[k])
-    const chosenKey = available.length ? available[Math.floor(Math.random() * available.length)] : (window.PRELOADED_MODELS['car'] ? 'car' : null)
+    // `opts.exact` picks the FIRST available candidate instead of a random one.
+    //
+    // Random selection is right for ambient traffic — variety is the point — and
+    // catastrophic for a film: a shot whose subtitle names a Fortuner must show
+    // a Fortuner, on every load, or the dialogue and the frame contradict each
+    // other. Callers in story/campaign.js pass `exact` and get a deterministic
+    // model; everyone else keeps the randomness.
+    const chosenKey = opts.exact
+      ? (available.length ? available[0] : (window.PRELOADED_MODELS['car'] ? 'car' : null))
+      : (available.length ? available[Math.floor(Math.random() * available.length)] : (window.PRELOADED_MODELS['car'] ? 'car' : null))
 
     if (chosenKey && window.PRELOADED_MODELS[chosenKey]) {
       const srcModel = window.PRELOADED_MODELS[chosenKey]
@@ -4737,13 +4767,26 @@ const _buildVehicle = window._buildVehicle = (type, col) => {
 
       const paintPool = [0x3b82f6, 0xef4444, 0x10b981, 0xf59e0b, 0x8b5cf6, 0xec4899, 0xffffff, 0x222222, 0x94a3b8]
       const paintColor = col || (chosenKey === 'taxi' ? 0xffd54a : (chosenKey === 'police' ? 0x1e3a8a : (chosenKey === 'ambulance' ? 0xffffff : paintPool[Math.floor(Math.random() * paintPool.length)])))
+      // Materials that must NEVER be repainted: glass, tyres, chrome, lights.
+      // Without this list `tintAll` would repaint the windscreen too and the
+      // vehicle would render as a solid coloured brick.
+      const KEEP = ['glass', 'window', 'windshield', 'windscreen', 'tyre', 'tire',
+        'wheel', 'rim', 'chrome', 'metal', 'light', 'lamp', 'head', 'tail',
+        'glassdark', 'black', 'trim', 'grille', 'plate', 'interior']
       baseModel.traverse((child) => {
         if (child.isMesh) {
           child.castShadow = true
           child.receiveShadow = true
           if (child.material) {
             const matName = (child.material.name || child.name || '').toLowerCase()
-            if (matName.includes('body') || matName.includes('paint') || matName.includes('chassis') || matName.includes('primary')) {
+            const isPaintable = matName.includes('body') || matName.includes('paint') ||
+              matName.includes('chassis') || matName.includes('primary')
+            if (isPaintable || opts.tintAll) {
+              // Repaint every material that is not glass/tyre/chrome/lamp. An
+              // unnamed material is treated as paint, which is the correct guess
+              // for a Kenney mesh: its body parts are the ones with blank names.
+              const protectedMat = KEEP.some(k => matName.includes(k))
+              if (opts.tintAll && protectedMat) { return; }
               child.material = child.material.clone()
               child.material.color.setHex(paintColor)
             }
@@ -5163,8 +5206,8 @@ const _buildSampleGLBPlayer = (isPlayer = true, app = {}) => {
         if (c.material) {
           c.material.roughness = 0.75
           c.material.metalness = 0.10
-          if (c.material.map && window.THREE && THREE.sRGBEncoding) {
-            c.material.map.encoding = THREE.sRGBEncoding
+          if (c.material.map && window.THREE && THREE.SRGBColorSpace) {
+            c.material.map.colorSpace = THREE.SRGBColorSpace
           }
         }
       }
@@ -7681,67 +7724,59 @@ function showConsequenceModal(violationType, severity = 'normal') {
   };
 
   // ═══════════════════════════════════════════════════════════════
-  // CHEAT CODE & INVULNERABILITY (GOD MODE) SYSTEM
+  // DEVELOPER DIAGNOSTICS (console-only, deliberately unreachable from UI)
   // ═══════════════════════════════════════════════════════════════
-  window.toggleGodModeCheat = function(forceState) {
-    var current = (typeof localStorage !== 'undefined' && localStorage.getItem('traffic_god_mode') === 'true');
-    var next = typeof forceState === 'boolean' ? forceState : !current;
-    window._trafficGodMode = next;
-    try {
-      localStorage.setItem('traffic_god_mode', next ? 'true' : 'false');
-    } catch(e) {}
-    
+  // There is intentionally NO click path, keybind, or persisted localStorage
+  // flag that turns these on. A previous build shipped a 3-tap version-badge
+  // cheat plus a hardcoded name list that granted all levels, all badges and
+  // invulnerability; that is gone. State lives only in window._trafficGodMode
+  // and dies on reload, so a student cannot inherit it from a shared machine.
+  //
+  // To use during development, from the browser console:
+  //     colDev.godMode(true)     collisions cannot kill you
+  //     colDev.telemetry(true)   fps / p95 ms / draw calls / NPC count
+  //     colDev.unlockAll()       every level + every badge (local only)
+  window._trafficGodMode = false;
+
+  function colDevGodBadge(on) {
     var badge = document.getElementById('god-mode-hud-badge');
-    if (!badge) {
-      badge = document.createElement('div');
-      badge.id = 'god-mode-hud-badge';
-      badge.style.cssText = 'position:fixed; top:14px; left:14px; z-index:999999; background:linear-gradient(135deg, rgba(255,215,0,0.25), rgba(255,140,0,0.35)); border:1.5px solid #ffd700; color:#ffd700; font-weight:800; font-size:0.75rem; padding:6px 12px; border-radius:20px; box-shadow:0 0 16px rgba(255,215,0,0.6); backdrop-filter:blur(8px); display:none; pointer-events:auto; cursor:pointer; letter-spacing:0.5px; transition:all 0.3s ease;';
-      badge.title = 'Click to disable Invulnerability Mode';
-      badge.onclick = function() { window.toggleGodModeCheat(false); };
-      document.body.appendChild(badge);
-    }
-    badge.innerHTML = '🛡️ GOD MODE: INVULNERABLE';
-    badge.style.display = next ? 'block' : 'none';
-
-    if (typeof toast === 'function') {
-      if (next) {
-        toast('⚡ CHEAT ACTIVATED: INVULNERABILITY MODE 🛡️', '#ffd700', 4000);
-      } else {
-        toast('🛡️ God Mode (Invulnerability) Disabled', '#aaa', 3000);
-      }
-    }
-    return next;
-  };
-
-  if (typeof localStorage !== 'undefined' && localStorage.getItem('traffic_god_mode') === 'true') {
-    window._trafficGodMode = true;
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', function() { window.toggleGodModeCheat(true); });
-    } else {
-      setTimeout(function() { window.toggleGodModeCheat(true); }, 300);
-    }
+    if (!on) { if (badge) { badge.remove(); } return; }
+    if (badge) { return; }
+    badge = document.createElement('div');
+    badge.id = 'god-mode-hud-badge';
+    badge.style.cssText = 'position:fixed; top:14px; left:14px; z-index:999999; background:rgba(255,215,0,0.15); border:1.5px solid #ffd700; color:#ffd700; font-weight:800; font-size:0.75rem; padding:6px 12px; border-radius:20px; pointer-events:none; letter-spacing:0.5px;';
+    badge.textContent = 'DEV: Invulnerable';
+    document.body.appendChild(badge);
   }
 
-  var _devClicks = 0;
-  window.handleDevClick = function() {
-    _devClicks++;
-    if (_devClicks >= 3) {
-      _devClicks = 0;
-      var p = prompt('⚡ CHEAT CODE & DEVELOPER ACCESS:\nType "god" or press OK to toggle Invulnerability Mode on all levels:');
-      if (p !== null) {
-        var code = (p || '').trim().toLowerCase();
-        if (['neel', 'ansh', 'sanjana'].includes(p.trim())) {
-          if (typeof ui !== 'undefined' && ui && ui.adminUnlock) {ui.adminUnlock();}
-          window.toggleGodModeCheat(true);
-        } else {
-          window.toggleGodModeCheat();
-        }
-      }
-    } else {
-      var rem = 3 - _devClicks;
+  window.colDev = {
+    godMode: function(on) {
+      var next = typeof on === 'boolean' ? on : !window._trafficGodMode;
+      window._trafficGodMode = next;
+      colDevGodBadge(next);
       if (typeof toast === 'function') {
-        toast('🛡️ Cheat Menu: Tap ' + rem + ' more time' + (rem > 1 ? 's' : '') + ' to toggle Invulnerability Mode!', '#ffd700', 1200);
+        toast(next ? 'Developer Mode: Invulnerability On' : 'Developer Mode: Invulnerability Off', '#ffd700', 2000);
       }
+      return next;
+    },
+    telemetry: function(on) {
+      var next = typeof on === 'boolean' ? on : !window._trafficTelemetry;
+      window._trafficTelemetry = next;
+      if (!next) {
+        var el = document.getElementById('telemetry-overlay');
+        if (el) { el.remove(); }
+      }
+      return next;
+    },
+    unlockAll: function() {
+      if (ui.adminUnlock) { ui.adminUnlock(); }
+      return true;
     }
+  };
+
+  // ui.toggleGodMode() stays as a thin alias for existing console users, but it
+  // is no longer wired to any button, badge or keybind.
+  window.toggleGodModeCheat = function(forceState) {
+    return window.colDev.godMode(forceState);
   };
 

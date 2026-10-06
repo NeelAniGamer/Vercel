@@ -8,7 +8,8 @@ window.LVS.push({
   isPedestrian: false,
   startOutside: true,
   hasGarageSpawn: true,
-  isSuburbanNeighborhood: true,
+  // Render this lesson from its connected city road graph; retain the school precinct.
+  isSuburbanNeighborhood: false,
   col: '#e74c3c',
   speedLimit: 40,
   schoolSpeedLimit: 20,
@@ -16,7 +17,9 @@ window.LVS.push({
   hasSchool: true,
   hasAIDirector: true,
   usesMapLLM: true,
-  aiPrompt: 'Suburban corridor ending at St. Xavier High School campus with AI-directed student dismissal swarm, dynamic crossing guard Mr. Shinde with animated STOP signal, silence zone enforcement, and dense households.',
+  themeType: 'mumbai_city',
+  npcRulesCompliant: true,
+  aiPrompt: 'A planned Mumbai city grid with residential, market, arterial, and school precincts. Keep St. Xavier High School at the end of the marked route, add a safe crossing and dismissal activity, and preserve connected streets and clear road hierarchy.',
   zebraZ: 540,
   flasherZ: 380,
   busBayZ: 460,
@@ -26,9 +29,8 @@ window.LVS.push({
   timeLimit: 360,
   roadLength: 1400,
   npcTypes: ['car', 'sedan', 'innova', 'suv', 'taxi', 'bike', 'splendor', 'activa', 'cycle', 'bus', 'truck', 'auto'],
-  // Dismissal-hour traffic personality: cautious parents + school buses dominate, nobody honks
-  // (vehicle types like auto-rickshaws come from npcTypes, not the profile mix)
-  npcMix: { school_parent: 34, cautious: 22, normal: 18, school_bus: 10, teen: 8, impatient_taxi: 8 },
+  // Randomized traffic personalities remain rule-compliant in this teaching level.
+  npcMix: { school_parent: 30, cautious: 25, normal: 20, school_bus: 15, elderly: 10 },
   pedMix: { child: 48, normal: 24, kid_dasher: 8, rusher: 8, cautious: 8, elderly_ped: 4 },
   npcs: [
     // Papa Sharma-style parent SUV cruising SV Avenue toward the school
@@ -37,9 +39,26 @@ window.LVS.push({
     { type: 'taxi', color: 0xffaa00, profileKey: 'cautious', route: [{ x: 60, z: -116.5 }, { x: 150, z: -116.5 }, { x: 210, z: -116.5 }] },
     // Delivery tempo on Gokhale Link — pulls aside for the school crowd
     { type: 'truck', color: 0x664422, profileKey: 'delivery', route: [{ x: 250, z: 263.5 }, { x: 350, z: 263.5 }] },
-    // F2 RIVAL: "Turbo Sanjana" the auto driver races your whole corridor to the school.
-    // Reach the gate before she finishes her run for +500.
-    { type: 'auto', color: 0x228b22, profileKey: 'aggressive', rival: true, name: 'Sanjana', route: [{ x: 215, z: -100 }, { x: 215, z: 150 }, { x: 250, z: 263.5 }, { x: 380, z: 263.5 }, { x: 436, z: 350 }] }
+    // School traffic follows legal routes; variation comes from the weighted NPC mix.
+  ],
+  // Explicit city blocks keep the playable view urban even at short render distances.
+  plots: [
+    { kind: 'apartment', x: 42, z: -265, w: 24, d: 18, h: 18, color: 0xd4b896 },
+    { kind: 'apartment', x: 95, z: -310, w: 24, d: 18, h: 24, color: 0xb8c8d8 },
+    { kind: 'apartment', x: 112, z: -265, w: 24, d: 18, h: 22, color: 0xc47c6a },
+    { kind: 'house', x: 175, z: -265, w: 18, d: 16, h: 8, color: 0xe8d5b7 },
+    { kind: 'shop', x: 48, z: -25, w: 24, d: 16, h: 6, color: 0xf0d878, text: 'Mahalaxmi Kirana', sub: 'Daily Needs' },
+    { kind: 'shop', x: 112, z: -25, w: 24, d: 16, h: 6, color: 0xd4907a, text: 'Tilak Bazar', sub: 'Market Street' },
+    { kind: 'shop', x: 174, z: -25, w: 24, d: 16, h: 6, color: 0xb8c8d8, text: 'Chai Tapri', sub: 'Tea And Snacks' },
+    { kind: 'apartment', x: 270, z: -25, w: 28, d: 20, h: 34, color: 0x9ab0c0 },
+    { kind: 'apartment', x: 335, z: -25, w: 28, d: 20, h: 42, color: 0xa8c8a8 },
+    { kind: 'apartment', x: 400, z: -25, w: 24, d: 20, h: 30, color: 0xd4b896 },
+    { kind: 'shop', x: 270, z: 165, w: 24, d: 18, h: 7, color: 0xe8b4a0, text: 'Parel Medical', sub: 'Pharmacy' },
+    { kind: 'apartment', x: 335, z: 165, w: 28, d: 20, h: 38, color: 0xb8c8d8 },
+    { kind: 'shop', x: 400, z: 165, w: 24, d: 18, h: 7, color: 0xf0d878, text: 'BEST Stop', sub: 'Bus Terminal' },
+    { kind: 'apartment', x: 530, z: 365, w: 28, d: 20, h: 30, color: 0xc9a87a },
+    { kind: 'shop', x: 530, z: 455, w: 26, d: 18, h: 7, color: 0xe8b4a0, text: 'School Supplies', sub: 'St. Xavier Precinct' },
+    { kind: 'apartment', x: 530, z: 515, w: 26, d: 20, h: 26, color: 0xb8c8d8 }
   ],
   roadProblems: [
     // Monsoon-ravaged Tilak Bazar corner — everyone slows here

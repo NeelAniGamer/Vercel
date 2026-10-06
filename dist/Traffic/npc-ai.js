@@ -361,6 +361,42 @@ const NPC_PROFILES = {
     parkingSkill: 0.9,
     schoolCareful: true,
     neverHonks: true
+  },
+
+  // ===== Robot NPCs =====
+  // weight: 0 => pickRandomProfile() NEVER selects these, so existing levels are
+  // unchanged. A robot appears only when a level/variant names the profileKey
+  // explicitly (see ROBOT_MODELS in robot-npcs.js for model + scale + clips).
+  robot_delivery: {
+    name: 'Delivery Robot',
+    weight: 0,
+    aggression: 0.05,
+    patience: 0.98,
+    signalCompliance: 1.0,
+    laneDiscipline: 0.97,
+    speedVariance: 0.02,
+    overtakeThreshold: 1.0,
+    sidewalkProbability: 0.0,
+    parkingSkill: 0.95,
+    robot: true,
+    neverHonks: true,
+    maxSpeed: 0.4
+  },
+  robot_crosser: {
+    name: 'Crossing Guide Robot',
+    weight: 0,
+    aggression: 0.02,
+    patience: 1.0,
+    signalCompliance: 1.0,
+    laneDiscipline: 1.0,
+    speedVariance: 0.0,
+    overtakeThreshold: 1.0,
+    sidewalkProbability: 1.0,
+    parkingSkill: 1.0,
+    robot: true,
+    neverHonks: true,
+    guidesPedestrians: true,
+    maxSpeed: 0.3
   }
 };
 

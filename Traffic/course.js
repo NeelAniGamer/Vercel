@@ -245,7 +245,12 @@ const MODULES = [
   {
     id: 13, name: 'Bonus: Free Roam', theme: 'bonus_free_roam',
     levels: [
-      { id: 53, name: 'City Sandbox',      route: 'free_roam',  timeLimit: 999, npcTypes: ['car','bus','auto','bike','truck'], assets: ['lowpoly_city'] }
+      { id: 53, name: 'City Sandbox',      route: 'free_roam',  timeLimit: 999, npcTypes: ['car','bus','auto','bike','truck'], assets: ['lowpoly_city'] },
+      // levels/level54.js has existed as a playable lesson for a while but was
+      // never registered here, so getLevel(54) returned null and
+      // getModeConfig(54) handed back a config with no timeLimit, npcTypes or
+      // route. tools/gen-level-catalog.js flags any level missing from here.
+      { id: 54, name: 'Suburban Avenue & Residential Safety', route: 'suburban_neighborhood', timeLimit: 999, npcTypes: ['car','auto','bike','scooter'], assets: ['suburban'] }
     ]
   }
 ];

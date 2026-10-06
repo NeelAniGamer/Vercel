@@ -67,16 +67,40 @@
 
   
   <script>
-    let S = {}
+    // `S` must be a real window property, not a bare `let`. A top-level `let`
+    // in a classic script creates a script-scoped lexical binding that is
+    // invisible to `window.S`, so every other module that reads `window.S`
+    // (game_core's Supabase sync, mission-manager, wallet-history) saw
+    // `undefined` and uploaded civic_score 0 / wallet 50000 on every session.
+    window.S = {}
     try {
       const _raw = localStorage.getItem('mth4')
-      if (_raw) S = JSON.parse(_raw)
+      if (_raw) window.S = JSON.parse(_raw)
     } catch(e) {}
-    if (!S) S = { comp: {}, badges: [], total: 0, name: 'Traffic Hero', wallet: 50000 }
-    if (!S.comp) S.comp = {}
-    if (!S.badges) S.badges = []
-    window.save = function() { try { localStorage.setItem('mth4', JSON.stringify(S)) } catch(e) {} }
+    if (!window.S) window.S = { comp: {}, badges: [], total: 0, name: 'Traffic Hero', wallet: 50000 }
+    if (!window.S.comp) window.S.comp = {}
+    if (!window.S.badges) window.S.badges = []
+    // Match the shape ui.init() builds on Academy.html. Driving.html defines S
+    // before ui.js loads, so ui.init()'s bootstrap is skipped here and these
+    // fields would otherwise be undefined for the whole session.
+    if (typeof window.S.total !== 'number') window.S.total = 0
+    if (typeof window.S.wallet !== 'number') window.S.wallet = 50000
+    if (typeof window.S.civicScore !== 'number') window.S.civicScore = 0
+    if (!window.S.studentId) window.S.studentId = 'STU-' + Math.floor(100000 + Math.random() * 900000)
+    if (!window.S.sylViewed) window.S.sylViewed = {}
+    if (!window.S.violationHistory) window.S.violationHistory = {}
+    // `let S` is still needed for the classic scripts that reference the bare
+    // identifier, but it must alias the same object, never a copy.
+    var S = window.S
+    window.save = function() {
+      try {
+        window.S = S
+        localStorage.setItem('mth4', JSON.stringify(window.S))
+      } catch(e) {}
+    }
 
+    // config.json is fetched as '/config.json' by the shared col-* modules, so
+    // this relative-path rewrite is redundant. Kept only for older callers.
     const _oldFetch = window.fetch
     window.fetch = function () {
       if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].startsWith('config.json')) {
@@ -97,10 +121,9 @@
   <link rel="stylesheet" href="traffic-mobile.css" />
   <script defer src="../col-ui.js"></script>
   <script defer src="../col-auth.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" onerror="if(!window.THREE){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js';s.onerror=function(){var e=document.getElementById('loading-screen');if(e)e.innerHTML='<div style=padding:40px;text-align:center;color:#fff><h2>3D Engine Failed To Load</h2><p>Check Your Connection And Reload.</p></div>'};document.head.appendChild(s;}"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/BufferGeometryUtils.js"></script>
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="libs/three-bundle.js"></script>
+  <script defer src="libs/jszip.min.js"></script>
+  <script defer src="libs/chart.umd.min.js"></script>
   <script defer src="traffic-charts.js"></script>
   <link rel="stylesheet" href="traffic-charts.css" />
   <link rel="stylesheet" href="welcome-back.css" />
@@ -2937,7 +2960,40 @@
     .gta-actions {
       display: flex;
       justify-content: flex-end;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
     }
+    /* Story Mode: secondary action, deliberately quieter than START MISSION so
+       the primary CTA keeps the eye. */
+    .gta-btn-replay {
+      background: rgba(255, 255, 255, 0.06);
+      color: rgba(255, 255, 255, 0.86);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 12px;
+      padding: 11px 18px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: none;
+      transition: background 0.15s, border-color 0.15s, transform 0.15s;
+    }
+    .gta-btn-replay:hover {
+      background: rgba(255, 255, 255, 0.13);
+      border-color: rgba(255, 255, 255, 0.4);
+      transform: scale(1.03);
+    }
+    .gta-btn-replay:active { transform: scale(0.98); }
+    .gta-btn-replay:disabled {
+      opacity: 0.45;
+      cursor: default;
+      transform: none;
+    }
+    .gta-btn-replay span { font-size: 0.75rem; line-height: 1; }
     .gta-btn-start {
       background: linear-gradient(135deg, #00f0cc, #00a8ff);
       color: #070a14;
@@ -6615,22 +6671,8 @@
       document.body.appendChild(errDiv)
     })
   </script>
-  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/fflate.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/FBXLoader.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/MTLLoader.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/math/SimplexNoise.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/SSAOShader.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/SSAOPass.js"></script>
   <script defer src="vehicles.js"></script>
+  <script defer src="robot-npcs.js"></script>
 <style>
     /* ========================================================================= */
     /* ========================================================================= */
@@ -8030,6 +8072,14 @@
       </div>
 
       <div class="gta-actions">
+        <!-- Story Mode: replays the intro cinematic. Shown by cutscene.js only
+             when the level actually has a prologue, so non-story lessons are
+             completely unaffected. -->
+        <button class="gta-btn-replay" id="gta-btn-replay" type="button"
+                onclick="window.replayStoryIntro && window.replayStoryIntro()"
+                style="display:none;">
+          <span>&#9654;</span> Replay Intro
+        </button>
         <button class="gta-btn-start" id="gta-btn-start" onclick="window.dismissGtaMissionIntro()">
           <span>START MISSION</span>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -8468,17 +8518,6 @@
             Academy</button>
           <button class="btn btn-g" onclick="ui.hardReset()" style="font-size: 1.1rem; padding: 12px 32px">Reset
             Progress</button>
-          <button class="btn btn-s"
-            style="background: var(--red); font-size: 1.1rem; padding: 12px 32px; color: var(--ink)" onclick="
-                const p = prompt('Developer Password:')
-                if (['Neel', 'Ansh', 'Sanjana'].includes(p)) {
-                  ui.adminUnlock()
-                } else if (p) {
-                  toast('❌ Access Denied', '#ff3b30')
-                }
-              ">
-            🔓 Dev Unlock
-          </button>
           <button class="btn btn-g mobile-dl"
             style="border-color: var(--signal); color: var(--signal); font-size: 1.1rem; padding: 12px 32px"
             onclick="window.location.href = '../COL.apk'">
@@ -8693,7 +8732,7 @@
   <script>
     window.LVS = []
   </script>
-  <script defer src="levels/level1.js"></script>
+  <script defer src="levels/level1.js?v=20261005_v4"></script>
   <script defer src="levels/level2.js"></script>
   <script defer src="levels/level3.js"></script>
   <script defer src="levels/level4.js"></script>
@@ -8786,9 +8825,6 @@
   <script defer src="safezone-ui.js?v=20260831_v9"></script>
   <script defer src="world-streamer.js?v=20260831_v9"></script>
   <script defer src="mission-manager.js?v=20260831_v9"></script>
-  <script defer src="scenery-kit.js?v=20260831_v9"></script>
-  <script defer src="collectible-system.js?v=20260831_v9"></script>
-  <script defer src="checkpoint-system.js?v=20260831_v9"></script>
   <script defer src="gameplay-recorder.js?v=20260831_v9"></script>
   <script defer src="task-manager.js?v=20260831_v9"></script>
   <script defer src="scenario2d.js?v=20260831_v9"></script>
@@ -8796,16 +8832,33 @@
   <script defer src="traffic-audio.js?v=20260917_v10"></script>
   <script defer src="unhandled-task-targets.js?v=20260925_v1"></script>
   <script defer src="task-evaluators.js?v=20260925_v1"></script>
-  <script defer src="game_core.js?v=20260925_v2"></script>
+  <script defer src="game_core.js?v=20261004_v4"></script>
   <script defer src="npc-ai.js?v=20260831_v9"></script>
   <script defer src="traffic-manager.js?v=20260831_v9"></script>
-  <script defer src="rule-breaker-profiles.js?v=20260831_v9"></script>
   <script defer src="minecraft_character.js"></script>
   <script defer src="ai-scene-generator.js"></script>
-  <script defer src="room-architect.js"></script>
   <script defer src="traffic-ai-copilot.js"></script>
   <script defer src="ai-map-llm.js"></script>
   <script defer src="ui.js?v=20260917_v10"></script>
+  <!-- Story Mode. Load order is a real dependency chain, not alphabetical:
+         stage.js   — the cinematic map configs (no deps; pure data)
+         campaign.js— words + shot lists (no deps; pure data)
+         shots.js   — camera maths, depends on nothing at load time
+         cinematics.js — set builder + stage dressing. Reads window.STORY for
+                        camera keep-out discs at build time, so campaign.js must
+                        already be present.
+         cutscene.js — the player state machine. Calls window.Shots.prepare(),
+                        window.Shots.applyCamera() and window.Cinematics.dressStage()
+                        at RUNTIME, so those two must be defined before a level
+                        loads rather than before this script executes.
+       All must load before start.js boots the Game, and after ui.js (which
+       provides _buildHuman/_makeNametag). -->
+  <script defer src="story/stage.js?v=20261005_v25"></script>
+  <script defer src="story/campaign.js?v=20261005_v25"></script>
+  <script defer src="story/shots.js?v=20261005_v25"></script>
+  <script defer src="story/audio.js?v=20261005_v25"></script>
+  <script defer src="cinematics.js?v=20261005_v25"></script>
+  <script defer src="cutscene.js?v=20261005_v25"></script>
   <script defer src="start.js?v=20260831_v9"></script>
 
   
@@ -10256,6 +10309,7 @@
 
         overlay.style.display = 'flex';
         overlay.classList.remove('gta-fade-out');
+        try { if (window.__syncReplayBtn) { window.__syncReplayBtn(); } } catch (e) {}
       } catch (err) {
         console.warn('[GTA Mission Intro] Error showing intro:', err);
       }
@@ -10269,6 +10323,48 @@
         overlay.style.display = 'none';
       }, 350);
     };
+
+    /**
+     * Story Mode: replay the intro cinematic for the level already on screen.
+     *
+     * Called from the briefing card, which is the one moment replaying is
+     * non-destructive: the mission has not started, the set is already built,
+     * and Cutscene.restart() re-runs the shots then re-raises this same card.
+     */
+    window.replayStoryIntro = function() {
+      try {
+        if (!window.Cutscene || typeof window.Cutscene.restart !== 'function') {
+          console.warn('[Story] Cutscene.restart unavailable — reloading instead.');
+          if (window.Cutscene && typeof window.Cutscene.clearSeen === 'function') {
+            try { window.Cutscene.clearSeen(window.ui && window.ui.cur ? window.ui.cur.id : undefined); } catch (e) {}
+          }
+          return;
+        }
+        const overlay = document.getElementById('gta-mission-intro');
+        if (overlay) { overlay.style.display = 'none'; overlay.classList.remove('gta-fade-out'); }
+        const btn = document.getElementById('gta-btn-replay');
+        if (btn) { btn.disabled = true; }
+        if (!window.Cutscene.restart()) {
+          // No prologue to play — restore the card rather than leaving the
+          // player on a hidden overlay with the button stuck disabled.
+          if (overlay) { overlay.style.display = 'flex'; }
+          if (btn) { btn.disabled = false; }
+        }
+      } catch (err) {
+        console.warn('[Story] Replay Intro failed:', err);
+      }
+    };
+
+    // Show Replay Intro only for levels that actually have a prologue.
+    const _syncReplayBtn = function() {
+      const btn = document.getElementById('gta-btn-replay');
+      if (!btn) return;
+      let has = false;
+      try { has = !!(window.Cutscene && typeof window.Cutscene.hasPrologue === 'function' && window.Cutscene.hasPrologue()); } catch (e) { has = false; }
+      btn.style.display = has ? 'flex' : 'none';
+      btn.disabled = false;
+    };
+    window.__syncReplayBtn = _syncReplayBtn;
 
     function startSignalMonitoring() {
         if (signalCheckInterval) clearInterval(signalCheckInterval);
@@ -10641,7 +10737,7 @@
   </script>
 
   <!-- Clickable Version Badge (Dev Access) -->
-  <div id="version-badge" style="position: fixed; bottom: 6px; right: 12px; font-size: 0.72rem; color: var(--muted2, #aaa); opacity: 0.45; cursor: pointer; z-index: 99999; font-weight: 700; user-select: none; transition: all 0.2s ease;" onclick="window.handleDevClick && window.handleDevClick()" onmouseover="this.style.opacity='1'; this.style.color='#ffd700';" onmouseout="this.style.opacity='0.45'; this.style.color='var(--muted2, #aaa)';" title="Class Of Learners Simulator v2.4.1">v2.4.1</div>
+  <div id="version-badge" style="position: fixed; bottom: 6px; right: 12px; font-size: 0.72rem; color: var(--muted2, #aaa); opacity: 0.45; cursor: default; z-index: 99999; font-weight: 700; user-select: none; transition: all 0.2s ease;" title="Class Of Learners Simulator v2.4.1">v2.4.1</div>
 
 </body>
 </html>

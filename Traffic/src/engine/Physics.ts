@@ -58,6 +58,16 @@ export const VEHICLE_STATS: Record<string, VehicleStats> = {
     dragCoeff: 0.55, rollResist: 0.01,
     tire: { B: 9, C: 1.85, D: 0.9, E: 0.96 }
   },
+  // Pedestrian-scale delivery/patrol robot. Low mass, low top speed, tall CG so
+  // it reacts visibly to kerb strikes. Mirrors the `robot_delivery` /
+  // `robot_crosser` NPC profiles in npc-ai.js.
+  robot: {
+    mass: 45, maxPower: 900, maxBrakeForce: 400,
+    maxSteerAngle: 0.7, wheelBase: 0.5, trackWidth: 0.4,
+    cgHeight: 0.7, frontWeightDist: 0.50,
+    dragCoeff: 0.9, rollResist: 0.02,
+    tire: { B: 12, C: 1.9, D: 1.2, E: 0.95 }
+  },
   auto: {
     mass: 450, maxPower: 22000, maxBrakeForce: 3500,
     maxSteerAngle: 0.55, wheelBase: 2.0, trackWidth: 1.2,

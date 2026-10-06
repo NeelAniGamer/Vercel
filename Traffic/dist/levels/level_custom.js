@@ -38,7 +38,7 @@ window.LVS.push({
     { x: 3.5, z: 0, desc: 'Central Gardens' },
     { x: 3.5, z: 150, desc: 'Suburban Avenue South' }
   ],
-  tasks: [{ type: 'free_roam', text: 'Explore Suburban Avenue freely' }],
+  tasks: [{ id: 'explore', text: 'Explore Suburban Avenue freely', type: 'reach', target: 'destination', done: false }],
   assets: ['house_lowpoly_isometric', 'house_mansion_lowpoly', 'suburban', 'street_props', 'cars']
 })
 
@@ -172,7 +172,7 @@ window.LVS.push({
 
   // ── Mission Objectives ──
   tasks: [
-    { id: 't_speed', text: 'Maintain speed under 50 km/h limit', type: 'speed_limit', target: 50, done: false },
+    { id: 't_speed', text: 'Complete the downtown circuit under the 50 km/h limit', type: 'reach', target: 'destination', done: false },
     { id: 't_signals', text: 'Comply with red lights at Central Junction', type: 'stop', target: 'red_light', done: false },
     { id: 't_pedestrians', text: 'Yield to crossing pedestrians at zebra marks', type: 'avoid', target: 'pedestrian', done: false },
     { id: 't_finish', text: 'Reach the Financial Tower Gate', type: 'reach', target: 'finish', done: false }

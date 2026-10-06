@@ -27,7 +27,7 @@ window.LVS.push({
   parkingType: "commercial",
   tasks: [
     { id: 'avoid_hydrant', text: 'Avoid hydrant area', type: 'avoid', target: 'hydrant_zone', done: false },
-    { id: 'find_parking', text: 'Find parking zone', type: 'reach', target: 'parking_zone', done: false },
+    { id: 'find_parking', text: 'Find parking zone', type: 'stop', target: 'parking_zone', done: false },
     { id: 'walk_dest', text: 'Walk to destination', type: 'reach', target: 'destination', done: false }
   ],
   assets: ['suburban', 'industrial']

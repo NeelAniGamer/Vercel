@@ -93,7 +93,7 @@ window.GameplayRecorder = {
 
     events.forEach(ev => {
 
-      if (!byCategory[ev.category]) byCategory[ev.category] = [];
+      if (!byCategory[ev.category]) {byCategory[ev.category] = [];}
       byCategory[ev.category].push(ev);
 
 
@@ -110,11 +110,11 @@ window.GameplayRecorder = {
     const dangerCount = bySeverity.danger || 0;
     const warningCount = bySeverity.warning || 0;
     let grade = 'A+';
-    if (criticalCount > 2) grade = 'D';
-    else if (criticalCount > 0) grade = 'C';
-    else if (dangerCount > 2) grade = 'C+';
-    else if (dangerCount > 0 || warningCount > 3) grade = 'B';
-    else if (warningCount > 0) grade = 'B+';
+    if (criticalCount > 2) {grade = 'D';}
+    else if (criticalCount > 0) {grade = 'C';}
+    else if (dangerCount > 2) {grade = 'C+';}
+    else if (dangerCount > 0 || warningCount > 3) {grade = 'B';}
+    else if (warningCount > 0) {grade = 'B+';}
 
     return {
       totalEvents: events.length,
@@ -161,7 +161,7 @@ window.GameplayRecorder = {
 
     const tipMap = new Map();
     mistakes.forEach(ev => {
-      if (ev.tip && !tipMap.has(ev.type)) tipMap.set(ev.type, { icon: ev.icon, label: ev.label, tip: ev.tip, category: ev.category });
+      if (ev.tip && !tipMap.has(ev.type)) {tipMap.set(ev.type, { icon: ev.icon, label: ev.label, tip: ev.tip, category: ev.category });}
     });
 
 
@@ -442,7 +442,7 @@ window.GameplayRecorder = {
       setTimeout(() => overlay.remove(), 300);
       if (!continued) {
         continued = true;
-        if (onContinue) onContinue();
+        if (onContinue) {onContinue();}
       }
     };
     overlay.querySelector('.dr-backdrop').onclick = doClose;

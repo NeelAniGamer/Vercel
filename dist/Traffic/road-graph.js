@@ -40,6 +40,11 @@ class RoadEdge {
     this.type = options.type || 'arterial';
     this.segments = [];
     this._laneOffsets = null;
+    // Lazily built perpendicular used by getLaneCenter(). Computed once per edge
+    // instead of per call — getLaneCenter is one of the hottest functions in the
+    // AI loop (2-4 calls per NPC per frame, up to 110 NPCs) and was allocating
+    // two throwaway Vector3s each time. Never handed out, so caching is safe.
+    this._right = null;
 
     nodeA.addEdge(this);
     nodeB.addEdge(this);
@@ -78,10 +83,14 @@ class RoadEdge {
 
   getLaneCenter(laneIndex, t, side = 0) {
     const p = this.getPointAt(t);
-    const right = new THREE.Vector3().crossVectors(this.direction, new THREE.Vector3(0, 1, 0));
+    if (!this._right) {
+      this._right = new THREE.Vector3().crossVectors(this.direction, new THREE.Vector3(0, 1, 0));
+    }
     const offsets = this.getLaneOffsets();
     const offset = offsets[laneIndex] || 0;
-    return p.add(right.multiplyScalar(offset * (side === 0 ? 1 : -1)));
+    // `p` is freshly allocated by getPointAt, so mutating it here is safe and
+    // avoids a third allocation. `_right` is read-only and never returned.
+    return p.addScaledVector(this._right, offset * (side === 0 ? 1 : -1));
   }
 
   subdivide(segmentLength = 40) {

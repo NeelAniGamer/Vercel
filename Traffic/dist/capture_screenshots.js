@@ -15,10 +15,10 @@ async function capture() {
   await page.evaluate(() => {
     localStorage.setItem('traffic_academy_tutorial_seen', 'true');
     const tut = document.getElementById('academy-tutorial-overlay');
-    if (tut) tut.classList.remove('on');
-    if (window.ui && typeof window.ui.show === 'function') window.ui.show('ss', { instant: true });
+    if (tut) {tut.classList.remove('on');}
+    if (window.ui && typeof window.ui.show === 'function') {window.ui.show('ss', { instant: true });}
     const load = document.getElementById('loading-screen');
-    if (load) load.style.display = 'none';
+    if (load) {load.style.display = 'none';}
   });
   await page.waitForTimeout(1000);
   await page.screenshot({ path: 'Traffic/tut_1_hub.png' });
@@ -26,9 +26,9 @@ async function capture() {
   // 2. Capture Curriculum Screen
   console.log('Capturing 2. Curriculum...');
   await page.evaluate(() => {
-    if (window.ui && typeof window.ui.showLevels === 'function') window.ui.showLevels();
+    if (window.ui && typeof window.ui.showLevels === 'function') {window.ui.showLevels();}
     const load = document.getElementById('loading-screen');
-    if (load) load.style.display = 'none';
+    if (load) {load.style.display = 'none';}
   });
   await page.waitForTimeout(1200);
   await page.screenshot({ path: 'Traffic/tut_2_curriculum.png' });
@@ -37,12 +37,12 @@ async function capture() {
   console.log('Capturing 3. Briefing...');
   await page.evaluate(() => {
     const firstLv = (window.LVS && window.LVS.length > 0) ? window.LVS[0] : { id: 1, title: 'Signal Basics', v: 'Car', modes: ['car', 'bike'] };
-    if (!window.LVS || window.LVS.length === 0) window.LVS = [firstLv];
+    if (!window.LVS || window.LVS.length === 0) {window.LVS = [firstLv];}
     if (window.ui && typeof window.ui.showBriefing === 'function') {
       window.ui.showBriefing(firstLv.id);
     }
     const load = document.getElementById('loading-screen');
-    if (load) load.style.display = 'none';
+    if (load) {load.style.display = 'none';}
   });
   await page.waitForTimeout(1200);
   await page.screenshot({ path: 'Traffic/tut_3_briefing.png' });
@@ -57,7 +57,7 @@ async function capture() {
       window.ui.show('screen-quiz', { instant: true });
     }
     const load = document.getElementById('loading-screen');
-    if (load) load.style.display = 'none';
+    if (load) {load.style.display = 'none';}
   });
   await page.waitForTimeout(1200);
   await page.screenshot({ path: 'Traffic/tut_5_quiz.png' });
@@ -71,7 +71,7 @@ async function capture() {
       window.ui.show('screen-badges', { instant: true });
     }
     const load = document.getElementById('loading-screen');
-    if (load) load.style.display = 'none';
+    if (load) {load.style.display = 'none';}
   });
   await page.waitForTimeout(1200);
   await page.screenshot({ path: 'Traffic/tut_6_profile.png' });
@@ -85,7 +85,7 @@ async function capture() {
       window.ui.show('screen-certificate', { instant: true });
     }
     const load = document.getElementById('loading-screen');
-    if (load) load.style.display = 'none';
+    if (load) {load.style.display = 'none';}
   });
   await page.waitForTimeout(1200);
   await page.screenshot({ path: 'Traffic/tut_7_certificate.png' });
@@ -106,7 +106,7 @@ async function capture() {
       ptr.style.top = '25px';
     }
     const load = document.getElementById('loading-screen');
-    if (load) load.style.display = 'none';
+    if (load) {load.style.display = 'none';}
   });
   await page.waitForTimeout(1200);
   await page.screenshot({ path: 'Traffic/tut_8_mobile.png' });

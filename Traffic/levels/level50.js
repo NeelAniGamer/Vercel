@@ -22,6 +22,8 @@ window.LVS.push({
   themeType: 'grand_test',
   startOutside: true,
   hasSchool: true,
+  schoolX: -60,
+  schoolZ: -32,
   hasHospital: true,
   hasSilentZone: true,
   isHighway: true,

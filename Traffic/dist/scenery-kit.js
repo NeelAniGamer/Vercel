@@ -18,7 +18,7 @@ class SceneryKit {
    * Place scenery along all roads in the level
    */
   decorateLevel(cfg) {
-    if (!cfg.roads || cfg.roads.length === 0) return;
+    if (!cfg.roads || cfg.roads.length === 0) {return;}
     this.clear();
 
     const roads = cfg.roads;
@@ -56,7 +56,7 @@ class SceneryKit {
       const numTrees = Math.floor(len / spacing);
 
       for (let i = 0; i < numTrees; i++) {
-        if (Math.random() > density) continue;
+        if (Math.random() > density) {continue;}
 
         const t = (i + 0.5) / numTrees;
         let x, z;
@@ -90,7 +90,7 @@ class SceneryKit {
    * Place street lights along roads
    */
   placeStreetLightsAlongRoads(roads, theme) {
-    if (theme === 'free_roam') return; // Free roam uses low-poly city props
+    if (theme === 'free_roam') {return;} // Free roam uses low-poly city props
     const lightKeys = ['streetlight_curved', 'streetlight_square'];
     const spacing = 30; // meters between lights
 
@@ -145,7 +145,7 @@ class SceneryKit {
       const numCars = Math.floor(len / spacing);
 
       for (let i = 0; i < numCars; i++) {
-        if (Math.random() > density) continue;
+        if (Math.random() > density) {continue;}
 
         const t = (i + 0.5) / numCars;
         let x, z;
@@ -189,7 +189,7 @@ class SceneryKit {
       const numProps = Math.floor(len / spacing);
 
       for (let i = 0; i < numProps; i++) {
-        if (Math.random() > 0.5) continue;
+        if (Math.random() > 0.5) {continue;}
 
         const t = (i + 0.5) / numProps;
         let x, z;
@@ -223,7 +223,7 @@ class SceneryKit {
    */
   placeBuildingsBehindRoads(roads, theme) {
     const buildingKeys = this._getThemeBuildings(theme);
-    if (buildingKeys.length === 0) return;
+    if (buildingKeys.length === 0) {return;}
 
     const spacing = 16; // meters between buildings
     const setback = 14; // meters behind road edge
@@ -236,7 +236,7 @@ class SceneryKit {
       const numBuildings = Math.floor(len / spacing);
 
       for (let i = 0; i < numBuildings; i++) {
-        if (Math.random() > 0.85) continue;
+        if (Math.random() > 0.85) {continue;}
 
         const t = (i + 0.5) / numBuildings;
         let x, z;
@@ -350,7 +350,7 @@ class SceneryKit {
   placeBarriers(roads) {
     const instances = [];
     roads.forEach(road => {
-      if (Math.random() > 0.3) return;
+      if (Math.random() > 0.3) {return;}
       const isV = road.type === 'v';
       const len = isV ? Math.abs(road.z2 - road.z1) : Math.abs(road.x2 - road.x1);
       const startT = Math.random() * 0.3;
@@ -367,7 +367,7 @@ class SceneryKit {
     const instances = [];
     const hwKeys = ['sign_highway', 'sign_highway_detailed', 'lowpoly_billboard_4x1_03'];
     roads.forEach(road => {
-      if (road.width < 18) return; // Only wide roads
+      if (road.width < 18) {return;} // Only wide roads
       const isV = road.type === 'v';
       const len = isV ? Math.abs(road.z2 - road.z1) : Math.abs(road.x2 - road.x1);
       const count = Math.floor(len / 60);
@@ -395,7 +395,7 @@ class SceneryKit {
     const instances = [];
     const animalKeys = ['animal_cow', 'animal_dog'];
     roads.forEach(road => {
-      if (Math.random() > 0.4) return;
+      if (Math.random() > 0.4) {return;}
       const isV = road.type === 'v';
       const len = isV ? Math.abs(road.z2 - road.z1) : Math.abs(road.x2 - road.x1);
       const t = 0.3 + Math.random() * 0.4;
@@ -417,7 +417,7 @@ class SceneryKit {
     const instances = [];
     const consKeys = ['barrier', 'cone', 'construction_light'];
     roads.forEach(road => {
-      if (Math.random() > 0.5) return;
+      if (Math.random() > 0.5) {return;}
       const isV = road.type === 'v';
       const len = isV ? Math.abs(road.z2 - road.z1) : Math.abs(road.x2 - road.x1);
       const count = Math.floor(len / 20);
@@ -488,17 +488,17 @@ class SceneryKit {
    * Place instances partitioned by spatial grid chunks
    */
   _placeInstances(instances, groupName) {
-    if (instances.length === 0) return;
-    if (!window.PRELOADED_MODELS) return;
+    if (instances.length === 0) {return;}
+    if (!window.PRELOADED_MODELS) {return;}
 
     const scene = this.game.scene;
-    if (!scene) return;
+    if (!scene) {return;}
 
     const cSize = this.chunkSize;
 
     instances.forEach(inst => {
       const model = window.PRELOADED_MODELS[inst.key];
-      if (!model) return;
+      if (!model) {return;}
 
       const cx = Math.floor(inst.x / cSize);
       const cz = Math.floor(inst.z / cSize);
@@ -536,6 +536,39 @@ class SceneryKit {
       });
 
       chunk.group.add(obj);
+
+      // STREETLIGHT TREATMENT: Add ground light pool decal and active light source
+      if (type === 'streetLights') {
+        if (!this._poolMat && typeof document !== 'undefined') {
+          const cv = document.createElement('canvas');
+          cv.width = 128; cv.height = 128;
+          const ctx = cv.getContext('2d');
+          const grad = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+          grad.addColorStop(0, 'rgba(255, 235, 130, 0.85)');
+          grad.addColorStop(0.35, 'rgba(254, 215, 102, 0.5)');
+          grad.addColorStop(0.7, 'rgba(251, 191, 36, 0.15)');
+          grad.addColorStop(1, 'rgba(245, 158, 11, 0)');
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, 128, 128);
+          const tex = new THREE.CanvasTexture(cv);
+          this._poolMat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: 0.85, depthWrite: false });
+        }
+        if (this._poolMat) {
+          const pool = new THREE.Mesh(new THREE.PlaneGeometry(7.5, 7.5), this._poolMat);
+          pool.rotation.x = -Math.PI / 2;
+          pool.position.set(inst.x, 0.03, inst.z);
+          chunk.group.add(pool);
+        }
+
+        // Active dynamic light budget (up to 8 lights across the scene for 60fps)
+        if (!this._lightBudget) {this._lightBudget = 0;}
+        if (this._lightBudget < 8) {
+          this._lightBudget++;
+          const pl = new THREE.PointLight(0xffea75, 2.6, 24, 1.4);
+          pl.position.set(inst.x, 6.0, inst.z);
+          chunk.group.add(pl);
+        }
+      }
     });
   }
 
@@ -543,14 +576,14 @@ class SceneryKit {
    * Dynamically loads/deloads scenery chunks based on player distance
    */
   updateVisibility(playerPos, renderDistance, force = false) {
-    if (!playerPos) return;
+    if (!playerPos) {return;}
     const rDist = renderDistance || 150;
     const rDistSq = (rDist + this.chunkSize * 0.7) * (rDist + this.chunkSize * 0.7);
 
     // Only update if player moved more than 8m or forced
     const dx = playerPos.x - this._lastUpdatePos.x;
     const dz = playerPos.z - this._lastUpdatePos.z;
-    if (!force && (dx * dx + dz * dz < 64)) return;
+    if (!force && (dx * dx + dz * dz < 64)) {return;}
 
     this._lastUpdatePos.x = playerPos.x;
     this._lastUpdatePos.z = playerPos.z;
@@ -572,15 +605,15 @@ class SceneryKit {
    * Clear all placed scenery
    */
   clear() {
-    if (!this.game.scene) return;
+    if (!this.game.scene) {return;}
     this.placedObjects.forEach(group => {
       this.game.scene.remove(group);
       group.traverse(c => {
         if (c.isMesh) {
           c.geometry?.dispose();
           if (c.material) {
-            if (Array.isArray(c.material)) c.material.forEach(m => m.dispose());
-            else c.material.dispose();
+            if (Array.isArray(c.material)) {c.material.forEach(m => m.dispose());}
+            else {c.material.dispose();}
           }
         }
       });

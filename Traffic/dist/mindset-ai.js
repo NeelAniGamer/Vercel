@@ -78,19 +78,19 @@
   ]
 
   function getConfig() {
-    if (window.MINDSET_AI_CONFIG && window.MINDSET_AI_CONFIG.endpoint) return window.MINDSET_AI_CONFIG
+    if (window.MINDSET_AI_CONFIG && window.MINDSET_AI_CONFIG.endpoint) {return window.MINDSET_AI_CONFIG}
     try {
       var raw = localStorage.getItem('mindset_ai_config')
       if (raw) {
         var cfg = JSON.parse(raw)
-        if (cfg && cfg.endpoint && cfg.apiKey) return cfg
+        if (cfg && cfg.endpoint && cfg.apiKey) {return cfg}
       }
     } catch (e) {}
     return null
   }
 
   function renderQuiz(container) {
-    if (!container) return
+    if (!container) {return}
     container.innerHTML = ''
     QUESTIONS.forEach(function (q, qi) {
       var wrap = document.createElement('div')
@@ -144,7 +144,7 @@
     var weakest = null
     answers.forEach(function (a) {
       total += a.score
-      if (!weakest || a.score < weakest.score) weakest = a
+      if (!weakest || a.score < weakest.score) {weakest = a}
     })
     return {
       score: Math.round((total / (answers.length * 10)) * 100),
@@ -154,7 +154,7 @@
 
   function archetypeFor(score) {
     for (var i = 0; i < ARCHETYPES.length; i++) {
-      if (score >= ARCHETYPES[i].min) return ARCHETYPES[i]
+      if (score >= ARCHETYPES[i].min) {return ARCHETYPES[i]}
     }
     return ARCHETYPES[ARCHETYPES.length - 1]
   }
@@ -166,11 +166,11 @@
     answers.forEach(function (a) {
       if (a.score <= 4) {
         var q = QUESTIONS.filter(function (x) { return x.text === a.question })[0]
-        if (q && tips.indexOf(q.coachTip) === -1) tips.push(q.coachTip)
+        if (q && tips.indexOf(q.coachTip) === -1) {tips.push(q.coachTip)}
       }
     })
-    if (!tips.length) tips.push(s.focus ? s.focus.question + ' — even here, choose the patient option. That is where champions are separated from statistics.' : 'Keep choosing the patient option. Patience compounds like interest.')
-    if (tips.length > 3) tips = tips.slice(0, 3)
+    if (!tips.length) {tips.push(s.focus ? s.focus.question + ' — even here, choose the patient option. That is where champions are separated from statistics.' : 'Keep choosing the patient option. Patience compounds like interest.')}
+    if (tips.length > 3) {tips = tips.slice(0, 3)}
     return {
       patienceScore: s.score,
       archetype: arch.name,
@@ -193,9 +193,9 @@
   function parseAIJson(text) {
     try {
       var m = text.match(/\{[\s\S]*\}/)
-      if (!m) return null
+      if (!m) {return null}
       var obj = JSON.parse(m[0])
-      if (typeof obj.patienceScore !== 'number' || !obj.archetype) return null
+      if (typeof obj.patienceScore !== 'number' || !obj.archetype) {return null}
       return {
         patienceScore: Math.max(0, Math.min(100, Math.round(obj.patienceScore))),
         archetype: String(obj.archetype || '').slice(0, 40),
@@ -230,16 +230,16 @@
       body: JSON.stringify(body),
       signal: ctrl ? ctrl.signal : undefined
     }).then(function (res) {
-      if (!res.ok) throw new Error('HTTP ' + res.status)
+      if (!res.ok) {throw new Error('HTTP ' + res.status)}
       return res.json()
     }).then(function (data) {
-      if (timer) clearTimeout(timer)
+      if (timer) {clearTimeout(timer)}
       var txt = data && data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content : ''
       var parsed = parseAIJson(txt || '')
-      if (!parsed) throw new Error('bad AI payload')
+      if (!parsed) {throw new Error('bad AI payload')}
       return parsed
     }).catch(function (err) {
-      if (timer) clearTimeout(timer)
+      if (timer) {clearTimeout(timer)}
       console.warn('[MindsetAI] AI analysis unavailable, using offline coach:', err.message)
       return null
     })
@@ -273,7 +273,7 @@
   }
 
   function renderReport(container, report) {
-    if (!container) return
+    if (!container) {return}
     var color = report.patienceScore >= 70 ? '#34d399' : report.patienceScore >= 45 ? '#f2b84b' : '#ef4444'
     var html =
       '<div style="width:100%;max-width:420px;margin:14px auto 0;text-align:left;background:rgba(255,255,255,0.05);border:1px solid rgba(242,184,75,0.35);border-radius:16px;padding:16px">' +

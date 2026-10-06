@@ -46,12 +46,12 @@
     }
 
     // Faces: 0: +X (Right), 1: -X (Left), 2: +Y (Top), 3: -Y (Bottom), 4: +Z (Front), 5: -Z (Back)
-    if (uvs.right) setFaceUV(0, uvs.right);
-    if (uvs.left) setFaceUV(1, uvs.left);
-    if (uvs.top) setFaceUV(2, uvs.top);
-    if (uvs.bottom) setFaceUV(3, uvs.bottom);
-    if (uvs.front) setFaceUV(4, uvs.front);
-    if (uvs.back) setFaceUV(5, uvs.back);
+    if (uvs.right) {setFaceUV(0, uvs.right);}
+    if (uvs.left) {setFaceUV(1, uvs.left);}
+    if (uvs.top) {setFaceUV(2, uvs.top);}
+    if (uvs.bottom) {setFaceUV(3, uvs.bottom);}
+    if (uvs.front) {setFaceUV(4, uvs.front);}
+    if (uvs.back) {setFaceUV(5, uvs.back);}
 
     uvAttr.needsUpdate = true;
   }
@@ -61,7 +61,7 @@
    */
   function buildMinecraftHuman(isPlayer = false, options = {}) {
     const THREE = window.THREE;
-    if (!THREE) return new THREE.Group();
+    if (!THREE) {return new THREE.Group();}
 
     const root = new THREE.Group();
     const app = options || {};
@@ -399,7 +399,7 @@
       const newSkin = { id, name: name || 'Custom Skin', dataUrl, isCustom: true, icon: '🎨' };
       skins.unshift(newSkin);
       // Keep up to 12 custom skins in local storage
-      if (skins.length > 12) skins.length = 12;
+      if (skins.length > 12) {skins.length = 12;}
       localStorage.setItem('traffic_custom_skins', JSON.stringify(skins));
       return newSkin;
     },

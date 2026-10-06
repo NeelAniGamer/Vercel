@@ -26,6 +26,15 @@ var import_electron = require("electron");
 var path = __toESM(require("path"));
 var fs = __toESM(require("fs"));
 var isDev = !import_electron.app.isPackaged;
+if (process.platform === "win32") {
+  import_electron.app.commandLine.appendSwitch("use-angle", "d3d11");
+} else if (process.platform === "linux") {
+  import_electron.app.commandLine.appendSwitch("use-angle", "vulkan");
+  import_electron.app.commandLine.appendSwitch("enable-features", "Vulkan");
+}
+import_electron.app.commandLine.appendSwitch("ignore-gpu-blocklist");
+import_electron.app.commandLine.appendSwitch("enable-gpu-rasterization");
+import_electron.app.commandLine.appendSwitch("disable-gpu-driver-bug-workarounds");
 var mainWindow = null;
 function getStatePath() {
   return path.join(import_electron.app.getPath("userData"), "window-state.json");
@@ -135,9 +144,9 @@ function createWindow() {
   if (state.isMaximized) mainWindow.maximize();
   else mainWindow.once("ready-to-show", () => mainWindow?.show());
   if (isDev) {
-    mainWindow.loadURL("http://localhost:5173/Driving.html");
+    mainWindow.loadURL("http://localhost:5173/Academy.html");
   } else {
-    mainWindow.loadFile(path.join(__dirname, "..", "dist", "Driving.html"));
+    mainWindow.loadFile(path.join(__dirname, "..", "dist", "Academy.html"));
   }
   let stateTimer = null;
   const scheduleStateSave = () => {
@@ -245,7 +254,7 @@ function createMenu() {
           });
         } },
         { type: "separator" },
-        { label: "Report Bug", click: () => import_electron.shell.openExternal("https://github.com/anomalyco/opencode/issues") }
+        { label: "Report Bug", click: () => import_electron.shell.openExternal("https://github.com/NeelAniGamer/Vercel/issues") }
       ]
     }
   ];

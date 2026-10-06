@@ -240,7 +240,7 @@ const studioHTML = `  <!-- Character & Minecraft Skins Studio Modal -->
   </div>`;
 
 // 1. Process Driving.html
-let drivingPath = path.join(__dirname, 'Driving.html');
+const drivingPath = path.join(__dirname, 'Driving.html');
 let driving = fs.readFileSync(drivingPath, 'utf8');
 
 // Insert minecraft_character.js script tag before ui.js if not present
@@ -269,7 +269,7 @@ fs.writeFileSync(drivingPath, driving, 'utf8');
 console.log('Driving.html updated successfully!');
 
 // 2. Process Academy.html
-let academyPath = path.join(__dirname, 'Academy.html');
+const academyPath = path.join(__dirname, 'Academy.html');
 let academy = fs.readFileSync(academyPath, 'utf8');
 
 // Add customizer-studio.css to Academy.html head if not present

@@ -33,7 +33,7 @@ class GeometryPool {
 
   release(geo, size, res) {
     const key = this._key(size, res);
-    if (!this.pools.has(key)) this.pools.set(key, []);
+    if (!this.pools.has(key)) {this.pools.set(key, []);}
     const pool = this.pools.get(key);
     if (pool.length < 20) { // limit pool size
       pool.push(geo);
@@ -44,7 +44,7 @@ class GeometryPool {
 
   clear() {
     for (const [key, pool] of this.pools) {
-      for (const geo of pool) geo.dispose();
+      for (const geo of pool) {geo.dispose();}
     }
     this.pools.clear();
   }
@@ -154,7 +154,7 @@ class ChunkTier {
         // Circular falloff for far tiers
         if (this.viewDistance > 3) {
           const dist = Math.sqrt(dx * dx + dz * dz);
-          if (dist > this.viewDistance) continue;
+          if (dist > this.viewDistance) {continue;}
         }
         const cx = pcx + dx;
         const cz = pcz + dz;
@@ -189,7 +189,7 @@ class ChunkTier {
   _applyVertexHiding(hideRegions) {
     for (const [key, mesh] of this.chunks) {
       const positions = mesh.geometry.attributes.position;
-      if (!positions) continue;
+      if (!positions) {continue;}
       const worldX = mesh.chunkX * this.chunkSize;
       const worldZ = mesh.chunkZ * this.chunkSize;
 
@@ -355,7 +355,7 @@ class ProcChunkManager {
   }
 
   _findClosestRoadPoint(x, z) {
-    if (!this.roadData) return null;
+    if (!this.roadData) {return null;}
     const fine = this.roadData.fine;
     let bestDist = Infinity;
     let bestPoint = null;

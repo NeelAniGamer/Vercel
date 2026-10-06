@@ -13,6 +13,24 @@ const autoUpdater = {
 
 const isDev = !app.isPackaged;
 
+// ===== GPU acceleration =====
+// Chromium's ANGLE translates WebGL to the platform's native backend:
+// D3D11 on Windows, Vulkan on Linux, Metal on macOS. Without these switches a
+// headless/virtualised GPU can fall back to SwiftShader (software), which is
+// dramatically slower for a scene with this many draw calls.
+// Must be set before app ready.
+if (process.platform === 'win32') {
+  app.commandLine.appendSwitch('use-angle', 'd3d11');
+} else if (process.platform === 'linux') {
+  app.commandLine.appendSwitch('use-angle', 'vulkan');
+  // Some Linux drivers still advertise GL but expose a Vulkan-backed ANGLE.
+  app.commandLine.appendSwitch('enable-features', 'Vulkan');
+}
+// Never silently degrade to software rendering — the game needs real GPU.
+app.commandLine.appendSwitch('ignore-gpu-blocklist');
+app.commandLine.appendSwitch('enable-gpu-rasterization');
+app.commandLine.appendSwitch('disable-gpu-driver-bug-workarounds');
+
 let mainWindow: BrowserWindow | null = null;
 
 // ===== Window state persistence =====
@@ -161,9 +179,9 @@ function createWindow(): void {
   else mainWindow.once('ready-to-show', () => mainWindow?.show());
 
   if (isDev) {
-    mainWindow.loadURL('http://localhost:5173/Driving.html');
+    mainWindow.loadURL('http://localhost:5173/Academy.html');
   } else {
-    mainWindow.loadFile(path.join(__dirname, '..', 'dist', 'Driving.html'));
+    mainWindow.loadFile(path.join(__dirname, '..', 'dist', 'Academy.html'));
   }
 
   // Persist window state on move/resize (debounced)
@@ -275,7 +293,7 @@ function createMenu(): void {
           });
         }},
         { type: 'separator' },
-        { label: 'Report Bug', click: () => shell.openExternal('https://github.com/anomalyco/opencode/issues') }
+        { label: 'Report Bug', click: () => shell.openExternal('https://github.com/NeelAniGamer/Vercel/issues') }
       ]
     }
   ];

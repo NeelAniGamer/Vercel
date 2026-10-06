@@ -10,7 +10,10 @@ window.LVS.push({
   hasGarageSpawn: true,
   // Home garage (detailed open-front structure) + porch start
   garageSpawn: { x: -69.5, z: -128, rotY: Math.PI / 2 },
-  playerSpawn: { x: -74, z: -124, rotY: Math.PI / 2 },
+  // Spawn in the front yard, clear of the garage's three walls. The old
+  // (-74,-124) sat inside the player body radius of BOTH the back wall and the
+  // right wall, so the engine shoved the player on frame one.
+  playerSpawn: { x: -76.5, z: -128, rotY: Math.PI / 2 },
   col: '#e74c3c',
   speedLimit: 40,
   timeLimit: 300,
@@ -27,6 +30,15 @@ window.LVS.push({
     // F2 RIVAL: "Aarush" runs your whole corridor — jump-free clean driving can still catch him. +500 if you finish first.
     { type: 'bike', color: 0xcc0000, profileKey: 'reckless_bike', rival: true, name: 'Aarush', route: [{ x: -56, z: -140 }, { x: -52, z: -100 }, { x: -4, z: -60 }, { x: -4, z: 20 }, { x: -4, z: 60 }, { x: 30, z: 100 }] }
   ],
+  // ── Story Mode cast ──────────────────────────────────────────────────────
+  // NONE. The film for this lesson (MUMBAI 4000, "The White Line") is staged on
+  // its own map in story/stage.js, and its cast lives in story/campaign.js —
+  // blocking is direction, which is narrative, not syllabus.
+  //
+  // Nothing in this file's `cast` was ever read by the playable build: cutscene.js
+  // prefers story/campaign.js and only falls back to the level for older entries
+  // that predate the split. So keeping a copy here would be a second, silently
+  // divergent list of the same actors.
   anchorNodes: [
     { x: -80, z: -130, zone: 'Residential' },
     { x: 60, z: -130, zone: 'Residential' },
@@ -59,8 +71,15 @@ window.LVS.push({
     { x: 40, z: 100, desc: '🏁 Park at Sharma General Stores — deliver Papa\u2019s dabba before 1 PM' }
   ],
   plots: [
-    // Sharma Niwas — home (route starts at its gate)
-    { kind: 'house', x: -83, z: -128, rotY: Math.PI / 2, w: 14, d: 12, color: 0xf5e6d3 },
+    // Sharma Niwas — home. Moved west from x=-83 to open a 7.5m front yard:
+    // at -83 the house's east face (x=-75.5) left only a 2.5m slot against the
+    // garage back wall (x=-73.0) — narrower than the 3m a 1.5m-radius player
+    // needs, so no valid spawn existed anywhere in that gap.
+    { kind: 'house', id: 'home', x: -88, z: -128, rotY: Math.PI / 2, w: 14, d: 12, color: 0xf5e6d3,
+      // Detailed story set: verandah + first-floor balcony (so "Mummy (Balcony)"
+      // is an actual place), compound wall + gate, front garden, and a furnished
+      // interior. Built by cinematics.js — see Cinematics.buildHouse().
+      houseSet: { verandah: true, balcony: true, compound: true, garden: true, interior: true } },
     // Home garage — you spawn on foot at the porch, car parked inside
     { kind: 'garage', x: -69.5, z: -128, rotY: 0, w: 6.5, d: 8, color: 0xe2e8f0 },
     // Bazaar market row (north side, facing the road)
@@ -76,7 +95,10 @@ window.LVS.push({
     { kind: 'house', x: -78, z: -60, rotY: Math.PI / 2, w: 12, d: 10, color: 0xe8d5b7 },
     { kind: 'house', x: -78, z: 20, rotY: Math.PI / 2, w: 12, d: 10, color: 0xd4b896 },
     { kind: 'house', x: 78, z: -40, rotY: -Math.PI / 2, w: 12, d: 10, color: 0xf0d878 },
-    { kind: 'house', x: 78, z: 40, rotY: -Math.PI / 2, w: 12, d: 10, color: 0xa8c8a8 }
+    { kind: 'house', x: 78, z: 40, rotY: -Math.PI / 2, w: 12, d: 10, color: 0xa8c8a8 },
+    // Sports park and organized city parking lot (Images 1 & 2)
+    { kind: 'court', x: 32, z: 54, rotY: 0, w: 24, d: 18 },
+    { kind: 'parking', x: -32, z: 54, rotY: 0, w: 24, d: 18 }
   ],
   roadProblems: [
     { kind: 'potholes', x: -4, z: 62, count: 7, spread: 10 },
@@ -85,30 +107,50 @@ window.LVS.push({
     { kind: 'puddle', x: -58, z: -112, r: 4 },
     // Map dressing: junction zebra, home + shop boards, lamp posts
     { kind: 'zebra', x: 0, z: -8, w: 14, rotY: 0 },
-    { kind: 'signboard', x: -72, z: -118, rotY: Math.PI / 2, text: 'Shanti Galli', sub: 'Sharma Niwas • Lane 2' },
+    // Shanti Galli board. Moved north to z=-102: at z=-118 it sat directly on
+    // the sight-line of the prologue's house-front shot and covered the lower
+    // third of frame with the back of its own canvas.
+    { kind: 'signboard', x: -72, z: -102, rotY: Math.PI / 2, text: 'Shanti Galli', sub: 'Sharma Niwas • Lane 2' },
     { kind: 'signboard', x: 52, z: 100, rotY: 0, text: 'Sharma General Stores', sub: 'Dabba Delivery Point' },
     { kind: 'streetlight', x: -8, z: -40, rotY: 0 },
     { kind: 'streetlight', x: 8, z: 20, rotY: Math.PI },
     { kind: 'streetlight', x: -8, z: 80, rotY: 0 }
   ],
   story: {
-    title: 'Red Light Patience: The Dabba Run',
-    briefing: '12:40 PM. Papa just called from Sharma General Stores in the bazaar — he forgot his lunch dabba and the shop has a rush of customers. You have 20 minutes to drive from Sharma Niwas, survive the big Linking Road signal at lunch hour, and deliver the dabba. A family of four is crossing at the signal, Ansh the taxi driver is honking like crazy behind you, and some biker is about to do something very stupid at the red light.',
-    storyBeat: 'Ghar se phone aaya: "Beta, Papa ka dabba reh gaya! Sharma General Stores, bazaar road — 1 baje se pehle pohocha de, dukaan par bheed hai!" Tum Shanti Galli se niklo, Linking Road ke bade signal par ruko, Ansh taxi wale ke horn ko ignore karo, aur uss red-light-kaatne-wale biker jaisa bilkul mat bano!',
+    title: 'The White Line',
+    // The film lives in story/campaign.js and is staged on its own map in
+    // story/stage.js. This is the playable half: same junction, same syllabus,
+    // six hours later, with a different reason to obey the light.
+    briefing: 'Six hours after Vikram Sawant was shot at this signal, his partner Insp. Arjun Kadam parks the jeep he is not supposed to be driving and opens the notebook Vikram kept. Entry one: Mrs. Iyer, Shanti Galli, ten-fifteen, temple. She sees everything. Drive the route. Obey every light on it — because the last man who did not is lying under the junction.',
+    storyBeat: 'Vikram ka notebook. Pehla entry: Mrs. Iyer, Shanti Galli, 10:15, mandir. Usne likha tha — "Sab kuch dekhti hai." Tum uss signal par khel rahe ho jahaan Vikram mar gaya. Sab rules abhi bhi wahi hain. Bas wajah badal gayi hai.',
     dialogue: [
-      { triggerZ: -128, speaker: 'Mummy (Balcony)', line: '"Beta dabba seat par rakh diya hai! Sharma General Stores — bazaar road! 1 baje se pehle! Aur signal mat kaatna!"' },
-      { triggerZ: -100, speaker: 'Neighbour Uncle', line: '"Arre Linking Road wala signal lunch time par bahut lamba hota hai. Line mein lag jao, jaldi mat karo!"' },
-      { triggerZ: -60, speaker: 'Havaldar Desai (Radio)', line: '"All units: Linking Road junction RED. Zebra par family cross kar rahi hai — chaar log. White line ke peeche ruko!"' },
+      // ── FILM DIALOGUE ──────────────────────────────────────────────────
+      // A cutscene may only speak lines that appear here verbatim;
+      // tools/validate-levels.js rejects any subtitle that does not. The cold
+      // open is an EXCHANGE, so the antagonist has to have a voice — three
+      // consecutive lines from one man is a caption track, not a scene.
+      { triggerZ: -128, speaker: 'Vikram Sawant', line: '"Stopping at the line. Even for a Fortuner."' },
+      { triggerZ: -100, speaker: 'The Fortuner Driver', line: '"Bhai, do minute. Bas."' },
+      { triggerZ: -60, speaker: 'The Fortuner Driver', line: '"Do minute ki baat hai. Signal toh sirf ek ruka hai."' },
+      { triggerZ: -60, speaker: 'Vikram Sawant', line: '"Sir, yeh red light hai. Zameen pe ek line hai. Please."' },
+      // ── BEAT (mid-level, present tense) ─────────────────────────────────
+      { triggerZ: -8, speaker: 'Insp. Arjun Kadam', line: '"Entry one. Mrs. Iyer. She sees everything."' },
+      { triggerZ: 20, speaker: 'Insp. Arjun Kadam', line: '"Red light karna, sir. Yahi toh sikhaya tha unhone."' },
+      // ── IN-PLAY RADIO ───────────────────────────────────────────────────
+      // Havildar Desai keeps the lesson running while the player drives: the
+      // film's thesis restated as guidance, never as exposition.
+      { triggerZ: -60, speaker: 'Havildar Desai (Radio)', line: '"All units: Linking Road junction RED. White line ke peeche ruko — ek line hai, koi shortcut nahi."' },
       { triggerZ: -30, speaker: 'Ansh Taxi', line: '"HORN HORN! Arey bhai chalo na! Mera meter down hai! (Ignore him — tumhe challan milega, use nahin!)"' },
-      { triggerZ: -8, speaker: 'Havaldar Desai (Radio)', line: '"Dekho woh Aarush — signal kaatne wala hai! Uska challan pakka. Tum GREEN ka wait karo!"' },
       { triggerZ: -8, speaker: 'Aarush', line: '"Heh! Tum signal pe so raho, main race jeet raha hoon! Pakad ke dikhao!"' },
-      { triggerZ: 20, speaker: 'Havaldar Desai (Radio)', line: '"GREEN! Ab niklo — dheere, lane mein. Bazaar stretch mein tempo double-parked hai, left se niklo."' },
-      { triggerZ: 20, speaker: 'Aarush', line: '"Arre wah, green mil gaya? Ab dekho kaun pehle bazaar pohochta hai!"' },
+      { triggerZ: 20, speaker: 'Havildar Desai (Radio)', line: '"GREEN! Ab niklo — dheere, lane mein. Bazaar stretch mein tempo double-parked hai, left se niklo."' },
       { triggerZ: 60, speaker: 'Shamika (Kirana Store)', line: '"Arre sambhal ke! Yahan roz tempo khada rehta hai aur gadde (potholes) bhi hain. Left lane pakdo!"' },
-      { triggerZ: 100, speaker: 'Papa (Shop)', line: '"Shabaash beta! Dabba time par! Aur signal bhi nahi kaata — sacha Traffic Hero!"' }
+      { triggerZ: 100, speaker: 'Mrs. Iyer', line: '"Vikram bhai har roz isi signal par rukta tha. Har roz. Tum bhi ruko."' },
+      { triggerZ: 100, speaker: 'Mrs. Iyer', line: '"Maine Fortuner dekha, Arjun. Aur piche baithe aadmi ko bhi."' },
+      { triggerZ: 100, speaker: 'Insp. Arjun Kadam', line: '"Kaun tha woh, Mrs. Iyer?!"' },
+      { triggerZ: 100, speaker: 'Mrs. Iyer', line: '"Police uniform thi uski. Aur agla entry tumhare notebook mein... Shanti Galli ka hai."' }
     ]
   },
-  ds: 'Step out of Sharma Niwas, hop in your parked car with [F], and deliver Papa\u2019s lunch dabba to Sharma General Stores before 1 PM. Wait out the red light at Linking Road junction while a family crosses, ignore Ansh the honking taxi, don\u2019t copy the signal-jumping biker, dodge bazaar potholes and the double-parked tempo, and park at the shop.',
+  ds: 'Hop in your parked car with [F] and drive the first entry in Vikram Sawant\u2019s notebook: Mrs. Iyer, Shanti Galli, temple. Hold the white line at Linking Road junction, ignore Ansh the honking taxi, don\u2019t copy the signal-jumping biker, clear the bazaar potholes and the double-parked tempo, and reach the temple steps before she does.',
   hps: [
     'Step out of the building and press [F] near your parked car to get in.',
     'Stop behind the solid white stop line at signals.',

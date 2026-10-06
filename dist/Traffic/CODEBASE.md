@@ -43,7 +43,13 @@ Both modes share the same engine (`game_core.js`) and optional subsystems loaded
 | `mission-manager.js` | 419 | Mission system. Types: CHECKPOINT, COLLECT, TIME_TRIAL, DELIVERY, FOLLOW. Collectible items with values. |
 | `scenario2d.js` | 1,865 | 2D scenario game (canvas-based). Easing functions, color utilities, scenario definitions for violations (signal_jump, wrong_side, etc.). |
 | `world-streamer.js` | 461 | Procedural city streaming. Chunk-based loading with seeded RNG (mulberry32). Buildings, props, foliage generation. |
-| `rule-breaker-profiles.js` | 374 | Defines rule-breaking NPC behavior profiles for Chaos mode. |
+
+Rule-breaking NPC behaviour lives in `npc-ai.js` (`NPC_PROFILES.rulebreaker`,
+selected by profile key) and `traffic-manager.js`
+(`RULE_BREAKER_PROBABILITY`). The standalone `rule-breaker-profiles.js` module
+was removed: it had zero consumers and its `window.getMumbaiStat` silently
+shadowed the `course.js` implementation, so a call with a snake_case violation
+id returned `null`.
 
 ### UI & Presentation
 

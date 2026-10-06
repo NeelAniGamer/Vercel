@@ -28,6 +28,8 @@ window.LVS.push({
   npcDensity: 'moderate',
   hasRain: true,
   hasSchool: true,
+  schoolX: -60,
+  schoolZ: -32,
   startOutside: true,
   tasks: [
     { id: 'crawl_zone', text: 'Crawl through school zone', type: 'avoid', target: 'speed_zone', done: false },

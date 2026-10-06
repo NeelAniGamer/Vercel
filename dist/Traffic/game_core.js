@@ -3396,6 +3396,14 @@ class Game {
         this._ghostPts = []; this._ghostLastT = -1; this._ghostIdx = 0; this._ghostTried = false;
         try { this._destroyGhostMesh(); } catch (e) {}
         try { window._namedTags = []; } catch (e) {}
+        // A beat queued by the previous level must not fire into this one. The
+        // callback checks lvId as well, but cancelling here means a queued
+        // requestAnimationFrame never even runs.
+        if (this._storyBeatFrame) {
+          try { cancelAnimationFrame(this._storyBeatFrame); } catch (e1) {}
+          this._storyBeatFrame = 0;
+        }
+        this._stageBuild = false;
         // Start gameplay recording
         if (window.GameplayRecorder) {GameplayRecorder.start(lv.id, lv.name || '');}
         this.ms = { inSz: false, passed: false, amb: null };
@@ -3476,8 +3484,11 @@ class Game {
         }
         this._updateLoading(50, 'Building city environment...');
         await new Promise(r => requestAnimationFrame(r));
+        // ── Pass 1 (only when a STAGE exists) ──────────────────────────────
+        // Cutscene.begin() rebuilds the world from the level's OWN config on
+        // the way out, so the playable map here is a provisional one: it exists
+        // only so there is something valid on screen if the film cannot run.
         this._buildScene(lv.mode);
-        this._buildRouteCheckpoints(this.mapCfg || lv);
         this._updateLoading(80, 'Spawning traffic & pedestrians...');
         await new Promise(r => requestAnimationFrame(r));
         this._updateLoading(100, 'Ready!');
@@ -3485,6 +3496,26 @@ class Game {
         this._hideLoading();
         const po = document.getElementById('play-overlay'); if (po) {po.remove();}
         this.playing = true; this.pause = false; ui.show(null);
+        // ── Story Mode intro cinematic ──────────────────────────────────────
+        // Called AFTER `playing = true` on purpose: Cutscene.begin() only takes
+        // over (sets playing = false) when a level actually has an unseen
+        // prologue, so levels without one fall straight through to gameplay.
+        //
+        // If a stage map exists, begin() does the two-pass swap internally:
+        //   _buildScene(mode, STAGE[id].map)  →  film
+        //   _buildScene(mode)                  →  playable
+        // and fires the onEnd callbacks (below) only after the playable map is
+        // standing. That ordering is what keeps the briefing modal from ever
+        // appearing over a film map, and what keeps the player from being
+        // dropped into a stage with no route.
+        this._introStarted = false;
+        try {
+          if (window.Cutscene && typeof window.Cutscene.begin === 'function') {
+            this._introStarted = !!window.Cutscene.begin(this, lv);
+          }
+        } catch (e) {
+          console.warn('[Driving] Cutscene.begin() failed — continuing without intro:', e);
+        }
         // Offer resume if a fresh autosave exists for this level (same spot + mission)
         try {
           const rs = (typeof this._loadRun === 'function') ? this._loadRun() : null;
@@ -3530,7 +3561,30 @@ class Game {
         const objDesc = document.getElementById('objective-desc');
         if(objDesc && lv.pract) { objDesc.innerHTML = lv.pract; }
         if (window.showGtaMissionIntro) {
-          window.showGtaMissionIntro(lv.id || 1);
+          // If a Story Mode intro is playing, hold the briefing modal back until
+          // the film finishes — otherwise it renders on top of the cutscene.
+          //
+          // When a STAGE map exists this callback runs AFTER the playable map has
+          // been rebuilt (cutscene.js restores the map before firing onEnd), so
+          // the modal appears over a world the player can actually drive.
+          const _showMissionIntro = () => {
+            // Belt and braces: if the map is somehow still a stage build at this
+            // point, rebuild it rather than briefing the player on film geometry.
+            try {
+              if (this._stageBuild) {
+                this._buildScene(lv.mode);
+                if (window.Cinematics && window.Cinematics.restoreAfterStage) {
+                  window.Cinematics.restoreAfterStage(this);
+                }
+              }
+            } catch (e) { console.warn('[Driving] stage restore before briefing failed:', e); }
+            try { window.showGtaMissionIntro(lv.id || 1); } catch (e2) {}
+          };
+          if (this._introStarted && window.Cutscene && typeof window.Cutscene.onEnd === 'function') {
+            window.Cutscene.onEnd(_showMissionIntro);
+          } else {
+            _showMissionIntro();
+          }
         }
         
         if (!cfg.isPedestrian) { 
@@ -4024,11 +4078,12 @@ class Game {
       _uh() {}
       
       _showIRLDeathPopup(cause) {
-        const isGod = window._trafficGodMode || (typeof localStorage !== 'undefined' && localStorage.getItem('traffic_god_mode') === 'true');
-        if (isGod) {
+        // Developer-only invulnerability. Set from the console via
+        // colDev.godMode(true); never persisted, so it cannot be inherited.
+        if (window._trafficGodMode) {
           this.hp = 100;
           this._uh();
-          toast('🛡️ GOD MODE: Collision Absorbed!', '#ffd700', 1500);
+          toast('Developer Mode: Collision Absorbed', '#ffd700', 1500);
           return;
         }
         this.pause = true; // Pause game immediately
@@ -4152,21 +4207,29 @@ class Game {
             }
           }
         }
-        if (this.npcs) {
-          // Gap: find two NPCs close together with space between
+        if (this.npcs && this.player && !this._reachedGap) {
+          // Gap: find two NPCs close together with space between.
+          //
+          // The old form scanned every NPC pair — O(n²) over up to 110 vehicles,
+          // i.e. ~6,000 distanceTo() calls every frame, and it recomputed dPA/dPB
+          // inside the inner loop. Both members of a matching pair must satisfy
+          // `dP < 8`, so prefiltering to the near set first is exactly
+          // equivalent and reduces the inner loop to a handful of candidates.
+          const near = [];
           for (let i = 0; i < this.npcs.length; i++) {
-            for (let j = i + 1; j < this.npcs.length; j++) {
-              const a = this.npcs[i], b = this.npcs[j];
-              if (!a.position || !b.position) {continue;}
-              const dAB = a.position.distanceTo(b.position);
-              const dPA = this.player ? this.player.position.distanceTo(a.position) : 999;
-              const dPB = this.player ? this.player.position.distanceTo(b.position) : 999;
-              if (dAB > 4 && dAB < 12 && dPA < 8 && dPB < 8) {
+            const a = this.npcs[i];
+            if (!a.position) {continue;}
+            if (this.player.position.distanceTo(a.position) < 8) {near.push(a);}
+          }
+          for (let i = 0; i < near.length && !this._reachedGap; i++) {
+            for (let j = i + 1; j < near.length; j++) {
+              const b = near[j];
+              const dAB = near[i].position.distanceTo(b.position);
+              if (dAB > 4 && dAB < 12) {
                 this._reachedGap = true;
                 break;
               }
             }
-            if (this._reachedGap) {break;}
           }
         }
 
@@ -4388,9 +4451,55 @@ class Game {
             changed = true;
             toast('✅ ' + t.text, '#27ae60');
             sfx.play('ok');
+            // ── Story Mode mid-level beat ───────────────────────────────────
+            // A beat is a film the campaign hung off this objective. It plays on
+            // the CURRENT playable map — no rebuild — so the lesson resumes from
+            // exactly where it was interrupted. Deferred by one frame so the
+            // task-complete toast and sound land before the film takes the frame.
+            //
+            // `beatForTask` decides whether a beat exists AND whether it has
+            // already been seen, so this costs one object lookup when the game
+            // has no story at all.
+            this._queueStoryBeat(t.id);
           }
         }
         if (changed) {this._renderTasks();}
+      }
+
+      /**
+       * Play the campaign beat attached to a completed objective, if any.
+       *
+       * Deferred one frame on purpose. `_checkTasks()` runs inside the tick that
+       * also advances physics, NPC AI and the traffic manager, and `Cutscene.begin`
+       * immediately sets `playing = false` — firing it inline would tear the world
+       * down mid-frame and leave the task toast hanging over a letterboxed film
+       * with no sound. One frame later, everything the player just saw has
+       * settled.
+       *
+       * The queued beat is cleared on level load, so completing the same objective
+       * twice (a retry) cannot stack two films.
+       */
+      _queueStoryBeat(taskId) {
+        if (!taskId || taskId == null) { return; }
+        const C = window.Cutscene;
+        if (!C || typeof C.beatForTask !== 'function' || typeof C.beat !== 'function') { return; }
+        let has = false;
+        try { has = !!C.beatForTask(this.lvId, taskId); } catch (e) { has = false; }
+        if (!has) { return; }
+        if (this._storyBeatFrame) { cancelAnimationFrame(this._storyBeatFrame); }
+        const lvId = this.lvId;
+        this._storyBeatFrame = requestAnimationFrame(() => {
+          this._storyBeatFrame = 0;
+          // The player may have restarted the level in that frame.
+          if (this.lvId !== lvId || !this.playing) { return; }
+          try {
+            if (window.Cutscene && !window.Cutscene.isActive()) {
+              window.Cutscene.beat(this, lvId, taskId);
+            }
+          } catch (e) {
+            console.warn('[Driving] story beat failed — continuing lesson:', e);
+          }
+        });
       }
 
       _collectMissionData(dt) {
@@ -4473,11 +4582,11 @@ class Game {
       }
       
       _go(reason) {
-        const isGod = window._trafficGodMode || (typeof localStorage !== 'undefined' && localStorage.getItem('traffic_god_mode') === 'true');
-        if (isGod) {
+        // Developer-only invulnerability. See _showIRLDeathPopup.
+        if (window._trafficGodMode) {
           this.hp = 100;
           this._uh();
-          toast('🛡️ GOD MODE: Collision Prevented!', '#ffd700', 1500);
+          toast('Developer Mode: Collision Prevented', '#ffd700', 1500);
           return;
         }
         this.stopPlay();
@@ -5722,16 +5831,33 @@ class Game {
             const bulbHalo = new THREE.Mesh(new THREE.SphereGeometry(0.4, 10, 10), new THREE.MeshBasicMaterial({ color: 0xffdf8a, transparent: true, opacity: 0.22, depthWrite: false }));
             bulbHalo.position.copy(bulb.position);
             g.add(bulbHalo);
+          } else if (p.kind === 'court') {
+            try {
+              if (typeof window._buildBasketballCourt === 'function') {
+                const courtMesh = window._buildBasketballCourt(null, w, d);
+                if (courtMesh) { g.add(courtMesh); }
+              }
+            } catch (errCourt) {
+              console.warn('[Plot] Failed to build court:', errCourt);
+            }
+          } else if (p.kind === 'parking') {
+            try {
+              if (typeof window._buildParkingLot === 'function') {
+                const parkMesh = window._buildParkingLot(null, w, d);
+                if (parkMesh) { g.add(parkMesh); }
+              }
+            } catch (errPark) {
+              console.warn('[Plot] Failed to build parking lot:', errPark);
+            }
           } else {
             return;
           }
           g.position.set(p.x, 0, p.z);
           g.rotation.y = p.rotY || 0;
           grp.add(g);
-          if (p.kind !== 'garage') {
+          if (p.kind !== 'garage' && p.kind !== 'court' && p.kind !== 'parking') {
             // Collision box follows 90° rotations (axis-aligned physics).
-            // Garages skip this: their 3 walls collide individually so the
-            // interior + opening stay drivable/walkable.
+            // Garages, courts, and parking lots skip this: their interiors stay drivable/walkable.
             const _rq = Math.abs((p.rotY || 0) % Math.PI);
             const _swap = Math.abs(_rq - Math.PI / 2) < 0.1;
             g.userData = { halfW: (_swap ? d : w) / 2 + 0.5, halfD: (_swap ? w : d) / 2 + 0.5, isObstacle: true, isBuilding: true };
@@ -5779,11 +5905,11 @@ class Game {
         this._frameDts = this._frameDts || [];
         return this._frameDts;
       }
-      // God-mode debug overlay: fps, p95 frame ms, draw calls, tris, NPCs.
-      // Behind the cheat gate (window._trafficGodMode / traffic_god_mode).
+      // Debug overlay: fps, p95 frame ms, draw calls, tris, NPCs.
+      // Console-only via colDev.telemetry(true); never persisted.
       _updateTelemetryOverlay() {
         try {
-          const on = window._trafficGodMode || (typeof localStorage !== 'undefined' && localStorage.getItem('traffic_god_mode') === 'true');
+          const on = !!window._trafficTelemetry;
           let el = document.getElementById('telemetry-overlay');
           if (!on) { if (el) {el.style.display = 'none';} return; }
           if (!el) {
@@ -5998,7 +6124,15 @@ class Game {
         }
       }
 
-      _buildRouteCheckpoints(cfg) {        this.cps = [];
+      _buildRouteCheckpoints(cfg) {
+        this.cps = [];
+        // A STAGE map is a film set, not a level. It declares `route: []` and
+        // this is the method that would otherwise substitute a hardcoded
+        // five-point demo route for it — putting glowing green checkpoint pads
+        // and a gold finish gate in the middle of a murder. The guard lives HERE
+        // rather than at each of the five call sites because every one of them is
+        // inside _buildScene and forgetting one puts the pads straight back.
+        if (this._stageBuild) { return; }
         const isPed = this.isPedestrian || (cfg && cfg.isPedestrian) || (this.vehMode === 'pedestrian');
         const rawRoute = (cfg && cfg.route && cfg.route.length > 1) ? cfg.route : [
           { x: 0, z: 0, desc: 'Start Position' },
@@ -6138,8 +6272,29 @@ class Game {
         });
       }
 
-      _buildScene(mode) {
+      /**
+       * Build the world for a level.
+       *
+       * @param mode   the level's mode string ('practical', 'night', 'rain', ...)
+       * @param stageOverride  OPTIONAL. A STAGE map config from story/stage.js,
+       *        merged over the level config. Present only for the film pass: the
+       *        cinematic map is geometry with no route, so no checkpoint pads, no
+       *        finish gate and no traffic. Passing it is how a level loads twice —
+       *        once to film, once to play.
+       *
+       * The second build is genuinely clean: this method wipes the scene and
+       * re-seeds world/npcs/sigs/cps/obstacles/roadSegments at the top, so the
+       * playable rebuild after a film inherits nothing from the stage.
+       */
+      _buildScene(mode, stageOverride) {
         if (typeof initGTex === 'function') {initGTex();}
+        // A stage pass must not inherit the previous map's film dressing, or a
+        // player's parked cars and rain would survive into the playable build.
+        try {
+          if (window.Cinematics && typeof window.Cinematics.clearStage === 'function') {
+            window.Cinematics.clearStage(this);
+          }
+        } catch (e) {}
         while (this.scene && this.scene.children.length) {this.scene.remove(this.scene.children[0]);}
         this.world = []; this.npcs = []; this.sigs = []; this.cps = []; this.spc = []; this.obstacles = []; this.roadSegments = []; this.driveRoute = []; this.peds = []; this.pedestrianAIs = []; this.speedBreakers = []; this.trains = [];
         // Phase 7: Recycle existing NPC groups into free pool before clearing scene
@@ -6151,8 +6306,14 @@ class Game {
 
         const lvId = ui.cur ? ui.cur.id : 1;
         const baseMapCfg = this._getMapConfig(lvId) || {};
-        const cfg = Object.assign({}, baseMapCfg, ui.cur || {});
+        // Merge order matters: the stage override goes LAST so a film can say
+        // `route: []` and actually get no route, rather than having the level's
+        // own route win because it was merged later.
+        const cfg = stageOverride
+          ? Object.assign({}, baseMapCfg, ui.cur || {}, stageOverride)
+          : Object.assign({}, baseMapCfg, ui.cur || {});
         this.mapCfg = cfg;
+        this._stageBuild = !!stageOverride;
         this.roadSegments = (cfg && cfg.roads) ? cfg.roads.slice() : [];
         this.timeLimit = cfg.timeLimit || 120; // default; overridden by age-adaptive logic in _actualStart
         this.isPedestrian = (this.vehMode === 'pedestrian') || (!this.vehMode && !!cfg.isPedestrian);
@@ -6324,13 +6485,15 @@ class Game {
           window._toonGrad.minFilter = THREE.NearestFilter;
           window._toonGrad.magFilter = THREE.NearestFilter;
           window._toonGrad.needsUpdate = true;
-        }        const gs = 16000;
-        const groundColor = (cfg.ground !== undefined && !cfg.isBridge) ? cfg.ground : (cfg.isBridge ? 0x1a5a8a : 0x33691e);
+        }
+        const gs = 16000;
+        const isCityMap = cfg.themeType === 'mumbai_city';
+        const groundColor = (cfg.ground !== undefined && !cfg.isBridge) ? cfg.ground : (cfg.isBridge ? 0x1a5a8a : (isCityMap ? 0x85867f : 0x33691e));
         const groundMat = cfg.isBridge
           ? new THREE.MeshLambertMaterial({ color: 0x1a5a8a, transparent: true, opacity: 0.7 })
           : new THREE.MeshLambertMaterial({
               color: groundColor,
-              map: (typeof window.createGrassCanvasTexture === 'function') ? window.createGrassCanvasTexture() : null,
+              map: (!isCityMap && typeof window.createGrassCanvasTexture === 'function') ? window.createGrassCanvasTexture() : null,
               roughness: 0.95
             });
         const ground = new THREE.Mesh(new THREE.PlaneGeometry(gs, gs), groundMat);
@@ -6369,7 +6532,11 @@ class Game {
         }
 
         // Generic road-problem zones for this level (potholes, barricades, parked trucks, puddles)
-        this._buildRoadProblems(cfg);
+        // Potholes, barricades, parked trucks, puddles. These DAMAGE and SCORE,
+        // so they are never built on a stage map — a film does not need the player
+        // to be able to fail it, and a pothole in the middle of a shot is a hole
+        // in the middle of a shot.
+        if (!this._stageBuild) { this._buildRoadProblems(cfg); }
 
         // ── Low-Poly Suburban Residential Avenue Generator ──
         if (cfg.isSuburbanNeighborhood || cfg.themeType === 'suburban_neighborhood') {
@@ -6396,6 +6563,16 @@ class Game {
               this._buildPlotBuildings(cfg);
               this._buildParksAndTrees();
               this._buildBusStops();
+              // ── Story sets: detailed house (verandah/balcony/garden/interior)
+              // + block filler, so levels that declare `roads` instead of a road
+              // graph do not render as open grass. See cinematics.js.
+              try {
+                if (window.Cinematics && typeof window.Cinematics.build === 'function') {
+                  window.Cinematics.build(this, cfg);
+                }
+              } catch (e) {
+                console.warn('[Driving] Cinematics.build() failed — continuing without story sets:', e);
+              }
             }
 
             // ── AI Syllabus Demands Resolver: Inject Physical Scenario Elements ──
@@ -7100,9 +7277,9 @@ class Game {
           }
         }
 
-        // Legacy generic school (levels 18/40/50). Skipped for suburban levels:
-        // createSuburbanNeighborhood already builds the campus at cfg.schoolZ (L5: z=600).
-        // Without this gate, Level 5 spawned TWO schools — one at the route, one at (-60,-32).
+        // Build the school props at their legacy coordinates, then translate the
+        // complete set to the level's configured school zone when one is present.
+        const schoolPropStart = this.scene.children.length;
         if (cfg.hasSchool && !(cfg.isSuburbanNeighborhood || cfg.themeType === 'suburban_neighborhood')) {
           const sGrp = new THREE.Group();
           const schoolX = -60, schoolZ = -32;
@@ -7176,13 +7353,14 @@ class Game {
           flag.position.set(-5.0, 11, 12); sGrp.add(flag);
 
           sGrp.position.set(schoolX, 0, schoolZ);
+          sGrp.userData.isLevelSchoolCampus = true;
           this.scene.add(sGrp);
           this.world.push(sGrp);
 
           // School building collision obstacle
           const schoolCol = new THREE.Group();
           schoolCol.position.set(schoolX, 0, schoolZ);
-          schoolCol.userData = { halfW: 28, halfD: 12, isObstacle: true, isBuilding: true };
+          schoolCol.userData = { halfW: 28, halfD: 12, isObstacle: true, isBuilding: true, isLevelSchoolCollider: true };
           this.obstacles.push(schoolCol);
 
           // 3. Parked Yellow School Bus outside school gate along North curb shoulder
@@ -7211,6 +7389,7 @@ class Game {
             const stripe = new THREE.Mesh(new THREE.PlaneGeometry(stripeW, 14.0), zMat);
             stripe.rotation.x = -Math.PI / 2;
             stripe.position.set(zebraStartX + s * (stripeW + stripeGap), 0.065, 0);
+            stripe.userData = { isLevelSchoolCrossing: true };
             this.scene.add(stripe);
           }
 
@@ -7220,11 +7399,13 @@ class Game {
           const stopLineE = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 7.0), stopLineMat);
           stopLineE.rotation.x = -Math.PI / 2;
           stopLineE.position.set(schoolX + 10, 0.065, 3.5); // left driving lane (Z in [0, 7])
+          stopLineE.userData = { isLevelSchoolCrossing: true };
           this.scene.add(stopLineE);
           // West stop line (for Eastbound traffic) at X = -70
           const stopLineW = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 7.0), stopLineMat);
           stopLineW.rotation.x = -Math.PI / 2;
           stopLineW.position.set(schoolX - 10, 0.065, -3.5); // right driving lane (Z in [-7, 0])
+          stopLineW.userData = { isLevelSchoolCrossing: true };
           this.scene.add(stopLineW);
 
           // 5. School Crossing Guard with Stop Sign on the North Sidewalk Curb
@@ -7239,7 +7420,7 @@ class Game {
           const stopPole = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 2.0, 8), new THREE.MeshLambertMaterial({ color: 0x64748b }));
           stopPole.position.set(0.7, 1.0, 0.4);
           guard.add(stopPole);
-          guard.userData = { isGuard: true, npcType: 'guard', isObstacle: true, halfW: 0.6, halfD: 0.6 };
+          guard.userData = { isGuard: true, npcType: 'guard', isObstacle: true, isLevelSchoolCrossing: true, halfW: 0.6, halfD: 0.6 };
           this.scene.add(guard);
           this.peds.push(guard);
           this.npcs.push(guard); // Also add to npcs for task proximity detection
@@ -7320,6 +7501,7 @@ class Game {
                 startX, startZ, targetX, targetZ,
                 crossingZ: startZ,
                 isChild: true,
+                isLevelSchoolCrossing: true,
                 isObstacle: true,
                 halfW: 0.35, halfD: 0.35
               };
@@ -7349,6 +7531,30 @@ class Game {
               this.pedestrianAIs.push(childAI);
               child._pedAI = childAI;
             }
+          }
+        }
+
+        if (cfg.hasSchool && !(cfg.isSuburbanNeighborhood || cfg.themeType === 'suburban_neighborhood') && cfg.schoolZ !== undefined) {
+          const dx = ((cfg.schoolX !== undefined) ? cfg.schoolX : -60) + 60;
+          const dz = cfg.schoolZ + 32;
+          if (dx || dz) {
+            // The road crossing stays on the configured school approach; offset
+            // only the campus itself to sit beside the road instead of on it.
+            this.scene.children.slice(schoolPropStart).forEach(obj => {
+              obj.position.x += dx;
+              obj.position.z += dz;
+              if (obj.userData && obj.userData.isLevelSchoolCrossing && cfg.zebraZ !== undefined) {
+                obj.position.z += cfg.zebraZ - cfg.schoolZ;
+              }
+            });
+            this.obstacles.forEach(obj => {
+              if (obj.userData && obj.userData.isLevelSchoolCollider) {
+                obj.position.x += dx + 40;
+                obj.position.z += dz;
+              }
+            });
+            const campus = this.scene.children.find(obj => obj.userData && obj.userData.isLevelSchoolCampus);
+            if (campus) { campus.position.x += 40; }
           }
         }
 
@@ -7590,7 +7796,14 @@ class Game {
           return true;
         });
         // Parked vehicles — placed legally parallel along road curb shoulders
-        if (!cfg.isPedestrian && cfg.roads && cfg.roads.length > 0) {
+        //
+        // SKIPPED on a stage build. These are random (`Math.random()` per car),
+        // land on the shoulders at random offsets, and are registered as
+        // obstacles. On a film map they are (a) different every load, so the
+        // establishing crane is not reproducible, and (b) obstacles the player
+        // will never drive past. Stage parking is authored in
+        // story/stage.js dressing instead, where it is deliberate and inert.
+        if (!this._stageBuild && !cfg.isPedestrian && cfg.roads && cfg.roads.length > 0) {
           for (let i = 0; i < 10; i++) {
             const seg = cfg.roads[Math.floor(Math.random() * cfg.roads.length)];
             const types = ['car', 'auto', 'bike', 'taxi'];
@@ -7619,6 +7832,7 @@ class Game {
         }
       
       // ── Build Level Route Checkpoints & Finish Gate ──
+      // No-ops on a stage build — see the guard inside _buildRouteCheckpoints.
       this._buildRouteCheckpoints(cfg);
 
       // Initialize player vehicle/pedestrian first so traffic spawns around player
@@ -7636,7 +7850,11 @@ class Game {
       }
 
       // Initialize TrafficManager for lively Mumbai-style traffic
-      if (!cfg.isPedestrian && window.TrafficManager) {
+      //
+      // SKIPPED on a stage build: a film wants named actors at authored marks,
+      // not 65 anonymous cars driving through a two-hander. Stage cast comes
+      // from story/campaign.js and is spawned by cutscene.js.
+      if (!this._stageBuild && !cfg.isPedestrian && window.TrafficManager) {
         if (!this.trafficManager) {
           this.trafficManager = new window.TrafficManager(this);
         }
@@ -7646,7 +7864,11 @@ class Game {
         }
       }
       // Initialize starting sidewalk pedestrians
-      if (this.mapCfg && this.mapCfg.roads && this.mapCfg.roads.length > 0) {
+      //
+      // SKIPPED on a stage build for the same reason traffic is: 24 random
+      // walkers crossing a two-hander's frame is the single most common way a
+      // cutscene looks unfinished. Stage actors are named and placed.
+      if (!this._stageBuild && this.mapCfg && this.mapCfg.roads && this.mapCfg.roads.length > 0) {
         if (!this.peds) {this.peds = [];}
         if (!this.pedestrianAIs) {this.pedestrianAIs = [];}
         const initPedCount = this._isMobile ? 12 : 24;
@@ -7728,16 +7950,14 @@ class Game {
       _buildRoadsFromGraph(roadWidth) {
         const graph = this.roadGraph;
         const cfg = this.mapCfg;
+        this._buildRoadZones(roadWidth);
         const roadKey = window.PRELOADED_MODELS?.road_avenue ? 'road_avenue' : 'road_straight';
         const roadModel = window.PRELOADED_MODELS?.[roadKey];
         const isNight = cfg?.isNight;
         const isPedestrian = cfg?.isPedestrian;
 
         if (!roadModel) {
-          console.warn('[RoadGraph] No road model available, falling back to legacy _buildRoadZones');
-          this._buildRoadZones(roadWidth);
-          this._buildBarriers(cfg, roadWidth);
-          return;
+          console.warn('[RoadGraph] No road model available; drawing the connected road graph procedurally');
         }
 
         // Road material (visible) — use real asphalt texture if available
@@ -7781,19 +8001,21 @@ class Game {
           const startX = isV ? cx : Math.min(n0.position.x, n1.position.x) + tileSize / 2 + startOffset;
           const startZ = isV ? Math.min(n0.position.z, n1.position.z) + tileSize / 2 + startOffset : cz;
 
-          for (let i = 0; i < numTiles; i++) {
-            const tile = roadModel.clone();
-            tile.scale.set(tileScale, tileScale, tileScale * tileLenScale);
-            tile.frustumCulled = true;
-            tile.traverse(c => { if (c.isMesh) { c.castShadow = false; c.receiveShadow = false; c.material = roadMat; } });
-            
-            if (isV) {
-              tile.position.set(cx, 0.08, startZ + i * tileSize);
-            } else {
-              tile.rotation.y = Math.PI / 2;
-              tile.position.set(startX + i * tileSize, 0.08, cz);
+          if (roadModel) {
+            for (let i = 0; i < numTiles; i++) {
+              const tile = roadModel.clone();
+              tile.scale.set(tileScale, tileScale, tileScale * tileLenScale);
+              tile.frustumCulled = true;
+              tile.traverse(c => { if (c.isMesh) { c.castShadow = false; c.receiveShadow = false; c.material = roadMat; } });
+              
+              if (isV) {
+                tile.position.set(cx, 0.08, startZ + i * tileSize);
+              } else {
+                tile.rotation.y = Math.PI / 2;
+                tile.position.set(startX + i * tileSize, 0.08, cz);
+              }
+              this.scene.add(tile);
             }
-            this.scene.add(tile);
           }
 
           // Sidewalks
@@ -7816,7 +8038,7 @@ class Game {
             const lawnW = 20;
             const lawn = new THREE.Mesh(
               isV ? new THREE.PlaneGeometry(lawnW, len) : new THREE.PlaneGeometry(len, lawnW),
-              new THREE.MeshLambertMaterial({ color: 0x44bd32 })
+              new THREE.MeshLambertMaterial({ color: cfg.themeType === 'mumbai_city' ? 0x9b9a91 : 0x44bd32 })
             );
             lawn.rotation.x = -Math.PI / 2;
             lawn.position.set(
@@ -9435,6 +9657,9 @@ class Game {
       _buildBuildingsFromGraph() {
         const graph = this.roadGraph;
         const cfg = this.mapCfg;
+        // Urban levels provide deliberate mixed-use blocks through `plots`.
+        // The graph filler below is a suburban house-and-yard generator.
+        if (cfg && cfg.themeType === 'mumbai_city') {return;}
         if (!graph || !graph.buildingSlots?.length) {return;}
 
         const bMats = [
@@ -9659,6 +9884,7 @@ class Game {
         if (!graph) {return;}
         const cfg = this.mapCfg || {};
 
+        const isCityMap = cfg.themeType === 'mumbai_city';
         const grassMat  = new THREE.MeshToonMaterial({ color: 0x4caf50, gradientMap: window._toonGrad });
         const benchMat  = new THREE.MeshToonMaterial({ color: 0x6d4c41, gradientMap: window._toonGrad });
         const pathMat   = new THREE.MeshToonMaterial({ color: 0xd7ccc8, gradientMap: window._toonGrad });
@@ -9670,7 +9896,15 @@ class Game {
         const treeInstances = [];
 
         // ── 1. Parks at unoccupied building slots ──
-        const slots = graph.buildingSlots ? graph.buildingSlots.filter(s => !s.occupied) : [];
+        const slots = graph.buildingSlots ? graph.buildingSlots.filter(s => {
+          if (s.occupied) {return false;}
+          if (isCityMap) {
+            const pos = s.getWorldPosition();
+            const nearCityPlot = (cfg.plots || []).some(plot => Math.hypot(pos.x - plot.x, pos.z - plot.z) < 28);
+            if (nearCityPlot) {s.occupied = true; return false;}
+          }
+          return true;
+        }) : [];
         const parkCount = Math.min(5, Math.max(2, Math.floor(slots.length * 0.08)));
         const step = Math.max(1, Math.floor(slots.length / (parkCount + 1)));
 
@@ -9705,7 +9939,7 @@ class Game {
           this.scene.add(seat);
 
           // Trees inside park
-          const numTrees = 3 + Math.floor(Math.random() * 3);
+          const numTrees = isCityMap ? 2 + Math.floor(Math.random() * 2) : 3 + Math.floor(Math.random() * 3);
           for (let t = 0; t < numTrees; t++) {
             const tx = pos.x + (Math.random() - 0.5) * (pw - 4);
             const tz = pos.z + (Math.random() - 0.5) * (pd - 4);
@@ -9731,14 +9965,14 @@ class Game {
           const rhw = ((edge.width || 14) / 2) + 5.5;
           const nx = (b.z - a.z) / len;
           const nz = -(b.x - a.x) / len;
-          const spacing = 28 + Math.random() * 10;
+          const spacing = isCityMap ? 48 + Math.random() * 16 : 28 + Math.random() * 10;
           const n = Math.floor(len / spacing);
           for (let t = 0; t < n; t++) {
             const tt = (t + 0.5) / n;
             const cx = a.x + (b.x - a.x) * tt;
             const cz = a.z + (b.z - a.z) * tt;
             const off = rhw + 1.2 + Math.random() * 1.5;
-            if (Math.random() > 0.25) {
+            if (Math.random() > (isCityMap ? 0.5 : 0.25)) {
               treeInstances.push({
                 x: cx + nx * off + (Math.random() - 0.5) * 1.2,
                 z: cz + nz * off + (Math.random() - 0.5) * 1.2,
@@ -9746,7 +9980,7 @@ class Game {
                 rot: Math.random() * Math.PI * 2
               });
             }
-            if (Math.random() > 0.25) {
+            if (Math.random() > (isCityMap ? 0.5 : 0.25)) {
               treeInstances.push({
                 x: cx - nx * off + (Math.random() - 0.5) * 1.2,
                 z: cz - nz * off + (Math.random() - 0.5) * 1.2,
@@ -9762,8 +9996,8 @@ class Game {
         if (count === 0) {return;}
 
         const trunkGeo = new THREE.CylinderGeometry(0.2, 0.3, 1.8, 6);
-        const cone1Geo = new THREE.ConeGeometry(1.6, 2.6, 7);
-        const cone2Geo = new THREE.ConeGeometry(1.1, 2.0, 7);
+        const cone1Geo = isCityMap ? new THREE.IcosahedronGeometry(1.5, 1) : new THREE.ConeGeometry(1.6, 2.6, 7);
+        const cone2Geo = isCityMap ? new THREE.IcosahedronGeometry(0.95, 1) : new THREE.ConeGeometry(1.1, 2.0, 7);
 
         const instTrunk = new THREE.InstancedMesh(trunkGeo, trunkMat, count);
         const instCone1 = new THREE.InstancedMesh(cone1Geo, folMat1, count);
@@ -9793,12 +10027,12 @@ class Game {
           instTrunk.setMatrixAt(i, dummy.matrix);
 
           // Lower foliage cone
-          dummy.position.set(inst.x, 2.2 * s, inst.z);
+          dummy.position.set(inst.x, (isCityMap ? 2.6 : 2.2) * s, inst.z);
           dummy.updateMatrix();
           instCone1.setMatrixAt(i, dummy.matrix);
 
           // Upper foliage cone
-          dummy.position.set(inst.x, 3.4 * s, inst.z);
+          dummy.position.set(inst.x, (isCityMap ? 3.4 : 3.4) * s, inst.z);
           dummy.updateMatrix();
           instCone2.setMatrixAt(i, dummy.matrix);
         });
@@ -10438,6 +10672,21 @@ class Game {
       _loop() {
         requestAnimationFrame(() => this._loop());
         if (!this.playing || this.pause) {
+          // Story Mode intro cinematic owns the frame while it runs. It advances
+          // off this.clock (draining it, so gameplay does not get a dt spike on
+          // handoff) and returns true to keep the rest of the tick skipped —
+          // no physics, no input, no NPC AI during the film.
+          try {
+            if (window.Cutscene && typeof window.Cutscene.tick === 'function' && window.Cutscene.isActive && window.Cutscene.isActive()) {
+              window.Cutscene.tick(this);
+              if (this.renderCore && this.scene && this.camera) {this.renderCore.render(this.scene, this.camera);}
+              return;
+            }
+          } catch (err) {
+            console.error('[Driving] Cutscene.tick() failed, restoring gameplay:', err);
+            try { if (window.Cutscene && window.Cutscene.skip) { window.Cutscene.skip(); } } catch (e2) {}
+            this.playing = true; this._camOverride = false;
+          }
           if (this.renderCore && this.scene && this.camera) {this.renderCore.render(this.scene, this.camera);}
           return;
         }
@@ -10631,11 +10880,11 @@ class Game {
         // The game relies on the highly stylized 2D canvas minimap via `_ummap()` which is much faster.
         this.renderCore.render(this.scene, this.camera);
 
-        // Frame budget monitoring in RenderCore
-        if (this.renderCore && this.renderCore.checkFrameBudget) {
-          const frameTime = performance.now() - now;
-          this.renderCore.checkFrameBudget(frameTime);
-        }
+        // Frame-budget monitoring is not repeated here: RenderCore.render() already
+        // calls its own _checkFrameBudget() once per frame. The block that used
+        // to live here was dead (it called `checkFrameBudget` without the
+        // leading underscore, and read a `now` that was never declared) and
+        // re-adding it would double-count frames in the 120-frame window.
 
       }
       _input(dt) {
