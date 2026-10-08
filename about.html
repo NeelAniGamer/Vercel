@@ -5,7 +5,33 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995"
      crossorigin="anonymous"></script>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Class Of Learners" />
+  <script>
+    ;(function () {
+      var ua = navigator.userAgent || ''
+      var p = navigator.platform || ''
+      var force = false
+      try {
+        force =
+          location.search.indexOf('iphone=1') !== -1 ||
+          location.search.indexOf('glass=1') !== -1 ||
+          localStorage.getItem('force_iphone') === 'true' ||
+          localStorage.getItem('liquid_glass') === 'true'
+      } catch (e) {}
+      if ((/iPhone/i.test(ua) || p === 'iPhone' || force) && !/iPad/i.test(ua)) {
+        document.documentElement.classList.add('is-iphone')
+        var m = ua.match(/OS (\d+)_/)
+        if (m) {
+          var v = parseInt(m[1], 10)
+          document.documentElement.classList.add('ios-' + v)
+          if (v >= 17) document.documentElement.classList.add('ios-17-plus')
+        }
+      }
+    })()
+  </script>
   <meta name="description" content="Meet the Class Of Learners team from Mumbai and learn how we turn school curiosity into interactive software, 3D engines, AI tools, and community projects." />
   <meta name="keywords" content="student engineering studio Mumbai, Class Of Learners team, student developers India, learn by building, student led software, school coding projects, young developers Mumbai, educational technology India, student startup story, Class Of Learners about">
   <meta property="og:site_name" content="Class Of Learners" />
@@ -874,26 +900,49 @@
       background: rgba(255, 255, 255, 0.015);
     }
 
+    .mentors-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 32px;
+      margin-top: 40px;
+    }
+
+    @media (min-width: 1024px) {
+      .mentors-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
     .mentor-card {
       display: flex;
-      align-items: center;
-      gap: 52px;
-      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: 32px;
+      padding: 36px 32px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      transition: transform 0.35s var(--ease), border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .mentor-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--lineb);
+      box-shadow: 0 20px 48px -12px rgba(0, 0, 0, 0.5);
     }
 
     .mentor-avatar {
-      width: 140px;
-      height: 140px;
-      border-radius: 24px;
+      width: 110px;
+      height: 110px;
+      border-radius: 22px;
       background: linear-gradient(135deg, var(--signal), #e8952a);
       display: flex;
       align-items: center;
       justify-content: center;
       font-family: var(--serif);
-      font-size: 4rem;
+      font-size: 3.2rem;
       color: #0a0500;
       flex-shrink: 0;
-      box-shadow: 0 24px 60px -20px rgba(242, 184, 75, 0.35);
+      box-shadow: 0 20px 50px -15px rgba(242, 184, 75, 0.35);
       transition: transform 0.5s var(--ease);
     }
 
@@ -903,12 +952,12 @@
 
     .mentor-info {
       flex: 1;
-      min-width: 260px;
+      min-width: 0;
     }
 
     .mentor-name {
       font-family: var(--serif);
-      font-size: 2.2rem;
+      font-size: 2rem;
       font-weight: 400;
       margin-bottom: 4px;
     }
@@ -919,14 +968,17 @@
       letter-spacing: 0.28em;
       color: var(--signal);
       text-transform: uppercase;
-      margin-bottom: 18px;
+      margin-bottom: 14px;
     }
 
     .mentor-desc {
-      font-size: 1rem;
+      font-size: 0.95rem;
       color: var(--dim);
-      line-height: 1.78;
-      max-width: 52ch;
+      line-height: 1.74;
+    }
+
+    .mentor-info .tm-tags {
+      justify-content: flex-start;
     }
 
     /* ==================== TEAM SECTION ==================== */
@@ -1625,8 +1677,14 @@
 
       .mentor-card {
         flex-direction: column;
+        align-items: center;
         text-align: center;
-        gap: 28px;
+        gap: 24px;
+        padding: 28px 20px;
+      }
+
+      .mentor-info .tm-tags {
+        justify-content: center;
       }
 
       .sf {
@@ -1648,7 +1706,7 @@
     @media (max-width: 768px) {
       html:not(.is-iphone) .top-nav { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background: rgba(7,10,20,0.92) !important; }
       html:not(.is-iphone) .top-nav::before { display: none !important; }
-      body.lm .top-nav { background: rgba(243,242,235,0.95) !important; }
+      html:not(.is-iphone) body.lm .top-nav { background: rgba(243,242,235,0.95) !important; }
       body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important; }
     }
 
@@ -1685,6 +1743,15 @@
     body.lm .mentor-section {
       background: #ffffff !important;
       border-color: rgba(0, 0, 0, 0.08) !important;
+    }
+    body.lm .mentor-card {
+      background: #ffffff !important;
+      border: 1px solid rgba(0, 0, 0, 0.08) !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+    }
+    body.lm .mentor-card:hover {
+      border-color: rgba(0, 0, 0, 0.16) !important;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08) !important;
     }
     body.lm .mentor-name {
       color: #0f172a !important;
@@ -1941,27 +2008,46 @@
       </div>
       <div class="stat rv">
         <div class="stat-num">15K+</div>
-        <div class="stat-label">Lines of Code</div>
+        <div class="stat-label">Lines Of Code</div>
       </div>
       <div class="stat rv">
-        <div class="stat-num">01</div>
-        <div class="stat-label">Mentor</div>
+        <div class="stat-num">02</div>
+        <div class="stat-label">Teachers &amp; Mentors</div>
       </div>
     </div>
   </section>
 
-  <!-- ==================== MENTOR ==================== -->
-  <section class="section mentor-section rv" style="content-visibility:auto; contain-intrinsic-size: 0 400px">
+  <!-- ==================== TEACHERS & MENTORS ==================== -->
+  <section class="section mentor-section rv" style="content-visibility:auto; contain-intrinsic-size: 0 400px" id="teachers">
     <div class="sey">Guided By</div>
-    <div class="mentor-card">
-      <div class="mentor-avatar">S</div>
-      <div class="mentor-info">
-        <h2 class="mentor-name">Sanjana Kasbe</h2>
-        <div class="mentor-role">Project Mentor &amp; Educator</div>
-        <p class="mentor-desc">
-          She provides guidance, feedback, and academic support that helps shape and refine these learning
-          modules and programming projects. Her mentorship pushes the studio to build beyond the classroom.
-        </p>
+    <h2 class="st">Our Teachers &amp; Mentors.</h2>
+    <p class="sdesc">The educators providing guidance, feedback, and academic mentorship across our software projects.</p>
+    <div class="mentors-grid">
+      <div class="mentor-card rv">
+        <div class="mentor-avatar">S</div>
+        <div class="mentor-info">
+          <h3 class="mentor-name">Sanjana Kasbe</h3>
+          <div class="mentor-role">Project Mentor &amp; Educator</div>
+          <p class="mentor-desc">
+            Sanjana Kasbe Ma'am provides foundational guidance, technical feedback, and academic mentorship across the Advanced Typing Instructor (ATI), Solar System Engine, Hand Tracking (GestureUI), and wider studio projects. Her mentorship continues to inspire the team to build ambitious technology beyond the classroom.
+          </p>
+          <div class="tm-tags" style="margin-top: 18px;">
+            <span class="tag">ATI</span><span class="tag">Solar System</span><span class="tag">Hand Tracking</span><span class="tag">Project Mentorship</span>
+          </div>
+        </div>
+      </div>
+      <div class="mentor-card rv">
+        <div class="mentor-avatar" style="background: linear-gradient(135deg, var(--ion), #00b4d8); box-shadow: 0 20px 50px -15px rgba(94, 212, 245, 0.35);">A</div>
+        <div class="mentor-info">
+          <h3 class="mentor-name">Avantika Raskar</h3>
+          <div class="mentor-role" style="color: var(--ion);">Teacher &amp; Project Mentor</div>
+          <p class="mentor-desc">
+            Avantika Raskar Ma'am provides dedicated guidance and support for the Mumbai Traffic Simulator project and the major new updates on Advanced Typing Instructor (ATI). Her insightful feedback helps shape realistic educational simulations, road safety rules, and new typing features.
+          </p>
+          <div class="tm-tags" style="margin-top: 18px;">
+            <span class="tag">Traffic Project</span><span class="tag">ATI Updates</span><span class="tag">Curriculum Design</span><span class="tag">Educational Guidance</span>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -1969,7 +2055,7 @@
   <!-- ==================== TEAM ==================== -->
   <section class="section rv">
     <div class="sey">The Core Team</div>
-    <h2 class="st">Six Students. One Studio.</h2>
+    <h2 class="st">Six Members. One Studio.</h2>
     <p class="sdesc">Each member brings a different strength to the table &mdash; from low-level system architecture to
       physics simulations to pixel-perfect design.</p>
     <div class="team-grid">
@@ -2039,17 +2125,17 @@
             class="tag">Data Modelling</span></div>
       </div>
       <div class="tm rv">
-        <div class="tm-av">Ak</div>
-        <h3 class="tm-name">Akshara Bangar</h3>
-        <div class="tm-role">Content Research &amp; Interface Polish</div>
+        <div class="tm-av" title="Anonymous Stealth Identity" style="background: linear-gradient(135deg, rgba(3,7,18,0.95), rgba(16,185,129,0.35)); border: 1px solid rgba(16,185,129,0.45); color: #10b981; font-weight: 800;">?</div>
+        <h3 class="tm-name">John Doe</h3>
+        <div class="tm-role">Secret Helper &amp; Core Systems Advisor <span style="font-size: 0.72rem; opacity: 0.8; display: block; font-weight: 500; letter-spacing: 0.05em; color: var(--signal);">(Anonymous Contributor)</span></div>
         <p class="tm-bio"
           style="font-size: 0.9rem; color: var(--dim); margin: 15px 0; text-align: left; line-height: 1.6">
-          Akshara researches and verifies the educational content across the studio's projects, then shapes how it is
-          presented. She focuses on clear information hierarchy and accessible copy so every tool teaches as well as it
-          performs.
+          Operating under the pseudonym John Doe to preserve stealth anonymity, this enigmatic developer is the secret contributor behind Class Of Learners. Providing critical architectural guidance, stealth feature research, rapid prototyping, and high-performance engineering from behind the scenes.
         </p>
-        <div class="tm-tags"><span class="tag">Research</span><span class="tag">Content</span><span
-            class="tag">UI Polish</span></div>
+        <div class="tm-tags">
+          <span class="tag">Anonymous Contributor</span><span class="tag">Core Architecture</span><span
+            class="tag">Stealth Dev</span><span class="tag">Optimization</span>
+        </div>
       </div>
     </div>
   </section>
@@ -2120,8 +2206,8 @@
         <div class="tl-dot"></div>
         <div class="tl-date">2025 &mdash; Present</div>
         <h3 class="tl-title">The Next Chapter</h3>
-        <p class="tl-desc">Migration to a custom domain, 3D WebGL backgrounds, gesture control prototypes, and an RPG
-          game currently in active development.</p>
+        <p class="tl-desc">Traffic Simulator launch, new updates on ATI guided by Avantika Raskar, 3D WebGL backgrounds,
+          gesture control prototypes, and active development across our studio tools.</p>
       </div>
     </div>
   </section>
@@ -2183,7 +2269,7 @@
   <script>
       // ============= CURSOR HOVER EFFECTS =============
       ; (function () {
-        document.querySelectorAll('.tm,.mission-card').forEach(function (el) {
+        document.querySelectorAll('.tm,.mission-card,.mentor-card').forEach(function (el) {
           el.addEventListener('mouseenter', function () {
             document.body.classList.add('ch')
           })

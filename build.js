@@ -13,7 +13,7 @@ const excludedDirectories = new Set([
   '.freebuff', '.impeccable', '.kilo', '.opencode', '.playwright-mcp',
   '.superpowers', '.vercel', 'android', '.gradle', 'react-src', 'tests',
   'build', 'dist', 'dist-electron', 'dist-web', 'docs', 'electron',
-  'recordings', 'screenshots', 'scripts', 'scratch', 'supabase', 'Cyberpunk'
+  'recordings', 'screenshots', 'scripts', 'scratch', 'supabase', 'Cyberpunk', 'output'
 ]);
 
 const excludedFiles = new Set([

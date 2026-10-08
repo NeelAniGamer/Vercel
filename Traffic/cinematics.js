@@ -881,8 +881,10 @@
   // ── Cutscene Character Actors ──────────────────────────────────────────────
 
   /**
-   * Mount a uniformed police officer on Vikram's motorcycle.
-   * Hands on handlebars, legs straddling the saddle, head looking forward/right.
+   * Mount a high-detail Mumbai Traffic Police motorcycle patrol officer on Vikram's bike.
+   * Features a tactical full-face wet-weather helmet with polarized reflective visor,
+   * high-visibility fluorescent neon-lime rain vest with 3M retroreflective bands,
+   * shoulder-mounted wireless transceiver with coiled cable, and tactical riding gloves.
    */
   function buildCutsceneRider(opts) {
     opts = opts || {};
@@ -891,8 +893,8 @@
     var rider = bh(false, {
       variant: 'guard',
       outfit: 'police',
-      shirt: 0xd7b987, // Khaki uniform
-      pants: 0xd7b987,
+      shirt: 0xd7b987, // Khaki base uniform
+      pants: 0xb59765,
       hairStyle: 'buzz',
       facialHair: 'mustache'
     });
@@ -901,93 +903,629 @@
     rider.name = 'mounted-rider';
     rider.scale.setScalar(0.92);
 
-    // Pose the character astride the motorcycle
     var ud = rider.userData || {};
+
+    // 1. TACTICAL POLICE HELMET: Enclose headGroup in a sleek, polished motorcycle helmet
+    if (ud.headGroup) {
+      // Suppress stylized procedural cartoon face parts
+      ud.headGroup.traverse(function (c) {
+        if (c.isMesh) { c.visible = false; }
+      });
+
+      var helmet = new THREE.Group();
+      helmet.name = 'police-tactical-helmet';
+
+      // Aerodynamic outer shell (midnight black high-gloss finish)
+      var shellMat = new THREE.MeshStandardMaterial({
+        color: 0x090d16, roughness: 0.12, metalness: 0.38
+      });
+      var shell = new THREE.Mesh(new THREE.SphereGeometry(0.32, 24, 20), shellMat);
+      shell.scale.set(1.0, 1.14, 1.18);
+      helmet.add(shell);
+
+      // Polarized iridium-tinted curved visor (reflective deep cyan mirror)
+      var visorMat = new THREE.MeshStandardMaterial({
+        color: 0x0284c7, roughness: 0.04, metalness: 0.92,
+        emissive: 0x011b2b, emissiveIntensity: 0.35
+      });
+      var visor = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.305, 0.305, 0.22, 22, 1, false, -Math.PI * 0.44, Math.PI * 0.88),
+        visorMat
+      );
+      visor.rotation.y = Math.PI / 2;
+      visor.position.set(0, 0.01, 0.04);
+      helmet.add(visor);
+
+      // Matte dark brow bezel / visor seal
+      var browBezel = new THREE.Mesh(
+        new THREE.BoxGeometry(0.50, 0.05, 0.16),
+        new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.6 })
+      );
+      browBezel.position.set(0, 0.14, 0.24);
+      helmet.add(browBezel);
+
+      // Golden Mumbai Police Crest Badge on forehead
+      var crest = new THREE.Mesh(
+        new THREE.BoxGeometry(0.08, 0.10, 0.03),
+        new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.85, roughness: 0.25 })
+      );
+      crest.position.set(0, 0.22, 0.30);
+      crest.rotation.x = -0.22;
+      helmet.add(crest);
+
+      // Retroreflective 3M silver safety chevrons along helmet temples
+      var stripeMat = new THREE.MeshStandardMaterial({
+        color: 0xf8fafc, roughness: 0.15, metalness: 0.4,
+        emissive: 0x475569, emissiveIntensity: 0.4
+      });
+      [-1, 1].forEach(function (side) {
+        var sideStripe = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.06, 0.36), stripeMat);
+        sideStripe.position.set(side * 0.32, 0.08, -0.04);
+        sideStripe.rotation.z = side * 0.15;
+        helmet.add(sideStripe);
+
+        // Circular visor pivot hinge caps
+        var hinge = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.04, 0.04, 0.03, 16),
+          new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.8, roughness: 0.3 })
+        );
+        hinge.rotation.z = Math.PI / 2;
+        hinge.position.set(side * 0.33, 0.02, 0.06);
+        helmet.add(hinge);
+      });
+
+      // Chin guard with ventilation intake slits
+      var chin = new THREE.Mesh(
+        new THREE.BoxGeometry(0.36, 0.15, 0.25),
+        new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.5 })
+      );
+      chin.position.set(0, -0.16, 0.20);
+      helmet.add(chin);
+
+      // Wireless tactical headset clip on left ear
+      var comClip = new THREE.Mesh(
+        new THREE.BoxGeometry(0.04, 0.08, 0.08),
+        new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.5 })
+      );
+      comClip.position.set(-0.33, -0.04, 0);
+      helmet.add(comClip);
+      var antenna = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.006, 0.006, 0.14, 8),
+        new THREE.MeshBasicMaterial({ color: 0x09090b })
+      );
+      antenna.position.set(-0.34, 0.07, -0.02);
+      antenna.rotation.z = 0.15;
+      helmet.add(antenna);
+
+      ud.headGroup.add(helmet);
+      ud.headGroup.rotation.set(0.06, 0.38, 0); // Vigilant gaze turned toward adjacent Fortuner
+    }
+
+    // 2. HIGH-VISIBILITY MUMBAI TRAFFIC POLICE RAIN VEST & TACTICAL HARNESS
+    if (ud.torsoGroup) {
+      ud.torsoGroup.rotation.x = 0.16; // Leaning into handlebars
+
+      var vest = new THREE.Group();
+      vest.name = 'police-highvis-vest';
+
+      // Fluorescent Neon-Lime / Chartreuse Safety Vest
+      var neonMat = new THREE.MeshStandardMaterial({
+        color: 0x84cc16, roughness: 0.32, metalness: 0.08
+      });
+      var vestBody = new THREE.Mesh(new THREE.BoxGeometry(0.66, 0.70, 0.44), neonMat);
+      vestBody.position.set(0, 0, 0);
+      vest.add(vestBody);
+
+      // Retroreflective 3M Silver Bands (Chest & Waist)
+      var refMat = new THREE.MeshStandardMaterial({
+        color: 0xf8fafc, roughness: 0.1, metalness: 0.55,
+        emissive: 0x64748b, emissiveIntensity: 0.35
+      });
+      var chestBand = new THREE.Mesh(new THREE.BoxGeometry(0.68, 0.085, 0.46), refMat);
+      chestBand.position.set(0, 0.08, 0);
+      vest.add(chestBand);
+
+      var waistBand = new THREE.Mesh(new THREE.BoxGeometry(0.68, 0.075, 0.46), refMat);
+      waistBand.position.set(0, -0.18, 0);
+      vest.add(waistBand);
+
+      // Shoulder Suspender Reflective Bands
+      [-0.18, 0.18].forEach(function (sx) {
+        var susp = new THREE.Mesh(new THREE.BoxGeometry(0.075, 0.72, 0.46), refMat);
+        susp.position.set(sx, 0.01, 0);
+        vest.add(susp);
+      });
+
+      // Mumbai Police Shield Plate on Left Chest
+      var badgePlate = new THREE.Mesh(
+        new THREE.BoxGeometry(0.11, 0.09, 0.03),
+        new THREE.MeshStandardMaterial({ color: 0x1e3a8a, metalness: 0.4, roughness: 0.4 })
+      );
+      badgePlate.position.set(-0.19, 0.15, 0.23);
+      vest.add(badgePlate);
+
+      var goldStar = new THREE.Mesh(
+        new THREE.BoxGeometry(0.05, 0.05, 0.02),
+        new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.9, roughness: 0.2 })
+      );
+      goldStar.position.set(-0.19, 0.15, 0.25);
+      vest.add(goldStar);
+
+      // Shoulder-Mounted Police Wireless Microphone (Lapel Mic)
+      var micUnit = new THREE.Mesh(
+        new THREE.BoxGeometry(0.09, 0.10, 0.07),
+        new THREE.MeshStandardMaterial({ color: 0x09090b, roughness: 0.6 })
+      );
+      micUnit.position.set(-0.25, 0.34, 0.12);
+      vest.add(micUnit);
+
+      // Coiled Cord to Duty Belt
+      var cord = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.012, 0.012, 0.38, 8),
+        new THREE.MeshBasicMaterial({ color: 0x18181b })
+      );
+      cord.position.set(-0.25, 0.12, 0.14);
+      cord.rotation.z = -0.15;
+      vest.add(cord);
+
+      ud.torsoGroup.add(vest);
+    }
+
+    // 3. TACTICAL RIDING GLOVES & MOTORCYCLE SADDLE POSE
     if (ud.lLeg && ud.rLeg) {
-      ud.lLeg.rotation.set(-0.45, 0, -0.32);
-      ud.rLeg.rotation.set(-0.45, 0, 0.32);
+      ud.lLeg.rotation.set(-0.46, 0, -0.32);
+      ud.rLeg.rotation.set(-0.46, 0, 0.32);
     }
     if (ud.lArm && ud.rArm) {
-      ud.lArm.rotation.set(-0.75, 0.25, 0);
-      ud.rArm.rotation.set(-0.75, -0.25, 0);
+      ud.lArm.rotation.set(-0.76, 0.24, 0);
+      ud.rArm.rotation.set(-0.76, -0.24, 0);
+
+      var gloveMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.45 });
+      var lGlove = new THREE.Mesh(new THREE.SphereGeometry(0.10, 10, 10), gloveMat);
+      lGlove.position.set(0, -0.62, 0);
+      ud.lArm.add(lGlove);
+
+      var rGlove = new THREE.Mesh(new THREE.SphereGeometry(0.10, 10, 10), gloveMat);
+      rGlove.position.set(0, -0.62, 0);
+      ud.rArm.add(rGlove);
     }
-    if (ud.torsoGroup) {
-      ud.torsoGroup.rotation.x = 0.15; // Leaning slightly forward into handlebars
-    }
-    if (ud.headGroup) {
-      ud.headGroup.rotation.set(0.05, 0.35, 0); // Turned toward the Fortuner SUV
-    }
+
     return rider;
   }
 
   /**
-   * Place an arrogant driver bust inside the Fortuner's front seat (Image 2 style).
+   * High-detail VIP Fortuner SUV interior cockpit, illuminated instrument cluster,
+   * steering wheel, and sinister driver silhouette with rolled-up window, gold luxury
+   * watch, and forward projector LED headlights.
    */
   function buildCutsceneDriver(opts) {
     opts = opts || {};
     var g = new THREE.Group();
     g.name = 'fortuner-driver-bust';
-    var M = mats();
 
-    // Driver head
-    var head = new THREE.Mesh(geo().sphere, M.wallWarm);
-    head.scale.set(0.24, 0.28, 0.24);
-    head.position.set(0, 1.45, 0);
-    g.add(head);
+    // ── 1. COCKPIT INTERIOR & ILLUMINATED INSTRUMENT CLUSTER ──────────────────
+    var cockpit = new THREE.Group();
+    cockpit.name = 'vip-cockpit';
 
-    // Sunglasses
-    var glasses = sbox(0.32, 0.08, 0.08, M.glassDark, 0, 1.48, 0.22);
-    g.add(glasses);
+    // Dashboard cowl
+    var dashMat = new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.7 });
+    var dash = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.26, 0.60), dashMat);
+    dash.position.set(-0.45, 0.98, 0.40);
+    cockpit.add(dash);
 
-    // Torso in black jacket
-    var torso = sbox(0.58, 0.75, 0.42, M.glassDark, 0, 0.95, 0);
-    g.add(torso);
+    // Glowing Speedometer Instrument Cluster (Cyan / Electric Blue)
+    var speedo = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.26, 0.10),
+      new THREE.MeshBasicMaterial({ color: 0x0284c7 })
+    );
+    speedo.position.set(-0.45, 1.05, 0.42);
+    speedo.rotation.x = -0.24;
+    cockpit.add(speedo);
 
-    // Arm resting along the driver window sill
-    var arm = sbox(0.14, 0.14, 0.65, M.wallWarm, -0.38, 1.15, 0.15);
-    arm.rotation.x = 0.2;
-    g.add(arm);
+    // Center Infotainment / Navigation Screen
+    var navScreen = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.20, 0.14),
+      new THREE.MeshBasicMaterial({ color: 0x38bdf8 })
+    );
+    navScreen.position.set(-0.06, 1.02, 0.38);
+    navScreen.rotation.x = -0.20;
+    navScreen.rotation.y = 0.15;
+    cockpit.add(navScreen);
 
+    // Cockpit Ambient Glow Light (illuminates driver silhouette and steering wheel)
+    var dashGlow = new THREE.PointLight(0x0284c7, 0.85, 2.6, 1.4);
+    dashGlow.position.set(-0.35, 1.06, 0.28);
+    cockpit.add(dashGlow);
+
+    // Three-Spoke Leather Steering Wheel
+    var wheelTorus = new THREE.Mesh(
+      new THREE.TorusGeometry(0.18, 0.024, 10, 24),
+      new THREE.MeshStandardMaterial({ color: 0x18181b, roughness: 0.5 })
+    );
+    wheelTorus.rotation.x = -0.42;
+    wheelTorus.position.set(-0.45, 1.04, 0.30);
+    cockpit.add(wheelTorus);
+
+    var wheelHub = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.045, 0.045, 0.03, 16),
+      new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.7, roughness: 0.3 })
+    );
+    wheelHub.rotation.x = Math.PI / 2 - 0.42;
+    wheelHub.position.set(-0.45, 1.04, 0.30);
+    cockpit.add(wheelHub);
+
+    // ── 2. THE ANTAGONIST: VIP DRIVER SILHOUETTE ──────────────────────────────
+    var driver = new THREE.Group();
+    driver.name = 'vip-driver-figure';
+
+    // Tailored Black Luxury Jacket / Torso
+    var suitMat = new THREE.MeshStandardMaterial({ color: 0x09090b, roughness: 0.8 });
+    var torso = new THREE.Mesh(new THREE.BoxGeometry(0.50, 0.62, 0.38), suitMat);
+    torso.position.set(-0.45, 0.90, 0.05);
+    driver.add(torso);
+
+    // Driver Head (proportioned realistically inside cabin, well below roof line)
+    var skinMat = new THREE.MeshStandardMaterial({
+      color: 0xa87148, roughness: 0.65, metalness: 0.05
+    });
+    var head = new THREE.Mesh(new THREE.SphereGeometry(0.135, 18, 16), skinMat);
+    head.scale.set(0.96, 1.16, 1.05);
+    head.position.set(-0.45, 1.25, 0.05);
+    head.rotation.y = -0.32; // Glancing slightly out the lowered window
+    driver.add(head);
+
+    // Styled slicked dark hair
+    var hair = new THREE.Mesh(
+      new THREE.SphereGeometry(0.142, 16, 14),
+      new THREE.MeshStandardMaterial({ color: 0x09090b, roughness: 0.4 })
+    );
+    hair.scale.set(0.98, 1.10, 1.06);
+    hair.position.set(-0.45, 1.28, 0.03);
+    driver.add(hair);
+
+    // Sleek designer dark wire-frame sunglasses
+    var glasses = new THREE.Mesh(
+      new THREE.BoxGeometry(0.24, 0.06, 0.06),
+      new THREE.MeshStandardMaterial({ color: 0x050505, metalness: 0.9, roughness: 0.1 })
+    );
+    glasses.position.set(-0.45, 1.27, 0.17);
+    driver.add(glasses);
+
+    // Right Arm (resting on steering wheel at 10 o'clock)
+    var rArm = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.11, 0.42), suitMat);
+    rArm.position.set(-0.32, 1.05, 0.22);
+    rArm.rotation.set(-0.35, -0.32, 0.2);
+    driver.add(rArm);
+
+    // Left Arm resting casually along the driver door window sill
+    var lArmUpper = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.32, 0.13), suitMat);
+    lArmUpper.position.set(-0.68, 1.06, 0.08);
+    lArmUpper.rotation.z = -0.25;
+    driver.add(lArmUpper);
+
+    // Forearm resting along window sill at x ≈ -0.92, y ≈ 0.96
+    var forearm = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.11, 0.52), skinMat);
+    forearm.position.set(-0.90, 0.96, 0.18);
+    forearm.rotation.x = 0.14;
+    driver.add(forearm);
+
+    // Rolled-up sleeve cuff
+    var sleeveCuff = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.14, 0.08), suitMat);
+    sleeveCuff.position.set(-0.84, 0.98, 0.04);
+    driver.add(sleeveCuff);
+
+    // Luxury Gold Chronograph Watch on the resting wrist
+    var watchMat = new THREE.MeshStandardMaterial({
+      color: 0xf59e0b, metalness: 0.95, roughness: 0.18
+    });
+    var watchCase = new THREE.Mesh(new THREE.CylinderGeometry(0.044, 0.044, 0.038, 16), watchMat);
+    watchCase.rotation.z = Math.PI / 2;
+    watchCase.position.set(-0.90, 0.98, 0.24);
+    driver.add(watchCase);
+
+    var watchDial = new THREE.Mesh(
+      new THREE.CircleGeometry(0.032, 16),
+      new THREE.MeshStandardMaterial({ color: 0x09090b, roughness: 0.2, metalness: 0.5 })
+    );
+    watchDial.rotation.y = -Math.PI / 2;
+    watchDial.position.set(-0.922, 0.98, 0.24);
+    driver.add(watchDial);
+
+    // Gold signet ring on pinky finger
+    var goldRing = new THREE.Mesh(new THREE.TorusGeometry(0.016, 0.006, 8, 16), watchMat);
+    goldRing.position.set(-0.90, 0.94, 0.38);
+    driver.add(goldRing);
+
+    // Subtle cigarette with glowing amber ash tip
+    var cig = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.007, 0.007, 0.09, 8),
+      new THREE.MeshBasicMaterial({ color: 0xf1f5f9 })
+    );
+    cig.rotation.x = Math.PI / 2;
+    cig.position.set(-0.89, 0.95, 0.44);
+    driver.add(cig);
+
+    var cigEmber = new THREE.Mesh(
+      new THREE.SphereGeometry(0.012, 8, 8),
+      new THREE.MeshBasicMaterial({ color: 0xff3b00 })
+    );
+    cigEmber.position.set(-0.89, 0.95, 0.49);
+    driver.add(cigEmber);
+
+    g.add(cockpit);
+    g.add(driver);
+
+    // ── 3. FORTUNER EXTERIOR PROJECTOR LED HEADLIGHTS & ROAD ILLUMINATION ──────
+    var headlights = new THREE.Group();
+    headlights.name = 'fortuner-headlights';
+
+    [-0.64, 0.64].forEach(function (hx) {
+      // High-intensity white projector LED lens
+      var lens = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.09, 0.09, 0.04, 16),
+        new THREE.MeshBasicMaterial({ color: 0xffffff })
+      );
+      lens.rotation.x = Math.PI / 2;
+      lens.position.set(hx, 0.68, 1.68);
+      headlights.add(lens);
+
+      // Amber DRL Eyebrow Strip
+      var drl = new THREE.Mesh(
+        new THREE.BoxGeometry(0.24, 0.03, 0.02),
+        new THREE.MeshBasicMaterial({ color: 0xf59e0b })
+      );
+      drl.position.set(hx, 0.77, 1.68);
+      headlights.add(drl);
+
+      // Forward Projector Spotlight casting light onto the wet road
+      var spot = new THREE.SpotLight(0xf8fafc, 3.4, 48, Math.PI / 7, 0.35, 1.1);
+      spot.position.set(hx, 0.70, 1.68);
+      spot.target.position.set(hx, 0, 32);
+      headlights.add(spot);
+      headlights.add(spot.target);
+
+      // Volumetric beam cone through the rain mist
+      var cone = new THREE.Mesh(
+        new THREE.ConeGeometry(1.6, 20, 16, 1, true),
+        new THREE.MeshBasicMaterial({
+          color: 0x93c5fd, transparent: true, opacity: 0.10, depthWrite: false
+        })
+      );
+      cone.rotation.x = -Math.PI / 2;
+      cone.position.set(hx, 0.65, 11.6);
+      headlights.add(cone);
+    });
+
+    // Rear crimson LED taillight strip
+    [-0.64, 0.64].forEach(function (tx) {
+      var tail = new THREE.Mesh(
+        new THREE.BoxGeometry(0.26, 0.07, 0.03),
+        new THREE.MeshBasicMaterial({ color: 0xef4444 })
+      );
+      tail.position.set(tx, 0.72, -1.68);
+      headlights.add(tail);
+    });
+
+    g.add(headlights);
     return g;
   }
 
   /**
    * Vikram Sawant's fallen body on the asphalt across the white stop line (Shot 6 aftermath).
+   * Features tactical helmet, high-vis rain vest, dropped leather route book, whistle,
+   * numbered police evidence marker, and dark crimson pool on the white stop line.
    */
   function buildFallenOfficer(opts) {
     opts = opts || {};
     var g = new THREE.Group();
     g.name = 'fallen-officer-aftermath';
     var M = mats();
-    var bh = (typeof window._buildHuman === 'function') ? window._buildHuman : null;
-    var body = bh ? bh(false, { variant: 'guard', outfit: 'police' }) : null;
 
-    if (body) {
-      body.rotation.x = Math.PI / 2; // Flat on the road
-      body.rotation.z = 0.55;
-      body.position.set(0, 0.06, 0);
-      g.add(body);
-    } else {
-      // Fallback procedural prone body
-      var bBox = sbox(0.5, 0.25, 1.6, M.compound, 0, 0.12, 0);
-      g.add(bBox);
-    }
+    // 1. Prone officer body sprawled on wet tarmac
+    var body = new THREE.Group();
+    body.name = 'officer-body';
 
-    // Tragic red pool on the white stop line
-    var pool = new THREE.Mesh(geo().plane, new THREE.MeshBasicMaterial({ color: 0x881337, transparent: true, opacity: 0.85 }));
-    pool.scale.set(1.4, 0.8, 1);
+    // Khaki uniform torso with high-vis vest
+    var torsoMat = new THREE.MeshStandardMaterial({ color: 0x84cc16, roughness: 0.4 });
+    var torso = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.28, 0.74), torsoMat);
+    torso.position.set(0, 0.15, 0);
+    body.add(torso);
+
+    // Reflective 3M stripe on fallen vest
+    var refStripe = new THREE.Mesh(
+      new THREE.BoxGeometry(0.64, 0.08, 0.76),
+      new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.2, emissive: 0x475569 })
+    );
+    refStripe.position.set(0, 0.20, 0);
+    body.add(refStripe);
+
+    // Tactical helmet on asphalt
+    var helmetMat = new THREE.MeshStandardMaterial({
+      color: 0x090d16, roughness: 0.15, metalness: 0.4
+    });
+    var helmet = new THREE.Mesh(new THREE.SphereGeometry(0.24, 18, 16), helmetMat);
+    helmet.scale.set(1.0, 1.1, 1.15);
+    helmet.position.set(0, 0.20, -0.62);
+    helmet.rotation.x = 0.25;
+    body.add(helmet);
+
+    // Polarized visor reflecting sodium lamps
+    var visor = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.23, 0.23, 0.16, 16, 1, false, -Math.PI * 0.4, Math.PI * 0.8),
+      new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.9, roughness: 0.05 })
+    );
+    visor.rotation.y = Math.PI / 2;
+    visor.position.set(0, 0.20, -0.60);
+    body.add(visor);
+
+    // Sprawled legs in khaki duty trousers
+    var legMat = new THREE.MeshStandardMaterial({ color: 0xb59765, roughness: 0.7 });
+    var lLeg = new THREE.Mesh(new THREE.BoxGeometry(0.20, 0.18, 0.85), legMat);
+    lLeg.position.set(-0.22, 0.10, 0.72);
+    lLeg.rotation.set(-0.1, 0.15, 0.1);
+    body.add(lLeg);
+
+    var rLeg = new THREE.Mesh(new THREE.BoxGeometry(0.20, 0.18, 0.82), legMat);
+    rLeg.position.set(0.24, 0.10, 0.68);
+    rLeg.rotation.set(-0.1, -0.22, -0.15);
+    body.add(rLeg);
+
+    // Tactical riding boots
+    var bootMat = new THREE.MeshStandardMaterial({ color: 0x09090b, roughness: 0.4 });
+    var lBoot = new THREE.Mesh(new THREE.BoxGeometry(0.20, 0.18, 0.28), bootMat);
+    lBoot.position.set(-0.25, 0.10, 1.18);
+    body.add(lBoot);
+
+    var rBoot = new THREE.Mesh(new THREE.BoxGeometry(0.20, 0.18, 0.28), bootMat);
+    rBoot.position.set(0.30, 0.10, 1.12);
+    body.add(rBoot);
+
+    // Arms sprawled on road
+    var armMat = new THREE.MeshStandardMaterial({ color: 0xd7b987, roughness: 0.6 });
+    var lArm = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.14, 0.62), armMat);
+    lArm.position.set(-0.48, 0.09, -0.18);
+    lArm.rotation.set(0, 0.55, 0);
+    body.add(lArm);
+
+    var rArm = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.14, 0.58), armMat);
+    rArm.position.set(0.48, 0.09, -0.12);
+    rArm.rotation.set(0, -0.45, 0);
+    body.add(rArm);
+
+    body.rotation.y = 0.35;
+    g.add(body);
+
+    // 2. Tragic dark crimson pool spreading across the white stop line
+    var poolMat = new THREE.MeshStandardMaterial({
+      color: 0x4a0404, roughness: 0.04, metalness: 0.12,
+      transparent: true, opacity: 0.92
+    });
+    var pool = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 1.1), poolMat);
     pool.rotation.x = -Math.PI / 2;
-    pool.position.set(0.2, 0.08, 0.1);
+    pool.position.set(0.15, 0.02, -0.10);
     g.add(pool);
 
+    // 3. Dropped Police Route Notebook (open on the asphalt)
+    var notebook = new THREE.Group();
+    notebook.name = 'vikram-route-notebook';
+    var coverMat = new THREE.MeshStandardMaterial({ color: 0x3e2723, roughness: 0.6 });
+    var pageMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.3 });
+
+    var leftPage = new THREE.Mesh(new THREE.PlaneGeometry(0.18, 0.26), pageMat);
+    leftPage.rotation.x = -Math.PI / 2;
+    leftPage.position.set(-0.09, 0.03, 0);
+    notebook.add(leftPage);
+
+    var rightPage = new THREE.Mesh(new THREE.PlaneGeometry(0.18, 0.26), pageMat);
+    rightPage.rotation.x = -Math.PI / 2;
+    rightPage.position.set(0.09, 0.03, 0);
+    notebook.add(rightPage);
+
+    var spine = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.015, 0.28), coverMat);
+    spine.position.set(0, 0.02, 0);
+    notebook.add(spine);
+
+    notebook.position.set(-0.85, 0, -0.35);
+    notebook.rotation.y = 0.42;
+    g.add(notebook);
+
+    // 4. Dropped Chrome Police Whistle with lanyard
+    var whistle = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.018, 0.018, 0.07, 12),
+      new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.95, roughness: 0.1 })
+    );
+    whistle.rotation.z = Math.PI / 2;
+    whistle.position.set(-0.65, 0.03, -0.62);
+    g.add(whistle);
+
     return g;
+  }
+
+  /**
+   * Inspector Arjun Kadam · Traffic Crime Branch.
+   * Dressed in dark detective field jacket, police badge lanyard, and khaki trousers.
+   */
+  function buildCutsceneArjun(opts) {
+    opts = opts || {};
+    var bh = (typeof window._buildHuman === 'function') ? window._buildHuman : null;
+    if (!bh) { return null; }
+    var arjun = bh(false, {
+      variant: 'normal',
+      shirt: 0x1e293b, // Dark charcoal / navy detective field jacket
+      pants: 0x92704a, // Police khaki trousers
+      hair: 0x09090b,
+      hairStyle: 'sidepart'
+    });
+    if (!arjun) { return null; }
+
+    arjun.name = 'inspector-arjun-kadam';
+
+    // Add Police ID card lanyard around neck
+    var ud = arjun.userData || {};
+    if (ud.torsoGroup) {
+      var lanyardMat = new THREE.MeshStandardMaterial({ color: 0x3b82f6, roughness: 0.5 });
+      var lanyard = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.36, 0.38), lanyardMat);
+      lanyard.position.set(0, 0.05, 0.02);
+      lanyard.scale.set(0.9, 0.8, 1.05);
+
+      var badgeHolder = new THREE.Mesh(
+        new THREE.BoxGeometry(0.10, 0.14, 0.02),
+        new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.8, roughness: 0.2 })
+      );
+      badgeHolder.position.set(0, -0.14, 0.22);
+      ud.torsoGroup.add(badgeHolder);
+    }
+    return arjun;
+  }
+
+  /**
+   * Mrs. Iyer · Elderly South Indian witness.
+   * Dressed in traditional deep maroon saree with golden border and spectacles.
+   */
+  function buildCutsceneIyer(opts) {
+    opts = opts || {};
+    var bh = (typeof window._buildHuman === 'function') ? window._buildHuman : null;
+    if (!bh) { return null; }
+    var iyer = bh(false, {
+      variant: 'elderly',
+      shirt: 0x881337, // Maroon silk saree drape
+      pants: 0x881337,
+      hair: 0xe2e8f0,  // Silver hair
+      gender: 'female'
+    });
+    if (!iyer) { return null; }
+
+    iyer.name = 'mrs-iyer-witness';
+
+    // Add steel tiffin carrier (dabba) in hand
+    var dabba = new THREE.Group();
+    dabba.name = 'steel-dabba';
+    var dabbaMat = new THREE.MeshStandardMaterial({
+      color: 0xe2e8f0, metalness: 0.85, roughness: 0.2
+    });
+    for (var tier = 0; tier < 3; tier++) {
+      var cyl = new THREE.Mesh(new THREE.CylinderGeometry(0.10, 0.10, 0.08, 16), dabbaMat);
+      cyl.position.y = tier * 0.09;
+      dabba.add(cyl);
+    }
+    var handle = new THREE.Mesh(new THREE.TorusGeometry(0.10, 0.015, 8, 16), dabbaMat);
+    handle.position.y = 0.30;
+    dabba.add(handle);
+
+    dabba.position.set(0.35, 0.40, 0.15);
+    iyer.add(dabba);
+
+    return iyer;
   }
 
   window._buildCutsceneRider = buildCutsceneRider;
   window._buildCutsceneDriver = buildCutsceneDriver;
   window._buildFallenOfficer = buildFallenOfficer;
+  window._buildCutsceneArjun = buildCutsceneArjun;
+  window._buildCutsceneIyer = buildCutsceneIyer;
   window._buildFacetedTree = buildFacetedTree;
   window._buildBasketballCourt = buildBasketballCourt;
+  window._buildParkingLot = buildParkingLot;
   window._buildParkingLot = buildParkingLot;
 
   // ── Block filler ──────────────────────────────────────────────────────────
@@ -1101,7 +1639,7 @@
     var fShop = new THREE.MeshLambertMaterial({ color: 0x9a3412 });
     var awningMats = [M.awningRed, M.awningBlue, M.awningGreen, M.awningOrange];
 
-    var MAX_FILL = 280;
+    var MAX_FILL = 450;
     var placed = 0;
 
     /** Emit one filler building. `face` is the outward direction (0=+Z,1=-Z,2=+X,3=-X). */
@@ -1113,8 +1651,9 @@
 
       // Ground-floor shopfront on the street face
       var fz = d / 2 + 0.06, fx = w / 2 + 0.06;
+      var facadeWidth = (face < 2) ? w : d;
       var shop = new THREE.Mesh(geo().plane, fShop);
-      shop.scale.set(Math.min(w * 0.7, 7), 2.1, 1);
+      shop.scale.set(Math.min(facadeWidth * 0.7, 7), 2.1, 1);
       if (face === 0) { shop.position.set(0, 1.5, fz); }
       else if (face === 1) { shop.position.set(0, 1.5, -fz); shop.rotation.y = Math.PI; }
       else if (face === 2) { shop.position.set(fx, 1.5, 0); shop.rotation.y = Math.PI / 2; }
@@ -1124,7 +1663,7 @@
       // Striped fabric awning over the shopfront (Image 1, 2)
       var awMat = pick(awningMats, hash2(Math.round(cx), Math.round(cz), 31 + salt));
       var aw = new THREE.Mesh(geo().box, awMat);
-      aw.scale.set(face < 2 ? w * 0.85 : 1.6, 0.24, face < 2 ? 1.6 : w * 0.85);
+      aw.scale.set(face < 2 ? w * 0.85 : 1.6, 0.24, face < 2 ? 1.6 : d * 0.85);
       if (face === 0) { aw.position.set(0, 2.85, fz + 0.75); aw.rotation.x = 0.15; }
       else if (face === 1) { aw.position.set(0, 2.85, -fz - 0.75); aw.rotation.x = -0.15; }
       else if (face === 2) { aw.position.set(fx + 0.75, 2.85, 0); aw.rotation.z = -0.15; }
@@ -1287,46 +1826,54 @@
       }
     }
 
-    // Blocks between consecutive vertical roads (columns), split by each
-    // horizontal road (rows).
+    // Interior city blocks between consecutive vertical and horizontal roads.
     for (var vi = 0; vi < ax.vs.length - 1 && placed < MAX_FILL; vi++) {
       var v0 = ax.vs[vi], v1 = ax.vs[vi + 1];
-      var colL = v0.pos + v0.w / 2 + verge;
-      var colR = v1.pos - v1.w / 2 - verge;
-      if (colR - colL < unitW) { continue; }
-      for (var hi = 0; hi < ax.hs.length; hi++) {
-        var h = ax.hs[hi];
-        var rowN = h.pos - h.w / 2 - verge;   // north edge of this row's block
-        var rowS = h.pos + h.w / 2 + verge;   // south edge
-        // West edge of the block: terrace facing the left-hand street (+X).
-        terrace('z', colL - depth / 2, rowN, rowS, 2);
-        // East edge: facing the right-hand street (-X).
-        terrace('z', colR + depth / 2, rowN, rowS, 3);
-      }
-    }
-    // Blocks between consecutive horizontal roads: terrace facing along Z.
-    for (var hj = 0; hj < ax.hs.length - 1 && placed < MAX_FILL; hj++) {
-      var h0 = ax.hs[hj], h1 = ax.hs[hj + 1];
-      var rowT = h0.pos + h0.w / 2 + verge;
-      var rowB = h1.pos - h1.w / 2 - verge;
-      if (rowB - rowT < unitW) { continue; }
-      for (var vi2 = 0; vi2 < ax.vs.length; vi2++) {
-        var v = ax.vs[vi2];
-        var colA = v.pos - v.w / 2 - verge;
-        var colZ = v.pos + v.w / 2 + verge;
-        // North edge of the block: facing the upper street (-Z).
-        terrace('x', rowT - depth / 2, colA, colZ, 1);
-        // South edge: facing the lower street (+Z).
-        terrace('x', rowB + depth / 2, colA, colZ, 0);
+      var bL = v0.pos + v0.w / 2 + verge;
+      var bR = v1.pos - v1.w / 2 - verge;
+      if (bR - bL < depth) { continue; }
+
+      for (var hi = 0; hi < ax.hs.length - 1 && placed < MAX_FILL; hi++) {
+        var h0 = ax.hs[hi], h1 = ax.hs[hi + 1];
+        var bN = h0.pos + h0.w / 2 + verge;
+        var bS = h1.pos - h1.w / 2 - verge;
+        if (bS - bN < depth) { continue; }
+
+        // West frontage of this block: facing road v0 to the west (-X)
+        terrace('z', bL + depth / 2, bN, bS, 3);
+        // East frontage of this block: facing road v1 to the east (+X)
+        terrace('z', bR - depth / 2, bN, bS, 2);
+        // North frontage of this block: facing road h0 to the north (-Z)
+        terrace('x', bN + depth / 2, bL + depth, bR - depth, 1);
+        // South frontage of this block: facing road h1 to the south (+Z)
+        terrace('x', bS - depth / 2, bL + depth, bR - depth, 0);
       }
     }
 
-    // Fill the leftover margins OUTSIDE the outer roads, so the map does not
-    // simply stop at the last road.
+    // Outer margins beyond the outer roads so the city skyline doesn't drop off into void.
     var firstV = ax.vs[0], lastV = ax.vs[ax.vs.length - 1];
     var firstH = ax.hs[0], lastH = ax.hs[ax.hs.length - 1];
-    if (firstV) { terrace('z', firstV.pos - firstV.w / 2 - verge - depth / 2, firstH.a - firstH.w, firstH.b + firstH.w, 3); }
-    if (lastV) { terrace('z', lastV.pos + lastV.w / 2 + verge + depth / 2, firstH.a - firstH.w, lastH.b + lastH.w, 2); }
+    var minZ = firstH ? (firstH.pos - firstH.w / 2 - verge) : -150;
+    var maxZ = lastH ? (lastH.pos + lastH.w / 2 + verge) : 150;
+    var minX = firstV ? (firstV.pos - firstV.w / 2 - verge) : -150;
+    var maxX = lastV ? (lastV.pos + lastV.w / 2 + verge) : 150;
+
+    if (firstV) {
+      // West outer margin facing east towards road firstV (+X)
+      terrace('z', firstV.pos - firstV.w / 2 - verge - depth / 2, minZ, maxZ, 2);
+    }
+    if (lastV) {
+      // East outer margin facing west towards road lastV (-X)
+      terrace('z', lastV.pos + lastV.w / 2 + verge + depth / 2, minZ, maxZ, 3);
+    }
+    if (firstH) {
+      // North outer margin facing south towards road firstH (+Z)
+      terrace('x', firstH.pos - firstH.w / 2 - verge - depth / 2, minX, maxX, 0);
+    }
+    if (lastH) {
+      // South outer margin facing north towards road lastH (-Z)
+      terrace('x', lastH.pos + lastH.w / 2 + verge + depth / 2, minX, maxX, 1);
+    }
 
     // ── Footpaths ──────────────────────────────────────────────────────────
     // Pavement strips along both kerbs of every road. Without these the widened
@@ -1617,6 +2164,267 @@
     return pts;
   }
 
+  // ── Crime-scene set pieces ────────────────────────────────────────────────
+  //
+  // A shot only reads as a crime scene if the frame contains the apparatus of
+  // one. A body on wet tarmac alone is a body; a body inside taped-off tarmac,
+  // under numbered markers, behind an evidence sheet, with a patrol car's
+  // strobes bouncing off the puddle, is an investigation — and the difference is
+  // the whole point of the cold open's aftermath.
+  //
+  // Everything here is INERT: no collision, no task queries, no player
+  // interaction. The player never drives this map.
+
+  /**
+   * Police barricade: an A-frame trestle with a caution band.
+   *
+   * Sits across the road to close it off. Placed north of the junction in the
+   * stage's dressing so the aftermath shots have something between camera and
+   * subject to break the frame up.
+   */
+  function buildBarricade(M, spec) {
+    var g = new THREE.Group();
+    g.name = 'stage-barricade';
+
+    var W = (spec && spec.width) || 7.5;
+    var barMat = new THREE.MeshLambertMaterial({ color: 0xf1f5f9 });
+    var legMat = M.poleGrey;
+
+    // Two horizontal boards with a caution stripe between them. Real barricades
+    // read as a striped band from any distance; a plain plank reads as a fence.
+    var top = new THREE.Mesh(new THREE.BoxGeometry(W, 0.42, 0.14), barMat);
+    top.position.set(0, 1.28, 0);
+    g.add(top);
+    var mid = new THREE.Mesh(new THREE.BoxGeometry(W, 0.30, 0.12), barMat);
+    mid.position.set(0, 0.86, 0);
+    g.add(mid);
+    var stripe = new THREE.Mesh(new THREE.BoxGeometry(W * 0.92, 0.16, 0.16), M.paintRed);
+    stripe.position.set(0, 1.28, 0.02);
+    g.add(stripe);
+    var stripe2 = new THREE.Mesh(new THREE.BoxGeometry(W * 0.92, 0.11, 0.15), M.paintRed);
+    stripe2.position.set(0, 0.86, 0.02);
+    g.add(stripe2);
+
+    // A-frame legs. Splayed, because a barricade with vertical legs looks like
+    // a fence rail floating in mid-air.
+    [-1, 1].forEach(function (side) {
+      var lx = side * (W / 2 - 0.35);
+      [-1, 1].forEach(function (z) {
+        var leg = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.6, 0.12), legMat);
+        leg.position.set(lx, 0.8, z * 0.26);
+        leg.rotation.x = z * 0.16;
+        g.add(leg);
+      });
+    });
+
+    if (spec && typeof spec.x === 'number') { g.position.set(spec.x, 0, spec.z); }
+    if (spec && typeof spec.rotY === 'number') { g.rotation.y = spec.rotY; }
+    return g;
+  }
+
+  /**
+   * Evidence marker: a small tent card with a number.
+   *
+   * The number is drawn on a canvas rather than modelled. It is legible in a
+   * push-in and costs one 64x64 texture shared by every marker on the stage.
+   */
+  var _markerTexCache = null;
+  function markerTex() {
+    if (_markerTexCache) { return _markerTexCache; }
+    try {
+      var cv = document.createElement('canvas');
+      cv.width = 96; cv.height = 96;
+      var x = cv.getContext('2d');
+      x.fillStyle = '#f8fafc';
+      x.fillRect(0, 0, 96, 96);
+      x.fillStyle = '#dc2626';
+      x.fillRect(0, 0, 96, 26);
+      x.fillStyle = '#ffffff';
+      x.font = 'bold 20px Inter, system-ui, sans-serif';
+      x.textAlign = 'center';
+      x.textBaseline = 'middle';
+      x.fillText('EVIDENCE', 48, 13);
+      x.fillStyle = '#0f172a';
+      x.font = 'bold 52px Inter, system-ui, sans-serif';
+      x.fillText('2', 48, 62);
+      _markerTexCache = new THREE.CanvasTexture(cv);
+    } catch (e) { _markerTexCache = null; }
+    return _markerTexCache;
+  }
+
+  function buildEvidenceMarkers(M, list) {
+    var g = new THREE.Group();
+    g.name = 'stage-markers';
+    var tex = markerTex();
+    var cardMat = tex
+      ? new THREE.MeshLambertMaterial({ map: tex, side: THREE.DoubleSide })
+      : M.paintWhite;
+
+    (list || []).forEach(function (spec, i) {
+      if (!spec) { return; }
+      // A folded card: two planes meeting at a shallow ridge, so it stands up
+      // without a frame.
+      var mk = new THREE.Group();
+      var front = new THREE.Mesh(new THREE.PlaneGeometry(0.34, 0.24), cardMat);
+      front.position.set(0, 0.12, 0.04);
+      front.rotation.x = -0.22;
+      mk.add(front);
+      var back = new THREE.Mesh(new THREE.PlaneGeometry(0.34, 0.24), cardMat);
+      back.position.set(0, 0.12, -0.04);
+      back.rotation.x = 0.22;
+      mk.add(back);
+      if (typeof spec.x === 'number') { mk.position.set(spec.x, 0, spec.z); }
+      if (typeof spec.rotY === 'number') { mk.rotation.y = spec.rotY; }
+      mk.userData = mk.userData || {};
+      mk.userData.isCast = true;
+      g.add(mk);
+      // Deterministic yaw jitter so a row of markers does not look cloned.
+      mk.rotation.y += (hash2(i, 3, 91) - 0.5) * 0.5;
+    });
+    return g;
+  }
+
+  /**
+   * Evidence sheet over the body.
+   *
+   * A pale tarpaulin tented over the fallen officer. It is the single prop that
+   * tells a viewer what the aftermath means before any subtitle does, and it
+   * gives the final crane something to rise above.
+   */
+  function buildEvidenceSheet(M, spec) {
+    var g = new THREE.Group();
+    g.name = 'stage-sheet';
+
+    var sheetMat = new THREE.MeshLambertMaterial({
+      color: 0xdfe6ee, side: THREE.DoubleSide, transparent: true, opacity: 0.94
+    });
+    var W = (spec && spec.width) || 2.6;
+    var D = (spec && spec.depth) || 3.4;
+    var H = (spec && spec.height) || 0.85;
+
+    // Four tapering skirts plus a lid: a tent, not a box. The peak is what makes
+    // it read as fabric over a form.
+    var lid = new THREE.Mesh(new THREE.BoxGeometry(W * 0.86, 0.07, D * 0.9), sheetMat);
+    lid.position.set(0, H, 0);
+    g.add(lid);
+
+    var sides = [
+      [0, -D / 2, 0, 0], [0, D / 2, 0, 0],
+      [-W / 2, 0, 0, Math.PI / 2], [W / 2, 0, 0, Math.PI / 2]
+    ];
+    sides.forEach(function (s) {
+      var panel = new THREE.Mesh(new THREE.BoxGeometry(W, H, 0.05), sheetMat);
+      panel.position.set(s[0] * 0.5, H / 2, s[1] * 0.5);
+      panel.rotation.y = s[3];
+      // Lean each skirt outward from the peak.
+      panel.rotation.x = s[1] < 0 ? 0.20 : (s[1] > 0 ? -0.20 : 0);
+      panel.rotation.z = s[0] < 0 ? -0.20 : (s[0] > 0 ? 0.20 : 0);
+      g.add(panel);
+    });
+
+    // Weighted hem, so the sheet is pinned to the road rather than hovering.
+    var hem = new THREE.Mesh(new THREE.BoxGeometry(W * 1.02, 0.08, D * 1.02), M.poleDark);
+    hem.position.set(0, 0.04, 0);
+    g.add(hem);
+
+    if (spec && typeof spec.x === 'number') { g.position.set(spec.x, 0, spec.z); }
+    if (spec && typeof spec.rotY === 'number') { g.rotation.y = spec.rotY; }
+    return g;
+  }
+
+  /**
+   * Police light bar.
+   *
+   * Built as emissive caps plus a real PointLight. The emissive caps alone read
+   * as decoration; what sells a strobing patrol car at night is the light it
+   * throws onto the wet road, which is the one thing the wet-tarmac specular
+   * material is waiting for.
+   *
+   * `tick(dt)` drives the alternating flash. Returns a stop handle so
+   * clearStage() can detach it rather than leaking a timer per replay.
+   */
+  function buildPoliceLightBar(M, spec) {
+    var g = new THREE.Group();
+    g.name = 'stage-lightbar';
+
+    var base = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.10, 0.24), M.poleDark);
+    base.position.set(0, 0.05, 0);
+    g.add(base);
+
+    var redMat = new THREE.MeshBasicMaterial({ color: 0xff2d2d });
+    var blueMat = new THREE.MeshBasicMaterial({ color: 0x3b82f6 });
+    var redCap = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.14, 0.22), redMat);
+    redCap.position.set(-0.33, 0.14, 0);
+    g.add(redCap);
+    var blueCap = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.14, 0.22), blueMat);
+    blueCap.position.set(0.33, 0.14, 0);
+    g.add(blueCap);
+
+    // The thrown light. Modest range: it should pool on the road around the car
+    // and die off well before the next lamp, not flood the whole stage.
+    var throwLight = new THREE.PointLight(0xff4444, 0, 16, 1.6);
+    throwLight.position.set(0, 0.2, 0);
+    g.add(throwLight);
+
+    var timer = null;
+    var phase = 0;
+    var on = false;
+    var tickFn = function (dt) {
+      // Alternating double-flash, the pattern every Indian patrol vehicle uses.
+      // A single steady flash reads as a hazard light; the double-pulse reads as
+      // an actual siren.
+      phase += (dt || 0.016);
+      var t = phase % 1.6;
+      var lit = (t < 0.10) || (t > 0.22 && t < 0.32);
+      if (lit === on) { return; }
+      on = lit;
+      redMat.color.setHex(lit ? 0xff5555 : 0x3a1010);
+      blueMat.color.setHex(lit ? 0x1a2036 : 0x4a86ff);
+      throwLight.intensity = lit ? 2.6 : 0;
+      throwLight.color.setHex(on ? 0xff5555 : 0x5588ff);
+    };
+
+    if (typeof window !== 'undefined' && window.setInterval) {
+      timer = window.setInterval(function () { tickFn(0.05); }, 50);
+    }
+
+    g.userData = g.userData || {};
+    g.userData.stageTick = tickFn;
+    g.userData.stopTick = function () { if (timer) { try { clearInterval(timer); } catch (e) {} } };
+
+    if (spec && typeof spec.x === 'number') { g.position.set(spec.x, 0, spec.z); }
+    if (spec && typeof spec.y === 'number') { g.position.y = spec.y; }
+    if (spec && typeof spec.rotY === 'number') { g.rotation.y = spec.rotY; }
+    return g;
+  }
+
+  /**
+   * Traffic cone with a reflective band.
+   *
+   * Cones are the most load-bearing piece of forensic staging there is: they
+   * establish a boundary AND they give the ground plane something to catch the
+   * patrol strobes. Three of them in a shallow arc is enough.
+   */
+  function buildCone(M, spec) {
+    var g = new THREE.Group();
+    g.name = 'stage-cone';
+    var coneMat = new THREE.MeshLambertMaterial({ color: 0xf97316 });
+    var bandMat = new THREE.MeshLambertMaterial({ color: 0xf8fafc });
+
+    var body = new THREE.Mesh(new THREE.ConeGeometry(0.22, 0.62, 10), coneMat);
+    body.position.set(0, 0.34, 0);
+    g.add(body);
+    var base = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.05, 0.44), coneMat);
+    base.position.set(0, 0.025, 0);
+    g.add(base);
+    var band = new THREE.Mesh(new THREE.CylinderGeometry(0.145, 0.175, 0.09, 10), bandMat);
+    band.position.set(0, 0.36, 0);
+    g.add(band);
+
+    if (spec && typeof spec.x === 'number') { g.position.set(spec.x, 0, spec.z); }
+    return g;
+  }
+
   /**
    * Build all film-only dressing for a stage and park it on the game.
    *
@@ -1695,6 +2503,55 @@
       } catch (e) {}
     }
 
+    // ── Crime-scene dressing ─────────────────────────────────────────────
+    // Declared separately from the street dressing because it is REVEALED, not
+    // built: these props appear only on shots that carry `aftermath`, so the
+    // murder itself plays on a clean, empty junction and the apparatus arrives
+    // afterwards. Building them up front would put a barricade in the opening
+    // crane, forty seconds before anything has happened.
+    var aftermathGrp = null;
+    function aftermathOn() {
+      if (!aftermathGrp || aftermathGrp.visible) { return; }
+      aftermathGrp.visible = true;
+    }
+    function aftermathOff() {
+      if (!aftermathGrp || !aftermathGrp.visible) { return; }
+      aftermathGrp.visible = false;
+    }
+
+    var az = d.aftermath;
+    if (az) {
+      try {
+        aftermathGrp = new THREE.Group();
+        aftermathGrp.name = 'stage-aftermath';
+
+        (az.barricades || []).forEach(function (spec) {
+          try { aftermathGrp.add(buildBarricade(M, spec)); } catch (eB) {}
+        });
+        try { aftermathGrp.add(buildEvidenceMarkers(M, az.markers)); } catch (eM) {}
+        if (az.sheet) {
+          try { aftermathGrp.add(buildEvidenceSheet(M, az.sheet)); } catch (eS) {}
+        }
+        (az.cones || []).forEach(function (spec) {
+          try { aftermathGrp.add(buildCone(M, spec)); } catch (eC) {}
+        });
+        // Patrol light bars are PARENTED to a vehicle rather than placed free,
+        // so one spec lights both this car and any other patrol car on the stage.
+        (az.lightBars || []).forEach(function (spec) {
+          try { aftermathGrp.add(buildPoliceLightBar(M, spec)); } catch (eL) {}
+        });
+
+        aftermathGrp.visible = false;
+        grp.add(aftermathGrp);
+        game._stageAftermath = aftermathGrp;
+      } catch (eA) {
+        console.warn('[Cinematics] aftermath dressing failed:', eA);
+        aftermathGrp = null;
+      }
+    }
+    game._aftermathOn = aftermathOn;
+    game._aftermathOff = aftermathOff;
+
     game.scene.add(grp);
     game._stageGroup = grp;
     game._stageRain = rain;
@@ -1719,9 +2576,23 @@
   /** Remove all stage dressing. Called when the playable map is rebuilt. */
   function clearStage(game) {
     if (!game || !game.scene) { return; }
+    // Stop every timer a stage prop owns BEFORE the geometry goes. A patrol light
+    // bar left running on an interval calls into a disposed material and, worse,
+    // survives a replay to stack a second interval on the same mesh.
     try {
       var prev = game.scene.getObjectByName(STAGE_GROUP);
-      if (prev && prev.parent) { prev.parent.remove(prev); }
+      if (prev) {
+        prev.traverse(function (o) {
+          if (o && o.userData && typeof o.userData.stopTick === 'function') {
+            try { o.userData.stopTick(); } catch (e0) {}
+            o.userData.stopTick = null;
+          }
+        });
+      }
+    } catch (eStop) {}
+    try {
+      var prev2 = game.scene.getObjectByName(STAGE_GROUP);
+      if (prev2 && prev2.parent) { prev2.parent.remove(prev2); }
     } catch (e) {}
     try { if (game._stageGroup) { game._stageGroup.traverse(disposeTree); } } catch (e2) {}
     game._stageGroup = null;
@@ -1729,6 +2600,12 @@
     game._stageHeroActors = null;
     game._stageKeepOut = null;
     game._stageAct = null;
+    game._stageAftermath = null;
+    // Drop the reveal hooks, not just the flag. cutscene.js calls these on every
+    // shot; leaving them bound to a torn-down group means the next film's
+    // applyShot() toggles an object that is no longer in the scene.
+    game._aftermathOn = null;
+    game._aftermathOff = null;
   }
 
   function disposeTree(o) {
@@ -1780,9 +2657,12 @@
         var wet = game._stageGroup.getObjectByName('stage-wet');
         if (wet) { wet.visible = a.wet !== false; }
       }
+      // Record the act's rain intent separately from the mesh's visibility.
+      // cutscene.js needs to answer "is it raining in this act?" without
+      // stomping on the visibility a `noRain` shot may have set.
+      game._stageActRain = a.rain !== false;
       if (game._stageRain) {
-        game._stageRain.visible = a.rain !== false;
-        if (a.rain === false) { game._stageRain.parent && (game._stageRain.visible = false); }
+        game._stageRain.visible = game._stageActRain;
       }
     } catch (e2) {}
 

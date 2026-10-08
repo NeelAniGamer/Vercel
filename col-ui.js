@@ -267,6 +267,19 @@
               '</div>' +
             '</div>' +
 
+            '<div class="cmd-setting-card cmd-liquid-card">' +
+              '<div class="cmd-setting-info">' +
+                '<div class="cmd-setting-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg></div>' +
+                '<div>' +
+                  '<div class="cmd-setting-title">Liquid Glass UI</div>' +
+                  '<div class="cmd-setting-desc" id="cmdLiquidDesc">' + (document.documentElement.classList.contains('is-iphone') ? 'Apple VisionOS &amp; iOS' : 'Standard Material') + '</div>' +
+                '</div>' +
+              '</div>' +
+              '<button type="button" class="cmd-toggle-pill' + (document.documentElement.classList.contains('is-iphone') ? ' active' : '') + '" id="cmdLiquidToggle" aria-label="Toggle Apple Liquid Glass">' +
+                '<span class="cmd-toggle-thumb"></span>' +
+              '</button>' +
+            '</div>' +
+
             '<div class="cmd-quick-deck">' +
               '<a href="/making" class="cmd-tile highlight">' +
                 '<span class="cmd-tile-icon">⚡</span>' +
@@ -337,6 +350,19 @@
               const desc = document.getElementById('cmdThemeDesc')
               if (desc) {desc.textContent = document.body.classList.contains('lm') ? 'Light Mica' : 'Dark VisionOS'}
             }, 60)
+          })
+        }
+
+        // Apple Liquid Glass toggle
+        const cmdLiquid = d.querySelector('#cmdLiquidToggle')
+        if (cmdLiquid) {
+          cmdLiquid.addEventListener('click', function () {
+            const enabled = typeof window.toggleAppleLiquidGlass === 'function' ? window.toggleAppleLiquidGlass() : false
+            cmdLiquid.classList.toggle('active', enabled)
+            const desc = document.getElementById('cmdLiquidDesc')
+            if (desc) {
+              desc.textContent = enabled ? 'Apple VisionOS & iOS' : 'Standard Material'
+            }
           })
         }
 

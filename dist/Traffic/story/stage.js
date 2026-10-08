@@ -128,9 +128,10 @@
 
     map: cfg({
       id: 1,
+      themeType: 'mumbai_city',
       mode: 'night',
-      sky: 0x223854,
-      ground: 0x3d5c38,
+      sky: 0x1e2e46,
+      ground: 0x243042,
       isNight: true,
       hasRain: true,
       hasPuddles: true,
@@ -196,7 +197,49 @@
       rain: { count: 1200, size: 0.04, opacity: 0.22 },
 
       // Fortuner is now a full cast actor with driver and motion animation
-      heroVehicles: []
+      heroVehicles: [],
+
+      // ── Crime-scene dressing ───────────────────────────────────────────
+      // Built once, parked INVISIBLE, and switched on only by shots that carry
+      // `aftermath: true`. This is the single most important piece of staging in
+      // the film: without it the last shot is a man lying in the road, and a man
+      // lying in the road reads as an accident. Barricade, evidence markers, the
+      // sheet over the body, cones and a strobing patrol bar say, before any
+      // subtitle does, that this was treated as a scene.
+      //
+      // Coordinates are all north and west of the stop line at z=-12.5 so the
+      // aftermath cranes rise over the apparatus rather than through it.
+      aftermath: {
+        // Road closed in both directions, upstream of the scene.
+        barricades: [
+          { x: 0.0, z: -30.0, rotY: 0, width: 9.0 },
+          { x: 0.0, z: 4.0, rotY: 0, width: 9.0 },
+          { x: -14.0, z: -12.0, rotY: Math.PI / 2, width: 7.0 }
+        ],
+
+        // Numbered cards ringing the body. Two on the paint, one on the kerb.
+        markers: [
+          { x: 2.2, z: -11.0, rotY: 0.4 },
+          { x: 5.6, z: -13.6, rotY: -0.6 },
+          { x: 8.4, z: -10.2, rotY: 1.1 }
+        ],
+
+        // The sheet is centred ON Vikram's mark (4.0, -12.5) so the body that
+        // cutscene.js topples and the tent that covers it agree.
+        sheet: { x: 4.0, z: -12.5, rotY: 0.22, width: 2.8, depth: 3.6, height: 0.9 },
+
+        cones: [
+          { x: -3.0, z: -9.0 },
+          { x: -3.0, z: -16.0 },
+          { x: 10.5, z: -8.0 },
+          { x: 10.5, z: -17.0 }
+        ],
+
+        // A patrol car's light bar, standing in on the west footpath.
+        lightBars: [
+          { x: -7.5, z: -14.5, rotY: Math.PI / 2, y: 2.05 }
+        ]
+      }
     }),
 
     // ── Light + weather per act ────────────────────────────────────────────
@@ -204,17 +247,26 @@
     // that shot holds. This is how one stage film crosses from 3am rain to 6am
     // dry light without building two maps.
     acts: cfg({
+      // `vig`, `scan` and `lensRain` are cutscene.js overlay grades, read from
+      // here via shotFx(). They are per-act because a single global value is
+      // wrong in both directions: a heavy vignette plus scanlines over a midday
+      // beat crushes the frame and makes the playable map look like tape
+      // playback, while a light vignette over a 3am rain scene throws away the
+      // only thing keeping the eye in the middle of the frame.
       night: {
-        sky: 0x223854,
-        ambient: 0.90,
+        sky: 0x1e2e46,
+        ambient: 0.68,
         hemiSky: 0x8eb4e4,
-        hemiGround: 0x486444,
-        sun: 0.85,
-        sunPos: [30, 65, 20],
-        fogNear: 350,
-        fogFar: 1600,
+        hemiGround: 0x334155,
+        sun: 0.75,
+        sunPos: [25, 60, 20],
+        fogNear: 220,
+        fogFar: 1200,
         rain: true,
-        wet: true
+        wet: true,
+        vig: 0.15,
+        scan: 0.02,
+        lensRain: 0.40
       },
       day: {
         sky: 0x9dc4e0,
@@ -226,7 +278,30 @@
         fogNear: 90,
         fogFar: 520,
         rain: false,
-        wet: false
+        wet: false,
+        vig: 0.26,
+        scan: 0.05,
+        lensRain: 0
+      },
+      // The dawn beat. Not cosmetic: the cold open is 3:14am and the first
+      // playable beat is six hours later, so the film needs a light that belongs
+      // to 6am specifically. Reusing `day` for both made the handover read as a
+      // time jump of hours rather than of six hours, and a low sun raking across
+      // wet tarmac is the shot that sells "it is going to be a hot day".
+      dawn: {
+        sky: 0x6f86a8,
+        ambient: 0.52,
+        hemiSky: 0x9fb6d6,
+        hemiGround: 0x4e4a3a,
+        sun: 0.55,
+        sunPos: [120, 16, -40],
+        fogNear: 70,
+        fogFar: 430,
+        rain: false,
+        wet: false,
+        vig: 0.34,
+        scan: 0.08,
+        lensRain: 0
       }
     })
   };

@@ -34,6 +34,7 @@
   "dependencies": {
     "@dimforge/rapier3d-compat": "^0.21.0",
     "howler": "^2.2.4",
+    "sarvamai": "^1.1.11",
     "three": "^0.186.1",
     "zustand": "^5.0.15"
   },

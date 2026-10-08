@@ -38,45 +38,59 @@
   // ── Overlay (letterbox + title + subtitle) ────────────────────────────────
   var STYLE_ID = 'cutscene-style';
   var CSS =
-    // z-index must clear the game's topmost HUD panels (some sit at 99999),
-    // otherwise the copilot card and badges paint over the film.
-    '#cutscene-root{position:fixed;inset:0;z-index:20000;pointer-events:none;' +
-    'font-family:Inter,system-ui,sans-serif;text-transform:none;}' +
-    '#cutscene-root .cs-bar{position:absolute;left:0;right:0;height:11vh;min-height:34px;' +
-    'background:#000;transform:scaleY(0);will-change:transform;}' +
+    '#cutscene-root{position:fixed;inset:0;z-index:20000;pointer-events:none;font-family:Inter,system-ui,sans-serif;text-transform:none;overflow:hidden;}' +
+    '#cutscene-root .cs-bar{position:absolute;left:0;right:0;height:6.5vh;min-height:22px;background:#030508;transform:scaleY(0);will-change:transform;z-index:20010;border-bottom:1px solid rgba(255,255,255,0.08);}' +
     '#cutscene-root .cs-bar.top{top:0;transform-origin:top center;}' +
-    '#cutscene-root .cs-bar.bot{bottom:0;transform-origin:bottom center;}' +
-    '#cutscene-root .cs-vig{position:absolute;inset:0;opacity:0;will-change:opacity;' +
-    // Deliberately light. At 0.55/.85 this crushed the frame edges and, added to
-    // the real shadow a verandah soffit casts, made a midday scene read as night.
-    'background:radial-gradient(ellipse at center,rgba(0,0,0,0) 58%,rgba(0,0,0,.34) 100%);}' +
-    '#cutscene-root .cs-fade{position:absolute;inset:0;background:#000;opacity:0;will-change:opacity;}' +
-    '#cutscene-root .cs-title{position:absolute;left:0;right:0;top:38%;text-align:center;' +
-    'color:#fff;opacity:0;will-change:opacity,transform;' +
-    'font-size:clamp(15px,4.4vw,30px);font-weight:800;letter-spacing:.16em;' +
-    'text-transform:uppercase;text-shadow:0 2px 18px rgba(0,0,0,.85);}' +
-    // text-transform:none is REQUIRED: a global body rule sets `capitalize`,
-    // which would rewrite the dialogue. Lines must stay verbatim; only the
-    // speaker label is uppercased.
-    '#cutscene-root .cs-sub{position:absolute;left:50%;transform:translateX(-50%);' +
-    'bottom:calc(11vh + 14px);max-width:min(92vw,760px);padding:9px 15px;' +
-    'border-radius:10px;background:rgba(6,9,16,.82);border:1px solid rgba(255,255,255,.14);' +
-    'color:#fff;opacity:0;will-change:opacity,transform;text-align:center;' +
-    'text-transform:none;' +
-    'font-size:clamp(12px,3.4vw,18px);line-height:1.4;}' +
-    '#cutscene-root .cs-sub b{display:block;font-size:.82em;font-weight:700;' +
-    'letter-spacing:.09em;text-transform:uppercase;color:#5ed3f0;margin-bottom:3px;}' +
-    '#cutscene-root .cs-skip-btn{position:absolute;top:max(16px,calc(11vh + 10px));right:18px;z-index:20020;' +
-    'pointer-events:auto;display:inline-flex;align-items:center;gap:8px;padding:9px 18px;' +
-    'border-radius:9999px;background:rgba(10,15,29,.88);border:1px solid rgba(255,255,255,.28);' +
+    '#cutscene-root .cs-bar.bot{bottom:0;transform-origin:bottom center;border-bottom:none;border-top:1px solid rgba(255,255,255,0.08);}' +
+    '#cutscene-root .cs-vig{position:absolute;inset:0;opacity:0;will-change:opacity;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 60%,rgba(3,6,12,0.28) 100%);z-index:20001;}' +
+    '#cutscene-root .cs-scanlines{position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,0.04) 0px,rgba(0,0,0,0.04) 1px,transparent 1px,transparent 3px);opacity:0.03;pointer-events:none;z-index:20002;}' +
+    '#cutscene-root .cs-fade{position:absolute;inset:0;background:#000;opacity:0;will-change:opacity;z-index:20015;}' +
+    '#cutscene-root .cs-flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:20016;transition:opacity 0.22s ease-out;}' +
+    '#cutscene-root .cs-rain-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:20003;opacity:0.85;}' +
+    '#cutscene-root .cs-title{position:absolute;left:0;right:0;top:38%;text-align:center;color:#fff;opacity:0;will-change:opacity,transform;font-size:clamp(16px,4.5vw,28px);font-weight:900;letter-spacing:.22em;text-transform:uppercase;text-shadow:0 2px 20px rgba(0,0,0,0.95);z-index:20012;}' +
+    // TACTICAL FOUND-FOOTAGE / INTERCEPTOR OSD
+    '#cutscene-root .cs-osd{position:absolute;inset:6.5vh 24px calc(6.5vh + 10px) 24px;pointer-events:none;z-index:20005;display:flex;flex-direction:column;justify-content:space-between;opacity:0;transition:opacity .45s ease;}' +
+    '#cutscene-root .cs-osd-top{display:flex;justify-content:space-between;align-items:center;font-family:"Space Mono",monospace;font-size:11px;color:rgba(255,255,255,0.75);letter-spacing:0.12em;text-shadow:0 1px 4px rgba(0,0,0,0.8);}' +
+    '#cutscene-root .cs-osd-rec{display:inline-flex;align-items:center;gap:7px;color:#ef4444;font-weight:800;}' +
+    '#cutscene-root .cs-rec-dot{width:8px;height:8px;border-radius:50%;background:#ef4444;box-shadow:0 0 10px #ef4444;animation:csBlink 1s infinite;}' +
+    '@keyframes csBlink{0%,100%{opacity:1;}50%{opacity:0.2;}}' +
+    '#cutscene-root .cs-osd-mid{display:flex;justify-content:space-between;height:100%;position:relative;}' +
+    '#cutscene-root .cs-osd-bracket{width:16px;height:16px;border:2px solid rgba(94,211,240,0.4);position:absolute;}' +
+    '#cutscene-root .cs-osd-bracket.tl{top:10px;left:10px;border-right:none;border-bottom:none;}' +
+    '#cutscene-root .cs-osd-bracket.tr{top:10px;right:10px;border-left:none;border-bottom:none;}' +
+    '#cutscene-root .cs-osd-bracket.bl{bottom:10px;left:10px;border-right:none;border-top:none;}' +
+    '#cutscene-root .cs-osd-bracket.br{bottom:10px;right:10px;border-left:none;border-top:none;}' +
+    '#cutscene-root .cs-osd-bot{display:flex;justify-content:space-between;align-items:flex-end;font-family:"Space Mono",monospace;font-size:10px;color:rgba(94,211,240,0.85);letter-spacing:0.08em;text-shadow:0 1px 4px rgba(0,0,0,0.8);}' +
+    '#cutscene-root .cs-osd-tc{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-family:"Space Mono",monospace;font-size:clamp(13px,2.2vw,19px);font-weight:700;letter-spacing:0.22em;color:rgba(255,255,255,0.92);text-shadow:0 2px 10px rgba(0,0,0,0.95);}' +
+    // NOIR TRANSCEIVER DIALOGUE CARD
+    '#cutscene-root .cs-transceiver{position:absolute;left:50%;transform:translateX(-50%) translateY(14px);bottom:calc(6.5vh + 14px);width:min(94vw,760px);display:flex;align-items:center;gap:14px;padding:12px 18px;border-radius:14px;background:rgba(8,12,22,0.92);border:1px solid rgba(94,211,240,0.32);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 8px 32px rgba(0,0,0,0.85),0 0 20px rgba(94,211,240,0.12);color:#fff;opacity:0;will-change:opacity,transform;z-index:20025;transition:transform .22s cubic-bezier(0.16,1,0.3,1),opacity .22s ease;}' +
+    '#cutscene-root .cs-avatar{width:44px;height:44px;border-radius:10px;background:rgba(18,26,45,0.9);border:1.5px solid rgba(94,211,240,0.5);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;box-shadow:inset 0 0 12px rgba(94,211,240,0.25);position:relative;overflow:hidden;}' +
+    '#cutscene-root .cs-content{flex:1;min-width:0;text-align:left;}' +
+    '#cutscene-root .cs-meta{display:flex;align-items:center;gap:8px;margin-bottom:4px;}' +
+    '#cutscene-root .cs-speaker-badge{font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#5ed3f0;background:rgba(94,211,240,0.12);padding:2px 8px;border-radius:4px;border:1px solid rgba(94,211,240,0.3);}' +
+    '#cutscene-root .cs-eq{display:inline-flex;align-items:flex-end;gap:2px;height:12px;margin-left:auto;}' +
+    '#cutscene-root .cs-eq-bar{width:3px;background:#5ed3f0;border-radius:1px;animation:csEq .6s ease-in-out infinite alternate;}' +
+    '#cutscene-root .cs-eq-bar:nth-child(1){height:4px;animation-delay:0.1s;}' +
+    '#cutscene-root .cs-eq-bar:nth-child(2){height:11px;animation-delay:0.3s;}' +
+    '#cutscene-root .cs-eq-bar:nth-child(3){height:7px;animation-delay:0.15s;}' +
+    '#cutscene-root .cs-eq-bar:nth-child(4){height:12px;animation-delay:0.4s;}' +
+    '#cutscene-root .cs-eq-bar:nth-child(5){height:5px;animation-delay:0.25s;}' +
+    '@keyframes csEq{0%{transform:scaleY(0.3);}100%{transform:scaleY(1.2);}}' +
+    '#cutscene-root .cs-dialogue-line{font-size:clamp(13px,3.2vw,16.5px);line-height:1.45;color:#e8edf5;font-weight:500;text-shadow:0 1px 2px rgba(0,0,0,0.8);}' +
+    // WINDSHIELD WIPER BLADE
+    '#cutscene-root .cs-wiper{position:absolute;bottom:0;left:15%;width:9px;height:125vh;background:linear-gradient(to right,rgba(15,20,30,0.9),rgba(45,55,75,0.95),rgba(10,15,25,0.9));transform-origin:bottom center;transform:rotate(-68deg);z-index:20004;opacity:0;pointer-events:none;box-shadow:0 0 16px rgba(0,0,0,0.9);transition:transform 0.45s cubic-bezier(0.2,0.8,0.3,1),opacity 0.2s ease;}' +
+    '#cutscene-root .cs-skip-btn{position:absolute;top:max(14px,calc(6.5vh + 10px));right:18px;z-index:20030;' +
+    'pointer-events:auto;display:inline-flex;align-items:center;gap:8px;padding:10px 20px;' +
+    'border-radius:9999px;background:rgba(10,15,29,.95);border:1.5px solid rgba(94,211,240,.6);' +
     'backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#fff;' +
-    'font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;' +
-    'box-shadow:0 4px 22px rgba(0,0,0,.6);opacity:0;transform:translateY(-4px);' +
+    'font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;' +
+    'box-shadow:0 4px 22px rgba(0,0,0,.7),0 0 16px rgba(94,211,240,.3);opacity:1;transform:translateY(0);' +
     'transition:transform .2s cubic-bezier(.16,1,.3,1),background .2s ease,border-color .2s ease,box-shadow .2s ease,opacity .25s ease;' +
     'will-change:transform,opacity;user-select:none;-webkit-user-select:none;}' +
-    '#cutscene-root .cs-skip-btn:hover{background:rgba(22,33,58,.96);border-color:#5ed3f0;transform:translateY(-4px) scale(1.04);box-shadow:0 6px 26px rgba(94,211,240,.38);}' +
-    '#cutscene-root .cs-skip-btn:active{transform:translateY(-2px) scale(.97);}' +
-    '#cutscene-root .cs-skip-icon{font-size:14px;color:#5ed3f0;}';
+    '#cutscene-root .cs-skip-btn:hover{background:rgba(22,33,58,.98);border-color:#5ed3f0;transform:scale(1.05);box-shadow:0 6px 28px rgba(94,211,240,.5);}' +
+    '#cutscene-root .cs-skip-btn:active{transform:scale(.97);}' +
+    '#cutscene-root .cs-skip-icon{font-size:14px;color:#5ed3f0;}' +
+    'body.cs-playing #hud,body.cs-playing #hudbar,body.cs-playing #hwrap,body.cs-playing #player-hud-card,body.cs-playing #tasks-container,body.cs-playing #objective-overlay,body.cs-playing #kid-pedals,body.cs-playing #kid-steer,body.cs-playing #enter-vehicle-btn,body.cs-playing .hud-dashboard-card,body.cs-playing #mini-map,body.cs-playing #minimap,body.cs-playing .mobile-controls,body.cs-playing #play-overlay,body.cs-playing .nav-login-btn,body.cs-playing .lp-modal,body.cs-playing #game-briefing,body.cs-playing #gta-briefing-modal,body.cs-playing #gta-mission-intro,body.cs-playing .gta-intro-overlay,body.cs-playing #daily-bonus-modal,body.cs-playing [class*="daily-bonus"],body.cs-playing .action-btn{display:none !important;}';
 
   function ensureStyle() {
     if (document.getElementById(STYLE_ID)) { return; }
@@ -90,13 +104,6 @@
   // wrapper and the canvas itself is `#3c` — hiding either hides the movie.
   var NEVER_HIDE = { 'gc': 1, '3c': 1, 'cutscene-root': 1, 'cutscene-style': 1 };
 
-  /**
-   * Collect every fixed/absolute HUD layer that sits above the canvas, so the
-   * briefing modal, objective list, copilot card and civic controls cannot paint
-   * over the film.
-   *
-   * @returns {Array} snapshot to pass to enforceHUD()/restoreGameUI()
-   */
   function hideGameUI() {
     var saved = [];
     var nodes;
@@ -104,15 +111,12 @@
     for (var i = 0; i < nodes.length; i++) {
       var el = nodes[i];
       if (NEVER_HIDE[el.id]) { continue; }
+      if (el.id === 'cutscene-root' || (el.closest && el.closest('#cutscene-root'))) { continue; }
       var cs;
       try { cs = getComputedStyle(el); } catch (e2) { continue; }
       if (cs.position !== 'fixed' && cs.position !== 'absolute') { continue; }
       var z = parseInt(cs.zIndex, 10);
-      if (!(z >= 40)) { continue; } // anything below sits under the canvas anyway
-      // NOTE: id is deliberately NOT required. A fair amount of HUD is built as
-      // anonymous inline-styled divs with no id — the "Press F to Enter Car"
-      // prompt is one — and skipping them left those painting over the
-      // cutscene. restoreGameUI() puts every one of them back.
+      if (!(z >= 40)) { continue; }
       saved.push({
         el: el,
         prevDisplay: el.style.getPropertyValue('display'),
@@ -124,11 +128,6 @@
     return saved;
   }
 
-  /**
-   * Re-assert the hide on the cached list. `_actualStart` keeps revealing HUD
-   * layers after the cutscene begins (and assigning to `.style.display` clears
-   * an inline `!important`), so a one-shot hide leaks panels onto the film.
-   */
   function enforceHUD(saved) {
     for (var i = 0; i < (saved || []).length; i++) {
       var s = saved[i];
@@ -155,6 +154,150 @@
     });
   }
 
+  /**
+   * Screen rain.
+   *
+   * This is CAMERA-RAIN, not world rain: droplets on the lens, between the film
+   * and the viewer. cinematics.js already emits a world rain volume inside the
+   * 3D stage, so anything here that moved in world space would double up.
+   *
+   * Deterministic by index, and stepped by dt rather than per frame, so a slow
+   * device rains at the same speed as a fast one and a replay looks identical.
+   */
+  var RAIN_DROPS = [];
+  function initRainDrops(canvas) {
+    if (!canvas) { return; }
+    RAIN_DROPS = [];
+    var count = Math.min(54, Math.floor((window.innerWidth || 800) / 22));
+    for (var i = 0; i < count; i++) {
+      RAIN_DROPS.push({
+        // Two families of droplet. The upper field streaks past fast and reads as
+        // depth; the lower field is fat, slow and out of focus, which is what a
+        // bead on the front element actually looks like. One family reads as a
+        // scrolling texture.
+        near: i % 3 === 0,
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: 1.2 + Math.random() * 3.2,
+        speed: 0.18 + Math.random() * 0.45,
+        alpha: 0.22 + Math.random() * 0.36
+      });
+    }
+  }
+
+  function stepRainDrops(canvas, dt) {
+    if (!canvas || !RAIN_DROPS.length) { return; }
+    var ctx = canvas.getContext('2d');
+    if (!ctx) { return; }
+    var w = canvas.width, h = canvas.height;
+    var step = Math.min(Math.max(dt || 0.016, 0.001), 0.1);
+    ctx.clearRect(0, 0, w, h);
+    for (var i = 0; i < RAIN_DROPS.length; i++) {
+      var d = RAIN_DROPS[i];
+      d.y += d.speed * h * step * (d.near ? 1.9 : 1);
+      if (d.y > h + 10) {
+        d.y = -10;
+        d.x = Math.random() * w;
+      }
+      if (d.near) {
+        // A near droplet is a streak, not a dot — it smears along its own path.
+        ctx.strokeStyle = 'rgba(215, 235, 255, ' + (d.alpha * 0.5) + ')';
+        ctx.lineWidth = d.r * 1.4;
+        ctx.beginPath();
+        ctx.moveTo(d.x, d.y);
+        ctx.lineTo(d.x - d.r * 0.5, d.y - d.r * 4.5);
+        ctx.stroke();
+      } else {
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(215, 235, 255, ' + d.alpha + ')';
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(d.x - d.r * 0.3, d.y - d.r * 0.3, d.r * 0.35, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 255, 255, ' + (d.alpha * 1.5) + ')';
+        ctx.fill();
+      }
+    }
+  }
+
+  /**
+   * Swipe the lens clean.
+   *
+   * Bound to the ACTIVE record, not to a bare overlay reference, because every
+   * timer here has to abort when the film ends. A wiper arm left mid-sweep by a
+   * skipped cutscene would keep swinging over the HUD for the rest of the level.
+   */
+  function triggerWiper(state) {
+    var ov = state && state.overlay;
+    if (!ov || !ov.wiper) { return; }
+    if (state._wiperTimer) { clearTimeout(state._wiperTimer); }
+
+    try {
+      if (window.StoryAudio && typeof window.StoryAudio.sting === 'function') {
+        window.StoryAudio.sting('wiper', 0.7);
+      }
+    } catch (eW) {}
+
+    var arm = ov.wiper;
+    arm.style.opacity = '0.9';
+    // Park the blade off-frame first, so the sweep always starts from the same
+    // angle. Without this a second wipe can begin mid-arc and read as a glitch.
+    arm.style.transition = 'none';
+    arm.style.transform = 'rotate(-68deg)';
+
+    var seq = [
+      [40, function () { arm.style.transition = ''; arm.style.transform = 'rotate(66deg)'; }],
+      [460, function () {
+        // Wipe complete: clear the accumulated beads so the lens is genuinely
+        // clean rather than merely scrolled.
+        try { if (ov.rainCanvas) { var c = ov.rainCanvas.getContext('2d'); if (c) { c.clearRect(0, 0, ov.rainCanvas.width, ov.rainCanvas.height); } } } catch (e1) {}
+        initRainDrops(ov.rainCanvas);
+        arm.style.transition = '';
+        arm.style.transform = 'rotate(-68deg)';
+      }],
+      [880, function () { arm.style.opacity = '0'; }]
+    ];
+    var i = 0;
+    var run = function () {
+      if (!ACTIVE) { return; }   // film ended mid-wipe: leave it be
+      if (i >= seq.length) { state._wiperTimer = 0; return; }
+      var stepDef = seq[i++];
+      state._wiperTimer = setTimeout(function () {
+        try { stepDef[1](); } catch (e2) {}
+        run();
+      }, stepDef[0]);
+    };
+    run();
+  }
+
+  /**
+   * One-frame white blowout — the muzzle flash.
+   *
+   * Not a held flash: a real gunshot is 4-8ms of light and the eye reads the
+   * darkness after it far more strongly than the flash itself. 200ms is already
+   * generous; anything longer looks like a lighting error.
+   */
+  function triggerFlash(state, strength) {
+    var ov = state && state.overlay;
+    if (!ov || !ov.flash) { return; }
+    var g = Math.max(0.2, Math.min(1, strength == null ? 0.85 : strength));
+    var f = ov.flash;
+    // Restart the CSS transition: setting opacity alone while a previous
+    // transition is mid-flight does nothing, and the flash silently vanishes on
+    // a replay because the element is already at opacity 0.
+    f.style.transition = 'none';
+    f.style.opacity = '0';
+    void f.offsetWidth;
+    f.style.transition = 'opacity 60ms ease-out';
+    f.style.opacity = String(g);
+    if (state._flashTimer) { clearTimeout(state._flashTimer); }
+    state._flashTimer = setTimeout(function () {
+      f.style.transition = 'opacity 260ms ease-out';
+      f.style.opacity = '0';
+      state._flashTimer = 0;
+    }, 70);
+  }
+
   function buildOverlay() {
     ensureStyle();
     var root = document.createElement('div');
@@ -164,21 +307,77 @@
       '<div class="cs-bar top"></div>' +
       '<div class="cs-bar bot"></div>' +
       '<div class="cs-vig"></div>' +
+      '<div class="cs-scanlines"></div>' +
+      '<canvas class="cs-rain-canvas" id="csRainCanvas"></canvas>' +
+      '<div class="cs-wiper" id="csWiper"></div>' +
+      '<div class="cs-flash" id="csFlash"></div>' +
+      '<div class="cs-osd" id="csOsd">' +
+        '<div class="cs-osd-top">' +
+          '<div class="cs-osd-rec"><span class="cs-rec-dot"></span><span id="csOsdRec">REC · 4K 60FPS</span></div>' +
+          '<div class="cs-osd-banner" id="csOsdBanner">MUMBAI TRAFFIC CRIME INVESTIGATION // SURVEILLANCE FEED</div>' +
+          '<div class="cs-osd-time" id="csOsdClock">03:14:18</div>' +
+        '</div>' +
+        '<div class="cs-osd-mid">' +
+          '<div class="cs-osd-bracket tl"></div><div class="cs-osd-bracket tr"></div>' +
+          '<div class="cs-osd-bracket bl"></div><div class="cs-osd-bracket br"></div>' +
+          '<div class="cs-osd-tc" id="csOsdTc">03:14:18:00</div>' +
+        '</div>' +
+        '<div class="cs-osd-bot">' +
+          '<div class="cs-osd-gps" id="csOsdGps">GPS: 19.0596° N, 72.8295° E // LINKING RD JUNCTION</div>' +
+          '<div class="cs-osd-unit" id="csOsdUnit">UNIT: BANDRA-WEST-04 // AUDIO: BANDPASS 104.2MHz</div>' +
+        '</div>' +
+      '</div>' +
       '<div class="cs-fade"></div>' +
       '<div class="cs-title"></div>' +
-      '<div class="cs-sub"></div>' +
+      '<div class="cs-transceiver" id="csTransceiver">' +
+        '<div class="cs-avatar" id="csAvatar">🚔</div>' +
+        '<div class="cs-content">' +
+          '<div class="cs-meta">' +
+            '<span class="cs-speaker-badge" id="csBadge">POLICE WIRELESS</span>' +
+            '<div class="cs-eq">' +
+              '<span class="cs-eq-bar"></span><span class="cs-eq-bar"></span>' +
+              '<span class="cs-eq-bar"></span><span class="cs-eq-bar"></span><span class="cs-eq-bar"></span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="cs-dialogue-line" id="csLine"></div>' +
+        '</div>' +
+      '</div>' +
       '<button class="cs-skip-btn" type="button" aria-label="Skip Cutscene">' +
         '<span>Skip Cutscene</span> <span class="cs-skip-icon">⏭</span>' +
       '</button>';
     document.body.appendChild(root);
+
+    // Cap the rain buffer. A 4K backing store would be four times the fill cost
+    // for droplets that are 2-5px across; the film reads identically at 1x.
+    var rCanvas = root.querySelector('.cs-rain-canvas');
+    if (rCanvas) {
+      rCanvas.width = Math.min(960, window.innerWidth || 800);
+      rCanvas.height = Math.min(640, window.innerHeight || 600);
+      initRainDrops(rCanvas);
+    }
+
     return {
       root: root,
       barTop: root.querySelector('.cs-bar.top'),
       barBot: root.querySelector('.cs-bar.bot'),
       vig: root.querySelector('.cs-vig'),
+      scanlines: root.querySelector('.cs-scanlines'),
+      rainCanvas: rCanvas,
+      wiper: root.querySelector('.cs-wiper'),
+      flash: root.querySelector('.cs-flash'),
+      osd: root.querySelector('.cs-osd'),
+      osdRec: root.querySelector('#csOsdRec'),
+      osdBanner: root.querySelector('#csOsdBanner'),
+      osdClock: root.querySelector('#csOsdClock'),
+      osdTc: root.querySelector('#csOsdTc'),
+      osdGps: root.querySelector('#csOsdGps'),
+      osdUnit: root.querySelector('#csOsdUnit'),
       fade: root.querySelector('.cs-fade'),
       title: root.querySelector('.cs-title'),
-      sub: root.querySelector('.cs-sub'),
+      transceiver: root.querySelector('.cs-transceiver'),
+      avatar: root.querySelector('#csAvatar'),
+      badge: root.querySelector('#csBadge'),
+      line: root.querySelector('#csLine'),
       skipBtn: root.querySelector('.cs-skip-btn')
     };
   }
@@ -186,6 +385,71 @@
   function teardownOverlay(ov) {
     if (!ov || !ov.root) { return; }
     try { if (ov.root.parentNode) { ov.root.parentNode.removeChild(ov.root); } } catch (e) {}
+    RAIN_DROPS = [];
+    LAST_SPEAKER = '';
+  }
+
+  // ── OSD clock ─────────────────────────────────────────────────────────────
+  /**
+   * Advance the surveillance overlay's running clock.
+   *
+   * A clock frozen on one value is the single thing that tells a viewer the OSD
+   * is a texture. Each frame adds the real frame delta to the film's own start
+   * time, so the clock runs at wall-clock speed and lands on a real time of day
+   * — which matters, because the cold open's whole point is 3:14am.
+   */
+  /**
+   * Zero-pad to two digits.
+   *
+   * This exists because the first version of these counters indexed a 12-entry
+   * hour table for minutes, seconds and frames too, so a 14-minute past 3am
+   * rendered as "03:undefined:undefined AM". A clock that says "undefined" is
+   * worse than no clock: it tells the viewer the film is a mock-up.
+   */
+  function pad2(n) {
+    n = Math.max(0, Math.floor(n || 0));
+    return (n < 10 ? '0' : '') + n;
+  }
+
+  function osdClockText(elapsedSec, base) {
+    var total = base + Math.max(0, elapsedSec);
+    var h = Math.floor(total / 3600) % 24;
+    var m = Math.floor(total / 60) % 60;
+    var s = Math.floor(total) % 60;
+    var ampm = h >= 12 ? 'PM' : 'AM';
+    var h12 = h % 12;
+    if (h12 === 0) { h12 = 12; }
+    return pad2(h12) + ':' + pad2(m) + ':' + pad2(s) + ' ' + ampm;
+  }
+
+  /**
+   * SMPTE-style timecode for the mid-frame counter: HH:MM:SS:FF.
+   *
+   * The frames field is what sells it. A wall-clock string looks like a label;
+   * a string with a running frame counter looks like a decoder, which is exactly
+   * what an evidence reel would have burned into it.
+   */
+  function osdTimecode(elapsedSec, base, fps) {
+    var f = fps || 24;
+    var total = Math.max(0, base) + Math.max(0, elapsedSec);
+    var frames = Math.floor((total % 1) * f);
+    var whole = Math.floor(total);
+    var h = Math.floor(whole / 3600) % 24;
+    var m = Math.floor(whole / 60) % 60;
+    var s = whole % 60;
+    return pad2(h) + ':' + pad2(m) + ':' + pad2(s) + ':' + pad2(frames);
+  }
+
+  /** Parse an authored clock ("3:14am", "03:14:18") into seconds past midnight. */
+  function osdBaseSeconds(str, fallback) {
+    var m = /(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(am|pm)?/i.exec(String(str || ''));
+    if (!m) { return fallback; }
+    var h = parseInt(m[1], 10) % 24;
+    var mm = parseInt(m[2], 10);
+    var ss = m[3] ? parseInt(m[3], 10) : 0;
+    if ((m[4] || '').toLowerCase() === 'pm' && h < 12) { h += 12; }
+    if ((m[4] || '').toLowerCase() === 'am' && h === 12) { h = 0; }
+    return (h * 3600) + (mm * 60) + ss;
   }
 
   // Title Case for user-facing overlay copy (AGENTS.md house rule).
@@ -201,12 +465,56 @@
     });
   }
 
+  var CHARACTER_ROLES = [
+    { re: /vikram|sawant/i, name: 'SI Vikram Sawant', dept: 'Traffic Surveillance Unit 12', icon: '🏍️', col: '#38bdf8' },
+    { re: /kadam|arjun|insp/i, name: 'Insp. Arjun Kadam', dept: 'Traffic Crime Branch', icon: '🚔', col: '#f59e0b' },
+    { re: /iyer|elderly|mummy/i, name: 'Mrs. Meenakshi Iyer', dept: 'Resident Eyewitness', icon: '👵', col: '#10b981' },
+    { re: /driver|fortuner/i, name: 'Fortuner Escort Driver', dept: 'Tinted VIP Convoy', icon: '🕶️', col: '#ef4444' },
+    { re: /vip|passenger|shadow/i, name: 'Shadowed VIP Passenger', dept: 'Unidentified Official', icon: '⚠️', col: '#dc2626' },
+    { re: /wireless|dispatch|control/i, name: 'Mumbai Police Wireless', dept: 'Bandra Central Control', icon: '📻', col: '#60a5fa' }
+  ];
+
+  function getCharacterMeta(speaker) {
+    var s = String(speaker || '');
+    for (var i = 0; i < CHARACTER_ROLES.length; i++) {
+      if (CHARACTER_ROLES[i].re.test(s)) { return CHARACTER_ROLES[i]; }
+    }
+    return { name: titleCase(speaker || 'Mumbai Police Wireless'), dept: 'Bandra Central Control', icon: '📻', col: '#60a5fa' };
+  }
+
+  var LAST_SPEAKER = '';
   function setSubtitle(ov, text) {
-    if (!ov || !ov.sub) { return; }
-    if (!text) { ov.sub.textContent = ''; ov.sub.style.opacity = '0'; return; }
-    var speaker = text.speaker ? titleCase(text.speaker) : '';
+    if (!ov || !ov.transceiver) { return; }
+    if (!text) {
+      ov.transceiver.style.opacity = '0';
+      ov.transceiver.style.transform = 'translateX(-50%) translateY(14px)';
+      return;
+    }
+    var rawSpeaker = text.speaker ? String(text.speaker).trim() : '';
+    var meta = getCharacterMeta(rawSpeaker);
     var line = text.line == null ? '' : String(text.line);
-    ov.sub.innerHTML = (speaker ? '<b>' + escapeHtml(speaker) + '</b>' : '') + escapeHtml(line);
+
+    if (rawSpeaker && rawSpeaker !== LAST_SPEAKER) {
+      LAST_SPEAKER = rawSpeaker;
+      try {
+        if (window.StoryAudio && typeof window.StoryAudio.sting === 'function') {
+          window.StoryAudio.sting('squelch', 0.55);
+        }
+      } catch (eSq) {}
+    }
+
+    if (ov.avatar) {
+      ov.avatar.textContent = meta.icon;
+      ov.avatar.style.borderColor = meta.col;
+    }
+    if (ov.badge) {
+      ov.badge.textContent = meta.name + ' · ' + meta.dept;
+      ov.badge.style.color = meta.col;
+      ov.badge.style.borderColor = meta.col;
+    }
+    if (ov.line) {
+      ov.line.innerHTML = escapeHtml(line);
+    }
   }
 
   // ── Cast spawning ─────────────────────────────────────────────────────────
@@ -235,19 +543,45 @@
               mesh.userData = mesh.userData || {};
               mesh.userData.rider = rider;
             }
+            // Halogen headlamp and red taillight for Vikram's motorcycle
+            try {
+              var hLamp = new THREE.Mesh(
+                new THREE.SphereGeometry(0.12, 14, 12),
+                new THREE.MeshBasicMaterial({ color: 0xfef08a })
+              );
+              hLamp.position.set(0, 0.72, 0.82);
+              mesh.add(hLamp);
+              var bSpot = new THREE.SpotLight(0xfff7ed, 3.2, 30, Math.PI / 6, 0.35, 1.2);
+              bSpot.position.set(0, 0.72, 0.85);
+              bSpot.target.position.set(0, 0, 16);
+              mesh.add(bSpot);
+              mesh.add(bSpot.target);
+              var tLamp = new THREE.Mesh(
+                new THREE.BoxGeometry(0.14, 0.08, 0.04),
+                new THREE.MeshBasicMaterial({ color: 0xef4444 })
+              );
+              tLamp.position.set(0, 0.65, -0.84);
+              mesh.add(tLamp);
+            } catch (eL) {}
           }
           if (mesh && (d.id === 'fortuner' || d.withDriver) && typeof window._buildCutsceneDriver === 'function') {
             var driver = window._buildCutsceneDriver();
             if (driver) {
-              driver.position.set(-0.35, 0.22, 0.12);
+              driver.position.set(0, 0, 0);
               mesh.add(driver);
               mesh.userData = mesh.userData || {};
               mesh.userData.driver = driver;
             }
           }
         } else {
-          var bh = (typeof window._buildHuman === 'function') ? window._buildHuman : null;
-          mesh = bh ? bh(false, { variant: d.variant || 'normal' }) : null;
+          if (d.id === 'arjun' && typeof window._buildCutsceneArjun === 'function') {
+            mesh = window._buildCutsceneArjun();
+          } else if (d.id === 'iyer' && typeof window._buildCutsceneIyer === 'function') {
+            mesh = window._buildCutsceneIyer();
+          } else {
+            var bh = (typeof window._buildHuman === 'function') ? window._buildHuman : null;
+            mesh = bh ? bh(false, { variant: d.variant || 'normal' }) : null;
+          }
         }
       } catch (e) { mesh = null; }
       if (!mesh) { return; }
@@ -459,6 +793,17 @@
   function updateOverlay(shot, p, state) {
     var ov = state.overlay;
     if (!ov) { return; }
+
+    // Per-shot OSD text, resolved once on entry rather than every frame.
+    if (state.fx) {
+      if (ov.osdClock && state.osdText) { ov.osdClock.textContent = state.osdText; }
+      if (ov.osdTc && state.osdTcText) { ov.osdTc.textContent = state.osdTcText; }
+      if (ov.osdGps && state.fx.osdGps) { ov.osdGps.textContent = state.fx.osdGps; }
+      if (ov.osdUnit && state.fx.osdUnit) { ov.osdUnit.textContent = state.fx.osdUnit; }
+      if (ov.osdBanner && state.fx.osdBanner) { ov.osdBanner.textContent = state.fx.osdBanner; }
+      if (ov.osdRec && state.fx.osdRec) { ov.osdRec.textContent = state.fx.osdRec; }
+    }
+
     // Bars ease in over the first 12% and out over the last 12% of the shot.
     var inP = Math.min(1, p / 0.12);
     var outP = Math.min(1, (1 - p) / 0.12);
@@ -466,8 +811,24 @@
     var sy = window.Shots ? window.Shots.ease('outCubic', bar) : bar;
     if (ov.barTop) { ov.barTop.style.transform = 'scaleY(' + sy + ')'; }
     if (ov.barBot) { ov.barBot.style.transform = 'scaleY(' + sy + ')'; }
-    if (ov.vig) { ov.vig.style.opacity = String(sy * 0.55); }
-    if (ov.skipBtn) { ov.skipBtn.style.opacity = String(Math.min(1, Math.max(0, (p - 0.05) / 0.15)) * sy); }
+
+    // Vignette and scanlines are per-act, not global.
+    //
+    // Both were previously pinned to one value, which was wrong in both
+    // directions: a heavy vignette over a midday beat crushed the frame edges
+    // until a verandah scene read as dusk, and scanlines over a daylight street
+    // made the playable map look like it was playing back off a tape. Each act
+    // declares its own weight; the film inherits whichever act the shot is in.
+    var fx = state.fx || {};
+    if (ov.vig) { ov.vig.style.opacity = String(sy * (fx.vig != null ? fx.vig : 0.34)); }
+    if (ov.scanlines) { ov.scanlines.style.opacity = String(sy * (fx.scan != null ? fx.scan : 0.12)); }
+    if (ov.rainCanvas) { ov.rainCanvas.style.opacity = String(sy * (fx.lensRain != null ? fx.lensRain : 0)); }
+
+    // The OSD is opt-in per shot. A surveillance overlay over a two-hander is
+    // a costume; over a CCTV-style insert it is the whole point.
+    if (ov.osd) { ov.osd.style.opacity = String(sy * (shot.osd ? 1 : 0)); }
+
+    if (ov.skipBtn) { ov.skipBtn.style.opacity = '1'; }
 
     // ── Shot transition ──
     // A hard cut between two unrelated camera setups reads as a glitch, so
@@ -497,16 +858,65 @@
       }
     }
 
-    if (ov.sub) {
-      if (shot.sub) {
-        var sp = p < 0.14 ? p / 0.14 : (p > 0.86 ? (1 - p) / 0.14 : 1);
-        setSubtitle(ov, shot.sub);
-        ov.sub.style.opacity = String(Math.max(0, Math.min(1, sp)));
-        ov.sub.style.transform = 'translateX(-50%) translateY(' + ((1 - Math.max(0, Math.min(1, sp))) * 8) + 'px)';
+    // Dialogue card. Note this is `transceiver`, not `sub` — the overlay was
+    // rebuilt around the transceiver card, and the old `ov.sub` branch had been
+    // left behind. It could never fire, so every line in the film was silent on
+    // screen while the audio still played: the exact failure that reads as
+    // "the subtitles are broken" rather than "a property was renamed".
+    if (ov.transceiver) {
+      var line = shot.sub || (state.subShown || null);
+      if (line) {
+        // Fade with the same envelope the bars use, so the card does not survive
+        // a hard cut into a shot that has no dialogue.
+        var sp = bar;
+        setSubtitle(ov, line);
+        ov.transceiver.style.opacity = String(Math.max(0, Math.min(1, sp)));
+        ov.transceiver.style.transform = 'translateX(-50%) translateY(' + ((1 - Math.max(0, Math.min(1, sp))) * 10) + 'px)';
       } else {
-        ov.sub.style.opacity = '0';
+        ov.transceiver.style.opacity = '0';
+        ov.transceiver.style.transform = 'translateX(-50%) translateY(10px)';
       }
     }
+  }
+
+  /**
+   * Resolve a shot's overlay treatment: which act's grade, and whether this cut
+   * is being seen through the surveillance camera or through the lens.
+   *
+   * `shot.osd` may be a boolean or an object — an object lets a shot rewrite the
+   * OSD's own clock and unit label, which is how one film shows two different
+   * cameras (a fixed CCTV clock for the inserts, the investigator's timecode for
+   * the handheld work) without two overlay elements.
+   */
+  function shotFx(shot) {
+    var actName = (shot && shot.act) || null;
+    var stage = null;
+    try {
+      var id = ACTIVE && ACTIVE.levelId != null ? ACTIVE.levelId
+        : (window.ui && window.ui.cur ? window.ui.cur.id : null);
+      var all = window.STAGE || {};
+      stage = all[String(id)] || null;
+    } catch (e) {}
+    var act = (stage && stage.acts && actName) ? stage.acts[actName] : null;
+
+    var fx = {
+      vig: act && act.vig != null ? act.vig : 0.34,
+      scan: act && act.scan != null ? act.scan : 0.12,
+      lensRain: (act && act.rain) ? 0.85 : 0,
+      wiper: !!(act && act.rain)
+    };
+    if (!shot) { return fx; }
+
+    var o = shot.osd;
+    if (o && typeof o === 'object') {
+      if (o.clock != null) { fx.osdBase = osdBaseSeconds(o.clock, 3 * 3600 + 14 * 60 + 18); }
+      if (o.gps) { fx.osdGps = o.gps; }
+      if (o.unit) { fx.osdUnit = o.unit; }
+      if (o.banner) { fx.osdBanner = o.banner; }
+      if (o.rec) { fx.osdRec = o.rec; }
+      if (o.tc !== false) { fx.osdTc = true; }
+    }
+    return fx;
   }
 
   // ── Fill light ────────────────────────────────────────────────────────────
@@ -516,18 +926,31 @@
   // so the lighting the player drives under is unchanged.
   function addFillLight(game) {
     try {
-      var amb = new THREE.AmbientLight(0xdde8f8, 0.85);
-      var key = new THREE.DirectionalLight(0xfff0e2, 0.75);
-      key.position.set(20, 36, 12);
-      var fill = new THREE.DirectionalLight(0xa5c4f5, 0.50);
-      fill.position.set(-30, 40, -40);
-      var junctionSpot = new THREE.PointLight(0xffd28a, 2.2, 55, 1.0);
-      junctionSpot.position.set(5.0, 11.0, -12.5);
-      game.scene.add(amb);
-      game.scene.add(key);
-      game.scene.add(fill);
-      game.scene.add(junctionSpot);
-      return [amb, key, fill, junctionSpot];
+      var isNight = !!(game && game.mapCfg && (game.mapCfg.isNight || game.mapCfg.mode === 'night'));
+      var lights = [];
+      if (isNight) {
+        // Balanced cinematic Mumbai night: luminous sky ambient fill, clear cool moon key, warm sodium bounce
+        var ambNight = new THREE.AmbientLight(0x405575, 0.70);
+        var moonKey = new THREE.DirectionalLight(0x93c5fd, 0.85);
+        moonKey.position.set(20, 45, 15);
+        var sodiumBounce = new THREE.DirectionalLight(0xf59e0b, 0.40);
+        sodiumBounce.position.set(-20, 25, -20);
+        game.scene.add(ambNight);
+        game.scene.add(moonKey);
+        game.scene.add(sodiumBounce);
+        lights.push(ambNight, moonKey, sodiumBounce);
+      } else {
+        var amb = new THREE.AmbientLight(0xdde8f8, 0.55);
+        var key = new THREE.DirectionalLight(0xfff0e2, 0.65);
+        key.position.set(20, 36, 12);
+        var fill = new THREE.DirectionalLight(0xa5c4f5, 0.35);
+        fill.position.set(-30, 40, -40);
+        game.scene.add(amb);
+        game.scene.add(key);
+        game.scene.add(fill);
+        lights.push(amb, key, fill);
+      }
+      return lights;
     } catch (e) { return []; }
   }
 
@@ -537,8 +960,35 @@
     });
   }
 
+  /**
+   * Wire the Skip button. This is the ONLY way to end a cutscene early.
+   *
+   * The requirement was a button rather than a key, and there is a concrete
+   * reason rather than a stylistic one: every key in this game is already a
+   * driving control (W/S throttle and brake, Space handbrake, arrows steer, F
+   * enter car, Escape pause), so a skip shortcut would either collide with
+   * driving or need a chord nobody discovers. A button costs one tap, works
+   * under a thumb on a phone, and cannot be pressed by accident mid-corner.
+   *
+   * `pointerdown` stops propagation so the tap does not also reach the canvas
+   * and register as a look/steer input behind the overlay. The button also gets
+   * an ARIA label and a real focus stop so it is reachable by keyboard for
+   * accessibility even though it is not a keyboard shortcut.
+   */
   function attachSkip(state) {
     try { if (window.StoryAudio && window.StoryAudio.unlock) { window.StoryAudio.unlock(); } } catch (e) {}
+
+    // Fetch the pre-rendered voice manifest up front, so the film's FIRST line is
+    // already a Sarvam mp3 rather than the browser voice. Loading it lazily on the
+    // first `say()` means shot 1 speaks in the wrong accent and every shot after
+    // it speaks in the right one, which is worse than being consistent either way.
+    // The load is fire-and-forget: a slow or absent manifest never delays the cut.
+    try {
+      if (window.StoryAudio && typeof window.StoryAudio.preloadVoices === 'function') {
+        window.StoryAudio.preloadVoices();
+      }
+    } catch (eVoice) {}
+
     if (state.overlay && state.overlay.skipBtn) {
       var btn = state.overlay.skipBtn;
       var onSkip = function (e) {
@@ -549,13 +999,17 @@
       };
       btn.addEventListener('click', onSkip);
       btn.addEventListener('touchend', onSkip);
-      btn.addEventListener('pointerdown', function (e) {
-        try { e.stopPropagation(); } catch (err) {}
-      });
+      var swallow = function (e) { try { e.stopPropagation(); } catch (err) {} };
+      btn.addEventListener('pointerdown', swallow);
+      btn.addEventListener('mousedown', swallow);
+      // Enter/Space on a focused button still fires `click`, which routes to the
+      // same skip(). That is the accessibility path, not a gameplay shortcut.
       state.detachSkip = function () {
         try {
           btn.removeEventListener('click', onSkip);
           btn.removeEventListener('touchend', onSkip);
+          btn.removeEventListener('pointerdown', swallow);
+          btn.removeEventListener('mousedown', swallow);
         } catch (e2) {}
       };
     } else {
@@ -684,6 +1138,19 @@
       game.pause = false;
       game._camOverride = true;
 
+      // ── Skip affordance ──────────────────────────────────────────────────────
+      // A BUTTON, deliberately, and not a key.
+      //
+      // A keyboard shortcut is the wrong shape for this in a driving game: W/S
+      // brake and accelerate, Space is the handbrake, and every arrow key is
+      // taken. Binding a skip to whatever key is left means either a control the
+      // player uses mid-lesson or a chord nobody discovers. A visible button
+      // costs one tap, is reachable with a thumb on a phone, and cannot be hit
+      // by accident while driving.
+      //
+      // It fades in ~1s after the film starts rather than being present on frame
+      // one, so it never competes with the opening shot for attention but is
+      // already there if the viewer decides immediately.
       attachSkip(ACTIVE);
 
       // The opening shot, applied now that ACTIVE exists.
@@ -694,9 +1161,18 @@
       // shot's audio block — ambience, stinger, and its spoken line. Firing the
       // audio before the camera lands means the film starts talking over a shot
       // the audience has not seen yet.
+      // Crime-scene dressing is REVEALED, not pre-built into the street. cinematics.js
+      // parks it invisible and applyShot() switches it on, so the opening crane
+      // sees an empty junction and the apparatus only arrives once something has
+      // happened.
       applyShot(0);
       applyTags();
       onShotEnter(ACTIVE.script[0]);
+      // The opening frame must already be graded. onShotEnter() only publishes
+      // ACTIVE.fx; updateOverlay() is what reads it, and that does not run until
+      // the first tick — so without this the film's first frame is an ungraded
+      // flash of daylight with full-strength scanlines.
+      try { updateOverlay(ACTIVE.script[0], 0, ACTIVE); } catch (eFirst) {}
       return true;
     } catch (e) {
       console.warn('[Cutscene] start() failed — continuing without film:', e);
@@ -735,8 +1211,32 @@
         window.Cinematics.applyAct(ACTIVE.game, shot.act);
       }
     } catch (e2) {}
+
+    // `noRain` overrides the act. The world rain is a 90m box centred on the
+    // junction, so a camera INSIDE the Fortuner (shot 6) would otherwise have
+    // 1200 streaks between the lens and the interior — rain falling through the
+    // roof. The act decides whether it is raining; this decides whether the
+    // camera can see it, and those are different questions.
+    try {
+      if (ACTIVE.game && ACTIVE.game._stageRain) {
+        ACTIVE.game._stageRain.visible = shot.noRain ? false : !!(ACTIVE.game._stageActRain !== false);
+      }
+    } catch (eRain) {}
     applyTags();
     // Aftermath handling (Shot 6 of Level 1 prologue): Vikram's bike toppled and fallen officer on road
+    // Crime-scene dressing is REVEALED, not pre-built into the street. cinematics.js
+    // parks the barricade, markers, sheet, cones and light bars invisible and
+    // this is what switches them on — so the opening crane sees an empty junction
+    // and the apparatus of an investigation only arrives once something has
+    // happened. `shot.clean` forces it back off for a flash-forward.
+    try {
+      if (ACTIVE.game) {
+        var wantsAftermath = !!shot.aftermath && !shot.clean;
+        if (wantsAftermath && typeof ACTIVE.game._aftermathOn === 'function') { ACTIVE.game._aftermathOn(); }
+        else if (!wantsAftermath && typeof ACTIVE.game._aftermathOff === 'function') { ACTIVE.game._aftermathOff(); }
+      }
+    } catch (eAfter) {}
+
     if (shot.aftermath) {
       if (ACTIVE.cast && ACTIVE.cast.actors && ACTIVE.cast.actors.vikram) {
         var vBike = ACTIVE.cast.actors.vikram;
@@ -788,11 +1288,50 @@
    * second and produce a continuous buzz instead of a line of dialogue.
    */
   function onShotEnter(shot) {
+    if (!ACTIVE || !shot) { return; }
     try {
       if (window.StoryAudio && window.StoryAudio.applyShot) {
-        window.StoryAudio.applyShot(shot, ACTIVE ? ACTIVE.idx : 0);
+        window.StoryAudio.applyShot(shot, ACTIVE.idx);
       }
     } catch (e) {}
+
+    // Overlay treatment for this cut. Everything lens-facing is decided here,
+    // once, because these are all animated transitions — restarting one per
+    // frame is what makes an overlay strobe.
+    try {
+      var fx = shotFx(shot);
+      ACTIVE.fx = fx;
+      ACTIVE.osdBase = (fx.osdBase != null) ? fx.osdBase : 3 * 3600 + 14 * 60 + 18;
+      ACTIVE.osdElapsed = 0;
+      ACTIVE.osdText = osdClockText(0, ACTIVE.osdBase);
+      // Empty, not null, for a shot with no OSD: the mid-frame counter is then
+      // CLEARED on the way out of a surveillance shot. Leaving the last CCTV
+      // timecode sitting in the element means the next OSD shot that only sets a
+      // clock opens on a stale counter, and the two disagree by however long the
+      // film ran in between.
+      ACTIVE.osdTcText = fx.osdTc ? osdTimecode(0, ACTIVE.osdBase) : '';
+
+      // A shot that declares `flashAt` blows out at that point in the shot.
+      // The flag is re-armed here; the tick fires it exactly once.
+      ACTIVE._flashAt = (shot.flashAt != null) ? shot.flashAt : null;
+      ACTIVE._flashFired = false;
+
+      // A wet-lens wipe is driven from the tick (see the timePass branch below),
+      // not from here — a wiper needs the ACTIVE record and must be abortable
+      // when the film ends.
+
+      // Restore the investigation overlay's own copy for a shot that carries no
+      // `osd`. Leaving the previous shot's CCTV text sitting in the DOM is
+      // invisible (the whole OSD is at opacity 0) but it is a lie about what the
+      // overlay currently says, and the first shot that DOES use `osd` without
+      // overriding every field would inherit a stranger's camera name.
+      if (!shot || !shot.osd) {
+        ACTIVE.fx.osdBanner = 'MUMBAI TRAFFIC CRIME INVESTIGATION // SURVEILLANCE FEED';
+        ACTIVE.fx.osdGps = 'GPS: 19.0596° N, 72.8295° E // LINKING RD JUNCTION';
+        ACTIVE.fx.osdUnit = 'UNIT: BANDRA-WEST-04 // AUDIO: BANDPASS 104.2MHz';
+        ACTIVE.fx.osdRec = 'REC · 4K 60FPS';
+      }
+    } catch (e2) {}
   }
 
   /**
@@ -816,12 +1355,6 @@
       try {
         if (explicit) {
           show = explicit.indexOf(t.id) >= 0;
-        } else if (speaker) {
-          // Match on the tag's own text: `_makeNametag` renders it verbatim, so
-          // "Vikram Sawant" matches a speaker of "Vikram Sawant" and a shot
-          // credited to the Fortuner's driver tags the Fortuner, not the bike.
-          var label = String(t.sprite.userData && t.sprite.userData.tagText || '').trim();
-          show = !!label && label.toLowerCase() === speaker.toLowerCase();
         }
       } catch (e) {}
       try { t.sprite.visible = show; } catch (e2) {}
@@ -845,10 +1378,13 @@
     if (!game || !game.scene || !game.camera) { return false; }
 
     var story = storyFor(level.id);
+    // Three independent ways a film may be forced to play. `alwaysReplay` is the
+    // campaign's "skipping must not dismiss this" flag; `force` is a one-off on
+    // the script or the campaign; the seen flag is the normal gate for every
+    // other level.
     var force = false;
-    try { force = !!(script.force || (story && (story.force || story.alwaysShow))); } catch (e) { force = false; }
-    // User requirement: after skipping, when the level loads again, the cutscene should still be shown.
-    if (!force && hasSeen(level.id) && level.id !== 1 && (!story || !story.alwaysShow)) { return false; }
+    try { force = !!(script.force || (story && (story.force || story.alwaysReplay))); } catch (e) { force = false; }
+    if (!force && hasSeen(level.id)) { return false; }
 
     var stage = stageFor(level.id);
     var stageBuilt = false;
@@ -912,13 +1448,19 @@
     var story = storyFor(levelId);
     if (!story || !story.beats || !story.beats.length) { return false; }
 
+    // A beat marked `once` plays a single time per browser. A campaign that re-forces
+    // its films (`alwaysReplay`) implies its beats replay too — otherwise
+    // "play it until I skip it" would hold for the prologue and quietly fail for
+    // the cliffhanger hanging off the last objective, which is the one the player
+    // actually came for.
+    var replayAll = !!story.alwaysReplay;
     var chosen = null;
     var chosenIdx = -1;
     for (var i = 0; i < story.beats.length; i++) {
       var b = story.beats[i];
       if (!b || !b.shots || !b.shots.length) { continue; }
       if (beatId != null && String(b.after) !== String(beatId)) { continue; }
-      if (b.once !== false && beatSeen(levelId, b.after != null ? b.after : i)) { continue; }
+      if (!replayAll && b.once !== false && beatSeen(levelId, b.after != null ? b.after : i)) { continue; }
       chosen = b; chosenIdx = i; break;
     }
     if (!chosen) { return false; }
@@ -948,10 +1490,14 @@
   function beatForTask(levelId, taskId) {
     var story = storyFor(levelId);
     if (!story || !story.beats || !story.beats.length) { return null; }
+    // Same rule as beat() — the two must agree or the beat will be found here,
+    // queued, and then refused by beat(), which reads as a beat that silently
+    // never plays.
+    var replayAll = !!story.alwaysReplay;
     for (var i = 0; i < story.beats.length; i++) {
       var b = story.beats[i];
       if (!b || String(b.after) !== String(taskId)) { continue; }
-      if (b.once !== false && beatSeen(levelId, b.after)) { continue; }
+      if (!replayAll && b.once !== false && beatSeen(levelId, b.after)) { continue; }
       return b;
     }
     return null;
@@ -982,6 +1528,37 @@
       var elapsed = now - ACTIVE.shotStartedAt;
       var p = elapsed / durMs;
 
+      // Lens rain advances on wall-clock dt. Gated on the act so a dry daylight
+      // beat pays nothing for a rain canvas it never shows.
+      if (ACTIVE.overlay && ACTIVE.overlay.rainCanvas && ACTIVE.fx && ACTIVE.fx.lensRain > 0) {
+        stepRainDrops(ACTIVE.overlay.rainCanvas, ACTIVE._dt);
+      }
+
+      // Surveillance clock: real elapsed seconds, recomputed each frame so a
+      // stall cannot desynchronise it from the film.
+      if (ACTIVE.osdClockBase != null) { /* kept for introspection */ }
+      if (ACTIVE.overlay && ACTIVE.overlay.osdClock && ACTIVE.osdBase != null) {
+        ACTIVE.osdElapsed = (ACTIVE.osdElapsed || 0) + ACTIVE._dt;
+        var txt = osdClockText(ACTIVE.osdElapsed, ACTIVE.osdBase);
+        if (txt !== ACTIVE.osdText) {
+          ACTIVE.osdText = txt;
+          ACTIVE.overlay.osdClock.textContent = txt;
+        }
+        // The mid-frame timecode runs off the same elapsed accumulator, so the
+        // two counters can never disagree — which is what would give away that
+        // they are DOM elements rather than a burn-in.
+        if (ACTIVE.overlay.osdTc && ACTIVE.osdTcText !== null) {
+          ACTIVE.osdTcText = ACTIVE.osdTcText ? osdTimecode(ACTIVE.osdElapsed, ACTIVE.osdBase) : '';
+        }
+      }
+
+      // The muzzle flash fires once, at its authored mark, from the tick rather
+      // than from applyShot() — which runs every frame.
+      if (ACTIVE._flashAt != null && !ACTIVE._flashFired && p >= ACTIVE._flashAt) {
+        ACTIVE._flashFired = true;
+        triggerFlash(ACTIVE, shot.flashGain);
+      }
+
       // Transition clock runs from the start of each shot. Default is a short
       // dissolve; opt out per shot with transition:'cut'.
       var transDur = (shot.transition === 'cut') ? 0 : (shot.dissolve != null ? shot.dissolve : 0.44);
@@ -990,6 +1567,17 @@
         ACTIVE.transT = 0;
       }
       ACTIVE.transT = ACTIVE.transT + ACTIVE._dt;
+
+      // A time-pass cut also fires the wiper. `applyTimed` owns the one-shot
+      // guards, but the wiper is an overlay concern and needs the ACTIVE record,
+      // so it is evaluated here against its own key instead.
+      if (shot.timePass === true && ACTIVE.fx && ACTIVE.fx.wiper && shot.wipe !== false) {
+        var wk = 'wipe:' + ACTIVE.idx;
+        if (shot['__' + wk] !== true) {
+          shot['__' + wk] = true;
+          triggerWiper(ACTIVE);
+        }
+      }
 
       applyShot(p > 1 ? 1 : p);
       updateOverlay(shot, p > 1 ? 1 : p, ACTIVE);
@@ -1007,6 +1595,20 @@
           }
         });
       }
+
+      // Step any prop that owns its own animation (today: the patrol light bars'
+      // alternating strobe). Driven from the film clock so a paused game freezes
+      // them too — a strobe that keeps flashing while the film is paused is the
+      // sort of detail that makes a pause feel like a bug.
+      try {
+        if (ACTIVE.game && ACTIVE.game._stageAftermath && ACTIVE.game._stageAftermath.visible) {
+          ACTIVE.game._stageAftermath.traverse(function (o) {
+            if (o && o.userData && typeof o.userData.stageTick === 'function') {
+              try { o.userData.stageTick(ACTIVE._dt); } catch (eTick) {}
+            }
+          });
+        }
+      } catch (eStage) {}
 
       // Step falling monsoon rain particles dynamically
       if (game && game.scene) {
@@ -1085,6 +1687,13 @@
     } catch (e) {}
 
     (state.rehideTimers || []).forEach(function (t) { try { clearTimeout(t); } catch (e) {} });
+    // Overlay animations run on their own timers and would keep moving over the
+    // HUD after the film released the frame.
+    try { if (state._wiperTimer) { clearTimeout(state._wiperTimer); state._wiperTimer = 0; } } catch (eT) {}
+    try { if (state._flashTimer) { clearTimeout(state._flashTimer); state._flashTimer = 0; } } catch (eT2) {}
+    // Kill the rain loop's canvas immediately; the overlay teardown below removes
+    // the element, but a queued tick between those two would throw on a dead ctx.
+    try { if (state.overlay && state.overlay.rainCanvas) { state.overlay.rainCanvas.width = 0; state.overlay.rainCanvas.height = 0; } } catch (eT3) {}
     // Film audio must stop with the film. Leaving a rain loop or a half-spoken
     // line running under gameplay is the kind of thing that makes a whole build
     // feel haunted.
@@ -1143,10 +1752,18 @@
 
     if (markPlayed !== false && !rebuildErr) {
       if (state.kind === 'beat') {
-        if (state.beatId != null) { markBeatSeen(state.levelId, state.beatId); }
+        var bStory = storyFor(state.levelId);
+        if (!(bStory && bStory.alwaysReplay) && state.beatId != null) {
+          markBeatSeen(state.levelId, state.beatId);
+        }
       } else if (state.level) {
+        // `alwaysReplay` is checked here as well as in begin(). Writing the seen
+        // mark for a campaign that re-forces its film is harmless on its own —
+        // begin() ignores the flag — but it leaves a lie in localStorage that
+        // any future reader (a replay button, a "continue" flow, a dev tool) will
+        // take at face value and act on.
         var sObj = storyFor(state.level.id);
-        if (state.level.id !== 1 && !(sObj && sObj.alwaysShow)) {
+        if (!(sObj && sObj.alwaysReplay)) {
           markSeen(state.level.id);
         }
       }
@@ -1246,7 +1863,16 @@
     var i = Math.max(0, Math.min(ACTIVE.script.length - 1, idx | 0));
     ACTIVE.idx = i;
     ACTIVE.shotStartedAt = (window.performance && performance.now) ? performance.now() : Date.now();
-    try { applyShot(0); } catch (e) {}
+    try {
+      applyShot(0);
+      // onShotEnter() is required here, not just applyShot(). applyShot moves the
+      // camera and toggles the aftermath dressing, but the overlay GRADE, the OSD
+      // copy and the lens rain are all published by onShotEnter — so a seek that
+      // skipped it landed on a surveillance shot still wearing the previous
+      // shot's clock, banner and rain state.
+      onShotEnter(ACTIVE.script[i]);
+      updateOverlay(ACTIVE.script[i], 0, ACTIVE);
+    } catch (e) {}
     return true;
   }
 

@@ -378,7 +378,12 @@ Class Of Learners is built by students in Mumbai:
 - **Aarush Vangari** — UI/UX design and physics engine
 - **Yashraj Jadhav** — QA, UI/UX, and product ideation
 - **Aarayaman Jadhav** — 3D systems and geospatial data
-- **Akshara Bangar** — Content research and interface polish
+- **John Doe** — Anonymous secret helper in developing CoL, core architecture advisor, and stealth systems contributor
+
+### Teachers & Mentors
+
+- **Sanjana Kasbe** — Project mentor & educator (ATI, Solar System Engine, Hand Tracking / GestureUI, and more)
+- **Avantika Raskar** — Teacher & project mentor (Traffic Simulator, ATI updates)
 
 ## License
 

@@ -4,7 +4,33 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995"
      crossorigin="anonymous"></script>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Class Of Learners" />
+    <script>
+      ;(function () {
+        var ua = navigator.userAgent || ''
+        var p = navigator.platform || ''
+        var force = false
+        try {
+          force =
+            location.search.indexOf('iphone=1') !== -1 ||
+            location.search.indexOf('glass=1') !== -1 ||
+            localStorage.getItem('force_iphone') === 'true' ||
+            localStorage.getItem('liquid_glass') === 'true'
+        } catch (e) {}
+        if ((/iPhone/i.test(ua) || p === 'iPhone' || force) && !/iPad/i.test(ua)) {
+          document.documentElement.classList.add('is-iphone')
+          var m = ua.match(/OS (\d+)_/)
+          if (m) {
+            var v = parseInt(m[1], 10)
+            document.documentElement.classList.add('ios-' + v)
+            if (v >= 17) document.documentElement.classList.add('ios-17-plus')
+          }
+        }
+      })()
+    </script>
     <meta
       name="description"
       content="See how CBSE Bhavani Shankar School in Mumbai shaped Class Of Learners through academic programs, technical curiosity, and a student-led learning culture."
@@ -1089,7 +1115,7 @@
       @media (max-width: 768px) {
         html:not(.is-iphone) .top-nav { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background: rgba(7,10,20,0.92) !important; }
         html:not(.is-iphone) .top-nav::before { display: none !important; }
-        body.lm .top-nav { background: rgba(243,242,235,0.95) !important; }
+        html:not(.is-iphone) body.lm .top-nav { background: rgba(243,242,235,0.95) !important; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important; }
       }
 
@@ -1489,7 +1515,7 @@
         <h2 style="font-family: var(--serif); font-size: 2.4rem; font-weight: 400; margin-bottom: 24px; color: var(--ink)">Why This School <em style="color: var(--em)">Matters</em> to CoL</h2>
         <p style="color: var(--dim); font-size: 1.05rem; line-height: 1.9; margin-bottom: 20px">
           Class Of Learners was born inside these walls. The school's emphasis on computer science and hands-on learning gave us the confidence to attempt building real-world applications. Our
-          teachers, particularly our mentor Sanjana Kasbe, encouraged us to push beyond the syllabus &mdash; to write actual software, debug real problems, and collaborate like a professional
+          teachers, particularly our mentors Sanjana Kasbe and Avantika Raskar, encouraged us to push beyond the syllabus &mdash; to write actual software, debug real problems, and collaborate like a professional
           development team.
         </p>
         <p style="color: var(--dim); font-size: 1.05rem; line-height: 1.9">

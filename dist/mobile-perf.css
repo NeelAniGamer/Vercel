@@ -230,26 +230,10 @@
   }
 }
 
-/* ── 7. Disable Liquid Glass on mobile (it uses backdrop-filter) ────────── */
-@media (max-width: 768px) {
-  .is-iphone .top-nav,
-  .is-iphone .orrery-dock,
-  .is-iphone .node-inspector,
-  .is-iphone .col-bottom-bar,
-  .is-iphone .mo .md,
-  .is-iphone .hud-group {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
-
-  /* Keep the solid glass look but kill the blur */
-  .is-iphone .top-nav::after,
-  .is-iphone .orrery-dock::after,
-  .is-iphone .node-inspector::after,
-  .is-iphone .col-bottom-bar::after {
-    display: none !important;
-  }
-}
+/* ── 7. Liquid Glass on iPhone ──────────────────────────────────────────────
+   iPhones use dedicated Apple GPU hardware for 120fps real-time glass shaders.
+   Full Liquid Glass optics, multi-layer specular highlights, and ambient
+   refraction are enabled in liquid-glass.css for all iPhone users. ── */
 
 /* ── 8. Reduce paint complexity ─────────────────────────────────────────── */
 @media (max-width: 768px) {

@@ -4,17 +4,40 @@
   'use strict'
 
   // ═══════════════════════════════════════════════════════════════════════
-  // 1. iPhone Detection (iPhone ONLY) → adds .is-iphone to <html>
+  // 1. iPhone Liquid Glass Detection & Ambient Fluid Aurora Mounting
   // ═══════════════════════════════════════════════════════════════════════
+  function mountLiquidBackdrop() {
+    if (!document.documentElement.classList.contains('is-iphone')) return
+    if (document.getElementById('apple-liquid-backdrop')) return
+    if (!document.body) {
+      document.addEventListener('DOMContentLoaded', mountLiquidBackdrop)
+      return
+    }
+    var backdrop = document.createElement('div')
+    backdrop.id = 'apple-liquid-backdrop'
+    backdrop.className = 'apple-liquid-backdrop'
+    backdrop.setAttribute('aria-hidden', 'true')
+    backdrop.innerHTML =
+      '<div class="apple-glass-orb apple-orb-amber"></div>' +
+      '<div class="apple-glass-orb apple-orb-cyan"></div>' +
+      '<div class="apple-glass-orb apple-orb-purple"></div>' +
+      '<div class="apple-glass-orb apple-orb-rose"></div>'
+    document.body.prepend(backdrop)
+  }
+
   function detectiPhone() {
     var ua = navigator.userAgent || ''
     var platform = navigator.platform || ''
     var hasForceFlag = false
     try {
-      hasForceFlag = window.location.search.indexOf('iphone=1') !== -1 || localStorage.getItem('force_iphone') === 'true'
+      hasForceFlag =
+        window.location.search.indexOf('iphone=1') !== -1 ||
+        window.location.search.indexOf('glass=1') !== -1 ||
+        localStorage.getItem('force_iphone') === 'true' ||
+        localStorage.getItem('liquid_glass') === 'true'
     } catch (e) {}
 
-    // Strict iPhone detection — excludes iPad, Mac, Android, and desktop browsers
+    // Strict iPhone detection — excludes iPad, Mac, Android, unless force flag is set
     var isIPhone = (/iPhone/i.test(ua) || platform === 'iPhone' || hasForceFlag) && !/iPad/i.test(ua)
 
     if (isIPhone) {
@@ -27,7 +50,25 @@
           document.documentElement.classList.add('ios-17-plus')
         }
       }
+      mountLiquidBackdrop()
     }
+  }
+
+  window.toggleAppleLiquidGlass = function (force) {
+    var willEnable = typeof force === 'boolean' ? force : !document.documentElement.classList.contains('is-iphone')
+    try {
+      localStorage.setItem('force_iphone', willEnable ? 'true' : 'false')
+      localStorage.setItem('liquid_glass', willEnable ? 'true' : 'false')
+    } catch (e) {}
+    if (willEnable) {
+      document.documentElement.classList.add('is-iphone')
+      mountLiquidBackdrop()
+    } else {
+      document.documentElement.classList.remove('is-iphone')
+      var el = document.getElementById('apple-liquid-backdrop')
+      if (el && el.parentNode) el.parentNode.removeChild(el)
+    }
+    return willEnable
   }
 
   detectiPhone()

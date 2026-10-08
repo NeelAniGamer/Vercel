@@ -1047,7 +1047,7 @@
           { name: 'Ansh Patil',     role: 'Co-Dev',  key: 'teal',  pos: new THREE.Vector3(16, 7, 0) },
           { name: 'Aarush Vangari', role: 'UI/UX',   key: 'plasma', pos: new THREE.Vector3(-16, -8, 0) },
           { name: 'Yashraj Jadhav', role: 'QA/Design', key: 'em',  pos: new THREE.Vector3(16, -8, 0) },
-          { name: 'Akshara Bangar', role: 'Research', key: 'dim',  pos: new THREE.Vector3(0, -16, 0) }
+          { name: 'John Doe',       role: 'Anonymous Advisor', key: 'plasma', pos: new THREE.Vector3(0, -16, 0) }
         ]
 
         var stars = []

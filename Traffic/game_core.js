@@ -1495,6 +1495,21 @@ class Game {
             if (e.key.toLowerCase() === 'f' && !e.repeat) { this._fTapT = this.timer; this._fTapConsumed = false; }
             this._lastInputTime = this.timer;
             if (this._idleHintShown) { this._idleHintShown = false; const h = document.getElementById('idle-hint'); if (h) {h.style.display = 'none';} }
+
+            // ── CUTSCENES TAKE THE KEYS ────────────────────────────────────
+            // Every binding below is a driving control: gears, horn, high beam,
+            // indicators, camera mode, cruise. None may fire while a film owns
+            // the frame, and the reason is not "the input was ignored" — the horn
+            // plays over the dialogue, the horn sound lands on the gunshot, and
+            // the first-person toggle changes the camera the player inherits the
+            // instant the film hands control back.
+            //
+            // There is deliberately NO skip binding here. A cutscene is skipped
+            // with the Skip button (cutscene.js attachSkip), not with a key: in
+            // a driving game every key is already spoken for, so a shortcut would
+            // either collide with driving or be undiscoverable.
+            if (window.Cutscene && window.Cutscene.isActive && window.Cutscene.isActive()) { return; }
+
             const gm = { p: 'P', r: 'R', n: 'N', d: 'D', '1': '1', '2': '2', '3': '3', '4': '4', '5': '5' };
             if (gm[e.key.toLowerCase()]) {this.setGear(gm[e.key.toLowerCase()]);}
             if (e.key === ' ') {this._horn();}
@@ -2512,6 +2527,9 @@ class Game {
 
       _horn() {
           this._honkedThisFrame = true;
+          if (typeof this._nearRedSignal === 'function' && this._nearRedSignal(35)) {
+            this._honkedNearSignal = true;
+          }
           if (this.mapCfg && this.mapCfg.isSilenceZone) {
             
 
@@ -3392,6 +3410,12 @@ class Game {
         this._splitTimes = []; this._driftScore = 0; this._driftQuiet = 0; this._nmCooldown = 0; this._fovKick = 0;
         this._victoryPrimed = false; this._victorySlow = 0;
         this._completing = false; this._completeToken = (this._completeToken || 0) + 1;
+        // Per-attempt latch for the end-of-level cliffhanger. It is cleared here
+        // rather than in completeLevel() so that a Retry replays the hook instead
+        // of silently completing with the reward screen, which is what happens if
+        // the latch outlives the attempt.
+        this._cliffhangerDone = false;
+        this._cliffhangerPlaysFromCompletion = true;
         try { this._recordTelemetry('attempt'); } catch (e) {}
         this._ghostPts = []; this._ghostLastT = -1; this._ghostIdx = 0; this._ghostTried = false;
         try { this._destroyGhostMesh(); } catch (e) {}
@@ -3439,6 +3463,7 @@ class Game {
         this.turnTimer = 0;
         this.phoneGpsOn = false;
         this._honkedThisFrame = false;
+        this._honkedNearSignal = false;
         this._nearbyPedCount = 0;
         this._collidedThisFrame = false;
         this._ambulanceNear = false;
@@ -4307,7 +4332,11 @@ class Game {
               else if (t.target === 'parking_spot' && Math.abs(this.speed) < 0.05) {complete = true;}
               else if (t.target === 'red_light' && Math.abs(this.speed) < 0.05) {complete = true;}
               // Strict variant: stopped NEAR a red signal (not just anywhere)
-              else if (t.target === 'red_signal' && Math.abs(this.speed) < 0.05 && this._nearRedSignal(30)) {complete = true;}
+              else if (t.target === 'red_signal' && Math.abs(this.speed) < 0.05 && this._nearRedSignal(30)) {
+                const inVeh = (!this.mapCfg || !this.mapCfg.startOutside) || this._everEnteredVehicle;
+                const atSignalArea = (this.hits >= 1) || (this.player && this.player.position.z >= -70 && this.player.position.z <= 20 && Math.abs(this.player.position.x) <= 25);
+                if (inVeh && atSignalArea) { complete = true; }
+              }
               else if (t.target === 'cow' && this._animalObstacle && this._animalObstacle.everWaitedNear) {complete = true;}
               else if (t.target === 'cow_moved' && this._animalObstacle && this._animalObstacle.moved) {complete = true;}
               break;
@@ -4339,7 +4368,12 @@ class Game {
               else if (t.target === 'gap_spot' && this._reachedGap) {complete = true;}
               break;
             case 'avoid':
-              if (t.target === 'honk' && !this._honkedThisFrame) {complete = true;}
+              if (t.target === 'honk') {
+                const waitRedTask = this.tasks && this.tasks.find(x => x.id === 'wait_red');
+                const waitRedDone = !waitRedTask || waitRedTask.done;
+                const pastSignal = (this.hits >= 2) || (this.player && this.player.position.z > -10);
+                if (waitRedDone && pastSignal && !this._honkedNearSignal) { complete = true; }
+              }
               else if (t.target === 'speed_zone') {
                 if (this.player && this.mapCfg && this.mapCfg.hasSchool) {
                   const px = this.player.position.x;
@@ -4395,7 +4429,13 @@ class Game {
                     }
                   }
                 } else if (this._nearbyPedCount === 0) {
-                  complete = true;
+                  const waitRedTask = this.tasks && this.tasks.find(x => x.id === 'wait_red');
+                  const waitRedDone = !waitRedTask || waitRedTask.done;
+                  const inVeh = (!this.mapCfg || !this.mapCfg.startOutside) || this._everEnteredVehicle;
+                  const pastCrossing = (this.hits >= 2) || (this.player && this.player.position.z > -10);
+                  if (inVeh && waitRedDone && pastCrossing) {
+                    complete = true;
+                  }
                 }
               }
               else if (t.target === 'collision' && !this._collidedThisFrame) {complete = true;}
@@ -4479,6 +4519,49 @@ class Game {
        * The queued beat is cleared on level load, so completing the same objective
        * twice (a retry) cannot stack two films.
        */
+      /**
+       * Play the beat attached to the lesson's LAST objective, if it has one, and
+       * hold the reward screen until it finishes.
+       *
+       * Called from completeLevel() rather than from _checkTasks(), because the
+       * final objective and the final checkpoint complete in the same frame and
+       * the checkpoint is detected first. See the comment at the call site.
+       *
+       * @returns {boolean} true when a film was started (caller must not proceed)
+       */
+      _playCliffhangerBeat() {
+        const C = window.Cutscene;
+        if (!C || typeof C.beatForTask !== 'function' || typeof C.beat !== 'function') { return false; }
+        const tasks = this.tasks || [];
+        if (!tasks.length) { return false; }
+        // The LAST objective, walked backwards: the final one is the one whose
+        // beat is the cliffhanger.
+        for (let i = tasks.length - 1; i >= 0; i--) {
+          const t = tasks[i];
+          if (!t || !t.id) { continue; }
+          let has = false;
+          try { has = !!C.beatForTask(this.lvId, t.id); } catch (e) { has = false; }
+          if (!has) { continue; }
+          const lvId = this.lvId;
+          try {
+            if (C.beat(this, lvId, t.id)) {
+              // The reward screen is queued behind the film. `finish()` restores
+              // `playing = true` before it fires these, so the re-entrant
+              // completeLevel() call is a normal one.
+              if (typeof C.onEnd === 'function') {
+                C.onEnd(() => { try { if (this.lvId === lvId) { this.completeLevel(); } } catch (e2) {} });
+              }
+              return true;
+            }
+          } catch (e3) {
+            console.warn('[Driving] cliffhanger beat failed — showing rewards:', e3);
+            return false;
+          }
+          break;
+        }
+        return false;
+      }
+
       _queueStoryBeat(taskId) {
         if (!taskId || taskId == null) { return; }
         const C = window.Cutscene;
@@ -4486,6 +4569,11 @@ class Game {
         let has = false;
         try { has = !!C.beatForTask(this.lvId, taskId); } catch (e) { has = false; }
         if (!has) { return; }
+        // The LAST objective's beat is the cliffhanger, and completeLevel() plays
+        // it. Queueing it here as well would start two films of the same shots
+        // back to back — the second one starting on the frame the first ends.
+        if (this._cliffhangerPlaysFromCompletion && this.tasks && this.tasks.length &&
+            taskId === (this.tasks[this.tasks.length - 1] || {}).id) { return; }
         if (this._storyBeatFrame) { cancelAnimationFrame(this._storyBeatFrame); }
         const lvId = this.lvId;
         this._storyBeatFrame = requestAnimationFrame(() => {
@@ -4493,6 +4581,8 @@ class Game {
           // The player may have restarted the level in that frame.
           if (this.lvId !== lvId || !this.playing) { return; }
           try {
+            // A film already running means this objective's beat is either the one
+            // playing or was refused as a duplicate. Either way, do not stack.
             if (window.Cutscene && !window.Cutscene.isActive()) {
               window.Cutscene.beat(this, lvId, taskId);
             }
@@ -4647,17 +4737,58 @@ class Game {
       }
       completeLevel() {
         if (!this.playing || this._completing) {return;}
+
+        // ── THE CLIFFHANGER PLAYS BEFORE THE REWARD SCREEN ──────────────────
+        // A level that ends on a story beat must show that beat to the player
+        // before anything else covers the frame.
+        //
+        // This is not optional polish — it is load-bearing, because of an ordering
+        // fact in the tick. `_ucps()` (which detects the final checkpoint and
+        // calls this method) runs BEFORE `_checkTasks()` (which completes the
+        // final objective and queues its beat) in the same frame. Without this
+        // gate, `stopPlay()` ran first and cleared `this.tasks`, so `_checkTasks`
+        // returned early and the beat was never queued at all: a cliffhanger that
+        // existed, validated, and shipped without ever being seen.
+        //
+        // `_cliffhangerDone` is the latch. It is set BEFORE the beat is started so
+        // the re-entrant call that `Cutscene.onEnd` makes falls straight through
+        // to the reward screen instead of starting the film a second time.
+        if (!this._cliffhangerDone) {
+          this._cliffhangerDone = true;
+          if (this._playCliffhangerBeat()) { return; }
+        }
+
         this._completing = true;
         // Victory beat first: 450ms of quarter-speed celebration, then the
         // normal completion flow (rewards, overlay, quiz).
+        //
+        // The continuation calls _finishLevel() directly, NOT completeLevel().
+        // `this._completing` was just set to true to stop the per-frame `_ucps()`
+        // detection from re-entering this method, and the guard at the top of
+        // completeLevel() tests that same flag — so re-entering would return
+        // immediately and the reward screen would never be built. The victory beat
+        // and the completion guard cannot share one entry point.
         if (!this._victoryPrimed) {
           this._victoryPrimed = true;
           this._victorySlow = 0.45;
           this._fovKick = Math.min(9, (this._fovKick || 0) + 7);
           const _tok = this._completeToken = (this._completeToken || 0) + 1;
-          setTimeout(() => { try { if (this._completeToken === _tok) {this.completeLevel();} } catch (e) {} }, 450);
+          setTimeout(() => { try { if (this._completeToken === _tok) { this._finishLevel(); } } catch (e) {} }, 450);
           return;
         }
+        this._finishLevel();
+      }
+
+      /**
+       * The second half of level completion: rewards, overlay, quiz.
+       *
+       * Split out of completeLevel() because the victory beat's 450ms
+       * continuation cannot go back through completeLevel() — its re-entry guard
+       * (`this._completing`) is precisely the thing that continuation must
+       * bypass. Both paths call this one method so the reward flow stays in a
+       * single place.
+       */
+      _finishLevel() {
         this._victoryPrimed = false;
         this.reachedGoal = true;
         this.levelCompleted = true;
@@ -7238,7 +7369,7 @@ class Game {
         }
 
         // Mumbai Landmarks (Spawned randomly in non-pedestrian levels to add flavor)
-        if (!cfg.isPedestrian && !cfg.isBridge) {
+        if (!this._stageBuild && !cfg.isPedestrian && !cfg.isBridge) {
           const buildLandmark = (type, bx, bz) => {
             const lg = new THREE.Group();
             if (type === 'gateway') {
@@ -9880,6 +10011,7 @@ class Game {
       }
 
       _buildParksAndTrees() {
+        if (this._stageBuild) { return; }
         const graph = this.roadGraph;
         if (!graph) {return;}
         const cfg = this.mapCfg || {};

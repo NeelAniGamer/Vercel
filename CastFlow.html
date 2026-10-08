@@ -5,6 +5,32 @@
      crossorigin="anonymous"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Class Of Learners" />
+    <script>
+      ;(function () {
+        var ua = navigator.userAgent || ''
+        var p = navigator.platform || ''
+        var force = false
+        try {
+          force =
+            location.search.indexOf('iphone=1') !== -1 ||
+            location.search.indexOf('glass=1') !== -1 ||
+            localStorage.getItem('force_iphone') === 'true' ||
+            localStorage.getItem('liquid_glass') === 'true'
+        } catch (e) {}
+        if ((/iPhone/i.test(ua) || p === 'iPhone' || force) && !/iPad/i.test(ua)) {
+          document.documentElement.classList.add('is-iphone')
+          var m = ua.match(/OS (\d+)_/)
+          if (m) {
+            var v = parseInt(m[1], 10)
+            document.documentElement.classList.add('ios-' + v)
+            if (v >= 17) document.documentElement.classList.add('ios-17-plus')
+          }
+        }
+      })()
+    </script>
     <meta name="theme-color" content="#070a14" />
     <title>CastFlow — Your Phone. Any Screen. | Class Of Learners</title>
     <meta name="description" content="CastFlow lets you cast your Android screen, share files, and use desktop mode — all from your browser. No cables. No installs on the receiver." />

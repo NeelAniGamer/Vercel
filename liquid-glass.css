@@ -1,226 +1,233 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   liquid-glass.css — Apple Liquid Glass Design System for iPhone
-   Activates STRICTLY via .is-iphone class added by JS device detection.
-   Features: authentic Apple frosted glass, multi-layer specular refraction,
-   spring-physics touch responses, liquid pill active tab animations,
-   and dynamic iOS specular shimmer sweeps.
+   liquid-glass.css — Apple Liquid Glass Design System For iPhone
+   Activates strictly via .is-iphone class added by device detection.
+   Features:
+   - High-fidelity optical refraction & ambient chromatic aurora lighting
+   - Multi-tier Apple glass materials (Ultra-Thin, Regular, Thick)
+   - Dual-tone specular rim lighting & 3D bevel refraction
+   - Continuous squircle curvature & dynamic specular sheen sweeps
+   - Apple spring physics kinematics & tactile touch squish
+   - Full edge-to-edge Dynamic Island, Notch & Home Bar safe-area ergonomics
+   - Complete Apple Light Mode & Dark Mode crystalline shaders
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* ── Apple iOS Motion Variables ─────────────────────────────────────────── */
+/* ── 1. Apple Kinematics, Optics & Tokens ────────────────────────────────── */
 .is-iphone {
   --apple-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --apple-ease: cubic-bezier(0.32, 0.72, 0, 1);
-  --apple-snap: cubic-bezier(0.2, 0.9, 0.3, 1);
+  --apple-squish: cubic-bezier(0.2, 0.9, 0.3, 1);
+  --apple-snap: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  --glass-blur-regular: 30px;
+  --glass-blur-thick: 34px;
+  --glass-blur-thin: 20px;
+  --glass-saturate: 210%;
+  --glass-brightness: 1.12;
+
+  --apple-gold-grad: linear-gradient(135deg, rgba(242, 184, 75, 0.95) 0%, rgba(224, 145, 14, 0.88) 100%);
+  --apple-gold-glow: 0 10px 30px rgba(242, 184, 75, 0.42);
 }
 
-/* ── Liquid Glass Base Material ─────────────────────────────────────────── */
-.is-iphone .liquid-glass,
-.is-iphone .top-nav,
-.is-iphone .orrery-dock,
-.is-iphone .node-inspector,
-.is-iphone .col-bottom-bar,
-.is-iphone .mo .md,
-.is-iphone .hud-group {
-  background: rgba(18, 24, 38, 0.68) !important;
-  backdrop-filter: blur(16px) saturate(190%) contrast(102%) brightness(1.08) !important;
-  -webkit-backdrop-filter: blur(16px) saturate(190%) contrast(102%) brightness(1.08) !important;
-  border: 0.5px solid rgba(255, 255, 255, 0.26) !important;
-  box-shadow:
-    0 12px 40px rgba(0, 0, 0, 0.32),
-    inset 0 0.5px 0.5px rgba(255, 255, 255, 0.45),
-    inset 0 -0.5px 0.5px rgba(0, 0, 0, 0.22) !important;
+.is-iphone * {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
 }
 
-/* ── Apple Specular Shimmer Sweep Keyframes ─────────────────────────────── */
-@keyframes appleGlassSheen {
-  0% {
-    transform: translateX(-100%) skewX(-15deg);
-    opacity: 0;
-  }
-  20% {
-    opacity: 0.45;
-  }
-  60% {
-    opacity: 0.45;
-  }
-  100% {
-    transform: translateX(200%) skewX(-15deg);
-    opacity: 0;
-  }
+/* ── 2. Ambient Fluid Aurora Caustic System (Refractive Light Source) ───── */
+.apple-liquid-backdrop {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  opacity: 0.82;
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+
+body.lm .apple-liquid-backdrop {
+  mix-blend-mode: multiply;
+  opacity: 0.52;
+}
+
+.apple-glass-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(75px);
+  -webkit-filter: blur(75px);
+  will-change: transform;
+  animation: appleFloat 22s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+}
+
+.apple-orb-amber {
+  width: 360px;
+  height: 360px;
+  background: radial-gradient(circle, #f2b84b 0%, rgba(242, 184, 75, 0.18) 65%, transparent 75%);
+  top: 2%;
+  left: -15%;
+  animation-duration: 20s;
+}
+
+.apple-orb-cyan {
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(circle, #00f0cc 0%, rgba(0, 240, 204, 0.16) 65%, transparent 75%);
+  top: 30%;
+  right: -20%;
+  animation-duration: 26s;
+  animation-direction: alternate-reverse;
+}
+
+.apple-orb-purple {
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(circle, #a78bfa 0%, rgba(167, 139, 250, 0.16) 65%, transparent 75%);
+  top: 55%;
+  left: -10%;
+  animation-duration: 24s;
+}
+
+.apple-orb-rose {
+  width: 340px;
+  height: 340px;
+  background: radial-gradient(circle, #fb7185 0%, rgba(251, 113, 133, 0.16) 65%, transparent 75%);
+  bottom: 5%;
+  right: -10%;
+  animation-duration: 21s;
+}
+
+/* Light Mode Soft Daylight Orbs */
+body.lm .apple-orb-amber { background: radial-gradient(circle, #fde68a 0%, rgba(253, 230, 138, 0.25) 60%, transparent 72%); }
+body.lm .apple-orb-cyan { background: radial-gradient(circle, #bae6fd 0%, rgba(186, 230, 253, 0.25) 60%, transparent 72%); }
+body.lm .apple-orb-purple { background: radial-gradient(circle, #ddd6fe 0%, rgba(221, 214, 254, 0.25) 60%, transparent 72%); }
+body.lm .apple-orb-rose { background: radial-gradient(circle, #fbcfe8 0%, rgba(251, 207, 232, 0.25) 60%, transparent 72%); }
+
+@keyframes appleFloat {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(50px, -40px, 0) scale(1.12); }
+  100% { transform: translate3d(-40px, 45px, 0) scale(0.94); }
+}
+
+@keyframes appleSheenSweep {
+  0% { transform: translateX(-120%) skewX(-20deg); }
+  25% { transform: translateX(380%) skewX(-20deg); }
+  100% { transform: translateX(380%) skewX(-20deg); }
 }
 
 @keyframes appleLiquidPillPulse {
   0%, 100% {
     box-shadow:
-      0 4px 14px rgba(242, 184, 75, 0.25),
-      inset 0 0.5px 0.5px rgba(255, 255, 255, 0.5);
+      0 4px 16px rgba(242, 184, 75, 0.32),
+      inset 0 1px 1px rgba(255, 255, 255, 0.6);
   }
   50% {
     box-shadow:
-      0 6px 20px rgba(242, 184, 75, 0.42),
-      inset 0 0.5px 0.5px rgba(255, 255, 255, 0.65);
+      0 6px 24px rgba(242, 184, 75, 0.5),
+      inset 0 1.2px 1.2px rgba(255, 255, 255, 0.8);
   }
 }
 
-/* ── Specular Highlight Layer (::after) ─────────────────────────────────── */
-.is-iphone .top-nav::after,
-.is-iphone .col-bottom-bar::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 48%;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.16) 0%,
-    rgba(255, 255, 255, 0.03) 70%,
-    transparent 100%
-  );
-  border-radius: inherit;
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* ── Apple Spring Buttons with Tactile Press Feedback ────────────────────── */
-.is-iphone .btn-p,
-.is-iphone .btn-g,
-.is-iphone .nav-dl-btn,
-.is-iphone .nav-login-btn,
-.is-iphone .ni-btn,
-.is-iphone .dock-chip {
+/* ── 3. Tier 1: Apple Ultra-Thin Glass (Badges, Chips & Secondary Pills) ── */
+.is-iphone .c-tag,
+.is-iphone .c-badge,
+.is-iphone .tech-tag,
+.is-iphone .dock-chip,
+.is-iphone .hey,
+.is-iphone .card-tags span,
+.is-iphone .badge,
+.is-iphone .status-pill,
+.is-iphone .mode-pills button {
   background: rgba(255, 255, 255, 0.1) !important;
-  backdrop-filter: blur(20px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
-  border: 0.5px solid rgba(255, 255, 255, 0.22) !important;
+  backdrop-filter: blur(var(--glass-blur-thin)) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur-thin)) saturate(180%) !important;
+  border: 0.5px solid rgba(255, 255, 255, 0.28) !important;
+  border-top-color: rgba(255, 255, 255, 0.55) !important;
   box-shadow:
-    0 4px 16px rgba(0, 0, 0, 0.1),
-    inset 0 0.5px 0.5px rgba(255, 255, 255, 0.35) !important;
-  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s ease, box-shadow 0.3s ease !important;
-}
-
-.is-iphone .btn-p:hover,
-.is-iphone .btn-g:hover,
-.is-iphone .nav-dl-btn:hover,
-.is-iphone .nav-login-btn:hover,
-.is-iphone .ni-btn:hover,
-.is-iphone .dock-chip:hover {
-  background: rgba(255, 255, 255, 0.16) !important;
-  border-color: rgba(255, 255, 255, 0.35) !important;
-  box-shadow:
-    0 8px 24px rgba(0, 0, 0, 0.18),
+    0 4px 14px rgba(0, 0, 0, 0.15),
     inset 0 0.5px 0.5px rgba(255, 255, 255, 0.45) !important;
-  transform: translateY(-1px) scale(1.02) !important;
+  border-radius: 20px !important;
+  transition: transform 0.35s var(--apple-spring), background 0.25s ease !important;
 }
 
-/* Apple Spring Tap: Compress smoothly then bounce back */
-.is-iphone .btn-p:active,
-.is-iphone .btn-g:active,
-.is-iphone .nav-dl-btn:active,
-.is-iphone .nav-login-btn:active,
-.is-iphone .ni-btn:active,
-.is-iphone .dock-chip:active,
-.is-iphone .mmb:active,
-.is-iphone .nav-link:active {
-  transform: scale(0.92) !important;
-  transition: transform 0.1s cubic-bezier(0.33, 1, 0.68, 1) !important;
+.is-iphone .c-badge.co-flag,
+.is-iphone .c-badge[data-tier="flagship"] {
+  background: linear-gradient(135deg, rgba(242, 184, 75, 0.3) 0%, rgba(242, 184, 75, 0.12) 100%) !important;
+  border: 0.5px solid rgba(242, 184, 75, 0.55) !important;
+  border-top-color: rgba(255, 255, 255, 0.6) !important;
+  color: #f2b84b !important;
 }
 
-/* ── Primary Signal Button ──────────────────────────────────────────────── */
-.is-iphone .btn-p,
-.is-iphone .nav-dl-btn {
-  background: rgba(242, 184, 75, 0.88) !important;
-  backdrop-filter: blur(20px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-  border: 0.5px solid rgba(242, 184, 75, 0.5) !important;
+/* ── 4. Tier 2: Apple Regular Glass (Navigation & Floating Controls) ─────── */
+.is-iphone .liquid-glass,
+.is-iphone .top-nav,
+.is-iphone .orrery-dock,
+.is-iphone .node-inspector,
+.is-iphone .hud-group {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%), rgba(14, 20, 34, 0.52) !important;
+  backdrop-filter: blur(var(--glass-blur-regular)) saturate(var(--glass-saturate)) contrast(104%) brightness(var(--glass-brightness)) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur-regular)) saturate(var(--glass-saturate)) contrast(104%) brightness(var(--glass-brightness)) !important;
+  border: 0.5px solid rgba(255, 255, 255, 0.28) !important;
+  border-top: 0.75px solid rgba(255, 255, 255, 0.65) !important;
+  border-radius: 28px !important;
   box-shadow:
-    0 6px 22px rgba(242, 184, 75, 0.32),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.15) !important;
-  color: #070a14 !important;
-}
-
-.is-iphone .btn-p:hover,
-.is-iphone .nav-dl-btn:hover {
-  background: rgba(242, 184, 75, 0.96) !important;
-  box-shadow:
-    0 10px 30px rgba(242, 184, 75, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
-}
-
-/* ── Project Cards — Apple Frosted Glass ─────────────────────────────────── */
-.is-iphone .pc {
-  background: rgba(255, 255, 255, 0.04) !important;
-  backdrop-filter: blur(14px) saturate(140%) !important;
-  -webkit-backdrop-filter: blur(14px) saturate(140%) !important;
-  border: 0.5px solid rgba(255, 255, 255, 0.12) !important;
-  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.35s ease, box-shadow 0.35s ease !important;
-}
-
-.is-iphone .pc:active {
-  transform: scale(0.98) !important;
-  background: rgba(255, 255, 255, 0.08) !important;
-  border-color: rgba(255, 255, 255, 0.22) !important;
-  box-shadow:
-    0 8px 30px rgba(0, 0, 0, 0.25),
-    inset 0 0.5px 0.5px rgba(255, 255, 255, 0.2) !important;
-}
-
-/* ── Dropdown Menu — Apple Glass Sheet ──────────────────────────────────── */
-.is-iphone .dropdown-content-inner {
-  background: rgba(16, 22, 36, 0.76) !important;
-  backdrop-filter: blur(20px) saturate(190%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(190%) !important;
-  border: 0.5px solid rgba(255, 255, 255, 0.18) !important;
-  box-shadow:
-    0 24px 60px rgba(0, 0, 0, 0.45),
-    inset 0 0.5px 0.5px rgba(255, 255, 255, 0.25) !important;
-  border-radius: 18px !important;
-}
-
-.is-iphone .dropdown-content a {
-  transition: background 0.25s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-}
-
-.is-iphone .dropdown-content a:active {
-  background: rgba(255, 255, 255, 0.1) !important;
-  transform: scale(0.96) !important;
-}
-
-/* ── Apple Liquid Glass Bottom Navigation Dock ──────────────────────────── */
-.is-iphone .col-bottom-bar {
-  border-radius: 32px !important;
-  background: rgba(16, 22, 36, 0.72) !important;
-  backdrop-filter: blur(18px) saturate(200%) contrast(105%) !important;
-  -webkit-backdrop-filter: blur(18px) saturate(200%) contrast(105%) !important;
-  border: 0.5px solid rgba(255, 255, 255, 0.24) !important;
-  box-shadow:
-    0 14px 44px rgba(0, 0, 0, 0.38),
-    inset 0 0.5px 0.5px rgba(255, 255, 255, 0.45),
-    inset 0 -0.5px 0.5px rgba(0, 0, 0, 0.2) !important;
-  padding: 6px 8px !important;
-  position: fixed !important;
-  z-index: 999 !important;
+    0 16px 44px rgba(0, 0, 0, 0.38),
+    inset 0 1px 1.5px rgba(255, 255, 255, 0.55),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.3) !important;
+  position: relative;
   overflow: hidden !important;
 }
 
-/* Subtle Apple Sheen sweeping across the bottom dock */
-.is-iphone .col-bottom-bar::before {
+/* Floating Top Navigation Header */
+.is-iphone .top-nav {
+  position: fixed !important;
+  top: 12px !important;
+  left: 14px !important;
+  right: 14px !important;
+  width: auto !important;
+  max-width: 1240px !important;
+  margin: 0 auto !important;
+  z-index: 1000 !important;
+  padding-top: max(12px, env(safe-area-inset-top, 12px)) !important;
+  padding-bottom: 12px !important;
+  transition: transform 0.4s var(--apple-ease), box-shadow 0.4s ease, background 0.4s ease !important;
+}
+
+/* Top Nav Specular Glint Sheen Sweep */
+.is-iphone .top-nav::after {
   content: '';
   position: absolute;
   top: 0;
-  left: 0;
+  left: -100%;
   width: 50%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.12) 50%,
-    transparent 100%
-  );
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.16) 50%, transparent 100%);
   pointer-events: none;
-  animation: appleGlassSheen 7s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation: appleSheenSweep 9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   z-index: 1;
+}
+
+/* ── 5. Apple Liquid Glass Bottom Navigation Dock ───────────────────────── */
+.is-iphone .col-bottom-bar {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.05) 100%), rgba(14, 20, 34, 0.65) !important;
+  backdrop-filter: blur(var(--glass-blur-thick)) saturate(220%) contrast(105%) brightness(1.15) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur-thick)) saturate(220%) contrast(105%) brightness(1.15) !important;
+  border: 0.5px solid rgba(255, 255, 255, 0.3) !important;
+  border-top: 0.75px solid rgba(255, 255, 255, 0.7) !important;
+  border-radius: 36px !important;
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.5),
+    inset 0 1.5px 1.5px rgba(255, 255, 255, 0.6),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.35) !important;
+  position: fixed !important;
+  bottom: max(16px, env(safe-area-inset-bottom, 16px)) !important;
+  left: 14px !important;
+  right: 14px !important;
+  width: auto !important;
+  max-width: 440px !important;
+  margin: 0 auto !important;
+  padding: 6px 10px !important;
+  z-index: 9999 !important;
+  overflow: hidden !important;
 }
 
 /* Bottom Bar Items Spring Dynamics */
@@ -228,33 +235,24 @@
 .is-iphone .col-bottom-bar button {
   position: relative !important;
   z-index: 2 !important;
-  transition: transform 0.38s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.2s ease !important;
+  transition: transform 0.38s var(--apple-spring), color 0.2s ease !important;
 }
 
 .is-iphone .col-bottom-bar a:active,
 .is-iphone .col-bottom-bar button:active {
   transform: scale(0.88) !important;
-  transition: transform 0.08s cubic-bezier(0.33, 1, 0.68, 1) !important;
+  transition: transform 0.08s var(--apple-snap) !important;
 }
 
-.is-iphone .col-bottom-bar a svg,
-.is-iphone .col-bottom-bar button svg {
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-}
-
-.is-iphone .col-bottom-bar a:active svg,
-.is-iphone .col-bottom-bar button:active svg {
-  transform: scale(0.9) !important;
-}
-
-/* Apple Active Tab Capsule — Frosted Pill with Spring Physics */
+/* Apple Active Tab Capsule — Frosted Pill with Liquid Glow */
 .is-iphone .col-bottom-bar a.act,
 .is-iphone .col-bottom-bar button.act {
-  background: linear-gradient(135deg, rgba(242, 184, 75, 0.22) 0%, rgba(242, 184, 75, 0.08) 100%) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
-  border: 0.5px solid rgba(242, 184, 75, 0.38) !important;
-  border-radius: 22px !important;
+  background: linear-gradient(135deg, rgba(242, 184, 75, 0.28) 0%, rgba(242, 184, 75, 0.1) 100%) !important;
+  backdrop-filter: blur(18px) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
+  border: 0.5px solid rgba(242, 184, 75, 0.5) !important;
+  border-top-color: rgba(255, 255, 255, 0.6) !important;
+  border-radius: 24px !important;
   color: var(--signal, #f2b84b) !important;
   animation: appleLiquidPillPulse 3.5s ease-in-out infinite !important;
 }
@@ -265,146 +263,351 @@
   filter: drop-shadow(0 2px 8px rgba(242, 184, 75, 0.45));
 }
 
-/* ── Apple iOS Sheet Navigation Drawer ───────────────────────────────────── */
-.is-iphone .nav-links {
-  background: rgba(10, 15, 26, 0.88) !important;
-  backdrop-filter: blur(20px) saturate(190%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(190%) !important;
-  border-left: 0.5px solid rgba(255, 255, 255, 0.16) !important;
-  transition:
-    transform 0.42s cubic-bezier(0.32, 0.72, 0, 1),
-    opacity 0.22s ease,
-    visibility 0s linear 0.42s !important;
-}
-
-.is-iphone .nav-links.active {
-  transition:
-    transform 0.42s cubic-bezier(0.32, 0.72, 0, 1),
-    opacity 0.22s ease,
-    visibility 0s linear 0s !important;
-}
-
-/* ── Modal — Liquid Glass Sheet ─────────────────────────────────────────── */
-.is-iphone .mo .md {
+/* ── 6. Tier 3: Apple Thick Glass Cards, Panels & Grids ─────────────────── */
+.is-iphone .pc,
+.is-iphone .vp-card,
+.is-iphone .fc,
+.is-iphone .sc-card,
+.is-iphone .stat-card,
+.is-iphone .feature-card,
+.is-iphone .content-card,
+.is-iphone .dl-card,
+.is-iphone .cert-card,
+.is-iphone .planet-card,
+.is-iphone .fb-card,
+.is-iphone .card,
+.is-iphone .box,
+.is-iphone .panel,
+.is-iphone .stage-hint {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.03) 100%), rgba(16, 22, 38, 0.58) !important;
+  backdrop-filter: blur(var(--glass-blur-regular)) saturate(200%) contrast(103%) brightness(1.1) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur-regular)) saturate(200%) contrast(103%) brightness(1.1) !important;
+  border: 0.5px solid rgba(255, 255, 255, 0.25) !important;
+  border-top: 0.75px solid rgba(255, 255, 255, 0.55) !important;
   border-radius: 28px !important;
-  border: 0.5px solid rgba(255, 255, 255, 0.2) !important;
-  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.5) !important;
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.35),
+    inset 0 1px 1px rgba(255, 255, 255, 0.4),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.25) !important;
+  transition: transform 0.45s var(--apple-spring), box-shadow 0.35s ease, border-color 0.3s ease !important;
+}
+
+.is-iphone .pc:active,
+.is-iphone .vp-card:active,
+.is-iphone .feature-card:active {
+  transform: scale(0.978) !important;
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.4),
+    inset 0 1.5px 1px rgba(255, 255, 255, 0.55) !important;
+}
+
+/* ── 7. Apple Prominent Glass Action Buttons ────────────────────────────── */
+.is-iphone .btn-p,
+.is-iphone .nav-dl-btn,
+.is-iphone .visit-btn,
+.is-iphone .run-btn,
+.is-iphone .cta-btn,
+.is-iphone .pc-btn {
+  background: var(--apple-gold-grad) !important;
+  backdrop-filter: blur(24px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(200%) !important;
+  border: 0.5px solid rgba(255, 255, 255, 0.65) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.85) !important;
+  box-shadow:
+    var(--apple-gold-glow),
+    inset 0 1.5px 1.5px rgba(255, 255, 255, 0.8),
+    inset 0 -1.5px 1px rgba(0, 0, 0, 0.25) !important;
+  border-radius: 26px !important;
+  color: #070a14 !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em !important;
+  transition: transform 0.45s var(--apple-spring), box-shadow 0.35s ease, filter 0.2s ease !important;
+}
+
+.is-iphone .btn-s,
+.is-iphone .btn-g,
+.is-iphone .nav-login-btn,
+.is-iphone .ni-btn {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.07) 100%), rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(24px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+  border: 0.5px solid rgba(255, 255, 255, 0.32) !important;
+  border-top: 0.75px solid rgba(255, 255, 255, 0.6) !important;
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.2),
+    inset 0 1px 1px rgba(255, 255, 255, 0.5) !important;
+  border-radius: 26px !important;
+  color: #ffffff !important;
+  transition: transform 0.45s var(--apple-spring), box-shadow 0.35s ease !important;
+}
+
+/* Tactile Elastic Squish Feedback On Touch */
+.is-iphone .btn-p:active,
+.is-iphone .btn-s:active,
+.is-iphone .btn-g:active,
+.is-iphone .nav-dl-btn:active,
+.is-iphone .nav-login-btn:active,
+.is-iphone .visit-btn:active,
+.is-iphone .pc-btn:active,
+.is-iphone .dock-chip:active,
+.is-iphone .nav-link:active {
+  transform: scale(0.96) !important;
+  transition: transform 0.1s var(--apple-snap) !important;
+}
+
+/* ── 8. Apple Search & Filter Glass Controls ────────────────────────────── */
+.is-iphone .sf,
+.is-iphone .search-box {
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(24px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+  border: 0.5px solid rgba(255, 255, 255, 0.25) !important;
+  border-top-color: rgba(255, 255, 255, 0.5) !important;
+  border-radius: 24px !important;
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.2),
+    inset 0 1px 1px rgba(255, 255, 255, 0.35) !important;
+}
+
+.is-iphone .sf input,
+.is-iphone .search-box input {
+  background: transparent !important;
+  color: #ffffff !important;
+}
+
+/* ── 9. Apple iOS Sheet Navigation Drawer & Modals ──────────────────────── */
+.is-iphone .nav-links {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.03) 100%), rgba(12, 17, 30, 0.85) !important;
+  backdrop-filter: blur(var(--glass-blur-thick)) saturate(210%) contrast(104%) brightness(1.1) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur-thick)) saturate(210%) contrast(104%) brightness(1.1) !important;
+  border-left: 0.5px solid rgba(255, 255, 255, 0.25) !important;
+  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5) !important;
+  padding-top: max(24px, env(safe-area-inset-top, 24px)) !important;
+  padding-bottom: max(32px, env(safe-area-inset-bottom, 32px)) !important;
+}
+
+.is-iphone .dropdown-content-inner {
+  background: rgba(16, 22, 36, 0.78) !important;
+  backdrop-filter: blur(28px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(200%) !important;
+  border: 0.5px solid rgba(255, 255, 255, 0.22) !important;
+  border-top: 0.75px solid rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5) !important;
+  border-radius: 22px !important;
+}
+
+.is-iphone .mo .md {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.03) 100%), rgba(14, 20, 34, 0.88) !important;
+  backdrop-filter: blur(34px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(34px) saturate(200%) !important;
+  border-radius: 32px !important;
+  border: 0.5px solid rgba(255, 255, 255, 0.25) !important;
+  border-top: 0.75px solid rgba(255, 255, 255, 0.6) !important;
+  box-shadow: 0 28px 75px rgba(0, 0, 0, 0.55) !important;
 }
 
 .is-iphone .mi {
   background: rgba(255, 255, 255, 0.08) !important;
-  border: 0.5px solid rgba(255, 255, 255, 0.16) !important;
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-  border-radius: 14px !important;
+  border: 0.5px solid rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  border-radius: 16px !important;
 }
 
 .is-iphone .mi:focus {
-  border-color: rgba(242, 184, 75, 0.6) !important;
-  box-shadow: 0 0 0 3px rgba(242, 184, 75, 0.18) !important;
+  border-color: rgba(242, 184, 75, 0.7) !important;
+  box-shadow: 0 0 0 3px rgba(242, 184, 75, 0.22) !important;
 }
 
-/* ── Theme Toggle — Apple Pill ──────────────────────────────────────────── */
-.is-iphone .hz-toggle {
-  background: rgba(255, 255, 255, 0.12) !important;
-  backdrop-filter: blur(20px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
-  border: 0.5px solid rgba(255, 255, 255, 0.24) !important;
-  border-radius: 30px !important;
+/* ── 10. Apple iOS Sheet Grabber Bar ─────────────────────────────────────── */
+.is-iphone .apple-sheet-grabber,
+.is-iphone .mo .md::before {
+  content: '';
+  display: block;
+  width: 42px;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.35);
+  margin: 8px auto 14px;
 }
 
-.is-iphone .hz-toggle.night {
-  background: rgba(28, 38, 56, 0.65) !important;
-  border-color: rgba(255, 255, 255, 0.15) !important;
+/* ── 11. Reposition Floating Buy Me A Coffee Widget ──────────────────────── */
+.is-iphone #bmc-wbtn,
+.is-iphone [class*="bmc-btn"],
+.is-iphone #bmc-floating-badge,
+.is-iphone .bmc-floating-badge,
+.is-iphone a[href*="buymeacoffee"] {
+  bottom: calc(max(16px, env(safe-area-inset-bottom, 16px)) + 76px) !important;
+  z-index: 9990 !important;
+  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.45)) !important;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease !important;
 }
 
-/* ── Light Mode — Apple Liquid Glass for Light Theme ────────────────────── */
+.is-iphone .bmc-floating-badge:active {
+  transform: scale(0.92) !important;
+}
+
+
+/* ── 12. Bottom Viewport Clearance (Prevents Overlap Under Dock) ─────────── */
+.is-iphone body {
+  padding-bottom: calc(max(20px, env(safe-area-inset-bottom, 20px)) + 84px) !important;
+}
+
+/* ── 13. Complete Apple Light Mode System (Crystalline Daylight) ─────────── */
 .is-iphone body.lm .liquid-glass,
 .is-iphone body.lm .top-nav,
 .is-iphone body.lm .orrery-dock,
 .is-iphone body.lm .node-inspector,
 .is-iphone body.lm .col-bottom-bar,
-.is-iphone body.lm .mo .md,
 .is-iphone body.lm .hud-group {
-  background: rgba(255, 255, 255, 0.72) !important;
-  backdrop-filter: blur(16px) saturate(190%) brightness(1.06) !important;
-  -webkit-backdrop-filter: blur(16px) saturate(190%) brightness(1.06) !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0.72) 100%) !important;
   border: 0.5px solid rgba(0, 0, 0, 0.1) !important;
+  border-top: 0.75px solid rgba(255, 255, 255, 0.95) !important;
   box-shadow:
-    0 12px 36px rgba(0, 0, 0, 0.08),
-    inset 0 1px 1px rgba(255, 255, 255, 0.8),
+    0 14px 40px rgba(0, 0, 0, 0.09),
+    inset 0 1px 1px rgba(255, 255, 255, 0.95),
     inset 0 -1px 1px rgba(0, 0, 0, 0.04) !important;
-}
-
-.is-iphone body.lm .col-bottom-bar {
-  background: rgba(255, 255, 255, 0.76) !important;
-  border: 0.5px solid rgba(0, 0, 0, 0.1) !important;
-  box-shadow:
-    0 14px 44px rgba(0, 0, 0, 0.1),
-    inset 0 1px 1px rgba(255, 255, 255, 0.85) !important;
 }
 
 .is-iphone body.lm .col-bottom-bar a.act,
 .is-iphone body.lm .col-bottom-bar button.act {
   background: linear-gradient(135deg, rgba(184, 114, 10, 0.18) 0%, rgba(184, 114, 10, 0.06) 100%) !important;
   border: 0.5px solid rgba(184, 114, 10, 0.35) !important;
+  border-top-color: rgba(255, 255, 255, 0.9) !important;
   color: #b8720a !important;
 }
 
-.is-iphone body.lm .col-bottom-bar a.act svg,
-.is-iphone body.lm .col-bottom-bar button.act svg {
-  filter: drop-shadow(0 2px 6px rgba(184, 114, 10, 0.3));
-}
-
-.is-iphone body.lm .nav-links {
-  background: rgba(246, 245, 240, 0.9) !important;
-  border-left: 0.5px solid rgba(0, 0, 0, 0.1) !important;
-}
-
-.is-iphone body.lm .pc {
-  background: rgba(255, 255, 255, 0.6) !important;
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
+.is-iphone body.lm .pc,
+.is-iphone body.lm .vp-card,
+.is-iphone body.lm .fc,
+.is-iphone body.lm .sc-card,
+.is-iphone body.lm .stat-card,
+.is-iphone body.lm .feature-card,
+.is-iphone body.lm .card,
+.is-iphone body.lm .content-card {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.82) 0%, rgba(255, 255, 255, 0.65) 100%) !important;
   border: 0.5px solid rgba(0, 0, 0, 0.08) !important;
-}
-
-.is-iphone body.lm .dropdown-content-inner {
-  background: rgba(255, 255, 255, 0.8) !important;
-  backdrop-filter: blur(20px) saturate(190%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(190%) !important;
-  border: 0.5px solid rgba(0, 0, 0, 0.1) !important;
+  border-top: 0.75px solid rgba(255, 255, 255, 0.95) !important;
   box-shadow:
-    0 24px 60px rgba(0, 0, 0, 0.12),
-    inset 0 1px 1px rgba(255, 255, 255, 0.7) !important;
+    0 16px 36px rgba(0, 0, 0, 0.07),
+    inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
+  color: #0f172a !important;
 }
 
 .is-iphone body.lm .btn-p,
-.is-iphone body.lm .nav-dl-btn {
-  background: rgba(184, 114, 10, 0.88) !important;
-  border-color: rgba(184, 114, 10, 0.4) !important;
-  color: #fff !important;
+.is-iphone body.lm .nav-dl-btn,
+.is-iphone body.lm .visit-btn {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 10px 28px rgba(217, 119, 6, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.6) !important;
+  color: #ffffff !important;
 }
 
-/* ── Tap Highlight & Smooth Transitions ─────────────────────────────────── */
-.is-iphone * {
-  -webkit-tap-highlight-color: transparent;
+.is-iphone body.lm .btn-s,
+.is-iphone body.lm .btn-g,
+.is-iphone body.lm .ni-btn {
+  background: rgba(255, 255, 255, 0.85) !important;
+  border: 0.5px solid rgba(0, 0, 0, 0.12) !important;
+  border-top-color: rgba(255, 255, 255, 0.95) !important;
+  color: #0f172a !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06), inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
 }
 
-.is-iphone .top-nav,
-.is-iphone .col-bottom-bar {
-  transition:
-    background 0.4s cubic-bezier(0.32, 0.72, 0, 1),
-    backdrop-filter 0.4s cubic-bezier(0.32, 0.72, 0, 1),
-    border-color 0.4s cubic-bezier(0.32, 0.72, 0, 1),
-    box-shadow 0.4s cubic-bezier(0.32, 0.72, 0, 1) !important;
+.is-iphone body.lm .nav-links {
+  background: rgba(246, 245, 240, 0.92) !important;
+  border-left: 0.5px solid rgba(0, 0, 0, 0.1) !important;
 }
 
-/* ── Safe Area Inset Support ────────────────────────────────────────────── */
-@supports (padding: env(safe-area-inset-top)) {
-  .is-iphone .top-nav {
-    padding-top: max(12px, env(safe-area-inset-top)) !important;
+.is-iphone body.lm .c-tag,
+.is-iphone body.lm .c-badge,
+.is-iphone body.lm .tech-tag,
+.is-iphone body.lm .dock-chip,
+.is-iphone body.lm .hey {
+  background: rgba(255, 255, 255, 0.75) !important;
+  border: 0.5px solid rgba(0, 0, 0, 0.08) !important;
+  border-top-color: rgba(255, 255, 255, 0.95) !important;
+  color: #1e293b !important;
+}
+
+/* ── 14. Apple Mobile Drawer & Settings Sheet ────────────────────────────── */
+.is-iphone .col-mobile-drawer .cmd-panel {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%), rgba(14, 20, 34, 0.88) !important;
+  backdrop-filter: blur(34px) saturate(210%) contrast(104%) brightness(1.1) !important;
+  -webkit-backdrop-filter: blur(34px) saturate(210%) contrast(104%) brightness(1.1) !important;
+  border-left: 0.5px solid rgba(255, 255, 255, 0.28) !important;
+  box-shadow: -15px 0 50px rgba(0, 0, 0, 0.6) !important;
+}
+
+.is-iphone .cmd-nav-group,
+.is-iphone .cmd-setting-card,
+.is-iphone .cmd-tile {
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 0.5px solid rgba(255, 255, 255, 0.22) !important;
+  border-top-color: rgba(255, 255, 255, 0.5) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.35) !important;
+}
+
+.is-iphone .cmd-toggle-pill {
+  position: relative;
+  width: 50px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 14px;
+  border: 0.5px solid rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  transition: background 0.3s ease, border-color 0.3s ease;
+  padding: 2px;
+}
+
+.is-iphone .cmd-toggle-pill.active {
+  background: #f2b84b;
+  border-color: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 0 12px rgba(242, 184, 75, 0.5);
+}
+
+.is-iphone .cmd-toggle-thumb {
+  display: block;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  transition: transform 0.35s var(--apple-spring);
+}
+
+.is-iphone .cmd-toggle-pill.active .cmd-toggle-thumb {
+  transform: translateX(22px);
+  background: #070a14;
+}
+
+body.lm .is-iphone .col-mobile-drawer .cmd-panel {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.8) 100%) !important;
+  border-left: 0.5px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+body.lm .is-iphone .cmd-nav-group,
+body.lm .is-iphone .cmd-setting-card,
+body.lm .is-iphone .cmd-tile {
+  background: rgba(255, 255, 255, 0.85) !important;
+  border: 0.5px solid rgba(0, 0, 0, 0.1) !important;
+  border-top-color: rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05), inset 0 1px 1px rgba(255, 255, 255, 0.9) !important;
+}
+
+/* ── 15. Motion Accessibility ────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .apple-glass-orb {
+    animation: none !important;
   }
-  .is-iphone .col-bottom-bar {
-    bottom: max(14px, env(safe-area-inset-bottom, 14px)) !important;
+  .is-iphone .top-nav::after {
+    animation: none !important;
+    display: none !important;
+  }
+  .is-iphone .col-bottom-bar a.act,
+  .is-iphone .col-bottom-bar button.act {
+    animation: none !important;
   }
 }

@@ -137,11 +137,18 @@
       if (!from || !look) { return; }
 
       var e = ease(shot.ease, p);
-      game.camera.position.set(
-        lerp(from[0], to[0], e),
-        lerp(from[1], to[1], e),
-        lerp(from[2], to[2], e)
-      );
+      var posX = lerp(from[0], to[0], e);
+      var posY = lerp(from[1], to[1], e);
+      var posZ = lerp(from[2], to[2], e);
+
+      // Subtle handheld breathing drift so the camera feels like physical cinematic gear
+      if (!shot.locked) {
+        var tNow = (typeof performance !== 'undefined' ? performance.now() : Date.now()) * 0.0014;
+        posX += Math.sin(tNow * 1.6) * 0.016;
+        posY += Math.cos(tNow * 1.9) * 0.012;
+      }
+
+      game.camera.position.set(posX, posY, posZ);
 
       // `lookTo` racks the attention across the shot without moving the camera —
       // the cheapest way to make a locked-off frame feel alive.
@@ -205,35 +212,33 @@
    */
   function keepOutFor(script, anchors) {
     var out = [];
-    // A disc has to be wider than the largest thing that can land inside it.
-    // Filler terraces are ~13m wide and ~10m deep, so a 9m disc protects the
-    // camera's own X/Z but not the building's near face — which is exactly how
-    // an establishing crane ends up pointed at a wall six metres behind its own
-    // keep-out zone. 14m clears a terrace's full footprint plus the jitter
-    // fillBlocks applies to its position.
-    var DISC = 14;
+    // Protect camera positions so the lens never lands inside or against a wall.
+    // 4.5m clears the camera's immediate radius without clearing out entire city blocks.
+    var CAM_DISC = 4.5;
+    var LINE_DISC = 3.5;
     (script || []).forEach(function (shot) {
       if (!shot) { return; }
       var world = function (v) { return resolveVec(v, shot, anchors); };
-      ['from', 'to', 'look', 'lookTo'].forEach(function (k) {
+      ['from', 'to'].forEach(function (k) {
         var v = world(shot[k]);
-        if (v) { out.push({ x: v[0], z: v[2], hw: DISC, hd: DISC }); }
+        if (v) { out.push({ x: v[0], z: v[2], hw: CAM_DISC, hd: CAM_DISC }); }
       });
       var a = world(shot.from);
       var t = world(shot.look || shot.to);
       if (!a || !t) { return; }
-      // Sample the whole camera→subject sight-line, not just the endpoints. A
-      // high crane's own position sits in clear ground while a building sits
-      // squarely between it and the subject; sampling fixes that class of
-      // occlusion without hand-tuning every shot.
-      var SAMPLES = 17;
-      for (var i = 1; i < SAMPLES; i++) {
-        var f = i / SAMPLES;
-        out.push({
-          x: a[0] + (t[0] - a[0]) * f,
-          z: a[2] + (t[2] - a[2]) * f,
-          hw: DISC, hd: DISC
-        });
+      // For high crane / establishing shots where camera is elevated, sample the sight-line
+      // with a focused corridor so filler buildings do not occlude the view down to the street.
+      var highCrane = (shot.from && shot.from[1] > 8);
+      if (highCrane) {
+        var SAMPLES = 12;
+        for (var i = 1; i < SAMPLES; i++) {
+          var f = i / SAMPLES;
+          out.push({
+            x: a[0] + (t[0] - a[0]) * f,
+            z: a[2] + (t[2] - a[2]) * f,
+            hw: LINE_DISC, hd: LINE_DISC
+          });
+        }
       }
     });
     return out;

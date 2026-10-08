@@ -4,7 +4,33 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995"
      crossorigin="anonymous"></script>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Class Of Learners" />
+    <script>
+      ;(function () {
+        var ua = navigator.userAgent || ''
+        var p = navigator.platform || ''
+        var force = false
+        try {
+          force =
+            location.search.indexOf('iphone=1') !== -1 ||
+            location.search.indexOf('glass=1') !== -1 ||
+            localStorage.getItem('force_iphone') === 'true' ||
+            localStorage.getItem('liquid_glass') === 'true'
+        } catch (e) {}
+        if ((/iPhone/i.test(ua) || p === 'iPhone' || force) && !/iPad/i.test(ua)) {
+          document.documentElement.classList.add('is-iphone')
+          var m = ua.match(/OS (\d+)_/)
+          if (m) {
+            var v = parseInt(m[1], 10)
+            document.documentElement.classList.add('ios-' + v)
+            if (v >= 17) document.documentElement.classList.add('ios-17-plus')
+          }
+        }
+      })()
+    </script>
     <meta name="description" content="View your student progress, achievements, trophy case, and global leaderboard rankings on Class Of Learners." />
     <meta name="robots" content="noindex, nofollow" />
     <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />

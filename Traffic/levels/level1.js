@@ -88,17 +88,23 @@ window.LVS.push({
     { kind: 'shop', x: 20, z: 112, rotY: Math.PI, w: 12, d: 9, color: 0xb8c8d8, awning: 0x1e40af, text: 'Sai Medical', sub: 'Open 24 Hours' },
     // Sharma General Stores — the dabba destination
     { kind: 'shop', x: 72, z: 100, rotY: -Math.PI / 2, w: 14, d: 10, color: 0xf5e6d3, awning: 0x166534, text: 'Sharma General Stores', sub: 'Dabba Delivery Point' },
-    // Junction corner apartments
-    { kind: 'apartment', x: -26, z: -26, rotY: 0, w: 16, d: 14, h: 20, color: 0xe8d5b7 },
-    { kind: 'apartment', x: 26, z: 26, rotY: 0, w: 16, d: 14, h: 24, color: 0xc9a87a },
+    // Linking Road Junction Corner Plots & Blocks (synchronized with prologue stage)
+    // North-west corner: apartment tower
+    { kind: 'apartment', x: -34, z: -24, rotY: 0, w: 20, d: 16, h: 26, color: 0x8f9aa8 },
+    // North-east: mirrored apartment tower
+    { kind: 'apartment', x: 34, z: -24, rotY: 0, w: 20, d: 16, h: 28, color: 0x7d8896 },
+    // South-east city block: complete Basketball Sports Complex
+    { kind: 'court', x: 34, z: 36, rotY: 0, w: 26, d: 18 },
+    // South-west city block: organized Parking Lot with stalls & parked cars
+    { kind: 'parking', x: -34, z: 36, rotY: 0, w: 26, d: 18 },
+    // Mid-block shops facing avenues
+    { kind: 'shop', x: -34, z: -72, rotY: 0, w: 18, d: 12, h: 6, color: 0xf5e6d3, text: 'Sharma Stores', sub: 'General Merchant' },
+    { kind: 'shop', x: 34, z: -72, rotY: 0, w: 18, d: 12, h: 7, color: 0xe0f2fe, text: 'City Clinic', sub: 'Emergency Care' },
     // Colony houses along Shanti Galli + Market Galli
     { kind: 'house', x: -78, z: -60, rotY: Math.PI / 2, w: 12, d: 10, color: 0xe8d5b7 },
     { kind: 'house', x: -78, z: 20, rotY: Math.PI / 2, w: 12, d: 10, color: 0xd4b896 },
     { kind: 'house', x: 78, z: -40, rotY: -Math.PI / 2, w: 12, d: 10, color: 0xf0d878 },
-    { kind: 'house', x: 78, z: 40, rotY: -Math.PI / 2, w: 12, d: 10, color: 0xa8c8a8 },
-    // Sports park and organized city parking lot (Images 1 & 2)
-    { kind: 'court', x: 32, z: 54, rotY: 0, w: 24, d: 18 },
-    { kind: 'parking', x: -32, z: 54, rotY: 0, w: 24, d: 18 }
+    { kind: 'house', x: 78, z: 40, rotY: -Math.PI / 2, w: 12, d: 10, color: 0xa8c8a8 }
   ],
   roadProblems: [
     { kind: 'potholes', x: -4, z: 62, count: 7, spread: 10 },
@@ -136,6 +142,10 @@ window.LVS.push({
       // ── BEAT (mid-level, present tense) ─────────────────────────────────
       { triggerZ: -8, speaker: 'Insp. Arjun Kadam', line: '"Entry one. Mrs. Iyer. She sees everything."' },
       { triggerZ: 20, speaker: 'Insp. Arjun Kadam', line: '"Red light karna, sir. Yahi toh sikhaya tha unhone."' },
+      // The hook, second half. Arjun reads the next entry and finds his own front
+      // door on it, which is the last line of the film and the reason Lesson 2
+      // is not just a parking lesson. Plays only inside the cliffhanger cutscene.
+      { triggerZ: 100, speaker: 'Insp. Arjun Kadam', line: '"Shanti Galli. Mere ghar ke saamne."' },
       // ── IN-PLAY RADIO ───────────────────────────────────────────────────
       // Havildar Desai keeps the lesson running while the player drives: the
       // film's thesis restated as guidance, never as exposition.
