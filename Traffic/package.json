@@ -25,11 +25,11 @@
     "@types/howler": "^2.2.11",
     "@types/node": "^26.6.2",
     "@types/three": "^0.186.0",
-    "electron": "^44.4.5",
+    "electron": "^44.5.1",
     "electron-builder": "^26.15.3",
     "electron-updater": "^6.8.9",
     "typescript": "^7.0.2",
-    "vite": "^8.3.1"
+    "vite": "^8.3.3"
   },
   "dependencies": {
     "@dimforge/rapier3d-compat": "^0.21.0",
