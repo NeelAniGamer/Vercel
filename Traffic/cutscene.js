@@ -564,10 +564,108 @@
               mesh.add(tLamp);
             } catch (eL) {}
           }
+          if (mesh && (d.id === 'fortuner' || d.withDriver)) {
+            // The Fortuner is the only vehicle in the film that drives, and it was
+            // the only one with no lights.
+            //
+            // THE FIRST VERSION OF THIS HARD-CODED THE OFFSETS — headlamps at
+            // z=+2.16, tail lamps at z=-2.16, y=0.72, lateral +/-0.52 — on the
+            // assumption that the model was a car-sized box centred on its origin.
+            // It is not. Those numbers were guesses about a model nobody had
+            // measured, and the film paid for it: red cubes hanging in mid-air over
+            // empty road, an orange glow burning inside the bodywork, a yellow disc
+            // floating off the front bumper. Emissive boxes are unforgiving — a
+            // wrong offset does not look wrong, it looks like a floating object.
+            //
+            // So: measure the model, then place the lights on the measurement.
+            try {
+              if (mesh.parent) { mesh.parent.updateMatrixWorld(true); }
+              mesh.updateMatrixWorld(true);
+              var lBox = new THREE.Box3().setFromObject(mesh);
+              var lSz = new THREE.Vector3(); lBox.getSize(lSz);
+              var lCt = new THREE.Vector3(); lBox.getCenter(lCt);
+
+              // A car is roughly 1.4-2.2m wide and 3.5-6m long. Anything outside
+              // that is not a car, and scattering lamps around a broken mesh is
+              // strictly worse than leaving it dark. Bail instead of guessing.
+              var plausible = lSz.x > 0.5 && lSz.x < 3.2 &&
+                              lSz.z > 2.0 && lSz.z < 8.0 &&
+                              lSz.y > 0.5 && lSz.y < 3.5;
+
+              // The beam is safe unconditionally: a SpotLight has no geometry, so
+              // it cannot be misplaced in a way the audience reads as an object.
+              var fBeam = new THREE.SpotLight(0xfff7ed, 4.0, 34, Math.PI / 7, 0.45, 1.3);
+              fBeam.position.set(0, 0.8, plausible ? lSz.z * 0.5 : 2.2);
+              fBeam.target.position.set(0, -0.4, 22);
+              mesh.add(fBeam);
+              mesh.add(fBeam.target);
+              mesh.userData = mesh.userData || {};
+              mesh.userData.lights = { beam: fBeam };
+
+              if (plausible) {
+                // Box centre expressed in the mesh's own local frame, so the lamp
+                // offsets survive whatever scale and rotation the model carries.
+                var lc = mesh.worldToLocal(lCt.clone());
+                var hx = lSz.x * 0.34;            // lateral, inboard of the flanks
+                var fz = lc.z + lSz.z * 0.47;     // just proud of the nose
+                var bz = lc.z - lSz.z * 0.47;     // just proud of the tail
+                var ly = lc.y + lSz.y * 0.30;     // bumper height, roughly
+
+                var headMat = new THREE.MeshBasicMaterial({ color: 0xfff3d6 });
+                var fHead = new THREE.Mesh(new THREE.BoxGeometry(lSz.x * 0.16, lSz.y * 0.07, 0.06), headMat);
+                fHead.position.set(lc.x + hx, ly, fz);
+                mesh.add(fHead);
+                var fHead2 = fHead.clone();
+                fHead2.position.x = lc.x - hx;
+                mesh.add(fHead2);
+
+                var tailMat = new THREE.MeshBasicMaterial({ color: 0x7f1d1d });
+                var brakeMat = new THREE.MeshBasicMaterial({ color: 0x2a0505 });
+                var tW = lSz.x * 0.14, tH = lSz.y * 0.06;
+                var tL1 = new THREE.Mesh(new THREE.BoxGeometry(tW, tH, 0.05), tailMat);
+                tL1.position.set(lc.x + hx, ly, bz);
+                mesh.add(tL1);
+                var tL2 = tL1.clone();
+                tL2.position.x = lc.x - hx;
+                mesh.add(tL2);
+                var bL1 = new THREE.Mesh(new THREE.BoxGeometry(tW * 0.7, tH, 0.05), brakeMat);
+                bL1.position.set(lc.x + hx, ly, bz - 0.03);
+                mesh.add(bL1);
+                var bL2 = bL1.clone();
+                bL2.position.x = lc.x - hx;
+                mesh.add(bL2);
+
+                mesh.userData.tailMat = tailMat;
+                mesh.userData.brakeMat = brakeMat;
+                mesh.userData.lights = {
+                  beam: fBeam, head: fHead, head2: fHead2,
+                  tail: [tL1, tL2], brake: [bL1, bL2]
+                };
+                mesh.userData.lightBox = { w: lSz.x, h: lSz.y, d: lSz.z };
+              }
+            } catch (eFortLights) {}
+          }
           if (mesh && (d.id === 'fortuner' || d.withDriver) && typeof window._buildCutsceneDriver === 'function') {
             var driver = window._buildCutsceneDriver();
             if (driver) {
-              driver.position.set(0, 0, 0);
+              // The driver sat at the vehicle origin, which is INSIDE the engine
+              // bay — a black blob half-buried in the bonnet, visible in the shot
+              // that cuts to the interior. Seat them in the cabin instead: left of
+              // centre (this is left-hand traffic), at roughly seated hip height.
+              try {
+                mesh.updateMatrixWorld(true);
+                var dBox = new THREE.Box3().setFromObject(mesh);
+                var dSz = new THREE.Vector3(); dBox.getSize(dSz);
+                var dCt = new THREE.Vector3(); dBox.getCenter(dCt);
+                var dlc = mesh.worldToLocal(dCt.clone());
+                driver.position.set(
+                  dlc.x - dSz.x * 0.16,
+                  dlc.y + dSz.y * 0.14,
+                  dlc.z + dSz.z * 0.04
+                );
+              } catch (eDriverSeat) {
+                driver.position.set(0, 0.6, 0.2);
+              }
               mesh.add(driver);
               mesh.userData = mesh.userData || {};
               mesh.userData.driver = driver;
@@ -593,6 +691,23 @@
       mesh.userData = mesh.userData || {};
       mesh.userData.isCast = true;
       mesh.userData.castId = d.id;
+      mesh.userData.initPos = [mesh.position.x, mesh.position.y, mesh.position.z];
+      mesh.userData.initRotY = mesh.rotation.y;
+      // `aftermath: true` on a cast entry means "this character does not exist yet
+      // when the film opens". Built hidden, revealed by onShotEnter when the first
+      // `aftermath` shot arrives.
+      //
+      // This flag exists because a campaign could not express it before. An
+      // inspector standing beside the body in shots 1-7 would tell the audience the
+      // case was already open, and the same actor visible before and after the
+      // shooting destroys the only thing the aftermath means. Building the actor
+      // and then hiding it is deliberate: building it lazily would mean the first
+      // aftermath shot pays the model cost, which is exactly when the frame is
+      // already busy.
+      if (d.aftermath) {
+        mesh.userData.aftermathOnly = true;
+        mesh.visible = false;
+      }
       group.add(mesh);
       made[d.id] = mesh;
     });
@@ -991,6 +1106,17 @@
       }
     } catch (eVoice) {}
 
+    // Warm the recorded-audio manifest for the same reason. A siren cued in the
+    // film's first ten seconds must not be the cue that discovers the manifest
+    // does not exist — the sample would be dropped and nothing would say why.
+    // Also fire-and-forget: a missing or slow manifest costs the film nothing but
+    // those cues, which is exactly the designed degradation.
+    try {
+      if (window.SampleBank && typeof window.SampleBank.preload === 'function') {
+        window.SampleBank.preload(function () {});
+      }
+    } catch (eSample) {}
+
     if (state.overlay && state.overlay.skipBtn) {
       var btn = state.overlay.skipBtn;
       var onSkip = function (e) {
@@ -1256,8 +1382,7 @@
           ACTIVE._fallenOfficerMesh = fo;
         }
       }
-    } else {
-      if (ACTIVE.cast && ACTIVE.cast.actors && ACTIVE.cast.actors.vikram) {
+    if (ACTIVE.cast && ACTIVE.cast.actors && ACTIVE.cast.actors.vikram) {
         var vBike2 = ACTIVE.cast.actors.vikram;
         if (vBike2.rotation.z !== 0) {
           vBike2.rotation.z = 0;
@@ -1272,6 +1397,65 @@
         ACTIVE._fallenOfficerMesh = null;
       }
     }
+
+    // ── Aftermath-only actors ──────────────────────────────────────────
+    // Toggled on EVERY shot, not just on the transition, because the cast
+    // survives across the whole film and a one-shot reveal would leave the
+    // characters standing in shots 1-7 if the film were ever reordered or
+    // scrubbed. Deriving visibility from the current shot rather than tracking
+    // state means the flag cannot drift out of sync with the script.
+    //
+    // Guarded per-actor: a cast entry that is missing its userData must not take
+    // the whole loop down, because that would silently end the film mid-shot.
+    try {
+      if (ACTIVE.cast && ACTIVE.cast.actors) {
+        var actors = ACTIVE.cast.actors;
+        for (var cid in actors) {
+          if (!Object.prototype.hasOwnProperty.call(actors, cid)) { continue; }
+          var actor = actors[cid];
+          if (!actor) { continue; }
+          var aud = actor.userData;
+          if (aud && aud.aftermathOnly) { actor.visible = !!shot.aftermath; }
+
+          // Brake lights follow DECELERATION, which is measurable and cheap.
+          //
+          // The Fortuner runs in this film, so these stay dark while it does —
+          // which is the point. A red glow under a car accelerating away reads as a
+          // fault. But the same wiring is what makes every other cast vehicle in a
+          // future level behave: press the brake, the lights come on.
+          //
+          // Compared on POSITION rather than speed, because during a `motion`
+          // track the actor is being teleported by shots.js and its velocity is not
+          // a derivative of anything the game knows about.
+          if (aud && aud.lights && aud.brakeMat) {
+            try {
+              var lp = aud.__lastPos || null;
+              var prevStep = aud.__lastStep;
+              if (lp) {
+                var moved = Math.abs(actor.position.z - lp[2]) + Math.abs(actor.position.x - lp[0]);
+                // Braking means SLOWING DOWN — a large step followed by a small one.
+                // It does not mean "not moving yet".
+                //
+                // The first version of this tested `moved < 0.004` alone, and the
+                // shot-7 escape immediately proved it wrong: the pull-away is eased
+                // with inCubic, so the car barely moves for the first frames, the
+                // test read that slow start as braking, and the Fortuner drove off
+                // a crime scene with its brake lights on. Requiring a previous
+                // non-trivial step distinguishes "standing still, about to go" from
+                // "was moving, now stopping".
+                var braking = prevStep > 0.004 && moved < prevStep * 0.5;
+                aud.brakeMat.color.setHex(braking ? 0xff2d2d : 0x2a0505);
+                aud.tailMat.color.setHex(braking ? 0xef4444 : 0x7f1d1d);
+                aud.__lastStep = moved;
+              } else {
+                aud.__lastStep = 0;
+              }
+              aud.__lastPos = [actor.position.x, actor.position.y, actor.position.z];
+            } catch (eBrake) {}
+          }
+        }
+      }
+    } catch (eCastVis) {}
 
     // Sub-shot audio cues (a sting 40% into a shot) are evaluated from the
     // tick, because the shot's own start already fired in onShotEnter.
@@ -1582,7 +1766,14 @@
         }
       }
 
-      applyShot(p > 1 ? 1 : p);
+      // Camera progress is the SHOT's progress compressed into its move window,
+      // so the move completes by (dur - hold) and the camera then sits at rest for
+      // the hold. Timed one-shots above still read `p`, which means a flash or a
+      // sting can land on the authored fraction of the frame while the camera has
+      // already stopped — which is what a hold is FOR: something happens, then the
+      // frame stops moving and lets it.
+      var moveFrac = shot._moveFrac || 1;
+      applyShot(moveFrac > 0 ? Math.min(1, p / moveFrac) : 1);
       updateOverlay(shot, p > 1 ? 1 : p, ACTIVE);
 
       // Step cast characters (idle breathing, blinking, joint kinematics)
@@ -1902,6 +2093,25 @@
   }
 
   window.Cutscene = {
+    // Test/diagnostic seam: the running film's state, or null.
+    //
+    // ACTIVE is module-private, and a harness that cannot see which shot is on
+    // screen has to infer it. Inference is how a verification ends up asserting
+    // things about the wrong moment — an earlier cast check reported "no actors
+    // found" for a film that had them on screen for its final shots, because it
+    // guessed the aftermath had not begun. Reading `idx` is the difference between
+    // observing a film and guessing at one.
+    state: function () {
+      if (!ACTIVE) { return null; }
+      var shot = ACTIVE.script ? ACTIVE.script[ACTIVE.idx] : null;
+      return {
+        idx: ACTIVE.idx,
+        total: ACTIVE.script ? ACTIVE.script.length : 0,
+        aftermath: !!(shot && shot.aftermath),
+        actorIds: ACTIVE.cast && ACTIVE.cast.actors
+          ? Object.keys(ACTIVE.cast.actors) : [],
+      };
+    },
     begin: begin,
     beat: beat,
     beatForTask: beatForTask,

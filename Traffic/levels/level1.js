@@ -62,11 +62,27 @@ window.LVS.push({
   route: [
     { x: -58, z: -128, desc: 'Back out of your home garage onto Shanti Galli' },
     { x: -52, z: -100, desc: 'Turn right out of the colony toward Linking Road' },
-    { x: -20, z: -96.5, desc: 'Join the queue at the big signal — it is RED' },
-    { x: -4, z: -60, desc: 'Wait behind the white stop line — family crossing ahead' },
-    { x: -4, z: -8, desc: 'Hold! Ansh the taxi is honking — do NOT jump the signal' },
-    { x: -4, z: 20, desc: 'GREEN! Cross the junction cleanly' },
-    { x: -4, z: 60, desc: 'Bazaar stretch — potholes + double-parked tempo, stay left' },
+    { x: 4, z: -96.5, desc: 'Join the southbound queue at the big signal — it is RED' },
+
+    // ── FROM HERE THE ROUTE IS THE FILM'S GEOGRAPHY ──────────────────────
+    // The next legs were previously at x=-20 and x=-4 — the NORTHBOUND carriageway.
+    // That is the wrong side of this level's own signal.
+    //
+    // The signal head stands at (11.4, -16.5): the EAST kerb, mast arm reaching west
+    // over the +x half. Under left-hand traffic, heading +z, your left is +x — so +x
+    // IS southbound, and the -x lanes are served by the far kerb's signal, not this
+    // one. Routing the player at x=-4 meant they queued at a junction under a signal
+    // that was not governing them, which is why "wait at the red light" could never be
+    // satisfied honestly.
+    //
+    // x=+4 is also exactly where the film already is: SI Vikram at (4.0, -12.5), the
+    // Fortuner at (6.4, -12.5), the escape running z=-12.5 to +95, and the zebra at
+    // z=-8. The player now drives through the spot the film puts the shooting, on the
+    // carriageway it happens on, past the same crossing.
+    { x: 4, z: -30, desc: 'Close on the stop line — a constable is already standing on it' },
+    { x: 4, z: -14, desc: 'Wait behind the white line — Ansh is honking, do NOT jump the signal' },
+    { x: 4, z: 20, desc: 'GREEN! Cross the junction cleanly' },
+    { x: 4, z: 60, desc: 'Bazaar stretch — potholes + double-parked tempo, stay left' },
     { x: 20, z: 96.5, desc: 'Turn right into Bazaar Road' },
     { x: 40, z: 100, desc: '🏁 Park at Sharma General Stores — deliver Papa\u2019s dabba before 1 PM' }
   ],
@@ -137,8 +153,12 @@ window.LVS.push({
       // consecutive lines from one man is a caption track, not a scene.
       { triggerZ: -128, speaker: 'Vikram Sawant', line: '"Stopping at the line. Even for a Fortuner."' },
       { triggerZ: -100, speaker: 'The Fortuner Driver', line: '"Bhai, do minute. Bas."' },
-      { triggerZ: -60, speaker: 'The Fortuner Driver', line: '"Do minute ki baat hai. Signal toh sirf ek ruka hai."' },
-      { triggerZ: -60, speaker: 'Vikram Sawant', line: '"Sir, yeh red light hai. Zameen pe ek line hai. Please."' },
+      // These two sat at z=-60, which was the old stop-line checkpoint. The line is
+      // at z=-12.5 — where the film actually puts it — so the approach checkpoint
+      // moved to z=-30 and these now fire at -40, still BEFORE Ansh honks at -30,
+      // which preserves the original order of the exchange.
+      { triggerZ: -40, speaker: 'The Fortuner Driver', line: '"Do minute ki baat hai. Signal toh sirf ek ruka hai."' },
+      { triggerZ: -40, speaker: 'Vikram Sawant', line: '"Sir, yeh red light hai. Zameen pe ek line hai. Please."' },
       // ── BEAT (mid-level, present tense) ─────────────────────────────────
       { triggerZ: -8, speaker: 'Insp. Arjun Kadam', line: '"Entry one. Mrs. Iyer. She sees everything."' },
       { triggerZ: 20, speaker: 'Insp. Arjun Kadam', line: '"Red light karna, sir. Yahi toh sikhaya tha unhone."' },
@@ -149,7 +169,9 @@ window.LVS.push({
       // ── IN-PLAY RADIO ───────────────────────────────────────────────────
       // Havildar Desai keeps the lesson running while the player drives: the
       // film's thesis restated as guidance, never as exposition.
-      { triggerZ: -60, speaker: 'Havildar Desai (Radio)', line: '"All units: Linking Road junction RED. White line ke peeche ruko — ek line hai, koi shortcut nahi."' },
+      // Moved from -60 with the rest of the stop-line geography. Now fires at the
+      // approach checkpoint, where the player is actually pulling up to the line.
+      { triggerZ: -26, speaker: 'Havildar Desai (Radio)', line: '"All units: Linking Road junction RED. White line ke peeche ruko — ek line hai, koi shortcut nahi."' },
       { triggerZ: -30, speaker: 'Ansh Taxi', line: '"HORN HORN! Arey bhai chalo na! Mera meter down hai! (Ignore him — tumhe challan milega, use nahin!)"' },
       { triggerZ: -8, speaker: 'Aarush', line: '"Heh! Tum signal pe so raho, main race jeet raha hoon! Pakad ke dikhao!"' },
       { triggerZ: 20, speaker: 'Havildar Desai (Radio)', line: '"GREEN! Ab niklo — dheere, lane mein. Bazaar stretch mein tempo double-parked hai, left se niklo."' },
@@ -192,5 +214,28 @@ window.LVS.push({
     { id: 'dodge_market', text: 'Clear potholes + parked tempo in bazaar', type: 'reach', target: 'checkpoint_2', done: false },
     { id: 'deliver_dabba', text: 'Park at Sharma General Stores & deliver', type: 'reach', target: 'finish', done: false }
   ],
-  assets: ['suburban', 'street_props', 'cars']
+  // The `stage_*` and `city_*` groups are the "free city pack" props staged by
+  // scripts/stage_assets.py. They are requested HERE rather than in story/stage.js
+  // because the asset list is read from the level config: a film can only use a
+  // prop that the lesson asked for. That indirection is deliberate — it means
+  // Lesson 2 does not pay to download the cones L1's crime scene needs.
+  //
+  // Each group is optional at runtime. A prop that fails to resolve falls back to
+  // the procedural builder in cinematics.js, so this list can grow without the
+  // film depending on it being complete.
+  assets: ['suburban', 'street_props', 'cars',
+    'stage_signals',   // mast signal head, street lighting
+    'stage_crime',     // cones, for the aftermath
+    'city_street',     // bins, bags, benches, trees, planters
+    'parking_detail',  // hydrant + STOP plate
+    // Rigged actors for the film cast. cinematics.js builds Vikram, Arjun and
+    // Iyer through window._buildHuman, so this one line gives the film's three
+    // performers a skeleton and real clips — Walking for the man on the
+    // footpath, Idle for the constable at the crossing — instead of the static
+    // mini-characters they fell back to before. It also reaches every gameplay
+    // pedestrian in the playable map, because _buildHuman is shared.
+    //
+    // The full group, not char_kaykit_walk: this film needs the aftermath to
+    // play a death clip, and that clip only exists in the `general` file.
+    'char_kaykit']
 })

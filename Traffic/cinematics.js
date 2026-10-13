@@ -1451,6 +1451,10 @@
     if (!bh) { return null; }
     var arjun = bh(false, {
       variant: 'normal',
+      // A named character must be the same character every load. Without this,
+      // `_buildHuman` may take its random-35% branch and hand the inspector a
+      // different model on the next run — a different actor playing the same part.
+      deterministic: true,
       shirt: 0x1e293b, // Dark charcoal / navy detective field jacket
       pants: 0x92704a, // Police khaki trousers
       hair: 0x09090b,
@@ -1488,6 +1492,8 @@
     if (!bh) { return null; }
     var iyer = bh(false, {
       variant: 'elderly',
+      // See `_buildCutsceneArjun`: same reason, same fix.
+      deterministic: true,
       shirt: 0x881337, // Maroon silk saree drape
       pants: 0x881337,
       hair: 0xe2e8f0,  // Silver hair
@@ -1642,10 +1648,46 @@
     var MAX_FILL = 450;
     var placed = 0;
 
+    /**
+     * Footprint test against the keep-out boxes.
+     *
+     * `inAnyBox(cx, cz, ...)` only asks whether the building's CENTRE is inside a
+     * reserved box, and that is the wrong question for a box with area. A terrace
+     * 14m wide whose centre sits 9m from a camera keep-out disc passes the centre
+     * test and still puts a wall across the lens.
+     *
+     * On the film stage this was not theoretical. `story/stage.js` runs
+     * `fillDensity: 1.4`, so filler terraces are wider than on the playable map,
+     * and the establishing shots put the camera at (−0.4, 1.6, −7.5) — dead centre
+     * of Linking Road, 8.5m from the junction. The centre test passed, a building
+     * was emitted 4.6m from the lens, and the first shot of the film opened on an
+     * untextured black wall with the signal mast buried in it.
+     *
+     * A building overlaps a reserved box when the SEPARATION on each axis is less
+     * than the sum of both half-extents. Testing both axes turns a point-in-box
+     * test into a proper rectangle-overlap test, which is what was always meant.
+     */
+    function footprintHits(cx, cz, w, d, pad) {
+      var hw = w / 2, hd = d / 2;
+      for (var i = 0; i < keepOut.length; i++) {
+        var k = keepOut[i];
+        if (!k) { continue; }
+        var khw = (k.hw === undefined ? 5 : k.hw);
+        var khd = (k.hd === undefined ? 5 : k.hd);
+        if (Math.abs(cx - k.x) < hw + khw + pad &&
+            Math.abs(cz - k.z) < hd + khd + pad) { return true; }
+      }
+      return false;
+    }
+
     /** Emit one filler building. `face` is the outward direction (0=+Z,1=-Z,2=+X,3=-X). */
     function emit(cx, cz, w, d, hgt, face, salt) {
       if (placed >= MAX_FILL) { return false; }
+      // Centre test first (cheap, and it is the tightest constraint for the small
+      // pads), then the footprint test which is the one that actually protects the
+      // lens and the carriageway.
       if (inAnyBox(cx, cz, keepOut, 0.5)) { return false; }
+      if (footprintHits(cx, cz, w, d, 0.5)) { return false; }
       var g = new THREE.Group();
       g.add(sbox(w, hgt, d, pick(wallMats, hash2(Math.round(cx), Math.round(cz), 17 + salt)), 0, hgt / 2, 0));
 
@@ -2087,32 +2129,60 @@
   function buildStreetLamp(M, spec) {
     var g = new THREE.Group();
     g.name = 'stage-lamp';
-    var H = 8.2;
-    var col = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.2, H, 8), M.poleGrey);
-    col.position.set(0, H / 2, 0);
-    g.add(col);
-    var base = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.4, 0.5, 8), M.poleDark);
-    base.position.set(0, 0.25, 0);
-    g.add(base);
 
     var dir = (spec.rotY || 0);
-    var arm = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.12, 2.4), M.poleGrey);
-    arm.position.set(0, H - 0.1, -1.2);
-    g.add(arm);
-    var head = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.2, 1.0), M.poleDark);
-    head.position.set(0, H - 0.24, -2.3);
-    g.add(head);
-    // The emissive lens is what actually makes it a lamp. A PointLight per lamp
-    // would cost four real lights on a mobile budget for no extra information;
-    // the bright lens plus the wet-road specular does the work.
-    var lens = new THREE.Mesh(new THREE.PlaneGeometry(0.44, 0.9), M.lampHead);
-    lens.rotation.x = Math.PI / 2;
-    lens.position.set(0, H - 0.36, -2.3);
-    g.add(lens);
+    var col;
+    var head;
+    var H = 8.2;
 
-    // Warm sodium amber street light casting real illumination onto the road
+    // RECORDED PROP FIRST, as the head and column. The procedural lamp is a
+    // cylinder, a box arm and a box head with a bright plane for the lens — which
+    // is a lamp in the sense that it stands where a lamp stands, and is not a lamp
+    // in any shot the camera pushes in on. Eight of these line the stage junction.
+    var glb = propScene('prop_street_light');
+    if (glb) {
+      // Named so the integration test can tell a modelled lamp from the
+      // procedural one by identity rather than by counting meshes. Mesh counting
+      // was tried first and was exactly backwards: the GLB lamp is TWO meshes and
+      // the procedural stand-in is six, so the heuristic selected the fallback
+      // and reported 0 of 8 lamps as modelled.
+      glb.name = 'stage-lamp-body';
+      g.add(glb);
+      col = glb;
+      head = glb;
+    } else {
+      var base = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.4, 0.5, 8), M.poleDark);
+      base.position.set(0, 0.25, 0);
+      g.add(base);
+
+      col = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.2, H, 8), M.poleGrey);
+      col.position.set(0, H / 2, 0);
+      g.add(col);
+
+      var arm = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.12, 2.4), M.poleGrey);
+      arm.position.set(0, H - 0.1, -1.2);
+      g.add(arm);
+
+      head = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.2, 1.0), M.poleDark);
+      head.position.set(0, H - 0.24, -2.3);
+      g.add(head);
+
+      // The emissive lens is what actually makes it a lamp. A PointLight per lamp
+      // would cost four real lights on a mobile budget for no extra information;
+      // the bright lens plus the wet-road specular does the work.
+      var lens = new THREE.Mesh(new THREE.PlaneGeometry(0.44, 0.9), M.lampHead);
+      lens.rotation.x = Math.PI / 2;
+      lens.position.set(0, H - 0.36, -2.3);
+      g.add(lens);
+    }
+
+    // The warm sodium spill is added either way, and is what actually lights the
+    // wet tarmac. Where the light sits depends on which version built the lamp —
+    // the GLB's own origin is the base of its column, so the lamp head is roughly
+    // 8 m up and slightly forward of the group origin.
     var lampLight = new THREE.PointLight(0xffbe55, 1.6, 28, 1.2);
-    lampLight.position.set(0, H - 0.5, -2.3);
+    if (glb) { lampLight.position.set(0, H - 0.5, -1.4); }
+    else { lampLight.position.set(0, H - 0.5, -2.3); }
     g.add(lampLight);
 
     g.position.set(spec.x || 0, 0, spec.z || 0);
@@ -2186,6 +2256,11 @@
     var g = new THREE.Group();
     g.name = 'stage-barricade';
 
+    // No GLB for this one — the "free city pack" has cones and hydrants but no
+    // police barricade, and the procedural A-frame below is what the shot is
+    // actually staged around: it takes a `width`, and the three barricades in
+    // stage.js are 7–9 m across. A modelled barrier at fixed scale would have to
+    // be stretched anyway, and stretching a GLB stretches its UVs.
     var W = (spec && spec.width) || 7.5;
     var barMat = new THREE.MeshLambertMaterial({ color: 0xf1f5f9 });
     var legMat = M.poleGrey;
@@ -2408,21 +2483,89 @@
   function buildCone(M, spec) {
     var g = new THREE.Group();
     g.name = 'stage-cone';
-    var coneMat = new THREE.MeshLambertMaterial({ color: 0xf97316 });
-    var bandMat = new THREE.MeshLambertMaterial({ color: 0xf8fafc });
 
-    var body = new THREE.Mesh(new THREE.ConeGeometry(0.22, 0.62, 10), coneMat);
-    body.position.set(0, 0.34, 0);
-    g.add(body);
-    var base = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.05, 0.44), coneMat);
-    base.position.set(0, 0.025, 0);
-    g.add(base);
-    var band = new THREE.Mesh(new THREE.CylinderGeometry(0.145, 0.175, 0.09, 10), bandMat);
-    band.position.set(0, 0.36, 0);
-    g.add(band);
+    // RECORDED PROP FIRST. A cone is the single most-photographed object in a
+    // crime-scene film and this one is four primitives: a cone, a box and a
+    // cylinder, with a reflective band that is a flat white ring rather than
+    // retroreflective material. The GLB has a square base, a tapered body and a
+    // band, and it is 12 KB.
+    //
+    // The procedural version is the FALLBACK, not the alternative. If the model
+    // is missing — an older cache, a partial deploy, a level that never requested
+    // the asset group — the cone still stands, and the film does not lose a prop
+    // it was counting on for the shot.
+    var glb = propScene('prop_traffic_cone');
+    if (glb) {
+      var inst = glb.clone(true);
+      inst.name = 'stage-cone-body';
+      g.add(inst);
+    } else {
+      var coneMat = new THREE.MeshLambertMaterial({ color: 0xf97316 });
+      var bandMat = new THREE.MeshLambertMaterial({ color: 0xf8fafc });
+
+      var body = new THREE.Mesh(new THREE.ConeGeometry(0.22, 0.62, 10), coneMat);
+      body.position.set(0, 0.34, 0);
+      g.add(body);
+      var base = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.05, 0.44), coneMat);
+      base.position.set(0, 0.025, 0);
+      g.add(base);
+      var band = new THREE.Mesh(new THREE.CylinderGeometry(0.145, 0.175, 0.09, 10), bandMat);
+      band.position.set(0, 0.36, 0);
+      g.add(band);
+    }
 
     if (spec && typeof spec.x === 'number') { g.position.set(spec.x, 0, spec.z); }
+    if (spec && typeof spec.rotY === 'number') { g.rotation.y = spec.rotY; }
     return g;
+  }
+
+  /**
+   * Fetch a staged GLB prop by manifest key, or null.
+   *
+   * Returns null rather than throwing, always, because every caller in this file
+   * has a procedural fallback it was written before this function existed. A prop
+   * that fails to resolve must cost a detail, never a film.
+   *
+   * Clones rather than returning the scene itself: `window.PRELOADED_MODELS`
+   * caches one instance per key, and a cone placed at four positions is four
+   * objects. Adding the cached scene to the graph twice would move all four when
+   * the first is positioned.
+   */
+  function propScene(key) {
+    try {
+      var P = (typeof window !== 'undefined') ? window.PRELOADED_MODELS : null;
+      var scene = P ? P[key] : null;
+      if (!scene) { return null; }
+      var c = typeof scene.clone === 'function' ? scene.clone(true) : null;
+      if (!c) { return null; }
+      c.traverse(function (n) {
+        if (n.isMesh) {
+          n.castShadow = true;
+          n.receiveShadow = true;
+          // Cloning shares materials with the cached original, so tinting a clone
+          // would recolour every future instance of that prop. Clone the ones that
+          // get tinted and leave the rest shared.
+        }
+      });
+      return c;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /**
+   * Clone a material off a cloned prop so per-instance tinting is safe.
+   * Call on the meshes a builder intends to recolour.
+   */
+  function makeMaterialsLocal(root) {
+    root.traverse(function (n) {
+      if (n.isMesh && n.material) {
+        n.material = Array.isArray(n.material)
+          ? n.material.map(function (mm) { return mm.clone(); })
+          : n.material.clone();
+      }
+    });
+    return root;
   }
 
   /**

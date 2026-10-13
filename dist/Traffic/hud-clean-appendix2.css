@@ -1,0 +1,80 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   hud-clean-appendix2.css — final overlap corrections
+   ═══════════════════════════════════════════════════════════════════════════════
+   Two issues visible in the first render at 844x390:
+
+   1. The objective card sat at the same y as the new gear button and the pause
+      button, so the card's text ran underneath them and was clipped
+      ("Lane Centering Complia"). The card now drops below that row.
+
+   2. #player-hud-card kept the original `display: none` until #gc gained `.on`,
+      which only happens once the player is actually in the car. That is correct
+      behaviour, but the original rule also gave the card `display: flex` with a
+      `flex-direction: column` that our row layout fought. This makes the row
+      layout authoritative whenever the card is shown.
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. Objective card clears the gear/pause row ───────────────────────────── */
+
+@media (orientation: landscape) {
+  body #gc.on ~ #top-right-hud-stack,
+  #top-right-hud-stack {
+    top: calc(env(safe-area-inset-top, 0px) + 46px) !important;
+  }
+  /* And keep it clear of the right-hand button column, which is ~92px wide. */
+  #sz-task-drawer.task-hud-drawer {
+    max-width: min(70vw, 300px) !important;
+    margin-right: 96px !important;
+  }
+  #challan-summary-box {
+    margin-right: 96px !important;
+    max-width: min(70vw, 300px) !important;
+  }
+}
+
+/* ── 2. Player card: row layout is authoritative ──────────────────────────── */
+
+body #gc.on ~ #player-hud-card,
+#gc.on ~ #player-hud-card {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+}
+
+/* ── 3. Seatbelt glyph was rendering as a red blob ─────────────────────────── */
+/* #sb-icon-wrap applies a pulsing animation with a background that covers the
+   icon at 40px. Only the ring should pulse. */
+
+#civic-controls .sb-icon-wrap {
+  background: transparent !important;
+  animation: none !important;
+  box-shadow: none !important;
+}
+#civic-controls #sb-icon { opacity: 1 !important; }
+
+/* ── 4. The minimap must not sit under the movement joystick ───────────────── */
+/* Both are registered to the bottom-left anchor (SZ 'BL'), so the map has to
+   move up to clear the stick. */
+
+@media (orientation: landscape) and (max-height: 500px) {
+  #mmc {
+    left: calc(env(safe-area-inset-left, 0px) + 8px) !important;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 112px) !important;
+    width: 72px !important;
+    height: 72px !important;
+  }
+  #mmc canvas { width: 72px !important; height: 72px !important; }
+}
+
+/* ── 5. Bottom-right gas/brake cluster keeps clear of the civic row ────────── */
+
+@media (orientation: landscape) and (max-height: 500px) {
+  body #gc.on ~ #civic-controls,
+  #civic-controls {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 76px) !important;
+  }
+  body #gc.on ~ #cockpit-drive-cluster,
+  #cockpit-drive-cluster {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 8px) !important;
+  }
+}

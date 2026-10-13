@@ -1,6 +1,6 @@
 {
-  "versionCode": 9,
-  "versionName": "1.8",
+  "versionCode": 20,
+  "versionName": "2.0.0",
   "apkUrl": "/COL.apk",
-  "releaseNotes": "v1.8: Modern 2026 Mobile UI polish, radical thumb reachability, solid opaque navigation drawer, fixed HUD overlapping, and smart scroll-hiding navigation bar."
+  "releaseNotes": "v2.0.0: Complete Native Android Suite — 5-Tab Command Center, 4 Offline Native Engineering Labs (Mumbai MVA Traffic Drill, 60fps Keplerian Solar Lab, 44.1kHz Mechanical Typing Arena, ISO-18004 QR Matrix Studio), 6-Axis Career Compass & Deep Work Focus Timer, SQLite Learner Passport with 12 Unlockable Badges, and Enhanced Cloud Portal."
 }

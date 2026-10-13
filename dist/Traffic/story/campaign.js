@@ -102,12 +102,48 @@
     // `fortuner` is NOT here — it is stage dressing, because it has to survive
     // into the act change and is never addressed or tagged.
     cast: [
-      { id: 'vikram', kind: 'vehicle', type: 'bike', color: 0x1b1f26, x: 4.0, y: 0, z: -12.5, rotY: Math.PI / 2, withRider: true },
-      { id: 'fortuner', kind: 'vehicle', type: 'suv', color: 0x0b0d10, x: 6.4, y: 0, z: -12.5, rotY: 0, withDriver: true }
+      { id: 'vikram', kind: 'vehicle', type: 'bike', color: 0x243040, x: 4.0, y: 0, z: -12.5, rotY: Math.PI / 2, withRider: true },
+      { id: 'fortuner', kind: 'vehicle', type: 'suv', color: 0x242a34, x: 6.4, y: 0, z: -12.5, rotY: 0, withDriver: true },
+
+      // ── The two people who are actually IN this film ──────────────────────
+      //
+      // Until these two lines existed, L1 was nine shots about a constable being
+      // shot at a junction, and the constable was never on screen: `cast` held a
+      // motorcycle and an SUV. `_buildCutsceneArjun` and `_buildCutsceneIyer` were
+      // written, wired, and called by id — nobody declared the ids. The Death and
+      // Hit clips were staged and loaded and bound to nothing.
+      //
+      // `aftermath: true` means VISIBLE ONLY FROM THE AFTERMATH ON. It is the one
+      // flag this cast needed and the campaign had no way to express: a film has
+      // to be able to keep a character out of a shot, and an inspector standing at
+      // the scene during shots 1-7 — before the shooting — would tell the audience
+      // the case was already open. So they are hidden until shot 8, which is the
+      // first shot flagged `aftermath`, and appear for the rest.
+      //
+      // PLACEMENT, against the stage geometry rather than by eye:
+      //   Linking Road is x=0, width 20, so the carriageway is x=-10..+10 and
+      //   anything beyond that is footpath. Both stand EAST of the east kerb, so
+      //   neither is in a traffic lane, and both are clear of the aftermath
+      //   apparatus — barricades at (0,-30), (0,4), (-14,-12); evidence markers at
+      //   (2.2,-11), (5.6,-13.6), (8.4,-10.2); cones at (-3,-9), (-3,-16),
+      //   (10.5,-8), (10.5,-17); the light bar at (-7.5,-14.5).
+      //
+      //   rotY faces each toward the sheet over Vikram at (4.0, -12.5), via
+      //   atan2(dx, dz) from the actor's own position to the body.
+      //
+      //   Shot 8 is tight on the body and neither actor is in frame — which is
+      //   right, it is the crime scene. Shot 9 is the crane to [8,38,-75], and
+      //   that is the shot they are in: two small figures on a wet junction, one
+      //   of them speaking. That is the reveal, and it is the first time this film
+      //   shows a person who is not riding away in it.
+      { id: 'arjun', kind: 'human', x: 12.6, y: 0, z: -13.6, rotY: -1.42, aftermath: true },
+      { id: 'iyer', kind: 'human', x: 13.4, y: 0, z: -18.5, rotY: -0.99, aftermath: true }
     ],
 
     tags: [
-      { id: 'vikram', text: 'Vikram Sawant' }
+      { id: 'vikram', text: 'Vikram Sawant' },
+      { id: 'arjun', text: 'Insp. Arjun Kadam' },
+      { id: 'iyer', text: 'Mrs. Iyer' }
     ],
 
     // ── PROLOGUE — cold open ───────────────────────────────────────────
@@ -158,7 +194,8 @@
       //     has spoken yet, and a card over an empty junction would be telling
       //     the audience what the frame already says.
       {
-        dur: 9,
+        dur: 12,
+        hold: 4,
         ease: 'cinematic',
         transition: 'cut',
         from: [8, 38, -75], to: [6, 16, -38],
@@ -168,7 +205,7 @@
         act: 'night',
         prior: true,
         title: 'Linking Road Signal · 3:14 AM',
-        audio: { beds: { rain: 0.5, room: 0.15 } }
+        audio: { beds: { rain: 0.04, room: 0.01 } }
       },
 
       // 2 — THE LINE. Push in along the stop line so the paint fills the bottom
@@ -189,7 +226,7 @@
           speaker: 'SI Vikram Sawant',
           line: '"Control Room, SI Sawant. Linking Road junction check. 03:14 hours. Monsoon visibility low. Holding the white line."'
         },
-        audio: { beds: { rain: 0.45, engine: 0.1 } }
+        audio: { beds: { rain: 0.04, engine: 0.05 } }
       },
 
       // 3 — CCTV INSERT. Movement II's first half: a black Fortuner draws up on the
@@ -233,7 +270,7 @@
           gps: 'CAM 04 · LINKING RD / SIGNAL JUNCTION',
           unit: 'IR LOW-LUX · 24FPS · AUDIO MUTED'
         },
-        audio: { beds: { rain: 0.4, room: 0.2 }, sting: 'click', stingGain: 0.3 }
+        audio: { beds: { rain: 0.04, room: 0.01 }, sting: 'click', stingGain: 0.2 }
       },
 
       // 4 — COMPLICATION. Hard cut to the Fortuner's flank, window down, the
@@ -258,7 +295,7 @@
           speaker: 'Fortuner Escort Driver',
           line: '"Aye Hawaldar. VIP movement hai. Side hatt, signal todne de."'
         },
-        audio: { beds: { rain: 0.4, engine: 0.16 }, sting: 'click', stingGain: 0.4 }
+        audio: { beds: { rain: 0.04, engine: 0.05 }, sting: 'click', stingGain: 0.2 }
       },
 
       // 5 — FRICTION. Across Vikram's shoulder, the Fortuner filling frame. He
@@ -267,7 +304,8 @@
       //     is something on the ground. Both men are in the same shot, which is
       //     the whole point: this is a scene between two people.
       {
-        dur: 11,
+        dur: 14,
+        hold: 3,
         ease: 'inOutQuad',
         transition: 'cut',
         from: [1.4, 2.3, -17.4], to: [2.8, 2.15, -15.0],
@@ -282,11 +320,16 @@
         // Second line lands late in the same shot. This is what an exchange
         // looks like in a shot list: two utterances, one cut.
         sayThen: {
-          at: 0.52,
+          at: 0.42,
           speaker: 'Fortuner Escort Driver',
           line: '"Tujhe nahi pata andar kaun baitha hai. Yeh aakhri warning hai."'
         },
-        audio: { beds: { rain: 0.4, engine: 0.14 } }
+        // The hold is the shot's real payload. "Yeh aakhri warning hai" is the
+        // last thing said before a man is shot, and at 11s the camera had barely
+        // finished moving when the threat was already over. The extra 3s are the
+        // film not cutting away — the audience is left on a face that has just
+        // been told something and has not yet moved.
+        audio: { beds: { rain: 0.04, engine: 0.05 } }
       },
 
       // 6 — GUNSHOT. Movement IV, first half. Inside the
@@ -321,7 +364,7 @@
           speaker: 'Shadowed VIP Passenger',
           line: '"Isko hatao yahan se."'
         },
-        audio: { beds: { rain: 0.3, room: 0.3, engine: 0.2 } }
+        audio: { beds: { rain: 0.02, room: 0.01, engine: 0.04 } }
       },
 
       // 7 — THE FLASH. One frame of white, then the Fortuner is already moving.
@@ -344,9 +387,26 @@
         motion: [
           { id: 'fortuner', from: [6.4, 0, -12.5], to: [6.4, 0, 95] }
         ],
+        // `inCubic` — the car ACCELERATES away.
+        //
+        // The default is `linear`, which is constant velocity, and constant
+        // velocity for a car pulling away from a crime scene is wrong twice over:
+        // it looks like the car is being slid rather than driven, and it is
+        // already doing 48 km/h in the first frame, with nothing on screen to
+        // explain where that came from. Ease-in spends the first third of the shot
+        // pulling away from the kerb at walking pace and only then opens up, so the
+        // shot has a beginning. Measured across the film, the escape went from
+        // "teleports to z=95" to "leaves under its own power".
+        motionEase: 'inCubic',
         audio: {
-          beds: { rain: 0.5, engine: 0.3 },
-          stingAt: { name: 'gun', kind: 'shot', at: 0.08, gain: 1.0 }
+          beds: { rain: 0.04, engine: 0.06 },
+          stingAt: { name: 'gun', kind: 'shot', at: 0.08, gain: 0.9 },
+          // The SYNTHESISED report is still the gunshot — it is the right
+          // sound. The recorded take underneath is the car's own glass and
+          // bodywork letting go, which is a different event two frames later and
+          // is the one the audience hears with their eyes shut. Wiper and blowout
+          // both at 8% because they are the same frame.
+          sampleAt: { name: 'sfx_windscreen', at: 0.09, gain: 0.5 }
         }
       },
 
@@ -365,7 +425,8 @@
       //     `thud` lands at 30% — the body hitting the road, heard rather than
       //     seen, because we are looking at a sheet-covered shape and not at him.
       {
-        dur: 9,
+        dur: 13,
+        hold: 5,
         ease: 'linear',
         transition: 'cut',
         from: [0.5, 1.1, -8.5], to: [1.2, 0.85, -9.6],
@@ -379,9 +440,24 @@
           speaker: 'Mumbai Police Wireless',
           line: '"All units, 10-33 on Linking Road! Officer down! Black Fortuner fled south towards Shanti Galli!"'
         },
+        // The film's only real beat of silence, and it sits after the radio call
+        // rather than before it. 5s on a crime scene with a light bar strobing
+        // and nobody speaking is the closest thing here to the 7s median the
+        // reference transcripts run — and it earns its length because the radio
+        // has just named Shanti Galli, which is the address the second half of the
+        // campaign turns on.
+        //
+        // The RECORDED two-tone wail starts here. Everything before this shot was
+        // synthesised: filtered noise for rain, a swept sine for the radio. A
+        // siren built that way is a sine wave, and a sine wave has no distance in
+        // it — it sits exactly as close as the volume says. The recorded take
+        // arrives from off-screen and stays off-screen, which is the entire point
+        // of a crime scene at 3am.
+        sampleLoop: 'sfx_police_siren',
+        sampleGain: 0.34,
         audio: {
-          beds: { rain: 0.5, room: 0.2 },
-          stingAt: { name: 'body', kind: 'thud', at: 0.30, gain: 0.9 }
+          beds: { rain: 0.04, room: 0.01 },
+          stingAt: { name: 'body', kind: 'thud', at: 0.30, gain: 0.8 }
         }
       },
 
@@ -394,8 +470,16 @@
       //     `timePass: true` fires the wet-lens wiper as the film jumps forward:
       //     this is the last cut of the night, and the wipe is how a film says
       //     "some time has passed" without a caption.
+      //
+      //     It is also where the siren dies. The crime-scene apparatus from shot 8
+      //     is still standing (`aftermath: true`), but the film is craning up and
+      //     away to an empty junction, and an investigation that runs its siren
+      //     through the whole crane pulls the camera off the thing it is meant to
+      //     be saying. Three seconds of silence on the bookend is the film
+      //     admitting the case has been left open.
       {
-        dur: 9,
+        dur: 11,
+        hold: 3,
         ease: 'cinematic',
         transition: 'cut',
         timePass: true,
@@ -406,7 +490,8 @@
         act: 'night',
         prior: true,
         aftermath: true,
-        audio: { beds: { rain: 0.5, room: 0.2 } }
+        sampleStop: ['sfx_police_siren'],
+        audio: { beds: { rain: 0.04, room: 0.01 } }
       }
     ],
 
@@ -451,7 +536,8 @@
           //     prologue shot 2, inverted in time. The audience has to feel the
           //     cut before they are told it is a cut.
           {
-            dur: 7,
+            dur: 9,
+            hold: 3,
             ease: 'outCubic',
             transition: 'cut',
             from: [-4, 3.2, -4], to: [0.5, 1.15, -8.5],
@@ -541,7 +627,8 @@
           //     framed as a two-shot's worth of depth but she is the only one
           //     addressed, which is what makes it feel like she has been waiting.
           {
-            dur: 7,
+            dur: 12,
+            hold: 5,
             ease: 'outCubic',
             transition: 'cut',
             from: [30, 2.8, 90], to: [36, 2.2, 94],
@@ -561,7 +648,8 @@
           //     does. fov 34 is tight enough that the awning edge crops the top of
           //     frame — the frame gets smaller as the news gets worse.
           {
-            dur: 7,
+            dur: 10,
+            hold: 3,
             ease: 'inOutQuad',
             transition: 'cut',
             from: [43, 1.8, 96], to: [45.2, 1.6, 97.4],
@@ -606,7 +694,7 @@
           //     Vikram's own paperwork. Vikram's notebook being the next exhibit
           //     is the hook: the dead man's records are the evidence.
           {
-            dur: 9,
+            dur: 13,
             ease: 'linear',
             transition: 'cut',
             from: [45.2, 1.6, 97.4], to: [45.6, 1.6, 97.7],
@@ -620,11 +708,17 @@
             // The second half arrives after the cut's beat, so the two facts land
             // as two separate pieces of bad news rather than one sentence.
             sayThen: {
-              at: 0.58,
+              at: 0.5,
               speaker: 'Insp. Arjun Kadam',
               line: '"Shanti Galli. Mere ghar ke saamne."'
             },
-            audio: { beds: { room: 0.16 }, stingAt: { name: 'turn', kind: 'page', at: 0.56, gain: 0.7 } }
+            // The reveal is the cliffhanger, so the film owes it a beat of nothing.
+            // Without the hold, "Shanti Galli" lands on the same frame as "police
+            // uniform" and both leave at once — the audience processes them as one
+            // fact instead of two. The 4s of silence is what turns a sentence into
+            // a turn.
+            hold: 4,
+            audio: { beds: { room: 0.16 }, stingAt: { name: 'turn', kind: 'page', at: 0.48, gain: 0.7 } }
           },
 
           // 5 — THE OBJECT. Vikram's notebook in Arjun's hands, open. This is the
@@ -638,7 +732,8 @@
           //     which is the whole point of the shot. Nobody gets to look at the
           //     page alone before he does.
           {
-            dur: 6,
+            dur: 9,
+            hold: 4,
             ease: 'linear',
             transition: 'cut',
             from: [40.4, 1.75, 98.4], to: [41.0, 1.68, 98.2],
@@ -669,7 +764,8 @@
           //     warns about exactly this ("shot camera is within 5m of garage"),
           //     which is how the collision was found.
           {
-            dur: 8,
+            dur: 12,
+            hold: 4,
             ease: 'cinematic',
             transition: 'cut',
             from: [-20, 22, -168], to: [-26, 13, -132],
@@ -688,7 +784,8 @@
           //     a black screen. There is no dialogue: the previous shot said
           //     everything, and a line here would explain the joke.
           {
-            dur: 7,
+            dur: 10,
+            hold: 4,
             ease: 'cinematic',
             transition: 'cut',
             from: [-26, 13, -132], to: [-14, 32, -184],

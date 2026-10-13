@@ -18,9 +18,15 @@
  *   camera maths.
  *
  * HOUSE RULES ENFORCED HERE
- *   - MIN_SHOT is a floor, not a suggestion. Cutting away in under a second is
- *     what made the very first pass read as a slideshow instead as a film, so
- *     every authored duration is clamped up to the floor. See prepare().
+ *   - A shot has TWO clocks: a camera MOVE and a trailing HOLD. Cutting away in
+ *     under a second is what made the very first pass read as a slideshow rather
+ *     than a film, so the move is clamped up to MIN_MOVE and down to MAX_SHOT.
+ *     Silence after the last line is a separate, authored thing — `hold` — because
+ *     a film that can only pause BEFORE a line has no aftermath, and no aftermath
+ *     is why nothing lands. See prepare().
+ *   - Timed one-shots (flash, stings, sayThen) read the shot's TOTAL progress;
+ *     the camera reads MOVE progress. So an event still fires at the fraction of
+ *     the frame the author wrote, while the camera has already come to rest.
  *   - Everything is guarded. A bad shot must never soft-lock a level, so every
  *     vector read, every lookAt and every actor move is wrapped.
  *   - Anchored shots resolve their vectors as OFFSETS from a named set anchor
@@ -41,8 +47,23 @@
    */
   var MIN_SHOT = 4;
 
-  /** Upper bound on a single shot. Longer than this and a static frame rots. */
+  /** Upper bound on a single shot's camera MOVE. Longer than this and a moving
+   *  frame rots. A shot may still run longer than this via `hold` — see below. */
   var MAX_SHOT = 12;
+
+  /**
+   * Longest trailing hold a single shot may carry.
+   *
+   * The reference pacing (scripts/analyze_ref.py, 12 transcripts) has a 7s median
+   * silence and a 13.6s worst case. 10s is set just under the worst case seen, so
+   * an authored film can reach the depth the reference actually uses without any
+   * single frame outstaying its welcome.
+   */
+  var MAX_HOLD = 10;
+
+  /** Shortest camera move. Below this the shot is a still, and a still with no
+   *  move intent should be written with `from === to` on purpose instead. */
+  var MIN_MOVE = 2;
 
   /** Default duration for a shot that declares none. */
   var DEFAULT_SHOT = 6;
@@ -74,9 +95,20 @@
   /**
    * Normalise an authored shot list into what the player will actually run.
    *
-   * Clamps every duration into [MIN_SHOT, MAX_SHOT], fills in the default, and
-   * drops shots with no usable camera intent. Runs once at begin(), so the
-   * per-frame hot path never re-derives any of this.
+   * Splits each shot's `dur` into a camera MOVE and a trailing `hold`, then
+   * clamps the move into [MIN_MOVE, MAX_SHOT] and the hold into [0, MAX_HOLD].
+   * Runs once at begin(), so the per-frame hot path never re-derives any of it.
+   *
+   * WHY TWO CLOCKS AND NOT ONE
+   *   A shot's `dur` is how long the cut is on screen. `hold` is how much of that
+   *   is spent AFTER the camera has come to rest. These are different things and
+   *   conflating them is the single biggest reason an authored film reads as a
+   *   slideshow: without `hold`, silence can only exist before a line, so every
+   *   pause in the film is leading-in rather than aftermath, and nothing ever
+   *   lands and then sits there.
+   *
+   *   `_moveFrac` is precomputed here precisely so tick() can divide by it every
+   *   frame without doing any parsing or clamping in the hot path.
    *
    * @param {Array} script authored shots
    * @returns {Array} normalised shots (same object references, `dur` fixed)
@@ -89,10 +121,32 @@
         // A shot with no camera intent and no look target has nothing to say.
         return;
       }
-      var d = (typeof s.dur === 'number' && s.dur > 0) ? s.dur : DEFAULT_SHOT;
-      if (d < MIN_SHOT) { d = MIN_SHOT; }
-      if (d > MAX_SHOT) { d = MAX_SHOT; }
-      s.dur = d;
+
+      // `dur` is the TOTAL on-screen time, and it is deliberately NOT clamped to
+      // MAX_SHOT: a 12s move followed by a 5s hold is a 17s shot, which is a
+      // legitimate authored beat. What is clamped is the move.
+      var total = (typeof s.dur === 'number' && s.dur > 0) ? s.dur : DEFAULT_SHOT;
+
+      var hold = (typeof s.hold === 'number' && s.hold > 0) ? s.hold : 0;
+      if (hold > MAX_HOLD) { hold = MAX_HOLD; }
+
+      var move = total - hold;
+      if (move < MIN_MOVE) {
+        // Asking for more hold than the shot has room for. The move yields, down
+        // to a floor: better a 2s drift than a frame that appears already stopped.
+        move = Math.min(MIN_MOVE, total);
+        hold = total - move;
+      } else if (move > MAX_SHOT) {
+        move = MAX_SHOT;
+        hold = Math.min(MAX_HOLD, total - MAX_SHOT);
+      }
+      if (hold < 0) { hold = 0; }
+
+      s.dur = total;
+      s._move = move;
+      s._hold = hold;
+      s._moveFrac = total > 0 ? move / total : 1;
+
       // A dissolve shorter than a fifth of a second reads as a glitch, not a
       // transition; snap it to a hard cut instead.
       if (s.dissolve != null && s.dissolve < 0.2) { s.transition = 'cut'; s.dissolve = 0; }
@@ -136,16 +190,34 @@
       var look = resolveVec(shot.look, shot, a);
       if (!from || !look) { return; }
 
+      // Ease the MOVE progress, not the shot progress. tick() has already scaled p by
+      // `_moveFrac`, so by the time p reaches 1 the move is over and `e` is 1 —
+      // which makes lerp() return `to` exactly and the camera genuinely stationary
+      // for the remainder of the shot.
       var e = ease(shot.ease, p);
       var posX = lerp(from[0], to[0], e);
       var posY = lerp(from[1], to[1], e);
       var posZ = lerp(from[2], to[2], e);
 
-      // Subtle handheld breathing drift so the camera feels like physical cinematic gear
+      // Subtle handheld breathing drift so the camera feels like physical
+      // cinematic gear.
+      //
+      // Ramp it OUT across the last stretch of the move. This was previously a
+      // constant ±16mm wobble for the entire shot, which meant a held shot was
+      // never actually still: `hold` stopped the move, and the drift immediately
+      // put the camera back in motion, so the hold read as "drifting" rather than
+      // "at rest". A hold is the one moment in a film where the frame is genuinely
+      // still, and the stillness is what makes it legible as a beat.
+      //
+      // Fade window is the last 15% of the move, so the wobble is at full
+      // amplitude while travelling and gone by the time the camera settles.
       if (!shot.locked) {
         var tNow = (typeof performance !== 'undefined' ? performance.now() : Date.now()) * 0.0014;
-        posX += Math.sin(tNow * 1.6) * 0.016;
-        posY += Math.cos(tNow * 1.9) * 0.012;
+        var settle = p > 0.85 ? (1 - p) / 0.15 : 1;
+        if (settle > 0) {
+          posX += Math.sin(tNow * 1.6) * 0.016 * settle;
+          posY += Math.cos(tNow * 1.9) * 0.012 * settle;
+        }
       }
 
       game.camera.position.set(posX, posY, posZ);

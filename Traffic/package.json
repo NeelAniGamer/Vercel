@@ -19,6 +19,10 @@
     "electron:pack-test": "vite build --mode electron && node build-electron.js && electron-builder --dir",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
+    "typecheck:physics": "tsc --noEmit -p src/physics/tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:physics": "vitest run",
     "test:smoke": "node pw_test.js"
   },
   "devDependencies": {
@@ -29,7 +33,8 @@
     "electron-builder": "^26.15.3",
     "electron-updater": "^6.8.9",
     "typescript": "^7.0.2",
-    "vite": "^8.3.1"
+    "vite": "^8.3.1",
+    "vitest": "^5.0.3"
   },
   "dependencies": {
     "@dimforge/rapier3d-compat": "^0.21.0",

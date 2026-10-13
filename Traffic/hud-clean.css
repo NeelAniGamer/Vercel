@@ -1,0 +1,533 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   hud-clean.css — decluttered gameplay HUD
+   ═══════════════════════════════════════════════════════════════════════════════
+   Loaded LAST, after col-mobile.css / the inline <style> blocks.
+
+   WHY THIS FILE
+   A screenshot of Driving.html at 844x390 (landscape phone) showed 67% of the
+   screen covered by HUD chrome, in five overlapping panels stacked down the
+   right-hand side. Measured, per panel:
+
+     #top-right-hud-stack   290x184  task list showing all 6 tasks at once,
+                                        clipped mid-item, overlapping the panel
+                                        below it
+     #cockpit-drive-cluster 290x124  six buttons
+     #ai-copilot-card       320x 95  repeats what the toast already says
+     #bmc-floating-badge    169x 36  "Buy me a coffee" donate button
+     #hud-ai-synth-btn       91x 30  dev tool ("AI City")
+     #hud-rd-btn             66x 26  dev tool (render distance)
+     #civic-controls        255x 70  five buttons, two of them real driving
+                                        actions and three being input settings
+     #player-hud-card       244x 95  six numbers, of which three change rarely
+
+   WHAT THIS KEEPS, and why it earns its pixels
+     - the map (#mmc)                  orientation; the user asked to keep it
+     - ONE objective at a time         the primary "what do I do now" signal
+     - #sig-ind                        signal state; the core skill being taught
+     - #challan-summary-box            penalties are the feedback loop
+     - timer + level                   the only two numbers that change constantly
+     - seatbelt + turn signals         real driving actions
+     - joystick, gas, brake            inputs
+     - pause                           unavoidable
+
+   WHAT THIS MOVES
+     Phone / Gyro / Kid Mode are input and accessibility settings, not driving
+     actions. They move into a settings sheet behind a single gear button so
+     nothing is lost, and three buttons come off the thumb zone.
+
+   Target after this file: ~27% of screen covered, down from ~67%.
+
+   Specificity note: several panels are shown by `#gc.on ~ #foo` (specificity
+   2,1,0). The hide rules below are written as `body #gc.on ~ #foo` (2,1,1) so
+   they win on specificity and not merely on load order.
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. REMOVE: dev tools, donate, duplicate panels, debug marks ────────────── */
+
+/* AI co-pilot card — its two messages ("System active", road conditions,
+   task completed) are already delivered by #toast and by the objective card. */
+body #gc.on ~ #ai-copilot-card,
+#ai-copilot-card {
+  display: none !important;
+}
+
+/* Donate button — not a driving signal. */
+body #gc.on ~ #bmc-floating-badge,
+#bmc-floating-badge {
+  display: none !important;
+}
+
+/* Scene-synthesis and render-distance toggles are developer affordances. */
+body #gc.on ~ #hud-ai-synth-btn,
+#hud-ai-synth-btn {
+  display: none !important;
+}
+body #gc.on ~ #hud-rd-btn,
+#hud-rd-btn {
+  display: none !important;
+}
+
+/* Build stamp — noise in front of the play area. */
+body #gc.on ~ #version-badge,
+#version-badge {
+  display: none !important;
+}
+
+/* Safe-zone anchors (#sz-tl / #sz-tr / #sz-bl / ...) are NOT debug chrome.
+   SafeZoneGrid reparents every registered HUD element into one of them
+   (game_core.js SZ.register), so hiding an anchor hides the element inside it --
+   that is how #player-hud-card disappeared in the first pass. The grid also
+   owns their position via the --sz-* custom properties, so this file must not
+   touch them at all. */
+
+/* The objective overlay duplicated the objective drawer that task-manager.js
+   mounts at #sz-task-drawer. The drawer is the single objective surface. */
+body #gc.on ~ #objective-overlay,
+#objective-overlay {
+  display: none !important;
+}
+
+/* ── 2. Player card: 244x95 of six numbers -> 170x34 of the two that move ──── */
+
+body #gc.on ~ #player-hud-card,
+#player-hud-card {
+  top: calc(env(safe-area-inset-top, 0px) + 6px) !important;
+  left: calc(env(safe-area-inset-left, 0px) + 8px) !important;
+  min-width: 0 !important;
+  width: auto !important;
+  max-width: none !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 5px 8px !important;
+  border-radius: 10px !important;
+  background: rgba(8, 13, 24, 0.72) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45) !important;
+  cursor: pointer !important;
+}
+
+/* Wallet / tokens / checkpoints / score: three of these change rarely, so they
+   become a drawer. The level and the timer stay visible because they are the
+   two numbers a player actually watches. */
+#player-hud-card .hud-dash-stats {
+  display: none !important;
+}
+
+#player-hud-card .hud-dash-header {
+  display: flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  flex: 0 0 auto !important;
+}
+
+#player-hud-card .hud-score-chip {
+  display: none !important;
+}
+
+#player-hud-card .hud-lvl-pill,
+#player-hud-card .hud-timer-chip {
+  padding: 2px 6px !important;
+  gap: 3px !important;
+  border-radius: 6px !important;
+}
+#player-hud-card .hud-chip-val { font-size: 0.7rem !important; }
+#player-hud-card .hud-lvl-prefix { font-size: 0.55rem !important; }
+
+/* Drawer, revealed by tapping the pill. Absolute so it does not reflow the row. */
+#player-hud-card .hud-dash-stats {
+  position: absolute !important;
+  top: calc(100% + 6px) !important;
+  left: 0 !important;
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 6px 12px !important;
+  padding: 8px 10px !important;
+  min-width: 190px !important;
+  border-radius: 10px !important;
+  background: rgba(8, 13, 24, 0.94) !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55) !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transform: translateY(-4px) !important;
+  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s !important;
+  pointer-events: none !important;
+  z-index: 2 !important;
+}
+#player-hud-card.hud-open .hud-dash-stats {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateY(0) !important;
+  pointer-events: auto !important;
+}
+/* Two columns instead of three: the row is now a 190px drawer, not a full card. */
+#player-hud-card .hud-dash-col { min-width: 0 !important; }
+#player-hud-card .hud-col-lbl { font-size: 0.5rem !important; }
+#player-hud-card .hud-col-val { font-size: 0.78rem !important; }
+
+/* ── 3. Objectives: all six at once -> the current one, plus a drawer ──────── */
+
+body #gc.on ~ #top-right-hud-stack,
+#top-right-hud-stack {
+  top: calc(env(safe-area-inset-top, 0px) + 6px) !important;
+  right: calc(env(safe-area-inset-right, 0px) + 8px) !important;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: min(74vw, 300px) !important;
+  gap: 6px !important;
+}
+
+#task-tracker {
+  padding: 7px 9px !important;
+  border-radius: 10px !important;
+  background: rgba(8, 13, 24, 0.72) !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45) !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+/* The "📋 Tasks" caption is redundant now that there is exactly one task and a
+   "2/6" counter. */
+#task-tracker > div:first-child { display: none !important; }
+
+#task-list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+}
+
+/* The single current objective, written by Game._renderTasks(). */
+#task-list .t-current {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 6px !important;
+  font: 700 0.76rem/1.25 Inter, -apple-system, BlinkMacSystemFont, sans-serif !important;
+  color: #fff !important;
+}
+#task-list .t-current .t-dot {
+  flex: 0 0 auto !important;
+  width: 7px !important;
+  height: 7px !important;
+  margin-top: 4px !important;
+  border-radius: 50% !important;
+  background: #22d3ee !important;
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.16) !important;
+}
+#task-list .t-current .t-text { min-width: 0 !important; }
+
+/* Progress + expand affordance. */
+#task-list .t-bar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  margin-top: 5px !important;
+  padding-top: 5px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+#task-list .t-count {
+  font: 600 0.62rem/1 Inter, sans-serif !important;
+  color: rgba(255, 255, 255, 0.55) !important;
+  letter-spacing: 0.04em !important;
+}
+#task-list .t-more {
+  font: 700 0.6rem/1 Inter, sans-serif !important;
+  color: #7dd3fc !important;
+  letter-spacing: 0.04em !important;
+  padding: 3px 7px !important;
+  border-radius: 999px !important;
+  background: rgba(125, 211, 252, 0.10) !important;
+  border: 1px solid rgba(125, 211, 252, 0.22) !important;
+}
+
+/* Full list, collapsed by default. */
+#task-list .t-all {
+  display: none !important;
+  margin-top: 5px !important;
+  padding-top: 5px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+  max-height: 34vh !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+#task-tracker.hud-open #task-list .t-all { display: flex !important; }
+#task-list .t-all .t-row {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 6px !important;
+  font: 500 0.68rem/1.25 Inter, sans-serif !important;
+  color: rgba(255, 255, 255, 0.72) !important;
+}
+#task-list .t-all .t-row.t-done {
+  color: #4ade80 !important;
+}
+#task-list .t-all .t-row.t-done .t-text {
+  text-decoration: line-through !important;
+  opacity: 0.6 !important;
+}
+#task-list .t-all .t-row.t-now .t-text { color: #fff !important; font-weight: 700 !important; }
+
+/* ── 4. Civic controls: 5 buttons -> the 2 that are driving actions ────────── */
+/* Seatbelt and indicators are the actions; Phone / Gyro / Kid Mode are input
+   and accessibility settings and now live in the settings sheet (§7). */
+
+body #gc.on ~ #civic-controls,
+#civic-controls {
+  right: calc(env(safe-area-inset-right, 0px) + 8px) !important;
+  top: auto !important;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 58px) !important;
+  flex-direction: row !important;
+  gap: 6px !important;
+  padding: 5px !important;
+  border-radius: 10px !important;
+  background: rgba(8, 13, 24, 0.68) !important;
+  border: 1px solid rgba(255, 255, 255, 0.09) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+  pointer-events: auto !important;
+}
+
+#civic-controls .civic-btn {
+  width: 40px !important;
+  min-width: 40px !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  padding: 0 !important;
+  border-radius: 9px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+}
+#civic-controls .civic-label { display: none !important; }
+#civic-controls .civic-icon,
+#civic-controls .ind-arrow { width: 17px !important; height: 17px !important; }
+#civic-controls .sb-icon { width: 17px !important; height: 17px !important; }
+
+/* ── 5. Drive cluster: six buttons -> CRUISE and LIMIT as small pills ─────── */
+
+body #gc.on ~ #cockpit-drive-cluster,
+#cockpit-drive-cluster {
+  right: calc(env(safe-area-inset-right, 0px) + 8px) !important;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 8px) !important;
+  width: auto !important;
+  max-width: none !important;
+  flex-direction: row !important;
+  gap: 6px !important;
+  padding: 5px !important;
+  border-radius: 10px !important;
+  background: rgba(8, 13, 24, 0.68) !important;
+  border: 1px solid rgba(255, 255, 255, 0.09) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+}
+/* Vehicle-cycle and environment chips are navigation aids, not driving aids;
+   the objective card already names the destination. */
+#cockpit-drive-cluster > *:not(.cdb-cruise):not(.cdb-limit) {
+  display: none !important;
+}
+#cockpit-drive-cluster .cdb-cruise,
+#cockpit-drive-cluster .cdb-limit {
+  padding: 6px 10px !important;
+  border-radius: 8px !important;
+  font: 700 0.62rem/1 Inter, sans-serif !important;
+  letter-spacing: 0.05em !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+}
+
+/* ── 6. Challan: keep it, but stop it colliding with the objective card ────── */
+
+#challan-summary-box {
+  padding: 6px 9px !important;
+  border-radius: 9px !important;
+  font-size: 0.68rem !important;
+  max-width: min(74vw, 300px) !important;
+}
+#challan-summary-box .csb-title { font-size: 0.62rem !important; }
+#challan-summary-box .csb-sub { font-size: 0.68rem !important; }
+
+/* ── 7. Settings sheet: holds Phone / Gyro / Kid Mode ─────────────────────── */
+
+#hud-settings-btn {
+  position: fixed !important;
+  top: calc(env(safe-area-inset-top, 0px) + 8px) !important;
+  right: calc(env(safe-area-inset-right, 0px) + 52px) !important;
+  width: 36px !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  display: none !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  border-radius: 9px !important;
+  background: rgba(8, 13, 24, 0.72) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #cbd5e1 !important;
+  cursor: pointer !important;
+  z-index: 46 !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+}
+body #gc.on ~ #hud-settings-btn,
+body.hud-play ~ #hud-settings-btn,
+#hud-settings-btn.hud-visible { display: flex !important; }
+#hud-settings-btn svg { width: 18px !important; height: 18px !important; }
+
+#hud-settings-sheet {
+  position: fixed !important;
+  left: 50% !important;
+  bottom: 0 !important;
+  transform: translate(-50%, 100%) !important;
+  width: min(92vw, 340px) !important;
+  padding: 12px 12px calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+  border-radius: 16px 16px 0 0 !important;
+  background: rgba(8, 13, 24, 0.96) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-bottom: none !important;
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  z-index: 120 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 9px !important;
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1) !important;
+  pointer-events: auto !important;
+}
+#hud-settings-sheet.hud-open { transform: translate(-50%, 0) !important; }
+
+#hud-settings-sheet .hss-head {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  font: 800 0.7rem/1 Inter, sans-serif !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+#hud-settings-sheet .hss-close {
+  border: none !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #fff !important;
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: 7px !important;
+  font-size: 0.9rem !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+}
+#hud-settings-sheet .hss-row {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 7px !important;
+}
+#hud-settings-sheet .civic-btn {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  padding: 9px 4px !important;
+  border-radius: 10px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  cursor: pointer !important;
+}
+#hud-settings-sheet .civic-icon,
+#hud-settings-sheet .sb-icon { width: 19px !important; height: 19px !important; }
+#hud-settings-sheet .civic-label {
+  display: block !important;
+  font: 600 0.6rem/1 Inter, sans-serif !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Scrim behind the sheet. */
+#hud-settings-scrim {
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(0, 0, 0, 0.45) !important;
+  z-index: 119 !important;
+  display: none !important;
+  border: none !important;
+  padding: 0 !important;
+}
+#hud-settings-scrim.hud-open { display: block !important; }
+
+/* ── 8. Toast: 274x68 in the middle of the road -> small, high, transient ──── */
+
+body #gc.on ~ #toast,
+#toast {
+  top: calc(env(safe-area-inset-top, 0px) + 46px) !important;
+  max-width: min(58vw, 240px) !important;
+  padding: 6px 11px !important;
+  font-size: 0.72rem !important;
+  border-radius: 999px !important;
+  background: rgba(8, 13, 24, 0.86) !important;
+}
+
+/* ── 9. Short-viewport guard (landscape phones, 390px tall) ───────────────── */
+/* Below ~430px of height the vertical budget is the binding constraint, so the
+   remaining optional chrome is dropped rather than allowed to overlap. */
+
+@media (max-height: 430px) {
+  #dn-clock { display: none !important; }
+  #sig-ind {
+    font-size: 0.66rem !important;
+    padding: 3px 8px !important;
+    gap: 7px !important;
+  }
+  #task-tracker { padding: 6px 8px !important; }
+  #task-list .t-current { font-size: 0.72rem !important; }
+}
+
+/* ── 10. Portrait phones ──────────────────────────────────────────────────── */
+/* The right column is a 290px strip on a 360px screen, so in portrait the
+   objective card moves to full width at the top and the driving controls stack
+   along the bottom. */
+
+@media (orientation: portrait) and (max-width: 560px) {
+  body #gc.on ~ #top-right-hud-stack,
+  #top-right-hud-stack {
+    left: calc(env(safe-area-inset-left, 0px) + 8px) !important;
+    right: calc(env(safe-area-inset-right, 0px) + 8px) !important;
+    top: calc(env(safe-area-inset-top, 0px) + 44px) !important;
+    max-width: none !important;
+  }
+  #task-tracker { width: 100% !important; box-sizing: border-box !important; }
+  #challan-summary-box { width: 100% !important; box-sizing: border-box !important; }
+  body #gc.on ~ #civic-controls,
+  #civic-controls {
+    left: calc(env(safe-area-inset-left, 0px) + 8px) !important;
+    right: auto !important;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 8px) !important;
+  }
+  body #gc.on ~ #cockpit-drive-cluster,
+  #cockpit-drive-cluster {
+    left: calc(env(safe-area-inset-left, 0px) + 8px) !important;
+    right: auto !important;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 58px) !important;
+  }
+  #hud-settings-btn { right: calc(env(safe-area-inset-right, 0px) + 52px) !important; }
+}
+
+/* ── 11. Larger screens: cap the objective card so it never dominates ─────── */
+
+@media (min-width: 1100px) and (min-height: 600px) {
+  #task-tracker { max-width: 340px !important; }
+  #task-list .t-current { font-size: 0.82rem !important; }
+  body #gc.on ~ #civic-controls,
+  #civic-controls { bottom: calc(env(safe-area-inset-bottom, 0px) + 64px) !important; }
+}
+
+/* ── 12. Respect reduced motion ───────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  #hud-settings-sheet,
+  #player-hud-card .hud-dash-stats { transition: none !important; }
+}

@@ -2527,6 +2527,9 @@ class Game {
 
       _horn() {
           this._honkedThisFrame = true;
+          if (typeof this._nearRedSignal === 'function' && this._nearRedSignal(35)) {
+            this._honkedNearSignal = true;
+          }
           if (this.mapCfg && this.mapCfg.isSilenceZone) {
             
 
@@ -2987,6 +2990,15 @@ class Game {
 
             if (window.TrafficAudio && lateralSlip > 0.45 && Math.random() < 0.15) {
               window.TrafficAudio.playScreech(Math.min(1.0, (lateralSlip - 0.3) * 1.6));
+              // Recorded tyre scrub under the synthesised screech. Screech is a
+              // filtered noise burst gated on slip angle, so it is either on or off
+              // and always the same timbre; a real skid has grit that comes and
+              // goes with the surface. Rate-limited by the same 15% roll so the two
+              // layers cannot machine-gun against each other.
+              if (window.SampleBank && typeof window.SampleBank.play === 'function') {
+                window.SampleBank.play(lateralSlip > 0.7 ? 'sfx_skid_long' : 'sfx_skid_short',
+                  { gain: Math.min(0.5, lateralSlip * 0.4), rate: 0.92 + Math.random() * 0.16 });
+              }
             }
           }
 
@@ -3460,6 +3472,7 @@ class Game {
         this.turnTimer = 0;
         this.phoneGpsOn = false;
         this._honkedThisFrame = false;
+        this._honkedNearSignal = false;
         this._nearbyPedCount = 0;
         this._collidedThisFrame = false;
         this._ambulanceNear = false;
@@ -3532,7 +3545,12 @@ class Game {
         this._introStarted = false;
         try {
           if (window.Cutscene && typeof window.Cutscene.begin === 'function') {
-            this._introStarted = !!window.Cutscene.begin(this, lv);
+            // `||=`, not `=`. A second launch (retryLevel, or a launcher that
+            // starts the level the page already started) calls begin() again, and
+            // begin() correctly refuses while a film is running — returning false.
+            // Assigning that false over the flag would erase the record that a
+            // prologue is on screen, which is what `_introStarted` exists to say.
+            this._introStarted = this._introStarted || !!window.Cutscene.begin(this, lv);
           }
         } catch (e) {
           console.warn('[Driving] Cutscene.begin() failed — continuing without intro:', e);
@@ -4168,17 +4186,53 @@ class Game {
         this._renderTasks();
       }
       
+      /**
+       * Objectives are shown ONE AT A TIME.
+       *
+       * Previously every task in the level was rendered into #task-list at once.
+       * Measured at 844x390, that produced a 290x184 panel listing six tasks,
+       * clipped mid-item, sitting on top of the objective overlay and the civic
+       * controls -- and the panel the player actually needs ("what do I do now")
+       * was the one most likely to be scrolled out of view.
+       *
+       * Now the card leads with the first incomplete task plus an "n/total"
+       * counter. The full checklist is still reachable by tapping the card, so
+       * nothing is lost -- it is just no longer competing for attention by
+       * default. Styling lives in hud-clean.css section 3.
+       */
       _renderTasks() {
         const list = document.getElementById('task-list');
         const tracker = document.getElementById('task-tracker');
         if (!list || !tracker) {return;}
         if (this.tasks.length === 0) { tracker.style.display = 'none'; return; }
         tracker.style.display = 'block';
-        list.innerHTML = this.tasks.map(t => {
-          const icon = t.done ? '✅' : '⬜';
-          const style = t.done ? 'text-decoration:line-through;opacity:0.5;' : '';
-          return `<div style="display:flex;align-items:center;gap:8px;${style}"><span>${icon}</span><span>${t.text}</span></div>`;
-        }).join('');
+
+        const esc = (s) => String(s == null ? '' : s)
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+        const total = this.tasks.length;
+        const done = this.tasks.filter(t => t.done).length;
+        const cur = this.tasks.find(t => !t.done);
+
+        // Nothing left to do: confirm completion rather than showing a blank card.
+        const headline = cur
+          ? `<div class="t-current"><span class="t-dot"></span><span class="t-text">${esc(cur.text)}</span></div>`
+          : `<div class="t-current"><span class="t-dot" style="background:#4ade80;box-shadow:0 0 0 3px rgba(74,222,128,.16)"></span><span class="t-text">All Objectives Complete</span></div>`;
+
+        const more = total > 1
+          ? `<div class="t-more">${done === total ? 'REVIEW' : 'VIEW ALL'}</div>`
+          : '';
+
+        const all = `<div class="t-all">` + this.tasks.map((t, i) => {
+          const cls = t.done ? 't-done' : (cur === t ? 't-now' : '');
+          const mark = t.done ? '\u2713' : (cur === t ? '\u25B6' : '\u25CB');
+          return `<div class="t-row ${cls}"><span>${mark}</span><span class="t-text">${esc(t.text)}</span></div>`;
+        }).join('') + `</div>`;
+
+        list.innerHTML = headline +
+          `<div class="t-bar"><span class="t-count">OBJECTIVE ${Math.min(done + 1, total)} / ${total}</span>${more}</div>` +
+          all;
       }
       
       _computeTaskFlags() {
@@ -4328,7 +4382,11 @@ class Game {
               else if (t.target === 'parking_spot' && Math.abs(this.speed) < 0.05) {complete = true;}
               else if (t.target === 'red_light' && Math.abs(this.speed) < 0.05) {complete = true;}
               // Strict variant: stopped NEAR a red signal (not just anywhere)
-              else if (t.target === 'red_signal' && Math.abs(this.speed) < 0.05 && this._nearRedSignal(30)) {complete = true;}
+              else if (t.target === 'red_signal' && Math.abs(this.speed) < 0.05 && this._nearRedSignal(30)) {
+                const inVeh = (!this.mapCfg || !this.mapCfg.startOutside) || this._everEnteredVehicle;
+                const atSignalArea = (this.hits >= 1) || (this.player && this.player.position.z >= -70 && this.player.position.z <= 20 && Math.abs(this.player.position.x) <= 25);
+                if (inVeh && atSignalArea) { complete = true; }
+              }
               else if (t.target === 'cow' && this._animalObstacle && this._animalObstacle.everWaitedNear) {complete = true;}
               else if (t.target === 'cow_moved' && this._animalObstacle && this._animalObstacle.moved) {complete = true;}
               break;
@@ -4360,7 +4418,12 @@ class Game {
               else if (t.target === 'gap_spot' && this._reachedGap) {complete = true;}
               break;
             case 'avoid':
-              if (t.target === 'honk' && !this._honkedThisFrame) {complete = true;}
+              if (t.target === 'honk') {
+                const waitRedTask = this.tasks && this.tasks.find(x => x.id === 'wait_red');
+                const waitRedDone = !waitRedTask || waitRedTask.done;
+                const pastSignal = (this.hits >= 2) || (this.player && this.player.position.z > -10);
+                if (waitRedDone && pastSignal && !this._honkedNearSignal) { complete = true; }
+              }
               else if (t.target === 'speed_zone') {
                 if (this.player && this.mapCfg && this.mapCfg.hasSchool) {
                   const px = this.player.position.x;
@@ -4416,7 +4479,13 @@ class Game {
                     }
                   }
                 } else if (this._nearbyPedCount === 0) {
-                  complete = true;
+                  const waitRedTask = this.tasks && this.tasks.find(x => x.id === 'wait_red');
+                  const waitRedDone = !waitRedTask || waitRedTask.done;
+                  const inVeh = (!this.mapCfg || !this.mapCfg.startOutside) || this._everEnteredVehicle;
+                  const pastCrossing = (this.hits >= 2) || (this.player && this.player.position.z > -10);
+                  if (inVeh && waitRedDone && pastCrossing) {
+                    complete = true;
+                  }
                 }
               }
               else if (t.target === 'collision' && !this._collidedThisFrame) {complete = true;}
@@ -5049,16 +5118,16 @@ class Game {
             npcTypes: ['car','auto','bike','car','bus','truck','taxi','car','auto','bike','car','auto','bus','car','taxi','car','bike','auto','truck','car','car','bike','auto','car'],
             roads: [
               // Major North-South Avenues
-              { type: 'v', x: 0, z1: -800, z2: 800, lanes: 4, width: 22, name: 'SV Road Arterial' },
-              { type: 'v', x: 240, z1: -800, z2: 800, lanes: 4, width: 20, name: 'Link Road' },
-              { type: 'v', x: -240, z1: -800, z2: 800, lanes: 4, width: 20, name: 'Western Express' },
-              { type: 'v', x: -480, z1: -800, z2: 800, lanes: 4, width: 20, name: 'Marine Coastal Way' },
+              { type: 'v', x: 0, z1: -800, z2: 800, lanes: 4, width: 26, name: 'SV Road Arterial' },
+              { type: 'v', x: 240, z1: -800, z2: 800, lanes: 4, width: 26, name: 'Link Road' },
+              { type: 'v', x: -240, z1: -800, z2: 800, lanes: 4, width: 26, name: 'Western Express' },
+              { type: 'v', x: -480, z1: -800, z2: 800, lanes: 4, width: 26, name: 'Marine Coastal Way' },
               { type: 'v', x: 480, z1: -800, z2: 800, lanes: 2, width: 14, name: 'East Ring Road' },
               // Major East-West Cross Streets
-              { type: 'h', z: 0, x1: -800, x2: 800, lanes: 4, width: 20, name: 'Central Boulevard' },
-              { type: 'h', z: -200, x1: -800, x2: 800, lanes: 4, width: 20, name: 'North Grand Avenue' },
+              { type: 'h', z: 0, x1: -800, x2: 800, lanes: 4, width: 26, name: 'Central Boulevard' },
+              { type: 'h', z: -200, x1: -800, x2: 800, lanes: 4, width: 26, name: 'North Grand Avenue' },
               { type: 'h', z: -400, x1: -800, x2: 800, lanes: 2, width: 14, name: 'Airport Approach' },
-              { type: 'h', z: 200, x1: -800, x2: 800, lanes: 4, width: 20, name: 'South Commercial Expressway' },
+              { type: 'h', z: 200, x1: -800, x2: 800, lanes: 4, width: 26, name: 'South Commercial Expressway' },
               { type: 'h', z: 400, x1: -800, x2: 800, lanes: 2, width: 14, name: 'Harbor Way' }
             ],
             route: [
@@ -5095,18 +5164,18 @@ class Game {
             isSilenceZone: true,
             roads: [
               // ── EAST-WEST ARTERIAL CORRIDORS (Standard Width 14m, 4 Lanes, IRC Compliant) ──
-              { type: 'h', z: 0, x1: -480, x2: 480, lanes: 4, width: 14, name: 'St. Xavier School Boulevard' },
-              { type: 'h', z: -120, x1: -480, x2: 480, lanes: 4, width: 14, name: 'Parel Commercial Crossway' },
-              { type: 'h', z: -240, x1: -480, x2: 480, lanes: 4, width: 14, name: 'North Parel Marg' },
-              { type: 'h', z: 120, x1: -480, x2: 480, lanes: 4, width: 14, name: 'South Parel Avenue' },
-              { type: 'h', z: 240, x1: -480, x2: 480, lanes: 4, width: 14, name: 'Sewri Link Expressway' },
+              { type: 'h', z: 0, x1: -480, x2: 480, lanes: 4, width: 26, name: 'St. Xavier School Boulevard' },
+              { type: 'h', z: -120, x1: -480, x2: 480, lanes: 4, width: 26, name: 'Parel Commercial Crossway' },
+              { type: 'h', z: -240, x1: -480, x2: 480, lanes: 4, width: 26, name: 'North Parel Marg' },
+              { type: 'h', z: 120, x1: -480, x2: 480, lanes: 4, width: 26, name: 'South Parel Avenue' },
+              { type: 'h', z: 240, x1: -480, x2: 480, lanes: 4, width: 26, name: 'Sewri Link Expressway' },
 
               // ── NORTH-SOUTH CONNECTING AVENUES (Standard Width 14m, 4 Lanes) ──
-              { type: 'v', x: -480, z1: -240, z2: 240, lanes: 4, width: 14, name: 'Currey Road Arterial' },
-              { type: 'v', x: -240, z1: -240, z2: 240, lanes: 4, width: 14, name: 'Parel West Link' },
-              { type: 'v', x: 0, z1: -240, z2: 240, lanes: 4, width: 14, name: 'Central Tram Avenue' },
-              { type: 'v', x: 240, z1: -240, z2: 240, lanes: 4, width: 14, name: 'Lower Parel Link' },
-              { type: 'v', x: 480, z1: -240, z2: 240, lanes: 4, width: 14, name: 'East Commercial Highway' }
+              { type: 'v', x: -480, z1: -240, z2: 240, lanes: 4, width: 26, name: 'Currey Road Arterial' },
+              { type: 'v', x: -240, z1: -240, z2: 240, lanes: 4, width: 26, name: 'Parel West Link' },
+              { type: 'v', x: 0, z1: -240, z2: 240, lanes: 4, width: 26, name: 'Central Tram Avenue' },
+              { type: 'v', x: 240, z1: -240, z2: 240, lanes: 4, width: 26, name: 'Lower Parel Link' },
+              { type: 'v', x: 480, z1: -240, z2: 240, lanes: 4, width: 26, name: 'East Commercial Highway' }
             ],
             route: [
               { x: 80, z: 0, desc: 'Parel East Approach - Start Driving' },
@@ -5656,7 +5725,10 @@ class Game {
             if (truck) {
               truck.position.set(p.x, 0, p.z);
               truck.rotation.y = (p.rotY !== undefined) ? p.rotY : Math.PI / 2;
-              truck.userData = { halfW: 4.6, halfD: 1.5, isObstacle: true, isVehicle: true, parked: true };
+              // halfW/halfD were SWAPPED here: this described a 9.2 m wide x 3.0 m long
+    // collider for a 2.50 x 8.50 m truck, so the player collided with a wall of
+    // invisible air to either side of the lorry and drove through its tail.
+    truck.userData = { halfW: 1.29, halfD: 4.29, isObstacle: true, isVehicle: true, parked: true };
               this.scene.add(truck);
               this.obstacles.push(truck);
               this._roadProblems.push({ kind: 'parked_truck', x: p.x, z: p.z, r: 6 });
@@ -7481,7 +7553,8 @@ class Game {
           if (schoolBus) {
             schoolBus.position.set(-38, 0, -9.2); // North curb shoulder, parallel to road
             schoolBus.rotation.y = Math.PI / 2; // Facing West
-            schoolBus.userData = { halfW: 4.8, halfD: 1.4, isObstacle: true, isVehicle: true };
+            // halfW/halfD were SWAPPED here too (9.6 m wide x 2.8 m long).
+    schoolBus.userData = { halfW: 1.32, halfD: 5.54, isObstacle: true, isVehicle: true };
             this.scene.add(schoolBus);
             this.obstacles.push(schoolBus);
           }
@@ -7615,7 +7688,7 @@ class Game {
                 isChild: true,
                 isLevelSchoolCrossing: true,
                 isObstacle: true,
-                halfW: 0.35, halfD: 0.35
+                halfW: 0.29, halfD: 0.19
               };
             } else if (i < 10) {
               // Students walking along North sidewalk toward the school bus
@@ -7623,14 +7696,14 @@ class Game {
               startZ = -9.2;
               child.position.set(startX, 0, startZ);
               child.rotation.y = Math.PI / 2;
-              child.userData = { spd: 0.02, state: 'sidewalk', isChild: true, halfW: 0.35, halfD: 0.35 };
+              child.userData = { spd: 0.02, state: 'sidewalk', isChild: true, halfW: 0.24, halfD: 0.17 };
             } else {
               // Students standing by the school courtyard chatting
               startX = schoolX - 4 + (i - 10) * 2.8;
               startZ = -18.0;
               child.position.set(startX, 0, startZ);
               child.rotation.y = (i % 2 === 0) ? Math.PI / 4 : -Math.PI / 4;
-              child.userData = { spd: 0, state: 'idle', isChild: true, halfW: 0.35, halfD: 0.35 };
+              child.userData = { spd: 0, state: 'idle', isChild: true, halfW: 0.24, halfD: 0.17 };
             }
 
             this.scene.add(child);
@@ -7936,7 +8009,7 @@ class Game {
                 pc.position.set(xMin + Math.random() * (xMax - xMin), 0, seg.z + side * shoulderOffset);
                 pc.rotation.y = side > 0 ? Math.PI / 2 : -Math.PI / 2; // parallel to road
               }
-              pc.userData = { isParked: true, isVehicle: true, halfW: 1.4, halfD: 2.2, isBuilding: false };
+              pc.userData = { isParked: true, isVehicle: true, halfW: 0.92, halfD: 2.12, isBuilding: false };
               this.scene.add(pc);
               this.obstacles.push(pc);
             }
@@ -10812,7 +10885,13 @@ class Game {
         }
         // Phase 5 frame-time ring (p95 source for telemetry + debug overlay)
         try {
-          const _fd = this._telemetryFrames();
+          // Drive brake lights and indicators once per frame. The updater itself
+      // throttles to 20 Hz and skips vehicles beyond 120 m, so with ~110 NPCs
+      // this costs a handful of emissive writes, not 110 material updates.
+      if (typeof window !== 'undefined' && window.IndianVehicles && typeof window.IndianVehicles.updateLights === 'function') {
+        window.IndianVehicles.updateLights(performance.now(), this.camera && this.camera.position);
+      }
+      const _fd = this._telemetryFrames();
           _fd.push(rawDt * 1000);
           if (_fd.length > 120) {_fd.shift();}
         } catch (e) {}
@@ -11117,8 +11196,11 @@ class Game {
             const pYaw = this.player.rotation.y;
             this.vx = Math.sin(pYaw) * this.speed;
             this.vz = Math.cos(pYaw) * this.speed;
-            this.player.position.x += this.vx;
-            this.player.position.z += this.vz;
+            // Same normalization as the vehicle branch below: speed is units-per-frame,
+            // so integration must scale with the real timestep or walking speed
+            // varies with frame rate. No-op at 60 fps.
+            this.player.position.x += this.vx * dt * 60;
+            this.player.position.z += this.vz * dt * 60;
           } else {
             this.speed = 0;
             this.vx = 0;
@@ -11269,7 +11351,13 @@ class Game {
           const targetVz = Math.cos(yaw) * this.speed - Math.sin(yaw) * vy;
           this.vx = targetVx;
           this.vz = targetVz;
-          this.player.position.x += this.vx; this.player.position.z += this.vz;
+          // MATH-1-6: `speed` is accumulated in units-per-frame (see the
+          // `dt * 60` factors above), so position must advance by the same
+          // normalization. At 60 fps dt*60 === 1 and this is a no-op; below
+          // and above, the car previously covered ground in proportion to the
+          // frame rate (0.33x at 30 fps, 2.4x at 144 fps).
+          this.player.position.x += this.vx * dt * 60;
+          this.player.position.z += this.vz * dt * 60;
 
         // ── KID-FIRST: MAGNETIC LANE ASSIST ──
         if (!this.isPedestrian && this.kidModeActive) {
@@ -11740,6 +11828,12 @@ class Game {
     }
 
       _usigs(dt) {
+        // `challanFired` is created when a level starts (see startLevel). A
+        // cutscene can build and run a stage map before that has happened, and
+        // this runs from the game loop on every frame — so without the guard the
+        // signal phase logic throws once per frame for the whole film, which
+        // surfaces as a silent console error and a frozen-looking set.
+        if (!this.challanFired) { this.challanFired = new Set(); }
         let nearestSig = null, nearestDist = 9999;
         this.sigs.forEach(sg => {
           const d = sg.userData;
@@ -11937,8 +12031,16 @@ class Game {
           if (this.player && this.trafficManager.vehicles) {
             const px = this.player.position.x, pz = this.player.position.z;
             const isPed = !!this.isPedestrian;
-            const pHalfW = isPed ? 0.35 : (this.vehMode === 'bike' ? 0.40 : (this.vehMode === 'auto' ? 0.70 : (this.vehMode === 'bus' || this.vehMode === 'truck' ? 1.35 : 0.95)));
-            const pHalfD = isPed ? 0.35 : (this.vehMode === 'bike' ? 0.95 : (this.vehMode === 'auto' ? 1.35 : (this.vehMode === 'bus' || this.vehMode === 'truck' ? 4.80 : 2.25)));
+            // Player extents come from the shared table (vehicle-dims.js) so the
+            // player's own box can never drift from the NPC boxes it collides with.
+            // Pedestrians use a 0.58 x 0.38 m box -- the previous 0.70 x 0.70 was
+            // 2.5x too deep, which registered hits on pedestrians already walked
+            // past, and pedestrian contact carries a penalty.
+            const _VDp = (typeof window !== 'undefined' && window.VehicleDims) ? window.VehicleDims : null;
+            const _pedH = _VDp ? _VDp.pedHalves(this.isChild) : { halfW: 0.29, halfD: 0.19 };
+            const _vehH = _VDp ? _VDp.halves(this.vehMode) : { halfW: 0.92, halfD: 2.12 };
+            const pHalfW = isPed ? _pedH.halfW : _vehH.halfW;
+            const pHalfD = isPed ? _pedH.halfD : _vehH.halfD;
             const pRot = this.player.rotation ? this.player.rotation.y : 0;
 
             this.trafficManager.vehicles.forEach(v => {
@@ -11948,14 +12050,27 @@ class Game {
               const dx = px - vx, dz = pz - vz;
               const distSq = dx * dx + dz * dz;
 
-              const vHalfW = v.mesh?.userData?.halfW || v.userData?.halfW || (v.type === 'bike' ? 0.40 : (v.type === 'auto' ? 0.70 : (v.type === 'bus' || v.type === 'truck' ? 1.35 : 0.95)));
-              const vHalfD = v.mesh?.userData?.halfD || v.userData?.halfD || (v.type === 'bike' ? 0.95 : (v.type === 'auto' ? 1.35 : (v.type === 'bus' || v.type === 'truck' ? 4.80 : 2.25)));
+              // Measured-from-mesh wins; the shared table is the fallback. This inverts
+              // the previous order's intent: the inline ternary was the LAST
+              // resort but its values were the ones actually used whenever
+              // userData was absent, and they disagreed with vehicles.js:930 by
+              // up to +0.40 m in width.
+              const _VDv = (typeof window !== 'undefined' && window.VehicleDims) ? window.VehicleDims : null;
+              const _fall = _VDv ? _VDv.halves(v.type) : { halfW: 0.92, halfD: 2.12 };
+              const vHalfW = v.mesh?.userData?.halfW || v.userData?.halfW || _fall.halfW;
+              const vHalfD = v.mesh?.userData?.halfD || v.userData?.halfD || _fall.halfD;
               const maxRad = Math.max(pHalfD, pHalfW) + Math.max(vHalfD, vHalfW);
 
               if (distSq < (maxRad + 0.5) * (maxRad + 0.5)) {
                 // Check oriented relative coordinates in vehicle local space
                 const vRot = v.rotation ? v.rotation.y : (v.mesh ? v.mesh.rotation.y : 0);
-                const cosV = Math.cos(-vRot), sinV = Math.sin(-vRot);
+                // MATH-2-1: this must be the true inverse rotation, not the transpose.
+// With yaw = atan2(x, z), local +X maps to world (cos r, -sin r) and +Z to
+// (sin r, cos r), so world->local is  lx = cos(r)*dx - sin(r)*dz,
+// lz = sin(r)*dx + cos(r)*dz.  Passing cos(-r)/sin(-r) substitutes -sin r and
+// yields the transpose, which swaps X and Z at 45/135 degrees — the car then
+// drives straight through diagonally-yawed buses and trucks.
+                const cosV = Math.cos(vRot), sinV = Math.sin(vRot);
                 const vLocX = cosV * dx - sinV * dz;
                 const vLocZ = sinV * dx + cosV * dz;
 
@@ -13067,8 +13182,12 @@ class Game {
           let localX = dx, localZ = dz;
           const rotY = obj.rotation ? obj.rotation.y : 0;
           if (Math.abs(rotY) > 0.01) {
-            const cos = Math.cos(-rotY);
-            const sin = Math.sin(-rotY);
+            // MATH-2-1: true inverse rotation, matching the resolution block
+            // below, which already uses the correct world basis (cos rotY).
+            // Fixing only this detection half would have inverted the push
+            // direction, since sign(localX) is read here and applied there.
+            const cos = Math.cos(rotY);
+            const sin = Math.sin(rotY);
             localX = cos * dx - sin * dz;
             localZ = sin * dx + cos * dz;
             overlapX = pR + hw - Math.abs(localX);
@@ -14080,7 +14199,20 @@ class Game {
         
         if (!this.warnEl) {
             this.warnEl = document.createElement('div');
-            this.warnEl.style.cssText = 'position:fixed; bottom:22%; left:50%; transform:translateX(-50%); font-family:"Inter", -apple-system, BlinkMacSystemFont, sans-serif; z-index:9999; display:none; pointer-events:none; text-align:center; transition:opacity 0.2s, transform 0.2s;';
+            // z-index 900, not 9999.
+            //
+            // The warning strip (OVERSPEEDING, SHARP CORNER, PRESS F TO ENTER CAR)
+            // is a HUD element that belongs to the playable map. It was layered one
+            // step BELOW the mission briefing (10000) but only just — and the
+            // briefing is a full-screen modal, so during the briefing the player saw
+            // "PRESS F TO ENTER CAR" floating on top of the briefing card it was
+            // supposed to be covered by. Two overlays for the same moment, neither
+            // dismissing the other.
+            //
+            // 900 keeps it above the world and the HUD drawer (120) and below every
+            // modal (10000+). The mobile hint button, which must stay tappable over
+            // everything, is on its own element and is unaffected.
+            this.warnEl.style.cssText = 'position:fixed; bottom:22%; left:50%; transform:translateX(-50%); font-family:"Inter", -apple-system, BlinkMacSystemFont, sans-serif; z-index:900; display:none; pointer-events:none; text-align:center; transition:opacity 0.2s, transform 0.2s;';
             document.body.appendChild(this.warnEl);
         }
         const speedLimitKmh = this.mapCfg && this.mapCfg.speedLimit ? this.mapCfg.speedLimit : (this.speedLimitCap || 50);

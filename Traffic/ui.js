@@ -31,6 +31,7 @@ window.sfx = Object.assign(window.sfx || {}, {
   vol: { sfx: 1, ui: 1, env: 1 },
   _cat: { horn: 'sfx', brake: 'sfx', ring: 'ui', challan: 'ui', ok: 'ui', error: 'ui', thunder: 'env' },
   init() {
+
     if (this._c) {return}
     try {
       this._c = new (window.AudioContext || window.webkitAudioContext)()
@@ -232,12 +233,89 @@ var ui = window.ui = Object.assign(window.ui || {}, {
       }
     }
   },
+    _hudCloseAll: function () {
+      ['#hud-settings-sheet', '#hud-settings-scrim', '#task-tracker', '#player-hud-card']
+        .forEach(function (s) {
+          const e = document.querySelector(s)
+          if (e) e.classList.remove('hud-open')
+        })
+    },
+
+    _hudToggleSettings: function (force) {
+      const sheet = document.getElementById('hud-settings-sheet')
+      const scrim = document.getElementById('hud-settings-scrim')
+      if (!sheet || !scrim) {return}
+      const open = force === undefined ? !sheet.classList.contains('hud-open') : !!force
+      // Opening the sheet pauses the run. A settings panel you can adjust while
+      // being sideswiped is not a settings panel, and on a 390px-tall screen the
+      // sheet would otherwise sit over the gas and brake controls.
+      const g = window.game
+      if (open) {
+        this._hudCloseAll()
+        sheet.classList.add('hud-open')
+        scrim.classList.add('hud-open')
+        if (g && typeof g.togglePause === 'function' && !g.paused) {g.togglePause()}
+      } else {
+        sheet.classList.remove('hud-open')
+        scrim.classList.remove('hud-open')
+        if (g && typeof g.togglePause === 'function' && g.paused) {g.togglePause()}
+      }
+    },
+
+    _hudToggleTasks: function () {
+      const t = document.getElementById('task-tracker')
+      if (!t) {return}
+      const open = !t.classList.contains('hud-open')
+      this._hudCloseAll()
+      if (open) {t.classList.add('hud-open')}
+    },
+
+    _hudToggleStats: function () {
+      const c = document.getElementById('player-hud-card')
+      if (!c) {return}
+      const open = !c.classList.contains('hud-open')
+      this._hudCloseAll()
+      if (open) {c.classList.add('hud-open')}
+    },
+
+    // Scrim tap and Escape dismiss the open drawer without disturbing the pause
+    // menu. Registered in capture phase so it runs before the pause handler.
+    _hudInit: function () {
+      const scrim = document.getElementById('hud-settings-scrim')
+      if (scrim && !scrim.__bound) {
+        scrim.__bound = true
+        scrim.addEventListener('click', () => this._hudToggleSettings(false))
+      }
+      if (this.__hudKeysBound) {return}
+      this.__hudKeysBound = true
+      window.addEventListener('keydown', (e) => {
+        if (e.key !== 'Escape') {return}
+        const sheet = document.getElementById('hud-settings-sheet')
+        if (sheet && sheet.classList.contains('hud-open')) {
+          e.stopPropagation()
+          this._hudToggleSettings(false)
+        } else if (document.querySelector('#task-tracker.hud-open, #player-hud-card.hud-open')) {
+          e.stopPropagation()
+          this._hudCloseAll()
+        }
+      }, true)
+      this._hudCloseAll()
+    },
+
   init() {
 
 
 
 
 
+
+
+
+
+    // Bind the HUD drawers once. Everything else in init() is unrelated to
+    // layout; this only wires the settings sheet and the two tap-to-open
+    // drawers. See _hudCloseAll above and hud-clean.css.
+    if (this._hudInit) {this._hudInit()}
 
     if (typeof S === 'undefined') {
       let s = null
@@ -4800,31 +4878,57 @@ const _buildVehicle = window._buildVehicle = (type, col, opts) => {
   if (baseModel) {
     const g = new THREE.Group()
     
-    // Universal vehicle grounding & scale calibration
-    baseModel.updateMatrixWorld(true)
-    const vBoxRaw = new THREE.Box3().setFromObject(baseModel)
-    const vSizeRaw = new THREE.Vector3()
-    vBoxRaw.getSize(vSizeRaw)
+    // Universal vehicle grounding & scale calibration.
+    //
+    // Previously this measured the imported model TWICE
+    // (Box3.setFromObject before and after scaling) and then threw both
+    // measurements away, hardcoding `hw`/`hl` from a 3-way ternary. So every
+    // imported car collided as a guessed 1.05 x 2.25 half-extent box no matter
+    // what the model actually was, and the `s = 1.20` / `s = 4.4` magic numbers
+    // produced cars anywhere from 2.9 m to 5.3 m long.
+    //
+    // Now: VehicleDims.fitImportedModel() rescales the model UNIFORMLY so its
+    // length matches the canonical envelope for its class, re-grounds it, and
+    // returns the box. colliderFromBox() derives the collider from that
+    // measurement, clamped to the canonical envelope so a mis-authored asset
+    // cannot inject a nonsense hitbox into the traffic stream.
+    const VD = (typeof window !== 'undefined' && window.VehicleDims) ? window.VehicleDims : null;
+    const isHeavy = normalizedType.includes('truck') || normalizedType.includes('bus');
 
-    // If model is a unit-length GLB (like sample 1/2 with length ~1m), scale to 4.5m automotive length
-    if (vSizeRaw.z < 1.8 && vSizeRaw.x < 1.8 && vSizeRaw.z > 0.4) {
-      s = 4.4
+    let hw, hl, fitInfo = null;
+    if (VD && VD.fitImportedModel) {
+      fitInfo = VD.fitImportedModel(baseModel, THREE.Box3, THREE.Vector3, normalizedType, {});
+      baseModel.rotation.y = Math.PI;
+      g.add(baseModel);
+
+      const c = VD.colliderFromBox(fitInfo.box, normalizedType);
+      hw = c.halfW;
+      hl = c.halfD;
+      g.userData = {
+        halfW: hw, halfD: hl, isVehicle: true,
+        measuredW: c.measured.W, measuredL: c.measured.L,
+        importScale: fitInfo.scale
+      };
+    } else {
+      // Fallback: preserve the previous behaviour exactly.
+      baseModel.updateMatrixWorld(true);
+      const vBoxRaw = new THREE.Box3().setFromObject(baseModel)
+      const vSizeRaw = new THREE.Vector3()
+      vBoxRaw.getSize(vSizeRaw)
+      let s = 1.20
+      if (vSizeRaw.z < 1.8 && vSizeRaw.x < 1.8 && vSizeRaw.z > 0.4) { s = 4.4 }
+      baseModel.scale.set(s, s, s)
+      baseModel.updateMatrixWorld(true)
+      const vBoxScaled = new THREE.Box3().setFromObject(baseModel)
+      baseModel.position.y = -vBoxScaled.min.y
+      baseModel.rotation.y = Math.PI
+      g.add(baseModel)
+      hw = isHeavy ? 1.35 : 1.05
+      hl = isHeavy ? 4.80 : 2.25
+      g.userData = { halfW: hw, halfD: hl, isVehicle: true }
     }
 
-    baseModel.scale.set(s, s, s)
-    baseModel.updateMatrixWorld(true)
-    const vBoxScaled = new THREE.Box3().setFromObject(baseModel)
-    
-    // Lift so bottom of tires sits flush on ground at y = 0
-    baseModel.position.y = -vBoxScaled.min.y
-    baseModel.rotation.y = Math.PI
-    g.add(baseModel)
-
-    const isHeavy = normalizedType.includes('truck') || normalizedType.includes('bus')
-    const isLambo = normalizedType === 'lambo'
-    const hw = isHeavy ? 1.35 : (isLambo ? 1.35 : 1.05)
-    const hl = isHeavy ? 4.80 : (isLambo ? 2.95 : 2.25)
-    g.userData = { halfW: hw, halfD: hl, isVehicle: true }
+    if (VD && VD.key) g.userData.dimKey = VD.key(normalizedType);
 
     // Clean interactive door anchors for player entry
     const dpL = new THREE.Group()
@@ -5319,6 +5423,235 @@ const _buildSampleGLBPlayer = (isPlayer = true, app = {}) => {
 }
 window._buildSampleGLBPlayer = _buildSampleGLBPlayer
 
+/**
+ * Which KayKit clip plays for a given action.
+ *
+ * The lists are explicit rather than regex-matched because the clip names in these
+ * two files are not a consistent vocabulary: locomotion uses `Walking_C`, `Runni
+ * ng_A` and `Jump_Full_Long`, while the general set uses `Idle_A`, `Death_A`,
+ * `Hit_B` and `Use_Item`. A `/walk/i` test matches `Walking_A` but also nothing
+ * else in either file, and an `/idle/i` test matches `Idle_A` and `Idle_B` — so
+ * half of this would have been guesswork dressed up as a pattern.
+ *
+ * `T-Pose` is deliberately absent from every list. It exists in both files, it is
+ * a valid clip, and it is the single worst thing to hand an NPC standing on a
+ * pavement. An index-based fallback would eventually reach it.
+ */
+const _KAYKIT_CLIPS = {
+  idle:     { src: 'general',    names: ['Idle_A', 'Idle_B'] },
+  walk:     { src: 'movement',   names: ['Walking_A', 'Walking_B', 'Walking_C'] },
+  run:      { src: 'movement',   names: ['Running_A', 'Running_B'] },
+  hit:      { src: 'general',    names: ['Hit_A', 'Hit_B'] },
+  death:    { src: 'general',    names: ['Death_A', 'Death_B', 'Death_A_Pose', 'Death_B_Pose'] },
+  interact: { src: 'general',    names: ['Interact', 'Use_Item', 'PickUp', 'Throw'] },
+  jump:     { src: 'movement',   names: ['Jump_Start', 'Jump_Full_Short', 'Jump_Land'] },
+};
+
+/** Resolve an action name to an AnimationClip, or null. */
+function _kaykitClip(PM, action) {
+  const spec = _KAYKIT_CLIPS[action];
+  if (!spec) { return null; }
+  const scene = PM['char_rig_medium_' + spec.src];
+  if (!scene || !scene.animations || !scene.animations.length) { return null; }
+  for (let i = 0; i < spec.names.length; i++) {
+    const want = spec.names[i];
+    for (let j = 0; j < scene.animations.length; j++) {
+      if (scene.animations[j] && scene.animations[j].name === want) { return scene.animations[j]; }
+    }
+  }
+  return null;
+}
+
+/**
+ * Build an animated actor from the staged KayKit FBX rigs.
+ *
+ * Returns null whenever the rig is absent or unusable, and the caller falls
+ * through to the next character source. That is the whole contract: this is a
+ * fallback, and a fallback that can fail has to fail quietly.
+ *
+ * @param PM   window.PRELOADED_MODELS
+ * @param opts { variant, scale, rotY, action, tint }
+ */
+function _buildKayKitRig(PM, opts) {
+  opts = opts || {};
+  const rig = PM.char_rig_medium_movement;
+  if (!rig) { return null; }
+
+  const g = new THREE.Group();
+  const sk = opts.scale || 0.74;
+  let body;
+  try {
+    body = rig.clone(true);
+  } catch (e) {
+    return null;
+  }
+  if (!body) { return null; }
+
+  // Normalise height from the measured bounding box rather than a magic scale
+  // constant. The Kenney branch uses `sk * 0.0098`, which is right for Kenney's
+  // export and meaningless here: KayKit's FBX is authored in centimetres, and a
+  // guessed factor that happens to be a centimetre/metre mix-up produces a 40 m
+  // pedestrian or a 4 cm one, both of which look like a bug and neither of which
+  // is obvious to spot from a screenshot.
+  let heightM = 0;
+  try {
+    body.updateMatrixWorld(true);
+    const box = new THREE.Box3().setFromObject(body);
+    heightM = Math.max(0.01, box.max.y - box.min.y);
+  } catch (e) {
+    return null;
+  }
+  const factor = (sk * 1.55) / heightM;
+  body.scale.setScalar(factor);
+
+  // Recentre so the feet are at y = 0 and the actor stands on the pavement.
+  try {
+    body.updateMatrixWorld(true);
+    const box2 = new THREE.Box3().setFromObject(body);
+    const centre = new THREE.Vector3();
+    box2.getCenter(centre);
+    body.position.x -= centre.x;
+    body.position.y -= box2.min.y;
+    body.position.z -= centre.z;
+  } catch (e) { /* leave the origin where it was */ }
+
+  body.rotation.y = opts.rotY || 0;
+  g.add(body);
+
+  // Tint the torso when a variant asks for it. Materials are cloned per instance
+  // first: `clone(true)` on a node SHARES materials with the cached original, so
+  // setting a colour without this line would recolour every future KayKit actor
+  // in the session, including ones already on screen.
+  const tint = opts.tint || 0;
+  if (tint) {
+    body.traverse((c) => {
+      if (!c.isMesh || !c.material) { return; }
+      c.material = Array.isArray(c.material)
+        ? c.material.map(m => m.clone())
+        : c.material.clone();
+      if (c.material.color) { c.material.color.setHex(tint); }
+    });
+  }
+  body.traverse((c) => {
+    if (c.isMesh) { c.castShadow = true; c.receiveShadow = true; }
+  });
+
+  // Mixer is rooted at the CLONE, not the cached rig. Rooting it at the cached
+  // object would have every actor in the level drive one skeleton.
+  let mixer = null;
+  const idleClip = _kaykitClip(PM, 'idle');
+  const walkClip = _kaykitClip(PM, 'walk');
+  const runClip = _kaykitClip(PM, 'run');
+  let idleAction = null;
+  let walkAction = null;
+
+  try {
+    mixer = new THREE.AnimationMixer(body);
+    if (idleClip) { idleAction = mixer.clipAction(idleClip); idleAction.play(); }
+    if (walkClip) { walkAction = mixer.clipAction(walkClip); walkAction.play(); }
+    // Locomotion and idle are crossfaded rather than both left running at full
+    // weight: two clips playing additively on the same bones produces a figure
+    // that shimmers and slides, which reads as a broken model rather than as two
+    // animations.
+    if (idleAction && walkAction) {
+      idleAction.setEffectiveWeight(1);
+      walkAction.setEffectiveWeight(0);
+      idleAction.play();
+      walkAction.play();
+    }
+  } catch (e) {
+    mixer = null;
+  }
+
+  // A one-shot the caller can fire for a specific beat — 'hit' when a constable
+  // is struck, 'death' for the body in the aftermath reveal, 'interact' when
+  // someone reaches for a radio. Played once and NOT looped.
+  function playAction(name, fade) {
+    if (!mixer) { return null; }
+    const clip = _kaykitClip(PM, name);
+    if (!clip) { return null; }
+    try {
+      if (idleAction) { idleAction.setEffectiveWeight(0); }
+      if (walkAction) { walkAction.setEffectiveWeight(0); }
+      const a = mixer.clipAction(clip);
+      a.reset();
+      a.setLoop(THREE.LoopOnce, 1);
+      a.clampWhenFinished = true;
+      const secs = (fade == null ? 0.25 : fade);
+      a.fadeIn(secs).play();
+      return a;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  const requested = opts.action && opts.action !== 'auto' ? opts.action : null;
+  if (requested) { playAction(requested, 0.05); }
+
+  const hb = new THREE.Mesh(
+    new THREE.BoxGeometry(0.6 * sk, 1.8 * sk, 0.6 * sk),
+    new THREE.MeshBasicMaterial({ visible: false })
+  );
+  hb.position.y = 0.9 * sk;
+  g.add(hb);
+
+  const shadowBlob = new THREE.Mesh(
+    new THREE.CircleGeometry(0.3 * sk, 12),
+    new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.25 })
+  );
+  shadowBlob.rotation.x = -Math.PI / 2;
+  shadowBlob.position.y = 0.01;
+  g.add(shadowBlob);
+
+  g.userData = {
+    isKayKit: true,
+    variant: opts.variant || 'normal',
+    isPlayer: false,
+    _sk: sk,
+    body: body,
+    shadowBlob: shadowBlob,
+    mixer: mixer,
+    idleAction: idleAction,
+    runAction: walkAction,
+    // `walkAction` is the name the GLB branch's sibling uses conceptually and the
+    // only one of the three that says what the clip IS. `runAction` is the Kenney
+    // branch's name and `_walkAction` the GLB branch's; all three are set so a
+    // caller reading any of them gets the locomotion clip rather than undefined.
+    walkAction: walkAction,
+    // The GLB branch exposes these two underscored names and callers in
+    // game_core read them, so an actor that reports `isGLB` elsewhere is read the
+    // same way. Both shapes are set rather than one, so a future rename in either
+    // branch does not silently stop animating this one.
+    _mixer: mixer,
+    _walkAction: walkAction,
+    _idleAction: idleAction,
+    playAction: playAction,
+    // How fast this actor should move, so callers that only know about
+    // `userData.spd` keep working.
+    spd: (opts.variant === 'elderly') ? 0.7 : 1.5,
+    dir: 1,
+    t: Math.random() * 10,
+    /** Crossfade between idle and locomotion by speed. */
+    setMoving: function (moving, fast) {
+      if (!mixer || !idleAction || !walkAction) { return; }
+      const target = moving ? 1 : 0;
+      const secs = 0.22;
+      idleAction.setEffectiveWeight(moving ? Math.max(0, 1 - target) : 1);
+      walkAction.setEffectiveWeight(target);
+      if (moving && fast) { walkAction.timeScale = 1.45; } else { walkAction.timeScale = 1; }
+    },
+    update: function (dt, speed) {
+      if (mixer) {
+        // Scale playback with movement so a running ped does not moonwalk. The
+        // same 0.8 floor as the GLB actor keeps a stationary figure breathing
+        // rather than frozen.
+        mixer.update(dt * (Math.abs(speed) > 0.05 ? Math.max(0.6, Math.abs(speed) * 1.5) : 0.8));
+      }
+    }
+  };
+  return g;
+}
+
 const _buildHuman = (isPlayer = false, appearance) => {
   const g = new THREE.Group()
   const app = (isPlayer && (() => { try { return JSON.parse(localStorage.getItem('traffic_appearance')) } catch(e){} return null })()) || appearance || {}
@@ -5336,12 +5669,65 @@ const _buildHuman = (isPlayer = false, appearance) => {
   }
 
   // ── NPC Pedestrians using 3D Hero/Citizen mesh ─────────────────────────
-  if (!isPlayer && Math.random() < 0.35) {
+// Random, and only for ANONYMOUS pedestrians.
+//
+// `app.deterministic` opts out, and named film actors set it. This branch rolls a
+// fresh random character on every single call, which is correct for a footpath —
+// nobody looks twice — and wrong for a film: `_buildCutsceneArjun` calls this to
+// build Inspector Kadam, and a 35% chance that the inspector who opens the case
+// is a different model on the next load is a different actor playing the same
+// part. A recurring character has to be the same character.
+  if (!isPlayer && !app.deterministic && Math.random() < 0.35) {
     const npcSample = _buildSampleGLBPlayer(false, { variant })
     if (npcSample) {return npcSample}
   }
 
   const PM = window.PRELOADED_MODELS || {}
+
+  // ── KayKit Rigged Actors ──────────────────────────────────────────────────
+  // Sits BEFORE the Kenney `anim_*` block below, so it wins whenever the rig is
+  // loaded. That ordering is the point for a named film actor: with `char_kaykit`
+  // requested, Inspector Kadam is always the same rig with the same clips, rather
+  // than sometimes a Kenney pack that was chosen for a footpath and sometimes not.
+  //
+  // For anonymous peds the same ordering is harmless, because `char_kaykit` is
+  // opt-in per level — a level that never requests the group never reaches here.
+  //
+  // Why KayKit earns the slot when it does fire: it carries real named clips in
+  // the same file as its mesh, verified by loading it through this game's own
+  // FBXLoader rather than by trusting the filename:
+  //
+  //   char_rig_medium_movement  138 bones  Walking_A/B/C  Running_A/B  Jump_*
+  //   char_rig_medium_general    138 bones  Idle_A/B  Death_A/B  Hit_A/B
+  //                              Interact  Throw  PickUp  Spawn_Ground
+  //
+  // Two files, one skeleton: both are the same 138-bone KayKit rig, so the Idle
+  // clips on `general` drive the mesh on `movement`. AnimationClip tracks are
+  // bone-NAME based, which is the whole reason this works across two files.
+  //
+  // Note this is NOT the Kenney clip convention. That block plays
+  // `fbxChar.animations[0]` and `runFBX.animations[0]`, which is correct when
+  // each animation file contains exactly one clip. KayKit files contain 11 and
+  // 15, and index 0 on `general` is `Use_Item` — so an NPC handed that path would
+  // stand on Linking Road indefinitely miming a door opening. Clips are matched
+  // by name instead, with the same explicit lists below as the fallback order.
+  if (!isPlayer && PM.char_rig_medium_movement && typeof THREE.AnimationMixer !== 'undefined') {
+    const kk = _buildKayKitRig(PM, {
+      variant: variant,
+      scale: variant === 'child' ? 0.58 : 0.74,
+      rotY: Math.PI,
+      // What the caller wants this actor doing right now. The film asks for
+      // 'idle' and 'walk'; a constable shot in the aftermath asks for 'hit',
+      // and a body on the tarmac asks for 'death'.
+      action: (app && app.action) || 'auto',
+      tint: variant === 'guard' ? 0xff8c00
+        : variant === 'worker' ? 0xff8c00
+        : variant === 'volunteer' ? 0xaaff00
+        : variant === 'elderly' ? 0xf5f0e1
+        : 0,
+    });
+    if (kk) { return kk; }
+  }
 
   // ── FBX-First Animated Character Model (NPCs only) ────────────────────────
   if (!isPlayer) {

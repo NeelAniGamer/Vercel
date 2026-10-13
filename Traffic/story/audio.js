@@ -855,12 +855,21 @@
    *   beds   { rain: 0.5, engine: 0.2 }   ambience levels for this shot
    *   sting  'shot'                        one-shot at the shot's start
    *   stingAt { shot: 0.35 }               one-shot 35% into the shot
+   *   sample  'sfx_crash_car'               RECORDED one-shot, alongside the synth
+   *   sampleAt { name, at: 0.3, gain }      RECORDED one-shot at a fraction of the shot
+   *   sampleLoop 'sfx_police_siren'         RECORDED loop, from this shot on
+   *   sampleStop  ['sfx_police_siren']      RECORDED loops to end as this shot starts
    *   say    true                          speak the subtitle (default when a
    *                                       subtitle exists)
    *   radio  true                          bandpass the voice — a handset
    *
+   * The `sample*` keys are the recorded-audio layer (story/samples.js). They sit
+   * ALONGSIDE the synthesised beds and stings, never in place of them: the rain
+   * bed still runs under the recorded siren, because a siren over synthetic rain
+   * is a siren in a room and a siren under real rain is a street at 3am.
+   *
    * Everything is optional and everything is guarded. A shot with no audio block
-   * still plays.
+   * still plays, and a shot naming a sample that failed to load still plays.
    */
   function applyShot(shot, index) {
     if (!shot) { return; }
@@ -877,6 +886,22 @@
         if (!a.beds || a.beds[k] == null) { stop(k); }
       });
     }
+
+    // ── recorded layer ────────────────────────────────────────────────────
+    // Ordered stop → play → loop so that a loop handed from one shot to the next
+    // restarts cleanly instead of cutting and immediately re-triggering.
+    try {
+      var SB = window.SampleBank;
+      if (SB) {
+        if (a.sampleStop) {
+          (Array.isArray(a.sampleStop) ? a.sampleStop : [a.sampleStop]).forEach(function (k) {
+            SB.stop(k);
+          });
+        }
+        if (a.sample) { SB.play(a.sample, { gain: a.sampleGain }); }
+        if (a.sampleLoop) { SB.loop(a.sampleLoop, { gain: a.sampleGain }); }
+      }
+    } catch (eSample) {}
 
     if (a.sting) { sting(a.sting, a.stingGain); }
 
@@ -910,6 +935,20 @@
       }
     }
 
+    // Recorded one-shot, cued at a fraction of the shot like stingAt.
+    if (a.sampleAt) {
+      try {
+        var SBa = window.SampleBank;
+        if (SBa) {
+          var skey2 = 'sample:' + (a.sampleAt.name || a.sampleAt.key || 'x');
+          if (shot.__fired !== skey2 && p >= (a.sampleAt.at || 0)) {
+            shot.__fired = skey2;
+            SBa.play(a.sampleAt.name || a.sampleAt.key, { gain: a.sampleAt.gain });
+          }
+        }
+      } catch (eS) {}
+    }
+
     if (shot.sayThen && p >= (shot.sayThen.at || 0)) {
       var skey = 'say:' + shot.sayThen.speaker + ':' + String(shot.sayThen.line).slice(0, 12);
       if (shot.__fired !== skey) {
@@ -937,6 +976,13 @@
       } catch (e) {}
     }
     Object.keys(beds).forEach(function (k) { stop(k); });
+
+    // The recorded layer has its own lifetime. Without this a police siren
+    // cued in the last shot of a cutscene keeps wailing through the reward
+    // screen, the results music and the next attempt — which is the single most
+    // offensive thing a sound integration can do, because it is impossible to
+    // mistake for intentional.
+    try { if (window.SampleBank) { window.SampleBank.stopAll(); } } catch (eS) {}
   }
 
   window.StoryAudio = {

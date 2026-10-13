@@ -697,8 +697,49 @@ class TrafficManager {
     mesh.userData.isTrafficManagerVehicle = true;
     mesh.userData.isObstacle = true;
     mesh.userData.isVehicle = true;
-    mesh.userData.halfW = isHeavy ? 1.5 : (isTwoWheeler ? 0.6 : 1.15);
-    mesh.userData.halfD = isHeavy ? 4.5 : (isTwoWheeler ? 1.1 : 2.2);
+
+    // Collider: only fill in if the mesh factory did NOT already provide one.
+    //
+    // This line used to be an unconditional overwrite:
+    //     mesh.userData.halfW = isHeavy ? 1.5 : (isTwoWheeler ? 0.6 : 1.15);
+    //     mesh.userData.halfD = isHeavy ? 4.5 : (isTwoWheeler ? 1.1 : 2.2);
+    // which silently discarded the value measured from the actual mesh by
+    // IndianVehicles.normalise() / ui.js _buildVehicle, and replaced it with a
+    // guess that disagreed with the visible body by up to +0.70 m wide and
+    // -0.20 m long (the 7-seater's collider was SHORTER than its own bodywork).
+    // It also made vehicles.js:930 and ui.js:4624 dead code.
+    // Read the shared dimension table ONCE, at the top of the method.
+    //
+    // It used to be declared inside the `if (!mesh.userData.halfW || ...)` block
+    // and read again three lines later, OUTSIDE that block:
+    //
+    //     if (!mesh.userData.halfW || !mesh.userData.halfD) {
+    //       const VD = window.VehicleDims;      // block-scoped
+    //       ...
+    //     }
+    //     if (VD && VD.key) mesh.userData.dimKey = VD.key(type);   // ReferenceError
+    //
+    // `const` is block-scoped, so the second reference threw
+    // "VD is not defined" on EVERY vehicle this method built. It was silent
+    // because the throw happened after the mesh was already positioned and the
+    // caller had already stored what it needed — the visible symptom was only
+    // that no NPC vehicle ever got a `dimKey`, which the collision code reads for
+    // its footprint. Every traffic vehicle in the game was therefore colliding
+    // with whatever default the fallback produced, and traffic spawned at odd
+    // places. Hoisting the lookup is the whole fix.
+    const VD = (typeof window !== 'undefined' && window.VehicleDims) ? window.VehicleDims : null;
+
+    if (!mesh.userData.halfW || !mesh.userData.halfD) {
+      if (VD && VD.halves) {
+        const h = VD.halves(type);
+        mesh.userData.halfW = h.halfW;
+        mesh.userData.halfD = h.halfD;
+      } else {
+        mesh.userData.halfW = isHeavy ? 1.35 : (isTwoWheeler ? 0.40 : 0.70);
+        mesh.userData.halfD = isHeavy ? 4.80 : (isTwoWheeler ? 0.95 : 1.35);
+      }
+    }
+    if (VD && VD.key) mesh.userData.dimKey = VD.key(type);
 
     if (!mesh.userData.materials) {
       let body = null;
@@ -710,6 +751,12 @@ class TrafficManager {
   }
 
   _resetVehicle(vehicle, color, profileKey) {
+    // Drop the vehicle from the light-update registry before it returns to the
+    // pool. Without this a pooled mesh keeps its brake/indicator state, and a
+    // later respawn can light up before it is even in view.
+    if (typeof window !== 'undefined' && window.IndianVehicles && vehicle.mesh) {
+      window.IndianVehicles.unregisterLights(vehicle.mesh);
+    }
     vehicle.active = false;
     vehicle.speed = 0;
     vehicle.velocity.set(0, 0, 0);

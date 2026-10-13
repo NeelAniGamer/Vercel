@@ -1,0 +1,149 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   hud-clean-appendix3.css — the corrections that matter
+   ═══════════════════════════════════════════════════════════════════════════════
+   ARCHITECTURAL RULE, established by reading safezone-ui.js:
+
+     SafeZoneGrid OWNS POSITION.
+     hud-clean.css OWNS APPEARANCE.
+
+   SZ sets --sz-x / --sz-y / --sz-gap / --sz-stack / --sz-order on a grid
+   container, and each element registered via SZ.register() lives inside a small
+   anchor div (#sz-tl, #sz-tr, #sz-bl, #sz-tc, ...). The grid places the anchors;
+   the registered element is sized by its own CSS.
+
+   Consequences for this pass:
+
+   1. The 20x20 "sz-*" boxes seen in the first audit are LAYOUT ANCHORS, not
+      stray debug chrome. hud-clean.css section 1 hid them, which hid
+      #player-hud-card with them. Never hide an anchor.
+
+   2. `#gc.on ~ #player-hud-card` -- the selector the original stylesheet used --
+      never matched, because the card's parent is #sz-tl, not #gc. The card is
+      shown via `#player-hud-card.on`. So every `body #gc.on ~ X` rule in
+      sections 1-5 was dead; only the bare `#X` fallbacks took effect.
+
+   3. Setting `top`/`left`/`bottom`/`right` on a registered element fights the
+      grid. Doing so pushed #mmc to y = -30 and #sig-ind to x = -70. Position is
+      therefore left alone below; only size, spacing and paint are restyled.
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. Remove: dev tools, donate button, duplicate panels ────────────────── */
+
+#ai-copilot-card,
+#bmc-floating-badge,
+#hud-ai-synth-btn,
+#hud-rd-btn,
+#version-badge,
+#objective-overlay {
+  display: none !important;
+}
+
+/* ── 2. Player card: compact, but positioned by SafeZoneGrid ──────────────── */
+
+#player-hud-card,
+#player-hud-card.on {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 7px !important;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  padding: 5px 8px !important;
+  border-radius: 10px !important;
+  background: rgba(8, 13, 24, 0.74) !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45) !important;
+  cursor: pointer !important;
+  transform: none !important;
+}
+
+#player-hud-card .hud-dash-header {
+  display: flex !important;
+  flex: 0 0 auto !important;
+  align-items: center !important;
+  gap: 7px !important;
+}
+#player-hud-card .hud-score-chip { display: none !important; }
+#player-hud-card .hud-lvl-pill,
+#player-hud-card .hud-timer-chip { flex: 0 0 auto !important; }
+
+/* ── 3. Minimap and signal: SIZE only, never position ─────────────────────── */
+/* #mmc had seven competing rules across media queries, all in the 52-80 px range.
+   Pin one size and let the grid find it a slot. */
+
+/* The one exception. #mmc and the movement joystick are BOTH registered to the
+   bottom-left anchor (game_core.js SZ.register('minimap', ..., 'BL')), so SZ
+   stacks them and the map ends up behind or below the stick -- measured at
+   y = 488 on a 390px-tall screen, i.e. off-screen. The map is worth keeping, so
+   it is pinned above the stick rather than left to contest the same slot. */
+#mmc {
+  position: fixed !important;
+  top: auto !important;
+  right: auto !important;
+  left: calc(env(safe-area-inset-left, 0px) + 8px) !important;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 100px) !important;
+  width: 76px !important;
+  height: 76px !important;
+  z-index: 30 !important;
+}
+#mmc canvas { width: 76px !important; height: 76px !important; }
+
+@media (orientation: portrait) {
+  #mmc {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 160px) !important;
+  }
+}
+
+#sig-ind {
+  font-size: 0.66rem !important;
+  padding: 3px 9px !important;
+  gap: 7px !important;
+  border-radius: 999px !important;
+  background: rgba(8, 13, 24, 0.80) !important;
+}
+
+/* ── 4. Toast: small, high, transient ─────────────────────────────────────── */
+
+#toast {
+  max-width: min(56vw, 230px) !important;
+  font-size: 0.72rem !important;
+  padding: 6px 11px !important;
+  border-radius: 999px !important;
+  background: rgba(8, 13, 24, 0.88) !important;
+}
+
+/* ── 5. Civic row: three driving-action buttons ────────────────────────────── */
+
+#civic-controls {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  gap: 6px !important;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  padding: 5px !important;
+  border-radius: 10px !important;
+  background: rgba(8, 13, 24, 0.70) !important;
+  border: 1px solid rgba(255, 255, 255, 0.09) !important;
+}
+#civic-controls .civic-btn {
+  width: 40px !important;
+  min-width: 40px !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  padding: 0 !important;
+  border-radius: 9px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+}
+#civic-controls .civic-label { display: none !important; }
+/* The pulsing background on the belt icon rendered as a red blob at 40 px. */
+#civic-controls .sb-icon-wrap {
+  background: transparent !important;
+  animation: none !important;
+  box-shadow: none !important;
+}

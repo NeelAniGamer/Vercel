@@ -90,6 +90,36 @@ function tierForLevel(id) {
   return 7;
 }
 
+/**
+ * The tier a lesson's film may ACTUALLY use: the syllabus tier, raised to cover
+ * the concept the lesson itself teaches.
+ *
+ * The syllabus tier alone was wrong. `tierForLevel` returns 1 for lessons 1-4, so
+ * Lesson 2 — which teaches Street Parking, a tier-2 concept — could not have a
+ * film that says the word "park". Authoring one was impossible: every mention was
+ * either a hard error or had to be laundered through `prior: true`, which claims
+ * the shot depicts something from before the lesson. For a lesson whose entire
+ * subject is parking, that claim is false, and a rule that forces you to state
+ * something untrue to build a scene is a rule to delete, not obey.
+ *
+ * So the floor is the lesson's own subject. A film may always name what it is
+ * about; it may still not run ahead of the syllabus.
+ */
+function filmTierForLevel(id, level) {
+  const syllabus = tierForLevel(id);
+  let taught = 0;
+  if (level) {
+    // The lesson's own prose is the honest statement of what it teaches.
+    taught = Math.max(
+      maxConceptTier(level.name || ''),
+      maxConceptTier(level.ds || ''),
+      maxConceptTier((level.hps || []).join(' ')),
+      maxConceptTier(level.theory || '')
+    );
+  }
+  return Math.max(syllabus, taught);
+}
+
 // Words that betray a concept being used in a film's prose. Matched against shot
 // subtitles and titles only — never against camera coordinates, which are all
 // numbers and would false-positive constantly.
@@ -383,9 +413,27 @@ if (process.argv.includes('--story-report')) {
   // looks identical to an intentional one.
   const MIN_SHOT = 4;
 
+  // Trailing-hold ceiling. Mirrors story/shots.js MAX_HOLD.
+  const MAX_HOLD = 10;
+
+  /**
+   * The camera MOVE, which is what the floor applies to — not the total `dur`.
+   *
+   * A shot is a move plus a trailing `hold`, and it is the move that must not be
+   * too short: a 17s shot that moves for 12 and then holds for 5 is correct, while
+   * a 5s shot that holds for 4 and moves for 1 is the slideshow this rule exists to
+   * prevent. Story/shots.js splits the two in prepare(); this mirrors that split so
+   * an authoring mistake is caught here rather than silently clamped at runtime.
+   */
+  function moveOf(shot) {
+    const total = shot.dur;
+    const hold = (shot.hold > 0) ? shot.hold : 0;
+    return total - Math.min(hold, MAX_HOLD);
+  }
+
   // Shared shot-shape checks, applied identically to prologues and to every beat
   // shot. A beat that is 1.5s long is exactly as broken as a 1.5s prologue shot.
-  function checkShots(shots, lvId, castIds, solids, label, dialogueKeys) {
+  function checkShots(shots, lvId, castIds, solids, label, dialogueKeys, tier) {
     (shots || []).forEach((shot, i) => {
       const where = `${label} shot ${i + 1}`;
       if (!Array.isArray(shot.from) || shot.from.length !== 3) {
@@ -396,11 +444,17 @@ if (process.argv.includes('--story-report')) {
       }
       if (!(shot.dur > 0)) {
         err(lvId, `${where} needs a positive 'dur'`);
-      } else if (shot.dur < MIN_SHOT) {
+      } else if (moveOf(shot) < MIN_SHOT) {
         // The rule that made the first pass read as a slideshow. Hard error, not
         // a warning: story/shots.js would silently clamp it, which hides the
         // authoring mistake from the person who made it.
-        err(lvId, `${where} is ${shot.dur}s — below the ${MIN_SHOT}s shot floor (cutting away sooner reads as a slideshow, not a scene)`);
+        //
+        // Reports the MOVE, because that is what the floor governs — a shot may
+        // run long on `hold`, just not on a camera that cuts away too soon.
+        err(lvId, `${where} moves for only ${moveOf(shot)}s — below the ${MIN_SHOT}s shot floor (cutting away sooner reads as a slideshow, not a scene)`);
+      }
+      if (shot.hold > MAX_HOLD) {
+        err(lvId, `${where} holds for ${shot.hold}s — over the ${MAX_HOLD}s ceiling (story/shots.js clamps it, which would silently shorten the shot)`);
       }
       if (shot.sub) {
         const key = `${(shot.sub.speaker || '').trim()}|${(shot.sub.line || '').trim()}`;
@@ -419,7 +473,9 @@ if (process.argv.includes('--story-report')) {
       // shown the crime, not being taught night driving. It is an explicit,
       // greppable exemption rather than a loosened rule, and the budget check
       // below stops a film marking everything prior to bypass the gate entirely.
-      const tier = tierForLevel(lvId);
+      //
+      // `tier` arrives from the caller because it is derived from the level's own
+      // syllabus prose — see filmTierForLevel().
       const prose = [shot.sub && shot.sub.line, shot.title].filter(Boolean).join(' ');
       const used = maxConceptTier(prose);
       if (used > tier && shot.prior !== true) {
@@ -611,7 +667,7 @@ if (process.argv.includes('--story-report')) {
     // filmed) and from the level otherwise (beats film on the playable map).
     const solids = solidsFrom((stg && stg.map) || lv);
 
-    checkShots(story.prologue, lv.id, castIds, solids, 'prologue', beatKeys);
+    checkShots(story.prologue, lv.id, castIds, solids, 'prologue', beatKeys, filmTierForLevel(lv.id, lv));
 
     // ── Mid-level beats ──
     // A beat is hung off an objective, so the objective must exist AND be able to
@@ -631,7 +687,7 @@ if (process.argv.includes('--story-report')) {
         E(lv.id, `${where} has no shots`);
         return;
       }
-      checkShots(b.shots, lv.id, castIds, solidsFrom(lv), where, beatKeys);
+      checkShots(b.shots, lv.id, castIds, solidsFrom(lv), where, beatKeys, filmTierForLevel(lv.id, lv));
     });
 
     // Two beats must not hang off the same objective, or only the first can ever

@@ -18,6 +18,12 @@ const MIME_TYPES = {
   '.ico': 'image/x-icon',
   '.glb': 'model/gltf-binary',
   '.gltf': 'model/gltf+json',
+  // The KayKit character rigs (char_rig_medium_movement / _general) and the truck
+  // collection. FBXLoader requests these as arraybuffer and does not inspect the
+  // content type, so application/octet-stream would have worked — but serving the
+  // real type means a wrong MIME shows up as a MIME problem in devtools rather
+  // than as a mystery.
+  '.fbx': 'application/octet-stream',
   '.bin': 'application/octet-stream',
   '.mp3': 'audio/mpeg',
   '.wav': 'audio/wav',

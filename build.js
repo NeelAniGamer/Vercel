@@ -23,7 +23,7 @@ const excludedFiles = new Set([
   'render_production_videos.py', 'perceptus_agent.py', 'local_server.js',
   'serve.js', 'server.js', 'package.json', 'package-lock.json', 'tsconfig.json',
   'opencode.json', 'skills-lock.json', 'eslint.config.js', 'AdvancedTypingInstructor.exe', 'AdvancedTypingInstructor_Setup.exe',
-  'AdvancedTypingInstructor_1.4.0_all.deb', 'AdvancedTypingInstructor-Linux.tar.gz', 'bmcbrand.zip'
+  'AdvancedTypingInstructor_1.4.0_all.deb', 'AdvancedTypingInstructor-Linux.tar.gz', 'bmcbrand.zip', 'build_col_apk.bat'
 ]);
 
 const excludedFilePatterns = [
@@ -38,6 +38,14 @@ const excludedFilePatterns = [
 // source/editor formats rather than loadable game assets. Keeping them out of
 // the deployable tree saves hundreds of megabytes without changing gameplay.
 const excludedPaths = new Set([
+  // The raw asset dump. 1.3 GB, ~4350 files, almost all of it in formats the
+  // browser never loads (Godot .tscn/.gd, .blend, .fbx, .obj) or as source-DCC
+  // WAV. scripts/stage_assets.py extracts the usable slice into
+  // Traffic/Models/props and Traffic/audio, and THOSE ship — so excluding the
+  // dump costs the deployed game nothing. build.js is a DENY-list, which means an
+  // unlisted 1.3 GB directory is copied verbatim on every build; this entry is the
+  // only thing standing between that and a 1.3 GB deploy artifact.
+  'Traffic/Models And SFX',
   'Traffic/Models/sofa',
   'Traffic/Models/kenney_platformer-pack-remastered',
   'Traffic/Models/uploads_files_3963923_Metal+and+Concrete+Barrier+Textures',

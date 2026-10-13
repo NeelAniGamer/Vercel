@@ -266,7 +266,37 @@ document.getElementById('close-clock-btn').addEventListener('click', () => {
     clearInterval(clockInterval);
 });
 
-// For demo purposes:
-// setTimeout(() => {
-//     addSharedFile({ id: "demo", name: "presentation.pdf", size: 4500000, mimeType: "application/pdf" });
-// }, 2000);
+// --- APK Download Wired To Live Version (cast-version.json at site root) ---
+(function () {
+    const btn = document.getElementById('apk-btn');
+    const label = document.getElementById('apk-version');
+    if (!btn) {return;}
+    fetch('../cast-version.json')
+        .then(r => { if (!r.ok) {throw new Error('no version file');} return r.json(); })
+        .then(v => {
+            if (v.apkUrl) {btn.href = v.apkUrl;}
+            if (label) {
+                label.textContent = `Latest: v${v.versionName || '?'} (build ${v.versionCode || '?'})` +
+                    (v.releaseNotes ? ` — ${v.releaseNotes}` : '');
+            }
+        })
+        .catch(() => {
+            if (label) {label.textContent = 'Version info unavailable offline.';}
+        });
+})();
+
+// --- Remote Relay: open the standalone viewer for a room ---
+(function () {
+    const openBtn = document.getElementById('relay-open-btn');
+    if (!openBtn) {return;}
+    openBtn.addEventListener('click', () => {
+        const server = (document.getElementById('relay-server').value || '').trim().replace(/\/$/, '');
+        const room = (document.getElementById('relay-room').value || '').trim();
+        if (!server || !room) {
+            alert('Enter both the relay server URL and the room name.');
+            return;
+        }
+        const url = `viewer-standalone.html?server=${encodeURIComponent(server)}&room=${encodeURIComponent(room)}`;
+        window.open(url, '_blank');
+    });
+})();

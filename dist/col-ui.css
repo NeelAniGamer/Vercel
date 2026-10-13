@@ -214,11 +214,11 @@ select {
   height: 38px;
   width: auto;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  background-color: var(--signal, #f2b84b);
-  border-radius: 50%;
-  padding: 2px;
-  /* Add a subtle glow so it stands out */
-  box-shadow: 0 0 10px rgba(242, 184, 75, 0.5);
+  background-color: transparent;
+  border-radius: 8px;
+  padding: 0;
+  box-shadow: none;
+  filter: drop-shadow(0 0 8px var(--primary-glow, rgba(56, 189, 248, 0.4)));
 }
 body.lm .brand-logo {
   background-color: transparent;

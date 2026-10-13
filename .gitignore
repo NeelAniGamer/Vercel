@@ -31,3 +31,11 @@ temp_rec/
 node_modules/
 Traffic/col-auth.js
 Traffic/col-ui.css
+
+# ── Raw asset dumps ────────────────────────────────────────────────────────
+# Source packs dropped in wholesale: ~1.3 GB across 4000+ files, almost all of it
+# in formats the game never loads (Godot .tscn/.gd, .blend, .fbx, .obj) or in
+# source-DCC audio (1.09 GB of WAV). scripts/stage_assets.py extracts the usable
+# slice into Traffic/Models/props and Traffic/audio, and THOSE are tracked — so
+# nothing the game needs is lost by ignoring the dump. Build.js also deny-lists it.
+/Traffic/Models And SFX/

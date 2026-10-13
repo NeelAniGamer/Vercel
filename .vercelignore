@@ -81,3 +81,5 @@ eslint.config.js
 .trajectory
 .prettierignore
 .prettierrc
+build_col_apk.bat
+

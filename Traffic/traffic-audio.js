@@ -586,6 +586,12 @@ class TrafficAudioEngine {
       body.start(now + 0.015);
       body.stop(now + 0.26);
     } catch (e) {}
+
+    // Recorded latch under the synth body thump. The synthesised version is a
+    // 1600 Hz click into a 110 Hz triangle, which is a decent door and is the
+    // same door every time — including the enter/exit cinematic, where it plays
+    // four times in eight seconds.
+    this._sample('sfx_door_close', { gain: 0.4 });
   }
 
   playDoorOpen() {
@@ -859,6 +865,46 @@ class TrafficAudioEngine {
       noise.start(now);
       noise.stop(now + 0.42);
     } catch (e) {}
+
+    // Recorded layer (story/samples.js). The synthesised crash above is a
+    // sub-bass thump and a filtered noise burst, which is the right SHAPE but has
+    // no car in it — there is no distinction between hitting a wall and hitting
+    // another car, because both are the same two oscillators. The recorded take
+    // supplies the difference, underneath rather than instead.
+    this._sample('sfx_crash_car', { gain: 0.85 * (intensity || 1) });
+    this._sample('sfx_windscreen', { gain: 0.45 * (intensity || 1) });
+  }
+
+  /**
+   * Fire a recorded sample if the bank is available, and never throw.
+   *
+   * Every gameplay sound goes through here rather than reaching into SampleBank
+   * directly, so that a missing manifest, a blocked autoplay policy or a decode
+   * failure costs one silent sound and not a crash screen.
+   */
+  _sample(key, opts) {
+    try {
+      const SB = window.SampleBank;
+      if (SB && typeof SB.play === 'function') { return SB.play(key, opts || {}); }
+    } catch (e) {}
+    return null;
+  }
+
+  /** Looping sample, for continuous things like a siren. */
+  _sampleLoop(key, opts) {
+    try {
+      const SB = window.SampleBank;
+      if (SB && typeof SB.loop === 'function') { return SB.loop(key, opts || {}); }
+    } catch (e) {}
+    return null;
+  }
+
+  _sampleStop(key, fadeMs) {
+    try {
+      const SB = window.SampleBank;
+      if (SB && typeof SB.stop === 'function') { return SB.stop(key, fadeMs); }
+    } catch (e) {}
+    return false;
   }
 
   // ── 10. TACTILE UI CLICK ──

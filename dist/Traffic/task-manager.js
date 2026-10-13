@@ -112,6 +112,26 @@
 
     init(levelConfig) {
       this.levelConfig = levelConfig || {}
+      // Capture where the player actually IS, right now, as the anchor for the
+      // departure task.
+      //
+      // This is deliberately not read from a config field. The original test used
+      // `g._startX`, which does not exist on the game at all; the next candidate,
+      // `_suburbanSpawn.car`, is only populated on one of several level-start paths
+      // and is `null` on the playable map. A measurement anchored on a field that
+      // may be absent either awards the task on frame one (distance from 0 is large)
+      // or never awards it at all (the guard returns false). Both were observed.
+      //
+      // The player's own position at init is the one value that is definitionally
+      // correct: it is where "the start" is, by construction.
+      try {
+        const veh = this.game && (this.game.playerVehicle || this.game.player || this.game.car)
+        this.startAnchor = (veh && veh.position)
+          ? { x: veh.position.x, z: veh.position.z }
+          : null
+      } catch (e) {
+        this.startAnchor = null
+      }
       this.tasks = this._buildTasksForLevel(this.levelConfig)
       this.currentTaskIndex = 0
       this.flagsUnlocked = []
@@ -133,6 +153,23 @@
       const tasks = []
 
       // Task 1: Garage Departure & Pre-Drive Check
+      //
+      // READ THIS BEFORE "FIXING" THE MEASUREMENT BELOW.
+      //
+      // The original test measured distance from `g._startX / g._startZ`, both of
+      // which DO NOT EXIST on the game object. They fell back to 0, and L1's spawn
+      // is at (-69.5, -128) — 145 m from the origin. So `distFromStart > 8` was
+      // TRUE ON THE VERY FIRST FRAME, and the task completed itself before the
+      // player had touched a control. That is what fired the
+      // "TELEMETRY FLAG CAPTURED +25 XP" toast over the mission briefing.
+      //
+      // The second half had the same shape of bug: `typeof g.isOnRoad === 'function'
+      // ? g.isOnRoad() : true` — the real method is `_getRoadAndSidewalkStatus`, so
+      // the guard always fell to `true` and the road test never ran at all.
+      //
+      // So this now measures against the fields that actually exist, and a missing
+      // prerequisite returns FALSE rather than defaulting to "passed". A task that
+      // cannot measure must not award itself.
       tasks.push({
         id: 'departure',
         title: 'Safe Workshop Departure',
@@ -142,11 +179,32 @@
         completed: false,
         verify: (g) => {
           const veh = g.playerVehicle || g.player || g.car
-          if (!veh) {return false}
+          if (!veh || !veh.position) { return false }
           const p = veh.position
-          // Left the garage spawn box and reached road surface
-          const distFromStart = Math.hypot(p.x - (g._startX || 0), p.z - (g._startZ || 0))
-          return distFromStart > 8 && (typeof g.isOnRoad === 'function' ? g.isOnRoad() : true)
+
+          // Anchor on the position captured in init(). See the note there: the
+          // config fields this used to read either do not exist or are null on the
+          // playable map, and both failure modes were shipped at some point.
+          const spawn = this.startAnchor
+          if (!spawn || typeof spawn.x !== 'number') { return false }
+
+          const distFromStart = Math.hypot(p.x - spawn.x, p.z - spawn.z)
+          if (distFromStart <= 8) { return false }
+
+          // Left the garage. Now actually leave the GARAGE ZONE — the game treats a
+          // 40 m radius around the garage as driveway, so "moved 8 m" is still
+          // standing in it. Requiring the player to be past that radius is what
+          // makes this a departure rather than a twitch of the steering wheel.
+          if (typeof g._garageX !== 'number' || typeof g._garageZ !== 'number') { return false }
+          const dGarage = Math.hypot(p.x - g._garageX, p.z - g._garageZ)
+          if (dGarage <= 40) { return false }
+
+          // The real road test. `_getRoadAndSidewalkStatus` is the method; the
+          // previous `isOnRoad` name does not exist on the game.
+          if (typeof g._getRoadAndSidewalkStatus !== 'function') { return false }
+          const status = g._getRoadAndSidewalkStatus(p.x, p.z)
+          if (!status || status.inGarageDriveway) { return false }
+          return status.onRoad === true
         }
       })
 
@@ -430,10 +488,15 @@
         })
         .join('')
 
+      const curTask = this.tasks.find((t) => !t.completed)
+      const curLabel = curTask
+        ? String(curTask.title || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        : 'All Objectives Complete'
+
       this.containerEl.innerHTML = `
         <div class="task-drawer-header" onclick="window.game?.taskManager?.toggleDrawer()">
           <div class="tdh-left">
-            <span class="tdh-icon">📋</span>
+            <span class="tdh-current">${curLabel}</span>
             <span class="tdh-title">OBJECTIVES (${completedCount}/${totalCount})</span>
           </div>
           <div class="tdh-right">
@@ -548,7 +611,27 @@
           display: flex;
           align-items: center;
           gap: 14px;
-          z-index: 10002;
+          /* BELOW the mission briefing (10000), not above it.
+
+             NO BACKTICKS ANYWHERE IN THIS COMMENT. This block lives inside a
+             JavaScript template literal — it is CSS being injected as a string —
+             and a backtick closes that string early. The result is still valid
+             JavaScript, so a syntax check passes, and the file loads, and the
+             class name, and nothing: the leftover text evaluates as an expression
+             and throws "X is not defined" the moment the string is built.
+
+             That is not hypothetical, and it has happened twice in this file while
+             writing this very comment. Both times the stray backtick made
+             _injectStyles() throw, which meant init() never reached its final line,
+             which meant _initialized stayed false, which meant update() returned on
+             every frame forever, which meant NO TASK COULD EVER COMPLETE IN THE
+             ENTIRE GAME. The only visible symptom was one flag toast.
+
+             Both bugs were fixed: the toast used to outrank the briefing, and the
+             departure task used to award itself on frame one. Fixing only the
+             z-index would have hidden the symptom and left the self-awarding task. */
+          z-index: 9900;
+          pointer-events: none;
           box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 24px rgba(0, 240, 204, 0.35);
           animation: flagPopIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
           font-family: var(--sans, 'Inter'), sans-serif;

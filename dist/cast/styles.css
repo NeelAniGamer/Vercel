@@ -354,6 +354,8 @@ h1, h2, h3, h4, .logo {
     object-fit: contain;
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-strong);
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: high-quality;
 }
 
 #placeholder {
