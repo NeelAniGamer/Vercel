@@ -1057,8 +1057,9 @@ function setupUI() {
                 const isLight = e.target.value === 'light';
                 if (isLight) {
                     document.body.classList.add('light-mode');
-                    scene.background.setHex(0xf4f7fa);
-                    if (stars) {stars.visible = false;}
+                    // In Off-White mode, keep 3D space deep and cosmic so it does not blow out into pure white
+                    scene.background.setHex(0x050811);
+                    if (stars) {stars.visible = true;}
                 } else {
                     document.body.classList.remove('light-mode');
                     scene.background.setHex(0x050811);

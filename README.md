@@ -376,8 +376,8 @@ Class Of Learners is built by students in Mumbai:
 - **Neel Badri** — Lead developer and logic engine
 - **Ansh Patil** — Co-developer and quality assurance
 - **Aarush Vangari** — UI/UX design and physics engine
-- **Yashraj Jadhav** — QA, UI/UX, and product ideation
-- **Aarayaman Jadhav** — 3D systems and geospatial data
+- **Yashraj Jadhav** — QA, UI/UX, product ideation, and Terra3D (Special Space Credit)
+- **Aaryaman Jadhav** — 3D systems, geospatial data, and Terra3D (Special Space Credit)
 - **John Doe** — Anonymous secret helper in developing CoL, core architecture advisor, and stealth systems contributor
 
 ### Teachers & Mentors

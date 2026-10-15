@@ -1163,6 +1163,16 @@ body.light-mode .powered-by {
   border-left-color: #b45309;
 }
 
+.special-space-credit-card {
+  border-left: 3px solid #00e5ff;
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.08), rgba(0, 102, 255, 0.03));
+}
+
+body.light-mode .special-space-credit-card {
+  border-left: 3px solid #0066ff;
+  background: linear-gradient(135deg, rgba(0, 102, 255, 0.06), rgba(0, 102, 255, 0.01));
+}
+
 .credits-brand {
   font-size: 15px;
   font-weight: 700;
@@ -1190,7 +1200,7 @@ body.light-mode .powered-by {
 }
 
 body.light-mode #main-menu {
-  background: radial-gradient(circle at left center, rgba(244, 247, 250, 0.96) 0%, rgba(244, 247, 250, 0.8) 45%, rgba(244, 247, 250, 0.15) 100%);
+  background: radial-gradient(circle at left center, rgba(244, 247, 250, 0.95) 0%, rgba(244, 247, 250, 0.75) 45%, rgba(5, 8, 17, 0) 100%);
 }
 
 #main-menu.visible {

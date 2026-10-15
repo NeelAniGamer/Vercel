@@ -1046,8 +1046,9 @@
           { name: 'Neel Badri',     role: 'Lead Dev', key: 'ion',   pos: new THREE.Vector3(-16, 7, 0) },
           { name: 'Ansh Patil',     role: 'Co-Dev',  key: 'teal',  pos: new THREE.Vector3(16, 7, 0) },
           { name: 'Aarush Vangari', role: 'UI/UX',   key: 'plasma', pos: new THREE.Vector3(-16, -8, 0) },
-          { name: 'Yashraj Jadhav', role: 'QA/Design', key: 'em',  pos: new THREE.Vector3(16, -8, 0) },
-          { name: 'John Doe',       role: 'Anonymous Advisor', key: 'plasma', pos: new THREE.Vector3(0, -16, 0) }
+          { name: 'Yashraj Jadhav', role: 'QA/Design (Terra3D)', key: 'em',  pos: new THREE.Vector3(16, -8, 0) },
+          { name: 'Aaryaman Jadhav', role: '3D/Space (Terra3D)', key: 'teal', pos: new THREE.Vector3(-8, -16, 0) },
+          { name: 'John Doe',       role: 'Anonymous Advisor', key: 'plasma', pos: new THREE.Vector3(8, -16, 0) }
         ]
 
         var stars = []
