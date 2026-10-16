@@ -243,17 +243,14 @@
 
     let s = opts.scale;
     if (s == null) {
+      const curScale = (baseModel.scale && typeof baseModel.scale.x === 'number') ? Math.abs(baseModel.scale.x) : 1;
       const rawL = Math.max(rawSize.z, rawSize.x);
-      // Only rescale when the source is meaningfully off; anything within
-      // 15% of target is already close enough that rescaling only adds jitter
-      // between models authored at slightly different scales.
-      s = (rawL > 0.05 && Math.abs(rawL - targetL) / targetL > 0.15)
-        ? (targetL / rawL)
-        : 1;
+      const unscaledL = (curScale > 1e-4) ? (rawL / curScale) : rawL;
+      s = (unscaledL > 0.05) ? (targetL / unscaledL) : targetL;
     }
-    // Never shrink a model below 60% or blow one past 160% of canonical:
-    // beyond that the asset is wrong, not the scale.
-    s = Math.min(1.6, Math.max(0.6, s));
+    // Safety clamp: prevent degenerate / zero scales while allowing unit-scale models to fit
+    if (!isFinite(s) || s <= 0) s = 1;
+    s = Math.min(25, Math.max(0.02, s));
 
     baseModel.scale.set(s, s, s);
     baseModel.updateMatrixWorld(true);

@@ -269,14 +269,60 @@ h1, h2, h3, h4, .logo {
 }
 
 .hero-content h1 {
-    font-size: clamp(3rem, 6vw, 5rem);
+    font-size: clamp(2.75rem, 5vw, 4.25rem);
     font-weight: 800;
-    line-height: 1.1;
-    letter-spacing: -2px;
-    margin-bottom: 24px;
-    background: linear-gradient(135deg, #0F172A, #3B82F6);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    line-height: 1.05;
+    letter-spacing: -1.5px;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+}
+
+/* Real product shot replaces the div-mockup (AI-tell: fake device frames) */
+.hero-visual {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+.hero-shot {
+    width: min(300px, 28vw);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-strong);
+    border: 1px solid var(--surface-glass-border);
+}
+.version-note {
+    margin-top: 16px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+.version-note code, .relay-steps code {
+    font-family: ui-monospace, monospace;
+    font-size: 0.85em;
+    background: rgba(59,130,246,.1);
+    padding: 2px 6px;
+    border-radius: 6px;
+}
+
+/* Remote relay panel */
+.relay-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 24px;
+}
+.relay-steps {
+    margin: 16px 0 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+    .about-layout { flex-direction: column; padding: 32px 24px; gap: 32px; overflow-y: auto; }
+    .hero-visual { flex-direction: column; }
+    .hero-shot { width: min(240px, 70vw); }
+    .share-layout { grid-template-columns: 1fr; overflow-y: auto; }
 }
 
 .hero-content p {

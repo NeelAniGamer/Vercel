@@ -891,6 +891,8 @@
     var bh = (typeof window._buildHuman === 'function') ? window._buildHuman : null;
     if (!bh) { return null; }
     var rider = bh(false, {
+      procedural: true,
+      seated: true,
       variant: 'guard',
       outfit: 'police',
       shirt: 0xd7b987, // Khaki base uniform
@@ -1003,7 +1005,7 @@
 
     // 2. HIGH-VISIBILITY MUMBAI TRAFFIC POLICE RAIN VEST & TACTICAL HARNESS
     if (ud.torsoGroup) {
-      ud.torsoGroup.rotation.x = 0.16; // Leaning into handlebars
+      ud.torsoGroup.rotation.x = 0.34; // Seated tuck into the handlebars
 
       var vest = new THREE.Group();
       vest.name = 'police-highvis-vest';
@@ -1133,7 +1135,7 @@
     cockpit.add(navScreen);
 
     // Cockpit Ambient Glow Light (illuminates driver silhouette and steering wheel)
-    var dashGlow = new THREE.PointLight(0x0284c7, 0.85, 2.6, 1.4);
+    var dashGlow = new THREE.PointLight(0x0284c7, 1.3, 2.6, 1.4);
     dashGlow.position.set(-0.35, 1.06, 0.28);
     cockpit.add(dashGlow);
 
@@ -1158,8 +1160,9 @@
     var driver = new THREE.Group();
     driver.name = 'vip-driver-figure';
 
-    // Tailored Black Luxury Jacket / Torso
-    var suitMat = new THREE.MeshStandardMaterial({ color: 0x09090b, roughness: 0.8 });
+    // Tailored Black Luxury Jacket / Torso. Lifted from near-black so the bust
+    // reads as a driver inside a dark cabin instead of a floating black box.
+    var suitMat = new THREE.MeshStandardMaterial({ color: 0x232f42, roughness: 0.8 });
     var torso = new THREE.Mesh(new THREE.BoxGeometry(0.50, 0.62, 0.38), suitMat);
     torso.position.set(-0.45, 0.90, 0.05);
     driver.add(torso);
@@ -1252,61 +1255,48 @@
     cigEmber.position.set(-0.89, 0.95, 0.49);
     driver.add(cigEmber);
 
+    // ── 2b. THE REAR-SEAT PASSENGER (the shooter) ──────────────────────────
+    // Shot 6 is staged on his muzzle rising, but no body existed — an empty
+    // back seat with a subtitle. He stays a silhouette: black on black, lean
+    // across toward the west window, gun extended past the driver.
+    var passenger = new THREE.Group();
+    passenger.name = 'vip-passenger-figure';
+    // Near-black, not pure black: an unlit matte figure inside a dark cabin
+    // is invisible, and the shot is staged on him.
+    var shadowMat = new THREE.MeshStandardMaterial({ color: 0x1a1d24, roughness: 0.85 });
+    // Rear cabin dome light: the only thing that models the passenger.
+    var dome = new THREE.PointLight(0xffd9a0, 0.7, 3.5, 1.4);
+    dome.position.set(0.3, 1.55, -0.7);
+    passenger.add(dome);
+    var pTorso = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.58, 0.34), shadowMat);
+    pTorso.position.set(0.42, 0.80, -0.75);
+    passenger.add(pTorso);
+    var pHead = new THREE.Mesh(new THREE.SphereGeometry(0.125, 16, 14), shadowMat);
+    pHead.scale.set(0.95, 1.15, 1.0);
+    pHead.position.set(0.42, 1.20, -0.75);
+    passenger.add(pHead);
+    // Extended arm crossing the cabin toward the west window
+    var pArm = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.10, 0.10), shadowMat);
+    pArm.position.set(-0.02, 1.00, -0.55);
+    pArm.rotation.y = 0.18;
+    passenger.add(pArm);
+    // The gun: dark slide + muzzle past the driver, aimed west at Vikram
+    var gunMat = new THREE.MeshStandardMaterial({ color: 0x111318, metalness: 0.7, roughness: 0.35 });
+    var gun = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.09, 0.09), gunMat);
+    gun.position.set(-0.52, 1.00, -0.47);
+    passenger.add(gun);
+    var muzzle = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.022, 0.022, 0.14, 10),
+      new THREE.MeshBasicMaterial({ color: 0x1f2937 })
+    );
+    muzzle.rotation.z = Math.PI / 2;
+    muzzle.position.set(-0.70, 1.00, -0.45);
+    passenger.add(muzzle);
+    g.add(passenger);
+
     g.add(cockpit);
     g.add(driver);
 
-    // ── 3. FORTUNER EXTERIOR PROJECTOR LED HEADLIGHTS & ROAD ILLUMINATION ──────
-    var headlights = new THREE.Group();
-    headlights.name = 'fortuner-headlights';
-
-    [-0.64, 0.64].forEach(function (hx) {
-      // High-intensity white projector LED lens
-      var lens = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.09, 0.09, 0.04, 16),
-        new THREE.MeshBasicMaterial({ color: 0xffffff })
-      );
-      lens.rotation.x = Math.PI / 2;
-      lens.position.set(hx, 0.68, 1.68);
-      headlights.add(lens);
-
-      // Amber DRL Eyebrow Strip
-      var drl = new THREE.Mesh(
-        new THREE.BoxGeometry(0.24, 0.03, 0.02),
-        new THREE.MeshBasicMaterial({ color: 0xf59e0b })
-      );
-      drl.position.set(hx, 0.77, 1.68);
-      headlights.add(drl);
-
-      // Forward Projector Spotlight casting light onto the wet road
-      var spot = new THREE.SpotLight(0xf8fafc, 3.4, 48, Math.PI / 7, 0.35, 1.1);
-      spot.position.set(hx, 0.70, 1.68);
-      spot.target.position.set(hx, 0, 32);
-      headlights.add(spot);
-      headlights.add(spot.target);
-
-      // Volumetric beam cone through the rain mist
-      var cone = new THREE.Mesh(
-        new THREE.ConeGeometry(1.6, 20, 16, 1, true),
-        new THREE.MeshBasicMaterial({
-          color: 0x93c5fd, transparent: true, opacity: 0.10, depthWrite: false
-        })
-      );
-      cone.rotation.x = -Math.PI / 2;
-      cone.position.set(hx, 0.65, 11.6);
-      headlights.add(cone);
-    });
-
-    // Rear crimson LED taillight strip
-    [-0.64, 0.64].forEach(function (tx) {
-      var tail = new THREE.Mesh(
-        new THREE.BoxGeometry(0.26, 0.07, 0.03),
-        new THREE.MeshBasicMaterial({ color: 0xef4444 })
-      );
-      tail.position.set(tx, 0.72, -1.68);
-      headlights.add(tail);
-    });
-
-    g.add(headlights);
     return g;
   }
 
@@ -1917,26 +1907,104 @@
       terrace('x', lastH.pos + lastH.w / 2 + verge + depth / 2, minX, maxX, 1);
     }
 
+    // Outer rings: two more rows deep so the city does not drop into void grass
+    // 15m past the last road. From the driver's POV the horizon must stay city
+    // all the way to the fog, or the map reads empty the moment you look ahead.
+    var RING_GAP = depth + verge + 2;
+    for (var ring = 1; ring <= 2 && placed < MAX_FILL; ring++) {
+      var off = ring * RING_GAP;
+      if (firstV) {
+        terrace('z', firstV.pos - firstV.w / 2 - verge - depth / 2 - off, minZ - off, maxZ + off, 2);
+      }
+      if (lastV) {
+        terrace('z', lastV.pos + lastV.w / 2 + verge + depth / 2 + off, minZ - off, maxZ + off, 3);
+      }
+      if (firstH) {
+        terrace('x', firstH.pos - firstH.w / 2 - verge - depth / 2 - off, minX - off, maxX + off, 0);
+      }
+      if (lastH) {
+        terrace('x', lastH.pos + lastH.w / 2 + verge + depth / 2 + off, minX - off, maxX + off, 1);
+      }
+    }
+
+    // Far skyline: big low-detail slabs on a ~260m ring so the horizon is city,
+    // not grass. One box + roof + lit band each (no awnings, trees or keep-out
+    // tests — far outside play), deterministic like everything else here.
+    var skySpots = 28;
+    for (var sa = 0; sa < skySpots && placed < MAX_FILL; sa++) {
+      var sang = (sa / skySpots) * Math.PI * 2 + hash2(sa, 3, 111) * 0.2;
+      var sx = Math.cos(sang) * 260, sz = Math.sin(sang) * 260;
+      var sw = 18 + hash2(sa, 5, 112) * 22, sd = 14 + hash2(sa, 7, 113) * 16;
+      var sh = 24 + hash2(sa, 11, 114) * 42;
+      var sgm = new THREE.Group();
+      sgm.add(sbox(sw, sh, sd, pick(wallMats, hash2(sa, 13, 115)), 0, sh / 2, 0));
+      sgm.add(sbox(sw + 0.5, 0.5, sd + 0.5, fSlab, 0, sh + 0.25, 0));
+      var sband = new THREE.Mesh(geo().plane, fLit);
+      sband.scale.set(sw * 0.8, 1.6, 1);
+      sband.position.set(0, sh * 0.7, sd / 2 + 0.06);
+      sgm.add(sband);
+      sgm.position.set(sx, 0, sz);
+      grp.add(sgm);
+      placed++;
+    }
+
     // ── Footpaths ──────────────────────────────────────────────────────────
-    // Pavement strips along both kerbs of every road. Without these the widened
-    // verge just exposes bare ground, which is what made the map read empty.
+    // Pavement strips along both kerbs of every road, properly sliced at
+    // intersections so sidewalks never bridge across perpendicular carriageways.
+    function subtractIntervals(range, cuts) {
+      var intervals = [[range[0], range[1]]];
+      (cuts || []).forEach(function (c) {
+        var cMin = Math.min(c[0], c[1]);
+        var cMax = Math.max(c[0], c[1]);
+        var next = [];
+        intervals.forEach(function (inv) {
+          if (cMax <= inv[0] || cMin >= inv[1]) {
+            next.push(inv);
+          } else {
+            if (cMin > inv[0]) { next.push([inv[0], cMin]); }
+            if (cMax < inv[1]) { next.push([cMax, inv[1]]); }
+          }
+        });
+        intervals = next;
+      });
+      return intervals.filter(function (inv) { return (inv[1] - inv[0]) > 0.5; });
+    }
+
     var walk = new THREE.MeshLambertMaterial({ color: 0xb9b3a6 });
     var kerb = new THREE.MeshLambertMaterial({ color: 0xd9d4c8 });
+    var hCuts = (ax.hs || []).map(function (h) {
+      return [h.pos - (h.w / 2 + FOOT), h.pos + (h.w / 2 + FOOT)];
+    });
+    var vCuts = (ax.vs || []).map(function (v) {
+      return [v.pos - (v.w / 2 + FOOT), v.pos + (v.w / 2 + FOOT)];
+    });
+
     ax.vs.forEach(function (v) {
       var zA = v.a - 14, zB = v.b + 14;
+      var vSegs = subtractIntervals([zA, zB], hCuts);
       [-1, 1].forEach(function (s) {
         var x = v.pos + s * (v.w / 2 + FOOT / 2);
-        var p = sbox(FOOT, 0.16, zB - zA, walk, x, 0.08, (zA + zB) / 2);
-        grp.add(p);
-        grp.add(sbox(0.18, 0.22, zB - zA, kerb, v.pos + s * (v.w / 2 + 0.09), 0.11, (zA + zB) / 2));
+        var kx = v.pos + s * (v.w / 2 + 0.09);
+        vSegs.forEach(function (seg) {
+          var len = seg[1] - seg[0];
+          var midZ = (seg[0] + seg[1]) / 2;
+          grp.add(sbox(FOOT, 0.16, len, walk, x, 0.08, midZ));
+          grp.add(sbox(0.18, 0.22, len, kerb, kx, 0.11, midZ));
+        });
       });
     });
     ax.hs.forEach(function (h) {
       var xA = h.a - 14, xB = h.b + 14;
+      var hSegs = subtractIntervals([xA, xB], vCuts);
       [-1, 1].forEach(function (s) {
         var z = h.pos + s * (h.w / 2 + FOOT / 2);
-        grp.add(sbox(xB - xA, 0.16, FOOT, walk, (xA + xB) / 2, 0.08, z));
-        grp.add(sbox(xB - xA, 0.22, 0.18, kerb, (xA + xB) / 2, 0.11, h.pos + s * (h.w / 2 + 0.09)));
+        var kz = h.pos + s * (h.w / 2 + 0.09);
+        hSegs.forEach(function (seg) {
+          var len = seg[1] - seg[0];
+          var midX = (seg[0] + seg[1]) / 2;
+          grp.add(sbox(len, 0.16, FOOT, walk, midX, 0.08, z));
+          grp.add(sbox(len, 0.22, 0.18, kerb, midX, 0.11, kz));
+        });
       });
     });
 
@@ -1968,9 +2036,11 @@
       poleDark: new THREE.MeshLambertMaterial({ color: 0x2a2e34 }),
       poleGrey: new THREE.MeshLambertMaterial({ color: 0x9aa3ad }),
       lampHead: new THREE.MeshBasicMaterial({ color: 0xffd98a }),
-      // Wet tarmac: light specular sheen without blacking out road surface
+      // Wet tarmac: light specular sheen without blacking out road surface.
+      // Specular kept low: a hot sun glint off this plane washed the whole
+      // crane shot gray from high angles.
       wet: new THREE.MeshPhongMaterial({
-        color: 0x3d4b5c, shininess: 110, specular: 0x88aacc, transparent: true, opacity: 0.20
+        color: 0x3d4b5c, shininess: 55, specular: 0x3a4a5c, transparent: true, opacity: 0.16
       }),
       puddle: new THREE.MeshPhongMaterial({
         color: 0x2d3e4e, shininess: 160, specular: 0xaaccff, transparent: true, opacity: 0.35
@@ -2050,6 +2120,28 @@
     g.add(box);
 
     setSignalState(g, (spec && spec.state) || 'red');
+
+    // Red-state glow: the lit aspect is a 19 cm disc — at film distances it
+    // vanishes. A red wash on the wet tarmac is what makes the audience feel
+    // the signal before any subtitle names it. Local (-4.0,-6.4) lands on the
+    // stop line at world (5.0,-12.5) given the east-kerb rotY.
+    try {
+      if (String((spec && spec.state) || 'red').toLowerCase() === 'red') {
+        var glow = new THREE.SpotLight(0xff3b30, 2.4, 25, Math.PI / 4, 0.6, 1.2);
+        glow.position.set(0, H - 0.95, -4.6);
+        glow.target.position.set(0, 0, -10);
+        g.add(glow);
+        g.add(glow.target);
+        var halo = new THREE.Mesh(
+          new THREE.CircleGeometry(0.35, 16),
+          new THREE.MeshBasicMaterial({ color: 0xff3b30, transparent: true, opacity: 0.75 })
+        );
+        halo.position.set(0, H - 0.95, -4.82);
+        halo.rotation.y = Math.PI;
+        g.add(halo);
+      }
+    } catch (eGlow) {}
+
     g.position.set(spec.x || 0, 0, spec.z || 0);
     g.rotation.y = spec.rotY || 0;
     return g;
@@ -2371,36 +2463,53 @@
     g.name = 'stage-sheet';
 
     var sheetMat = new THREE.MeshLambertMaterial({
-      color: 0xdfe6ee, side: THREE.DoubleSide, transparent: true, opacity: 0.94
+      color: 0xecf0f5, side: THREE.DoubleSide
     });
-    var W = (spec && spec.width) || 2.6;
-    var D = (spec && spec.depth) || 3.4;
-    var H = (spec && spec.height) || 0.85;
-
-    // Four tapering skirts plus a lid: a tent, not a box. The peak is what makes
-    // it read as fabric over a form.
-    var lid = new THREE.Mesh(new THREE.BoxGeometry(W * 0.86, 0.07, D * 0.9), sheetMat);
-    lid.position.set(0, H, 0);
-    g.add(lid);
-
-    var sides = [
-      [0, -D / 2, 0, 0], [0, D / 2, 0, 0],
-      [-W / 2, 0, 0, Math.PI / 2], [W / 2, 0, 0, Math.PI / 2]
-    ];
-    sides.forEach(function (s) {
-      var panel = new THREE.Mesh(new THREE.BoxGeometry(W, H, 0.05), sheetMat);
-      panel.position.set(s[0] * 0.5, H / 2, s[1] * 0.5);
-      panel.rotation.y = s[3];
-      // Lean each skirt outward from the peak.
-      panel.rotation.x = s[1] < 0 ? 0.20 : (s[1] > 0 ? -0.20 : 0);
-      panel.rotation.z = s[0] < 0 ? -0.20 : (s[0] > 0 ? 0.20 : 0);
-      g.add(panel);
+    var foldMat = new THREE.MeshLambertMaterial({
+      color: 0xd5dde5, side: THREE.DoubleSide
     });
+    var W = (spec && spec.width) || 2.4;
+    var D = (spec && spec.depth) || 3.2;
+    var H = (spec && spec.height) || 0.65;
 
-    // Weighted hem, so the sheet is pinned to the road rather than hovering.
-    var hem = new THREE.Mesh(new THREE.BoxGeometry(W * 1.02, 0.08, D * 1.02), M.poleDark);
-    hem.position.set(0, 0.04, 0);
-    g.add(hem);
+    // Central raised ridge representing the covered motorcycle and form
+    var ridge = new THREE.Mesh(
+      new THREE.CylinderGeometry(W * 0.22, W * 0.42, D * 0.85, 12),
+      sheetMat
+    );
+    ridge.rotation.x = Math.PI / 2;
+    ridge.scale.set(1.0, 0.48, 1.0);
+    ridge.position.set(0, H * 0.55, 0);
+    g.add(ridge);
+
+    // Secondary draping cloth
+    var drapedTop = new THREE.Mesh(
+      new THREE.CylinderGeometry(W * 0.34, W * 0.52, D * 0.96, 14),
+      foldMat
+    );
+    drapedTop.rotation.x = Math.PI / 2;
+    drapedTop.scale.set(1.0, 0.32, 1.0);
+    drapedTop.position.set(0, H * 0.32, 0);
+    g.add(drapedTop);
+
+    // Ground apron skirt pinned neatly to the asphalt
+    var skirt = new THREE.Mesh(
+      new THREE.BoxGeometry(W * 1.06, 0.06, D * 1.04),
+      sheetMat
+    );
+    skirt.position.set(0, 0.03, 0);
+    g.add(skirt);
+
+    // Weighted corner sandbags pinning the tarp against wind/rain
+    var weightMat = new THREE.MeshLambertMaterial({ color: 0x334155 });
+    [
+      [-W * 0.48, -D * 0.48], [W * 0.48, -D * 0.48],
+      [-W * 0.48, D * 0.48], [W * 0.48, D * 0.48]
+    ].forEach(function (pt) {
+      var weight = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.10, 0.35), weightMat);
+      weight.position.set(pt[0], 0.05, pt[1]);
+      g.add(weight);
+    });
 
     if (spec && typeof spec.x === 'number') { g.position.set(spec.x, 0, spec.z); }
     if (spec && typeof spec.rotY === 'number') { g.rotation.y = spec.rotY; }
@@ -2744,6 +2853,14 @@
     game._stageKeepOut = null;
     game._stageAct = null;
     game._stageAftermath = null;
+    // Restore the tone-mapping exposure the night act borrowed. Without this
+    // the playable map inherits the film's brighter grade and day looks hazy.
+    try {
+      if (game._stagePrevExposure != null && game.renderCore && game.renderCore.renderer) {
+        game.renderCore.renderer.toneMappingExposure = game._stagePrevExposure;
+      }
+    } catch (eExp) {}
+    game._stagePrevExposure = null;
     // Drop the reveal hooks, not just the flag. cutscene.js calls these on every
     // shot; leaving them bound to a torn-down group means the next film's
     // applyShot() toggles an object that is no longer in the scene.
@@ -2791,6 +2908,17 @@
       if (game._sun) {
         if (a.sun != null) { game._sun.intensity = a.sun; }
         if (a.sunPos) { game._sun.position.set(a.sunPos[0], a.sunPos[1], a.sunPos[2]); }
+      }
+      // Per-act tone-mapping exposure. The renderer defaults to 0.60 with ACES,
+      // which crushes a 3am rain scene to unreadable black on real displays
+      // (gameplay compensates with its own per-frame exposure ramp, but the
+      // film owns the frame so that ramp never runs). The act keeps its dark
+      // lights — this only re-grades the same frame brighter.
+      if (a.exposure != null && game.renderCore && game.renderCore.renderer) {
+        if (game._stagePrevExposure == null) {
+          game._stagePrevExposure = game.renderCore.renderer.toneMappingExposure;
+        }
+        game.renderCore.renderer.toneMappingExposure = a.exposure;
       }
     } catch (e) {}
 

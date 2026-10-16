@@ -148,12 +148,17 @@
         // North-east: mirrored apartment tower
         { kind: 'apartment', x: 34, z: -24, rotY: 0, w: 20, d: 16, h: 28, color: 0x7d8896 },
         // South-east city block: complete Basketball Sports Complex (Reference Image 1)
-        { kind: 'court', x: 34, z: 36, rotY: 0, w: 26, d: 18 },
+        { kind: 'court', x: 42, z: 36, rotY: 0, w: 20, d: 18 },
         // South-west city block: organized Parking Lot with stalls & parked cars (Reference Images 1 & 2)
-        { kind: 'parking', x: -34, z: 36, rotY: 0, w: 26, d: 18 },
+        { kind: 'parking', x: -42, z: 36, rotY: 0, w: 20, d: 18 },
         // Mid-block shops facing avenues
         { kind: 'shop', x: -34, z: -72, rotY: 0, w: 18, d: 12, h: 6, color: 0xf5e6d3, text: 'Sharma Stores', sub: 'General Merchant' },
-        { kind: 'shop', x: 34, z: -72, rotY: 0, w: 18, d: 12, h: 7, color: 0xe0f2fe, text: 'City Clinic', sub: 'Emergency Care' }
+        { kind: 'shop', x: 34, z: -72, rotY: 0, w: 18, d: 12, h: 7, color: 0xe0f2fe, text: 'City Clinic', sub: 'Emergency Care' },
+        // Sharma Niwas — home at Shanti Galli
+        { kind: 'house', id: 'home', x: -88, z: -128, rotY: Math.PI / 2, w: 14, d: 12, color: 0xf5e6d3,
+          houseSet: { verandah: true, balcony: true, compound: true, garden: true, interior: true } },
+        // Home garage
+        { kind: 'garage', x: -69.5, z: -128, rotY: 0, w: 6.5, d: 8, color: 0xe2e8f0 }
       ],
 
       // Dense frontage is set dressing for the film: nothing here can damage,
@@ -190,7 +195,9 @@
         { x: -10.6, z: -74, rotY: Math.PI / 2, color: 0x2b2f36, type: 'car' },
         { x: 10.6, z: -70, rotY: -Math.PI / 2, color: 0x3a4048, type: 'car' },
         { x: -10.6, z: 62, rotY: Math.PI / 2, color: 0x1f242b, type: 'car' },
-        { x: 10.6, z: 66, rotY: -Math.PI / 2, color: 0x4a4038, type: 'car' }
+        { x: 10.6, z: 66, rotY: -Math.PI / 2, color: 0x4a4038, type: 'car' },
+        // Kabir's car in Sharma Niwas garage
+        { x: -69.5, z: -128, rotY: Math.PI / 2, color: 0x3b82f6, type: 'car' }
       ],
 
       // Rain particles: soft, atmospheric monsoon droplets, not a white static blizzard
@@ -254,19 +261,24 @@
       // playback, while a light vignette over a 3am rain scene throws away the
       // only thing keeping the eye in the middle of the frame.
       night: {
-        sky: 0x1e2e46,
-        ambient: 0.68,
-        hemiSky: 0x8eb4e4,
-        hemiGround: 0x334155,
-        sun: 0.75,
+        sky: 0x162438,
+        ambient: 0.46,
+        hemiSky: 0x6486b4,
+        hemiGround: 0x323e4e,
+        sun: 0.42,
         sunPos: [25, 60, 20],
-        fogNear: 220,
-        fogFar: 1200,
+        fogNear: 150,
+        fogFar: 900,
         rain: true,
         wet: true,
-        vig: 0.15,
+        vig: 0.18,
         scan: 0.02,
-        lensRain: 0.40
+        lensRain: 0.35,
+        // Re-grade for ACES at 0.60 exposure, which crushes this act to black
+        // on real displays (gameplay has its own per-frame exposure ramp; the
+        // film owns the frame so that ramp never runs). Lights stay dark —
+        // only the grade lifts. Restored by clearStage.
+        exposure: 0.9
       },
       day: {
         sky: 0x9dc4e0,

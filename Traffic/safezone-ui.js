@@ -345,6 +345,10 @@ class SafeZoneGrid {
 
 
   register(itemId, element, zoneId, options = {}) {
+    if (!element || !element.classList) {
+      console.warn(`SafeZoneGrid: Skipped Null Element For '${itemId}'`);
+      return false;
+    }
     if (!this.zones.has(zoneId)) {
       console.warn(`SafeZoneGrid: Unknown zone ${zoneId}`);
       return false;

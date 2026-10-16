@@ -269,25 +269,25 @@ const CAMPAIGNS = [
       {
         levelId: 1,
         missionType: 'CHECKPOINT',
-        title: 'Signal Basics',
-        briefing: 'Learn the rhythm of Mumbai signals. Green means go, but always check cross-traffic.',
-        storyBeat: '06:47 AM. Andheri Station Road. A family of four crosses - father, mother, two kids with backpacks. Behind you, three autorickshaws honk in chorus. Patil: "Solid white line ke peechhe ruk jao. Pedestrians pehle, tum baad mein."',
+        title: 'The White Line',
+        briefing: 'Leave Mrs. Iyer\'s Shanti Galli bungalow, hold the Linking Road white line where Vikram fell, and collect the evidence envelope from Sharma General Stores.',
+        storyBeat: 'Vikram Sawant ka notebook: "Mrs. Iyer, Shanti Galli, Mandir. Sab kuch dekhti hai." Linking Road junction par red light obey karo, Ansh taxi ke honk ko ignore karo, aur Sharma General Stores tak safely pahuncho.',
         objectives: {
-          primary: 'Wait at red light behind stop line. Let all pedestrians cross fully.',
-          secondary: ['Ignore honking pressure (0 violations)', 'Move only on solid green', 'Complete within 90 seconds'],
-          bonus: 'Zero honking from NPCs behind you'
+          primary: 'Board your car, hold behind the white stop line on Linking Road, and deliver to Sharma General Stores.',
+          secondary: ['Ignore honking pressure from Ansh (0 violations)', 'Move only on solid green light', 'Complete within time limit'],
+          bonus: 'Zero honking or collisions across the entire route'
         },
         characterDialogue: [
-          { speaker: 'Constable Patil', line: '"Beta, Mumbai mein signal sirf light nahi - zindagi ka sawaal hai."', context: 'Briefing' },
-          { speaker: 'NPC Auto Driver', line: '"Arre bhai, chalo na! Green hai na?"', context: 'Horn pressure' },
-          { speaker: 'Mother crossing', line: '"Bachchon ka haath pakad ke chalo, gaadi rukne de."', context: 'Pedestrian voice' }
+          { speaker: 'Insp. Arjun Kadam', line: '"Entry one. Mrs. Iyer. She sees everything."', context: 'Briefing' },
+          { speaker: 'Havildar Desai (Radio)', line: '"All units: Linking Road junction RED. White line ke peeche ruko — ek line hai, koi shortcut nahi."', context: 'Signal approach' },
+          { speaker: 'Mrs. Iyer', line: '"Vikram bhai har roz isi signal par rukta tha. Har roz. Tum bhi ruko."', context: 'Destination' }
         ],
         consequences: {
-          success: 'Patil nods. "Theek hai. Pehle subah, pehle signal - seekh liya." +500Rs',
-          failure: 'Challan issued. Patil sighs. "Dubara mat karna." -1000Rs, retry required',
-          perfect: 'Zero violations + no honking = "Perfect Run" bonus + Mission Token'
+          success: 'Envelope secured. Arjun opens the notebook: entry two awaits. +500Rs',
+          failure: 'Signal jumped or route missed. Havildar Desai issues challan. -1000Rs, retry required.',
+          perfect: 'Zero violations + perfect signal patience = "Clean Case" bonus + Mission Token'
         },
-        mumbaiContext: 'Andheri Station sees 600,000+ daily commuters. Peak hour: 8-10 AM, 6-8 PM. Average wait: 47 seconds.'
+        mumbaiContext: 'Linking Road junction connects Andheri West to Santacruz. Obeying the solid stop line prevents fatal cross-traffic broadsides.'
       },
       {
         levelId: 2,

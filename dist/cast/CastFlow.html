@@ -32,6 +32,7 @@
                 <button class="nav-btn active focusable" data-target="panel-about">About</button>
                 <button class="nav-btn focusable" data-target="panel-cast">Cast Viewer</button>
                 <button class="nav-btn focusable" data-target="panel-share">File Share</button>
+                <button class="nav-btn focusable" data-target="panel-relay">Remote Relay</button>
             </nav>
 
             <div class="connection-module">
@@ -67,22 +68,25 @@
             <section id="panel-about" class="glass-panel active">
                 <div class="about-layout">
                     <div class="hero-content">
-                        <h1>Cast & Share In Seconds.</h1>
-                        <p>Share files, stream your screen, and control your device locally across your home network.</p>
+                        <h1>Cast &amp; Share In Seconds.</h1>
+                        <p>Share files, stream your screen, and control your device locally across your home network — or relay it to your own server and watch from anywhere.</p>
                         <div class="action-buttons">
-                            <button class="glass-btn primary big focusable">
-                                <i data-lucide="download"></i> Download APK
-                            </button>
+                            <a class="glass-btn primary big focusable" id="apk-btn" href="#">
+                                <i data-lucide="download"></i> <span id="apk-label">Download APK</span>
+                            </a>
                             <button class="glass-btn secondary big focusable" id="show-qr-btn">
                                 <i data-lucide="qr-code"></i> Show QR Code
                             </button>
                         </div>
+                        <p class="version-note" id="apk-version">Checking latest version…</p>
                     </div>
-                    <div class="hero-mockup glass-card">
-                        <i data-lucide="smartphone" class="mockup-icon"></i>
-                        <p>Scan to Connect</p>
-                        <!-- QR Code placeholder -->
-                        <div id="qr-code-container" class="qr-placeholder"></div>
+                    <div class="hero-visual">
+                        <img src="hero.png" alt="CastFlow app casting a phone screen to a TV" class="hero-shot">
+                        <div class="hero-mockup glass-card">
+                            <p>Scan to Connect</p>
+                            <!-- QR Code placeholder -->
+                            <div id="qr-code-container" class="qr-placeholder"></div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -145,11 +149,40 @@
                 </div>
             </section>
 
+            <!-- Panel: Remote Relay (any Wi-Fi / internet via your server) -->
+            <section id="panel-relay" class="glass-panel">
+                <div class="share-layout">
+                    <div class="share-card glass-card">
+                        <i data-lucide="cloud" class="upload-icon"></i>
+                        <h2>Watch From Anywhere</h2>
+                        <p class="subtitle">Your phone pushes its screen to your own relay server. Open that room here — no same-Wi-Fi needed.</p>
+                        <div class="relay-form">
+                            <input type="text" id="relay-server" class="glass-input" placeholder="Relay server (https://example.com/cast)">
+                            <input type="text" id="relay-room" class="glass-input" placeholder="Room (e.g. living-room)">
+                            <button class="glass-btn primary focusable" id="relay-open-btn">
+                                <i data-lucide="play"></i> Open Relay Viewer
+                            </button>
+                        </div>
+                        <p class="version-note">Needs <code>viewer-standalone.html</code> next to this page and the Flask relay running (see <code>relay-server/</code> in the app repo).</p>
+                    </div>
+                    <div class="share-card glass-card">
+                        <h2>How It Works</h2>
+                        <p class="subtitle">RustDesk-style, minus the infrastructure bill</p>
+                        <ol class="relay-steps">
+                            <li>Run <code>server.py</code> on your server behind HTTPS.</li>
+                            <li>In the app: Settings → Server relay → same URL, room and token.</li>
+                            <li>Start Screen Cast, then start the relay.</li>
+                            <li>Open the room here from any network.</li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+
         </main>
     </div>
 
     <!-- QR Code Script (to generate QR dynamically if needed) -->
-    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script>
         lucide.createIcons();
     </script>

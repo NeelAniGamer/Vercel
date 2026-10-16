@@ -102,8 +102,8 @@
     // `fortuner` is NOT here — it is stage dressing, because it has to survive
     // into the act change and is never addressed or tagged.
     cast: [
-      { id: 'vikram', kind: 'vehicle', type: 'bike', color: 0x243040, x: 4.0, y: 0, z: -12.5, rotY: Math.PI / 2, withRider: true },
-      { id: 'fortuner', kind: 'vehicle', type: 'suv', color: 0x242a34, x: 6.4, y: 0, z: -12.5, rotY: 0, withDriver: true },
+      { id: 'vikram', kind: 'vehicle', type: 'bike', color: 0x3a4c68, x: 3.6, y: 0, z: -12.5, rotY: 0, withRider: true },
+      { id: 'fortuner', kind: 'vehicle', type: 'suv', color: 0x22262e, x: 6.8, y: 0, z: -12.5, rotY: 0, withDriver: true },
 
       // ── The two people who are actually IN this film ──────────────────────
       //
@@ -258,7 +258,7 @@
         ease: 'linear',
         locked: true,
         transition: 'cut',
-        from: [-9.5, 7.4, -8.0], to: [-9.5, 7.4, -8.0],
+        from: [-5.5, 6.4, -6.5], to: [-5.5, 6.4, -6.5],
         look: [5.0, 0.8, -13.0],
         fov: 62,
         act: 'night',
@@ -282,12 +282,14 @@
       //     a threat feel patient. Coming straight out of the CCTV insert, this
       //     cut is the moment the film admits it has a camera operator — and it
       //     says so by getting close, which surveillance could not.
+      //     The camera sits higher than the first pass: the old mark filmed from
+      //     y≈1.4 and the frame was three-quarters void sky.
       {
         dur: 8,
         ease: 'linear',
         transition: 'cut',
-        from: [1.6, 1.45, -16.2], to: [2.6, 1.3, -14.6],
-        look: [6.4, 1.5, -12.5],
+        from: [1.8, 2.1, -17.0], to: [2.8, 1.9, -15.0],
+        look: [6.2, 1.2, -12.3],
         fov: 42,
         act: 'night',
         prior: true,
@@ -308,8 +310,8 @@
         hold: 3,
         ease: 'inOutQuad',
         transition: 'cut',
-        from: [1.4, 2.3, -17.4], to: [2.8, 2.15, -15.0],
-        look: [6.3, 1.6, -12.5],
+        from: [1.6, 2.4, -18.0], to: [3.0, 2.2, -15.4],
+        look: [6.0, 1.2, -12.3],
         fov: 44,
         act: 'night',
         prior: true,
@@ -332,10 +334,10 @@
         audio: { beds: { rain: 0.04, engine: 0.05 } }
       },
 
-      // 6 — GUNSHOT. Movement IV, first half. Inside the
-      //     Fortuner. The tightest frame in the film — fov 28, framed on the
-      //     driver's shoulder, so the whole world is a windscreen pillar and a
-      //     hand.
+      // 6 — GUNSHOT. Movement IV, first half. Outside the Fortuner's EAST
+      //     (passenger-side) window, looking in at the rear seat: the muzzle
+      //     shot is staged on the PASSENGER, and the old mark sat on the
+      //     driver side where the bodywork filled 80% of frame.
       //
       //     This is the shot the whole cold open exists to arrive at, so it is
       //     cut in three separate pieces rather than covered in one move:
@@ -355,8 +357,8 @@
         ease: 'linear',
         transition: 'cut',
         noRain: true,
-        from: [5.55, 1.42, -12.1], to: [5.62, 1.40, -12.15],
-        look: [7.4, 1.30, -12.2],
+        from: [11.8, 1.7, -14.2], to: [11.2, 1.6, -13.4],
+        look: [6.0, 1.0, -12.4],
         fov: 28,
         act: 'night',
         prior: true,
@@ -376,16 +378,16 @@
         dur: 8,
         ease: 'outQuint',
         transition: 'cut',
-        from: [0.5, 1.9, -15.0], to: [6.4, 1.5, -4.0],
-        look: [6.4, 1.0, -12.5],
-        lookTo: [6.4, 1.4, 12],
-        fov: 50,
+        from: [1.5, 1.7, -17.0], to: [5.2, 1.6, -3.0],
+        look: [6.8, 1.0, -12.5],
+        lookTo: [6.8, 1.4, 12],
+        fov: 44,
         act: 'night',
         prior: true,
         flashAt: 0.08,
         flashGain: 0.9,
         motion: [
-          { id: 'fortuner', from: [6.4, 0, -12.5], to: [6.4, 0, 95] }
+          { id: 'fortuner', from: [6.8, 0, -12.5], to: [6.8, 0, 95] }
         ],
         // `inCubic` — the car ACCELERATES away.
         //
@@ -424,20 +426,23 @@
       //
       //     `thud` lands at 30% — the body hitting the road, heard rather than
       //     seen, because we are looking at a sheet-covered shape and not at him.
+      //     LOW crane that still shows body, markers, zebra AND the red signal in
+      //     one frame. The old mark sat 4 m out and the evidence sheet filled
+      //     the lens; the crime scene read as a gray wall.
       {
         dur: 13,
         hold: 5,
         ease: 'linear',
         transition: 'cut',
-        from: [0.5, 1.1, -8.5], to: [1.2, 0.85, -9.6],
-        look: [4.0, 0.5, -12.5],
-        fov: 44,
+        from: [-3.0, 2.4, -5.5], to: [-1.8, 1.7, -7.5],
+        look: [3.6, 0.5, -12.5],
+        fov: 50,
         act: 'night',
         prior: true,
         aftermath: true,
         title: 'Vikram Sawant · 19 Years, Traffic Division',
         sub: {
-          speaker: 'Mumbai Police Wireless',
+          speaker: 'Mumbai Police Radio',
           line: '"All units, 10-33 on Linking Road! Officer down! Black Fortuner fled south towards Shanti Galli!"'
         },
         // The film's only real beat of silence, and it sits after the radio call
@@ -461,37 +466,30 @@
         }
       },
 
-      // 9 — BOOKEND. Crane up and away to the EXACT framing of shot 1 — same
-      //     start point, same end point, same look target, same fov — so the film
-      //     ends on the junction it opened on with one thing changed. Bookending
-      //     an identical frame is the cheapest way to make nine shots read as one
-      //     film rather than as a sequence.
-      //
-      //     `timePass: true` fires the wet-lens wiper as the film jumps forward:
-      //     this is the last cut of the night, and the wipe is how a film says
-      //     "some time has passed" without a caption.
-      //
-      //     It is also where the siren dies. The crime-scene apparatus from shot 8
-      //     is still standing (`aftermath: true`), but the film is craning up and
-      //     away to an empty junction, and an investigation that runs its siren
-      //     through the whole crane pulls the camera off the thing it is meant to
-      //     be saying. Three seconds of silence on the bookend is the film
-      //     admitting the case has been left open.
+      // 9 — TRANSITION TO SHANTI GALLI. Six hours later, dawn breaks over the colony.
+      //     The camera glides down onto Sharma Niwas on Shanti Galli, revealing the
+      //     family home, the garage with the parked car, and Kabir's mother calling from
+      //     the balcony. This establishes the player's immediate spawn point and vehicle,
+      //     creating seamless narrative and spatial handover into the driving lesson.
       {
-        dur: 11,
+        dur: 10,
         hold: 3,
         ease: 'cinematic',
         transition: 'cut',
         timePass: true,
-        from: [0.5, 1.1, -8.5], to: [8, 38, -75],
-        look: [4.0, 0.5, -12.5],
-        lookTo: [5.2, 1.0, -12.5],
+        title: 'Six Hours Later · Shanti Galli — Sharma Niwas',
+        from: [-54, 8, -112], to: [-62, 3.2, -122],
+        look: [-64.0, 1.2, -128],
+        lookTo: [-64.0, 1.2, -128],
         fov: 46,
-        act: 'night',
+        act: 'dawn',
         prior: true,
-        aftermath: true,
         sampleStop: ['sfx_police_siren'],
-        audio: { beds: { rain: 0.04, room: 0.01 } }
+        sub: {
+          speaker: 'Mummy (Balcony)',
+          line: '"Kabir! Papa forgot his lunch dabba on the counter! Take the car and deliver it to Mrs. Iyer at Linking Road!"'
+        },
+        audio: { beds: { room: 0.10, engine: 0.02, birds: 0.04 } }
       }
     ],
 
@@ -543,7 +541,8 @@
             from: [-4, 3.2, -4], to: [0.5, 1.15, -8.5],
             look: [4.6, 0.7, -12.4],
             fov: 40,
-            act: 'day'
+            act: 'day',
+            audio: { beds: { room: 0.12, engine: 0.04, birds: 0.04 } }
           },
           // 2 — Arjun, low and close, notebook in frame. The subtitle is the
           //     whole case in one line.
@@ -558,7 +557,8 @@
             sub: {
               speaker: 'Insp. Arjun Kadam',
               line: '"Entry one. Mrs. Iyer. She sees everything."'
-            }
+            },
+            audio: { beds: { room: 0.12, engine: 0.04, birds: 0.04 } }
           },
           // 3 — The rule, said out loud by the man it killed. Wide, so the
           //     junction is in frame and the jeep sits on the line where the
@@ -583,7 +583,7 @@
               speaker: 'Insp. Arjun Kadam',
               line: '"Red light karna, sir. Yahi toh sikhaya tha unhone."'
             },
-            audio: { beds: { room: 0.12 } }
+            audio: { beds: { room: 0.12, engine: 0.04, birds: 0.04 } }
           }
         ]
       },
@@ -639,7 +639,7 @@
               speaker: 'Mrs. Iyer',
               line: '"Vikram bhai har roz isi signal par rukta tha. Har roz. Tum bhi ruko."'
             },
-            audio: { beds: { room: 0.14 } }
+            audio: { beds: { room: 0.14, engine: 0.04, birds: 0.04 } }
           },
 
           // 2 — Push in on Mrs. Iyer. A slow push rather than a cut for the
@@ -660,7 +660,7 @@
               speaker: 'Mrs. Iyer',
               line: '"Maine Fortuner dekha, Arjun. Aur piche baithe aadmi ko bhi."'
             },
-            audio: { beds: { room: 0.14 } }
+            audio: { beds: { room: 0.14, engine: 0.04, birds: 0.04 } }
           },
 
           // 3 — Reverse on Arjun. The only reaction shot in the film, and it is
@@ -679,7 +679,7 @@
               speaker: 'Insp. Arjun Kadam',
               line: '"Kaun tha woh, Mrs. Iyer?!"'
             },
-            audio: { beds: { room: 0.14 } }
+            audio: { beds: { room: 0.14, engine: 0.04, birds: 0.04 } }
           },
 
           // 4 — THE REVELATION. Shot 2's framing again, tighter still (fov 30),
@@ -718,7 +718,7 @@
             // fact instead of two. The 4s of silence is what turns a sentence into
             // a turn.
             hold: 4,
-            audio: { beds: { room: 0.16 }, stingAt: { name: 'turn', kind: 'page', at: 0.48, gain: 0.7 } }
+            audio: { beds: { room: 0.16, engine: 0.04, birds: 0.04 }, stingAt: { name: 'turn', kind: 'page', at: 0.48, gain: 0.7 } }
           },
 
           // 5 — THE OBJECT. Vikram's notebook in Arjun's hands, open. This is the
@@ -741,7 +741,7 @@
             fov: 40,
             act: 'day',
             audio: {
-              beds: { room: 0.12 },
+              beds: { room: 0.12, engine: 0.04, birds: 0.04 },
               stingAt: { name: 'turn', kind: 'page', at: 0.55, gain: 0.85 }
             }
           },
@@ -768,13 +768,13 @@
             hold: 4,
             ease: 'cinematic',
             transition: 'cut',
-            from: [-20, 22, -168], to: [-26, 13, -132],
+            from: [-24, 20, -156], to: [-28, 12, -128],
             look: [-56, 2, -118],
             lookTo: [-58, 1.2, -104],
             fov: 50,
             act: 'day',
             title: 'Shanti Galli · 10:15 AM · Entry Two',
-            audio: { beds: { room: 0.18 } }
+            audio: { beds: { room: 0.18, engine: 0.03, birds: 0.04 } }
           },
 
           // 7 — TITLE CARD. Pull back off the street to black.
@@ -788,12 +788,12 @@
             hold: 4,
             ease: 'cinematic',
             transition: 'cut',
-            from: [-26, 13, -132], to: [-14, 32, -184],
+            from: [-28, 12, -128], to: [-16, 30, -170],
             look: [-58, 1.2, -104],
             fov: 50,
             act: 'day',
             title: 'To Be Continued · Lesson 2',
-            audio: { beds: { room: 0.2 } }
+            audio: { beds: { room: 0.2, engine: 0.02, birds: 0.03 } }
           }
         ]
       }

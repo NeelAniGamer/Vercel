@@ -91,9 +91,13 @@ class RenderCore {
     
     init(canvas) {
         this.canvas = canvas;
+        // MSAA Is Prohibitively Expensive On Tile-Based Mobile GPUs; The
+        // Engine Already Caps Mobile DPR At 1.0 And Skips Post-Processing.
+        const isMobileGL = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+          || (window.innerWidth || 9999) <= 767;
         this.renderer = new THREE.WebGLRenderer({
             canvas: canvas,
-            antialias: true,
+            antialias: !isMobileGL,
             powerPreference: 'high-performance',
             alpha: false,
             depth: true,

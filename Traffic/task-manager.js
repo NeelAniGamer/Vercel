@@ -172,8 +172,8 @@
       // cannot measure must not award itself.
       tasks.push({
         id: 'departure',
-        title: 'Safe Workshop Departure',
-        desc: 'Exit the auto garage onto the road without colliding with side walls.',
+        title: 'Safe Garage Departure',
+        desc: 'Exit the garage onto Shanti Galli without colliding with side walls.',
         flag: `FLAG{DEPARTURE_L${lvId}_CLEAN}`,
         xp: 25,
         completed: false,
@@ -497,7 +497,7 @@
         <div class="task-drawer-header" onclick="window.game?.taskManager?.toggleDrawer()">
           <div class="tdh-left">
             <span class="tdh-current">${curLabel}</span>
-            <span class="tdh-title">OBJECTIVES (${completedCount}/${totalCount})</span>
+            <span class="tdh-title">Objectives (${completedCount}/${totalCount})</span>
           </div>
           <div class="tdh-right">
             <span class="tdh-pct">${pct}%</span>

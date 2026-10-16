@@ -174,6 +174,14 @@
       gain = Math.min(gain, 0.015);
     } else if (name === 'engine') {
       gain = Math.min(gain, 0.06);
+    } else if (name === 'birds') {
+      // Daytime outdoor air: synthesised chirps, not filtered noise (noise
+      // cannot chirp). This bed owns a chirp timer instead of a looped buffer;
+      // stop() tears it down via the birds flag below.
+      gain = Math.min(gain, 0.05);
+      startBirds(Math.max(0, gain));
+      beds[name] = { birds: true };
+      return beds[name];
     }
 
     src.connect(flt); flt.connect(g); g.connect(world);
@@ -185,10 +193,81 @@
     return beds[name];
   }
 
+  // ── Daytime birds ────────────────────────────────────────────────────────
+  // Synthesised chirps for day/dawn shots: 2-4 syllable phrases from a sine
+  // osc with a fast up-down sweep each, scheduled 0.5-2.2s apart with a random
+  // pan so the air feels wide rather than centred. Everything is guarded and
+  // timer-driven; stopBirds() kills the chain, and a chirp already in flight
+  // is 0.15s long so it dies on its own. Silent is always a valid state.
+  var birdTimer = 0;
+  var birdLevel = 0.04;
+
+  function birdChirp(t0, baseFreq, nSyl, pan) {
+    var c = ensure();
+    if (!c || !world) { return; }
+    try {
+      var usePan = null;
+      try {
+        if (typeof c.createStereoPanner === 'function') {
+          usePan = c.createStereoPanner();
+          usePan.pan.value = Math.max(-0.8, Math.min(0.8, pan || 0));
+          usePan.connect(world);
+        }
+      } catch (eP) { usePan = null; }
+      var out = usePan || world;
+      for (var i = 0; i < nSyl; i++) {
+        (function (k) {
+          var o = c.createOscillator();
+          o.type = 'sine';
+          var g = c.createGain();
+          var st = t0 + k * 0.14;
+          var f = baseFreq * (0.9 + Math.random() * 0.35);
+          o.frequency.setValueAtTime(Math.max(400, f * 0.9), st);
+          o.frequency.exponentialRampToValueAtTime(f * 1.35, st + 0.05);
+          o.frequency.exponentialRampToValueAtTime(Math.max(400, f * 0.85), st + 0.11);
+          g.gain.setValueAtTime(0.0001, st);
+          g.gain.exponentialRampToValueAtTime(Math.max(0.001, birdLevel), st + 0.02);
+          g.gain.exponentialRampToValueAtTime(0.0001, st + 0.12);
+          o.connect(g); g.connect(out);
+          try { o.start(st); o.stop(st + 0.15); } catch (eS) {}
+        })(i);
+      }
+    } catch (e) {}
+  }
+
+  function birdTick() {
+    birdTimer = 0;
+    try {
+      var c = ensure();
+      if (c && c.state === 'running' && Math.random() < 0.7) {
+        birdChirp(c.currentTime + 0.05,
+          2200 + Math.random() * 1400,
+          2 + Math.floor(Math.random() * 3),
+          Math.random() * 2 - 1);
+      }
+    } catch (e) {}
+    try {
+      birdTimer = setTimeout(birdTick, 500 + Math.random() * 1700);
+    } catch (e2) { birdTimer = 0; }
+  }
+
+  function startBirds(gain) {
+    birdLevel = Math.max(0.001, Math.min(0.05, gain == null ? 0.04 : gain));
+    ensure();
+    if (birdTimer) { return; }
+    try { birdTick(); } catch (e) {}
+  }
+
+  function stopBirds() {
+    try { if (birdTimer) { clearTimeout(birdTimer); } } catch (e) {}
+    birdTimer = 0;
+  }
+
   function stop(name) {
     var b = beds[name];
     if (!b) { return; }
     delete beds[name];
+    if (b.birds) { try { stopBirds(); } catch (eB) {} return; }
     try {
       var c = ensure();
       if (c) { b.gain.gain.setTargetAtTime(0, c.currentTime, 0.2); }

@@ -2852,7 +2852,7 @@
 
           const constraints = {
             video: {
-              deviceId: cameraSelect.value ? { exact: cameraSelect.value } : undefined,
+              deviceId: cameraSelect.value ? { ideal: cameraSelect.value } : undefined,
               width: { ideal: 1280 },
               height: { ideal: 720 },
               frameRate: { ideal: 60, min: 30 }

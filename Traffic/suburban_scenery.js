@@ -1174,19 +1174,20 @@
     const spawnDialogue = story.dialogue.find(d => d.triggerZ <= -2350);
     if (spawnDialogue) {
       setTimeout(() => {
-        triggeredSet.add(spawnDialogue.triggerZ);
+        triggeredSet.add(story.dialogue.indexOf(spawnDialogue));
         showDialogue(spawnDialogue);
       }, 1200);
     }
 
-    // Polling hook based on player Z position
+    // Polling hook based on player Z position. Keyed by dialogue INDEX, not
+    // triggerZ: shared trigger values used to kill every repeat line.
     if (game._storyTimer) {clearInterval(game._storyTimer);}
     game._storyTimer = setInterval(() => {
       if (!game.playing || !game.player) {return;}
       const pZ = game.player.position ? game.player.position.z : (game.vehicle ? game.vehicle.position.z : 0);
-      story.dialogue.forEach(d => {
-        if (!triggeredSet.has(d.triggerZ) && pZ >= d.triggerZ - 20 && pZ <= d.triggerZ + 80) {
-          triggeredSet.add(d.triggerZ);
+      story.dialogue.forEach((d, di) => {
+        if (!triggeredSet.has(di) && pZ >= d.triggerZ - 20 && pZ <= d.triggerZ + 80) {
+          triggeredSet.add(di);
           showDialogue(d);
         }
       });

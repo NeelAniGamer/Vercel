@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/col_void"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Top Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingBottom="12dp">
+
+        <Button
+            android:id="@+id/btnBackTraffic"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_btn_outline"
+            android:minWidth="0dp"
+            android:paddingHorizontal="14dp"
+            android:text="← Hub"
+            android:textAllCaps="false"
+            android:textColor="@color/col_ink"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mumbai Traffic Academy"
+                android:textColor="@color/col_ink"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Motor Vehicles Act &amp; Civic Safety Lab"
+                android:textColor="@color/col_dim"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvCivicBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_pill_emerald"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            android:text="Civic: 850"
+            android:textColor="@color/col_emerald"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Category Filter Strip -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/chipCatAll"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_pill_gold"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="7dp"
+                android:text="All Modules"
+                android:textColor="@color/col_signal"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/chipCatMva"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_btn_outline"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="7dp"
+                android:text="MVA Sections &amp; Fines"
+                android:textColor="@color/col_ink"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/chipCatMumbai"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_btn_outline"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="7dp"
+                android:text="Mumbai Streets"
+                android:textColor="@color/col_ink"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/chipCatEmergency"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_btn_outline"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="7dp"
+                android:text="Emergency &amp; Priority"
+                android:textColor="@color/col_ink"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Question Card -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_card_hero"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tvLawTag"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_pill_gold"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="4dp"
+                        android:text="MVA Section 129"
+                        android:textColor="@color/col_signal"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:id="@+id/tvQuestionCounter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Scenario 1 Of 10"
+                        android:textColor="@color/col_dim"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvQuestionPrompt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:lineSpacingExtra="4dp"
+                    android:text="Scenario Question"
+                    android:textColor="@color/col_ink"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Options -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/btnOpt0"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/bg_card_glass"
+                    android:gravity="start|center_vertical"
+                    android:padding="14dp"
+                    android:text="Option A"
+                    android:textAllCaps="false"
+                    android:textColor="@color/col_ink"
+                    android:textSize="14sp" />
+
+                <Button
+                    android:id="@+id/btnOpt1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/bg_card_glass"
+                    android:gravity="start|center_vertical"
+                    android:padding="14dp"
+                    android:text="Option B"
+                    android:textAllCaps="false"
+                    android:textColor="@color/col_ink"
+                    android:textSize="14sp" />
+
+                <Button
+                    android:id="@+id/btnOpt2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/bg_card_glass"
+                    android:gravity="start|center_vertical"
+                    android:padding="14dp"
+                    android:text="Option C"
+                    android:textAllCaps="false"
+                    android:textColor="@color/col_ink"
+                    android:textSize="14sp" />
+
+                <Button
+                    android:id="@+id/btnOpt3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:background="@drawable/bg_card_glass"
+                    android:gravity="start|center_vertical"
+                    android:padding="14dp"
+                    android:text="Option D"
+                    android:textAllCaps="false"
+                    android:textColor="@color/col_ink"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <!-- Explanation Box -->
+            <LinearLayout
+                android:id="@+id/boxExplanation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_card_glass"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tvFeedbackHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="✓ Correct Judgment (+25 XP)"
+                    android:textColor="@color/col_emerald"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvFeedbackBody"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:lineSpacingExtra="3dp"
+                    android:text="Legal explanation..."
+                    android:textColor="@color/col_dim"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/btnNextScenario"
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/bg_btn_signal"
+                    android:text="Next Scenario →"
+                    android:textAllCaps="false"
+                    android:textColor="@color/col_void"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

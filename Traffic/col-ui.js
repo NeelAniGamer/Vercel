@@ -600,16 +600,26 @@ window.addEventListener('col-apk-verified', function (e) {
 
     popup.innerHTML =
       '<div style="display:flex; justify-content:space-between; align-items:center;">' +
-      '<div style="font-weight:bold; font-size:1.1rem; color:var(--signal, #F2B84B);">Get the App</div>' +
+      '<div style="font-weight:bold; font-size:1.1rem; color:var(--signal, #F2B84B);">Get The App</div>' +
       '<button id="closeAppPopup" aria-label="Close" style="background:none; border:none; color:var(--dim, #8891AA); font-size:1.4rem; cursor:pointer; padding:0; line-height:1; min-width:44px; min-height:44px;">&times;</button>' +
       '</div>' +
-      '<div style="font-size:0.9rem; color:var(--dim, #8891AA); line-height:1.4;">Experience Class Of Learners natively on your mobile device for better performance.</div>' +
-      '<a href="/COL.apk" download style="display:block; text-align:center; background:var(--signal, #F2B84B); color:#070A14; text-decoration:none; padding:12px; border-radius:8px; font-weight:bold; font-size:0.95rem; margin-top:5px; transition: opacity 0.2s;">Download Android APK</a>'
+      '<div style="font-size:0.9rem; color:var(--dim, #8891AA); line-height:1.4;">Experience Class Of Learners Natively On Your Mobile Device For Better Performance.</div>' +
+      '<a href="/COL.apk" download style="display:block; text-align:center; background:var(--signal, #F2B84B); color:#070A14; text-decoration:none; padding:14px 12px; border-radius:8px; font-weight:bold; font-size:0.95rem; margin-top:5px; min-height:48px; box-sizing:border-box; transition: opacity 0.2s;">Download Android APK</a>'
 
     document.body.appendChild(popup)
 
+    // Keep The Floating Donate Badge From Covering The Download Button
+    try {
+      const bmc = document.getElementById('bmc-floating-badge')
+      if (bmc) {bmc.style.display = 'none'}
+    } catch (e) {}
+
     document.getElementById('closeAppPopup').addEventListener('click', function () {
       popup.remove()
+      try {
+        const bmc = document.getElementById('bmc-floating-badge')
+        if (bmc) {bmc.style.display = ''}
+      } catch (e) {}
     })
   }
 } catch (e) {}

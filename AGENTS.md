@@ -2,39 +2,47 @@
 
 ## Repository Map
 
-- Vercel serves committed root `dist/`; `vercel.json` runs `npm run build`. The site is static HTML/vanilla JS plus esbuild entry `react-src/GamePage.tsx` → `dist/Traffic/simulator-bundle.js`.
-- `Traffic/` is a separate npm app with its own lockfile. `Traffic/src` is an unwired TypeScript port: Vite enters at `Traffic/index.html` (which iframes the vanilla pages), while Electron loads `Driving.html`; generated outputs are `dist-web`, `dist`, and `dist-electron`, all excluded from the root build.
-- `Terra3D/` is standalone but has no lockfile; use `npm install` there, not `npm ci`. Its Vite build writes `Terra3D/dist`, which currently contains desktop output, so do not run it casually; root Vercel installs only root dependencies.
-- `traffic-ts/` is an unowned reference library with no manifest or build script; root build copies it raw, so do not treat it as the active runtime.
-- `build.js` is the source of truth for deployment: it clears/recreates root `dist/`, copies the deny-listed runtime tree and `Traffic/public/`, then bundles React. It excludes local agent state, secrets, source-only directories, selected large model paths, and the Traffic-local `col-auth.js`/`col-ui.css`; the pages resolve the root shared copies. Because this is a deny-list, review new files before building.
-- `build.js` and `.vercelignore` have separate filters; `.vercelignore` currently lacks `*.exe`, so review Vercel source-upload exclusions even though public `dist/` filters binaries.
-- `README.md`, `PROJECTS.md`, and `Traffic/CODEBASE.md` contain stale architecture/count/build claims; trust `build.js`, package scripts, and runtime files.
+- Vercel serves committed root `dist/`; `vercel.json` runs `npm ci` → `npm run build` → `dist/`. The site is static HTML/vanilla JS plus esbuild entry `react-src/GamePage.tsx` → `dist/Traffic/simulator-bundle.js`.
+- `build.js` is the source of truth for deployment: it validates scoped levels, deletes/recreates `dist/`, copies the deny-listed runtime tree plus `Traffic/public/`, then bundles React. Never hand-edit `dist/`. Because the filter is a deny-list, review new files before building.
+- `Traffic/` is a separate npm app with its own lockfile. The runtime is the vanilla pages (`Driving.html`, `Academy.html`); `Traffic/index.html` only iframes them for Vite dev. `Traffic/src` is an unwired TypeScript port (covered by typecheck, not served as the game); `dist-web`, `dist`, and `dist-electron` outputs are excluded from the root build.
+- The Traffic-local `col-auth.js`/`col-ui.css` (gitignored) plus `col-ui.js`, `col-router.js`, and `config.json` are excluded from `dist/`; the root shared copies are the source of truth.
+- `Terra3D/` is standalone with no lockfile; use `npm install` there, not `npm ci`. Do not run its Vite build casually — `Terra3D/dist` currently holds desktop/PyInstaller output (including a `.exe`).
+- `traffic-ts/` is an unowned reference library with no `package.json`; the root build copies it raw, so do not treat it as the active runtime.
+- `build.js` and `.vercelignore` are separate filters (output vs source upload); keep both exclusion lists aligned when adding sensitive or non-runtime paths.
+- `README.md` follows the current executable config; `PROJECTS.md` and `Traffic/CODEBASE.md` may describe superseded counts and entrypoints — trust `build.js`, package scripts, and runtime files.
 
 ## Commands
 
-- Use npm; Playwright tooling requires Node 20+. Root install: `npm ci`. Full production pipeline: `npm run build` (its `postbuild` runs production and security checks; direct `node build.js` skips them). `npm run verify:production` checks an existing `dist/` only and is not a browser smoke test; `npm run security:check` guards live-session identity, QR verifier storage, Electron sandbox flags, and CodeQL configuration.
-- `npm run build` validates only `level1,level5,level_custom` before copying. Use `node Traffic/tools/validate-levels.js` for the full report (it currently exposes a legacy backlog); keep the 54 numbered levels plus the custom/free-roam entries loadable.
-- JavaScript syntax check: `node --check <file>`; use a temporary `.mjs` copy for ES-module files when needed. For HTML/script-load changes, compare blocking vs `defer` tags and smoke-test both `Traffic/Driving.html` and `Academy.html`; no automated browser gate exists.
-- From `Traffic/`: `npm ci`, `npm run dev` (Vite on port 5173; serves the current vanilla pages), `npm run typecheck`, and `npm run build:web`; typecheck is permissive (`strict: false`). `build:electron` typechecks, while `electron:build`/`electron:portable` skip it. `npm run test:smoke` points to missing `pw_test.js`.
-- Root `npm run lint`, `npm run typecheck`, `npm test`, and `npm run test:smoke` have no checked-in root configs/tests (the smoke script requests an undefined `chromium` project); do not treat them as passing gates. `dist/` is committed. The build deletes/recreates it, so rebuild after source edits and never hand-edit generated output. `.github/workflows/` has CodeQL/DevSkim security scans, not a general build/test gate; Dependabot omits Terra3D.
+- Root install: `npm ci` (also what Vercel uses). Full pipeline: `npm run build` (its `postbuild` runs production, SEO, and security checks with `--allow-missing-sources`). `npm run verify:production` checks an existing `dist/` without rebuilding. Local clean-URL server: `node serve.js` (port 3000).
+- `npm run build` validates only `--scope=level1,level5,level_custom` before copying. Use `node Traffic/tools/validate-levels.js` for the full report (it currently exposes a legacy backlog). Keep all 56 level files (`level1`–`level54` plus `level_custom`, `level_freeram`) loadable.
+- Regression gates: `npm test` runs `test:smoke` + `test:stubs`. `test:smoke` is `node Traffic/pw_test.js` (boots every entry page with zero console errors, asserts local three.js resolution and `window.LVS` registration; needs `npx playwright install --with-deps chromium` once in a fresh env — Playwright resolves from root `node_modules`). `test:stubs` is `node Traffic/tools/check-startup-stubs.js` (dependency-free: rejects base64 payloads and dangling asset paths in the five startup stubs). CI `.github/workflows/traffic-smoke.yml` runs both on `Traffic/**` changes.
+- `npm run lint` is scoped by `eslint.config.js` (ignores `Traffic/src`, `traffic-ts`, `Terra3D`, `react-src` TS, and vendored libs). `npm run typecheck` covers `react-src` only. JavaScript syntax check: `node --check <file>`; use a temporary `.mjs` copy for ES-module files when needed.
+- From `Traffic/`: `npm ci`, `npm run dev` (Vite on 5173; presents the iframed vanilla pages), `npm run typecheck` (permissive: `strict: false`, `checkJs: false`), `npm run build:web` (typechecks), `npm run build:electron` (typechecks; preferred desktop build). `electron:build`/`electron:portable` skip typecheck.
+- `.github/workflows/` has the Traffic smoke gate plus DevSkim/Defender scans, not a general build gate; Dependabot covers `/` and `/Traffic` only (omits Terra3D).
 
 ## Non-Negotiable Product Rules
 
-- Title Case every user-facing string. Target 360px first; optimize mobile UI, use compositor-friendly `transform`/`opacity`, avoid full-viewport `background-position` animation, cap DPR, and lazy-load below-fold content.
-- `window.colUser` is live-session-only. LocalStorage profiles may support offline setup, but never present them as the signed-in user or use them for leaderboard identity; prefer `colUser.picture`, with initials only when no photo exists.
-- `TrafficDashboard.html`'s `col_user` fallback is a regression to remove, not a supported identity source.
+- Title Case every user-facing string. Target 360px first; use compositor-friendly `transform`/`opacity`, cap DPR, avoid full-viewport `background-position` animation, and lazy-load below-fold content.
+- `window.colUser` is live-session-only. Never present LocalStorage profiles as the signed-in user or use them for leaderboard identity; prefer `colUser.picture`, with initials only when no photo exists. `scripts/security-check.js` enforces this (no `col_user` writes in `col-auth.js`, no `col_user` reads in `TrafficDashboard.html`, no plaintext passwords in QR storage, Electron sandbox flags on).
 - Prioritize a readable, completable level over new features. Preserve Mumbai context, law-by-doing, a useful 30-second loop, autosave, and no forced replay.
-- Treat `Traffic/Models/` as large runtime-sensitive assets; review changes for deployment size and runtime impact.
+- Treat `Traffic/Models/` as large runtime-sensitive assets (~620 MB artifact); review deployment-size impact. The dead-model manifest is generated by `Traffic/tools/find-dead-models.js` and fail-closed against the `model-requests.json` browser capture — never hand-drop an entry or its level breaks silently at runtime.
 
 ## Traffic Runtime Contracts
 
 - `Driving.html` and `Academy.html` load `ui.js` and most runtime scripts deferred; `start.js` polls for `Game`, so new parse-time global consumers can break boot. Keep optional `ui` calls such as `showQuiz` and challan handlers guarded because UI availability varies.
-- Level files register in `window.LVS`; Academy renders from that registry, and `game_core.js` merges the selected `ui.cur` config into `mapCfg` with `Object.assign`.
-- `_checkTasks` supports `enter_vehicle`, `stop`, `reach`, `avoid`, and `toggle`; keep `Traffic/tools/validate-levels.js` target tables in sync when adding a type or target.
+- Level files register in `window.LVS`; Academy renders from that registry, and the selected `ui.cur` config is merged into `mapCfg` before scene construction.
+- Task completion has two homes: inline `_checkTasks` (`stop`, `reach`, `avoid`, `toggle`, `enter_vehicle`) and `task-evaluators.js`. The validator reads the evaluator file dynamically, so only the inline target tables need manual sync when adding a type or target.
 - Level-specific school/crossing positions come from `schoolX`, `schoolZ`, `zebraZ`, and `flasherZ`; the legacy no-`schoolZ` fallback remains in `game_core.js`, so do not copy its fixed coordinates into new levels.
-- `game_core.completeLevel` records `S.comp` and wallet rewards; the quiz/results flow in `ui.js` owns `S.total`, `civicScore`, and badges with `_counted` idempotency. Run saves use `traffic_run_<id>` with 30-minute freshness; syllabus ticks live in `S.sylViewed`.
+- `game_core.completeLevel` records `S.comp` and wallet rewards; the quiz/results flow in `ui.js` owns `S.total`, `civicScore`, and badges with `_counted` idempotency. Run saves use `traffic_run_<id>`; syllabus ticks live in `S.sylViewed`.
 - NPC behavior comes from `npc-ai.js` profiles, `npcMix`/`pedMix`, and scripted `profileKey`; silence zones suppress horns and NPCs slow near `schoolZ`.
-- Dashboard ranks must use dense ties, escape names, scope tabs on first paint, and color podiums by place; data order is `certificates` → `user_profiles` (then `profiles`), with `wallets` and `badges`.
+- Dashboard data order is `certificates` → `user_profiles` (then `profiles`), with `wallets` for civic data and `badges` for badge rankings; ranks 1/2/3 get gold/silver/bronze tiers.
+
+## Traffic Film Pipeline (Story Mode)
+
+- Prologues play on dedicated stage maps (`Traffic/story/stage.js`), never the playable map; beats play on the playable map without rebuilding it. Stage maps declare `route: []`, no NPCs/peds/roadProblems; the signal head is film dressing so the engine cycle cannot override it.
+- Night-act lighting lives in the stage `acts` table and must stay darker than day (ambient ~0.30, sun ~0.38); brighter values wash the film to daylight gray. The letterbox is pinned to whole-film progress in `cutscene.js`, not per-shot.
+- Film subtitles should already exist verbatim in the level's `story.dialogue[]`; cast colors/positions are blocking (narrative). Validate with `node Traffic/tools/validate-levels.js` (full, 0 errors/warnings expected).
+- To watch the film headlessly: serve the repo root, load `Traffic/Driving.html` in Chromium with SwiftShader, poll `window.Cutscene.isActive()` / `state()` for the shot index, and screenshot. `page.screenshot` on SwiftShader lags several seconds behind the sampled shot index — correlate loosely.
 
 ## Commit Attribution
 

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CastFlow Relay Viewer</title>
+<!--
+  Drop-in static viewer for your site (e.g. Vercel).
+  Usage:  viewer-standalone.html?server=https://example.com/cast&room=living-room
+  It polls your Flask relay (relay-server/server.py):
+      GET {server}/api/rooms/{room}/frame
+  No build step, no dependencies except a font. <img> polling needs
+  no CORS headers, so the relay works as-is.
+-->
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#0F1118; --teal:#00BFA5; --dim:#9AA0A6; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; background:var(--bg); color:#E8EAED;
+    font-family:'Outfit',system-ui,sans-serif; overflow:hidden; }
+  .ambient { position:fixed; inset:0; pointer-events:none;
+    background:
+      radial-gradient(600px 400px at 15% 10%, rgba(0,191,165,.12), transparent 60%),
+      radial-gradient(700px 500px at 85% 90%, rgba(66,165,245,.10), transparent 60%); }
+  header { position:fixed; top:0; left:0; right:0; z-index:5;
+    display:flex; align-items:center; gap:12px; padding:14px 20px;
+    background:rgba(255,255,255,.04); backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px); border-bottom:1px solid rgba(255,255,255,.08); }
+  header .brand { font-weight:800; letter-spacing:.5px; color:var(--teal); }
+  header .room { font-size:.85rem; color:var(--dim); }
+  header .pill { margin-left:auto; font-size:.75rem; padding:4px 12px; border-radius:999px;
+    border:1px solid rgba(255,255,255,.12); color:var(--dim); }
+  header .pill.live { color:#0F1118; background:var(--teal); border-color:var(--teal); font-weight:600; }
+  main { position:fixed; inset:57px 0 0 0; display:flex; align-items:center; justify-content:center; }
+  img#v { max-width:100vw; max-height:100%; object-fit:contain; background:#000; display:none; }
+  .empty { text-align:center; color:var(--dim); max-width:420px; padding:24px; }
+  .empty h1 { font-size:1.4rem; color:#fff; margin-bottom:8px; }
+  .empty p { font-size:.9rem; line-height:1.6; }
+  .empty code { display:block; margin-top:12px; font-size:.8rem; color:var(--teal);
+    background:rgba(0,191,165,.08); border:1px solid rgba(0,191,165,.25);
+    border-radius:8px; padding:8px 12px; word-break:break-all; }
+  form.setup { display:flex; gap:8px; margin-top:16px; }
+  form.setup input { flex:1; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12);
+    color:#fff; border-radius:8px; padding:10px 12px; font-size:.85rem; font-family:inherit; }
+  form.setup button { background:var(--teal); color:#0F1118; border:none; border-radius:8px;
+    padding:10px 18px; font-weight:700; cursor:pointer; font-family:inherit; }
+</style>
+</head>
+<body>
+<div class="ambient"></div>
+<header>
+  <span class="brand">CastFlow Relay</span>
+  <span class="room" id="roomLabel">no room</span>
+  <span class="pill" id="status">waiting</span>
+</header>
+<div id="filebar" style="display:none;position:fixed;top:57px;left:0;right:0;z-index:5;text-align:center;padding:8px;background:rgba(200,240,75,.10);border-bottom:1px solid rgba(200,240,75,.3);font-size:14px"><a id="filelink" href="#" style="color:#C8F04B">Download shared file</a></div>
+<main>
+  <img id="v" alt="Relayed screen">
+  <div class="empty" id="empty">
+    <h1>Watch a CastFlow screen</h1>
+    <p>Open this page with your relay details, or fill them in:</p>
+    <code id="hint">viewer-standalone.html?server=https://example.com/cast&amp;room=living-room</code>
+    <form class="setup" id="setup">
+      <input id="server" placeholder="https://example.com/cast">
+      <input id="room" placeholder="room">
+      <button type="submit">Watch</button>
+    </form>
+  </div>
+</main>
+<script>
+(function () {
+  const q = new URLSearchParams(location.search);
+  const img = document.getElementById('v');
+  const empty = document.getElementById('empty');
+  const pill = document.getElementById('status');
+  const roomLabel = document.getElementById('roomLabel');
+  let server = (q.get('server') || '').replace(/\/$/, '');
+  let room = q.get('room') || '';
+  let frames = 0, misses = 0;
+
+  document.getElementById('setup').addEventListener('submit', (e) => {
+    e.preventDefault();
+    server = document.getElementById('server').value.trim().replace(/\/$/, '');
+    room = document.getElementById('room').value.trim();
+    if (server && room) {
+      history.replaceState(null, '', `?server=${encodeURIComponent(server)}&room=${encodeURIComponent(room)}`);
+      tick();
+    }
+  });
+
+  function url() { return `${server}/api/rooms/${encodeURIComponent(room)}/frame?t=${Date.now()}`; }
+
+  function tick() {
+    if (!server || !room) return;
+    roomLabel.textContent = 'room ' + room;
+    empty.style.display = 'none';
+    img.style.display = 'block';
+    img.src = url();
+  }
+  img.onload = () => {
+    frames++; misses = 0;
+    pill.textContent = `live · ${frames} frames`;
+    pill.classList.add('live');
+    setTimeout(tick, 100); // ~10fps viewer-side; phone pushes at its own relay fps
+  };
+  img.onerror = () => {
+    misses++;
+    pill.textContent = 'waiting for phone…';
+    pill.classList.remove('live');
+    setTimeout(tick, misses > 5 ? 2000 : 800);
+  };
+  // Shared-file bar (relay file parity): poll room info, show download link.
+  setInterval(() => {
+    if (!server || !room) return;
+    fetch(`${server}/api/rooms/${encodeURIComponent(room)}/info`)
+      .then(r => r.json()).then(i => {
+        const bar = document.getElementById('filebar');
+        if (i.file) {
+          bar.style.display = 'block';
+          const a = document.getElementById('filelink');
+          a.textContent = `Download: ${i.file.name} (${Math.round(i.file.bytes / 1024)} KB)`;
+          a.href = `${server}/api/rooms/${encodeURIComponent(room)}/file`;
+        } else {
+          bar.style.display = 'none';
+        }
+      }).catch(() => {});
+  }, 3000);
+  if (server && room) tick();
+})();
+</script>
+</body>
+</html>

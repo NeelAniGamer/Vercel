@@ -23,7 +23,8 @@ const excludedFiles = new Set([
   'render_production_videos.py', 'perceptus_agent.py', 'local_server.js',
   'serve.js', 'server.js', 'package.json', 'package-lock.json', 'tsconfig.json',
   'opencode.json', 'skills-lock.json', 'eslint.config.js', 'AdvancedTypingInstructor.exe', 'AdvancedTypingInstructor_Setup.exe',
-  'AdvancedTypingInstructor_1.4.0_all.deb', 'AdvancedTypingInstructor-Linux.tar.gz', 'bmcbrand.zip', 'build_col_apk.bat'
+  'AdvancedTypingInstructor_1.4.0_all.deb', 'AdvancedTypingInstructor-Linux.tar.gz', 'AdvancedTypingInstructor.apk',
+  'CoL_Ecosystem_Comprehensive_Apps_Report.pdf', 'bmcbrand.zip', 'build_col_apk.bat'
 ]);
 
 const excludedFilePatterns = [
@@ -31,7 +32,10 @@ const excludedFilePatterns = [
   /\.(?:db|sqlite|sqlite3)$/i,
   /\.(?:exe|msi|dmg|appimage|pkg)$/i,
   /\.bak$/i,
-  /^vite\.config\.(?:ts|mts|cts|js|mjs|cjs)$/i
+  /^vite\.config\.(?:ts|mts|cts|js|mjs|cjs)$/i,
+  /\.(?:fbx|obj|mtl|blend|blend1|max|3ds|dae|mb|tscn|gd)$/i,
+  /\.pdf$/i,
+  /\.(?:test|spec)\.[jt]sx?$/i
 ];
 
 // These model folders are unreferenced by the browser runtime and contain
@@ -45,7 +49,10 @@ const excludedPaths = new Set([
   // dump costs the deployed game nothing. build.js is a DENY-list, which means an
   // unlisted 1.3 GB directory is copied verbatim on every build; this entry is the
   // only thing standing between that and a 1.3 GB deploy artifact.
+  'Traffic/src',
   'Traffic/Models And SFX',
+  'Traffic/Models/house_interior',
+  'Traffic/Models/high_school.glb',
   'Traffic/Models/sofa',
   'Traffic/Models/kenney_platformer-pack-remastered',
   'Traffic/Models/uploads_files_3963923_Metal+and+Concrete+Barrier+Textures',

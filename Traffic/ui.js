@@ -4565,13 +4565,13 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
 
 const _genTex = (type) => {
   if (type === 'asphalt') {
-    const tex = new THREE.TextureLoader().load('textures/road.png')
+    const tex = new THREE.TextureLoader().load('textures/road.webp')
     tex.wrapS = tex.wrapT = THREE.RepeatWrapping
     tex.repeat.set(4, 4)
     return tex
   }
   if (type === 'building') {
-    const tex = new THREE.TextureLoader().load('textures/building.png')
+    const tex = new THREE.TextureLoader().load('textures/building.webp')
     tex.wrapS = tex.wrapT = THREE.RepeatWrapping
     tex.repeat.set(2, 2)
     return tex
@@ -5526,6 +5526,8 @@ function _buildKayKitRig(PM, opts) {
   if (tint) {
     body.traverse((c) => {
       if (!c.isMesh || !c.material) { return; }
+      const n = (c.name || '').toLowerCase();
+      if (!n.includes('body') && !n.includes('torso')) { return; }
       c.material = Array.isArray(c.material)
         ? c.material.map(m => m.clone())
         : c.material.clone();
@@ -5792,8 +5794,8 @@ const _buildHuman = (isPlayer = false, appearance) => {
     const charKeys = isFemale ? femaleKeys : maleKeys
     const preferredKey = charKeys[Math.floor(Math.random() * charKeys.length)]
     const charGLB = PM[preferredKey]
-
-    if (charGLB && charGLB.scene) {
+    const hasAnimations = charGLB && charGLB.animations && charGLB.animations.length > 0
+    if (!app.procedural && !app.seated && charGLB && charGLB.scene && hasAnimations) {
       const charScene = charGLB.scene.clone(true)
       charScene.scale.setScalar(sk * 0.90)
       charScene.rotation.y = Math.PI

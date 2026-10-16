@@ -90,7 +90,10 @@
     '#cutscene-root .cs-skip-btn:hover{background:rgba(22,33,58,.98);border-color:#5ed3f0;transform:scale(1.05);box-shadow:0 6px 28px rgba(94,211,240,.5);}' +
     '#cutscene-root .cs-skip-btn:active{transform:scale(.97);}' +
     '#cutscene-root .cs-skip-icon{font-size:14px;color:#5ed3f0;}' +
-    'body.cs-playing #hud,body.cs-playing #hudbar,body.cs-playing #hwrap,body.cs-playing #player-hud-card,body.cs-playing #tasks-container,body.cs-playing #objective-overlay,body.cs-playing #kid-pedals,body.cs-playing #kid-steer,body.cs-playing #enter-vehicle-btn,body.cs-playing .hud-dashboard-card,body.cs-playing #mini-map,body.cs-playing #minimap,body.cs-playing .mobile-controls,body.cs-playing #play-overlay,body.cs-playing .nav-login-btn,body.cs-playing .lp-modal,body.cs-playing #game-briefing,body.cs-playing #gta-briefing-modal,body.cs-playing #gta-mission-intro,body.cs-playing .gta-intro-overlay,body.cs-playing #daily-bonus-modal,body.cs-playing [class*="daily-bonus"],body.cs-playing .action-btn{display:none !important;}';
+    'body.cs-playing #hud,body.cs-playing #hudbar,body.cs-playing #hwrap,body.cs-playing #player-hud-card,body.cs-playing #tasks-container,body.cs-playing #objective-overlay,body.cs-playing #kid-pedals,body.cs-playing #kid-steer,body.cs-playing #enter-vehicle-btn,body.cs-playing .hud-dashboard-card,body.cs-playing #mini-map,body.cs-playing #minimap,body.cs-playing .mobile-controls,body.cs-playing #play-overlay,body.cs-playing .nav-login-btn,body.cs-playing .lp-modal,body.cs-playing #game-briefing,body.cs-playing #gta-briefing-modal,body.cs-playing #gta-mission-intro,body.cs-playing .gta-intro-overlay,body.cs-playing #daily-bonus-modal,body.cs-playing [class*="daily-bonus"],body.cs-playing .action-btn{display:none !important;}' +
+    '@media (max-width:480px){#cutscene-root .cs-title{letter-spacing:.1em;font-size:clamp(13px,3.8vw,18px);padding:0 14px;top:34%;text-wrap:balance;}}' +
+    '@media (max-width:480px){#cutscene-root .cs-skip-btn{padding:8px 14px;font-size:11px;right:12px;top:max(10px,calc(6.5vh + 8px));}}' +
+    '@media (max-width:480px){#cutscene-root .cs-transceiver{bottom:calc(6.5vh + 10px);padding:10px 14px;gap:10px;}}';
 
   function ensureStyle() {
     if (document.getElementById(STYLE_ID)) { return; }
@@ -178,9 +181,9 @@
         near: i % 3 === 0,
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        r: 1.2 + Math.random() * 3.2,
-        speed: 0.18 + Math.random() * 0.45,
-        alpha: 0.22 + Math.random() * 0.36
+        r: 0.8 + Math.random() * 2.0,
+        speed: 0.30 + Math.random() * 0.60,
+        alpha: 0.15 + Math.random() * 0.25
       });
     }
   }
@@ -471,7 +474,7 @@
     { re: /iyer|elderly|mummy/i, name: 'Mrs. Meenakshi Iyer', dept: 'Resident Eyewitness', icon: '👵', col: '#10b981' },
     { re: /driver|fortuner/i, name: 'Fortuner Escort Driver', dept: 'Tinted VIP Convoy', icon: '🕶️', col: '#ef4444' },
     { re: /vip|passenger|shadow/i, name: 'Shadowed VIP Passenger', dept: 'Unidentified Official', icon: '⚠️', col: '#dc2626' },
-    { re: /wireless|dispatch|control/i, name: 'Mumbai Police Wireless', dept: 'Bandra Central Control', icon: '📻', col: '#60a5fa' }
+    { re: /wireless|dispatch|control|radio/i, name: 'Mumbai Police Wireless', dept: 'Bandra Central Control', icon: '📻', col: '#60a5fa' }
   ];
 
   function getCharacterMeta(speaker) {
@@ -538,7 +541,13 @@
           if (mesh && (d.id === 'vikram' || d.withRider) && typeof window._buildCutsceneRider === 'function') {
             var rider = window._buildCutsceneRider();
             if (rider) {
-              rider.position.set(0, 0.42, -0.2);
+              // Seated on the saddle, not standing on the pegs: the old mark
+              // put feet at y=0.42 and the crane read a man standing ON the bike.
+              // The guard-variant rig is also squashed to a seated crouch —
+              // there is no sitting clip, and a standing rider breaks every
+              // wide shot he is in.
+              rider.position.set(0, 0.12, -0.05);
+              rider.scale.set(0.92, 0.62, 0.95);
               mesh.add(rider);
               mesh.userData = mesh.userData || {};
               mesh.userData.rider = rider;
@@ -581,7 +590,8 @@
             try {
               if (mesh.parent) { mesh.parent.updateMatrixWorld(true); }
               mesh.updateMatrixWorld(true);
-              var lBox = new THREE.Box3().setFromObject(mesh);
+              var lBox = new THREE.Box3();
+              mesh.traverse(function (o) { if (o.isMesh) { try { lBox.expandByObject(o); } catch (eM) {} } });
               var lSz = new THREE.Vector3(); lBox.getSize(lSz);
               var lCt = new THREE.Vector3(); lBox.getCenter(lCt);
 
@@ -652,23 +662,37 @@
               // bay — a black blob half-buried in the bonnet, visible in the shot
               // that cuts to the interior. Seat them in the cabin instead: left of
               // centre (this is left-hand traffic), at roughly seated hip height.
+              //
+              // Measured MESH-ONLY: the spotlight target added above sits 22 m
+              // ahead and would otherwise stretch the Box3 to 23 m and strand the
+              // seat math. The bust itself is ~1.4 tall, so it is scaled to fit
+              // under a 1.7 m roofline.
               try {
                 mesh.updateMatrixWorld(true);
-                var dBox = new THREE.Box3().setFromObject(mesh);
+                var dBox = new THREE.Box3();
+                mesh.traverse(function (o) { if (o.isMesh) { try { dBox.expandByObject(o); } catch (eM) {} } });
                 var dSz = new THREE.Vector3(); dBox.getSize(dSz);
                 var dCt = new THREE.Vector3(); dBox.getCenter(dCt);
                 var dlc = mesh.worldToLocal(dCt.clone());
+                var dMinL = mesh.worldToLocal(dBox.min.clone());
+                driver.scale.setScalar(0.68);
                 driver.position.set(
                   dlc.x - dSz.x * 0.16,
-                  dlc.y + dSz.y * 0.14,
-                  dlc.z + dSz.z * 0.04
+                  dMinL.y + dSz.y * 0.12,
+                  dlc.z + dSz.z * 0.02
                 );
               } catch (eDriverSeat) {
-                driver.position.set(0, 0.6, 0.2);
+                try { driver.scale.setScalar(0.68); } catch (eS) {}
+                driver.position.set(0, 0.15, 0.2);
               }
               mesh.add(driver);
               mesh.userData = mesh.userData || {};
               mesh.userData.driver = driver;
+              driver.visible = false;
+              // The bust only belongs in interior/dialogue shots (prologue idx 3-5):
+              // in exterior two-handers it reads as a black box floating off
+              // the cabin. applyShot() enforces this.
+              try { driver.userData = driver.userData || {}; driver.userData.onlyShot = 5; } catch (eOS) {}
             }
           }
         } else {
@@ -924,7 +948,27 @@
     // Bars ease in over the first 12% and out over the last 12% of the shot.
     var inP = Math.min(1, p / 0.12);
     var outP = Math.min(1, (1 - p) / 0.12);
-    var bar = Math.min(inP, outP);
+    var shotBar = Math.min(inP, outP);
+    // ...but the LETTERBOX is pinned to the FILM, not the shot: collapsing the
+    // bars at every cut made the frame breathe and the film read as a slideshow.
+    // Film progress from the script durations + the shot clock.
+    var filmP = p;
+    try {
+      var sc = (state && state.script) || [];
+      if (sc.length > 1) {
+        var tot = 0, bef = 0, si, sdd;
+        var sIdx = (state && state.idx) || 0;
+        for (si = 0; si < sc.length; si++) {
+          sdd = Math.max(0.05, ((sc[si] && sc[si].dur) || 3));
+          if (si < sIdx) { bef += sdd; }
+          tot += sdd;
+        }
+        var nowMs = (window.performance && performance.now) ? performance.now() : Date.now();
+        var elS = Math.max(0, (nowMs - (state.shotStartedAt || nowMs)) / 1000);
+        if (tot > 0) { filmP = (bef + elS) / tot; }
+      }
+    } catch (eF) {}
+    var bar = Math.min(Math.min(1, filmP / 0.03), Math.min(1, (1 - filmP) / 0.03));
     var sy = window.Shots ? window.Shots.ease('outCubic', bar) : bar;
     if (ov.barTop) { ov.barTop.style.transform = 'scaleY(' + sy + ')'; }
     if (ov.barBot) { ov.barBot.style.transform = 'scaleY(' + sy + ')'; }
@@ -981,11 +1025,17 @@
     // screen while the audio still played: the exact failure that reads as
     // "the subtitles are broken" rather than "a property was renamed".
     if (ov.transceiver) {
-      var line = shot.sub || (state.subShown || null);
+      var line = shot.sub || null;
+      // `sayThen` is the answer inside the SAME shot (audio.js voices it at
+      // `at`, a fraction of the shot). The caption has to swap with the voice,
+      // or the viewer hears a second speaker while reading the first one's line.
+      if (shot.sayThen && shot.sayThen.line && p >= (shot.sayThen.at || 0)) {
+        line = shot.sayThen;
+      }
       if (line) {
-        // Fade with the same envelope the bars use, so the card does not survive
-        // a hard cut into a shot that has no dialogue.
-        var sp = bar;
+        // Fade with the SHOT envelope (dialogue belongs to shots), while the
+        // letterbox above stays pinned to the film.
+        var sp = shotBar;
         setSubtitle(ov, line);
         ov.transceiver.style.opacity = String(Math.max(0, Math.min(1, sp)));
         ov.transceiver.style.transform = 'translateX(-50%) translateY(' + ((1 - Math.max(0, Math.min(1, sp))) * 10) + 'px)';
@@ -1046,11 +1096,13 @@
       var isNight = !!(game && game.mapCfg && (game.mapCfg.isNight || game.mapCfg.mode === 'night'));
       var lights = [];
       if (isNight) {
-        // Balanced cinematic Mumbai night: luminous sky ambient fill, clear cool moon key, warm sodium bounce
-        var ambNight = new THREE.AmbientLight(0x405575, 0.70);
-        var moonKey = new THREE.DirectionalLight(0x93c5fd, 0.85);
+        // Balanced cinematic Mumbai night: luminous sky ambient fill, clear cool moon key, warm sodium bounce.
+        // Kept LOW on purpose: the stage act already lights the set, and this
+        // stack used to total ~1.0 ambient and wash the film to daylight gray.
+        var ambNight = new THREE.AmbientLight(0x405575, 0.22);
+        var moonKey = new THREE.DirectionalLight(0x93c5fd, 0.35);
         moonKey.position.set(20, 45, 15);
-        var sodiumBounce = new THREE.DirectionalLight(0xf59e0b, 0.40);
+        var sodiumBounce = new THREE.DirectionalLight(0xf59e0b, 0.25);
         sodiumBounce.position.set(-20, 25, -20);
         game.scene.add(ambNight);
         game.scene.add(moonKey);
@@ -1382,7 +1434,7 @@
           ACTIVE._fallenOfficerMesh = fo;
         }
       }
-    if (ACTIVE.cast && ACTIVE.cast.actors && ACTIVE.cast.actors.vikram) {
+    } else if (ACTIVE.cast && ACTIVE.cast.actors && ACTIVE.cast.actors.vikram) {
         var vBike2 = ACTIVE.cast.actors.vikram;
         if (vBike2.rotation.z !== 0) {
           vBike2.rotation.z = 0;
@@ -1396,7 +1448,6 @@
         try { ACTIVE.game.scene.remove(ACTIVE._fallenOfficerMesh); } catch (e) {}
         ACTIVE._fallenOfficerMesh = null;
       }
-    }
 
     // ── Aftermath-only actors ──────────────────────────────────────────
     // Toggled on EVERY shot, not just on the transition, because the cast
@@ -1416,6 +1467,16 @@
           if (!actor) { continue; }
           var aud = actor.userData;
           if (aud && aud.aftermathOnly) { actor.visible = !!shot.aftermath; }
+          // Cast-attached figures (driver bust, passenger) that belong to specific
+          // shots only. Cockpit glass, lamps and cones stay: hiding the whole
+          // bust group would also kill the headlights mid-escape.
+          try {
+            var drv = aud && aud.driver;
+            if (drv) {
+              var showFig = (ACTIVE.idx === 3 || ACTIVE.idx === 4 || ACTIVE.idx === 5);
+              drv.visible = showFig;
+            }
+          } catch (eOSV) {}
 
           // Brake lights follow DECELERATION, which is measurable and cheap.
           //
@@ -2028,6 +2089,27 @@
     var script = resolveScript(lv);
     if (!script) { return false; }
     var started = false;
+    var stage = stageFor(lv.id);
+    var stageBuilt = false;
+    // Same two-pass contract as begin(): the prologue is staged on its own film
+    // map. Replaying it over the current daytime playable map put the 03:14 AM
+    // rain scene on a sunny street with checkpoint rings and no crime-scene set.
+    if (stage && stage.map && typeof game._buildScene === 'function') {
+      try {
+        game._buildScene(lv.mode, stage.map);
+        stageBuilt = true;
+        try {
+          if (window.Cinematics && typeof window.Cinematics.dressStage === 'function') {
+            window.Cinematics.dressStage(game, stage, story);
+          }
+        } catch (e3) {
+          console.warn('[Cutscene] restart(): dressStage failed — continuing with bare map:', e3);
+        }
+      } catch (eS) {
+        console.warn('[Cutscene] restart(): stage build failed — replaying on the playable map:', eS);
+        stageBuilt = false;
+      }
+    }
     try {
       started = start(game, script, {
         level: lv,
@@ -2041,6 +2123,15 @@
     } catch (e) {
       console.warn('[Cutscene] restart() failed:', e);
       started = false;
+    }
+    if (!started && stageBuilt) {
+      // Never leave the player on the film set.
+      try { game._buildScene(lv.mode); } catch (e5) {}
+    }
+    if (started && ACTIVE) {
+      // finish() swaps back to the playable map when ACTIVE.stage is set.
+      ACTIVE.stage = stageBuilt ? stage : null;
+      ACTIVE.levelConfig = lv;
     }
     // Put the briefing card back when the replay finishes, so the flow resumes
     // exactly where it left off instead of dropping the player into gameplay.

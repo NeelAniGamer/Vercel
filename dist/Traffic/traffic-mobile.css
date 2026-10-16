@@ -976,9 +976,99 @@ canvas#gc {
 /* ── Tap target: inline "Log in" link in auth subtitle (38x42 → 44px) ── */
 @media (pointer: coarse) {
   .remote-auth-subtitle a {
-    min-height: 44px;
-    padding: 8px 6px;
-    display: inline-flex;
-    align-items: center;
+    min-height: 44px !important;
+    min-width: 44px !important;
+    padding: 10px 8px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   15. MOBILE AUDIT FIXES — 360px Tap Targets, Popup Overlaps, Guards
+   Added 2026-10-14 From Real 360×740 / 390×844 / 412×915 Device Tests.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* 15a. 44px Minimum Tap Targets (Measured Failures At 360px) */
+@media (pointer: coarse) {
+  /* Academy "Get Started" Measured 140×40 */
+  #enter-academy-btn {
+    min-height: 44px !important;
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+  }
+  /* Dashboard Hamburger Measured 38×38 */
+  .btn-menu {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+  }
+  /* App Popup Download Link Measured 278×40 */
+  #colAppPopup a[href="/COL.apk"] {
+    min-height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  /* Donate Badge Measured 150×32 — Expand Hit Area Without Moving Visual */
+  .bmc-floating-badge a {
+    padding: 6px !important;
+    margin: -6px !important;
+  }
+}
+
+/* 15b. App Popup Never Sits Under The Donate Badge Or Bottom Nav */
+#colAppPopup {
+  max-height: calc(100dvh - 160px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+body:has(#colAppPopup) #bmc-floating-badge,
+body:has(#colAppPopup) .bmc-floating-badge {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+@media (max-width: 480px) {
+  #colAppPopup {
+    left: 12px !important;
+    right: 12px !important;
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
+
+/* 15c. Rotate Gate Is Portrait-Only — Never Block Landscape Play */
+@media (orientation: landscape) {
+  #rotate-device-overlay,
+  #landscape-enforcer {
+    display: none !important;
+  }
+}
+
+/* 15d. Driving Cutscene Title Stays Compact On 360px */
+@media (max-width: 480px) {
+  #cutscene-root .cs-title {
+    letter-spacing: 0.1em;
+  }
+  .cs-skip-btn,
+  #cutscene-root .cs-skip-btn {
+    scale: 0.9;
+    transform-origin: top right;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   16. MOBILE RENDER BUDGET — Skip Off-Screen Work On Phones
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* 16a. Level Cards + Syllabus Rows Render Only Near The Viewport.
+   intrinsic-size Placeholders Keep The Scrollbar Stable. */
+@media (max-width: 900px) {
+  .lcard,
+  .syl-item,
+  .bento-card {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 160px;
   }
 }

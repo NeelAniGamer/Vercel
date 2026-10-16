@@ -10297,12 +10297,17 @@
 
         const m = info?.mission;
         const c = info?.campaign;
+        // Prefer the level's own story (levels/level*.js) over the legacy
+        // course.js mission: the card used to show the wrong place, people and
+        // time vs the film. Falls back silently for older levels.
+        const lv = (typeof window !== 'undefined' && window.LVS && typeof window.LVS.find === 'function') ? window.LVS.find(l => l.id === levelId) : null;
+        const story = lv && lv.story ? lv.story : null;
 
         const modEl = document.getElementById('gta-intro-module');
         if (modEl) modEl.textContent = (c?.name || 'MUMBAI PATROL').toUpperCase();
 
         const titleEl = document.getElementById('gta-intro-title');
-        if (titleEl) titleEl.textContent = m?.title ? m.title.toUpperCase() : `MISSION ${levelId}`;
+        if (titleEl) titleEl.textContent = story && story.title ? story.title.toUpperCase() : (m?.title ? m.title.toUpperCase() : `MISSION ${levelId}`);
 
         const rewardEl = document.getElementById('gta-intro-reward');
         if (rewardEl) {
@@ -10314,7 +10319,12 @@
         const speakerEl = document.getElementById('gta-speaker-name');
         const lineEl = document.getElementById('gta-speaker-line');
 
-        if (m?.characterDialogue && m.characterDialogue.length > 0) {
+        if (story) {
+          if (modEl) modEl.textContent = 'MUMBAI 4000';
+          if (speakerEl) speakerEl.textContent = 'Insp. Arjun Kadam';
+          if (lineEl) lineEl.textContent = story.briefing || '"Drive safely and follow Mumbai traffic regulations."';
+          if (avatarEl) avatarEl.textContent = '👮';
+        } else if (m?.characterDialogue && m.characterDialogue.length > 0) {
           const d0 = m.characterDialogue[0];
           if (speakerEl) speakerEl.textContent = d0.speaker;
           if (lineEl) lineEl.textContent = d0.line;
@@ -10326,7 +10336,7 @@
         }
 
         const pObjEl = document.getElementById('gta-obj-primary');
-        if (pObjEl) pObjEl.textContent = m?.objectives?.primary || m?.briefing || 'Complete all checkpoints.';
+        if (pObjEl) pObjEl.textContent = (lv && lv.pract) || m?.objectives?.primary || m?.briefing || 'Complete all checkpoints.';
 
         const sObjEl = document.getElementById('gta-obj-secondary');
         if (sObjEl) {

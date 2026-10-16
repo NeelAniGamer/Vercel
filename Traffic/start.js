@@ -70,7 +70,6 @@ window.ASSET_MANIFEST = {}
   M.bmw_m4 = glb('Models/bmw_m4_widebody__www.vecarz.com.glb');
   M.nilu_27 = glb('Models/nilu_27_concept_2024__www.vecarz.com.glb');
   M.cyberpunk_bike = glb('Models/cyberpunk_bike.glb');
-  M.lowpoly_cars = fbx('Models/uploads_files_3354643_LowPoly_Cars_01_fbx.FBX');
 
   M.road_straight = glb(roadKit + 'road-straight.glb'); M.road_intersect = glb(roadKit + 'road-intersection.glb')
   M.road_cross = glb(roadKit + 'road-crossroad.glb'); M.road_cross_path = glb(roadKit + 'road-crossroad-path.glb')
@@ -80,7 +79,7 @@ window.ASSET_MANIFEST = {}
   M.road_avenue = { path: 'Models/road__avenue__street/scene.gltf', fmt: 'gltf' }
   M.city_map_sample = glb('Models/city_map_sample.glb'); // Sample: 3D Urban Terrain Map
   M.building_high_school = glb('Models/building_high_school.glb'); // High School Campus Architecture
-  M.high_school = glb('Models/high_school.glb');
+  M.high_school = M.building_high_school;
   M.house_lowpoly_isometric = glb('Models/house_lowpoly_isometric.glb'); // Low-poly Modern Suburban House
   M.house_mansion_lowpoly = glb('Models/house_mansion_lowpoly.glb'); // Low-poly Suburban Mansion / Villa
   M.mansion_house = glb('Models/house_mansion_lowpoly.glb');

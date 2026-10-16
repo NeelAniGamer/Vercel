@@ -19,6 +19,10 @@ class TrafficAudioEngine {
     this._gearRpm = 0.2;
     this._lastShiftTime = 0;
     this._lastPopTime = 0;
+    // Daytime outdoor ambience (synthesised birds). Timer-driven, idempotent,
+    // silent until the first user gesture unlocks the AudioContext.
+    this._birdsOn = false;
+    this._birdTimer = 0;
 
     // Distortion curve for warm, smooth acoustic engine growl
     this._distortionCurve = this._makeDistortionCurve(4);
@@ -142,6 +146,68 @@ class TrafficAudioEngine {
     if (this.ctx && this.ctx.state === 'suspended') {
       this.ctx.resume().catch(() => {});
     }
+  }
+
+  // ── DAYTIME OUTDOOR AMBIENCE (birds) ──
+  // Idempotent: call every frame with the desired state; the scheduler only
+  // runs while on === true, so pause menus, night/rain maps, cutscenes and
+  // level exits all silence it with no teardown hooks. Chirps are short
+  // scheduled blips on the world bus (ducked under dialogue like everything
+  // else), capped quiet — air, not a soundtrack.
+  setDayAmbience(on) {
+    on = !!on;
+    if (on === this._birdsOn) {return;}
+    this._birdsOn = on;
+    if (on) {
+      this._ensureUnlocked();
+      this._scheduleBird();
+    } else if (this._birdTimer) {
+      try {clearTimeout(this._birdTimer);} catch (e) {}
+      this._birdTimer = 0;
+    }
+  }
+
+  _scheduleBird() {
+    if (!this._birdsOn) {return;}
+    if (this._birdTimer) {try {clearTimeout(this._birdTimer);} catch (e) {}}
+    this._birdTimer = setTimeout(() => {
+      try {
+        if (this._birdsOn && this.ctx && this.ctx.state === 'running' && this.worldGain && Math.random() < 0.7) {
+          this._birdChirp(this.ctx.currentTime + 0.05, 2200 + Math.random() * 1400, 2 + Math.floor(Math.random() * 3));
+        }
+      } catch (e) {}
+      this._scheduleBird();
+    }, 500 + Math.random() * 1700);
+  }
+
+  _birdChirp(t0, baseFreq, nSyl) {
+    if (!this.ctx || !this.worldGain) {return;}
+    try {
+      let out = this.worldGain;
+      try {
+        if (typeof this.ctx.createStereoPanner === 'function') {
+          const pan = this.ctx.createStereoPanner();
+          pan.pan.value = Math.max(-0.8, Math.min(0.8, Math.random() * 2 - 1));
+          pan.connect(this.worldGain);
+          out = pan;
+        }
+      } catch (eP) {}
+      for (let i = 0; i < nSyl; i++) {
+        const o = this.ctx.createOscillator();
+        o.type = 'sine';
+        const g = this.ctx.createGain();
+        const st = t0 + i * 0.14;
+        const f = baseFreq * (0.9 + Math.random() * 0.35);
+        o.frequency.setValueAtTime(Math.max(400, f * 0.9), st);
+        o.frequency.exponentialRampToValueAtTime(f * 1.35, st + 0.05);
+        o.frequency.exponentialRampToValueAtTime(Math.max(400, f * 0.85), st + 0.11);
+        g.gain.setValueAtTime(0.0001, st);
+        g.gain.exponentialRampToValueAtTime(0.035, st + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, st + 0.12);
+        o.connect(g); g.connect(out);
+        try {o.start(st); o.stop(st + 0.15);} catch (eS) {}
+      }
+    } catch (e) {}
   }
 
   // ── 1. SUPERCAR V8 / V10 ACOUSTIC ENGINE SYNTHESIZER ──
