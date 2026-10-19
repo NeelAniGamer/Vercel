@@ -396,11 +396,25 @@
           const page = typeof DYNAMIC_QR !== 'undefined' ? DYNAMIC_QR.decodePayload(target) : null;
           if (page) {
             const now = Date.now();
-            if (page.exp && new Date(page.exp) < now) { renderError(ICONS.expired, 'QR Code Expired', 'This dynamic campaign link has reached its expiration date.'); return; }
-            if (page.start && new Date(page.start) > now) { renderError(ICONS.expired, 'Upcoming Campaign', `This QR code will activate on ${new Date(page.start).toLocaleDateString()}.`); return; }
-            if (page.end && new Date(page.end) < now) { renderError(ICONS.expired, 'Campaign Ended', `This campaign concluded on ${new Date(page.end).toLocaleDateString()}.`); return; }
+            const fb = page.fb ? (/^https?:\/\//i.test(page.fb) ? page.fb : 'https://' + page.fb) : null;
+            const deny = (icon, title, msg) => { if (fb) { window.location.replace(fb); } else { renderError(icon, title, msg); } };
+            const used = entry.scansCount != null ? entry.scansCount : (entry.scans || 0);
+            if (page.exp && new Date(page.exp) < now) { deny(ICONS.expired, 'QR Code Expired', 'This dynamic campaign link has reached its expiration date.'); return; }
+            if (page.start && new Date(page.start) > now) { deny(ICONS.expired, 'Upcoming Campaign', `This QR code will activate on ${new Date(page.start).toLocaleDateString()}.`); return; }
+            if (page.end && new Date(page.end) < now) { deny(ICONS.expired, 'Campaign Ended', `This campaign concluded on ${new Date(page.end).toLocaleDateString()}.`); return; }
+            if (page.max && used >= page.max) { deny(ICONS.warning, 'Scan Limit Reached', 'This QR code has reached its maximum number of scans.'); return; }
             await recordScan();
-            if (page.t === 'go') { target = page.url; } else { renderLanding(page); return; }
+            if (page.t !== 'go') { renderLanding(page); return; }
+            // Smart rules: device targeting, A/B rotation, UTM tagging
+            target = (/iPhone|iPad|iPod/.test(UA) ? page.ios : /Android/.test(UA) ? page.android : page.desktop) || page.url;
+            if (page.ab && page.ab.length) { const pool = [target].concat(page.ab); target = pool[Math.floor(Math.random() * pool.length)]; }
+            if (page.utm && !/^(mailto:|tel:|sms:|smsto:|geo:)/i.test(target)) {
+              try {
+                const u = new URL(/^https?:/i.test(target) ? target : 'https://' + target.replace(/^\/+/, ''));
+                [['s', 'source'], ['m', 'medium'], ['c', 'campaign']].forEach(([k, n]) => { if (page.utm[k] && !u.searchParams.has('utm_' + n)) { u.searchParams.set('utm_' + n, page.utm[k]); } });
+                target = u.href;
+              } catch (e) {}
+            }
           } else {
             await recordScan();
           }

@@ -24,7 +24,7 @@ const excludedFiles = new Set([
   'serve.js', 'server.js', 'package.json', 'package-lock.json', 'tsconfig.json',
   'opencode.json', 'skills-lock.json', 'eslint.config.js', 'AdvancedTypingInstructor.exe', 'AdvancedTypingInstructor_Setup.exe',
   'AdvancedTypingInstructor_1.4.0_all.deb', 'AdvancedTypingInstructor-Linux.tar.gz', 'AdvancedTypingInstructor.apk',
-  'CoL_Ecosystem_Comprehensive_Apps_Report.pdf', 'bmcbrand.zip', 'build_col_apk.bat'
+  'CoL_Ecosystem_Comprehensive_Apps_Report.pdf', 'bmcbrand.zip', 'build_col_apk.bat', 'terms.7z'
 ]);
 
 const excludedFilePatterns = [

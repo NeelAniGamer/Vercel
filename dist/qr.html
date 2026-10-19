@@ -17,6 +17,7 @@
       })()
     </script>
     <script defer src="qr-dynamic.js"></script>
+    <script defer src="col-auth.js"></script>
     <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
     <link rel="stylesheet" href="col-mobile.css" />
     <link rel="stylesheet" href="liquid-glass.css" />
@@ -1898,6 +1899,7 @@
       }
 
       function openLogin() {
+        if (window.openGlobalLogin) { window.openGlobalLogin(); return }
         const mo = document.getElementById('loginMo')
         if (mo) mo.classList.add('open')
         const mt = document.getElementById('moAuthTitle'),

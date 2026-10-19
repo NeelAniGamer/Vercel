@@ -31,7 +31,7 @@
         }
       })()
     </script>
-    <meta name="theme-color" content="#070a14" />
+    <meta name="theme-color" content="#070a14" id="themeMeta" />
     <title>CastFlow — Your Phone. Any Screen. | Class Of Learners</title>
     <meta name="description" content="CastFlow lets you cast your Android screen, share files, and use desktop mode — all from your browser. No cables. No installs on the receiver." />
     <meta name="keywords" content="screen mirroring, cast phone to PC, wireless display, screen sharing, phone to screen, Android screen mirror, browser screen cast, wireless screen share, CastFlow, phone mirroring app, cast without cable, screen projection">
@@ -53,7 +53,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
     <script>
       ;(function () {
         try {
@@ -65,6 +65,9 @@
     </script>
     <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
     <link rel="stylesheet" href="col-mobile.css" />
+    <link rel="stylesheet" href="liquid-glass.css" />
+    <link rel="stylesheet" href="mobile-perf.css" />
+    <link rel="manifest" href="manifest.json" />
 
     <script type="application/ld+json">
       {
@@ -89,14 +92,14 @@
         :root {
             --void: #070a14;
             --void-2: #0b0f1e;
-            --panel: rgba(255, 255, 255, 0.035);
+            --cf-panel: rgba(255, 255, 255, 0.035);
             --line: rgba(255, 255, 255, 0.09);
             --ink: #e8e3d8;
             --dim: #9aa3b8;
             --signal: #f2b84b;
             --signal-ink: #1a1206;
             --teal: #00f0cc;
-            --font: 'Space Grotesk', -apple-system, 'Segoe UI', system-ui, sans-serif;
+            --font: 'Inter', -apple-system, 'Segoe UI', system-ui, sans-serif;
             --wrap: min(1120px, 100% - 40px);
             --r-lg: 22px;
             --r-md: 14px;
@@ -154,44 +157,6 @@
             text-transform: uppercase;
         }
 
-        /* ── Header ───────────────────────────────────────────── */
-        header.site-head {
-            position: sticky;
-            top: 0;
-            z-index: 900;
-            background: rgba(7, 10, 20, 0.82);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            border-bottom: 1px solid var(--line);
-        }
-
-        .head-inner {
-            width: var(--wrap);
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            min-height: 64px;
-        }
-
-        .brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 700; font-size: 1.15rem; letter-spacing: -0.01em; }
-        .brand-mark {
-            width: 34px; height: 34px; border-radius: 10px; flex: none;
-            display: grid; place-items: center;
-            background: linear-gradient(135deg, var(--signal), #ff8a3d);
-            color: var(--signal-ink);
-        }
-        .brand-mark svg { width: 20px; height: 20px; }
-
-        nav.primary ul { display: flex; align-items: center; gap: 4px; list-style: none; }
-        nav.primary a {
-            text-decoration: none; font-size: 0.85rem; font-weight: 600;
-            color: var(--dim); padding: 10px 14px; border-radius: 10px;
-            transition: color 0.2s, background 0.2s;
-        }
-        nav.primary a:hover { color: var(--ink); background: rgba(255, 255, 255, 0.05); }
-
         .btn {
             display: inline-flex; align-items: center; justify-content: center; gap: 10px;
             text-decoration: none; font-weight: 700; cursor: pointer; border: none;
@@ -204,12 +169,6 @@
         .btn-ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
         .btn-ghost:hover { border-color: var(--signal); color: var(--signal); }
         .btn-sm { min-height: 44px; padding: 10px 20px; font-size: 0.85rem; border-radius: 12px; }
-
-        .menu-btn {
-            display: none; background: none; border: 1px solid var(--line);
-            border-radius: 12px; width: 48px; height: 48px; cursor: pointer; color: var(--ink);
-        }
-        .menu-btn svg { width: 22px; height: 22px; margin: auto; }
 
         /* ── Hero ─────────────────────────────────────────────── */
         .hero { padding: 72px 0 40px; overflow: clip; }
@@ -308,7 +267,7 @@
 
         .feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
         .feat {
-            background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-lg);
+            background: var(--cf-panel); border: 1px solid var(--line); border-radius: var(--r-lg);
             padding: 28px 24px; transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
         }
         .feat:hover { transform: translateY(-5px); border-color: rgba(242, 184, 75, 0.4); box-shadow: 0 24px 50px rgba(0, 0, 0, 0.4); }
@@ -324,7 +283,7 @@
         /* Steps */
         .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; counter-reset: step; }
         .step {
-            position: relative; background: var(--panel); border: 1px solid var(--line);
+            position: relative; background: var(--cf-panel); border: 1px solid var(--line);
             border-radius: var(--r-lg); padding: 30px 24px 26px; overflow: clip;
         }
         .step-num {
@@ -378,7 +337,7 @@
 
         /* Download */
         .dl-card {
-            background: var(--panel); border: 1px solid rgba(242, 184, 75, 0.3);
+            background: var(--cf-panel); border: 1px solid rgba(242, 184, 75, 0.3);
             border-radius: 26px; padding: clamp(28px, 5vw, 56px); text-align: center;
             position: relative; overflow: clip;
         }
@@ -405,7 +364,7 @@
         .faq-list { display: flex; flex-direction: column; gap: 12px; max-width: 760px; }
         .faq-list.center { margin: 0 auto; }
         details.faq {
-            background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-md);
+            background: var(--cf-panel); border: 1px solid var(--line); border-radius: var(--r-md);
             padding: 0 22px; transition: border-color 0.2s;
         }
         details.faq[open] { border-color: rgba(242, 184, 75, 0.4); }
@@ -431,26 +390,6 @@
         }
         .news-card h2 { font-size: clamp(1.6rem, 4.4vw, 2.2rem); margin-bottom: 10px; }
         .news-card > p { color: var(--dim); margin-bottom: 26px; }
-        .news-form { display: flex; gap: 10px; max-width: 480px; margin: 0 auto; }
-        .news-form input {
-            flex: 1; min-width: 0; min-height: 52px; border-radius: 14px; font: inherit;
-            background: rgba(0, 0, 0, 0.35); border: 1px solid var(--line); color: var(--ink);
-            padding: 12px 18px; font-size: 0.95rem;
-        }
-        .news-form input::placeholder { color: var(--dim); }
-        .news-status { margin-top: 14px; font-size: 0.88rem; font-weight: 600; min-height: 1.4em; }
-        .news-status.ok { color: var(--teal); }
-        .news-status.err { color: #ff8a8a; }
-
-        /* Footer */
-        footer.site-foot { border-top: 1px solid var(--line); padding: 44px 0 34px; margin-top: 20px; }
-        .foot-grid { display: flex; justify-content: space-between; gap: 28px; flex-wrap: wrap; align-items: flex-start; }
-        .foot-brand { display: flex; align-items: center; gap: 10px; font-weight: 700; margin-bottom: 10px; text-decoration: none; }
-        .foot-tag { color: var(--dim); font-size: 0.85rem; max-width: 300px; }
-        .foot-links { display: flex; gap: 26px; flex-wrap: wrap; list-style: none; }
-        .foot-links a { color: var(--dim); text-decoration: none; font-size: 0.88rem; font-weight: 600; padding: 6px 0; }
-        .foot-links a:hover { color: var(--signal); }
-        .foot-base { margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--dim); font-size: 0.8rem; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 
         /* Reveal */
         .rv { opacity: 0; transform: translateY(26px); transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
@@ -481,21 +420,6 @@
             .chip-b { right: -8px; }
         }
 
-        @media (max-width: 860px) {
-            nav.primary {
-                position: fixed; top: 64px; left: 12px; right: 12px; z-index: 950;
-                background: rgba(11, 15, 30, 0.98); border: 1px solid var(--line);
-                border-radius: 18px; padding: 10px; display: none;
-                box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
-            }
-            nav.primary.open { display: block; }
-            nav.primary ul { flex-direction: column; align-items: stretch; }
-            nav.primary a { padding: 14px 16px; font-size: 0.95rem; }
-            nav.primary .head-cta { display: inline-flex; justify-content: center; margin-top: 8px; }
-            .menu-btn { display: inline-flex; }
-            .head-cta { display: none; }
-        }
-
         @media (max-width: 640px) {
             .hero { padding: 52px 0 24px; }
             .phone-stage { margin: 26px 0; }
@@ -504,11 +428,8 @@
             section.block { padding: 54px 0; }
             .feat-grid, .steps { grid-template-columns: 1fr; }
             .stats-band { grid-template-columns: 1fr; gap: 26px; padding: 30px 20px; }
-            .news-form { flex-direction: column; }
-            .news-form .btn { width: 100%; }
             .browser-body { grid-template-columns: repeat(2, 1fr); }
             .float-chip { font-size: 0.66rem; padding: 8px 12px; }
-            .foot-grid { flex-direction: column; }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -525,7 +446,7 @@
         body.lm {
             --void: #fbfaf5 !important;
             --void-2: #f1efe6 !important;
-            --panel: #ffffff !important;
+            --cf-panel: #ffffff !important;
             --line: rgba(0, 0, 0, 0.08) !important;
             --ink: #0f172a !important;
             --dim: #475569 !important;
@@ -533,14 +454,6 @@
             --signal-ink: #ffffff !important;
             --teal: #0d9488 !important;
             --primary: #0d9488 !important;
-        }
-        body.lm header.site-head {
-            background: rgba(251, 250, 245, 0.92) !important;
-            border-bottom-color: rgba(0, 0, 0, 0.08) !important;
-        }
-        body.lm nav.primary a:hover {
-            color: #0f172a !important;
-            background: rgba(0, 0, 0, 0.04) !important;
         }
         body.lm .btn-solid {
             background: #b8720a !important;
@@ -664,24 +577,11 @@
             border: 1px solid rgba(0, 0, 0, 0.08) !important;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
         }
-        body.lm .news-form input {
-            background: #f8fafc !important;
-            border-color: rgba(0, 0, 0, 0.12) !important;
-            color: #0f172a !important;
-        }
-        body.lm footer.site-foot {
-            border-color: rgba(0, 0, 0, 0.08) !important;
-        }
-        body.lm .foot-base {
-            border-color: rgba(0, 0, 0, 0.08) !important;
-            color: #475569 !important;
-        }
-        body.lm .foot-links a {
-            color: #475569 !important;
-        }
-        body.lm .foot-links a:hover {
-            color: #b8720a !important;
-        }
+    
+        .hero-title, .sec-title, .news-card h2, .block h2 { font-family: var(--serif, 'Instrument Serif', Georgia, serif); font-weight: 400; letter-spacing: -0.01em; }
+        .eyebrow, .ver-pill { font-family: var(--mono, 'Space Mono', monospace); }
+        @media (max-width: 1100px) { .announcement { margin-top: calc(env(safe-area-inset-top, 0px) + 82px); } }
+        .news-card .hero-ctas { justify-content: center; margin-top: 22px; }
     </style>
 </head>
 <body>
@@ -694,30 +594,129 @@
     </script>
     <a class="skip-link" href="#main">Skip To Content</a>
 
-    <div class="announcement">Open Source — No Tracking — No Ads</div>
+        <div class="cd" id="cDot"></div>
+    <div class="cr" id="cRing"></div>
 
-    <header class="site-head">
-        <div class="head-inner">
-            <a class="brand" href="#top" aria-label="CastFlow Home">
-                <span class="brand-mark" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/></svg>
-                </span>
-                CastFlow
-            </a>
-            <nav class="primary" id="primaryNav" aria-label="Primary">
-                <ul>
-                    <li><a href="#features">Features</a></li>
-                    <li><a href="#how-it-works">How It Works</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#faq">FAQ</a></li>
-                    <li><a href="/download" class="btn btn-solid btn-sm head-cta">Get The App</a></li>
-                </ul>
-            </nav>
-            <button class="menu-btn" id="menuBtn" aria-label="Open Menu" aria-expanded="false" aria-controls="primaryNav">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
-            </button>
+    <nav class="top-nav" id="topNav">
+      <a href="/" class="nav-brand">
+        <img src="Class.png" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" />
+        <span class="brand-name">Class Of Learners</span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="/" class="nav-link"
+          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+            <polyline points="9 22 9 12 15 12 15 22" /></svg
+          >Home</a
+        >
+        <a href="about" class="nav-link"
+          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 16v-4" />
+            <path d="M12 8h.01" /></svg
+          >About</a
+        >
+        <a href="school" class="nav-link"
+          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" />
+            <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" /></svg
+          >School</a
+        >
+        <a href="sneh-asha" class="nav-link"
+          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" /></svg
+          >Sneh Asha</a
+        >
+        <a href="making" class="nav-link"
+          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg
+          >Making</a
+        >
+        <div class="dropdown" id="projDD">
+          <button class="dropdown-btn" aria-haspopup="true" aria-expanded="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+              <line x1="8" y1="21" x2="16" y2="21" />
+              <line x1="12" y1="17" x2="12" y2="21" /></svg
+            >Projects <span class="darr">&#9660;</span>
+          </button>
+          <div class="dropdown-content">
+            <div class="dropdown-content-inner">
+              <a href="ati"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="4 7 4 4 20 4 20 7" />
+                  <line x1="9" y1="20" x2="15" y2="20" />
+                  <line x1="12" y1="4" x2="12" y2="20" /></svg
+                >Typing Instructor</a
+              ><a href="solar"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="5" />
+                  <line x1="12" y1="1" x2="12" y2="3" />
+                  <line x1="12" y1="21" x2="12" y2="23" />
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                  <line x1="1" y1="12" x2="3" y2="12" />
+                  <line x1="21" y1="12" x2="23" y2="12" />
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" /></svg
+                >Solar Engine</a
+              ><a href="gesture"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 8h1a4 4 0 010 8h-1" />
+                  <path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z" />
+                  <line x1="6" y1="1" x2="6" y2="4" />
+                  <line x1="10" y1="1" x2="10" y2="4" />
+                  <line x1="14" y1="1" x2="14" y2="4" /></svg
+                >Perceptus Flow</a
+              ><a href="rpg"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg
+                >RPG Game</a
+              ><a href="qr"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="2" width="8" height="8" rx="1" />
+                  <rect x="14" y="2" width="8" height="8" rx="1" />
+                  <rect x="2" y="14" width="8" height="8" rx="1" />
+                  <rect x="14" y="14" width="4" height="4" />
+                  <rect x="20" y="14" width="2" height="2" />
+                  <rect x="14" y="20" width="2" height="2" />
+                  <rect x="20" y="20" width="2" height="2" /></svg
+                >QR Studio Matrix</a
+              ><a href="Terra3D/"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="2" y1="12" x2="22" y2="12" />
+                  <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" /></svg
+                >Terra3D Atlas</a
+              ><a href="cereal"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 00-3 3v6a3 3 0 006 0V5a3 3 0 00-3-3z" /><path d="M19 10v1a7 7 0 01-14 0v-1M12 18v4" /></svg>Cereal AI</a
+              ><a href="CastFlow"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8V6a2 2 0 012-2h16a2 2 0 012 2v12a2 2 0 01-2 2h-6" /><path d="M2 12a9 9 0 018 8M2 16a5 5 0 014 4M2 20h.01" /></svg>CastFlow</a
+              >
+            </div>
+          </div>
         </div>
-    </header>
+      </div>
+      <div class="nav-actions">
+        <div class="hz-toggle" onclick="hzToggle()"><div class="hz-clouds"></div><div class="hz-stars"></div><div class="hz-orb"></div></div>
+        <button class="nav-login-btn" id="navLoginBtn" onclick="if(window.openGlobalLogin)window.openGlobalLogin();else if(window.openLogin)window.openLogin();">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+            <circle cx="12" cy="7" r="4" /></svg
+          >Sign In
+        </button>
+        <div class="nav-user-profile" id="navUserProfile" onclick="if(window.openGlobalLogin)window.openGlobalLogin();else if(window.openLogin)window.openLogin();">
+          <div class="nav-user-avatar" id="navUserAv">?</div>
+          <span class="nun" id="navUserName">User</span>
+        </div>
+        <a href="download" class="nav-dl-btn desktop-dl">Downloads Hub</a>
+        <button class="mmb" id="mmb" aria-label="Toggle menu">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M3 6H21M3 12H21M3 18H21" stroke-width="1.5" stroke-linecap="round" stroke="currentColor" /></svg>
+        </button>
+      </div>
+    </nav>
+
+    <div class="announcement">The CastFlow App: Open Source · No Tracking · No Ads</div>
 
     <main id="main">
         <!-- Hero -->
@@ -939,43 +938,29 @@
         <section class="block" id="newsletter">
             <div class="wrap">
                 <div class="news-card rv">
-                    <h2>Join The Experiment</h2>
-                    <p>Get early access to new features and help shape the future of CastFlow.</p>
-                    <form class="news-form" id="castFlowForm" novalidate>
-                        <input type="email" id="castFlowEmail" name="email" placeholder="Enter your email" autocomplete="email" aria-label="Email address" required />
-                        <button class="btn btn-solid" type="submit">Count Me In</button>
-                    </form>
-                    <p class="news-status" id="castFlowStatus" role="status" aria-live="polite"></p>
+                    <h2>Shape What Comes Next</h2>
+                    <p>CastFlow grows from your feedback. Report a bug, request a feature, or tell us how you use it.</p>
+                    <div class="hero-ctas">
+                        <a class="btn btn-solid" href="/feedback">Send Feedback</a>
+                        <a class="btn btn-ghost" href="/download">Get The App</a>
+                    </div>
                 </div>
             </div>
         </section>
     </main>
 
-    <footer class="site-foot">
-        <div class="wrap">
-            <div class="foot-grid">
-                <div class="rv">
-                    <a class="foot-brand" href="#top" aria-label="Back to top">
-                        <span class="brand-mark" aria-hidden="true">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/></svg>
-                        </span>
-                        CastFlow
-                    </a>
-                    <p class="foot-tag">Your phone on any screen. Free, open source, and private by design.</p>
-                </div>
-                <ul class="foot-links">
-                    <li><a href="/making">Making</a></li>
-                    <li><a href="/feedback">Feedback</a></li>
-                    <li><a href="/download">Downloads</a></li>
-                    <li><a href="/privacy">Privacy</a></li>
-                    <li><a href="/terms">Terms</a></li>
-                </ul>
-            </div>
-            <div class="foot-base">
-                <span>© 2026 Class Of Learners. All Rights Reserved.</span>
-                <span>Built With Local Intelligence &amp; Precision.</span>
-            </div>
+    <footer class="sf">
+      <div class="fi">
+        <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
+        <div class="fl">
+          <a href="making">Making</a>
+          <a href="privacy">Privacy</a>
+          <a href="terms">Terms</a>
+          <a href="feedback">Feedback</a>
+          <a href="download">Downloads</a>
         </div>
+        <div class="fc">&copy; 2026 Neel, Ansh, &amp; Aarush (Co‑Founders).</div>
+      </div>
     </footer>
 
     <script defer src="col-router.js"></script>
@@ -983,30 +968,56 @@
     <script defer src="col-ui.js"></script>
     <script defer src="col-auth.js"></script>
     <script>
+      // Shared theme + project-menu controller (same behaviour as the other pages)
+      function applyTheme(isLight) {
+        document.documentElement.classList.toggle('lm', isLight)
+        document.body.classList.toggle('lm', isLight)
+        document.querySelectorAll('.hz-toggle').forEach(function (el) {
+          el.classList.toggle('night', !isLight)
+        })
+        var desc = document.getElementById('cmdThemeDesc')
+        if (desc) desc.textContent = isLight ? 'Light Mica' : 'Dark VisionOS'
+        var tm = document.getElementById('themeMeta')
+        if (tm) tm.setAttribute('content', isLight ? '#f4f3ee' : '#070A14')
+      }
+      window.hzToggle = function () {
+        if (navigator.vibrate) {
+          try { navigator.vibrate(8) } catch (e) {}
+        }
+        var isLight = !document.body.classList.contains('lm')
+        try { localStorage.setItem('theme', isLight ? 'light' : 'dark') } catch (e) {}
+        applyTheme(isLight)
+      }
+      try {
+        applyTheme(localStorage.getItem('theme') === 'light')
+      } catch (e) {
+        applyTheme(false)
+      }
+      var projDD = document.getElementById('projDD')
+      if (projDD) {
+        var projBtn = projDD.querySelector('.dropdown-btn')
+        if (projBtn) {
+          projBtn.addEventListener('click', function (e) {
+            e.preventDefault()
+            e.stopPropagation()
+            var willOpen = !projDD.classList.contains('active')
+            projDD.classList.toggle('active')
+            projBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false')
+          })
+        }
+      }
+      window.addEventListener('click', function (e) {
+        if (!e.target.closest('.dropdown')) {
+          document.querySelectorAll('.dropdown.active').forEach(function (d) {
+            d.classList.remove('active')
+            var btn = d.querySelector('.dropdown-btn')
+            if (btn) btn.setAttribute('aria-expanded', 'false')
+          })
+        }
+      })
+    </script>
+    <script>
         (function () {
-            // Mobile menu
-            var menuBtn = document.getElementById('menuBtn');
-            var nav = document.getElementById('primaryNav');
-            function closeMenu() {
-                if (!nav || !menuBtn) return;
-                nav.classList.remove('open');
-                menuBtn.setAttribute('aria-expanded', 'false');
-                menuBtn.setAttribute('aria-label', 'Open Menu');
-            }
-            if (menuBtn && nav) {
-                menuBtn.addEventListener('click', function () {
-                    var open = nav.classList.toggle('open');
-                    menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
-                    menuBtn.setAttribute('aria-label', open ? 'Close Menu' : 'Open Menu');
-                });
-                nav.querySelectorAll('a').forEach(function (a) {
-                    a.addEventListener('click', closeMenu);
-                });
-                document.addEventListener('keydown', function (e) {
-                    if (e.key === 'Escape') closeMenu();
-                });
-            }
-
             // Scroll reveals with cascade stagger (no library dependency)
             try {
                 // Cascade: siblings inside grids/steps/lists reveal one after another
@@ -1028,42 +1039,7 @@
                 }
             } catch (e) {}
 
-            // Newsletter: validated, local-only, inline status (no popups)
-            var form = document.getElementById('castFlowForm');
-            var input = document.getElementById('castFlowEmail');
-            var status = document.getElementById('castFlowStatus');
-            function setStatus(msg, ok) {
-                if (!status) return;
-                status.textContent = msg;
-                status.className = 'news-status ' + (ok ? 'ok' : 'err');
-            }
-            if (form && input) {
-                form.addEventListener('submit', function (e) {
-                    e.preventDefault();
-                    var v = (input.value || '').trim();
-                    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) {
-                        setStatus('Please Enter A Valid Email Address.', false);
-                        input.focus();
-                        return;
-                    }
-                    try {
-                        var key = 'castflow_subs';
-                        var arr = JSON.parse(localStorage.getItem(key) || '[]');
-                        if (arr.indexOf(v) === -1) arr.push(v);
-                        localStorage.setItem(key, JSON.stringify(arr));
-                    } catch (err) {}
-                    input.value = '';
-                    setStatus('Subscribed! Watch Your Inbox For Early Access.', true);
-                });
-                input.addEventListener('input', function () {
-                    if (status) { status.textContent = ''; status.className = 'news-status'; }
-                });
-            }
-            // Legacy alias for any retained inline handlers
-            window.castFlowSubscribe = function (e) {
-                if (form) form.requestSubmit();
-                return false;
-            };
+
         })();
     </script>
 </body>

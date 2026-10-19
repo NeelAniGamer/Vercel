@@ -355,7 +355,7 @@ window.IndianVehicles = {
 
   /** Side sill / rocker panel between the wheel arches. */
   addSideSill: function (g, w, l, y, thick) {
-    const mat = this.darkChromeMat()
+    const mat = this.darkChromeMat();
     [-1, 1].forEach((sgn) => {
       const s = new THREE.Mesh(new THREE.BoxGeometry(thick || 0.06, 0.10, l * 0.44), mat)
       s.position.set(sgn * (w / 2 + 0.012), y, 0)

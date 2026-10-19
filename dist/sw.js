@@ -1,5 +1,5 @@
-const CACHE_NAME = 'col-cache-v11'
-const SW_VERSION = '2026-09-26-v2'
+const CACHE_NAME = 'col-cache-v12'
+const SW_VERSION = '2026-10-18-v1'
 const OFFLINE_FALLBACK = '/home.html'
 const urlsToCache = [
   '/home.html',
@@ -30,6 +30,8 @@ const cacheableDestinations = new Set([
 function isPrivateOrDynamicPath(pathname) {
   return (
     pathname === '/config.json' ||
+    pathname === '/q' ||
+    pathname === '/q.html' ||
     pathname.endsWith('/config.json') ||
     pathname.startsWith('/api/') ||
     pathname.startsWith('/_vercel/') ||
@@ -95,7 +97,7 @@ self.addEventListener('fetch', (event) => {
       const cached = await cache.match(request)
 
       // Network-first for core scripts and navigation to ensure deployments are live immediately
-      const isCoreUpdate = request.mode === 'navigate' || request.url.includes('col-ui.js') || request.url.includes('col-ui.css') || request.url.includes('bmc-button.svg')
+      const isCoreUpdate = request.mode === 'navigate' || request.url.includes('col-ui.js') || request.url.includes('col-ui.css') || request.url.includes('bmc-button.svg') || request.url.includes('qr-dynamic.js')
       if (isCoreUpdate) {
         try {
           const fresh = await fetch(request)

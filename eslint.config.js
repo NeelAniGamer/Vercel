@@ -56,8 +56,8 @@ export default [
 
   {
     // ES modules: this config, and logic.js which engine.html loads with
-    // <script type="module">.
-    files: ['eslint.config.js', 'logic.js'],
+    // <script type="module">, plus three-shim.js and .mjs script files.
+    files: ['eslint.config.js', 'logic.js', 'Traffic/three-shim.js', '**/*.mjs'],
     languageOptions: {
       sourceType: 'module',
       globals: sharedGlobals,
@@ -65,8 +65,8 @@ export default [
   },
   {
     // Everything else that is actually ours is a classic script.
-    files: ['**/*.js', '**/*.mjs', '**/*.cjs'],
-    ignores: ['eslint.config.js', 'logic.js'],
+    files: ['**/*.js', '**/*.cjs'],
+    ignores: ['eslint.config.js', 'logic.js', 'Traffic/three-shim.js'],
     languageOptions: {
       globals: sharedGlobals,
       ecmaVersion: 2024,

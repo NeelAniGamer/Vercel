@@ -79,7 +79,7 @@
   function initPullToRefresh() {
     // Only on touch devices, only on pages that don't have their own scroll handling
     if (!('ontouchstart' in window)) {return}
-    var isGamePage = /Driving|Academy|solar|gesture|rpg/i.test(location.pathname)
+    var isGamePage = /Driving|Academy|solar|gesture|rpg|qr-editor/i.test(location.pathname)
     if (isGamePage) {return}
 
     var pullThreshold = 80
@@ -141,6 +141,7 @@
 
     document.addEventListener('touchstart', function (e) {
       if (window.scrollY > 5) {return}
+      if (e.target && e.target.closest && e.target.closest('input,textarea,select,canvas,.mo,[data-no-pull]')) {return}
       startY = e.touches[0].clientY
       pulling = true
     }, { passive: true })
