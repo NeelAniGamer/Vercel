@@ -31,6 +31,15 @@
         }
       })()
     </script>
+    <script>
+      ;(function () {
+        try {
+          if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.add('lm')
+          }
+        } catch (e) {}
+      })()
+    </script>
     <meta
       name="description"
       content="See how CBSE Bhavani Shankar School in Mumbai shaped Class Of Learners through academic programs, technical curiosity, and a student-led learning culture."
@@ -1251,8 +1260,8 @@
             <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg
           >Making</a
         >
-        <div class="dropdown" id="projDD" onclick="this.classList.toggle('active')">
-          <button class="dropdown-btn">
+        <div class="dropdown" id="projDD">
+          <button class="dropdown-btn" aria-haspopup="true" aria-expanded="false">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
               <line x1="8" y1="21" x2="16" y2="21" />
@@ -1541,23 +1550,92 @@
         })
       })()
 
-      function removeLoader() { var l = document.getElementById('loader'); if (l && !l.classList.contains('gone')) l.classList.add('gone'); } window.addEventListener('load', function () { setTimeout(removeLoader, 1300); }); setTimeout(removeLoader, 4000);
+      // 1. Fast Loader Dismissal (150ms after DOMContentLoaded)
+      function removeLoader() {
+        var l = document.getElementById('loader')
+        if (l && !l.classList.contains('gone')) l.classList.add('gone')
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function () {
+          setTimeout(removeLoader, 150)
+        })
+      } else {
+        setTimeout(removeLoader, 150)
+      }
+      window.addEventListener('load', removeLoader, { once: true })
+
+      // 2. Unified Theme Controller — syncs BOTH <html> and <body>
+      function applyTheme(isLight) {
+        document.documentElement.classList.toggle('lm', isLight)
+        document.body.classList.toggle('lm', isLight)
+        document.querySelectorAll('.hz-toggle').forEach(function (el) {
+          el.classList.toggle('night', !isLight)
+        })
+        var desc = document.getElementById('cmdThemeDesc')
+        if (desc) desc.textContent = isLight ? 'Light Mica' : 'Dark VisionOS'
+        var tm = document.getElementById('themeMeta')
+        if (tm) tm.setAttribute('content', isLight ? '#f4f3ee' : '#070A14')
+      }
+
+      window.hzToggle = function () {
+        if (navigator.vibrate) {
+          try { navigator.vibrate(8) } catch (e) {}
+        }
+        var isLight = !document.body.classList.contains('lm')
+        try { localStorage.setItem('theme', isLight ? 'light' : 'dark') } catch (e) {}
+        applyTheme(isLight)
+      }
+
+      try {
+        applyTheme(localStorage.getItem('theme') === 'light')
+      } catch (e) {
+        applyTheme(false)
+      }
+
+      // 3. Top Nav Scroll State (rAF-throttled)
       var navEl = document.getElementById('topNav')
-      window.addEventListener(
-        'scroll',
-        function () {
-          navEl.classList.toggle('s', scrollY > 60)
-        },
-        { passive: true }
-      )
-      window.addEventListener('click', function (e) {
-        if (!e.target.closest('.dropdown'))
-          document.querySelectorAll('.dropdown').forEach(function (d) {
-            d.classList.remove('active')
+      var navTicking = false
+      if (navEl) {
+        window.addEventListener(
+          'scroll',
+          function () {
+            if (!navTicking) {
+              requestAnimationFrame(function () {
+                navEl.classList.toggle('s', window.scrollY > 60)
+                navTicking = false
+              })
+              navTicking = true
+            }
+          },
+          { passive: true }
+        )
+      }
+
+      // 4. Accessible Dropdown Interaction & Close on Outside Click
+      var projDD = document.getElementById('projDD')
+      if (projDD) {
+        var projBtn = projDD.querySelector('.dropdown-btn')
+        if (projBtn) {
+          projBtn.addEventListener('click', function (e) {
+            e.preventDefault()
+            e.stopPropagation()
+            var willOpen = !projDD.classList.contains('active')
+            projDD.classList.toggle('active')
+            projBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false')
           })
+        }
+      }
+      window.addEventListener('click', function (e) {
+        if (!e.target.closest('.dropdown')) {
+          document.querySelectorAll('.dropdown.active').forEach(function (d) {
+            d.classList.remove('active')
+            var btn = d.querySelector('.dropdown-btn')
+            if (btn) btn.setAttribute('aria-expanded', 'false')
+          })
+        }
       })
 
-      // Scroll reveals
+      // 5. Scroll reveals
       ;(function () {
         var els = document.querySelectorAll('.rv')
         var io = new IntersectionObserver(
@@ -1575,56 +1653,6 @@
           io.observe(el)
         })
       })()
-
-      // Theme
-      var Storage = {
-        get: function (k) {
-          try {
-            return localStorage.getItem(k)
-          } catch (e) {
-            return null
-          }
-        },
-        set: function (k, v) {
-          try {
-            localStorage.setItem(k, v)
-          } catch (e) {}
-        }
-      }
-
-      function initializeTheme() {
-        var tsck = document.getElementById('tsck')
-        var tl = document.getElementById('tLabel')
-
-        if (Storage.get('theme') === 'light') {
-          document.body.classList.add('lm')
-          if (tsck) tsck.checked = true
-          if (tl) tl.textContent = 'Light Mode'
-        } else {
-          // Explicitly enforce Dark Mode on first visit or if missing
-          document.body.classList.remove('lm')
-          if (tsck) tsck.checked = false
-          if (tl) tl.textContent = 'Dark Mode'
-          Storage.set('theme', 'dark')
-        }
-      }
-
-      function toggleTheme(el) {
-        var tl = document.getElementById('tLabel')
-        if (el.checked) {
-          document.body.classList.add('lm')
-          Storage.set('theme', 'light')
-          if (tl) tl.textContent = 'Light Mode'
-        } else {
-          document.body.classList.remove('lm')
-          Storage.set('theme', 'dark')
-          if (tl) tl.textContent = 'Dark Mode'
-        }
-      }
-
-      ;(function () {
-        initializeTheme()
-      })()
     </script>
 
     <footer class="sf" style="content-visibility:auto; contain-intrinsic-size: 0 200px">
@@ -1637,14 +1665,7 @@
           <a href="feedback">Feedback</a>
           <a href="download">Downloads</a>
         </div>
-        <div class="fc">&copy; 2026 Neel, Ansh, Aarush &amp; Yash Raj.</div>
+        <div class="fc">&copy; 2026 Neel, Ansh, &amp; Aarush (Co‑Founders).</div>
       </div>
-    </footer>
-    <script>
-    function hzInit(){var t;try{t=localStorage.getItem('theme')}catch(e){t=null}if(t==='light'){document.body.classList.add('lm')}else{document.body.classList.remove('lm')}hzSync()}
-    function hzSync(){var els=document.querySelectorAll('.hz-toggle');if(!els.length)return;var isLight=document.body.classList.contains('lm');els.forEach(function(el){if(isLight){el.classList.remove('night')}else{el.classList.add('night')}});var desc=document.getElementById('cmdThemeDesc');if(desc)desc.textContent=isLight?'Light Mica':'Dark VisionOS'}
-    function hzToggle(){if(navigator.vibrate)try{navigator.vibrate(8)}catch(e){}document.body.classList.toggle('lm');var isLight=document.body.classList.contains('lm');try{localStorage.setItem('theme',isLight?'light':'dark')}catch(e){}hzSync()}
-    hzInit()
-    </script>
   </body>
 </html>

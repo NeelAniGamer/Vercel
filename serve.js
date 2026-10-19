@@ -76,6 +76,13 @@ const server = http.createServer((req, res) => {
   }
 
   const parsedUrl = url.parse(req.url);
+
+  if (parsedUrl.pathname === '/health') {
+    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+    res.end(JSON.stringify({ status: 'ok', uptime: process.uptime() }));
+    return;
+  }
+
   const targetFile = resolveFilePath(parsedUrl.pathname);
 
   if (!targetFile) {

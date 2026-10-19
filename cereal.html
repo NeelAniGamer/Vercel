@@ -1,0 +1,2504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995" crossorigin="anonymous"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Class Of Learners" />
+    <meta name="theme-color" content="#070a14" />
+    <title>Cereal — AI Lecture &amp; Meeting Assistant | Class Of Learners</title>
+    <meta name="description" content="Never miss a classroom lecture again. Cereal records audio in background, extracts structured notes with Gemini 2.5 Flash, and syncs to Google Calendar &amp; Tasks. 100% Free." />
+    <meta name="keywords" content="Cereal, AI note taker, lecture recorder, Gemini 2.5 Flash, Android AI assistant, student notes, automated minutes, Google Calendar sync, Class Of Learners" />
+    <meta property="og:site_name" content="Class Of Learners" />
+    <meta property="og:title" content="Cereal — AI Lecture &amp; Meeting Assistant" />
+    <meta property="og:description" content="Background audio lecture recording, multimodal Gemini 2.5 Flash notes, and instant Google Calendar/Tasks sync. 100% Free &amp; Open Source." />
+    <meta property="og:url" content="https://advancedlogiclabs.dpdns.org/cereal" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://advancedlogiclabs.dpdns.org/Icon.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Cereal — AI Lecture &amp; Meeting Assistant" />
+    <meta name="twitter:description" content="Background audio lecture recording, multimodal Gemini 2.5 Flash notes, and instant Google Calendar/Tasks sync. 100% Free." />
+    <meta name="twitter:image" content="https://advancedlogiclabs.dpdns.org/Icon.png" />
+    <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/cereal" />
+    <link rel="icon" type="image/png" href="Icon.png" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Cereal",
+        "url": "https://advancedlogiclabs.dpdns.org/cereal",
+        "description": "Background AI lecture recorder for Android. Cereal captures classroom audio in the foreground, synthesizes structured notes with Gemini 2.5 Flash, and syncs exam dates and assignments to Google Calendar and Tasks.",
+        "applicationCategory": "EducationApplication",
+        "operatingSystem": "Android 8.0+",
+        "image": "https://advancedlogiclabs.dpdns.org/Icon.png",
+        "inLanguage": "en-IN",
+        "author": { "@id": "https://advancedlogiclabs.dpdns.org/#organization" },
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "softwareVersion": "1.2.0",
+        "fileSize": "18.4 MB"
+      }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <script>
+      ;(function () {
+        try {
+          if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.add('lm')
+          }
+        } catch (e) {}
+      })()
+    </script>
+    <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
+    <link rel="stylesheet" href="col-mobile.css" />
+
+    <style>
+      *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+      :root {
+        --void: #070a14;
+        --void-2: #0b0f1e;
+        --panel: rgba(255, 255, 255, 0.035);
+        --panel-solid: #0d1222;
+        --line: rgba(255, 255, 255, 0.09);
+        --line-hot: rgba(236, 72, 153, 0.45);
+        --ink: #e8e3d8;
+        --dim: #9aa3b8;
+        --signal: #f2b84b;
+        --plasma: #ec4899;
+        --plasma-glow: rgba(236, 72, 153, 0.35);
+        --ion: #00f0ff;
+        --teal: #00f0cc;
+        --em: #10b981;
+        --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        --serif: 'Instrument Serif', Georgia, serif;
+        --mono: 'Space Mono', monospace;
+        --wrap: min(1180px, 100% - 40px);
+        --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      body {
+        background: var(--void);
+        color: var(--ink);
+        font-family: var(--font);
+        line-height: 1.6;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      body.lm {
+        --void: #f5f4ed;
+        --void-2: #eae8dd;
+        --panel: #ffffff;
+        --panel-solid: #f8fafc;
+        --line: rgba(15, 23, 42, 0.12);
+        --line-hot: rgba(219, 39, 119, 0.45);
+        --ink: #0f172a;
+        --dim: #475569;
+        --signal: #d97706;
+        --plasma: #db2777;
+        --plasma-glow: rgba(219, 39, 119, 0.2);
+        --ion: #0284c7;
+        --teal: #0d9488;
+        --em: #059669;
+      }
+      .wrap {
+        width: var(--wrap);
+        margin: 0 auto;
+      }
+
+      /* Hero Section */
+      .cereal-hero {
+        position: relative;
+        padding: 130px 0 70px;
+        background: radial-gradient(circle at 65% 20%, rgba(236, 72, 153, 0.15) 0%, transparent 60%),
+                    radial-gradient(circle at 20% 45%, rgba(0, 240, 255, 0.08) 0%, transparent 55%);
+      }
+      .badge-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(236, 72, 153, 0.12);
+        border: 1px solid rgba(236, 72, 153, 0.38);
+        color: var(--plasma);
+        border-radius: 999px;
+        padding: 6px 14px;
+        font-family: var(--mono);
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin-bottom: 22px;
+        box-shadow: 0 0 20px rgba(236, 72, 153, 0.2);
+      }
+      .badge-pill::before {
+        content: '';
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--plasma);
+        box-shadow: 0 0 10px var(--plasma);
+        animation: pulsePill 2s infinite;
+      }
+      @keyframes pulsePill {
+        0%, 100% { opacity: 0.5; transform: scale(0.9); }
+        50% { opacity: 1; transform: scale(1.2); }
+      }
+      .cereal-title {
+        font-family: var(--serif);
+        font-size: clamp(2.4rem, 5.5vw, 4.4rem);
+        line-height: 1.08;
+        font-weight: 400;
+        letter-spacing: -0.02em;
+        margin-bottom: 20px;
+        max-width: 22ch;
+      }
+      .cereal-title em {
+        font-style: italic;
+        color: var(--plasma);
+        text-shadow: 0 0 24px rgba(236, 72, 153, 0.35);
+      }
+      .cereal-lede {
+        font-size: clamp(1rem, 1.8vw, 1.22rem);
+        color: var(--dim);
+        max-width: 58ch;
+        line-height: 1.65;
+        margin-bottom: 34px;
+      }
+      .cta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        align-items: center;
+        margin-bottom: 40px;
+      }
+      .btn-primary {
+        background: var(--plasma);
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 0.96rem;
+        padding: 14px 28px;
+        border-radius: 12px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        box-shadow: 0 0 25px rgba(236, 72, 153, 0.45);
+        transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+        cursor: pointer;
+        border: none;
+      }
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 35px rgba(236, 72, 153, 0.65);
+      }
+      .btn-ghost {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--ink);
+        border: 1px solid var(--line);
+        font-weight: 600;
+        font-size: 0.96rem;
+        padding: 14px 24px;
+        border-radius: 12px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: background 0.2s var(--ease), border-color 0.2s var(--ease);
+      }
+      .btn-ghost:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+      body.lm .btn-ghost {
+        background: #ffffff;
+        border-color: rgba(15, 23, 42, 0.15);
+      }
+
+      /* Telemetry Strip */
+      .tele-strip {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 16px;
+        margin-bottom: 60px;
+      }
+      .tele-card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 18px 22px;
+        backdrop-filter: blur(10px);
+        transition: border-color 0.3s;
+      }
+      .tele-card:hover {
+        border-color: var(--line-hot);
+      }
+      .tele-val {
+        font-family: var(--mono);
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: var(--plasma);
+      }
+      .tele-lbl {
+        font-size: 0.82rem;
+        color: var(--dim);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-top: 4px;
+        font-weight: 600;
+      }
+
+      /* Interactive Live Simulator */
+      .sim-card {
+        background: rgba(10, 14, 26, 0.92);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65), 0 0 40px rgba(236, 72, 153, 0.12);
+        backdrop-filter: blur(16px);
+        margin-bottom: 90px;
+      }
+      body.lm .sim-card {
+        background: #ffffff;
+        box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08), 0 0 30px rgba(219, 39, 119, 0.08);
+      }
+      .sim-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 14px;
+      }
+      .sim-live-indicator {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-family: var(--mono);
+        font-size: 0.78rem;
+        color: var(--plasma);
+        font-weight: 700;
+        letter-spacing: 0.06em;
+      }
+      .sim-pulse {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--plasma);
+        box-shadow: 0 0 10px var(--plasma);
+        animation: pulseWave 1.8s infinite;
+      }
+      @keyframes pulseWave {
+        0% { transform: scale(0.9); opacity: 0.7; }
+        50% { transform: scale(1.3); opacity: 1; }
+        100% { transform: scale(0.9); opacity: 0.7; }
+      }
+      .sim-status-hud {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-family: var(--mono);
+        font-size: 0.76rem;
+        color: var(--dim);
+      }
+      .sim-status-hud span b {
+        color: var(--ink);
+      }
+      /* Continuous Moving Hero Audio Wave Strip */
+      .hero-audio-stream-bar {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        background: rgba(10, 15, 29, 0.75);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 10px 18px;
+        margin-bottom: 34px;
+        backdrop-filter: blur(12px);
+      }
+      body.lm .hero-audio-stream-bar {
+        background: #ffffff;
+      }
+      .stream-bar-badge {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--plasma);
+        white-space: nowrap;
+        letter-spacing: 0.05em;
+      }
+      .stream-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--plasma);
+        box-shadow: 0 0 8px var(--plasma);
+        animation: pulsePill 1.8s infinite;
+      }
+      .hero-wave-canvas {
+        flex: 1;
+        height: 28px;
+        display: block;
+        min-width: 140px;
+      }
+      .stream-bar-meta {
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        color: var(--dim);
+        white-space: nowrap;
+      }
+      @media (max-width: 768px) {
+        .hero-audio-stream-bar {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+        }
+        .hero-wave-canvas {
+          width: 100%;
+        }
+      }
+
+      /* Modern Continuous Audio Visualizer Deck */
+      .audio-deck-wrap {
+        background: rgba(6, 9, 20, 0.95);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 18px 20px;
+        margin-bottom: 24px;
+        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.6), 0 8px 24px rgba(0, 0, 0, 0.4);
+        position: relative;
+        overflow: hidden;
+      }
+      body.lm .audio-deck-wrap {
+        background: #f8fafc;
+        border-color: rgba(15, 23, 42, 0.12);
+        box-shadow: inset 0 2px 6px rgba(15, 23, 42, 0.05), 0 8px 24px rgba(15, 23, 42, 0.04);
+      }
+      .audio-deck-topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 14px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      }
+      body.lm .audio-deck-topbar {
+        border-bottom-color: rgba(15, 23, 42, 0.08);
+      }
+      .audio-modes-nav {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .audio-mode-pill {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--line);
+        color: var(--dim);
+        font-family: var(--mono);
+        font-size: 0.74rem;
+        font-weight: 700;
+        padding: 6px 14px;
+        border-radius: 999px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        transition: all 0.2s var(--ease);
+      }
+      .audio-mode-pill:hover {
+        color: var(--ink);
+        border-color: rgba(255, 255, 255, 0.25);
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .audio-mode-pill.active {
+        color: #ffffff;
+        background: rgba(236, 72, 153, 0.2);
+        border-color: var(--plasma);
+        box-shadow: 0 0 14px rgba(236, 72, 153, 0.35);
+      }
+      body.lm .audio-mode-pill.active {
+        color: var(--plasma);
+        background: rgba(219, 39, 119, 0.12);
+        border-color: var(--plasma);
+      }
+      .mode-led {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+      .audio-telemetry-badge {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        color: var(--dim);
+      }
+      .tele-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--em);
+        box-shadow: 0 0 8px var(--em);
+      }
+      .audio-canvas-stage {
+        position: relative;
+        width: 100%;
+        height: 140px;
+        border-radius: 12px;
+        overflow: hidden;
+        background: radial-gradient(circle at 50% 50%, rgba(236, 72, 153, 0.06) 0%, rgba(0, 0, 0, 0.4) 80%);
+      }
+      body.lm .audio-canvas-stage {
+        background: radial-gradient(circle at 50% 50%, rgba(219, 39, 119, 0.04) 0%, rgba(241, 245, 249, 0.8) 80%);
+      }
+      .waveform-canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .audio-deck-freq-ticks {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+        font-family: var(--mono);
+        font-size: 0.68rem;
+        color: var(--dim);
+        opacity: 0.75;
+        overflow-x: auto;
+        gap: 12px;
+      }
+
+      /* Simulator Output Tabs */
+      .sim-tabs-nav {
+        display: flex;
+        gap: 8px;
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 12px;
+        margin-bottom: 20px;
+        overflow-x: auto;
+      }
+      .sim-tab-btn {
+        background: none;
+        border: 1px solid transparent;
+        color: var(--dim);
+        font-family: var(--mono);
+        font-size: 0.8rem;
+        font-weight: 700;
+        padding: 8px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s var(--ease);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        white-space: nowrap;
+      }
+      .sim-tab-btn:hover {
+        color: var(--ink);
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .sim-tab-btn.active {
+        color: var(--plasma);
+        background: rgba(236, 72, 153, 0.14);
+        border-color: rgba(236, 72, 153, 0.35);
+      }
+      body.lm .sim-tab-btn.active {
+        background: rgba(219, 39, 119, 0.1);
+        border-color: rgba(219, 39, 119, 0.3);
+      }
+
+      .sim-tab-content {
+        display: none;
+        animation: fadeIn 0.3s var(--ease);
+      }
+      .sim-tab-content.active {
+        display: block;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(6px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .sim-output-box {
+        background: rgba(17, 24, 39, 0.65);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 24px;
+        font-size: 0.95rem;
+        line-height: 1.7;
+      }
+      body.lm .sim-output-box {
+        background: #f8fafc;
+      }
+      .sim-tag-row {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+      .sim-badge {
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-weight: 700;
+        background: rgba(236, 72, 153, 0.15);
+        color: var(--plasma);
+      }
+
+      /* Task Items in Simulator */
+      .task-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 12px 14px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        margin-bottom: 10px;
+        cursor: pointer;
+        transition: background 0.2s, border-color 0.2s;
+      }
+      .task-item:hover {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(236, 72, 153, 0.3);
+      }
+      .task-check {
+        width: 18px;
+        height: 18px;
+        border-radius: 4px;
+        border: 2px solid var(--dim);
+        margin-top: 3px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: all 0.2s;
+      }
+      .task-item.done .task-check {
+        background: var(--em);
+        border-color: var(--em);
+      }
+      .task-item.done .task-check::after {
+        content: '✓';
+        color: #fff;
+        font-size: 11px;
+        font-weight: bold;
+      }
+      .task-item.done .task-title {
+        text-decoration: line-through;
+        opacity: 0.5;
+      }
+      .task-meta {
+        font-family: var(--mono);
+        font-size: 0.76rem;
+        color: var(--signal);
+        margin-top: 3px;
+      }
+
+      /* Quiz Flash Cards */
+      .quiz-card {
+        padding: 16px;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        margin-bottom: 14px;
+      }
+      .quiz-q {
+        font-weight: 700;
+        font-size: 1rem;
+        margin-bottom: 12px;
+      }
+      .quiz-options {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 8px;
+      }
+      .quiz-opt {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-size: 0.88rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: left;
+        color: var(--ink);
+      }
+      .quiz-opt:hover {
+        background: rgba(236, 72, 153, 0.1);
+        border-color: var(--plasma);
+      }
+      .quiz-opt.correct {
+        background: rgba(16, 185, 129, 0.2) !important;
+        border-color: var(--em) !important;
+        color: var(--em) !important;
+        font-weight: 700;
+      }
+      .quiz-opt.wrong {
+        background: rgba(239, 68, 68, 0.2) !important;
+        border-color: #ef4444 !important;
+        color: #ef4444 !important;
+      }
+
+      /* Features Grid */
+      .sec-head {
+        margin-bottom: 40px;
+      }
+      .sec-eyebrow {
+        font-family: var(--mono);
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--plasma);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        margin-bottom: 8px;
+      }
+      .sec-title {
+        font-family: var(--serif);
+        font-size: clamp(2rem, 4vw, 3rem);
+        line-height: 1.15;
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 22px;
+        margin-bottom: 90px;
+      }
+      .feat-card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 30px;
+        transition: transform 0.25s var(--ease), border-color 0.25s var(--ease), box-shadow 0.25s var(--ease);
+      }
+      .feat-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(236, 72, 153, 0.45);
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
+      }
+      .feat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: rgba(236, 72, 153, 0.15);
+        color: var(--plasma);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 18px;
+      }
+      .feat-card h3 {
+        font-size: 1.22rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+      .feat-card p {
+        color: var(--dim);
+        font-size: 0.94rem;
+        line-height: 1.6;
+      }
+
+      /* Architecture Section */
+      .arch-box {
+        background: rgba(10, 14, 26, 0.7);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 40px;
+        margin-bottom: 90px;
+      }
+      body.lm .arch-box {
+        background: #ffffff;
+      }
+      .pipeline-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 18px;
+        margin-top: 28px;
+      }
+      .pipe-step {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px dashed var(--line);
+        border-radius: 12px;
+        padding: 22px;
+        position: relative;
+        transition: border-color 0.2s;
+      }
+      .pipe-step:hover {
+        border-color: var(--plasma);
+      }
+      body.lm .pipe-step {
+        background: #f8fafc;
+      }
+      .pipe-num {
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--plasma);
+        margin-bottom: 6px;
+      }
+      .pipe-title {
+        font-weight: 700;
+        font-size: 1.05rem;
+        margin-bottom: 8px;
+      }
+      .pipe-desc {
+        font-size: 0.88rem;
+        color: var(--dim);
+        line-height: 1.55;
+      }
+
+      /* Specifications Comparison Table */
+      .specs-table-wrap {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        overflow: hidden;
+        margin-bottom: 90px;
+        background: var(--panel);
+      }
+      .specs-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        font-size: 0.94rem;
+      }
+      .specs-table th {
+        background: rgba(255, 255, 255, 0.04);
+        padding: 16px 20px;
+        font-family: var(--mono);
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--dim);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        border-bottom: 1px solid var(--line);
+      }
+      .specs-table td {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--line);
+      }
+      .specs-table tr:last-child td {
+        border-bottom: none;
+      }
+      .specs-table tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      /* FAQ Accordion */
+      .faq-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+        gap: 16px;
+        margin-bottom: 90px;
+      }
+      @media (max-width: 600px) {
+        .faq-grid { grid-template-columns: 1fr; }
+      }
+      .faq-item {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 22px;
+      }
+      .faq-q {
+        font-weight: 700;
+        font-size: 1.08rem;
+        margin-bottom: 8px;
+        color: var(--ink);
+      }
+      .faq-a {
+        color: var(--dim);
+        font-size: 0.92rem;
+        line-height: 1.6;
+      }
+
+      /* Direct APK Download Card */
+      .apk-dl-banner {
+        background: linear-gradient(135deg, rgba(236, 72, 153, 0.16) 0%, rgba(11, 15, 30, 0.95) 70%);
+        border: 1.5px solid rgba(236, 72, 153, 0.4);
+        border-radius: 22px;
+        padding: 48px 40px;
+        text-align: center;
+        margin-bottom: 90px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(236, 72, 153, 0.15);
+      }
+      .apk-dl-banner h2 {
+        font-family: var(--serif);
+        font-size: clamp(2.2rem, 4vw, 3.2rem);
+        margin-bottom: 16px;
+      }
+      .apk-dl-banner p {
+        color: var(--dim);
+        max-width: 58ch;
+        margin: 0 auto 30px;
+        font-size: 1.05rem;
+      }
+      .apk-meta-row {
+        display: flex;
+        justify-content: center;
+        gap: 24px;
+        flex-wrap: wrap;
+        margin-top: 24px;
+        font-family: var(--mono);
+        font-size: 0.78rem;
+        color: var(--dim);
+      }
+
+      /* Footer */
+      .col-footer {
+        border-top: 1px solid var(--line);
+        padding: 40px 0;
+        color: var(--dim);
+        font-size: 0.88rem;
+      }
+      .col-footer a {
+        color: var(--ink);
+        text-decoration: none;
+        margin-right: 18px;
+      }
+      .col-footer a:hover {
+        color: var(--plasma);
+      }
+
+      /* =============================================
+         Hero Layout: Copy + App Phone Mockup
+         ============================================= */
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 1.08fr 0.92fr;
+        gap: 46px;
+        align-items: center;
+        margin-bottom: 52px;
+      }
+      @keyframes heroRise {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: none; }
+      }
+      .boot {
+        opacity: 0;
+        animation: heroRise 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+
+      .phone-stage {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        padding: 26px 0 18px;
+      }
+      .phone {
+        width: 290px;
+        max-width: 100%;
+        background: #0a0e1c;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 44px;
+        padding: 10px;
+        box-shadow: 0 44px 90px rgba(0, 0, 0, 0.7), 0 0 70px rgba(236, 72, 153, 0.14), inset 0 0 0 2px rgba(255, 255, 255, 0.04);
+        position: relative;
+        z-index: 1;
+      }
+      .phone::before {
+        content: '';
+        position: absolute;
+        top: 22px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 84px;
+        height: 23px;
+        border-radius: 999px;
+        background: #05070f;
+        z-index: 3;
+      }
+      .phone-screen {
+        background: linear-gradient(180deg, #10152b 0%, #0a0f20 55%, #090d1a 100%);
+        border-radius: 35px;
+        overflow: hidden;
+        padding: 54px 16px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        min-height: 558px;
+      }
+      .ph-status {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: var(--mono);
+        font-size: 10px;
+        color: rgba(232, 227, 216, 0.5);
+        letter-spacing: 0.05em;
+      }
+      .ph-status b { color: rgba(232, 227, 216, 0.8); }
+      .ph-appbar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 4px;
+      }
+      .ph-logo-dot {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #ec4899 0%, #a855f7 100%);
+        box-shadow: 0 0 18px rgba(236, 72, 153, 0.5);
+        position: relative;
+        flex-shrink: 0;
+      }
+      .ph-logo-dot::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        margin: auto;
+        width: 9px;
+        height: 15px;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.92);
+      }
+      .ph-appname {
+        font-weight: 700;
+        font-size: 0.95rem;
+        line-height: 1.2;
+      }
+      .ph-appsub {
+        font-size: 0.64rem;
+        color: #8b93ab;
+        font-family: var(--mono);
+        letter-spacing: 0.05em;
+        font-weight: 400;
+      }
+      .ph-rec-chip {
+        margin-left: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: var(--mono);
+        font-size: 0.6rem;
+        font-weight: 700;
+        color: #ffd7e6;
+        background: rgba(236, 72, 153, 0.16);
+        border: 1px solid rgba(236, 72, 153, 0.5);
+        border-radius: 999px;
+        padding: 4px 10px;
+        letter-spacing: 0.1em;
+      }
+      .ph-rec-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #ff2d6f;
+        box-shadow: 0 0 8px #ff2d6f;
+        animation: phRec 1.4s ease-in-out infinite;
+      }
+      @keyframes phRec {
+        0%, 100% { opacity: 0.35; }
+        50% { opacity: 1; }
+      }
+      .ph-timer {
+        font-family: var(--mono);
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #ffffff;
+        text-align: center;
+        margin: 2px 0;
+        text-shadow: 0 0 22px rgba(236, 72, 153, 0.35);
+      }
+      .ph-timer small {
+        display: block;
+        font-size: 0.6rem;
+        color: #8b93ab;
+        font-weight: 400;
+        letter-spacing: 0.07em;
+        margin-top: 3px;
+      }
+      .ph-wavebars {
+        height: 54px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        padding: 0 10px;
+      }
+      .ph-wavebars span {
+        width: 4px;
+        border-radius: 3px;
+        background: linear-gradient(180deg, #ec4899 0%, #00f0cc 100%);
+        transform-origin: center;
+        animation: phBar 1.15s ease-in-out infinite;
+      }
+      .ph-wavebars span:nth-child(1) { height: 16px; animation-delay: 0s; }
+      .ph-wavebars span:nth-child(2) { height: 24px; animation-delay: 0.1s; }
+      .ph-wavebars span:nth-child(3) { height: 30px; animation-delay: 0.2s; }
+      .ph-wavebars span:nth-child(4) { height: 36px; animation-delay: 0.3s; }
+      .ph-wavebars span:nth-child(5) { height: 26px; animation-delay: 0.4s; }
+      .ph-wavebars span:nth-child(6) { height: 34px; animation-delay: 0.5s; }
+      .ph-wavebars span:nth-child(7) { height: 40px; animation-delay: 0.6s; }
+      .ph-wavebars span:nth-child(8) { height: 32px; animation-delay: 0.7s; }
+      .ph-wavebars span:nth-child(9) { height: 26px; animation-delay: 0.8s; }
+      .ph-wavebars span:nth-child(10) { height: 20px; animation-delay: 0.9s; }
+      .ph-wavebars span:nth-child(11) { height: 28px; animation-delay: 1s; }
+      .ph-wavebars span:nth-child(12) { height: 14px; animation-delay: 1.1s; }
+      @keyframes phBar {
+        0%, 100% { transform: scaleY(0.3); opacity: 0.5; }
+        50% { transform: scaleY(1); opacity: 1; }
+      }
+      .ph-note {
+        background: rgba(255, 255, 255, 0.045);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        padding: 12px 14px;
+      }
+      .ph-note-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+      .ph-note-head .n-ico {
+        width: 20px;
+        height: 20px;
+        border-radius: 6px;
+        background: rgba(0, 240, 255, 0.14);
+        color: #00f0ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .ph-note-lines {
+        margin-top: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+      }
+      .ph-note-lines i {
+        display: block;
+        height: 8px;
+        border-radius: 4px;
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.26) 45%, rgba(255, 255, 255, 0.08) 100%);
+        background-size: 200% 100%;
+        animation: phShimmer 2.4s linear infinite;
+      }
+      .ph-note-lines i:nth-child(2) { width: 82%; animation-delay: 0.25s; }
+      .ph-note-lines i:nth-child(3) { width: 58%; animation-delay: 0.5s; }
+      @keyframes phShimmer {
+        0% { background-position: 160% 0; }
+        100% { background-position: -60% 0; }
+      }
+      .ph-note-meta {
+        margin-top: 10px;
+        font-family: var(--mono);
+        font-size: 0.58rem;
+        color: #8b93ab;
+        letter-spacing: 0.08em;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .ph-note-meta::before {
+        content: '';
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: #10b981;
+        box-shadow: 0 0 7px #10b981;
+      }
+      .ph-chips {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .ph-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.68rem;
+        font-weight: 700;
+        font-family: var(--mono);
+        padding: 6px 11px;
+        border-radius: 999px;
+        letter-spacing: 0.02em;
+      }
+      .ph-chip.cal {
+        background: rgba(59, 130, 246, 0.16);
+        color: #7db2ff;
+        border: 1px solid rgba(59, 130, 246, 0.4);
+      }
+      .ph-chip.task {
+        background: rgba(16, 185, 129, 0.15);
+        color: #5eeab0;
+        border: 1px solid rgba(16, 185, 129, 0.4);
+      }
+      .ph-gesture {
+        width: 78px;
+        height: 4px;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.22);
+        margin: 6px auto 2px;
+      }
+      .float-badge {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(10, 14, 26, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.13);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 13px;
+        padding: 10px 14px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: #e8e3d8;
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55);
+        z-index: 4;
+      }
+      .float-ico {
+        width: 28px;
+        height: 28px;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .float-badge small {
+        display: block;
+        font-family: var(--mono);
+        font-size: 0.58rem;
+        color: #9aa2b8;
+        font-weight: 400;
+        letter-spacing: 0.06em;
+        margin-top: 1px;
+      }
+      .float-a { top: 42px; left: calc(50% - 224px); animation: floatDrift 6.5s ease-in-out infinite; }
+      .float-b { bottom: 54px; right: calc(50% - 228px); animation: floatDrift 7.5s ease-in-out infinite reverse; }
+      .float-a .float-ico { background: rgba(236, 72, 153, 0.2); color: #ec4899; }
+      .float-b .float-ico { background: rgba(16, 185, 129, 0.18); color: #10b981; }
+      @keyframes floatDrift {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-9px); }
+      }
+
+      /* Quiz Score Row */
+      .quiz-score-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 4px;
+        flex-wrap: wrap;
+      }
+      .quiz-score-row[hidden] { display: none; }
+      .quiz-score {
+        font-family: var(--mono);
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+      .quiz-reset { padding: 8px 16px; font-size: 0.8rem; }
+
+      /* FAQ Accordion Upgrade */
+      .faq-toggle {
+        width: 100%;
+        background: none;
+        border: none;
+        color: var(--ink);
+        font-family: var(--font);
+        font-size: 1.08rem;
+        font-weight: 700;
+        text-align: left;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 14px;
+        cursor: pointer;
+        padding: 0;
+        line-height: 1.4;
+        margin-bottom: 0;
+      }
+      .faq-toggle .chev {
+        transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        color: var(--plasma);
+        flex-shrink: 0;
+        margin-top: 3px;
+      }
+      .faq-item .faq-q { margin-bottom: 0; }
+      .faq-toggle { margin-bottom: 0; }
+      .faq-item.open .chev { transform: rotate(180deg); }
+      .faq-a-wrap {
+        display: grid;
+        grid-template-rows: 0fr;
+        transition: grid-template-rows 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .faq-a-inner { overflow: hidden; min-height: 0; }
+      .faq-a { padding-top: 10px; }
+      .faq-item.open .faq-a-wrap { grid-template-rows: 1fr; }
+
+      /* Scroll Reveal */
+      .rv {
+        opacity: 0;
+        transform: translateY(26px);
+        transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .rv.vis { opacity: 1; transform: none; }
+
+      /* Spec Table Mobile Scroll */
+      .specs-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .specs-table { min-width: 620px; }
+
+      /* Focus Rings */
+      a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
+        outline: 2px solid var(--plasma);
+        outline-offset: 2px;
+      }
+
+      /* Reduced Motion */
+      @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+        .rv { opacity: 1; transform: none; }
+        .boot { opacity: 1; }
+      }
+
+      /* Responsive Comfort */
+      @media (max-width: 1000px) {
+        .hero-grid { grid-template-columns: 1fr; gap: 26px; margin-bottom: 44px; }
+        .float-a { left: 0; }
+        .float-b { right: 0; }
+      }
+      @media (max-width: 760px) {
+        .cereal-hero { padding: 112px 0 56px; }
+        .sim-card { padding: 20px 14px; }
+        .sim-output-box { padding: 18px 14px; }
+        .arch-box { padding: 26px 18px; }
+        .apk-dl-banner { padding: 36px 20px; }
+        .faq-item { padding: 18px; }
+        .tele-strip { gap: 12px; }
+        .tele-val { font-size: 1.5rem; }
+      }
+      @media (max-width: 420px) {
+        .feat-card { padding: 22px; }
+        .btn-primary, .btn-ghost { padding: 12px 20px; font-size: 0.9rem; }
+        .hero-copy .cta-row { align-items: stretch; }
+        .hero-copy .cta-row > a { flex: 1 1 100%; justify-content: center; }
+        .apk-dl-banner { padding: 30px 16px; }
+        .phone { width: 260px; }
+        .phone-screen { min-height: 500px; }
+        .float-badge { font-size: 0.7rem; padding: 8px 11px; }
+      }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation Matching CoL Standard -->
+    <nav class="top-nav" id="topNav">
+      <a href="/" class="brand" aria-label="Class Of Learners Home">
+        <img src="Icon.png" alt="Class Of Learners Logo" width="36" height="36" />
+        <span class="brand-text">Class Of Learners</span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="/" class="nav-link">Home</a>
+        <a href="ati" class="nav-link">ATI 1.4</a>
+        <a href="solar" class="nav-link">Solar 3D</a>
+        <a href="cereal" class="nav-link active" style="color: var(--plasma); font-weight: 700;">Cereal AI</a>
+        <a href="gesture" class="nav-link">Perceptus</a>
+        <a href="CastFlow" class="nav-link">CastFlow</a>
+        <a href="Database_Logic" class="nav-link">Database Logic</a>
+        <a href="about" class="nav-link">About</a>
+      </div>
+      <div class="nav-actions">
+        <div class="hz-toggle" onclick="hzToggle()"><div class="hz-clouds"></div><div class="hz-stars"></div><div class="hz-orb"></div></div>
+        <button class="nav-login-btn" id="navLoginBtn" onclick="openLogin()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+            <circle cx="12" cy="7" r="4" /></svg
+          >Sign In
+        </button>
+        <div class="nav-user-profile" id="navUserProfile" onclick="openLogin()">
+          <div class="nav-user-avatar" id="navUserAv">?</div>
+          <span class="nun" id="navUserName">User</span>
+        </div>
+        <a href="download" class="nav-dl-btn desktop-dl">Downloads Hub</a>
+        <button class="mmb" id="mmb" aria-label="Toggle menu">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M3 6H21M3 12H21M3 18H21" stroke-width="1.5" stroke-linecap="round" /></svg>
+        </button>
+      </div>
+    </nav>
+
+    <main id="main">
+      <section class="cereal-hero">
+        <div class="wrap">
+          <div class="hero-grid">
+            <div class="hero-copy">
+              <div class="badge-pill">Native Android &bull; Multimodal AI &bull; 100% Free</div>
+          <h1 class="cereal-title">Never Miss A Classroom Lecture &mdash; Transcribed, <em>Structured</em> &amp; Synced.</h1>
+          <p class="cereal-lede">
+            Cereal runs silently in the background on your Android phone, captures multi-speaker classroom discussions (including Hinglish code-switching), extracts executive study briefs with Gemini 2.5 Flash, and automatically syncs exam dates and assignment tasks directly to your Google Calendar and Tasks.
+          </p>
+              <div class="cta-row">
+                <a href="download" class="btn-primary">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Download Cereal APK
+                </a>
+                <a href="https://github.com/NeelAniGamer" target="_blank" rel="noopener noreferrer" class="btn-ghost">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+                  GitHub Source Code
+                </a>
+              </div>
+            </div><!-- /hero-copy -->
+
+            <div class="hero-visual">
+              <div class="phone-stage">
+                <div class="phone">
+                  <div class="phone-screen">
+                    <div class="ph-status"><b>9:41</b><span>REC &bull; AAC-LC</span></div>
+                    <div class="ph-appbar">
+                      <span class="ph-logo-dot" aria-hidden="true"></span>
+                      <div class="ph-appname">Cereal<div class="ph-appsub">Lecture Assistant</div></div>
+                      <span class="ph-rec-chip"><span class="ph-rec-dot"></span>REC</span>
+                    </div>
+                    <div class="ph-timer">00:14:26<small>Foreground Service &bull; 44.1 kHz Stereo</small></div>
+                    <div class="ph-wavebars" aria-hidden="true">
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                    </div>
+                    <div class="ph-note">
+                      <div class="ph-note-head">
+                        <span class="n-ico"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>
+                        CS 302 &bull; Virtual Memory Brief
+                      </div>
+                      <div class="ph-note-lines" aria-hidden="true"><i></i><i></i><i></i></div>
+                      <div class="ph-note-meta">Gemini 2.5 Flash &bull; Synthesized</div>
+                    </div>
+                    <div class="ph-chips">
+                      <span class="ph-chip cal"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>Quiz 02 &rarr; Calendar</span>
+                      <span class="ph-chip task"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Lab 04 &rarr; Tasks</span>
+                    </div>
+                    <div class="ph-gesture" aria-hidden="true"></div>
+                  </div>
+                </div>
+                <div class="float-badge float-a">
+                  <span class="float-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
+                  <span>Gemini 2.5 Flash<small>Synthesized In 1.2s</small></span>
+                </div>
+                <div class="float-badge float-b">
+                  <span class="float-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><path d="m9 16 2 2 4-4"/></svg></span>
+                  <span>Synced<small>Calendar &amp; Tasks</small></span>
+                </div>
+              </div><!-- /phone-stage -->
+            </div><!-- /hero-visual -->
+          </div><!-- /hero-grid -->
+
+          <!-- Continuous Moving Hero Audio Wave Strip -->
+          <div class="hero-audio-stream-bar">
+            <div class="stream-bar-badge">
+              <span class="stream-dot"></span>
+              <span>Continuous Audio DSP Stream</span>
+            </div>
+            <canvas id="heroWaveCanvas" class="hero-wave-canvas" height="28" aria-hidden="true"></canvas>
+            <div class="stream-bar-meta">
+              <span>Stereo AAC-LC &bull; 44.1 kHz MediaCodec</span>
+            </div>
+          </div>
+
+          <!-- Telemetry Metrics Strip -->
+          <div class="tele-strip">
+            <div class="tele-card">
+              <div class="tele-val">&lt; 1.2s</div>
+              <div class="tele-lbl">Gemini Synthesis Latency</div>
+            </div>
+            <div class="tele-card">
+              <div class="tele-val">44.1 kHz</div>
+              <div class="tele-lbl">Stereo AAC Audio Capture</div>
+            </div>
+            <div class="tele-card">
+              <div class="tele-val">100%</div>
+              <div class="tele-lbl">Private Local SQLite Vault</div>
+            </div>
+            <div class="tele-card">
+              <div class="tele-val">Zero</div>
+              <div class="tele-lbl">Paywall / 100% Free</div>
+            </div>
+          </div>
+
+          <!-- Interactive Live Simulator -->
+          <div class="sim-card">
+            <div class="sim-header">
+              <div class="sim-live-indicator">
+                <span class="sim-pulse"></span>
+                <span>Live Recording &amp; Note Synthesizer Demo</span>
+              </div>
+              <div class="sim-status-hud">
+                <span>Buffer: <b id="simTimer">00:45:12</b></span>
+                <span>Peak: <b id="simDb">-14 dBFS</b></span>
+                <button id="recordToggleBtn" class="btn-primary" aria-pressed="false" style="padding: 8px 18px; font-size: 0.84rem;">
+                  Simulate 45-Minute Lecture
+                </button>
+                <button id="micToggleBtn" class="btn-ghost" aria-pressed="false" style="padding: 7px 14px; font-size: 0.82rem; border-color: rgba(0, 240, 255, 0.4); color: var(--ion);">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                  <span id="micBtnText">Test With Mic</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Modern Continuous Audio Visualizer Deck -->
+            <div class="audio-deck-wrap">
+              <div class="audio-deck-topbar">
+                <div class="audio-modes-nav" role="tablist" aria-label="Audio Visualizer Modes">
+                  <button type="button" class="audio-mode-pill active" data-mode="siri" aria-selected="true">
+                    <span class="mode-led" style="background:#ec4899"></span>
+                    Siri Fluid Ribbons
+                  </button>
+                  <button type="button" class="audio-mode-pill" data-mode="harmonics" aria-selected="false">
+                    <span class="mode-led" style="background:#00f0ff"></span>
+                    Neural Sine Lines
+                  </button>
+                  <button type="button" class="audio-mode-pill" data-mode="spectrum" aria-selected="false">
+                    <span class="mode-led" style="background:#a855f7"></span>
+                    Equalizer Spectrum Lines
+                  </button>
+                </div>
+                <div class="audio-telemetry-badge">
+                  <span class="tele-dot"></span>
+                  <span id="audioEngineStatus">60 FPS Continuous Motion &bull; Active Harmonics</span>
+                </div>
+              </div>
+
+              <div class="audio-canvas-stage">
+                <canvas id="waveformCanvas" class="waveform-canvas" aria-hidden="true"></canvas>
+              </div>
+
+              <div class="audio-deck-freq-ticks">
+                <span>20 Hz</span>
+                <span>120 Hz (Male Fundamental)</span>
+                <span>240 Hz (Female Fundamental)</span>
+                <span>1 kHz</span>
+                <span>3.2 kHz (Speech Formants)</span>
+                <span>8 kHz</span>
+                <span>16 kHz</span>
+                <span>22 kHz</span>
+              </div>
+            </div>
+
+            <!-- Tab Switcher -->
+            <div class="sim-tabs-nav">
+              <button class="sim-tab-btn active" data-tab="tab-brief">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                Structured Notes
+              </button>
+              <button class="sim-tab-btn" data-tab="tab-tasks">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                Calendar &amp; Tasks Synced
+              </button>
+              <button class="sim-tab-btn" data-tab="tab-quiz">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                AI Flash Quiz
+              </button>
+              <button class="sim-tab-btn" data-tab="tab-transcript">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Multilingual Diarization
+              </button>
+            </div>
+
+            <!-- Tab 1: Structured Notes -->
+            <div class="sim-tab-content active" id="tab-brief">
+              <div class="sim-output-box">
+                <div class="sim-tag-row">
+                  <span class="sim-badge">Gemini 2.5 Flash</span>
+                  <span class="sim-badge" style="background: rgba(0,240,255,0.15); color: var(--ion);">CS 302: Operating Systems</span>
+                  <span class="sim-badge" style="background: rgba(242,184,75,0.15); color: var(--signal);">Auto-Formatted with KaTeX</span>
+                </div>
+                <div id="demoText" aria-live="polite">
+                  <p style="color: var(--dim); margin-bottom: 12px;">
+                    Click <b>"Simulate 45-Minute Lecture"</b> above to experience how Cereal synthesizes multi-speaker classroom discussions into structured notes and calendar action items in real-time.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab 2: Calendar & Tasks Synced -->
+            <div class="sim-tab-content" id="tab-tasks">
+              <div class="sim-output-box">
+                <div class="sim-tag-row">
+                  <span class="sim-badge" style="background: rgba(16, 185, 129, 0.15); color: var(--em);">Google Tasks API Connected</span>
+                  <span class="sim-badge" style="background: rgba(59, 130, 246, 0.15); color: #3b82f6;">Google Calendar Event Scheduled</span>
+                </div>
+                <p style="font-size: 0.88rem; color: var(--dim); margin-bottom: 16px;">
+                  Action items detected by Gemini from professor's verbal announcements. Click each item to toggle status:
+                </p>
+                <div class="task-item" onclick="this.classList.toggle('done')">
+                  <div class="task-check"></div>
+                  <div>
+                    <div class="task-title">Submit Lab 04: Paging Simulation in C++</div>
+                    <div class="task-meta">Due: Thursday, Oct 24 &bull; 11:59 PM &bull; Google Tasks</div>
+                  </div>
+                </div>
+                <div class="task-item" onclick="this.classList.toggle('done')">
+                  <div class="task-check"></div>
+                  <div>
+                    <div class="task-title">Midterm Quiz 02: Virtual Memory &amp; TLB Invalidation</div>
+                    <div class="task-meta">Event: Saturday, Oct 26 &bull; 09:00 AM &ndash; 10:30 AM &bull; Google Calendar Alert</div>
+                  </div>
+                </div>
+                <div class="task-item" onclick="this.classList.toggle('done')">
+                  <div class="task-check"></div>
+                  <div>
+                    <div class="task-title">Read Silberschatz Chapter 9 (Sections 9.1 &ndash; 9.4)</div>
+                    <div class="task-meta">Self-Study &bull; Recommended Before Tuesday Lecture</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab 3: AI Flash Quiz -->
+            <div class="sim-tab-content" id="tab-quiz">
+              <div class="sim-output-box">
+                <div class="sim-tag-row">
+                  <span class="sim-badge">Automated Quiz Synthesis</span>
+                  <span class="sim-badge" style="background: rgba(245, 158, 11, 0.15); color: var(--signal);">Active Recall Engine</span>
+                </div>
+                <p style="font-size: 0.88rem; color: var(--dim); margin-bottom: 16px;">
+                  Test your comprehension immediately after lecture ends with questions generated directly from teacher's key emphasis:
+                </p>
+
+                <div class="quiz-card">
+                  <div class="quiz-q">1. What causes Thrashing in a virtual memory system?</div>
+                  <div class="quiz-options">
+                    <button class="quiz-opt" onclick="evalQuiz(this, false)">Excessive CPU clock frequency</button>
+                    <button class="quiz-opt" onclick="evalQuiz(this, true)">Processes spending more time paging than executing</button>
+                    <button class="quiz-opt" onclick="evalQuiz(this, false)">TLB cache size exceeding L1 cache</button>
+                  </div>
+                </div>
+
+                <div class="quiz-card">
+                  <div class="quiz-q">2. Which page replacement algorithm suffers from Belady's Anomaly?</div>
+                  <div class="quiz-options">
+                    <button class="quiz-opt" onclick="evalQuiz(this, true)">First-In, First-Out (FIFO)</button>
+                    <button class="quiz-opt" onclick="evalQuiz(this, false)">Least Recently Used (LRU)</button>
+                    <button class="quiz-opt" onclick="evalQuiz(this, false)">Optimal Page Replacement (OPT)</button>
+                  </div>
+                </div>
+                <div class="quiz-score-row" id="quizScoreRow" hidden>
+                  <span class="quiz-score" id="quizScore" aria-live="polite"></span>
+                  <button type="button" class="btn-ghost quiz-reset" id="quizResetBtn">Retry Quiz</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab 4: Multilingual Transcript -->
+            <div class="sim-tab-content" id="tab-transcript">
+              <div class="sim-output-box">
+                <div class="sim-tag-row">
+                  <span class="sim-badge">Speaker Diarization</span>
+                  <span class="sim-badge" style="background: rgba(168, 85, 247, 0.15); color: #a855f7;">Hinglish Code-Switching Supported</span>
+                </div>
+                <div style="font-family: var(--mono); font-size: 0.86rem; line-height: 1.8;">
+                  <p><b style="color: var(--ion)">[00:04:12 - Prof. Sharma]:</b> "Good morning everyone. Today we are finishing Virtual Memory. Remember last class we discussed Page Faults?"</p>
+                  <p><b style="color: var(--plasma)">[00:08:45 - Prof. Sharma]:</b> "Agar TLB hit ratio 98% hai, toh Effective Access Time calculate karna exam mein aayega. <i>Remember the formula</i>: hit time plus miss rate times penalty."</p>
+                  <p><b style="color: var(--teal)">[00:14:30 - Student Question]:</b> "Sir, will LRU page replacement algorithm suffer from Belady's anomaly?"</p>
+                  <p><b style="color: var(--plasma)">[00:15:02 - Prof. Sharma]:</b> "Bilkul nahi! LRU is a stack algorithm. Only FIFO suffers from Belady's anomaly. Note this down for Saturday's quiz."</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- Why We Built It Section -->
+      <section style="padding: 70px 0;">
+        <div class="wrap">
+          <div class="sec-head">
+            <div class="sec-eyebrow">The Classroom Problem</div>
+            <h2 class="sec-title">Built For The Reality Of Indian Higher Education.</h2>
+          </div>
+          <div class="grid-3">
+            <div class="feat-card">
+              <div class="feat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg></div>
+              <h3>Multilingual Code-Switching</h3>
+              <p>Professors frequently switch between English, Hindi, and technical dialect in the middle of a sentence. Standard speech recognition engines fail or produce garbled text. Cereal is tuned for natural multilingual audio flow.</p>
+            </div>
+            <div class="feat-card">
+              <div class="feat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+              <h3>Automatic Deadline Extraction</h3>
+              <p>Whenever a teacher says <em>"Submit the assignment by next Tuesday 4 PM"</em>, Cereal isolates the due date, creates a task in Google Tasks, and blocks time on your Google Calendar automatically.</p>
+            </div>
+            <div class="feat-card">
+              <div class="feat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+              <h3>Foreground Audio Reliability</h3>
+              <p>Phones lock, notifications arrive, and students switch between apps. Cereal utilizes a persistent foreground Android service to maintain high-bitrate AAC recording without system kills or interruptions.</p>
+            </div>
+            <div class="feat-card">
+              <div class="feat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+              <h3>Active Recall Generation</h3>
+              <p>Automatically compiles dynamic multiple-choice quiz questions and flashcards directly from lecture content, allowing students to test themselves within minutes after the lecture finishes.</p>
+            </div>
+            <div class="feat-card">
+              <div class="feat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+              <h3>Zero-Cloud Telemetry Privacy</h3>
+              <p>Raw audio stays strictly stored on your Android device. It is never sold, analyzed, or indexed by third-party tracking networks. You maintain complete control over your private recordings.</p>
+            </div>
+            <div class="feat-card">
+              <div class="feat-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+              <h3>Battery-Conscious MediaCodec</h3>
+              <p>Direct low-level Android MediaCodec hardware encoding uses less than 3% battery per hour of continuous recording, letting you capture an entire day of college classes without needing a charger.</p>
+            </div>
+          </div>
+
+          <!-- Architecture Pipeline Box -->
+          <div class="arch-box">
+            <div class="sec-eyebrow">Software Engineering</div>
+            <h2 style="font-size: 1.9rem; margin-bottom: 12px; font-weight: 700;">Native Kotlin &amp; Jetpack Compose Pipeline</h2>
+            <p style="color: var(--dim); max-width: 68ch; font-size: 1rem;">
+              Built natively in <code>Current Projects/Granola20/</code> (production package <code>com.col.cereal</code>), Cereal is engineered with modern Android Material 3, StateFlow, Room SQLite with FTS5 search, and Google OAuth2 (PKCE).
+            </p>
+            <div class="pipeline-row">
+              <div class="pipe-step">
+                <div class="pipe-num">STAGE 01</div>
+                <div class="pipe-title">Audio Capture Service</div>
+                <div class="pipe-desc">Hardware microphone input recorded to <code>.m4a</code> (AAC 44.1 kHz, 128 kbps) with battery-conscious low-memory buffers and foreground notification.</div>
+              </div>
+              <div class="pipe-step">
+                <div class="pipe-num">STAGE 02</div>
+                <div class="pipe-title">Gemini 2.5 Flash</div>
+                <div class="pipe-desc">Audio payload streamed via HTTP to Google's sub-second multimodal model with zero hallucination prompt controls and markdown structure.</div>
+              </div>
+              <div class="pipe-step">
+                <div class="pipe-num">STAGE 03</div>
+                <div class="pipe-title">Local SQLite Vault</div>
+                <div class="pipe-desc">Full-text searchable notes, audio checkpoints, and speaker metadata saved securely on-device with zero cloud lock-in.</div>
+              </div>
+              <div class="pipe-step">
+                <div class="pipe-num">STAGE 04</div>
+                <div class="pipe-title">Calendar &amp; Tasks Sync</div>
+                <div class="pipe-desc">REST API dispatcher converts identified action items into native Google Calendar events and Google Tasks with automatic time-blocking.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Technical Specifications Table -->
+          <div class="sec-head">
+            <div class="sec-eyebrow">Technical Specifications</div>
+            <h2 class="sec-title">Architectural Standards &amp; Compatibility</h2>
+          </div>
+          <div class="specs-table-wrap">
+            <table class="specs-table">
+              <thead>
+                <tr>
+                  <th>Component</th>
+                  <th>Implementation Specification</th>
+                  <th>Engineering Rationale</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><b>Frontend UI</b></td>
+                  <td>Jetpack Compose 1.7 / Material 3 Design</td>
+                  <td>Declarative reactive UI with dynamic dark/light surface tokens.</td>
+                </tr>
+                <tr>
+                  <td><b>Audio Subsystem</b></td>
+                  <td>Android MediaCodec (AAC-LC, 44.1 kHz, 128 kbps)</td>
+                  <td>Zero CPU overhead hardware encoding for continuous 4-hour lectures.</td>
+                </tr>
+                <tr>
+                  <td><b>AI Synthesis Engine</b></td>
+                  <td>Google Gemini 2.5 Flash Multimodal Endpoint</td>
+                  <td>Sub-second transcription with native Hinglish and Indian accent comprehension.</td>
+                </tr>
+                <tr>
+                  <td><b>Persistence Layer</b></td>
+                  <td>Android Room SQLite with FTS5 Full-Text Search</td>
+                  <td>Instant search across hundreds of past lectures without network latency.</td>
+                </tr>
+                <tr>
+                  <td><b>Calendar Sync</b></td>
+                  <td>Google Calendar &amp; Tasks v3 REST API (PKCE OAuth2)</td>
+                  <td>Secure token management with scoped user permissions and offline retry queues.</td>
+                </tr>
+                <tr>
+                  <td><b>Minimum Target</b></td>
+                  <td>Android 8.0 Oreo (API Level 26) through Android 15</td>
+                  <td>Covers 98.4% of active Android devices across India and globally.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- FAQ Accordion -->
+          <div class="sec-head">
+            <div class="sec-eyebrow">Frequently Asked Questions</div>
+            <h2 class="sec-title">Common Questions &amp; Practical Details</h2>
+          </div>
+          <div class="faq-grid">
+            <div class="faq-item open">
+              <h3 class="faq-q"><button type="button" class="faq-toggle" aria-expanded="true" aria-controls="faq-a-1">
+                <span>Does Cereal Record When The Phone Screen Is Locked?</span>
+                <span class="chev" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+              </button></h3>
+              <div class="faq-a-wrap" id="faq-a-1">
+                <div class="faq-a-inner"><div class="faq-a">Yes. Cereal runs as a foreground Android service with a persistent system notification, holding an efficient CPU wake lock that ensures high-fidelity recording even when your phone is locked in your pocket.</div></div>
+              </div>
+            </div>
+            <div class="faq-item">
+              <h3 class="faq-q"><button type="button" class="faq-toggle" aria-expanded="false" aria-controls="faq-a-2">
+                <span>How Does It Handle Hindi And Regional Code-Switching?</span>
+                <span class="chev" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+              </button></h3>
+              <div class="faq-a-wrap" id="faq-a-2">
+                <div class="faq-a-inner"><div class="faq-a">Gemini 2.5 Flash is natively multimodal and pre-trained on diverse Indian linguistic patterns. It seamlessly decodes bilingual Hindi-English lecture delivery without producing phonetically confused transcripts.</div></div>
+              </div>
+            </div>
+            <div class="faq-item">
+              <h3 class="faq-q"><button type="button" class="faq-toggle" aria-expanded="false" aria-controls="faq-a-3">
+                <span>What Recording Permissions Does Cereal Need?</span>
+                <span class="chev" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+              </button></h3>
+              <div class="faq-a-wrap" id="faq-a-3">
+                <div class="faq-a-inner"><div class="faq-a">Only two: microphone access for capture, and notification permission so Android can display the persistent recording service badge. No contacts, storage scanning, location, or background data harvesting is ever requested.</div></div>
+              </div>
+            </div>
+            <div class="faq-item">
+              <h3 class="faq-q"><button type="button" class="faq-toggle" aria-expanded="false" aria-controls="faq-a-4">
+                <span>Does Cereal Work Completely Offline?</span>
+                <span class="chev" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+              </button></h3>
+              <div class="faq-a-wrap" id="faq-a-4">
+                <div class="faq-a-inner"><div class="faq-a">Recording and storage work fully offline — your audio is saved locally first with zero data loss. Only the synthesis step streams to Gemini, and pending lectures automatically upload for transcription the moment connectivity returns.</div></div>
+              </div>
+            </div>
+            <div class="faq-item">
+              <h3 class="faq-q"><button type="button" class="faq-toggle" aria-expanded="false" aria-controls="faq-a-5">
+                <span>Why Does Google Play Protect Show A Warning During Install?</span>
+                <span class="chev" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+              </button></h3>
+              <div class="faq-a-wrap" id="faq-a-5">
+                <div class="faq-a-inner"><div class="faq-a">Because Cereal ships as a direct APK rather than a Play Store listing, Android flags any sideloaded package as "unknown publisher" by default. The build is signed, open-source, and auditable on GitHub — tap "Install Anyway" to proceed.</div></div>
+              </div>
+            </div>
+            <div class="faq-item">
+              <h3 class="faq-q"><button type="button" class="faq-toggle" aria-expanded="false" aria-controls="faq-a-6">
+                <span>Is Cereal Free, Or Are There Hidden Subscription Fees?</span>
+                <span class="chev" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+              </button></h3>
+              <div class="faq-a-wrap" id="faq-a-6">
+                <div class="faq-a-inner"><div class="faq-a">Cereal is 100% free and open-source. There are no subscriptions, ads, or artificial feature walls. You can supply your own free Google Gemini API key or use our studio's student quota.</div></div>
+              </div>
+            </div>
+            <div class="faq-item">
+              <h3 class="faq-q"><button type="button" class="faq-toggle" aria-expanded="false" aria-controls="faq-a-7">
+                <span>How Is This Different From The Built-In Voice Recorder?</span>
+                <span class="chev" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+              </button></h3>
+              <div class="faq-a-wrap" id="faq-a-7">
+                <div class="faq-a-inner"><div class="faq-a">A stock recorder hands you a raw audio file; Cereal hands you study material. It synthesizes searchable structured notes, extracts exam formulas, and dispatches dates and assignments straight into Google Calendar and Tasks — all in one tap.</div></div>
+              </div>
+            </div>
+            <div class="faq-item">
+              <h3 class="faq-q"><button type="button" class="faq-toggle" aria-expanded="false" aria-controls="faq-a-8">
+                <span>How Much Storage Does A Typical College Lecture Take?</span>
+                <span class="chev" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+              </button></h3>
+              <div class="faq-a-wrap" id="faq-a-8">
+                <div class="faq-a-inner"><div class="faq-a">Because Cereal uses efficient AAC-LC hardware compression at 128 kbps, a standard 60-minute lecture uses only ~57 MB of device storage.</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Direct APK Download Banner -->
+          <div class="apk-dl-banner">
+            <h2>Ready To Supercharge Your Learning?</h2>
+            <p>Download the Cereal Android APK directly, install in seconds, and experience effortless classroom note-taking and task automation.</p>
+            <a href="download" class="btn-primary" style="font-size: 1.05rem; padding: 16px 36px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download Cereal APK (v1.2.0)
+            </a>
+            <div class="apk-meta-row">
+              <span><b>Package:</b> com.col.cereal</span>
+              <span><b>Size:</b> 18.4 MB</span>
+              <span><b>Android:</b> 8.0+</span>
+              <span><b>License:</b> Open Educational</span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </main>
+
+    <!-- Global Studio Footer -->
+    <footer class="col-footer">
+      <div class="wrap" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+        <div><b>Class Of Learners</b> &bull; Mumbai Student Engineering Studio</div>
+        <div>
+          <a href="/">Home</a>
+          <a href="ati">ATI 1.4</a>
+          <a href="solar">Solar Engine</a>
+          <a href="gesture">Perceptus Flow</a>
+          <a href="CastFlow">CastFlow</a>
+          <a href="Database_Logic">Database Logic</a>
+          <a href="cereal">Cereal AI</a>
+          <a href="download">Downloads</a>
+          <a href="about">About</a>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Studio Core Scripts -->
+    <script src="col-ui.js"></script>
+    <script src="col-auth.js"></script>
+
+    <script>
+      // ==========================================
+      // Modern Continuous Audio Lines Engine
+      // ==========================================
+      (function () {
+        var canvas = document.getElementById('waveformCanvas')
+        var heroCanvas = document.getElementById('heroWaveCanvas')
+        if (!canvas) return
+
+        var isPlaying = false
+        var currentMode = 'siri' // 'siri', 'harmonics', 'spectrum'
+        var phase = 0
+        var heroPhase = 0
+        var micActive = false
+        var micAudioCtx = null
+        var micAnalyser = null
+        var micDataArray = null
+        var timerInterval = null
+        var secondsElapsed = 45 * 60 + 12
+
+        // Speech burst simulation & energy dynamics
+        var vocalEnergy = 0.22
+        var targetVocalEnergy = 0.22
+
+        // Floating Audio Photons / Sparkle Particles
+        var particles = []
+        for (var i = 0; i < 28; i++) {
+          particles.push({
+            xNorm: Math.random(),
+            speed: 0.0008 + Math.random() * 0.0018,
+            size: 1.4 + Math.random() * 2.2,
+            alpha: 0.3 + Math.random() * 0.7,
+            color: i % 2 === 0 ? '#ec4899' : '#00f0ff'
+          })
+        }
+
+        // Setup High-DPI canvas helper
+        function setupCanvas(c, heightPx) {
+          if (!c) return null
+          var rect = c.getBoundingClientRect()
+          var w = rect.width || c.parentElement.clientWidth || 800
+          var h = heightPx || 140
+          var dpr = Math.min(window.devicePixelRatio || 1, 2)
+          c.width = Math.floor(w * dpr)
+          c.height = Math.floor(h * dpr)
+          var ctx = c.getContext('2d')
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+          return { ctx: ctx, w: w, h: h, dpr: dpr }
+        }
+
+        var mainDims = setupCanvas(canvas, 140)
+        var heroDims = setupCanvas(heroCanvas, 28)
+
+        window.addEventListener('resize', function () {
+          mainDims = setupCanvas(canvas, 140)
+          heroDims = setupCanvas(heroCanvas, 28)
+          if (reduceMotion) renderAudioLines()
+        })
+
+        // Hann tapering envelope for smooth edge decay
+        function hannEnvelope(t) {
+          if (t <= 0 || t >= 1) return 0
+          return Math.pow(Math.sin(Math.PI * t), 1.25)
+        }
+
+        // Render Frame Loop (Continuous Moving Animation)
+        function renderAudioLines() {
+          var isLm = document.documentElement.classList.contains('lm')
+
+          // Update continuous phase
+          var speed = isPlaying ? 0.048 : 0.024
+          phase += speed
+          heroPhase += 0.03
+
+          // Update vocal energy target when playing simulation
+          if (isPlaying) {
+            if (Math.random() < 0.08) {
+              targetVocalEnergy = 0.45 + Math.random() * 0.55
+            }
+          } else {
+            targetVocalEnergy = 0.2
+          }
+
+          // Smooth interpolation
+          vocalEnergy += (targetVocalEnergy - vocalEnergy) * 0.1
+
+          // Read Live Mic data if active
+          if (micActive && micAnalyser && micDataArray) {
+            micAnalyser.getByteFrequencyData(micDataArray)
+            var sum = 0
+            for (var m = 0; m < micDataArray.length; m++) {
+              sum += micDataArray[m]
+            }
+            var micLevel = (sum / micDataArray.length) / 255
+            vocalEnergy = 0.15 + micLevel * 1.5
+          }
+
+          // ----------------------------------------
+          // 1. Draw Hero Continuous Audio Wave Strip
+          // ----------------------------------------
+          if (heroCanvas && heroDims) {
+            var hCtx = heroDims.ctx
+            var hw = heroDims.w
+            var hh = heroDims.h
+            hCtx.clearRect(0, 0, hw, hh)
+
+            hCtx.beginPath()
+            hCtx.lineWidth = 1.8
+            hCtx.strokeStyle = isLm ? '#db2777' : '#ec4899'
+            hCtx.shadowBlur = 8
+            hCtx.shadowColor = 'rgba(236, 72, 153, 0.6)'
+
+            var points = 60
+            for (var pi = 0; pi <= points; pi++) {
+              var norm = pi / points
+              var px = norm * hw
+              var env = Math.sin(Math.PI * norm)
+              var py = (hh / 2) + Math.sin(norm * 18 - heroPhase * 2) * (hh * 0.35) * env
+              if (pi === 0) hCtx.moveTo(px, py)
+              else hCtx.lineTo(px, py)
+            }
+            hCtx.stroke()
+            hCtx.shadowBlur = 0
+          }
+
+          // ----------------------------------------
+          // 2. Draw Main Audio Visualizer Deck
+          // ----------------------------------------
+          if (canvas && mainDims) {
+            var ctx = mainDims.ctx
+            var w = mainDims.w
+            var h = mainDims.h
+            var cy = h / 2
+
+            ctx.clearRect(0, 0, w, h)
+
+            // Mode 1: Siri Fluid Ribbons
+            if (currentMode === 'siri') {
+              // A. Background Spectrum Pins (Equalizer lines)
+              var pinCount = Math.floor(w / 14)
+              var pinWidth = 2.5
+              for (var i = 0; i < pinCount; i++) {
+                var pinNorm = i / pinCount
+                var pinX = pinNorm * w
+                var pinEnv = hannEnvelope(pinNorm)
+                var pinFreq = Math.sin(pinNorm * 22 + phase * 1.5) * Math.cos(pinNorm * 9 - phase)
+                var pinHeight = (Math.abs(pinFreq) * (h * 0.38) * vocalEnergy + 4) * pinEnv
+
+                ctx.fillStyle = isLm ? 'rgba(15, 23, 42, 0.08)' : 'rgba(255, 255, 255, 0.06)'
+                ctx.fillRect(pinX, cy - pinHeight, pinWidth, pinHeight * 2)
+
+                // Illuminated Cap
+                ctx.fillStyle = (i % 3 === 0)
+                  ? (isLm ? '#db2777' : '#ec4899')
+                  : (isLm ? '#0284c7' : '#00f0ff')
+                ctx.fillRect(pinX, cy - pinHeight - 1.5, pinWidth, 2)
+              }
+
+              // B. Multi-Layer Overlapping Continuous Sine Waves
+              var waveConfigs = [
+                {
+                  color: isLm ? '#db2777' : '#ec4899',
+                  glow: 'rgba(236, 72, 153, 0.85)',
+                  fillGrad: isLm ? 'rgba(219, 39, 119, 0.12)' : 'rgba(236, 72, 153, 0.18)',
+                  amp: (h * 0.44) * vocalEnergy,
+                  freq: 0.008,
+                  speed: 1.0,
+                  width: 2.8,
+                  fill: true
+                },
+                {
+                  color: isLm ? '#0284c7' : '#00f0ff',
+                  glow: 'rgba(0, 240, 255, 0.75)',
+                  fillGrad: isLm ? 'rgba(2, 132, 199, 0.08)' : 'rgba(0, 240, 255, 0.12)',
+                  amp: (h * 0.36) * (vocalEnergy * 0.95),
+                  freq: 0.012,
+                  speed: -1.35,
+                  width: 2.2,
+                  fill: true
+                },
+                {
+                  color: isLm ? '#7c3aed' : '#a855f7',
+                  glow: 'rgba(168, 85, 247, 0.65)',
+                  amp: (h * 0.28) * (vocalEnergy * 0.8),
+                  freq: 0.005,
+                  speed: 0.7,
+                  width: 1.8,
+                  fill: false
+                },
+                {
+                  color: isLm ? '#d97706' : '#f59e0b',
+                  glow: 'rgba(245, 158, 11, 0.6)',
+                  amp: (h * 0.22) * (vocalEnergy * 1.1),
+                  freq: 0.019,
+                  speed: 2.1,
+                  width: 1.4,
+                  fill: false
+                }
+              ]
+
+              waveConfigs.forEach(function (cfg) {
+                ctx.save()
+                ctx.beginPath()
+                ctx.lineWidth = cfg.width
+                ctx.strokeStyle = cfg.color
+                ctx.shadowBlur = isLm ? 6 : 14
+                ctx.shadowColor = cfg.glow
+
+                var stepSamples = 120
+                for (var s = 0; s <= stepSamples; s++) {
+                  var sx = (s / stepSamples) * w
+                  var sNorm = s / stepSamples
+                  var env = hannEnvelope(sNorm)
+                  var waveY = cy + (
+                    Math.sin(sx * cfg.freq + phase * cfg.speed) *
+                    Math.cos(sx * (cfg.freq * 0.5) - phase * (cfg.speed * 0.4)) *
+                    cfg.amp
+                  ) * env
+
+                  if (s === 0) ctx.moveTo(sx, waveY)
+                  else ctx.lineTo(sx, waveY)
+                }
+
+                ctx.stroke()
+
+                // Lush gradient fill underneath
+                if (cfg.fill) {
+                  ctx.lineTo(w, cy)
+                  ctx.lineTo(0, cy)
+                  ctx.closePath()
+                  var grad = ctx.createLinearGradient(0, cy - cfg.amp, 0, cy + cfg.amp)
+                  grad.addColorStop(0, cfg.fillGrad)
+                  grad.addColorStop(1, 'transparent')
+                  ctx.fillStyle = grad
+                  ctx.fill()
+                }
+                ctx.restore()
+              })
+
+              // C. Continuous Floating Audio Photons / Particles
+              particles.forEach(function (p) {
+                p.xNorm += p.speed
+                if (p.xNorm > 1) p.xNorm = 0
+                var px = p.xNorm * w
+                var env = hannEnvelope(p.xNorm)
+                var py = cy + (Math.sin(px * 0.008 + phase) * Math.cos(px * 0.004 - phase * 0.4) * (h * 0.44 * vocalEnergy)) * env
+
+                ctx.save()
+                ctx.beginPath()
+                ctx.arc(px, py, p.size, 0, Math.PI * 2)
+                ctx.fillStyle = p.color
+                ctx.shadowBlur = 10
+                ctx.shadowColor = p.color
+                ctx.globalAlpha = p.alpha * env
+                ctx.fill()
+                ctx.restore()
+              })
+            }
+
+            // Mode 2: Neural Sine Lines (Precision Oscilloscope)
+            else if (currentMode === 'harmonics') {
+              var laserHues = isLm
+                ? ['#db2777', '#0284c7', '#7c3aed', '#0d9488', '#ea580c', '#e11d48']
+                : ['#ec4899', '#00f0ff', '#a855f7', '#00f0cc', '#f59e0b', '#f43f5e']
+
+              var lineCount = 6
+              for (var l = 0; l < lineCount; l++) {
+                var lColor = laserHues[l % laserHues.length]
+                var lSpeed = (l % 2 === 0 ? 1 : -1) * (0.8 + l * 0.25)
+                var lFreq = 0.004 + (l * 0.003)
+                var lAmp = (h * 0.4) * vocalEnergy * (1 - (l * 0.12))
+
+                ctx.save()
+                ctx.beginPath()
+                ctx.lineWidth = 1.8
+                ctx.strokeStyle = lColor
+                ctx.shadowBlur = 12
+                ctx.shadowColor = lColor
+
+                var samples = 140
+                for (var si = 0; si <= samples; si++) {
+                  var lx = (si / samples) * w
+                  var lNorm = si / samples
+                  var lenv = hannEnvelope(lNorm)
+                  var ly = cy + Math.sin(lx * lFreq + phase * lSpeed + l) * lAmp * lenv
+                  if (si === 0) ctx.moveTo(lx, ly)
+                  else ctx.lineTo(lx, ly)
+                }
+                ctx.stroke()
+                ctx.restore()
+              }
+            }
+
+            // Mode 3: Continuous Equalizer Spectrum Lines
+            else if (currentMode === 'spectrum') {
+              var bars = 72
+              var bWidth = (w / bars) - 3
+              var topCurvePoints = []
+
+              for (var b = 0; b < bars; b++) {
+                var bNorm = b / bars
+                var bx = bNorm * w + 1.5
+                var benv = hannEnvelope(bNorm)
+
+                // Frequency response profile with voice boost around index 20-35
+                var formantBoost = 1 + Math.exp(-Math.pow((b - 28) / 8, 2)) * 1.2
+                var barVal = (Math.sin(b * 0.35 + phase * 2.2) * 0.5 + 0.5) *
+                             (Math.cos(b * 0.15 - phase * 1.4) * 0.5 + 0.5)
+                var bHeight = (barVal * (h * 0.45) * vocalEnergy * formantBoost + 6) * benv
+
+                topCurvePoints.push({ x: bx + bWidth / 2, y: cy - bHeight })
+
+                // Gradient bar
+                var barGrad = ctx.createLinearGradient(0, cy - bHeight, 0, cy + bHeight)
+                barGrad.addColorStop(0, isLm ? '#db2777' : '#ec4899')
+                barGrad.addColorStop(0.5, isLm ? '#0284c7' : '#00f0ff')
+                barGrad.addColorStop(1, isLm ? '#7c3aed' : '#a855f7')
+
+                ctx.save()
+                ctx.fillStyle = barGrad
+                ctx.shadowBlur = 8
+                ctx.shadowColor = 'rgba(236, 72, 153, 0.4)'
+                ctx.beginPath()
+                if (ctx.roundRect) {
+                  ctx.roundRect(bx, cy - bHeight, bWidth, bHeight * 2, 3)
+                } else {
+                  ctx.rect(bx, cy - bHeight, bWidth, bHeight * 2)
+                }
+                ctx.fill()
+                ctx.restore()
+              }
+
+              // Top bounding continuous wave line
+              if (topCurvePoints.length > 0) {
+                ctx.save()
+                ctx.beginPath()
+                ctx.lineWidth = 2.2
+                ctx.strokeStyle = isLm ? '#db2777' : '#ec4899'
+                ctx.shadowBlur = 14
+                ctx.shadowColor = isLm ? '#db2777' : '#ec4899'
+                ctx.moveTo(topCurvePoints[0].x, topCurvePoints[0].y)
+                for (var ci = 1; ci < topCurvePoints.length; ci++) {
+                  ctx.lineTo(topCurvePoints[ci].x, topCurvePoints[ci].y)
+                }
+                ctx.stroke()
+                ctx.restore()
+              }
+            }
+          }
+
+          // Loop tail: only schedule the next frame while the engine is running
+          if (!engineRunning || reduceMotion) return
+          kickFrame()
+        }
+
+        // Continuous engine state: pauses with the tab, honors reduced motion with a single calm frame
+        var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        var engineRunning = true
+        var rafPending = false
+        function kickFrame() {
+          // Dedupe scheduler: back-to-back kicks (resume + pending frame) never spawn a second loop
+          if (rafPending || !engineRunning || reduceMotion) return
+          rafPending = true
+          requestAnimationFrame(function () {
+            rafPending = false
+            renderAudioLines()
+          })
+        }
+
+        document.addEventListener('visibilitychange', function () {
+          engineRunning = !document.hidden
+          kickFrame()
+        })
+
+        // Initial kick-off
+        if (reduceMotion) {
+          renderAudioLines()
+        } else {
+          kickFrame()
+        }
+
+        // Mode Pill Buttons
+        var modePills = document.querySelectorAll('.audio-mode-pill')
+        modePills.forEach(function (pill) {
+          pill.addEventListener('click', function () {
+            modePills.forEach(function (p) {
+              p.classList.remove('active')
+              p.setAttribute('aria-selected', 'false')
+            })
+            pill.classList.add('active')
+            pill.setAttribute('aria-selected', 'true')
+            currentMode = pill.dataset.mode
+            var statusEl = document.getElementById('audioEngineStatus')
+            if (statusEl) {
+              if (currentMode === 'siri') statusEl.textContent = '60 FPS Continuous Siri Ribbons • 44.1 kHz DSP'
+              else if (currentMode === 'harmonics') statusEl.textContent = 'Multi-Beam Neural Sine Lines • Oscilloscope Active'
+              else statusEl.textContent = '72-Band Continuous Equalizer Spectrum • High Dynamic Range'
+            }
+            if (reduceMotion) renderAudioLines()
+          })
+        })
+
+        // Microphone Reactive Toggle
+        var micBtn = document.getElementById('micToggleBtn')
+        var micText = document.getElementById('micBtnText')
+        if (micBtn) {
+          micBtn.addEventListener('click', function () {
+            if (!micActive) {
+              if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert('Live microphone input is not supported in this browser environment.')
+                return
+              }
+              navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+                micAudioCtx = new (window.AudioContext || window.webkitAudioContext)()
+                var source = micAudioCtx.createMediaStreamSource(stream)
+                micAnalyser = micAudioCtx.createAnalyser()
+                micAnalyser.fftSize = 256
+                source.connect(micAnalyser)
+                micDataArray = new Uint8Array(micAnalyser.frequencyBinCount)
+                micActive = true
+                micBtn.setAttribute('aria-pressed', 'true')
+                if (micText) micText.textContent = 'Stop Live Mic'
+                micBtn.style.background = 'rgba(0, 240, 255, 0.18)'
+                micBtn.style.borderColor = 'var(--ion)'
+                var statusEl = document.getElementById('audioEngineStatus')
+                if (statusEl) statusEl.textContent = 'LIVE MICROPHONE ACTIVE • Real-Time Voice Wave Reactive'
+              }).catch(function (err) {
+                console.warn('Microphone permission denied or unavailable:', err)
+                alert('Microphone permission was not granted. The simulator will continue with simulated vocal harmonics.')
+              })
+            } else {
+              micActive = false
+              micBtn.setAttribute('aria-pressed', 'false')
+              if (micAudioCtx && micAudioCtx.state !== 'closed') {
+                micAudioCtx.close()
+              }
+              if (micText) micText.textContent = 'Test With Mic'
+              micBtn.style.background = 'transparent'
+              micBtn.style.borderColor = 'rgba(0, 240, 255, 0.4)'
+              var statusEl = document.getElementById('audioEngineStatus')
+              if (statusEl) statusEl.textContent = '60 FPS Continuous Motion • Active Harmonics'
+            }
+          })
+        }
+
+        // Record / Simulate 45-Minute Lecture Button
+        var toggleBtn = document.getElementById('recordToggleBtn')
+        var demoText = document.getElementById('demoText')
+        var timerEl = document.getElementById('simTimer')
+        var dbEl = document.getElementById('simDb')
+
+        if (toggleBtn && demoText) {
+          toggleBtn.addEventListener('click', function () {
+            isPlaying = !isPlaying
+            toggleBtn.textContent = isPlaying ? 'Stop Simulation' : 'Simulate 45-Minute Lecture'
+            toggleBtn.style.background = isPlaying ? '#ef4444' : 'var(--plasma)'
+            toggleBtn.setAttribute('aria-pressed', isPlaying ? 'true' : 'false')
+
+            var statusEl = document.getElementById('audioEngineStatus')
+            if (isPlaying) {
+              if (statusEl) statusEl.textContent = 'GEMINI 2.5 FLASH RECORDING • Real-Time Vocal Frequency Synthesis'
+              demoText.innerHTML = '<b style="color: var(--plasma); font-family: var(--mono)">[Gemini 2.5 Flash Synthesizing...]</b><br/><br/>' +
+                '<b>1. Executive Summary:</b> Deep-dive discussion on Virtual Memory, Multilevel Page Tables, and TLB Thrashing in modern x86-64 microarchitectures.<br/><br/>' +
+                '<b>2. Critical Exam Formula:</b> Effective Access Time (EAT) = <code>Hit_Time + (Miss_Rate &times; Page_Fault_Penalty)</code>.<br/><br/>' +
+                '<b>3. Key Takeaway:</b> FIFO algorithm suffers from Belady&#39;s anomaly where increasing page frames increases page faults; LRU is a stack algorithm and immune.<br/><br/>' +
+                '<b>4. Actions Dispatched:</b> Midterm Quiz 02 scheduled on Google Calendar &bull; Lab 04 Paging Sim added to Google Tasks.'
+
+              clearInterval(timerInterval)
+              timerInterval = setInterval(function () {
+                secondsElapsed++
+                var mins = Math.floor(secondsElapsed / 60)
+                var secs = secondsElapsed % 60
+                var hrs = Math.floor(mins / 60)
+                mins = mins % 60
+                if (timerEl) {
+                  timerEl.textContent = (hrs < 10 ? '0' : '') + hrs + ':' + (mins < 10 ? '0' : '') + mins + ':' + (secs < 10 ? '0' : '') + secs
+                }
+                if (dbEl) {
+                  var randomDb = -10 - Math.floor(Math.random() * 10)
+                  dbEl.textContent = randomDb + ' dBFS'
+                }
+              }, 1000)
+            } else {
+              clearInterval(timerInterval)
+              if (statusEl) statusEl.textContent = '60 FPS Continuous Motion • Standby Fluid Audio Stream'
+              demoText.innerHTML = '<p style="color: var(--dim)">Lecture synthesis completed and encrypted in local SQLite database.</p>'
+              if (dbEl) dbEl.textContent = '-48 dBFS'
+            }
+          })
+        }
+
+        // Tab Switcher
+        var tabBtns = document.querySelectorAll('.sim-tab-btn')
+        tabBtns.forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            tabBtns.forEach(function (b) { b.classList.remove('active') })
+            btn.classList.add('active')
+            var targetId = btn.dataset.tab
+            document.querySelectorAll('.sim-tab-content').forEach(function (content) {
+              content.classList.toggle('active', content.id === targetId)
+            })
+          })
+        })
+
+        // ==========================================
+        // Interactive Enhancements: Quiz, Tasks, FAQ, Reveal, Boot
+        // ==========================================
+
+        // Quiz: score tracking with a Retry that restores pristine option labels
+        var quizState = { total: 0, correct: 0 }
+        function refreshQuizScore() {
+          var row = document.getElementById('quizScoreRow')
+          var scoreEl = document.getElementById('quizScore')
+          if (!row || !scoreEl || quizState.total === 0) return
+          row.hidden = false
+          scoreEl.textContent = 'Quiz Score: ' + quizState.correct + ' / ' + quizState.total
+        }
+
+        document.querySelectorAll('.quiz-opt').forEach(function (opt) {
+          if (!opt.dataset.label) opt.dataset.label = opt.textContent.trim()
+        })
+
+        window.evalQuiz = function (btn, isCorrect) {
+          var parent = btn.parentElement
+          if (parent.dataset && parent.dataset.answered === '1') return
+          if (parent.dataset) parent.dataset.answered = '1'
+          quizState.total++
+          if (isCorrect) quizState.correct++
+          parent.querySelectorAll('.quiz-opt').forEach(function (opt) {
+            opt.disabled = true
+            opt.style.cursor = 'default'
+          })
+          btn.classList.add(isCorrect ? 'correct' : 'wrong')
+          btn.innerHTML = btn.dataset.label + ' &bull; <b>' + (isCorrect ? 'Correct!' : 'Incorrect') + '</b>'
+          refreshQuizScore()
+        }
+
+        var quizResetBtn = document.getElementById('quizResetBtn')
+        if (quizResetBtn) {
+          quizResetBtn.addEventListener('click', function () {
+            quizState.total = 0
+            quizState.correct = 0
+            var row = document.getElementById('quizScoreRow')
+            if (row) row.hidden = true
+            document.querySelectorAll('.quiz-opt').forEach(function (opt) {
+              opt.disabled = false
+              opt.style.cursor = ''
+              opt.classList.remove('correct', 'wrong')
+              opt.textContent = opt.dataset.label || opt.textContent
+              if (opt.parentElement.dataset) delete opt.parentElement.dataset.answered
+            })
+            var firstOpt = document.querySelector('.quiz-opt')
+            if (firstOpt) firstOpt.focus()
+          })
+        }
+
+        // Task cards: full keyboard activation for pointer-free toggling
+        document.querySelectorAll('.task-item').forEach(function (task) {
+          task.setAttribute('role', 'button')
+          task.setAttribute('tabindex', '0')
+          task.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+              e.preventDefault()
+              task.click()
+            }
+          })
+        })
+
+        // FAQ accordion
+        document.querySelectorAll('.faq-toggle').forEach(function (tog) {
+          tog.addEventListener('click', function () {
+            var item = tog.closest('.faq-item')
+            if (!item) return
+            var opening = !item.classList.contains('open')
+            item.classList.toggle('open', opening)
+            tog.setAttribute('aria-expanded', opening ? 'true' : 'false')
+          })
+        })
+
+        // Hero boot choreography (skipped quietly under reduced motion)
+        if (!reduceMotion) {
+          document.querySelectorAll('.hero-copy > *, .phone-stage').forEach(function (el, i) {
+            el.classList.add('boot')
+            el.style.animationDelay = (120 + i * 90) + 'ms'
+          })
+          window.setTimeout(function () {
+            document.querySelectorAll('.boot').forEach(function (el) {
+              el.classList.remove('boot')
+              el.style.removeProperty('animation-delay')
+            })
+          }, 2000)
+        }
+
+        // Scroll reveal: observable sections plus staggered grid children
+        if ('IntersectionObserver' in window && !reduceMotion) {
+          var revealObserver = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('vis')
+                revealObserver.unobserve(entry.target)
+              }
+            })
+          }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' })
+
+          function stageReveal(el, delay) {
+            el.classList.add('rv')
+            if (delay) el.style.transitionDelay = delay + 'ms'
+            el.addEventListener('transitionend', function handler(ev) {
+              if (ev.target === el && ev.propertyName === 'transform') {
+                el.style.removeProperty('transition-delay')
+                el.removeEventListener('transitionend', handler)
+              }
+            })
+            revealObserver.observe(el)
+          }
+
+          document.querySelectorAll(
+            '.tele-strip, .arch-box, .specs-table-wrap, .apk-dl-banner, .hero-audio-stream-bar, .sim-card, .pipeline-row'
+          ).forEach(function (el) {
+            stageReveal(el, 0)
+          })
+
+          document.querySelectorAll('.grid-3, .faq-grid').forEach(function (grid) {
+            Array.prototype.forEach.call(grid.children, function (child, i) {
+              stageReveal(child, (i % 3) * 80)
+            })
+          })
+        }
+      })()
+    </script>
+</body>
+</html>

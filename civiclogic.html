@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995" crossorigin="anonymous"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Class Of Learners" />
+    <meta name="theme-color" content="#070a14" />
+    <title>CivicLogic: TRAFFIC.EDU — Mumbai Civic & Statutory Knowledge Base | Class Of Learners</title>
+    <meta name="description" content="50-module interactive civic engineering database, Motor Vehicles Act jurisprudence, RTO challan calculations, and IRC standards built for Mumbai road users." />
+    <meta name="keywords" content="CivicLogic, TRAFFIC.EDU, Motor Vehicles Act, RTO Challan, IRC Standards, Road Safety Mumbai, Civic Engineering, Class Of Learners" />
+    <meta property="og:site_name" content="Class Of Learners" />
+    <meta property="og:title" content="CivicLogic: TRAFFIC.EDU — Mumbai Statutory Knowledge Base" />
+    <meta property="og:description" content="50-module interactive civic engineering database, Motor Vehicles Act jurisprudence, and RTO challan calculations." />
+    <meta property="og:url" content="https://advancedlogiclabs.dpdns.org/civiclogic" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://advancedlogiclabs.dpdns.org/Icon.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="CivicLogic: TRAFFIC.EDU — Mumbai Statutory Knowledge Base" />
+    <meta name="twitter:description" content="50-module interactive civic engineering database and RTO challan calculations." />
+    <meta name="twitter:image" content="https://advancedlogiclabs.dpdns.org/Icon.png" />
+    <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/civiclogic" />
+    <link rel="icon" type="image/png" href="Icon.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <meta http-equiv="refresh" content="0; url=Database_Logic" />
+    <script>
+      window.location.replace('Database_Logic');
+    </script>
+    <script>
+      ;(function () {
+        try {
+          if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.add('lm')
+          }
+        } catch (e) {}
+      })()
+    </script>
+    <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
+    <link rel="stylesheet" href="col-mobile.css" />
+
+    <style>
+      *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+      :root {
+        --void: #070a14;
+        --void-2: #0b0f1e;
+        --panel: rgba(255, 255, 255, 0.035);
+        --line: rgba(255, 255, 255, 0.09);
+        --ink: #e8e3d8;
+        --dim: #9aa3b8;
+        --signal: #f2b84b;
+        --cobalt: #3b82f6;
+        --ion: #00f0ff;
+        --teal: #00f0cc;
+        --font: 'Inter', -apple-system, sans-serif;
+        --serif: 'Instrument Serif', Georgia, serif;
+        --mono: 'Space Mono', monospace;
+        --wrap: min(1160px, 100% - 40px);
+      }
+      body {
+        background: var(--void);
+        color: var(--ink);
+        font-family: var(--font);
+        line-height: 1.6;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      body.lm {
+        --void: #f5f4ed;
+        --void-2: #eae8dd;
+        --panel: #ffffff;
+        --line: rgba(15, 23, 42, 0.12);
+        --ink: #0f172a;
+        --dim: #475569;
+        --signal: #d97706;
+        --cobalt: #2563eb;
+      }
+      .wrap {
+        width: var(--wrap);
+        margin: 0 auto;
+      }
+
+      .hero {
+        position: relative;
+        padding: 130px 0 70px;
+        background: radial-gradient(circle at 50% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 60%);
+      }
+      .badge-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(59, 130, 246, 0.12);
+        border: 1px solid rgba(59, 130, 246, 0.35);
+        color: var(--cobalt);
+        border-radius: 999px;
+        padding: 6px 14px;
+        font-family: var(--mono);
+        font-size: 0.78rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        letter-spacing: 0.06em;
+      }
+      .title-hero {
+        font-family: var(--serif);
+        font-size: clamp(2.5rem, 6vw, 4.2rem);
+        line-height: 1.08;
+        font-weight: 400;
+        letter-spacing: -0.02em;
+        margin-bottom: 20px;
+      }
+      .title-hero em {
+        font-style: italic;
+        color: var(--cobalt);
+      }
+      .lede-hero {
+        font-size: clamp(1.05rem, 2vw, 1.25rem);
+        color: var(--dim);
+        max-width: 64ch;
+        margin-bottom: 36px;
+      }
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-bottom: 50px;
+      }
+      .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--cobalt);
+        color: #ffffff;
+        font-weight: 700;
+        padding: 14px 28px;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: transform 0.2s, box-shadow 0.2s;
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+      }
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 30px rgba(59, 130, 246, 0.45);
+      }
+      .btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        color: var(--ink);
+        padding: 14px 24px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: background 0.2s, border-color 0.2s;
+      }
+      .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: var(--cobalt);
+      }
+
+      .stats-strip {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 16px;
+        margin-top: 30px;
+      }
+      .stat-card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 20px;
+        backdrop-filter: blur(10px);
+      }
+      .stat-val {
+        font-family: var(--mono);
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--cobalt);
+      }
+      .stat-lbl {
+        font-size: 0.85rem;
+        color: var(--dim);
+        margin-top: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .section {
+        padding: 70px 0;
+      }
+      .sec-title {
+        font-family: var(--serif);
+        font-size: clamp(2rem, 4vw, 2.8rem);
+        margin-bottom: 12px;
+      }
+      .sec-sub {
+        color: var(--dim);
+        font-size: 1.05rem;
+        max-width: 60ch;
+        margin-bottom: 40px;
+      }
+
+      .modules-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 20px;
+      }
+      .mod-card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 24px;
+        transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+      }
+      .mod-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(59, 130, 246, 0.4);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+      }
+      .mod-num {
+        font-family: var(--mono);
+        font-size: 0.8rem;
+        color: var(--cobalt);
+        margin-bottom: 8px;
+      }
+      .mod-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+      }
+      .mod-desc {
+        font-size: 0.92rem;
+        color: var(--dim);
+        line-height: 1.5;
+      }
+
+      .cta-box {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(11, 15, 30, 0.8));
+        border: 1.5px solid rgba(59, 130, 246, 0.35);
+        border-radius: 18px;
+        padding: 48px 36px;
+        text-align: center;
+        margin: 50px 0;
+      }
+      .cta-box h3 {
+        font-family: var(--serif);
+        font-size: clamp(2rem, 3.5vw, 2.6rem);
+        margin-bottom: 16px;
+      }
+      .cta-box p {
+        color: var(--dim);
+        max-width: 55ch;
+        margin: 0 auto 28px;
+        font-size: 1.05rem;
+      }
+
+      @media (max-width: 768px) {
+        .hero { padding: 100px 0 50px; }
+      }
+    </style>
+</head>
+<body>
+    <nav class="top-nav" id="topNav">
+      <a href="/" class="brand" aria-label="Class Of Learners Home">
+        <img src="Icon.png" alt="Class Of Learners Logo" width="36" height="36" />
+        <span class="brand-text">Class Of Learners</span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="/" class="nav-link">Home</a>
+        <a href="ati" class="nav-link">ATI 1.4</a>
+        <a href="solar" class="nav-link">Solar 3D</a>
+        <a href="cereal" class="nav-link">Cereal AI</a>
+        <a href="gesture" class="nav-link">Perceptus</a>
+        <a href="Database_Logic" class="nav-link active">CivicLogic DB</a>
+        <a href="download" class="nav-link">Downloads</a>
+      </div>
+      <div class="nav-actions">
+        <a href="Database_Logic" class="nav-dl-btn desktop-dl" style="background: var(--cobalt);">Deep DB Access</a>
+      </div>
+    </nav>
+
+    <header class="hero">
+      <div class="wrap">
+        <div class="badge-pill">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          MVA 1988 &middot; IRC Standards &middot; TRAFFIC.EDU v3.0
+        </div>
+        <h1 class="title-hero">CivicLogic: <em>The Mumbai</em> Statutory Knowledge Base.</h1>
+        <p class="lede-hero">
+          A 50-module interactive civic engineering database, Motor Vehicles Act jurisprudence engine, and live RTO challan simulator. Engineered to transform abstract road laws into transparent, actionable software.
+        </p>
+        <div class="hero-actions">
+          <a href="Database_Logic" class="btn-primary">
+            Explore 50-Module Database
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="Traffic/Driving" class="btn-secondary">
+            Launch Mumbai Simulator
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+          </a>
+        </div>
+
+        <div class="stats-strip">
+          <div class="stat-card">
+            <div class="stat-val">50</div>
+            <div class="stat-lbl">Curated Modules</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val">100%</div>
+            <div class="stat-lbl">IRC &amp; MVA Aligned</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val">Live</div>
+            <div class="stat-lbl">Challan Sandbox</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val">Zero</div>
+            <div class="stat-lbl">Paywall / Free</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="section">
+        <h2 class="sec-title">Core Civic Engineering Pillars</h2>
+        <p class="sec-sub">Bridging the gap between legal statutes, civil engineering blueprints, and daily Mumbai commuting.</p>
+
+        <div class="modules-grid">
+          <div class="mod-card">
+            <div class="mod-num">PILLAR 01 &mdash; STATUTE</div>
+            <h3 class="mod-title">Motor Vehicles Act 1988 &amp; 2019</h3>
+            <p class="mod-desc">Full textual and situational breakdown of Sections 112, 115, 129, 134, 184, 185, and 194. Learn exact legal procedures, rights during vehicle inspection, and compoundable offence protocols.</p>
+          </div>
+          <div class="mod-card">
+            <div class="mod-num">PILLAR 02 &mdash; ENGINEERING</div>
+            <h3 class="mod-title">IRC Road Geometry &amp; Markings</h3>
+            <p class="mod-desc">Indian Roads Congress guidelines for lane widths, stop lines, pedestrian zebra crossing zones, yellow box junctions, and speed breaker dimensions for Indian urban roads.</p>
+          </div>
+          <div class="mod-card">
+            <div class="mod-num">PILLAR 03 &mdash; COMPUTATION</div>
+            <h3 class="mod-title">Automated Challan Computation</h3>
+            <p class="mod-desc">Interactive fine calculator modeling compoundable vs non-compoundable penalties, repeat violations, driving license suspension thresholds, and digital e-challan dispute procedures.</p>
+          </div>
+          <div class="mod-card">
+            <div class="mod-num">PILLAR 04 &mdash; EMERGENCY</div>
+            <h3 class="mod-title">Good Samaritan Protection (Sec 134A)</h3>
+            <p class="mod-desc">Comprehensive legal protections for citizens aiding road crash victims, Supreme Court guidelines, exemption from civil/criminal liability, and golden hour hospital admission mandates.</p>
+          </div>
+          <div class="mod-card">
+            <div class="mod-num">PILLAR 05 &mdash; MUNICIPAL</div>
+            <h3 class="mod-title">Mumbai Specific Civic Rules</h3>
+            <p class="mod-desc">Local Coastal Road speed profiles, Eastern Freeway restrictions, Bandra-Worli Sea Link regulations, silence zone noise pollution bylaws, and odd-even lane merging logic.</p>
+          </div>
+          <div class="mod-card">
+            <div class="mod-num">PILLAR 06 &mdash; TELEMETRY</div>
+            <h3 class="mod-title">Simulator Bridge Integration</h3>
+            <p class="mod-desc">Real-time data synchronization with Mumbai Traffic Hero 3D. Every traffic violation committed in the simulator logs straight to CivicLogic for immediate post-drive debriefs.</p>
+          </div>
+        </div>
+      </section>
+
+      <div class="cta-box">
+        <h3>Access the Complete 50-Module Logic Engine</h3>
+        <p>Interactive legal tree, searchable statutes, and the complete statutory database are open to all students, researchers, and drivers.</p>
+        <a href="Database_Logic" class="btn-primary">
+          Launch Deep Access Database
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </main>
+
+    <footer style="border-top: 1px solid var(--line); padding: 40px 0; text-align: center; color: var(--dim); font-size: 0.9rem;">
+      <div class="wrap">
+        <p>&copy; 2026 Class Of Learners. Open Educational Engineering. Built in Mumbai, India.</p>
+      </div>
+    </footer>
+
+    <script src="col-ui.js"></script>
+</body>
+</html>

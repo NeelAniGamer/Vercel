@@ -1,12 +1,12 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995"
-     crossorigin="anonymous"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="theme-color" content="#070A14" id="themeMeta" />
     <meta name="apple-mobile-web-app-title" content="Class Of Learners" />
     <script>
       ;(function () {
@@ -35,7 +35,6 @@
       name="description"
       content="Explore interactive projects built by students in Mumbai, including Solar Engine, Traffic Academy, ATI, Gesture Control, QR Editor, and Terra3D."
     />
-    <meta name="keywords" content="interactive learning projects, student projects Mumbai, 3D browser games, educational simulations, Class Of Learners, free learning tools, student engineering studio, STEM projects India, Three.js games, open source education, Indian student developers, interactive STEM education, browser based learning, coding projects for students, Mumbai student startups" />
     <meta property="og:site_name" content="Class Of Learners" />
     <meta property="og:title" content="Class Of Learners | Interactive Learning Projects" />
     <meta property="og:description" content="Explore interactive projects built by students in Mumbai, including Solar Engine, Traffic Academy, ATI, Gesture Control, QR Editor, and Terra3D." />
@@ -76,32 +75,29 @@
             "publisher": { "@id": "https://advancedlogiclabs.dpdns.org/#organization" }
           },
           {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://advancedlogiclabs.dpdns.org/"}
+            ]
+          },
+          {
             "@type": "ItemList",
             "@id": "https://advancedlogiclabs.dpdns.org/#projects",
             "name": "Class Of Learners Projects",
             "itemListOrder": "https://schema.org/ItemListOrderAscending",
             "numberOfItems": 6,
             "itemListElement": [
-              { "@type": "ListItem", "position": 1, "name": "Mumbai Traffic Academy", "url": "https://advancedlogiclabs.dpdns.org/Traffic/Academy" },
+              { "@type": "ListItem", "position": 1, "name": "Mumbai Traffic Academy", "url": "https://advancedlogiclabs.dpdns.org/Traffic/Driving" },
               { "@type": "ListItem", "position": 2, "name": "Solar Engine", "url": "https://advancedlogiclabs.dpdns.org/solar" },
               { "@type": "ListItem", "position": 3, "name": "Advanced Typing Instructor", "url": "https://advancedlogiclabs.dpdns.org/ati" },
               { "@type": "ListItem", "position": 4, "name": "Perceptus Flow", "url": "https://advancedlogiclabs.dpdns.org/gesture" },
-              { "@type": "ListItem", "position": 5, "name": "QR Editor", "url": "https://advancedlogiclabs.dpdns.org/qr-editor" },
+              { "@type": "ListItem", "position": 5, "name": "QR Studio Matrix", "url": "https://advancedlogiclabs.dpdns.org/qr" },
               { "@type": "ListItem", "position": 6, "name": "Terra3D", "url": "https://advancedlogiclabs.dpdns.org/Terra3D/" }
             ]
           }
         ]
       }
     </script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://advancedlogiclabs.dpdns.org/"}
-  ]
-}
-</script>
 
     <script>
       ;(function () {
@@ -116,22 +112,15 @@
       ;(function () {
         try {
           var c = localStorage.getItem('col_admin_config')
-          if (c) {
-            var cfg = JSON.parse(c),
-              p = window.location.pathname.split('/').pop() || 'home',
-              s = cfg.pages[p] || '200'
-            if (s === '503') {
-              document.write(
-                '<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:#F2B84B">503</h1><h2>System Maintenance</h2><p style="color:#8C94B0">Check back soon.</p></div>'
-              )
-              window.stop()
-            }
-            if (s === '404') {
-              document.write(
-                '<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:#ef4444">404</h1><h2>Page Not Found</h2><a href="/" style="margin-top:20px;color:#F2B84B;text-decoration:none;font-weight:bold">Return Home</a></div>'
-              )
-              window.stop()
-            }
+          if (!c) return
+          var cfg = JSON.parse(c),
+            p = window.location.pathname.split('/').pop() || 'home',
+            s = (cfg.pages && cfg.pages[p]) || '200'
+          if (s === '503' || s === '404') {
+            document.documentElement.innerHTML =
+              s === '503'
+                ? '<body style="display:flex;height:100vh;width:100vw;margin:0;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:#F2B84B">503</h1><h2>System Maintenance</h2><p style="color:#8C94B0">Check back soon.</p></body>'
+                : '<body style="display:flex;height:100vh;width:100vw;margin:0;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:#ef4444">404</h1><h2>Page Not Found</h2><a href="/" style="margin-top:20px;color:#F2B84B;text-decoration:none;font-weight:bold">Return Home</a></body>'
           }
         } catch (e) {}
       })()
@@ -143,6 +132,8 @@
     <!-- font-display=swap prevents FOIT (invisible text) during font load → better LCP -->
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" /></noscript>
+    <!-- col-ui.css loaded FIRST so --void/--ink/--signal custom properties are defined before inline styles consume them -->
+    <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
     <style>
       *,
       *::before,
@@ -1138,9 +1129,6 @@
         display: inline-flex;
         align-items: center;
         gap: 14px;
-        opacity: 0;
-        transform: translateY(18px);
-        animation: fu 0.8s var(--ease) 0.9s forwards;
       }
       .hey::before {
         content: '';
@@ -1158,7 +1146,6 @@
         letter-spacing: -0.01em;
         opacity: 0;
         transform: translateY(28px);
-        animation: fu 0.95s var(--ease) 1.05s forwards;
       }
       .hero h1 em {
         font-style: italic;
@@ -1172,7 +1159,6 @@
         margin-top: 28px;
         opacity: 0;
         transform: translateY(18px);
-        animation: fu 0.8s var(--ease) 1.3s forwards;
       }
       .hcta {
         margin-top: 48px;
@@ -1181,7 +1167,6 @@
         flex-wrap: wrap;
         opacity: 0;
         transform: translateY(14px);
-        animation: fu 0.7s var(--ease) 1.5s forwards;
       }
       .btn-p {
         background: var(--signal);
@@ -2208,9 +2193,9 @@
           margin-bottom: 20px;
         }
         .top-nav {
-          top: 15px;
-          left: 15px;
-          width: calc(100% - 30px);
+          top: calc(env(safe-area-inset-top, 0px) + 12px);
+          left: 12px;
+          width: calc(100% - 24px);
           border-radius: 30px;
           padding: 10px 20px;
           box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
@@ -2247,6 +2232,23 @@
         }
         .nav-login-btn {
           margin-top: 10px;
+        }
+        /* Prevent scroll indicator from overlapping stacked CTA buttons */
+        .sci {
+          display: none;
+        }
+        /* Tactile press feedback for touch devices */
+        .pc:active {
+          transform: scale(0.985) !important;
+          border-color: var(--lineb);
+        }
+        /* Accessible tap target spacing for footer links */
+        .fl {
+          gap: 16px 22px;
+        }
+        .fl a {
+          padding: 6px 2px;
+          display: inline-block;
         }
         /* Hide heavy animated elements on mobile for perf */
         .gsc, .qb, .rc, .rg {
@@ -2339,380 +2341,11 @@
         .top-nav, .nav-links { will-change: transform; transform: translateZ(0); }
         .col-bottom-bar { will-change: transform; }
         .pc { contain: layout style; }
-        /* Use system font to avoid font swap jank */
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important; }
       }
-    </style>
-    <script defer src="col-router.js"></script>
-    <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
-    <link rel="stylesheet" href="col-mobile.css" />
-    <link rel="stylesheet" href="liquid-glass.css" />
-    <link rel="stylesheet" href="mobile-perf.css" />
-    <script defer src="pull-refresh.js"></script>
-    <script defer src="col-ui.js"></script>
-    <script defer src="col-auth.js"></script>
-    <link rel="manifest" href="manifest.json" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  </head>
-  <body>
-    <script>
-      ;(function () {
-        try {
-          if (localStorage.getItem('theme') === 'light') document.body.classList.add('lm')
-        } catch (e) {}
-      })()
-    </script>
-    <div class="loader" id="loader">
-      <div class="lid"><span>CoL</span> &middot; Studio Hub</div>
-      <div class="lbar"></div>
-    </div>
-    <div class="cd" id="cDot"></div>
-    <div class="cr" id="cRing"></div>
 
-    <!-- Hover tooltip for 3D nodes (single instance; see #ntip below near stage) -->
-
-    <nav class="top-nav" id="topNav">
-      <a href="/" class="nav-brand"><img src="Class.png" alt="Class Of Learners" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" /><span class="brand-name">Class Of Learners</span></a>
-      <div class="nav-links" id="navLinks">
-        <a href="/" class="nav-link act"
-          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-            <polyline points="9 22 9 12 15 12 15 22" /></svg
-          >Home</a
-        >
-        <a href="about" class="nav-link"
-          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10" />
-            <path d="M12 16v-4" />
-            <path d="M12 8h.01" /></svg
-          >About</a
-        >
-        <a href="school" class="nav-link"
-          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" />
-            <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" /></svg
-          >School</a
-        >
-        <a href="sneh-asha" class="nav-link"
-          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" /></svg
-          >Sneh Asha</a
-        >
-        <a href="making" class="nav-link"
-          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg
-          >Making</a
-        >
-        <div class="dropdown" id="projDD" onclick="this.classList.toggle('active')">
-          <button class="dropdown-btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
-              <line x1="8" y1="21" x2="16" y2="21" />
-              <line x1="12" y1="17" x2="12" y2="21" /></svg
-            >Projects <span class="darr">&#9660;</span>
-          </button>
-          <div class="dropdown-content">
-            <div class="dropdown-content-inner">
-              <a href="ati"
-                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="4 7 4 4 20 4 20 7" />
-                  <line x1="9" y1="20" x2="15" y2="20" />
-                  <line x1="12" y1="4" x2="12" y2="20" /></svg
-                >Typing Instructor</a
-              ><a href="solar"
-                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="5" />
-                  <line x1="12" y1="1" x2="12" y2="3" />
-                  <line x1="12" y1="21" x2="12" y2="23" />
-                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-                  <line x1="1" y1="12" x2="3" y2="12" />
-                  <line x1="21" y1="12" x2="23" y2="12" />
-                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" /></svg
-                >Solar Engine</a
-              ><a href="gesture"
-                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M18 8h1a4 4 0 010 8h-1" />
-                  <path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z" />
-                  <line x1="6" y1="1" x2="6" y2="4" />
-                  <line x1="10" y1="1" x2="10" y2="4" />
-                  <line x1="14" y1="1" x2="14" y2="4" /></svg
-                >Perceptus Flow</a
-              ><a href="rpg"
-                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg
-                >RPG Game</a
-              ><a href="qr"
-                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="2" y="2" width="8" height="8" rx="1" />
-                  <rect x="14" y="2" width="8" height="8" rx="1" />
-                  <rect x="2" y="14" width="8" height="8" rx="1" />
-                  <rect x="14" y="14" width="4" height="4" />
-                  <rect x="20" y="14" width="2" height="2" />
-                  <rect x="14" y="20" width="2" height="2" />
-                  <rect x="20" y="20" width="2" height="2" /></svg
-                >QR Studio Matrix</a
-              ><a href="Terra3D/"
-                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="2" y1="12" x2="22" y2="12" />
-                  <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" /></svg
-                >Terra3D Atlas</a
-              >
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="nav-actions">
-        <div class="hz-toggle" onclick="hzToggle()"><div class="hz-clouds"></div><div class="hz-stars"></div><div class="hz-orb"></div></div>
-        <button class="nav-login-btn" id="navLoginBtn" onclick="openLogin()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
-            <circle cx="12" cy="7" r="4" /></svg
-          >Sign In
-        </button>
-        <div class="nav-user-profile" id="navUserProfile" onclick="openLogin()">
-          <div class="nav-user-avatar" id="navUserAv">?</div>
-          <span class="nun" id="navUserName">User</span>
-        </div>
-        <a href="download" class="nav-dl-btn desktop-dl">Downloads Hub</a>
-        <button class="mmb" id="mmb" aria-label="Toggle menu">
-          <svg viewBox="0 0 24 24" fill="none"><path d="M3 6H21M3 12H21M3 18H21" stroke-width="1.5" stroke-linecap="round" /></svg>
-        </button>
-      </div>
-    </nav>
-
-    <main id="main">
-    <section class="hero" id="heroSection">
-      <div class="hvig"></div>
-      <div class="hvigb"></div>
-
-      <div class="hc" id="heroContent">
-        <div class="hey">Mumbai &middot; India &middot; Est.&nbsp;2024</div>
-        <h1>Engineering The <em>Future</em> Of Interactive Learning.</h1>
-        <p class="hlede">
-          A working portfolio of programming logic, machine vision, and deep-space physics engines &mdash; built by three students from Mumbai. We build tools that make complex computer science concepts
-          click for anyone willing to try.
-        </p>
-        <div class="hcta">
-          <a href="#projects" class="btn-p"
-            >View Projects
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7" /></svg
-          ></a>
-          <a href="download" class="btn-g">Apps &amp; Downloads &#8594;</a>
-          <a href="about" class="btn-g">Our Story &#8594;</a>
-          <a href="COL.apk" class="btn-g mobile-dl" download style="border-color: var(--signal); color: var(--signal)">Download Android App</a>
-        </div>
-      </div>
-
-
-
-      <!-- Holographic In-Place Node Inspector Card -->
-      <div class="node-inspector" id="nodeInspector" aria-hidden="true" inert>
-        <div class="ni-header">
-          <div class="ni-icon" id="niIcon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="8" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="7.5" cy="15.5" r="1.5"/><circle cx="16.5" cy="15.5" r="1.5"/></svg></div>
-          <div class="ni-meta">
-            <div class="ni-badge" id="niBadge">3D Simulation & AI</div>
-            <h2 class="ni-title" id="niTitle">Mumbai Traffic Hero</h2>
-          </div>
-          <button class="ni-close" id="niCloseBtn" aria-label="Close Inspector">&times;</button>
-        </div>
-        <div class="ni-telemetry" id="niTelemetry">
-          <div class="ni-tele-cell"><span class="ni-tele-k">Status</span><span class="ni-tele-v" id="niTeleStatus">Online</span></div>
-          <div class="ni-tele-cell"><span class="ni-tele-k">Engine</span><span class="ni-tele-v" id="niTeleEngine">Three.js / WebGL</span></div>
-          <div class="ni-tele-cell"><span class="ni-tele-k">Orbit</span><span class="ni-tele-v" id="niTeleOrbit">R=20 AU</span></div>
-          <div class="ni-tele-cell"><span class="ni-tele-k">FPS</span><span class="ni-tele-v" id="niTeleFps">60 Stable</span></div>
-        </div>
-        <p class="ni-desc" id="niDesc">
-          An authentic Mumbai city driving simulator featuring procedurally controlled intersections, real-time traffic signal logic, pedestrians, and dynamic camera angles.
-        </p>
-        <div class="ni-actions">
-          <a href="Traffic/Driving" class="ni-btn ni-btn-primary" id="niLaunchBtn">
-            Launch Engine <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </a>
-          <button class="ni-btn ni-btn-secondary" id="niFocusBtn">
-            Center View
-          </button>
-          <button class="ni-btn ni-btn-ghost" id="niDismissBtn">
-            Return Orbit ✕
-          </button>
-        </div>
-      </div>
-
-      <!-- 3D Stage Hint Banner -->
-      <div class="stage-hint" id="stageHint">
-        <span class="sh-dot"></span> 3D Lab Active: Drag to Orbit &middot; Scroll to Zoom &middot; Click Planets to Inspect
-      </div>
-
-      <!-- 3D Node Tooltip -->
-      <div id="ntip" class="ntip" style="display:none; opacity:0; position:fixed; pointer-events:none; z-index:1000;">
-        <span id="ntip-dot" class="ntip-dot"></span>
-        <span id="ntip-name" class="ntip-name"></span>
-      </div>
-
-      <div class="sci">
-        <span>Scroll</span>
-        <div class="scl"></div>
-      </div>
-      <div class="hst">
-        <div><b>Projects</b> &mdash; 06</div>
-        <div><b>Team</b> &mdash; 06</div>
-        <div><b>Base</b> &mdash; Mumbai</div>
-      </div>
-    </section>
-
-    <section class="vp-section" style="content-visibility:auto; contain-intrinsic-size: 0 600px">
-      <div class="vp-grid">
-        <div class="vp-card rv">
-          <div class="vp-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          </div>
-          <h2 class="vp-title">Performance First</h2>
-          <p class="vp-desc">Our tools are built natively without bulky frameworks, keeping load times fast across every device.</p>
-        </div>
-        <div class="vp-card rv">
-          <div class="vp-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/><circle cx="12" cy="12" r="5"/></svg>
-          </div>
-          <h2 class="vp-title">Interactive Learning</h2>
-          <p class="vp-desc">Move beyond textbooks and static pages. We create immersive environments where you learn by experimenting in real-time.</p>
-        </div>
-        <div class="vp-card rv">
-          <div class="vp-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-          </div>
-          <h2 class="vp-title">Open &amp; Accessible</h2>
-          <p class="vp-desc">Education should have zero barriers. Everything we build is free to access and works for anyone, anywhere.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="ps" id="projects" style="content-visibility:auto; contain-intrinsic-size: 0 1200px">
-      <div class="sh">
-        <div>
-          <div class="sey">Portfolio</div>
-          <h2 class="st">Six Tools.<br />One Studio.</h2>
-        </div>
-        <p class="ssb">
-          Each project is a standalone engine &mdash; a focused exploration of a specific domain of computer science and interactive design, engineered from scratch to show what web
-          applications can really do.
-        </p>
-      </div>
-      <div class="pgrid">
-        <a href="solar" class="pc ci feat" data-delay="0"
-          ><div class="badge bflag">Co-Flagship</div>
-          <div class="pv"><img src="solar.webp" alt="Solar System Engine" width="900" height="500" loading="lazy" decoding="async" /></div>
-          <div class="pb">
-            <div class="pn">01 &mdash; Physics Engine</div>
-            <h3 class="pname">Solar System Engine V3.3</h3>
-            <p class="pdesc">
-              Deep-space telemetry and accurate orbital mechanics simulated in a standalone 64-bit application. Explore every planet, moon, and asteroid belt in real time with high-fidelity WebGL
-              graphics and interactive data panels.
-            </p>
-          </div>
-          <div class="pf">
-            <div class="ptags"><span class="tag">Physics</span><span class="tag">3D Engine</span><span class="tag">C++</span></div>
-            <div class="plink">
-              Open Engine <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-            </div></div
-        ></a>
-        <a href="ati" class="pc cs feat" data-delay="80"
-          ><div class="badge bflag">Co-Flagship</div>
-          <div class="pv"><img src="ATI 1.png" alt="Advanced Typing Instructor" width="900" height="500" loading="lazy" decoding="async" /></div>
-          <div class="pb">
-            <div class="pn">02 &mdash; Learning Platform</div>
-            <h3 class="pname">Advanced Typing Instructor</h3>
-            <p class="pdesc">
-              Master Python, C++, and JavaScript syntax with adaptive heatmaps, a virtual mechanical keyboard, and a full progression system designed specifically for programmers to improve their
-              coding speed and accuracy.
-            </p>
-          </div>
-          <div class="pf">
-            <div class="ptags"><span class="tag">Education</span><span class="tag">UX</span><span class="tag">Python</span></div>
-            <div class="plink">
-              Launch <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-            </div></div
-        ></a>
-        <a href="gesture" class="pc ct" data-delay="160"
-          ><div class="badge bp">Autonomous AI</div>
-          <div class="pv" style="background: #060d10">
-            <div class="vg">
-              <div class="gg"></div>
-              <div class="gsc"></div>
-              <div class="gh"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg></div>
-            </div>
-          </div>
-          <div class="pb">
-            <div class="pn">03</div>
-            <h3 class="pname">Perceptus Flow: Vision Co-Pilot</h3>
-            <p class="pdesc">
-              Touchless spatial machine vision and multimodal AI co-pilot using standard webcams. Zero extra hardware required — control cursor, pinch-click, scroll, and air-draw in mid-air.
-            </p>
-          </div>
-          <div class="pf">
-            <div class="ptags"><span class="tag">AI Vision</span><span class="tag">Spatial UI</span><span class="tag">Webcam</span></div>
-            <div class="plink">
-              Explore <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-            </div></div
-        ></a>
-        <a href="qr" class="pc ce" data-delay="240"
-          ><div class="pv" style="background: #040e08">
-            <div class="vq">
-              <div class="qgl"></div>
-              <div class="qb"></div>
-              <div class="qm2" id="qrm"></div>
-            </div>
-          </div>
-          <div class="pb">
-            <div class="pn">04</div>
-            <h3 class="pname">QR Studio Matrix</h3>
-            <p class="pdesc">
-              Static &amp; dynamic QR engine with cloud redirection, real-time scan analytics, custom geometric styles, logo embedding, camera scanner, and bulk generation.
-            </p>
-          </div>
-          <div class="pf">
-            <div class="ptags"><span class="tag">Dynamic QR</span><span class="tag">Analytics</span><span class="tag">Cloud Sync</span></div>
-            <div class="plink">
-              Studio <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-            </div></div
-        ></a>
-        <a href="rpg" class="pc cp" data-delay="320"
-          ><div class="badge bs">Coming Soon</div>
-          <div class="pv" style="background: #080514">
-            <div class="vr">
-              <div class="rc"></div>
-              <div class="rg"></div>
-              <div class="ri"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M16 16l4 4"/><path d="M19 21l2-2"/></svg></div>
-              <div class="ro">
-                <div class="rob"></div>
-                <div class="rob"></div>
-                <div class="rob"></div>
-                <div class="rob"></div>
-                <div class="rob"></div>
-              </div>
-            </div>
-          </div>
-          <div class="pb">
-            <div class="pn">05</div>
-            <h3 class="pname">RPG Game</h3>
-            <p class="pdesc">
-              An epic role-playing adventure featuring dynamic battles, leveling systems, and a deep story. Currently in active development by the studio, blending classic mechanics with modern
-              interactive design.
-            </p>
-          </div>
-          <div class="pf">
-            <div class="ptags"><span class="tag">Game Dev</span><span class="tag">Canvas</span></div>
-            <div class="plink">
-              Preview <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-            </div></div
-        ></a>
-      </div>
-    </section>
-
-    <style id="terra3d-styles">
-      /* Terra3D (Globe & Orbit Rings) */
+      /* =========================================================
+         TERRA3D GLOBE & ORBIT RINGS
+         ========================================================= */
       .t3-bg {
         width: 100%;
         height: 100%;
@@ -2732,14 +2365,8 @@
         animation: t3-pulse 4s ease-in-out infinite alternate;
       }
       @keyframes t3-pulse {
-        0% {
-          transform: scale(0.92);
-          opacity: 0.55;
-        }
-        100% {
-          transform: scale(1.14);
-          opacity: 1;
-        }
+        0% { transform: scale(0.92); opacity: 0.55; }
+        100% { transform: scale(1.14); opacity: 1; }
       }
       .t3-stars {
         position: absolute;
@@ -2753,12 +2380,8 @@
         animation: t3-twinkle 5s ease-in-out infinite alternate;
       }
       @keyframes t3-twinkle {
-        0% {
-          opacity: 0.35;
-        }
-        100% {
-          opacity: 0.9;
-        }
+        0% { opacity: 0.35; }
+        100% { opacity: 0.9; }
       }
       .t3-globe {
         position: relative;
@@ -2768,12 +2391,8 @@
         animation: t3-float 6s ease-in-out infinite alternate;
       }
       @keyframes t3-float {
-        0% {
-          transform: translateY(-5px);
-        }
-        100% {
-          transform: translateY(5px);
-        }
+        0% { transform: translateY(-5px); }
+        100% { transform: translateY(5px); }
       }
       .t3-core {
         position: absolute;
@@ -2803,23 +2422,9 @@
         animation: t3-spin 20s linear infinite;
       }
       @keyframes t3-spin {
-        0% {
-          transform: rotateX(72deg) rotateZ(0deg);
-        }
-        100% {
-          transform: rotateX(72deg) rotateZ(360deg);
-        }
+        0% { transform: rotateX(72deg) rotateZ(0deg); }
+        100% { transform: rotateX(72deg) rotateZ(360deg); }
       }
-      body.lm .t3-bg {
-        background: radial-gradient(ellipse at 50% 55%, #dff3f6 0%, #eef4f8 70%) !important;
-      }
-      body.lm .t3-core {
-        background: radial-gradient(circle at 34% 30%, #3aa7bd 0%, #17607a 60%, #0b3550 100%) !important;
-      }
-      body.lm .t3-stars {
-        opacity: 0.18 !important;
-      }
-
       /* Full-width Terra3D card: spans all 3 educational columns */
       .pgrid .pc.t3-wide {
         grid-column: 1 / -1;
@@ -2870,9 +2475,10 @@
           font-size: 1.5rem;
         }
       }
-    </style>
 
-    <style id="edu-styles">
+      /* =========================================================
+         EDUCATIONAL FEATURE CARDS (CAREER, DATABASE, TRAFFIC)
+         ========================================================= */
       /* Career (Briefcase & Network) */
       .c-bg {
         width: 100%;
@@ -2893,14 +2499,8 @@
         animation: c-pulse 3s ease-in-out infinite alternate;
       }
       @keyframes c-pulse {
-        0% {
-          transform: scale(1);
-          opacity: 0.6;
-        }
-        100% {
-          transform: scale(1.3);
-          opacity: 1;
-        }
+        0% { transform: scale(1); opacity: 0.6; }
+        100% { transform: scale(1.3); opacity: 1; }
       }
       .c-grid {
         position: absolute;
@@ -2920,18 +2520,8 @@
         animation: c-grid-move 10s linear infinite;
       }
       @keyframes c-grid-move {
-        0% {
-          background-position:
-            0 0,
-            0 0,
-            0 0;
-        }
-        100% {
-          background-position:
-            0 0,
-            0 20px,
-            20px 0;
-        }
+        0% { background-position: 0 0, 0 0, 0 0; }
+        100% { background-position: 0 0, 0 20px, 20px 0; }
       }
       .c-icon-wrap {
         z-index: 3;
@@ -3011,22 +2601,12 @@
         background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
         animation: sweep 3s linear infinite;
       }
-      .dbs-1::before {
-        animation-delay: 0s;
-      }
-      .dbs-2::before {
-        animation-delay: 0.5s;
-      }
-      .dbs-3::before {
-        animation-delay: 1s;
-      }
+      .dbs-1::before { animation-delay: 0s; }
+      .dbs-2::before { animation-delay: 0.5s; }
+      .dbs-3::before { animation-delay: 1s; }
       @keyframes sweep {
-        0% {
-          left: -50%;
-        }
-        100% {
-          left: 150%;
-        }
+        0% { left: -50%; }
+        100% { left: 150%; }
       }
       .db-led {
         width: 6px;
@@ -3047,13 +2627,8 @@
         animation-duration: 0.8s;
       }
       @keyframes blink {
-        0%,
-        100% {
-          opacity: 1;
-        }
-        50% {
-          opacity: 0.2;
-        }
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.2; }
       }
       .db-line {
         flex: 1;
@@ -3072,25 +2647,15 @@
         background: #00ffcc;
         animation: db-data 2s infinite;
       }
-      .dbs-1 .db-line::after {
-        animation-duration: 1.2s;
-      }
+      .dbs-1 .db-line::after { animation-duration: 1.2s; }
       .dbs-2 .db-line::after {
         animation-duration: 2.5s;
         background: #38bdf8;
       }
-      .dbs-3 .db-line::after {
-        animation-duration: 1.7s;
-      }
+      .dbs-3 .db-line::after { animation-duration: 1.7s; }
       @keyframes db-data {
-        0% {
-          left: -30%;
-          opacity: 1;
-        }
-        100% {
-          left: 100%;
-          opacity: 0;
-        }
+        0% { left: -30%; opacity: 1; }
+        100% { left: 100%; opacity: 0; }
       }
       .db-scan {
         position: absolute;
@@ -3105,12 +2670,8 @@
         opacity: 0.6;
       }
       @keyframes scan {
-        0% {
-          top: 10%;
-        }
-        100% {
-          top: 90%;
-        }
+        0% { top: 10%; }
+        100% { top: 90%; }
       }
       .db-glow {
         position: absolute;
@@ -3122,14 +2683,8 @@
         animation: pulse-glow 4s infinite alternate;
       }
       @keyframes pulse-glow {
-        0% {
-          opacity: 0.5;
-          transform: scale(0.8);
-        }
-        100% {
-          opacity: 1;
-          transform: scale(1.2);
-        }
+        0% { opacity: 0.5; transform: scale(0.8); }
+        100% { opacity: 1; transform: scale(1.2); }
       }
 
       /* Traffic (Road & Signal) */
@@ -3191,30 +2746,14 @@
         animation: streak-up 1.8s infinite 0.9s;
       }
       @keyframes streak {
-        0% {
-          transform: translateY(-100%);
-          opacity: 0;
-        }
-        50% {
-          opacity: 1;
-        }
-        100% {
-          transform: translateY(100%);
-          opacity: 0;
-        }
+        0% { transform: translateY(-100%); opacity: 0; }
+        50% { opacity: 1; }
+        100% { transform: translateY(100%); opacity: 0; }
       }
       @keyframes streak-up {
-        0% {
-          transform: translateY(100%);
-          opacity: 0;
-        }
-        50% {
-          opacity: 1;
-        }
-        100% {
-          transform: translateY(-100%);
-          opacity: 0;
-        }
+        0% { transform: translateY(100%); opacity: 0; }
+        50% { opacity: 1; }
+        100% { transform: translateY(-100%); opacity: 0; }
       }
       .tr-light-box {
         z-index: 3;
@@ -3252,158 +2791,217 @@
         transition: opacity 0.3s;
         z-index: -1;
       }
-      .red-l {
-        animation: tl-red 6s infinite;
-      }
+      .red-l { animation: tl-red 6s infinite; }
       .red-l::before {
         background: radial-gradient(circle, rgba(255, 51, 102, 0.6) 0%, transparent 70%);
         animation: tl-red-glow 6s infinite;
       }
-      .yellow-l {
-        animation: tl-yellow 6s infinite;
-      }
+      .yellow-l { animation: tl-yellow 6s infinite; }
       .yellow-l::before {
         background: radial-gradient(circle, rgba(255, 204, 0, 0.6) 0%, transparent 70%);
         animation: tl-yellow-glow 6s infinite;
       }
-      .green-l {
-        animation: tl-green 6s infinite;
-      }
+      .green-l { animation: tl-green 6s infinite; }
       .green-l::before {
         background: radial-gradient(circle, rgba(0, 255, 204, 0.6) 0%, transparent 70%);
         animation: tl-green-glow 6s infinite;
       }
       @keyframes tl-red {
-        0%,
-        33% {
+        0%, 33% {
           background: #ff3366;
-          box-shadow:
-            0 0 15px #ff3366,
-            inset 0 0 5px #fff;
+          box-shadow: 0 0 15px #ff3366, inset 0 0 5px #fff;
         }
-        34%,
-        100% {
+        34%, 100% {
           background: #222;
           box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
         }
       }
       @keyframes tl-yellow {
-        0%,
-        33% {
+        0%, 33% {
           background: #222;
           box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
         }
-        34%,
-        50% {
+        34%, 50% {
           background: #ffcc00;
-          box-shadow:
-            0 0 15px #ffcc00,
-            inset 0 0 5px #fff;
+          box-shadow: 0 0 15px #ffcc00, inset 0 0 5px #fff;
         }
-        51%,
-        100% {
+        51%, 100% {
           background: #222;
           box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
         }
       }
       @keyframes tl-green {
-        0%,
-        50% {
+        0%, 50% {
           background: #222;
           box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
         }
-        51%,
-        100% {
+        51%, 100% {
           background: #00ffcc;
-          box-shadow:
-            0 0 15px #00ffcc,
-            inset 0 0 5px #fff;
+          box-shadow: 0 0 15px #00ffcc, inset 0 0 5px #fff;
         }
       }
       @keyframes tl-red-glow {
-        0%,
-        33% {
-          opacity: 1;
-        }
-        34%,
-        100% {
-          opacity: 0;
-        }
+        0%, 33% { opacity: 1; }
+        34%, 100% { opacity: 0; }
       }
       @keyframes tl-yellow-glow {
-        0%,
-        33% {
-          opacity: 0;
-        }
-        34%,
-        50% {
-          opacity: 1;
-        }
-        51%,
-        100% {
-          opacity: 0;
-        }
+        0%, 33% { opacity: 0; }
+        34%, 50% { opacity: 1; }
+        51%, 100% { opacity: 0; }
       }
       @keyframes tl-green-glow {
-        0%,
-        50% {
-          opacity: 0;
-        }
-        51%,
-        100% {
-          opacity: 1;
-        }
+        0%, 50% { opacity: 0; }
+        51%, 100% { opacity: 1; }
       }
 
-      /* Light mode overrides for edu feature cards */
-      body.lm .c-bg,
-      body.lm .db-bg,
-      body.lm .tr-bg {
-        background: #f8f9fa !important;
+      /* =========================================================
+         COMPLETE LIGHT MODE SYSTEM UPGRADE (html.lm / body.lm)
+         ========================================================= */
+
+      /* 1. Daylight-Calibrated Color Tokens (WCAG AA Contrast) */
+      html.lm,
+      body.lm {
+        --void: #f4f3ee;          /* Warm architectural alabaster */
+        --panel: #ffffff;         /* Crisp white elevated surfaces */
+        --nav: rgba(244, 243, 238, 0.82);
+        --ink: #0f172a;           /* Deep slate-black primary text */
+        --dim: #475569;           /* Readable muted slate */
+        --line: rgba(15, 23, 42, 0.09);
+        --lineb: rgba(15, 23, 42, 0.16);
+
+        /* Deeper, high-contrast daylight accents */
+        --signal: #c27803;        /* Rich amber-gold (replaces pale #f2b84b) */
+        --ion: #0284c7;           /* Deep sky-cyan (replaces neon #5ed4f5) */
+        --teal: #0d9488;          /* Deep teal (replaces neon #00f0cc) */
+        --em: #059669;            /* Deep emerald (replaces pastel #34d399) */
+        --plasma: #7c3aed;        /* Royal violet (replaces pastel #b89bff) */
       }
-      body.lm .c-icon-wrap {
-        background: #eef2ff !important;
-        border: 2px solid rgba(129, 140, 248, 0.6) !important;
-        box-shadow: 0 8px 20px rgba(129, 140, 248, 0.15) !important;
+
+      /* Keep primary CTA buttons vibrant with crisp white text */
+      body.lm .btn-p,
+      body.lm .nav-dl-btn,
+      body.lm .ni-btn-primary {
+        background: #d97706;
+        color: #ffffff;
+        border-color: #d97706;
+        box-shadow: 0 10px 24px -8px rgba(217, 119, 6, 0.45);
       }
-      body.lm .db-server {
+      body.lm .btn-p:hover,
+      body.lm .nav-dl-btn:hover {
+        background: #b45309;
+        box-shadow: 0 16px 32px -10px rgba(180, 83, 9, 0.55);
+      }
+
+      /* 2. Elevated Card & Surface Hierarchy */
+      body.lm .vp-card,
+      body.lm .pc {
         background: #ffffff !important;
-        border: 2px solid #0d9488 !important;
-        box-shadow: 0 8px 20px rgba(13, 148, 136, 0.15) !important;
+        border: 1px solid rgba(15, 23, 42, 0.08) !important;
+        box-shadow:
+          0 4px 6px -1px rgba(15, 23, 42, 0.04),
+          0 12px 24px -4px rgba(15, 23, 42, 0.06);
       }
-      body.lm .db-scan {
-        background: #0d9488 !important;
-        box-shadow: 0 0 15px rgba(13, 148, 136, 0.4) !important;
-      }
-      body.lm .db-glow {
-        background: radial-gradient(circle, rgba(13, 148, 136, 0.15) 0%, transparent 70%) !important;
-      }
-      body.lm .tr-light-box {
-        background: #fffcf0 !important;
-        border: 2px solid rgba(242, 184, 75, 0.5) !important;
-        box-shadow: 0 8px 20px rgba(242, 184, 75, 0.15) !important;
+      body.lm .vp-card:hover {
+        border-color: rgba(15, 23, 42, 0.16) !important;
+        box-shadow: 0 20px 38px -10px rgba(15, 23, 42, 0.12) !important;
       }
 
-      /* Light mode overrides for project cards */
-      body.lm .pc .pv {
+      /* Colored hover glow tuned for white cards */
+      body.lm .pc.ci:hover {
+        border-color: rgba(2, 132, 199, 0.4) !important;
+        box-shadow: 0 24px 48px -12px rgba(2, 132, 199, 0.18) !important;
+      }
+      body.lm .pc.cs:hover {
+        border-color: rgba(217, 119, 6, 0.4) !important;
+        box-shadow: 0 24px 48px -12px rgba(217, 119, 6, 0.18) !important;
+      }
+      body.lm .pc.ct:hover {
+        border-color: rgba(13, 148, 136, 0.4) !important;
+        box-shadow: 0 24px 48px -12px rgba(13, 148, 136, 0.18) !important;
+      }
+      body.lm .pc.ce:hover {
+        border-color: rgba(5, 150, 105, 0.4) !important;
+        box-shadow: 0 24px 48px -12px rgba(5, 150, 105, 0.18) !important;
+      }
+      body.lm .pc.cp:hover {
+        border-color: rgba(124, 58, 237, 0.4) !important;
+        box-shadow: 0 24px 48px -12px rgba(124, 58, 237, 0.18) !important;
+      }
+
+      /* 3. Fix Washed-Out Project Images & Tags */
+      body.lm .pv {
+        border-bottom: 1px solid rgba(15, 23, 42, 0.07);
         background: #f8f9fa !important;
       }
-      body.lm .vg,
-      body.lm .vq,
-      body.lm .vr {
-        background: #f8f9fa !important;
+      body.lm .pv img {
+        opacity: 1; /* Fixes milky 0.82 opacity on light background */
       }
-      body.lm .gh {
-        filter: drop-shadow(0 4px 12px rgba(0, 240, 204, 0.5)) !important;
+      body.lm .pv::after {
+        display: none !important; /* Remove dark gradient overlay on images */
+      }
+      body.lm .tag {
+        background: #f1f5f9;
+        border-color: rgba(15, 23, 42, 0.1);
+        color: #334155;
+      }
+      body.lm .pc:hover .tag {
+        background: #e2e8f0;
+        border-color: rgba(15, 23, 42, 0.2);
+      }
+
+      /* 4. Fix Navigation, Dropdowns, Modals, Footer & Inspector */
+      body.lm .dropdown-content-inner {
+        background: rgba(255, 255, 255, 0.96);
+        border-color: rgba(15, 23, 42, 0.12);
+        box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.15);
+      }
+      body.lm .dropdown-content a:hover {
+        background: rgba(15, 23, 42, 0.06);
+        color: var(--ink);
+      }
+      body.lm .ni-icon,
+      body.lm .ni-btn-secondary {
+        background: rgba(15, 23, 42, 0.05);
+        border-color: rgba(15, 23, 42, 0.12);
+        color: var(--ink);
+      }
+      body.lm .ni-btn-secondary:hover {
+        background: rgba(15, 23, 42, 0.1);
+      }
+      body.lm .sf {
+        background: #ebe9e1;
+        border-top-color: rgba(15, 23, 42, 0.1);
+      }
+      body.lm .md {
+        background: #ffffff;
+        box-shadow: 0 32px 70px rgba(15, 23, 42, 0.22);
+      }
+      body.lm .mi {
+        background: #f8fafc;
+        border-color: rgba(15, 23, 42, 0.15);
+        color: var(--ink);
+      }
+
+      /* 5. Upgrade Custom CSS Card Illustrations for Daylight */
+
+      /* Perceptus Flow (Hand Vision) */
+      body.lm .vg {
+        background: radial-gradient(circle at 50% 50%, #e6fffa 0%, #f0fdfa 100%) !important;
       }
       body.lm .gg {
-        opacity: 0.15;
+        opacity: 0.18;
+        background:
+          repeating-linear-gradient(0deg, transparent, transparent 18px, #0d9488 18px, #0d9488 19px),
+          repeating-linear-gradient(90deg, transparent, transparent 18px, #0d9488 18px, #0d9488 19px);
       }
-      body.lm .ri {
-        filter: drop-shadow(0 4px 12px rgba(184, 155, 255, 0.5)) !important;
+      body.lm .gsc {
+        background: #0d9488;
+        box-shadow: 0 0 10px #0d9488;
       }
-      body.lm .rc {
-        opacity: 0.5;
+
+      /* QR Studio Matrix */
+      body.lm .vq {
+        background: radial-gradient(circle at 50% 50%, #ecfdf5 0%, #f0fdf4 100%) !important;
       }
       body.lm .qc {
         background: rgba(16, 185, 129, 0.15) !important;
@@ -3421,6 +3019,72 @@
       body.lm .qgl {
         background: radial-gradient(ellipse at center, rgba(4, 120, 87, 0.08) 0%, transparent 70%) !important;
       }
+
+      /* RPG Card (Fix invisible white stars on light background) */
+      body.lm .vr {
+        background: radial-gradient(ellipse at 50% 80%, #ede9fe 0%, #f5f3ff 100%) !important;
+      }
+      body.lm .rc {
+        opacity: 0.75;
+        background:
+          radial-gradient(1.5px 1.5px at 15% 25%, #7c3aed 0%, transparent 100%),
+          radial-gradient(1.5px 1.5px at 75% 15%, #6d28d9 0%, transparent 100%),
+          radial-gradient(1.5px 1.5px at 45% 55%, #8b5cf6 0%, transparent 100%),
+          radial-gradient(1.5px 1.5px at 85% 70%, #5b21b6 0%, transparent 100%),
+          radial-gradient(2px 2px at 30% 80%, #d97706 0%, transparent 100%);
+        background-size: 12px 12px;
+      }
+      body.lm .ri {
+        color: #6d28d9;
+        filter: drop-shadow(0 4px 12px rgba(109, 40, 217, 0.35)) !important;
+      }
+
+      /* Traffic Card (Soften housing & boost streak contrast) */
+      body.lm .tr-bg {
+        background: radial-gradient(circle at 50% 50%, #fef3c7 0%, #fffbeb 100%) !important;
+      }
+      body.lm .tr-light-box {
+        background: #1e293b !important; /* Keep signal housing dark slate so LEDs pop */
+        border: 2px solid #334155 !important;
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.2) !important;
+      }
+
+      /* Career Card (Boost grid visibility) */
+      body.lm .c-bg {
+        background: radial-gradient(circle at 50% 50%, #e0e7ff 0%, #eef2ff 100%) !important;
+      }
+      body.lm .c-grid {
+        background:
+          radial-gradient(circle at 50% 50%, rgba(79, 70, 229, 0.18) 0%, transparent 60%),
+          linear-gradient(0deg, rgba(79, 70, 229, 0.12) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(79, 70, 229, 0.12) 1px, transparent 1px);
+        background-size: 100% 100%, 20px 20px, 20px 20px;
+      }
+      body.lm .c-icon-wrap {
+        background: #eef2ff !important;
+        border: 2px solid rgba(129, 140, 248, 0.6) !important;
+        box-shadow: 0 8px 20px rgba(129, 140, 248, 0.15) !important;
+      }
+      body.lm .c-svg {
+        color: #4f46e5;
+      }
+
+      /* Database Logic Card */
+      body.lm .db-bg {
+        background: radial-gradient(circle at 50% 50%, #e6fffa 0%, #f0fdfa 100%) !important;
+      }
+      body.lm .db-server {
+        background: #ffffff !important;
+        border: 2px solid #0d9488 !important;
+        box-shadow: 0 8px 20px rgba(13, 148, 136, 0.15) !important;
+      }
+      body.lm .db-scan {
+        background: #0d9488 !important;
+        box-shadow: 0 0 15px rgba(13, 148, 136, 0.4) !important;
+      }
+      body.lm .db-glow {
+        background: radial-gradient(circle, rgba(13, 148, 136, 0.15) 0%, transparent 70%) !important;
+      }
       body.lm .db-line {
         background: rgba(13, 148, 136, 0.2) !important;
       }
@@ -3431,10 +3095,847 @@
         background: #0d9488 !important;
         box-shadow: 0 0 8px #0d9488 !important;
       }
-      body.lm .pv::after {
-        display: none !important;
-      } /* Remove dark gradient overlay on images in light mode */
+
+      /* Terra3D Atlas Card */
+      body.lm .t3-bg {
+        background: radial-gradient(ellipse at 50% 55%, #dff3f6 0%, #eef4f8 70%) !important;
+      }
+      body.lm .t3-core {
+        background: radial-gradient(circle at 34% 30%, #3aa7bd 0%, #17607a 60%, #0b3550 100%) !important;
+      }
+      body.lm .t3-stars {
+        opacity: 0.18 !important;
+      }
+
+      /* 6. Fix Mobile Non-iPhone Light Mode Specificity Bug */
+      @media (max-width: 768px) {
+        html:not(.is-iphone) body.lm .node-inspector,
+        html.lm:not(.is-iphone) .node-inspector {
+          background: rgba(255, 255, 255, 0.98) !important;
+          border-color: rgba(15, 23, 42, 0.14) !important;
+        }
+        html:not(.is-iphone) body.lm .dropdown-content-inner,
+        html.lm:not(.is-iphone) .dropdown-content-inner {
+          background: transparent !important;
+        }
+      }
+
+      /* =========================================================
+         DESKTOP OVERHAUL: HERO ORBITAL STAGE & CARD SPOTLIGHT
+         ========================================================= */
+
+      /* 7. Interactive Hero Orbital Stage (Desktop Orrery Replacement) */
+      .hero-orbital-stage {
+        display: none;
+      }
+      @media (min-width: 901px) {
+        .hero-orbital-stage {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: absolute;
+          top: 50%;
+          right: max(16px, calc(50vw - 680px));
+          transform: translateY(-50%);
+          width: min(660px, 48vw);
+          height: min(660px, 48vw);
+          z-index: 4;
+          pointer-events: auto;
+          user-select: none;
+          transition: opacity 0.4s var(--ease), filter 0.4s var(--ease);
+        }
+        .hero:has(.node-inspector.active) .hero-orbital-stage,
+        .hero.inspector-active .hero-orbital-stage {
+          opacity: 0.2;
+          filter: blur(4px);
+          pointer-events: none;
+        }
+        .hos-ring {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          border-radius: 50%;
+          border: 1px dashed rgba(255, 255, 255, 0.12);
+          pointer-events: none;
+          transform: translate(-50%, -50%);
+          animation: hosSpin 80s linear infinite;
+        }
+        .hos-r1 {
+          width: 210px;
+          height: 210px;
+          border-color: rgba(0, 240, 255, 0.22);
+          animation-duration: 45s;
+        }
+        .hos-r2 {
+          width: 330px;
+          height: 330px;
+          border-color: rgba(168, 85, 247, 0.18);
+          animation-duration: 75s;
+          animation-direction: reverse;
+        }
+        .hos-r3 {
+          width: 460px;
+          height: 460px;
+          border-color: rgba(245, 158, 11, 0.18);
+          animation-duration: 105s;
+        }
+        .hos-r4 {
+          width: 590px;
+          height: 590px;
+          border-color: rgba(255, 87, 34, 0.18);
+          animation-duration: 140s;
+          animation-direction: reverse;
+        }
+        body.lm .hos-ring {
+          border-color: rgba(15, 23, 42, 0.12);
+        }
+        body.lm .hos-r1 {
+          border-color: rgba(2, 132, 199, 0.25);
+        }
+        body.lm .hos-r2 {
+          border-color: rgba(124, 58, 237, 0.22);
+        }
+        body.lm .hos-r3 {
+          border-color: rgba(217, 119, 6, 0.22);
+        }
+        body.lm .hos-r4 {
+          border-color: rgba(194, 65, 12, 0.22);
+        }
+
+        @keyframes hosSpin {
+          from {
+            transform: translate(-50%, -50%) rotate(0deg);
+          }
+          to {
+            transform: translate(-50%, -50%) rotate(360deg);
+          }
+        }
+
+        .hos-core {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 104px;
+          height: 104px;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(242, 184, 75, 0.3) 0%, rgba(10, 14, 26, 0.94) 75%);
+          border: 1.5px solid var(--signal);
+          color: var(--ink);
+          box-shadow: 0 0 38px rgba(242, 184, 75, 0.4), inset 0 0 18px rgba(242, 184, 75, 0.25);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          z-index: 5;
+          padding: 0;
+          transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+        }
+        .hos-core:hover {
+          transform: translate(-50%, -50%) scale(1.08);
+          box-shadow: 0 0 52px rgba(242, 184, 75, 0.65), inset 0 0 22px rgba(242, 184, 75, 0.35);
+        }
+        .hos-core-label {
+          font-family: var(--mono);
+          font-size: 0.72rem;
+          font-weight: 800;
+          letter-spacing: 0.12em;
+          color: var(--signal);
+          text-transform: uppercase;
+        }
+        .hos-core-pulse {
+          position: absolute;
+          inset: -12px;
+          border-radius: 50%;
+          border: 1.5px solid var(--signal);
+          opacity: 0.45;
+          animation: corePulse 3s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+          pointer-events: none;
+        }
+        @keyframes corePulse {
+          0% { transform: scale(0.9); opacity: 0.85; }
+          100% { transform: scale(1.4); opacity: 0; }
+        }
+
+        .hos-node {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%) rotate(var(--angle, 0deg)) translateY(calc(-1 * var(--radius, 120px))) rotate(calc(-1 * var(--angle, 0deg)));
+          display: flex;
+          align-items: center;
+          gap: 7px;
+          background: rgba(10, 14, 26, 0.9);
+          border: 1.5px solid var(--node-color, var(--lineb));
+          border-radius: 20px;
+          padding: 6px 13px 6px 9px;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 16px -2px var(--node-color);
+          cursor: pointer;
+          z-index: 6;
+          transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), background 0.3s var(--ease);
+        }
+        .hos-node:hover {
+          transform: translate(-50%, -50%) rotate(var(--angle, 0deg)) translateY(calc(-1 * var(--radius, 120px))) rotate(calc(-1 * var(--angle, 0deg))) scale(1.14);
+          box-shadow: 0 12px 32px rgba(0, 0, 0, 0.65), 0 0 28px var(--node-color);
+          background: rgba(17, 24, 39, 0.96);
+        }
+        .hos-node.hos-flagship {
+          border-width: 2px !important;
+          border-color: #00f0ff !important;
+          box-shadow: 0 0 26px rgba(0, 240, 255, 0.8), 0 0 10px #00f0ff, inset 0 0 12px rgba(0, 240, 255, 0.35) !important;
+          background: rgba(8, 20, 36, 0.96) !important;
+          font-weight: 800;
+          z-index: 10;
+        }
+        .hos-node.hos-flagship .hos-dot {
+          background: #00f0ff !important;
+          box-shadow: 0 0 12px #00f0ff, 0 0 20px #00f0ff !important;
+        }
+        .hos-node.hos-flagship .hos-tag {
+          color: #00f0ff !important;
+          letter-spacing: 0.06em;
+          font-weight: 800;
+        }
+        .hos-dot {
+          width: 9px;
+          height: 9px;
+          border-radius: 50%;
+          background: var(--node-color);
+          box-shadow: 0 0 8px var(--node-color);
+          flex-shrink: 0;
+        }
+        .hos-tag {
+          font-family: var(--mono);
+          font-size: 0.74rem;
+          font-weight: 700;
+          color: var(--ink);
+          letter-spacing: 0.04em;
+          white-space: nowrap;
+        }
+
+        /* Light mode for orbital stage */
+        body.lm .hos-core {
+          background: radial-gradient(circle, rgba(217, 119, 6, 0.16) 0%, rgba(255, 255, 255, 0.95) 75%);
+          box-shadow: 0 10px 25px rgba(217, 119, 6, 0.2), inset 0 0 15px rgba(217, 119, 6, 0.1);
+        }
+        body.lm .hos-node {
+          background: rgba(255, 255, 255, 0.95);
+          box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08), 0 0 12px var(--node-color);
+        }
+        body.lm .hos-node:hover {
+          background: #ffffff;
+          box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14), 0 0 20px var(--node-color);
+        }
+        body.lm .hos-node.hos-flagship {
+          background: #ffffff !important;
+          border-color: #0284c7 !important;
+          box-shadow: 0 0 22px rgba(2, 132, 199, 0.5) !important;
+        }
+        body.lm .hos-node.hos-flagship .hos-tag {
+          color: #0284c7 !important;
+        }
+        body.lm .hos-tag {
+          color: #0f172a;
+        }
+      }
+
+      /* 8. Specular Spotlight & Lag-Free Card Tilt */
+      @media (pointer: fine) {
+        .pc,
+        .vp-card {
+          position: relative;
+        }
+        .pc::after,
+        .vp-card::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          pointer-events: none;
+          background: radial-gradient(
+            circle 320px at var(--card-mx, -9999px) var(--card-my, -9999px),
+            rgba(255, 255, 255, 0.12),
+            transparent 70%
+          );
+          opacity: 0;
+          transition: opacity 0.35s ease;
+          z-index: 5;
+        }
+        .pc:hover::after,
+        .vp-card:hover::after {
+          opacity: 1;
+        }
+        body.lm .pc::after,
+        body.lm .vp-card::after {
+          background: radial-gradient(
+            circle 320px at var(--card-mx, -9999px) var(--card-my, -9999px),
+            rgba(2, 132, 199, 0.12),
+            transparent 70%
+          );
+        }
+        /* Cancel sluggish 0.7s transition during active mouse tilt */
+        .pc.is-tilting {
+          transition: border-color 0.25s var(--ease), box-shadow 0.25s var(--ease) !important;
+        }
+      }
+
+      /* 9. 1024px Grid Orphan Span Fix */
+      @media (max-width: 1024px) and (min-width: 769px) {
+        #projects .pgrid > .pc:last-child:nth-child(odd) {
+          grid-column: 1 / -1 !important;
+        }
+      }
+
+      /* Continuous Moving Audio Wave Lines */
+      .col-moving-audio-lines {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        pointer-events: none;
+      }
+      .col-moving-audio-lines svg {
+        position: absolute;
+        width: 200%;
+        height: 80px;
+        will-change: transform;
+      }
+      .col-audio-wave-1 {
+        animation: colAudioGlide 5.2s linear infinite;
+      }
+      .col-audio-wave-2 {
+        animation: colAudioGlide 3.6s linear infinite reverse;
+      }
+      .col-audio-wave-3 {
+        animation: colAudioGlide 7s linear infinite;
+      }
+      @keyframes colAudioGlide {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+      }
+
+      /* 10. Reduced Motion Safety */
+      @media (prefers-reduced-motion: reduce) {
+        .hos-ring,
+        .hos-core-pulse,
+        .col-audio-wave-1,
+        .col-audio-wave-2,
+        .col-audio-wave-3 {
+          animation: none !important;
+        }
+      }
     </style>
+    <script defer src="col-router.js"></script>
+    <link rel="stylesheet" href="col-mobile.css" />
+    <link rel="stylesheet" href="liquid-glass.css" />
+    <link rel="stylesheet" href="mobile-perf.css" />
+    <script defer src="pull-refresh.js"></script>
+    <script defer src="col-ui.js"></script>
+    <script defer src="col-auth.js"></script>
+    <link rel="manifest" href="manifest.json" />
+  </head>
+  <body>
+    <script>
+      ;(function () {
+        try {
+          if (localStorage.getItem('theme') === 'light') document.body.classList.add('lm')
+        } catch (e) {}
+      })()
+    </script>
+    <div class="loader" id="loader">
+      <div class="lid"><span>CoL</span> &middot; Studio Hub</div>
+      <div class="lbar"></div>
+    </div>
+    <div class="cd" id="cDot"></div>
+    <div class="cr" id="cRing"></div>
+
+    <!-- Hover tooltip for 3D nodes (single instance; see #ntip below near stage) -->
+
+    <nav class="top-nav" id="topNav">
+      <a href="/" class="nav-brand"><img src="Class.png" alt="Class Of Learners" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" /><span class="brand-name">Class Of Learners</span></a>
+      <div class="nav-links" id="navLinks">
+        <a href="/" class="nav-link act"
+          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+            <polyline points="9 22 9 12 15 12 15 22" /></svg
+          >Home</a
+        >
+        <a href="about" class="nav-link"
+          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 16v-4" />
+            <path d="M12 8h.01" /></svg
+          >About</a
+        >
+        <a href="school" class="nav-link"
+          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" />
+            <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" /></svg
+          >School</a
+        >
+        <a href="sneh-asha" class="nav-link"
+          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" /></svg
+          >Sneh Asha</a
+        >
+        <a href="making" class="nav-link"
+          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg
+          >Making</a
+        >
+        <div class="dropdown" id="projDD">
+          <button class="dropdown-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+              <line x1="8" y1="21" x2="16" y2="21" />
+              <line x1="12" y1="17" x2="12" y2="21" /></svg
+            >Projects <span class="darr">&#9660;</span>
+          </button>
+          <div class="dropdown-content">
+            <div class="dropdown-content-inner">
+              <a href="ati"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="4 7 4 4 20 4 20 7" />
+                  <line x1="9" y1="20" x2="15" y2="20" />
+                  <line x1="12" y1="4" x2="12" y2="20" /></svg
+                >Typing Instructor</a
+              ><a href="solar"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="5" />
+                  <line x1="12" y1="1" x2="12" y2="3" />
+                  <line x1="12" y1="21" x2="12" y2="23" />
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                  <line x1="1" y1="12" x2="3" y2="12" />
+                  <line x1="21" y1="12" x2="23" y2="12" />
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" /></svg
+                >Solar Engine</a
+              ><a href="gesture"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 8h1a4 4 0 010 8h-1" />
+                  <path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z" />
+                  <line x1="6" y1="1" x2="6" y2="4" />
+                  <line x1="10" y1="1" x2="10" y2="4" />
+                  <line x1="14" y1="1" x2="14" y2="4" /></svg
+                >Perceptus Flow</a
+              ><a href="rpg"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg
+                >RPG Game</a
+              ><a href="qr"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="2" width="8" height="8" rx="1" />
+                  <rect x="14" y="2" width="8" height="8" rx="1" />
+                  <rect x="2" y="14" width="8" height="8" rx="1" />
+                  <rect x="14" y="14" width="4" height="4" />
+                  <rect x="20" y="14" width="2" height="2" />
+                  <rect x="14" y="20" width="2" height="2" />
+                  <rect x="20" y="20" width="2" height="2" /></svg
+                >QR Studio Matrix</a
+              ><a href="Terra3D/"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="2" y1="12" x2="22" y2="12" />
+                  <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" /></svg
+                >Terra3D Atlas</a
+              ><a href="Career"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" /></svg
+                >Career Compass</a
+              ><a href="Database_Logic"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                  <line x1="9" y1="7" x2="16" y2="7" />
+                  <line x1="9" y1="11" x2="14" y2="11" /></svg
+                >Database Logic DB</a
+              ><a href="CastFlow"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="3" width="20" height="14" rx="2" />
+                  <line x1="8" y1="21" x2="16" y2="21" />
+                  <line x1="12" y1="17" x2="12" y2="21" /></svg
+                >CastFlow Studio</a
+              ><a href="cereal"
+                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                  <line x1="12" y1="19" x2="12" y2="23" />
+                  <line x1="8" y1="23" x2="16" y2="23" /></svg
+                >Cereal AI App</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="nav-actions">
+        <div class="hz-toggle" onclick="hzToggle()"><div class="hz-clouds"></div><div class="hz-stars"></div><div class="hz-orb"></div></div>
+        <button class="nav-login-btn" id="navLoginBtn" onclick="openLogin()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+            <circle cx="12" cy="7" r="4" /></svg
+          >Sign In
+        </button>
+        <div class="nav-user-profile" id="navUserProfile" onclick="openLogin()">
+          <div class="nav-user-avatar" id="navUserAv">?</div>
+          <span class="nun" id="navUserName">User</span>
+        </div>
+        <a href="download" class="nav-dl-btn desktop-dl">Downloads Hub</a>
+        <button class="mmb" id="mmb" aria-label="Toggle menu">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M3 6H21M3 12H21M3 18H21" stroke-width="1.5" stroke-linecap="round" /></svg>
+        </button>
+      </div>
+    </nav>
+
+    <main id="main">
+    <section class="hero" id="heroSection">
+      <canvas id="orrery"></canvas>
+      <div class="hvig"></div>
+      <div class="hvigb"></div>
+
+      <div class="hc" id="heroContent">
+        <div class="hey">Mumbai &middot; India &middot; Est.&nbsp;2024</div>
+        <h1>Engineering The <em>Future</em> Of Interactive Learning.</h1>
+        <p class="hlede">
+          A working portfolio of programming logic, machine vision, and deep-space physics engines &mdash; built by six students from Mumbai. We build tools that make complex computer science concepts
+          click for anyone willing to try.
+        </p>
+        <div class="hcta">
+          <a href="#projects" class="btn-p"
+            >View Projects
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7" /></svg
+          ></a>
+          <a href="download" class="btn-g">Apps &amp; Downloads &#8594;</a>
+          <a href="about" class="btn-g">Our Story &#8594;</a>
+          <a href="COL.apk" class="btn-g mobile-dl" download style="border-color: var(--signal); color: var(--signal)">Download Android App</a>
+        </div>
+      </div>
+
+      <!-- Interactive Desktop Orbital Stage (Right Side of Hero) -->
+      <div class="hero-orbital-stage" id="heroOrbitalStage" aria-label="Interactive Project Orrery">
+        <div class="hos-ring hos-r4"></div>
+        <div class="hos-ring hos-r3"></div>
+        <div class="hos-ring hos-r2"></div>
+        <div class="hos-ring hos-r1"></div>
+
+        <!-- Central Core -->
+        <button type="button" class="hos-core" onclick="window.openNodeInspector('core')" aria-label="Inspect Studio Core">
+          <span class="hos-core-pulse"></span>
+          <span class="hos-core-label">CoL CORE</span>
+        </button>
+
+        <!-- Orbiting Project Nodes -->
+        <!-- Ring 1 (Radius 105px) -->
+        <button type="button" class="hos-node hos-flagship hos-n-ati" style="--angle: 45deg; --radius: 105px; --node-color: #00f0ff" onclick="window.openNodeInspector('ATI')" aria-label="Inspect Advanced Typing Instructor Flagship">
+          <span class="hos-dot"></span><span class="hos-tag">★ ATI 1.4</span>
+        </button>
+        <button type="button" class="hos-node hos-n-cereal" style="--angle: 225deg; --radius: 105px; --node-color: #ec4899" onclick="window.openNodeInspector('Cereal')" aria-label="Inspect Cereal AI Assistant">
+          <span class="hos-dot"></span><span class="hos-tag">Cereal</span>
+        </button>
+
+        <!-- Ring 2 (Radius 165px) -->
+        <button type="button" class="hos-node hos-n-gesture" style="--angle: 100deg; --radius: 165px; --node-color: #a855f7" onclick="window.openNodeInspector('Gesture')" aria-label="Inspect Perceptus Flow">
+          <span class="hos-dot"></span><span class="hos-tag">Perceptus</span>
+        </button>
+        <button type="button" class="hos-node hos-n-rpg" style="--angle: 220deg; --radius: 165px; --node-color: #10b981" onclick="window.openNodeInspector('RPG')" aria-label="Inspect Quest Master RPG">
+          <span class="hos-dot"></span><span class="hos-tag">RPG</span>
+        </button>
+        <button type="button" class="hos-node hos-n-castflow" style="--angle: 340deg; --radius: 165px; --node-color: #0ea5e9" onclick="window.openNodeInspector('CastFlow')" aria-label="Inspect CastFlow Studio">
+          <span class="hos-dot"></span><span class="hos-tag">CastFlow</span>
+        </button>
+
+        <!-- Ring 3 (Radius 230px) -->
+        <button type="button" class="hos-node hos-n-traffic" style="--angle: 160deg; --radius: 230px; --node-color: #f59e0b" onclick="window.openNodeInspector('Traffic')" aria-label="Inspect Mumbai Traffic Sim">
+          <span class="hos-dot"></span><span class="hos-tag">Traffic</span>
+        </button>
+        <button type="button" class="hos-node hos-n-civic" style="--angle: 280deg; --radius: 230px; --node-color: #3b82f6" onclick="window.openNodeInspector('Database_Logic')" aria-label="Inspect Database Logic">
+          <span class="hos-dot"></span><span class="hos-tag">Database</span>
+        </button>
+        <button type="button" class="hos-node hos-n-terra" style="--angle: 40deg; --radius: 230px; --node-color: #00f0cc" onclick="window.openNodeInspector('Terra3D')" aria-label="Inspect Terra 3D Earth Globe">
+          <span class="hos-dot"></span><span class="hos-tag">Terra3D</span>
+        </button>
+
+        <!-- Ring 4 (Radius 295px) -->
+        <button type="button" class="hos-node hos-n-solar" style="--angle: 310deg; --radius: 295px; --node-color: #ff5722" onclick="window.openNodeInspector('Solar')" aria-label="Inspect Solar System 3D">
+          <span class="hos-dot"></span><span class="hos-tag">Solar 3D</span>
+        </button>
+        <button type="button" class="hos-node hos-n-career" style="--angle: 70deg; --radius: 295px; --node-color: #8b5cf6" onclick="window.openNodeInspector('Career')" aria-label="Inspect FutureScape Career Compass">
+          <span class="hos-dot"></span><span class="hos-tag">Career</span>
+        </button>
+        <button type="button" class="hos-node hos-n-qr" style="--angle: 190deg; --radius: 295px; --node-color: #84cc16" onclick="window.openNodeInspector('QR')" aria-label="Inspect QR Studio Matrix">
+          <span class="hos-dot"></span><span class="hos-tag">QR Studio</span>
+        </button>
+      </div>
+
+
+      <div class="node-inspector" id="nodeInspector" aria-hidden="true" inert>
+        <div class="ni-header">
+          <div class="ni-icon" id="niIcon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="8" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="7.5" cy="15.5" r="1.5"/><circle cx="16.5" cy="15.5" r="1.5"/></svg></div>
+          <div class="ni-meta">
+            <div class="ni-badge" id="niBadge">3D Simulation & AI</div>
+            <h2 class="ni-title" id="niTitle">Mumbai Traffic Hero</h2>
+          </div>
+          <button class="ni-close" id="niCloseBtn" aria-label="Close Inspector">&times;</button>
+        </div>
+        <div class="ni-telemetry" id="niTelemetry">
+          <div class="ni-tele-cell"><span class="ni-tele-k">Status</span><span class="ni-tele-v" id="niTeleStatus">Online</span></div>
+          <div class="ni-tele-cell"><span class="ni-tele-k">Engine</span><span class="ni-tele-v" id="niTeleEngine">Three.js / WebGL</span></div>
+          <div class="ni-tele-cell"><span class="ni-tele-k">Orbit</span><span class="ni-tele-v" id="niTeleOrbit">R=20 AU</span></div>
+          <div class="ni-tele-cell"><span class="ni-tele-k">FPS</span><span class="ni-tele-v" id="niTeleFps">60 Stable</span></div>
+        </div>
+        <p class="ni-desc" id="niDesc">
+          An authentic Mumbai city driving simulator featuring procedurally controlled intersections, real-time traffic signal logic, pedestrians, and dynamic camera angles.
+        </p>
+        <div class="ni-actions">
+          <a href="Traffic/Driving" class="ni-btn ni-btn-primary" id="niLaunchBtn">
+            Launch Engine <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <button class="ni-btn ni-btn-secondary" id="niFocusBtn">
+            Center View
+          </button>
+          <button class="ni-btn ni-btn-ghost" id="niDismissBtn">
+            Return Orbit ✕
+          </button>
+        </div>
+      </div>
+
+      <!-- 3D Stage Hint Banner -->
+      <div class="stage-hint" id="stageHint">
+        <span class="sh-dot"></span> 3D Lab Active: Drag to Orbit &middot; Scroll to Zoom &middot; Click Planets to Inspect
+      </div>
+
+      <!-- 3D Node Tooltip -->
+      <div id="ntip" class="ntip" style="display:none; opacity:0; position:fixed; pointer-events:none; z-index:1000;">
+        <span id="ntip-dot" class="ntip-dot"></span>
+        <span id="ntip-name" class="ntip-name"></span>
+      </div>
+
+      <div class="sci">
+        <span>Scroll</span>
+        <div class="scl"></div>
+      </div>
+      <div class="hst">
+        <div><b>Projects</b> &mdash; 16</div>
+        <div><b>Team</b> &mdash; 06</div>
+        <div><b>Base</b> &mdash; Mumbai</div>
+      </div>
+    </section>
+
+    <section class="vp-section" style="content-visibility:auto; contain-intrinsic-size: 0 600px">
+      <div class="vp-grid">
+        <div class="vp-card rv">
+          <div class="vp-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          </div>
+          <h2 class="vp-title">Performance First</h2>
+          <p class="vp-desc">Our tools are built natively without bulky frameworks, keeping load times fast across every device.</p>
+        </div>
+        <div class="vp-card rv">
+          <div class="vp-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/><circle cx="12" cy="12" r="5"/></svg>
+          </div>
+          <h2 class="vp-title">Interactive Learning</h2>
+          <p class="vp-desc">Move beyond textbooks and static pages. We create immersive environments where you learn by experimenting in real-time.</p>
+        </div>
+        <div class="vp-card rv">
+          <div class="vp-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </div>
+          <h2 class="vp-title">Open &amp; Accessible</h2>
+          <p class="vp-desc">Education should have zero barriers. Everything we build is free to access and works for anyone, anywhere.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="ps" id="projects" style="content-visibility:auto; contain-intrinsic-size: 0 1200px">
+      <div class="sh">
+        <div>
+          <div class="sey">Portfolio</div>
+          <h2 class="st">Seven Engines.<br />One Studio.</h2>
+        </div>
+        <p class="ssb">
+          Each project is a standalone engine &mdash; a focused exploration of a specific domain of computer science and interactive design, engineered from scratch to show what web
+          applications can really do.
+        </p>
+      </div>
+      <div class="pgrid">
+        <a href="ati" class="pc cs feat" data-delay="0"
+          ><div class="badge bflag" style="background: linear-gradient(135deg, #00f0ff, #0284c7); color: #040810; font-weight: 800; box-shadow: 0 0 20px rgba(0, 240, 255, 0.45)">★ Primary Flagship</div>
+          <div class="pv"><img src="ATI 1.png" alt="Advanced Typing Instructor" width="900" height="500" loading="lazy" decoding="async" /></div>
+          <div class="pb">
+            <div class="pn">01 &mdash; Founding Flagship &amp; Suite</div>
+            <h3 class="pname">Advanced Typing Instructor 1.4</h3>
+            <p class="pdesc">
+              The founding suite of Class of Learners. Master touch typing, Python, C++, and JavaScript syntax with adaptive heatmaps, a virtual mechanical keyboard, 200+ levels, and a full progression system designed for developers.
+            </p>
+          </div>
+          <div class="pf">
+            <div class="ptags"><span class="tag">Flagship</span><span class="tag">Education</span><span class="tag">Python / React</span></div>
+            <div class="plink">
+              Launch Flagship <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+            </div></div
+        ></a>
+        <a href="solar" class="pc ci feat" data-delay="80"
+          ><div class="badge bflag">Co-Flagship</div>
+          <div class="pv"><img src="solar.webp" alt="Solar System Engine" width="900" height="500" loading="lazy" decoding="async" /></div>
+          <div class="pb">
+            <div class="pn">02 &mdash; Physics Engine</div>
+            <h3 class="pname">Solar System Engine V3.3</h3>
+            <p class="pdesc">
+              Deep-space telemetry and accurate orbital mechanics simulated in a standalone 64-bit application. Explore every planet, moon, and asteroid belt in real time with high-fidelity WebGL
+              graphics and interactive data panels.
+            </p>
+          </div>
+          <div class="pf">
+            <div class="ptags"><span class="tag">Physics</span><span class="tag">3D Engine</span><span class="tag">C++</span></div>
+            <div class="plink">
+              Open Engine <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+            </div></div
+        ></a>
+        <a href="gesture" class="pc ct" data-delay="160"
+          ><div class="badge bp">Autonomous AI</div>
+          <div class="pv" style="background: #060d10">
+            <div class="vg">
+              <div class="gg"></div>
+              <div class="gsc"></div>
+              <div class="gh"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg></div>
+            </div>
+          </div>
+          <div class="pb">
+            <div class="pn">03</div>
+            <h3 class="pname">Perceptus Flow: Vision Co-Pilot</h3>
+            <p class="pdesc">
+              Touchless spatial machine vision and multimodal AI co-pilot using standard webcams. Zero extra hardware required — control cursor, pinch-click, scroll, and air-draw in mid-air.
+            </p>
+          </div>
+          <div class="pf">
+            <div class="ptags"><span class="tag">AI Vision</span><span class="tag">Spatial UI</span><span class="tag">Webcam</span></div>
+            <div class="plink">
+              Explore <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+            </div></div
+        ></a>
+        <a href="qr" class="pc ce" data-delay="240"
+          ><div class="pv" style="background: #040e08">
+            <div class="vq">
+              <div class="qgl"></div>
+              <div class="qb"></div>
+              <div class="qm2" id="qrm"></div>
+            </div>
+          </div>
+          <div class="pb">
+            <div class="pn">04</div>
+            <h3 class="pname">QR Studio Matrix</h3>
+            <p class="pdesc">
+              Static &amp; dynamic QR engine with cloud redirection, real-time scan analytics, custom geometric styles, logo embedding, camera scanner, and bulk generation.
+            </p>
+          </div>
+          <div class="pf">
+            <div class="ptags"><span class="tag">Dynamic QR</span><span class="tag">Analytics</span><span class="tag">Cloud Sync</span></div>
+            <div class="plink">
+              Studio <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+            </div></div
+        ></a>
+        <a href="rpg" class="pc cp" data-delay="320"
+          ><div class="badge bs">Coming Soon</div>
+          <div class="pv" style="background: #080514">
+            <div class="vr">
+              <div class="rc"></div>
+              <div class="rg"></div>
+              <div class="ri"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M16 16l4 4"/><path d="M19 21l2-2"/></svg></div>
+              <div class="ro">
+                <div class="rob"></div>
+                <div class="rob"></div>
+                <div class="rob"></div>
+                <div class="rob"></div>
+                <div class="rob"></div>
+              </div>
+            </div>
+          </div>
+          <div class="pb">
+            <div class="pn">05</div>
+            <h3 class="pname">RPG Game</h3>
+            <p class="pdesc">
+              An epic role-playing adventure featuring dynamic battles, leveling systems, and a deep story. Currently in active development by the studio, blending classic mechanics with modern
+              interactive design.
+            </p>
+          </div>
+          <div class="pf">
+            <div class="ptags"><span class="tag">Game Dev</span><span class="tag">Canvas</span></div>
+            <div class="plink">
+              Preview <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+            </div></div
+        ></a>
+        <a href="CastFlow" class="pc ci" data-delay="360"
+          ><div class="badge bp" style="background: rgba(14, 165, 233, 0.18); border-color: rgba(14, 165, 233, 0.4); color: #0ea5e9;">Wireless Display</div>
+          <div class="pv" style="background: #040914">
+            <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+              <div style="position: absolute; width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle, rgba(14, 165, 233, 0.22) 0%, transparent 70%);"></div>
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 16px rgba(14, 165, 233, 0.6));">
+                <rect x="2" y="3" width="20" height="14" rx="2" />
+                <line x1="8" y1="21" x2="16" y2="21" />
+                <line x1="12" y1="17" x2="12" y2="21" />
+                <path d="M2 16.5a1 1 0 0 0 1 1" />
+                <path d="M2 13a4.5 4.5 0 0 1 4.5 4.5" />
+              </svg>
+            </div>
+          </div>
+          <div class="pb">
+            <div class="pn">06 &mdash; Wireless Streaming</div>
+            <h3 class="pname">CastFlow Studio</h3>
+            <p class="pdesc">
+              High-framerate wireless screen mirroring and remote control suite. Stream laptop displays to Android TVs and browser clients with zero latency and hardware-accelerated MSS capture.
+            </p>
+          </div>
+          <div class="pf">
+            <div class="ptags"><span class="tag">Screen Cast</span><span class="tag">WebRTC</span><span class="tag">Android TV</span></div>
+            <div class="plink">
+              Launch Studio <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+            </div></div
+        ></a>
+        <a href="cereal" class="pc cp" data-delay="420"
+          ><div class="badge bp" style="background: rgba(236, 72, 153, 0.18); border-color: rgba(236, 72, 153, 0.4); color: #ec4899;">Gemini 2.5 AI</div>
+          <div class="pv" style="background: #100612">
+            <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+              <div style="position: absolute; width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle, rgba(236, 72, 153, 0.22) 0%, transparent 70%);"></div>
+              <!-- Continuous Moving Audio Wave Lines -->
+              <div class="col-moving-audio-lines" aria-hidden="true">
+                <svg class="col-audio-wave-1" viewBox="0 0 800 60" preserveAspectRatio="none">
+                  <path d="M0,30 Q100,6 200,30 T400,30 T600,30 T800,30" fill="none" stroke="rgba(236, 72, 153, 0.65)" stroke-width="2.2"/>
+                </svg>
+                <svg class="col-audio-wave-2" viewBox="0 0 800 60" preserveAspectRatio="none">
+                  <path d="M0,30 Q100,54 200,30 T400,30 T600,30 T800,30" fill="none" stroke="rgba(0, 240, 255, 0.5)" stroke-width="1.8"/>
+                </svg>
+                <svg class="col-audio-wave-3" viewBox="0 0 800 60" preserveAspectRatio="none">
+                  <path d="M0,30 Q100,18 200,30 T400,30 T600,30 T800,30" fill="none" stroke="rgba(168, 85, 247, 0.4)" stroke-width="1.4"/>
+                </svg>
+              </div>
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 16px rgba(236, 72, 153, 0.6)); position: relative; z-index: 2;">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                <line x1="12" y1="19" x2="12" y2="23" />
+                <line x1="8" y1="23" x2="16" y2="23" />
+              </svg>
+            </div>
+          </div>
+          <div class="pb">
+            <div class="pn">07 &mdash; AI Note Taker</div>
+            <h3 class="pname">Cereal AI Assistant</h3>
+            <p class="pdesc">
+              Native Android AI lecture and meeting assistant built with Jetpack Compose. Records background audio, extracts structured notes with Gemini 2.5 Flash, and syncs to Google Calendar &amp; Tasks.
+            </p>
+          </div>
+          <div class="pf">
+            <div class="ptags"><span class="tag">Android</span><span class="tag">Gemini 2.5</span><span class="tag">Audio Notes</span></div>
+            <div class="plink">
+              Explore Cereal <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+            </div></div
+        ></a>
+      </div>
+    </section>
 
     <section class="ps" id="educational" style="content-visibility:auto; contain-intrinsic-size: 0 600px; padding-top: 40px">
       <div class="sh">
@@ -3559,9 +4060,67 @@
             </div>
           </div>
           <div class="pf">
-            <div class="ptags"><span class="tag">Three.js</span><span class="tag">WebGL</span><span class="tag">Geo Data</span><span class="tag" style="border-color: rgba(242, 184, 75, 0.4); color: var(--signal);">Made by Aaryaman &amp; Yashraj</span></div>
+            <div class="ptags"><span class="tag">Three.js</span><span class="tag">WebGL</span><span class="tag">Geo Data</span><span class="tag" style="border-color: var(--signal); color: var(--signal);">Made by Aaryaman &amp; Yashraj</span></div>
             <div class="plink">
               Explore Globe <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+            </div>
+          </div>
+        </a>
+
+        <a href="download" class="pc cs" data-delay="320">
+          <div class="pv" style="background: #0d0818">
+            <div class="c-bg" style="position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+              <!-- Continuous Moving Audio Wave Lines -->
+              <div class="col-moving-audio-lines" aria-hidden="true">
+                <svg class="col-audio-wave-1" viewBox="0 0 800 60" preserveAspectRatio="none">
+                  <path d="M0,30 Q100,8 200,30 T400,30 T600,30 T800,30" fill="none" stroke="rgba(236, 72, 153, 0.65)" stroke-width="2"/>
+                </svg>
+                <svg class="col-audio-wave-2" viewBox="0 0 800 60" preserveAspectRatio="none">
+                  <path d="M0,30 Q100,52 200,30 T400,30 T600,30 T800,30" fill="none" stroke="rgba(0, 240, 255, 0.5)" stroke-width="1.8"/>
+                </svg>
+              </div>
+              <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--plasma)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="position: relative; z-index: 2;">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                <line x1="12" y1="19" x2="12" y2="23"/>
+                <line x1="8" y1="23" x2="16" y2="23"/>
+              </svg>
+            </div>
+          </div>
+          <div class="pb">
+            <div class="pn">05 &mdash; Native Android</div>
+            <h3 class="pname">Cereal AI Assistant</h3>
+            <p class="pdesc">Background lecture and meeting recorder powered by Gemini 2.5 Flash, generating instant structured notes and task action items.</p>
+          </div>
+          <div class="pf">
+            <div class="ptags"><span class="tag">Kotlin</span><span class="tag">Gemini AI</span><span class="tag">Android APK</span></div>
+            <div class="plink">
+              Get APK <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+            </div>
+          </div>
+        </a>
+
+        <a href="CastFlow" class="pc ci" data-delay="400">
+          <div class="pv" style="background: #040d18">
+            <div class="c-bg" style="position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
+              <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--ion)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="3" width="20" height="14" rx="2"/>
+                <line x1="8" y1="21" x2="16" y2="21"/>
+                <line x1="12" y1="17" x2="12" y2="21"/>
+                <path d="M2 16.5a1 1 0 0 0 1 1"/>
+                <path d="M2 13a4.5 4.5 0 0 1 4.5 4.5"/>
+              </svg>
+            </div>
+          </div>
+          <div class="pb">
+            <div class="pn">06 &mdash; Wireless Suite</div>
+            <h3 class="pname">CastFlow Studio</h3>
+            <p class="pdesc">High-framerate wireless screen mirroring, classroom projector casting, and remote touch control over local Wi-Fi and DLNA.</p>
+          </div>
+          <div class="pf">
+            <div class="ptags"><span class="tag">WebSockets</span><span class="tag">WebRTC</span><span class="tag">DLNA</span></div>
+            <div class="plink">
+              Launch <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
             </div>
           </div>
         </a>
@@ -3573,180 +4132,224 @@
       <div class="fi">
         <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
         <div class="fl"><a href="making">Making</a><a href="privacy">Privacy</a><a href="terms">Terms</a><a href="feedback">Feedback</a><a href="download">Downloads</a></div>
-        <div class="fc">&copy; 2026 Neel, Ansh, Aarush &amp; Yash Raj.</div>
+        <div class="fc">&copy; 2026 Neel, Ansh, &amp; Aarush (Co‑Founders).</div>
       </div>
     </footer>
 
     <div class="toast" id="toast"></div>
 
     <script>
-      // ============= CURSOR HOVER EFFECTS =============
       ;(function () {
-        document.querySelectorAll('.pc').forEach(function (el) {
-          el.addEventListener('mouseenter', function () {
-            document.body.classList.add('ch')
-          })
-          el.addEventListener('mouseleave', function () {
-            document.body.classList.remove('ch')
-          })
-        })
-      })()
-
-      function removeLoader() {
-        var l = document.getElementById('loader')
-        if (l && !l.classList.contains('gone')) l.classList.add('gone')
-      }
-      window.addEventListener('load', function () {
-        setTimeout(removeLoader, 1300)
-      })
-      setTimeout(removeLoader, 4000)
-      var navEl = document.getElementById('topNav')
-      window.addEventListener(
-        'scroll',
-        function () {
-          navEl.classList.toggle('s', scrollY > 60)
-        },
-        { passive: true }
-      )
-      window.addEventListener('click', function (e) {
-        if (!e.target.closest('.dropdown'))
-          document.querySelectorAll('.dropdown').forEach(function (d) {
-            d.classList.remove('active')
-          })
-      })
-
-      // Card reveals
-      ;(function () {
-        var cards = document.querySelectorAll('.pc')
-        var io = new IntersectionObserver(
-          function (entries) {
-            entries.forEach(function (entry) {
-              if (entry.isIntersecting) {
-                var d = parseInt(entry.target.dataset.delay || 0)
-                setTimeout(function () {
-                  entry.target.classList.add('rev')
-                }, d)
-                io.unobserve(entry.target)
-              }
-            })
-          },
-          { threshold: 0.08 }
-        )
-        cards.forEach(function (c) {
-          io.observe(c)
-        })
-      })()
-
-      // 3D tilt on card hover — rAF-throttled so getBoundingClientRect and style
-      // mutations only run once per frame (max 60/s) instead of on every mouse event.
-      // Disabled entirely on touch devices and narrow viewports to avoid jank.
-      if (innerWidth >= 768 && !window.matchMedia('(pointer: coarse)').matches) {
-        document.querySelectorAll('.pc').forEach(function (card) {
-          var _rafId = null, _ex = 0, _ey = 0, _rect = null
-          card.addEventListener('mouseenter', function () {
-            _rect = card.getBoundingClientRect()
-          }, { passive: true })
-          card.addEventListener('mousemove', function (e) {
-            _ex = e.clientX; _ey = e.clientY
-            if (_rafId) return
-            _rafId = requestAnimationFrame(function () {
-              _rafId = null
-              if (!_rect) _rect = card.getBoundingClientRect()
-              var x = (_ex - _rect.left) / _rect.width - 0.5
-              var y = (_ey - _rect.top) / _rect.height - 0.5
-              card.style.transform = 'translateY(-8px) perspective(900px) rotateX(' + (-y * 4) + 'deg) rotateY(' + (x * 4) + 'deg)'
-            })
-          }, { passive: true })
-          card.addEventListener('mouseleave', function () {
-            if (_rafId) { cancelAnimationFrame(_rafId); _rafId = null }
-            _rect = null
-            card.style.transform = ''
-          })
-        })
-      }
-
-      // QR art — throttled to 1200ms to reduce constant style invalidation
-      ;(function () {
-        var m = document.getElementById('qrm')
-        if (!m) return
-        var f = document.createDocumentFragment()
-        for (var i = 0; i < 81; i++) {
-          var c = document.createElement('div')
-          c.className = 'qc' + (Math.random() > 0.48 ? ' on' : '')
-          f.appendChild(c)
+        // 1. Fast Loader Dismissal (150ms after DOMContentLoaded, not 1300ms after window.load)
+        function removeLoader() {
+          var l = document.getElementById('loader')
+          if (l && !l.classList.contains('gone')) l.classList.add('gone')
         }
-        m.appendChild(f)
-        setInterval(function () {
-          var cs = m.children
-          if (!cs.length) return
-          cs[Math.floor(Math.random() * cs.length)].classList.toggle('on')
-          cs[Math.floor(Math.random() * cs.length)].classList.toggle('on')
-        }, 1200)
-      })()
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', function () {
+            setTimeout(removeLoader, 150)
+          })
+        } else {
+          setTimeout(removeLoader, 150)
+        }
+        // Safety fallback — fires if DOMContentLoaded somehow misses
+        window.addEventListener('load', removeLoader, { once: true })
 
-      // Theme
-      var Storage = {
-        get: function (k) {
-          try {
-            return localStorage.getItem(k)
-          } catch (e) {
-            return null
+        // 2. Unified Theme Controller — syncs BOTH <html> and <body> (Bug B fix)
+        function applyTheme(isLight) {
+          document.documentElement.classList.toggle('lm', isLight)
+          document.body.classList.toggle('lm', isLight)
+          document.querySelectorAll('.hz-toggle').forEach(function (el) {
+            el.classList.toggle('night', !isLight)
+          })
+          var desc = document.getElementById('cmdThemeDesc')
+          if (desc) desc.textContent = isLight ? 'Light Mica' : 'Dark VisionOS'
+          var tm = document.getElementById('themeMeta')
+          if (tm) tm.setAttribute('content', isLight ? '#f4f3ee' : '#070A14')
+        }
+
+        window.hzToggle = function () {
+          if (navigator.vibrate) {
+            try { navigator.vibrate(8) } catch (e) {}
           }
-        },
-        set: function (k, v) {
-          try {
-            localStorage.setItem(k, v)
-          } catch (e) {}
+          var isLight = !document.body.classList.contains('lm')
+          try { localStorage.setItem('theme', isLight ? 'light' : 'dark') } catch (e) {}
+          applyTheme(isLight)
         }
-      }
 
-      function initializeTheme() {
-        var tsck = document.getElementById('tsck')
-        var tl = document.getElementById('tLabel')
-
-        if (Storage.get('theme') === 'light') {
-          document.body.classList.add('lm')
-          if (tsck) tsck.checked = true
-          if (tl) tl.textContent = 'Light Mode'
-        } else {
-          // Explicitly enforce Dark Mode on first visit or if missing
-          document.body.classList.remove('lm')
-          if (tsck) tsck.checked = false
-          if (tl) tl.textContent = 'Dark Mode'
-          Storage.set('theme', 'dark')
+        try {
+          applyTheme(localStorage.getItem('theme') === 'light')
+        } catch (e) {
+          applyTheme(false)
         }
-      }
 
-      function toggleTheme(el) {
-        var tl = document.getElementById('tLabel')
-        if (el.checked) {
-          document.body.classList.add('lm')
-          Storage.set('theme', 'light')
-          if (tl) tl.textContent = 'Light Mode'
-        } else {
-          document.body.classList.remove('lm')
-          Storage.set('theme', 'dark')
-          if (tl) tl.textContent = 'Dark Mode'
+        // 3. Top Nav Scroll State (rAF-throttled — avoids layout thrashing)
+        var navEl = document.getElementById('topNav')
+        var navTicking = false
+        if (navEl) {
+          window.addEventListener(
+            'scroll',
+            function () {
+              if (!navTicking) {
+                requestAnimationFrame(function () {
+                  navEl.classList.toggle('s', window.scrollY > 60)
+                  navTicking = false
+                })
+                navTicking = true
+              }
+            },
+            { passive: true }
+          )
         }
-      }
 
-      ;(function () {
-        initializeTheme()
-        var isrv = document.querySelectorAll('.rv')
-        var rvIo = new IntersectionObserver(
+        // 4. Accessible Dropdown Interaction & Close on Outside Click
+        var projDD = document.getElementById('projDD')
+        if (projDD) {
+          var projBtn = projDD.querySelector('.dropdown-btn')
+          if (projBtn) {
+            projBtn.addEventListener('click', function (e) {
+              e.preventDefault()
+              e.stopPropagation()
+              var willOpen = !projDD.classList.contains('active')
+              projDD.classList.toggle('active')
+              projBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false')
+            })
+          }
+        }
+        window.addEventListener('click', function (e) {
+          if (!e.target.closest('.dropdown')) {
+            document.querySelectorAll('.dropdown.active').forEach(function (d) {
+              d.classList.remove('active')
+              var btn = d.querySelector('.dropdown-btn')
+              if (btn) btn.setAttribute('aria-expanded', 'false')
+            })
+          }
+        })
+
+        // 5. Single Unified IntersectionObserver for .pc and .rv
+        var revealIo = new IntersectionObserver(
           function (entries) {
             entries.forEach(function (entry) {
-              if (entry.isIntersecting) {
-                entry.target.classList.add('vis')
-                rvIo.unobserve(entry.target)
+              if (!entry.isIntersecting) return
+              var el = entry.target
+              if (el.classList.contains('pc')) {
+                var d = parseInt(el.dataset.delay || 0, 10)
+                setTimeout(function () { el.classList.add('rev') }, d)
+              } else {
+                el.classList.add('vis')
               }
+              revealIo.unobserve(el)
             })
           },
           { threshold: 0.08 }
         )
-        isrv.forEach(function (el) {
-          rvIo.observe(el)
+        document.querySelectorAll('.pc, .rv').forEach(function (el) {
+          revealIo.observe(el)
         })
+
+        // 6. Desktop Specular Spotlight + Lag-Free 3D Card Tilt
+        if (window.innerWidth >= 768 && !window.matchMedia('(pointer: coarse)').matches) {
+          document.querySelectorAll('.pc, .vp-card').forEach(function (card) {
+            var rafId = null, ex = 0, ey = 0, rect = null
+            var isProjectCard = card.classList.contains('pc')
+
+            card.addEventListener('mouseenter', function () {
+              rect = card.getBoundingClientRect()
+              if (isProjectCard) {
+                card.classList.add('is-tilting')
+                document.body.classList.add('ch')
+              }
+            }, { passive: true })
+
+            card.addEventListener('mousemove', function (e) {
+              ex = e.clientX
+              ey = e.clientY
+              if (rafId) return
+              rafId = requestAnimationFrame(function () {
+                rafId = null
+                if (!rect) rect = card.getBoundingClientRect()
+                var relX = ex - rect.left
+                var relY = ey - rect.top
+                card.style.setProperty('--card-mx', relX.toFixed(0) + 'px')
+                card.style.setProperty('--card-my', relY.toFixed(0) + 'px')
+
+                if (isProjectCard) {
+                  var x = relX / rect.width - 0.5
+                  var y = relY / rect.height - 0.5
+                  card.style.transform =
+                    'translateY(-8px) perspective(900px) rotateX(' + (-y * 4.5).toFixed(2) + 'deg) rotateY(' + (x * 4.5).toFixed(2) + 'deg)'
+                }
+              })
+            }, { passive: true })
+
+            card.addEventListener('mouseleave', function () {
+              if (rafId) {
+                cancelAnimationFrame(rafId)
+                rafId = null
+              }
+              rect = null
+              if (isProjectCard) {
+                card.classList.remove('is-tilting')
+                document.body.classList.remove('ch')
+                card.style.transform = ''
+              }
+            })
+          })
+
+          // Desktop Keyboard Shortcuts: Ctrl+K / Cmd+K Quick Cycle & Liquid Glass Toggle
+          document.addEventListener('keydown', function (e) {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+              e.preventDefault()
+              var keys = ['core', 'Solar', 'ATI', 'Gesture', 'Traffic', 'QR', 'RPG', 'Career', 'Terra3D', 'CivicLogic', 'Cereal', 'CastFlow']
+              var curKey = window.__currentInspectorNodeKey || null
+              var curIdx = curKey ? keys.findIndex(function (k) { return k.toLowerCase() === curKey.toLowerCase(); }) : -1
+              var nextIdx = (curIdx + 1) % keys.length
+              window.openNodeInspector(keys[nextIdx])
+            } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'l') {
+              e.preventDefault()
+              if (typeof window.toggleAppleLiquidGlass === 'function') {
+                window.toggleAppleLiquidGlass()
+              }
+            }
+          })
+        }
+
+        // 7. Viewport-Gated QR Matrix Animation (only ticks when visible & tab active)
+        var qrm = document.getElementById('qrm')
+        if (qrm) {
+          var frag = document.createDocumentFragment()
+          for (var i = 0; i < 81; i++) {
+            var cell = document.createElement('div')
+            cell.className = 'qc' + (Math.random() > 0.48 ? ' on' : '')
+            frag.appendChild(cell)
+          }
+          qrm.appendChild(frag)
+
+          var qrTimer = null
+          function startQr() {
+            if (qrTimer) return
+            qrTimer = setInterval(function () {
+              if (document.hidden) return
+              var cs = qrm.children
+              if (!cs.length) return
+              cs[Math.floor(Math.random() * cs.length)].classList.toggle('on')
+              cs[Math.floor(Math.random() * cs.length)].classList.toggle('on')
+            }, 1200)
+          }
+          function stopQr() {
+            if (qrTimer) {
+              clearInterval(qrTimer)
+              qrTimer = null
+            }
+          }
+          var qrIo = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) startQr()
+              else stopQr()
+            })
+          })
+          qrIo.observe(qrm)
+        }
       })()
     </script>
     <!-- =========================================================
@@ -3768,7 +4371,7 @@
               orbit: 'R=0 CORE',
               fps: '60 STABLE'
             },
-            desc: 'The central computational core synchronizing all six independent simulation engines. Built natively with zero bloat for maximum performance and fluid physics.',
+            desc: 'The central computational core synchronizing all independent simulation engines. Built natively with zero bloat for maximum performance and fluid physics.',
             cta: 'About Studio'
           },
           Traffic: {
@@ -3787,8 +4390,8 @@
             cta: 'Launch Driving Sim'
           },
           Solar: {
-            name: 'Solar System Engine',
-            badge: 'Astrophysics & Orbitals',
+            name: 'Solar System Engine V3.3',
+            badge: 'Co-Flagship & Astrophysics',
             key: 'teal',
             page: 'solar',
             icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>',
@@ -3802,19 +4405,34 @@
             cta: 'Open Solar Engine'
           },
           ATI: {
-            name: 'Advanced Typing Instructor',
-            badge: 'Interactive Learning',
+            name: 'Advanced Typing Instructor 1.4',
+            badge: '★ Founding Flagship & Suite',
             key: 'ion',
             page: 'ati',
             icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>',
             stats: {
               status: 'ONLINE',
-              engine: 'TOUCH TYPING UX',
-              orbit: 'R=14 AU',
+              engine: 'TOUCH TYPING UX / REACT',
+              orbit: 'R=1 Inner Prime',
               fps: '60 STABLE'
             },
-            desc: 'Master Python, C++, and JavaScript syntax with real-time adaptive heatmaps, virtual mechanical switches, and developer-tailored code challenges.',
-            cta: 'Launch ATI'
+            desc: 'The founding flagship of Class of Learners. Master touch typing, Python, C++, and JavaScript syntax with real-time adaptive heatmaps, virtual mechanical switches, 200+ levels, and developer-tailored code challenges.',
+            cta: 'Launch ATI (Flagship)'
+          },
+          Cereal: {
+            name: 'Cereal AI Assistant',
+            badge: 'Multimodal Audio & Gemini AI',
+            key: 'plasma',
+            page: 'cereal',
+            icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>',
+            stats: {
+              status: 'ONLINE',
+              engine: 'KOTLIN / GEMINI 2.5 FLASH',
+              orbit: 'R=11 AU',
+              fps: '60 STABLE'
+            },
+            desc: 'Native Android AI lecture and meeting assistant built with Jetpack Compose. Records background audio, generates structured summaries and action items with Gemini 2.5 Flash, and syncs to Google Calendar and Tasks.',
+            cta: 'Explore Cereal AI'
           },
           Gesture: {
             name: 'Perceptus Flow: Vision Co-Pilot',
@@ -3825,11 +4443,26 @@
             stats: {
               status: 'ONLINE',
               engine: '60 FPS AI CV PIPELINE',
-              orbit: 'R=17 AU',
+              orbit: 'R=14 AU',
               fps: '60 STABLE'
             },
             desc: 'Touchless spatial machine vision and multimodal AI co-pilot using standard webcams. Zero extra hardware required — control cursor, pinch-click, scroll, and air-draw in mid-air.',
             cta: 'Launch Perceptus Flow'
+          },
+          CastFlow: {
+            name: 'CastFlow Studio',
+            badge: 'Wireless Display & WebRTC',
+            key: 'ion',
+            page: 'CastFlow',
+            icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/><path d="M2 16.5a1 1 0 0 0 1 1"/><path d="M2 13a4.5 4.5 0 0 1 4.5 4.5"/></svg>',
+            stats: {
+              status: 'ONLINE',
+              engine: 'WEBRTC / DLNA 40 FPS',
+              orbit: 'R=16 AU',
+              fps: '40 STABLE'
+            },
+            desc: 'Cross-platform wireless screen-mirroring and remote touch-control suite. Streams laptop displays to Android TVs and browser clients via WebSockets, DLNA, and hardware-accelerated MSS capture at ultra-low latency.',
+            cta: 'Launch CastFlow'
           },
           RPG: {
             name: 'RPG Game Engine',
@@ -3840,16 +4473,76 @@
             stats: {
               status: 'ACTIVE DEV',
               engine: 'CUSTOM CANVAS 2D',
-              orbit: 'R=23 AU',
+              orbit: 'R=18 AU',
               fps: '60 STABLE'
             },
             desc: 'An epic retro-modern browser RPG exploring procedural dungeon crawling, tilemap streaming, leveling mechanics, and dynamic battle state machines.',
             cta: 'Preview RPG Game'
           },
+          Database_Logic: {
+            name: 'Database Logic: TRAFFIC.EDU',
+            badge: '50-Module Logic Database',
+            key: 'teal',
+            page: 'Database_Logic',
+            icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="9" y1="7" x2="16" y2="7"/><line x1="9" y1="11" x2="14" y2="11"/></svg>',
+            stats: {
+              status: 'ONLINE',
+              engine: 'INTERACTIVE SANDBOX',
+              orbit: 'R=22 AU',
+              fps: '60 STABLE'
+            },
+            desc: 'Comprehensive 50-module interactive civic engineering and statutory laws database. Delivers live RTO challan simulations, IRC standards, and deep Motor Vehicles Act jurisprudence for Mumbai road users.',
+            cta: 'Access Database'
+          },
+          CivicLogic: {
+            name: 'Database Logic: TRAFFIC.EDU',
+            badge: '50-Module Logic Database',
+            key: 'teal',
+            page: 'Database_Logic',
+            icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="9" y1="7" x2="16" y2="7"/><line x1="9" y1="11" x2="14" y2="11"/></svg>',
+            stats: {
+              status: 'ONLINE',
+              engine: 'INTERACTIVE SANDBOX',
+              orbit: 'R=22 AU',
+              fps: '60 STABLE'
+            },
+            desc: 'Comprehensive 50-module interactive civic engineering and statutory laws database. Delivers live RTO challan simulations, IRC standards, and deep Motor Vehicles Act jurisprudence for Mumbai road users.',
+            cta: 'Access Database'
+          },
+          Terra3D: {
+            name: 'Terra 3D Earth Globe',
+            badge: 'Geodesy & Planetary Shaders',
+            key: 'teal',
+            page: 'Terra3D/',
+            icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
+            stats: {
+              status: 'ONLINE',
+              engine: 'THREE.JS / RAYLEIGH SHADERS',
+              orbit: 'R=24 AU',
+              fps: '60 STABLE'
+            },
+            desc: 'Interactive 3D Earth globe featuring spherical geodesy, 195+ international boundaries, real-time sun angle illumination, and custom GLSL atmospheric Rayleigh scattering shaders.',
+            cta: 'Explore Terra 3D'
+          },
+          Career: {
+            name: 'FutureScape: Career Compass',
+            badge: 'Psychometrics & 436 Careers',
+            key: 'plasma',
+            page: 'Career',
+            icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>',
+            stats: {
+              status: 'ONLINE',
+              engine: 'COSINE SIMILARITY 8D',
+              orbit: 'R=28 AU',
+              fps: '60 STABLE'
+            },
+            desc: 'Interactive career navigation system mapping 436 Indian and global career pathways. Employs 8-dimensional psychometric vector matching to provide personalized education roadmaps, skill matrices, and salary trajectories.',
+            cta: 'Launch Career Compass'
+          },
           QR: {
             name: 'QR Studio Matrix',
             badge: 'Utility & Cryptography',
-            key: 'dim',
+            key: 'em',
             page: 'qr',
             icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>',
             stats: {
@@ -3906,6 +4599,7 @@
           if (!data) return
 
           currentNodeKey = nodeKey
+          window.__currentInspectorNodeKey = nodeKey
 
           if (niIcon) niIcon.innerHTML = data.icon
           if (niBadge) {
@@ -3930,11 +4624,14 @@
             inspector.removeAttribute('aria-hidden')
             inspector.removeAttribute('inert')
           }
+          if (heroSection) heroSection.classList.add('inspector-active')
 
-          // Sync dock chip
-          dockChips.forEach(function (chip) {
-            chip.classList.toggle('active', chip.dataset.node.toLowerCase() === nodeKey.toLowerCase())
-          })
+          // Sync dock chip if present
+          if (dockChips && dockChips.length) {
+            dockChips.forEach(function (chip) {
+              chip.classList.toggle('active', chip.dataset.node.toLowerCase() === nodeKey.toLowerCase())
+            })
+          }
         }
 
         // Close Inspector
@@ -3944,8 +4641,12 @@
             inspector.setAttribute('aria-hidden', 'true')
             inspector.setAttribute('inert', '')
           }
+          if (heroSection) heroSection.classList.remove('inspector-active')
           currentNodeKey = null
-          dockChips.forEach(function (chip) { chip.classList.remove('active') })
+          window.__currentInspectorNodeKey = null
+          if (dockChips && dockChips.length) {
+            dockChips.forEach(function (chip) { chip.classList.remove('active') })
+          }
         }
 
         if (niCloseBtn) niCloseBtn.addEventListener('click', function () {
@@ -3966,15 +4667,17 @@
         })
 
         // Dock Chips Interaction
-        dockChips.forEach(function (chip) {
-          chip.addEventListener('click', function () {
-            var nodeName = chip.dataset.node
-            if (window.__col3d && window.__col3d.flyToNode) {
-              window.__col3d.flyToNode(nodeName)
-            }
-            window.openNodeInspector(nodeName)
+        if (dockChips && dockChips.length) {
+          dockChips.forEach(function (chip) {
+            chip.addEventListener('click', function () {
+              var nodeName = chip.dataset.node
+              if (window.__col3d && window.__col3d.flyToNode) {
+                window.__col3d.flyToNode(nodeName)
+              }
+              window.openNodeInspector(nodeName)
+            })
           })
-        })
+        }
 
         // Stage Mode Toggle
         if (stageModeBtn && heroSection) {
@@ -4056,19 +4759,25 @@
               if (window.__col3d && window.__col3d.resetView) window.__col3d.resetView()
             } else if (heroSection && heroSection.classList.contains('stage-mode')) {
               heroSection.classList.remove('stage-mode')
-              var label = stageModeBtn.querySelector('.hud-mode-label')
-              if (label) label.textContent = '3D Lab Mode'
+              if (stageModeBtn) {
+                var label = stageModeBtn.querySelector('.hud-mode-label')
+                if (label) label.textContent = '3D Lab Mode'
+              }
               if (window.__col3d && window.__col3d.setStageMode) window.__col3d.setStageMode(false)
             }
           }
         })
       })()
     </script>
+    <!-- AdSense loaded after page content for optimal LCP -->
     <script>
-    function hzInit(){var t;try{t=localStorage.getItem('theme')}catch(e){t=null}if(t==='light'){document.body.classList.add('lm')}else{document.body.classList.remove('lm')}hzSync()}
-    function hzSync(){var els=document.querySelectorAll('.hz-toggle');if(!els.length)return;var isLight=document.body.classList.contains('lm');els.forEach(function(el){if(isLight){el.classList.remove('night')}else{el.classList.add('night')}});var desc=document.getElementById('cmdThemeDesc');if(desc)desc.textContent=isLight?'Light Mica':'Dark VisionOS'}
-    function hzToggle(){if(navigator.vibrate)try{navigator.vibrate(8)}catch(e){}document.body.classList.toggle('lm');var isLight=document.body.classList.contains('lm');try{localStorage.setItem('theme',isLight?'light':'dark')}catch(e){}hzSync()}
-    hzInit()
+      window.addEventListener('load', function () {
+        var s = document.createElement('script')
+        s.async = true
+        s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995'
+        s.crossOrigin = 'anonymous'
+        document.body.appendChild(s)
+      }, { once: true })
     </script>
   </body>
 </html>

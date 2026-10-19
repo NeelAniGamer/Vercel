@@ -5526,6 +5526,8 @@ function _buildKayKitRig(PM, opts) {
   if (tint) {
     body.traverse((c) => {
       if (!c.isMesh || !c.material) { return; }
+      const n = (c.name || '').toLowerCase();
+      if (!n.includes('body') && !n.includes('torso')) { return; }
       c.material = Array.isArray(c.material)
         ? c.material.map(m => m.clone())
         : c.material.clone();

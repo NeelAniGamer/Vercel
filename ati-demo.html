@@ -12,6 +12,17 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
     
+    <script>
+      (function () {
+        var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        if (isIOS) document.documentElement.classList.add('is-iphone');
+        try {
+          if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.add('lm');
+          }
+        } catch (e) {}
+      })();
+    </script>
     <script defer src="col-router.js"></script>
     <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
     <link rel="stylesheet" href="col-mobile.css" />
@@ -44,6 +55,7 @@
         --r: 18px;
       }
 
+      html.lm,
       body.lm {
         --void: #f8fafc;
         --void2: #f1f5f9;
@@ -792,8 +804,8 @@
             <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
           </svg>Making
         </a>
-        <div class="dropdown" id="projDD" onclick="this.classList.toggle('active')">
-          <button class="dropdown-btn act">
+        <div class="dropdown" id="projDD">
+          <button class="dropdown-btn act" aria-haspopup="true" aria-expanded="false">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
               <line x1="8" y1="21" x2="16" y2="21" />
@@ -1746,8 +1758,77 @@
           <a href="feedback">Feedback</a>
           <a href="download">Downloads</a>
         </div>
-        <div class="fc">&copy; 2026 Neel, Ansh, Aarush &amp; Yash Raj.</div>
+        <div class="fc">&copy; 2026 Neel, Ansh, &amp; Aarush (Co‑Founders).</div>
       </div>
     </footer>
+
+    <script>
+      (function () {
+        var pdd = document.getElementById('projDD')
+        if (pdd) {
+          var btn = pdd.querySelector('.dropdown-btn')
+          if (btn) {
+            btn.addEventListener('click', function (e) {
+              e.stopPropagation()
+              var isOpen = pdd.classList.toggle('active')
+              btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false')
+            })
+          }
+        }
+        document.addEventListener('click', function (e) {
+          var d = document.getElementById('projDD')
+          if (d && !d.contains(e.target)) {
+            d.classList.remove('active')
+            var b = d.querySelector('.dropdown-btn')
+            if (b) b.setAttribute('aria-expanded', 'false')
+          }
+        })
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') {
+            var d = document.getElementById('projDD')
+            if (d && d.classList.contains('active')) {
+              d.classList.remove('active')
+              var b = d.querySelector('.dropdown-btn')
+              if (b) b.setAttribute('aria-expanded', 'false')
+            }
+          }
+        })
+
+        var topNav = document.getElementById('topNav')
+        if (topNav) {
+          var ticking = false
+          window.addEventListener('scroll', function () {
+            if (!ticking) {
+              requestAnimationFrame(function () {
+                topNav.classList.toggle('s', window.scrollY > 40)
+                ticking = false
+              })
+              ticking = true
+            }
+          }, { passive: true })
+        }
+      })()
+
+      function applyTheme(isLight) {
+        document.documentElement.classList.toggle('lm', isLight)
+        document.body.classList.toggle('lm', isLight)
+        try {
+          localStorage.setItem('theme', isLight ? 'light' : 'dark')
+        } catch (_e) {}
+        var tsck = document.getElementById('tsck')
+        if (tsck) tsck.checked = !isLight
+        var lbl = document.getElementById('tLabel')
+        if (lbl) lbl.textContent = isLight ? 'Light Mode' : 'Dark Mode'
+      }
+      window.applyTheme = applyTheme
+      window.hzToggle = function () {
+        var isLight = !document.documentElement.classList.contains('lm')
+        applyTheme(isLight)
+      }
+      window.toggleTheme = function (elem) {
+        var isLight = elem ? !elem.checked : !document.documentElement.classList.contains('lm')
+        applyTheme(isLight)
+      }
+    </script>
   </body>
 </html>

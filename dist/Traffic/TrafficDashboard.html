@@ -30,6 +30,15 @@
     <script src="level-catalog.js"></script>
     <link rel="stylesheet" href="traffic-charts.css" />
     <link rel="stylesheet" href="welcome-back.css" />
+    <script>
+      (function () {
+        try {
+          if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.add('lm');
+          }
+        } catch (e) {}
+      })();
+    </script>
 
         <script defer src="../col-router.js"></script>
     <link rel="stylesheet" href="../col-ui.css" />
@@ -2644,20 +2653,23 @@
       }
 
       function hzInit() {
-        var t = localStorage.getItem('theme');
-        if (t === 'light') { document.body.classList.add('lm'); }
-        else { document.body.classList.remove('lm'); }
+        var isLight = false;
+        try { isLight = localStorage.getItem('theme') === 'light'; } catch (e) {}
+        document.documentElement.classList.toggle('lm', isLight);
+        document.body.classList.toggle('lm', isLight);
         hzSync();
       }
       function hzSync() {
         var el = document.querySelector('.hz-toggle');
         if (!el) return;
-        if (document.body.classList.contains('lm')) { el.classList.remove('night'); }
+        if (document.documentElement.classList.contains('lm') || document.body.classList.contains('lm')) { el.classList.remove('night'); }
         else { el.classList.add('night'); }
       }
       function hzToggle() {
-        document.body.classList.toggle('lm');
-        localStorage.setItem('theme', document.body.classList.contains('lm') ? 'light' : 'dark');
+        var isLight = !document.documentElement.classList.contains('lm');
+        document.documentElement.classList.toggle('lm', isLight);
+        document.body.classList.toggle('lm', isLight);
+        try { localStorage.setItem('theme', isLight ? 'light' : 'dark'); } catch (e) {}
         hzSync();
       }
       hzInit();

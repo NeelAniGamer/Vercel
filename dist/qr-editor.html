@@ -62,15 +62,18 @@
     <script defer src="qr-dynamic.js"></script>
 
 <script>
-  ;(function () {
+  (function () {
+    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    if (isIOS) document.documentElement.classList.add('is-iphone');
     try {
       if (localStorage.getItem('theme') === 'light') {
-        document.documentElement.classList.add('lm')
+        document.documentElement.classList.add('lm');
       }
     } catch (e) {}
-  })()
+  })();
 </script>
 <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
+<link rel="stylesheet" href="col-mobile.css" />
 <link rel="stylesheet" href="liquid-glass.css" />
 <link rel="stylesheet" href="mobile-perf.css" />
 <script defer src="pull-refresh.js"></script>
@@ -520,7 +523,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   
   
 
-<link rel="stylesheet" href="col-ui.css?v=20260923-nav3">
 <script defer src="col-ui.js"></script>
 <script defer src="col-auth.js"></script>
 
@@ -565,8 +567,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
             <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
           </svg>Making
         </a>
-        <div class="dropdown" id="projDD" onclick="this.classList.toggle('active')">
-          <button class="dropdown-btn act">
+        <div class="dropdown" id="projDD">
+          <button class="dropdown-btn act" aria-haspopup="true" aria-expanded="false">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
               <line x1="8" y1="21" x2="16" y2="21" />
@@ -2716,31 +2718,86 @@ function loadEditData() {
 
 
 <script>
-window.onclick = e => { if (!e.target.matches('.dropdown-btn') && !e.target.closest('.dropdown-btn')) document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active')); };
+  (function () {
+    var pdd = document.getElementById('projDD');
+    if (pdd) {
+      var btn = pdd.querySelector('.dropdown-btn');
+      if (btn) {
+        btn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          var isOpen = pdd.classList.toggle('active');
+          btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        });
+      }
+    }
+    document.addEventListener('click', function (e) {
+      var d = document.getElementById('projDD');
+      if (d && !d.contains(e.target)) {
+        d.classList.remove('active');
+        var b = d.querySelector('.dropdown-btn');
+        if (b) b.setAttribute('aria-expanded', 'false');
+      }
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        var d = document.getElementById('projDD');
+        if (d && d.classList.contains('active')) {
+          d.classList.remove('active');
+          var b = d.querySelector('.dropdown-btn');
+          if (b) b.setAttribute('aria-expanded', 'false');
+        }
+      }
+    });
 
-// Close mobile menu on outside click or Escape
-document.getElementById('mmb').onclick=function(){ var nl=document.getElementById('navLinks'); var exp=this.getAttribute('aria-expanded')==='true'; this.setAttribute('aria-expanded',String(!exp)); nl.classList.toggle('active'); };
-document.addEventListener('click', function(e){
-  var nl=document.getElementById('navLinks');
-  var mb=document.getElementById('mmb');
-  if(nl && mb && nl.classList.contains('active') && !nl.contains(e.target) && !mb.contains(e.target)){
-    nl.classList.remove('active'); mb.setAttribute('aria-expanded','false');
+    var topNav = document.getElementById('topNav');
+    if (topNav) {
+      var ticking = false;
+      window.addEventListener('scroll', function () {
+        if (!ticking) {
+          requestAnimationFrame(function () {
+            topNav.classList.toggle('s', window.scrollY > 40);
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }, { passive: true });
+    }
+  })();
+
+  function applyTheme(isLight) {
+    document.documentElement.classList.toggle('lm', isLight);
+    document.body.classList.toggle('light', isLight);
+    document.body.classList.toggle('lm', isLight);
+    try {
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+      if (window.Storage && typeof window.Storage.set === 'function') {
+        window.Storage.set('theme', isLight ? 'light' : 'dark');
+      }
+    } catch (_e) {}
+    var tsck = document.getElementById('tsck');
+    if (tsck) tsck.checked = !isLight;
+    var lbl = document.getElementById('tLabel');
+    if (lbl) lbl.textContent = isLight ? 'Light Mode' : 'Dark Mode';
   }
-});
-document.addEventListener('keydown', function(e){
-  if(e.key==='Escape'){
-    var nl=document.getElementById('navLinks');
-    var mb=document.getElementById('mmb');
-    if(nl && nl.classList.contains('active')){ nl.classList.remove('active'); mb.setAttribute('aria-expanded','false'); }
-    document.querySelectorAll('.dropdown').forEach(function(d){ d.classList.remove('active'); var btn=d.querySelector('.dropdown-btn'); if(btn) btn.setAttribute('aria-expanded','false'); });
-  }
-});
+  window.applyTheme = applyTheme;
+  window.hzToggle = function () {
+    var isLight = !document.documentElement.classList.contains('lm');
+    applyTheme(isLight);
+  };
+  window.toggleTheme = function (elem) {
+    var isLight = elem ? !elem.checked : !document.documentElement.classList.contains('lm');
+    applyTheme(isLight);
+  };
 
 (function(){
-  const theme = Storage.get('theme');
-  const tsck = document.getElementById('tsck');
-  if(theme === 'light'){ document.body.classList.add('light'); if(tsck) tsck.checked = false; } 
-  else { document.body.classList.remove('light'); if(tsck) tsck.checked = true; }
+  var theme = null;
+  try {
+    theme = (window.Storage && typeof window.Storage.get === 'function') ? window.Storage.get('theme') : localStorage.getItem('theme');
+  } catch (e) {
+    try { theme = localStorage.getItem('theme'); } catch (_e) {}
+  }
+  var isLight = (theme === 'light');
+  applyTheme(isLight);
   
   buildTypeGrids(); 
   buildFrameGrid(); 
@@ -2784,17 +2841,6 @@ document.addEventListener('keydown', function(e){
   }
   if(dStep >= 1 && dStep <= 3) { goStep(dStep); }
 })();
-
-// Theme switch owned by shared col-ui.js (window.toggleTheme, body.lm + #tsck/#tLabel).
-// Fallback kept for no-JS-shared edge: sync both theme classes.
-function toggleTheme(element){
-    var isLight = !!(element && element.checked);
-    document.body.classList.toggle('light', isLight);
-    document.body.classList.toggle('lm', isLight);
-    try { (window.Storage || Storage).set('theme', isLight ? 'light' : 'dark'); } catch (e) { try { localStorage.setItem('theme', isLight ? 'light' : 'dark'); } catch (_e) {} }
-    var lbl = document.getElementById('tLabel');
-    if (lbl) lbl.textContent = isLight ? 'Light Mode' : 'Dark Mode';
-  }
 </script>
 
 <footer class="sf">
@@ -2807,7 +2853,7 @@ function toggleTheme(element){
             <a href="feedback">Feedback</a>
             <a href="download">Downloads</a>
         </div>
-        <div class="fc">&copy; 2026 Neel, Ansh, Aarush &amp; Yash Raj.</div>
+        <div class="fc">&copy; 2026 Neel, Ansh, &amp; Aarush (Co‑Founders).</div>
     </div>
 </footer>
 

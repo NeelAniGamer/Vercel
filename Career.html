@@ -29,6 +29,11 @@
             if (v >= 17) document.documentElement.classList.add('ios-17-plus')
           }
         }
+        try {
+          if (localStorage.getItem('theme') === 'light' || localStorage.getItem('fs_theme') === 'light') {
+            document.documentElement.classList.add('lm')
+          }
+        } catch (e) {}
       })()
     </script>
     <meta name="description" content="Explore 436 career pathways and 5,900+ real job titles, with degree roadmaps, entrance exams, salary bands, and plain-language notes on AI exposure." />
@@ -3138,13 +3143,21 @@
 
       // Theme Management
       function initTheme() {
-        if (localStorage.getItem('fs_theme') === 'light') {
-          document.body.classList.add('lm');
-        }
+        var isLight = false;
+        try {
+          isLight = localStorage.getItem('theme') === 'light' || localStorage.getItem('fs_theme') === 'light';
+        } catch (e) {}
+        document.documentElement.classList.toggle('lm', isLight);
+        document.body.classList.toggle('lm', isLight);
       }
       function toggleSiteTheme() {
-        document.body.classList.toggle('lm');
-        localStorage.setItem('fs_theme', document.body.classList.contains('lm') ? 'light' : 'dark');
+        var isLight = !document.documentElement.classList.contains('lm');
+        document.documentElement.classList.toggle('lm', isLight);
+        document.body.classList.toggle('lm', isLight);
+        try {
+          localStorage.setItem('theme', isLight ? 'light' : 'dark');
+          localStorage.setItem('fs_theme', isLight ? 'light' : 'dark');
+        } catch (e) {}
       }
 
       // Shortlist / Bookmarks

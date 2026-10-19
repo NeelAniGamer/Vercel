@@ -88,17 +88,20 @@
   }
 
   const DYNAMIC_QR = {
-    baseUrl: typeof window !== 'undefined' ? (window.location.origin + '/q.html') : 'https://advancedlogiclabs.dpdns.org/q.html',
+    baseUrl: typeof window !== 'undefined' ? (new URL('q.html', window.location.href).href) : 'https://advancedlogiclabs.dpdns.org/q.html',
     shortDomain: 'cl.ink',
 
     // Alphanumeric 6-char generator (avoiding ambiguous 0/O, 1/I/l)
     generateShortCode: function () {
       const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-      let code = '';
-      for (let i = 0; i < 6; i++) {
-        code += chars.charAt(Math.floor(Math.random() * chars.length));
+      const taken = new Set(this.getAll().map(q => q.shortCode));
+      for (let n = 0; n < 20; n++) {
+        const r = globalThis.crypto && crypto.getRandomValues ? crypto.getRandomValues(new Uint8Array(7)) : Array.from({ length: 7 }, () => Math.floor(Math.random() * 256));
+        let code = '';
+        for (let i = 0; i < 7; i++) {code += chars[r[i] % chars.length];}
+        if (!taken.has(code)) {return code;}
       }
-      return code;
+      return 'Q' + Date.now().toString(36).toUpperCase();
     },
 
     // Create a new dynamic QR record
@@ -156,6 +159,8 @@
       const all = this.getAll();
       const rawSecret = entry && entry.password;
       const normalized = withoutPlaintextPassword(entry);
+      const dropPwd = !!(entry && entry.removePassword);
+      delete normalized.removePassword;
       if (rawSecret) {
         const salt = globalThis.crypto?.getRandomValues
           ? globalThis.crypto.getRandomValues(new Uint8Array(16))
@@ -169,6 +174,11 @@
       const idx = all.findIndex(q => q.shortCode === normalized.shortCode || String(q.id) === String(normalized.id));
       if (idx !== -1) {
         all[idx] = Object.assign({}, all[idx], normalized, { updated: new Date().toISOString() });
+        if (dropPwd) {
+          delete all[idx].authHash;
+          delete all[idx].authSalt;
+          all[idx].isPasswordProtected = !!normalized.isPasswordProtected;
+        }
       } else {
         all.unshift(normalized);
       }
@@ -218,8 +228,7 @@
 
     // Delete single QR
     delete: function (shortCode) {
-      const all = this.getAll().filter(q => q.shortCode !== shortCode && String(q.id) !== String(shortCode));
-      this.saveAll(all);
+      this.bulkDelete([shortCode]);
     },
 
     // Bulk delete QRs
@@ -247,7 +256,7 @@
       const qr = all[idx];
       qr.scans = (qr.scans || 0) + 1;
 
-      const ipHash = this.hashIP(scanData.ip || 'anon');
+      const ipHash = this.hashIP(scanData.ip || this.visitorId());
       if (!Array.isArray(qr.uniqueIPs)) {qr.uniqueIPs = [];}
       if (!qr.uniqueIPs.includes(ipHash)) {
         qr.uniqueIPs.push(ipHash);
@@ -321,16 +330,12 @@
       const entry = this.getByCode(shortCode);
       if (!entry || !entry.analytics || entry.analytics.length === 0) {return '';}
       const headers = ['Time', 'Country', 'City', 'Device', 'OS', 'Browser', 'Referrer', 'IP Hash'];
-      const rows = entry.analytics.map(a => [
-        `"${a.time}"`,
-        `"${a.country}"`,
-        `"${a.city}"`,
-        `"${a.device}"`,
-        `"${a.os}"`,
-        `"${a.browser}"`,
-        `"${a.referrer}"`,
-        `"${a.ip}"`
-      ]);
+      const cell = v => {
+        v = String(v == null ? '' : v);
+        if (/^[=+\-@\t\r]/.test(v)) {v = "'" + v;}
+        return '"' + v.replace(/"/g, '""') + '"';
+      };
+      const rows = entry.analytics.map(a => [a.time, a.country, a.city, a.device, a.os, a.browser, a.referrer, a.ip].map(cell));
       return [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
     },
 
@@ -343,6 +348,60 @@
       if (!entry || !hash || !salt || !enteredPassword) {return false;}
       const actual = await derivePassword(enteredPassword, base64ToBytes(salt));
       return constantTimeEqual(actual, hash);
+    },
+
+    visitorId: function () {
+      try {
+        let v = localStorage.getItem('col_vid');
+        if (!v) { v = Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem('col_vid', v); }
+        return v;
+      } catch (e) { return 'anon'; }
+    },
+
+    // Shared Supabase client (lazy). Works on any page that loads this file.
+    getSb: async function () {
+      if (window.supabaseClient) {return window.supabaseClient;}
+      try {
+        let cfg = null;
+        for (const u of ['config.json', '/config.json']) {
+          try { const r = await fetch(u); if (r.ok) { cfg = await r.json(); break; } } catch (e) {}
+        }
+        if (!cfg || !cfg.auth || !cfg.auth.url) {return null;}
+        if (!window.supabase) {
+          await new Promise((res, rej) => { const s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
+        }
+        window.supabaseClient = window.supabase.createClient(cfg.auth.url, cfg.auth.key);
+      } catch (e) {}
+      return window.supabaseClient || null;
+    },
+
+    // Landing-page payloads ("col:v1:") and passcode-locked destinations ("enc:v1:").
+    // Both live inside destination_url, so they work on every device with no server changes.
+    encodePayload: function (obj) {
+      return 'col:v1:' + bytesToBase64(new TextEncoder().encode(JSON.stringify(obj))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    },
+    decodePayload: function (s) {
+      try {
+        if (typeof s !== 'string' || s.indexOf('col:v1:') !== 0) {return null;}
+        let b = s.slice(7).replace(/-/g, '+').replace(/_/g, '/');
+        while (b.length % 4) {b += '=';}
+        return JSON.parse(new TextDecoder().decode(base64ToBytes(b)));
+      } catch (e) { return null; }
+    },
+    _aesKey: async function (password, salt) {
+      const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey']);
+      return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations: 250000, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+    },
+    lock: async function (plain, password) {
+      const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+      const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, await this._aesKey(password, salt), new TextEncoder().encode(plain)));
+      return 'enc:v1:' + [salt, iv, ct].map(x => bytesToBase64(x)).join('.');
+    },
+    unlock: async function (blob, password) {
+      try {
+        const [s, i, c] = String(blob).slice(7).split('.').map(base64ToBytes);
+        return new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: i }, await this._aesKey(password, s), c));
+      } catch (e) { return null; }
     },
 
     hashIP: function (ip) {

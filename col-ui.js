@@ -83,60 +83,71 @@
   if (!isTouch && !isGamePage) {
     const dot = document.getElementById('cDot'),
       ring = document.getElementById('cRing')
-    const spot = document.querySelector('.col-ambient-spotlight')
+    let spot = null
     let mx = window.innerWidth / 2,
       my = window.innerHeight / 3,
       rx = mx,
       ry = my
-    let rafPending = false
+    let isMoving = false,
+      ringRaf = null
+
+    function updateRing() {
+      const dx = mx - rx
+      const dy = my - ry
+      rx += dx * 0.16
+      ry += dy * 0.16
+      if (ring) {
+        ring.style.transform = 'translate3d(' + rx + 'px,' + ry + 'px,0) translate(-50%,-50%)'
+      }
+      if (Math.abs(dx) > 0.2 || Math.abs(dy) > 0.2) {
+        ringRaf = requestAnimationFrame(updateRing)
+      } else {
+        rx = mx
+        ry = my
+        ringRaf = null
+      }
+    }
 
     document.addEventListener(
       'mousemove',
       function (e) {
         mx = e.clientX
         my = e.clientY
-        if (dot) {dot.style.transform = 'translate(' + mx + 'px,' + my + 'px) translate(-50%,-50%)'}
-        if (!rafPending) {
-          rafPending = true
+        if (dot) {
+          dot.style.transform = 'translate3d(' + mx + 'px,' + my + 'px,0) translate(-50%,-50%)'
+        }
+        if (!ringRaf && ring) {
+          ringRaf = requestAnimationFrame(updateRing)
+        }
+        if (!isMoving) {
+          isMoving = true
           requestAnimationFrame(function () {
-            // Direct style mutation on spotlight element avoids full DOM tree style recalculation
+            if (!spot) {
+              spot = document.querySelector('.col-ambient-spotlight')
+            }
             if (spot) {
               spot.style.background =
                 'radial-gradient(600px circle at ' + mx + 'px ' + my + 'px, rgba(94, 212, 245, 0.05), transparent 70%)'
             }
-            rafPending = false
+            isMoving = false
           })
         }
       },
       { passive: true }
     )
 
-    if (dot && ring) {
-      let _cursorFrame = 0
-      ;(function draw() {
-        if (document.hidden) {
-          requestAnimationFrame(draw)
-          return
-        }
-        _cursorFrame++
-        if (_cursorFrame % 2 === 0) {
-          requestAnimationFrame(draw)
-          return
-        }
-        rx += (mx - rx) * 0.13
-        ry += (my - ry) * 0.13
-        ring.style.transform = 'translate(' + rx + 'px,' + ry + 'px) translate(-50%,-50%)'
-        requestAnimationFrame(draw)
-      })()
-      document.querySelectorAll('a,button,select,input,.typing-area').forEach(function (el) {
-        el.addEventListener('mouseenter', function () {
-          document.body.classList.add('ch')
-        })
-        el.addEventListener('mouseleave', function () {
-          document.body.classList.remove('ch')
-        })
-      })
-    }
+    // Event delegation for cursor hover state on interactive targets
+    document.addEventListener('mouseover', function (e) {
+      if (e.target && e.target.closest('a, button, select, input, .typing-area, [role="button"], .hz-toggle, .pc')) {
+        document.body.classList.add('ch')
+      }
+    }, { passive: true })
+
+    document.addEventListener('mouseout', function (e) {
+      if (e.target && e.target.closest('a, button, select, input, .typing-area, [role="button"], .hz-toggle, .pc')) {
+        document.body.classList.remove('ch')
+      }
+    }, { passive: true })
   }
 
   // 2. Mobile Menu & In-App Updater — Engineered for 720p→2K
@@ -172,7 +183,7 @@
         nl.setAttribute('aria-hidden', 'true')
       }
       function isNavOpen() {
-        return nl.classList.contains('active')
+        return Boolean(_drawer && _drawer.classList.contains('active'))
       }
 
       // Dedicated, Isolated Centered Mobile Drawer
@@ -381,6 +392,28 @@
           link.addEventListener('click', closeDrawer)
         })
 
+        // Swipe to dismiss mobile drawer (horizontal swipe > 80px)
+        let _sx = 0, _sy = 0
+        d.addEventListener(
+          'touchstart',
+          function (e) {
+            _sx = e.touches[0].clientX
+            _sy = e.touches[0].clientY
+          },
+          { passive: true }
+        )
+        d.addEventListener(
+          'touchend',
+          function (e) {
+            const dx = e.changedTouches[0].clientX - _sx
+            const dy = e.changedTouches[0].clientY - _sy
+            if (dx > 80 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+              closeDrawer()
+            }
+          },
+          { passive: true }
+        )
+
         return _drawer
       }
 
@@ -422,33 +455,9 @@
       // Close on Escape
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && isNavOpen()) {
-          nl.classList.remove('active')
-          mmb.classList.remove('active')
-          unlockNav()
+          closeDrawer()
         }
       })
-
-      // Swipe to close (left swipe)
-      let _sx = 0
-      nl.addEventListener(
-        'touchstart',
-        function (e) {
-          _sx = e.touches[0].clientX
-        },
-        { passive: true }
-      )
-      nl.addEventListener(
-        'touchend',
-        function (e) {
-          const dx = e.changedTouches[0].clientX - _sx
-          if (dx > 80 && isNavOpen()) {
-            nl.classList.remove('active')
-            mmb.classList.remove('active')
-            unlockNav()
-          }
-        },
-        { passive: true }
-      )
 
       // Mobile dropdown toggle (accordion, no propagation to drawer close)
       const dropdowns = nl.querySelectorAll('.dropdown')
@@ -484,16 +493,14 @@
             .then((r) => r.json())
             .then((data) => {
               const currentV = localStorage.getItem('col_apk_version') || '0'
-              if (parseInt(data.versionCode) > parseInt(currentV)) {
-                const nl = document.querySelector('.nav-links')
-                if (nl && !document.getElementById('apkUpdateBtn')) {
+              if (parseInt(data.versionCode, 10) > parseInt(currentV, 10)) {
+                if (!document.getElementById('apkUpdateBtn')) {
                   const updBtn = document.createElement('a')
                   updBtn.id = 'apkUpdateBtn'
                   updBtn.href = data.apkUrl || '/COL.apk'
-                  updBtn.className = 'nav-dl-btn mobile-dl'
-                  updBtn.innerHTML = 'Update App'
-                  updBtn.style.display = 'block'
-                  updBtn.style.marginTop = '10px'
+                  updBtn.className = 'cmd-btn-primary mobile-dl'
+                  updBtn.innerHTML = 'Update App (v' + (data.versionName || data.versionCode) + ')'
+                  updBtn.style.display = 'flex'
                   updBtn.style.backgroundColor = 'var(--signal, #F2B84B)'
                   updBtn.style.color = '#000'
                   updBtn.style.textAlign = 'center'
@@ -505,58 +512,44 @@
                     }, 1000)
                     alert('Downloading update... Please open your notifications or file manager to install the new version.')
                   }
-                  nl.appendChild(updBtn)
+                  const drawer = getOrCreateMobileDrawer()
+                  const deck = drawer ? drawer.querySelector('.cmd-actions-deck') : null
+                  if (deck) {
+                    deck.prepend(updBtn)
+                  } else {
+                    const nlElem = document.querySelector('.nav-links')
+                    if (nlElem) {nlElem.appendChild(updBtn)}
+                  }
                 }
               }
             })
-            .catch((e) => console.warn('Could not fetch version for update check.'))
+            .catch((_e) => console.warn('Could not fetch version for update check.'))
         }
-      } catch (e) {}
+      } catch (_e) {}
     }
   }
-
-  // 3. Setup initial theme based on Storage if Storage exists (from col-auth.js or inline)
-  // Actually, col-router.js or home.html defines Storage, but if it doesn't, we fallback to localStorage directly.
-  try {
-    const savedTheme = localStorage.getItem('theme')
-    const tl = document.getElementById('tLabel')
-    const tsck = document.getElementById('tsck')
-
-    if (savedTheme === 'light') {
-      document.body.classList.add('lm')
-      if (tsck) {tsck.checked = true}
-      if (tl) {tl.textContent = 'Light Mode'}
-    } else {
-      // Explicitly enforce Dark Mode
-      document.body.classList.remove('lm')
-      if (tsck) {tsck.checked = false}
-      if (tl) {tl.textContent = 'Dark Mode'}
-      localStorage.setItem('theme', 'dark')
-    }
-  } catch (e) {}
 })()
 
-window.toggleTheme = function (el) {
-  // rAF-deferred so the checkbox click event completes instantly (fixes INP)
-  const isChecked = el && el.checked;
-  try { if (navigator.vibrate) {navigator.vibrate(10);} } catch (e) {}
-  requestAnimationFrame(function () {
-    const tl = document.getElementById('tLabel')
-    if (isChecked) {
-      document.body.classList.add('lm')
-      try {
-        localStorage.setItem('theme', 'light')
-      } catch (e) {}
-      if (tl) {tl.textContent = 'Light Mode'}
-    } else {
-      document.body.classList.remove('lm')
-      try {
-        localStorage.setItem('theme', 'dark')
-      } catch (e) {}
-      if (tl) {tl.textContent = 'Dark Mode'}
-    }
-  })
-}
+// 3. Desktop Navbar Scroll State (.top-nav.s)
+;(function () {
+  let navTicking = false
+  window.addEventListener(
+    'scroll',
+    function () {
+      if (!navTicking) {
+        requestAnimationFrame(function () {
+          const topNav = document.getElementById('topNav') || document.querySelector('.top-nav')
+          if (topNav) {
+            topNav.classList.toggle('s', window.scrollY > 50)
+          }
+          navTicking = false
+        })
+        navTicking = true
+      }
+    },
+    { passive: true }
+  )
+})()
 
 // Register Service Worker for PWA
 if ('serviceWorker' in navigator) {
@@ -731,22 +724,6 @@ function initBottomBar() {
       })
     })
 
-    // Sync menu button active state with drawer state
-    const menuBtn = bar.querySelector('.bbar-menu')
-    var checkDrawerInterval = setInterval(function () {
-      const d = document.getElementById('colMobileDrawer')
-      if (d && menuBtn) {
-        clearInterval(checkDrawerInterval)
-        if ('MutationObserver' in window) {
-          const obs = new MutationObserver(function () {
-            const isOpen = d.classList.contains('active')
-            menuBtn.classList.toggle('act', isOpen)
-          })
-          obs.observe(d, { attributes: true, attributeFilter: ['class'] })
-        }
-      }
-    }, 200)
-
   }
 
   if (document.readyState === 'loading') {
@@ -760,104 +737,96 @@ initBottomBar()
 
 // 7. Buy Me A Coffee Global Floating Action Badge
 function initBmcBadge() {
-  if (document.getElementById('bmc-floating-badge')) {return}
+  // Respect a previous dismissal so the badge stops getting in the way.
+  try { if (localStorage.getItem('bmc-dismissed') === '1') {return} } catch (e) {}
 
-  function injectStyles() {
-    if (document.getElementById('bmc-floating-styles')) {return}
-    const style = document.createElement('style')
-    style.id = 'bmc-floating-styles'
-    style.textContent = [
-      '.bmc-floating-badge {',
-      '  position: fixed;',
-      '  bottom: 24px;',
-      '  right: 24px;',
-      '  z-index: 99999;',
-      '  display: flex;',
-      '  align-items: center;',
-      '  justify-content: center;',
-      '  border-radius: 12px;',
-      '  filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.35));',
-      '  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease;',
-      '  line-height: 0;',
-      '  text-decoration: none;',
-      '}',
-      '.bmc-floating-badge:hover {',
-      '  transform: translateY(-2px) scale(1.02);',
-      '  filter: drop-shadow(0 8px 20px rgba(95, 127, 255, 0.45));',
-      '}',
-      '.bmc-floating-badge:active {',
-      '  transform: translateY(0) scale(0.98);',
-      '}',
-      'body.nav-lock .bmc-floating-badge {',
-      '  opacity: 0 !important;',
-      '  pointer-events: none !important;',
-      '  transform: translateY(20px) !important;',
-      '}',
-      '.bmc-floating-badge a {',
-      '  display: inline-block;',
-      '  line-height: 0;',
-      '  border-radius: 10px;',
-      '}',
-      '.bmc-floating-badge img {',
-      '  height: 42px;',
-      '  width: auto;',
-      '  border-radius: 8px;',
-      '  display: block;',
-      '}',
-      '@media (max-width: 900px) {',
-      '  .bmc-floating-badge {',
-      '    bottom: calc(76px + env(safe-area-inset-bottom, 0px));',
-      '    right: 14px;',
-      '    filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.4));',
-      '  }',
-      '  .bmc-floating-badge img {',
-      '    height: 36px;',
-      '  }',
-      '}',
-      '@media (max-width: 480px) {',
-      '  .bmc-floating-badge {',
-      '    bottom: calc(72px + env(safe-area-inset-bottom, 0px));',
-      '    right: 10px;',
-      '  }',
-      '  .bmc-floating-badge img {',
-      '    height: 32px;',
-      '  }',
-      '}',
-      '@media (prefers-reduced-motion: reduce) {',
-      '  .bmc-floating-badge,',
-      '  .bmc-floating-badge:hover,',
-      '  .bmc-floating-badge:active {',
-      '    transition: none;',
-      '    transform: none;',
-      '  }',
-      '}',
-      '@media print {',
-      '  .bmc-floating-badge {',
-      '    display: none !important;',
-      '  }',
-      '}'
-    ].join('\n')
-    if (document.head) {
-      document.head.appendChild(style)
-    } else {
-      document.addEventListener('DOMContentLoaded', function () {
-        if (document.head) {document.head.appendChild(style)}
-      })
-    }
-  }
+  if (document.getElementById('bmc-floating-badge')) {return}
 
   function createBadge() {
     if (document.getElementById('bmc-floating-badge')) {return}
     if (!document.body) {return}
-    injectStyles()
 
     const badge = document.createElement('aside')
     badge.id = 'bmc-floating-badge'
     badge.className = 'bmc-floating-badge'
     badge.setAttribute('aria-label', 'Support Creator')
-    badge.innerHTML = '<a href="https://www.buymeacoffee.com/NeelAniGamer" target="_blank" rel="noopener noreferrer" title="Buy Me A Coffee" aria-label="Buy Me A Coffee"><img src="/bmc-button.svg" onerror="if(this.src.indexOf(\'img.buymeacoffee.com\')===-1)this.src=\'https://img.buymeacoffee.com/button-api/?text=Buy%20me%20a%20coffee&emoji=&slug=NeelAniGamer&button_colour=5F7FFF&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00\'" alt="Buy Me A Coffee" width="180" height="40" loading="lazy" /></a>'
+    badge.innerHTML = '<button type="button" class="bmc-dismiss" aria-label="Dismiss support badge" title="Dismiss">&times;</button><a href="https://www.buymeacoffee.com/NeelAniGamer" target="_blank" rel="noopener noreferrer" title="Buy Me A Coffee" aria-label="Buy Me A Coffee"><img src="/bmc-button.svg" onerror="if(this.src.indexOf(\'img.buymeacoffee.com\')===-1)this.src=\'https://img.buymeacoffee.com/button-api/?text=Buy%20me%20a%20coffee&emoji=&slug=NeelAniGamer&button_colour=5F7FFF&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00\'" alt="Buy Me A Coffee" width="180" height="40" loading="lazy" /></a>'
 
     document.body.appendChild(badge)
+
+    const dismiss = badge.querySelector('.bmc-dismiss')
+    if (dismiss) {
+      dismiss.addEventListener('click', function (e) {
+        e.preventDefault()
+        e.stopPropagation()
+        try { localStorage.setItem('bmc-dismissed', '1') } catch (err) {}
+        badge.remove()
+      })
+    }
+
+    // 7. Draggable badge: let users move it out of the way.
+    makeBmcDraggable(badge)
+  }
+
+  function makeBmcDraggable(badge) {
+    // Restore saved position.
+    try {
+      const saved = JSON.parse(localStorage.getItem('bmc-pos') || 'null')
+      if (saved && typeof saved.x === 'number' && typeof saved.y === 'number') {
+        badge.style.left = saved.x + 'px'
+        badge.style.top = saved.y + 'px'
+        badge.style.right = 'auto'
+        badge.style.bottom = 'auto'
+      }
+    } catch (e) {}
+
+    let dragging = false
+    let startX = 0, startY = 0, origX = 0, origY = 0
+
+    function onDown(e) {
+      // Don't start drag from the dismiss button or the link.
+      if (e.target && e.target.closest && e.target.closest('.bmc-dismiss, a')) {return}
+      dragging = true
+      badge.style.cursor = 'grabbing'
+      const pt = e.touches ? e.touches[0] : e
+      startX = pt.clientX
+      startY = pt.clientY
+      const rect = badge.getBoundingClientRect()
+      origX = rect.left
+      origY = rect.top
+      e.preventDefault()
+    }
+    function onMove(e) {
+      if (!dragging) {return}
+      const pt = e.touches ? e.touches[0] : e
+      let x = origX + (pt.clientX - startX)
+      let y = origY + (pt.clientY - startY)
+      // Clamp to viewport.
+      const w = badge.offsetWidth, h = badge.offsetHeight
+      x = Math.max(8, Math.min(window.innerWidth - w - 8, x))
+      y = Math.max(8, Math.min(window.innerHeight - h - 8, y))
+      badge.style.left = x + 'px'
+      badge.style.top = y + 'px'
+      badge.style.right = 'auto'
+      badge.style.bottom = 'auto'
+    }
+    function onUp() {
+      if (!dragging) {return}
+      dragging = false
+      badge.style.cursor = ''
+      try {
+        const rect = badge.getBoundingClientRect()
+        localStorage.setItem('bmc-pos', JSON.stringify({ x: rect.left, y: rect.top }))
+      } catch (e) {}
+    }
+
+    badge.addEventListener('mousedown', onDown)
+    badge.addEventListener('touchstart', onDown, { passive: false })
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('touchmove', onMove, { passive: false })
+    window.addEventListener('mouseup', onUp)
+    window.addEventListener('touchend', onUp)
+    badge.style.cursor = 'grab'
   }
 
   if (document.readyState === 'loading') {
@@ -868,7 +837,7 @@ function initBmcBadge() {
 }
 initBmcBadge()
 
-// Global theme helpers for all pages
+// Global canonical theme helpers for all pages
 window.safeThemeGet = function () {
   try {
     return localStorage.getItem('theme')
@@ -884,7 +853,7 @@ window.safeThemeSet = function (val) {
 }
 
 window.hzSync = function () {
-  const isLight = document.body.classList.contains('lm')
+  const isLight = document.body ? document.body.classList.contains('lm') : document.documentElement.classList.contains('lm')
   const toggles = document.querySelectorAll('.hz-toggle')
   toggles.forEach(function (el) {
     if (isLight) {el.classList.remove('night')}
@@ -892,16 +861,48 @@ window.hzSync = function () {
   })
   const desc = document.getElementById('cmdThemeDesc')
   if (desc) {desc.textContent = isLight ? 'Light Mica' : 'Dark VisionOS'}
+  const tl = document.getElementById('tLabel')
+  if (tl) {tl.textContent = isLight ? 'Light Mode' : 'Dark Mode'}
+  const tsck = document.getElementById('tsck')
+  if (tsck) {tsck.checked = isLight}
+  const meta = document.getElementById('themeMeta') || document.querySelector('meta[name="theme-color"]')
+  if (meta) {meta.setAttribute('content', isLight ? '#f3f2eb' : '#070a14')}
 }
 
 window.hzToggle = function () {
   if (navigator.vibrate) {
-    try { navigator.vibrate(8) } catch (e) {}
+    try { navigator.vibrate(8) } catch (_e) {}
   }
-  document.body.classList.toggle('lm')
-  const isLight = document.body.classList.contains('lm')
-  window.safeThemeSet(isLight ? 'light' : 'dark')
+  const willBeLight = !document.documentElement.classList.contains('lm')
+  if (willBeLight) {
+    document.documentElement.classList.add('lm')
+    if (document.body) {document.body.classList.add('lm')}
+    window.safeThemeSet('light')
+  } else {
+    document.documentElement.classList.remove('lm')
+    if (document.body) {document.body.classList.remove('lm')}
+    window.safeThemeSet('dark')
+  }
   window.hzSync()
+}
+
+// Canonical alias for legacy pages calling window.toggleTheme
+window.toggleTheme = function (el) {
+  if (el && typeof el.checked === 'boolean') {
+    const wantLight = el.checked
+    if (wantLight) {
+      document.documentElement.classList.add('lm')
+      if (document.body) {document.body.classList.add('lm')}
+      window.safeThemeSet('light')
+    } else {
+      document.documentElement.classList.remove('lm')
+      if (document.body) {document.body.classList.remove('lm')}
+      window.safeThemeSet('dark')
+    }
+    window.hzSync()
+  } else {
+    window.hzToggle()
+  }
 }
 
 // Immediately restore theme on script load

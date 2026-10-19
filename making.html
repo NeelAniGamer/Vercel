@@ -30,6 +30,15 @@
         }
       })()
     </script>
+    <script>
+      ;(function () {
+        try {
+          if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.add('lm')
+          }
+        } catch (e) {}
+      })()
+    </script>
     <meta name="description" content="See the AI tools, local models, cloud platforms, design systems, and step-by-step engineering practices behind the interactive projects built by Class Of Learners." />
     <meta name="keywords" content="how we built it, engineering behind Class Of Learners, Three.js development, student project development, web app architecture, AI tools for development, building educational software, development story, student engineering process, web development India">
     <meta property="og:site_name" content="Class Of Learners" />
@@ -1269,8 +1278,8 @@
           Making
         </a>
 
-        <div class="dropdown" id="projDD" onclick="this.classList.toggle('active')">
-          <button class="dropdown-btn" type="button">
+        <div class="dropdown" id="projDD">
+          <button class="dropdown-btn" type="button" aria-haspopup="true" aria-expanded="false">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
             Projects <span class="darr">&#9660;</span>
           </button>
@@ -2238,7 +2247,7 @@ webView.loadUrl("https://advancedlogiclabs.dpdns.org");</code>
               </div>
               <div class="section-body">
                 <p>
-                  GitHub Coordinates Collaborative Source Control Across Our Student Team (Neel, Ansh, Aarush, And Yash Raj). It Manages Release Binaries For The Advanced Typing Instructor Windows Installer (<code>AdvancedTypingInstructor_Setup.exe</code>), Automates Asset Sync, And Safeguards Branch History.
+                  GitHub Coordinates Collaborative Source Control Across Our Student Team (Co‑Founders Neel, Ansh, And Aarush, Plus Contributors Yashraj Jadhav, Aaryaman Jadhav, And John Doe). It Manages Release Binaries For The Advanced Typing Instructor Windows Installer (<code>AdvancedTypingInstructor_Setup.exe</code>), Automates Asset Sync, And Safeguards Branch History.
                 </p>
               </div>
             </div>
@@ -2610,7 +2619,7 @@ response = requests.post(url, json=payload, headers=headers)</code>
       <script>
         ;(function () {
           var SITE_KB = [
-            { keys: ['studio', 'class of learners', 'team', 'who built', 'about'], title: 'The Studio', answer: '<strong>Class Of Learners:</strong> A Student Studio Run By Neel, Ansh, Aarush, And Yash Raj. Everything Ships As Static HTML Plus Vanilla JavaScript On Vercel, With Zero-Cost Local AI Tooling.' },
+            { keys: ['studio', 'class of learners', 'team', 'who built', 'about'], title: 'The Studio', answer: '<strong>Class Of Learners:</strong> A Student Studio Run By Co‑Founders Neel, Ansh, And Aarush, With Contributions From Yashraj Jadhav, Aaryaman Jadhav, And John Doe. Everything Ships As Static HTML Plus Vanilla JavaScript On Vercel, With Zero-Cost Local AI Tooling.' },
             { keys: ['ollama', 'qwen', 'deepseek', 'local llm', 'claude code'], title: 'Claude Code Plus Ollama', answer: '<strong>Claude Code Plus Ollama:</strong> A Terminal Coding Agent Driving Local Open-Weight Models Like Qwen 2.5 Coder 32B. Start With <strong>ollama run qwen2.5-coder:32b</strong> For Private, Zero-Cost Refactoring.' },
             { keys: ['antigravity', 'google'], title: 'Antigravity', answer: '<strong>Google Antigravity:</strong> The Senior Pair-Programmer Behind The Studio Planning Discipline. Always Draft An Implementation Plan Before Touching Code, Then Verify With Headless Browser Screenshots.' },
             { keys: ['opencode', 'terminal', 'cli'], title: 'OpenCode', answer: '<strong>OpenCode:</strong> The Terminal-First Agent Used For Subprojects. Install With NPM, Add An <strong>opencode.json</strong> In The Project Root, And Run <strong>opencode</strong> To Start.' },
@@ -2728,26 +2737,63 @@ response = requests.post(url, json=payload, headers=headers)</code>
       <div class="fi">
         <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
         <div class="fl"><a href="making">Making</a><a href="privacy">Privacy</a><a href="terms">Terms</a><a href="feedback">Feedback</a><a href="download">Downloads</a></div>
-        <div class="fc">&copy; 2026 Neel, Ansh, Aarush &amp; Yash Raj. Built With Local Intelligence &amp; Precision.</div>
+        <div class="fc">&copy; 2026 Neel, Ansh, &amp; Aarush (Co‑Founders). Built With Local Intelligence &amp; Precision.</div>
       </div>
     </footer>
 
     <!-- Interactive Filtering & Copy Scripts -->
     <script>
-      // Theme Toggle
-      function hzToggle() {
-        if (window.hzToggle && window.hzToggle !== hzToggle) {
-          window.hzToggle()
-        } else {
-          document.body.classList.toggle('lm')
-          var isLight = document.body.classList.contains('lm')
-          try { localStorage.setItem('theme', isLight ? 'light' : 'dark') } catch(e) {}
-          if (window.hzSync) window.hzSync()
+      // Unified Theme Controller — syncs BOTH <html> and <body>
+      function applyTheme(isLight) {
+        document.documentElement.classList.toggle('lm', isLight)
+        document.body.classList.toggle('lm', isLight)
+        document.querySelectorAll('.hz-toggle').forEach(function (el) {
+          el.classList.toggle('night', !isLight)
+        })
+        var desc = document.getElementById('cmdThemeDesc')
+        if (desc) desc.textContent = isLight ? 'Light Mica' : 'Dark VisionOS'
+        var tm = document.getElementById('themeMeta')
+        if (tm) tm.setAttribute('content', isLight ? '#f4f3ee' : '#070A14')
+      }
+
+      window.hzToggle = function () {
+        if (navigator.vibrate) {
+          try { navigator.vibrate(8) } catch (e) {}
+        }
+        var isLight = !document.body.classList.contains('lm')
+        try { localStorage.setItem('theme', isLight ? 'light' : 'dark') } catch (e) {}
+        applyTheme(isLight)
+      }
+
+      try {
+        applyTheme(localStorage.getItem('theme') === 'light')
+      } catch (e) {
+        applyTheme(false)
+      }
+
+      // Accessible Dropdown Interaction & Close on Outside Click
+      var projDD = document.getElementById('projDD')
+      if (projDD) {
+        var projBtn = projDD.querySelector('.dropdown-btn')
+        if (projBtn) {
+          projBtn.addEventListener('click', function (e) {
+            e.preventDefault()
+            e.stopPropagation()
+            var willOpen = !projDD.classList.contains('active')
+            projDD.classList.toggle('active')
+            projBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false')
+          })
         }
       }
-      function toggleLocalTheme() {
-        hzToggle()
-      }
+      window.addEventListener('click', function (e) {
+        if (!e.target.closest('.dropdown')) {
+          document.querySelectorAll('.dropdown.active').forEach(function (d) {
+            d.classList.remove('active')
+            var btn = d.querySelector('.dropdown-btn')
+            if (btn) btn.setAttribute('aria-expanded', 'false')
+          })
+        }
+      })
 
       // Filter Pills Logic
       var filterButtons = document.querySelectorAll('.filter-pill')

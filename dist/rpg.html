@@ -32,6 +32,15 @@
         }
       })()
     </script>
+    <script>
+      ;(function () {
+        try {
+          if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.add('lm')
+          }
+        } catch (e) {}
+      })()
+    </script>
     <title>RPG Game | Coming Soon | Class Of Learners</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -991,8 +1000,8 @@
             <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
           </svg>Making
         </a>
-        <div class="dropdown" id="projDD" onclick="this.classList.toggle('active')">
-          <button class="dropdown-btn act">
+        <div class="dropdown" id="projDD">
+          <button class="dropdown-btn act" aria-haspopup="true" aria-expanded="false">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
               <line x1="8" y1="21" x2="16" y2="21" />
@@ -1132,7 +1141,7 @@
       <h1 class="hero-title">RPG Game</h1>
       <p class="hero-subtitle">By Class Of Learners</p>
       <p class="hero-desc">
-        An Epic Role-Playing Adventure Built From Scratch By Neel, Ansh, Aarush and Yash Raj. Explore Vast Dungeons, Battle Fearsome Creatures, Level Up Your Character, And Uncover A Deep Storyline — All Within
+        An Epic Role-Playing Adventure Built From Scratch By Neel, Ansh, and Aarush (Co‑Founders), with contributions from Yashraj Jadhav, Aaryaman Jadhav, and John Doe. Explore Vast Dungeons, Battle Fearsome Creatures, Level Up Your Character, And Uncover A Deep Storyline — All Within
         A Fully Custom Game Engine.
       </p>
 
@@ -1216,9 +1225,29 @@
         }, 50)
       })
 
-      window.onclick = (e) => {
-        if (!e.target.matches('.dropdown-btn') && !e.target.closest('.dropdown-btn')) document.querySelectorAll('.dropdown').forEach((d) => d.classList.remove('active'))
+      // Accessible Dropdown Interaction & Close on Outside Click
+      var projDD = document.getElementById('projDD')
+      if (projDD) {
+        var projBtn = projDD.querySelector('.dropdown-btn')
+        if (projBtn) {
+          projBtn.addEventListener('click', function (e) {
+            e.preventDefault()
+            e.stopPropagation()
+            var willOpen = !projDD.classList.contains('active')
+            projDD.classList.toggle('active')
+            projBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false')
+          })
+        }
       }
+      window.addEventListener('click', function (e) {
+        if (!e.target.closest('.dropdown')) {
+          document.querySelectorAll('.dropdown.active').forEach(function (d) {
+            d.classList.remove('active')
+            var btn = d.querySelector('.dropdown-btn')
+            if (btn) btn.setAttribute('aria-expanded', 'false')
+          })
+        }
+      })
     </script>
 
     <footer class="sf">
@@ -1231,7 +1260,7 @@
           <a href="feedback">Feedback</a>
           <a href="download">Downloads</a>
         </div>
-        <div class="fc">&copy; 2026 Neel, Ansh, Aarush &amp; Yash Raj.</div>
+        <div class="fc">&copy; 2026 Neel, Ansh, &amp; Aarush (Co‑Founders).</div>
       </div>
     </footer>
     <script defer src="col-3d.js"></script>

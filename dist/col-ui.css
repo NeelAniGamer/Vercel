@@ -1,4 +1,3 @@
-@import url('col-mobile.css');
 /* col-ui.css - Shared UI styles for Class Of Learners (Navbar, Footer, Cursor) */
 :root {
   --void: #070a14;
@@ -1911,10 +1910,10 @@ body.lm .col-ambient-spotlight {
   width: 38px !important;
   height: 38px !important;
   min-width: 38px;
-  border-radius: 50% !important;
+  border-radius: 10px !important;
   object-fit: contain;
-  background: var(--page-theme) !important;
-  box-shadow: 0 0 12px color-mix(in srgb, var(--page-theme) 45%, transparent) !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 body.lm .top-nav .brand-logo {
@@ -2119,6 +2118,35 @@ body.nav-lock .bmc-floating-badge {
   border-radius: 10px;
 }
 
+/* Dismiss control for the support badge */
+.bmc-floating-badge {
+  position: relative;
+}
+.bmc-dismiss {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 20px;
+  height: 20px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.85);
+  color: #fff;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+}
+.bmc-floating-badge:hover .bmc-dismiss {
+  opacity: 1;
+}
+
 .bmc-floating-badge img {
   height: 42px;
   width: auto;
@@ -2163,5 +2191,131 @@ body.nav-lock .bmc-floating-badge {
     display: none !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   LIGHT MODE & COMPONENT ELEVATION PATCHES
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* 1. Prevent col-ui.css body.lm h3 !important from killing card hover accent colors */
+body.lm .pc.ci:hover .pname { color: var(--ion, #0e72a0) !important; }
+body.lm .pc.cg:hover .pname { color: var(--teal, #0a8c7a) !important; }
+body.lm .pc.ca:hover .pname { color: var(--signal, #b8720a) !important; }
+body.lm .pc.cp:hover .pname { color: var(--plasma, #6f4fe0) !important; }
+body.lm .pc.ce:hover .pname { color: var(--em, #1b9d66) !important; }
+
+/* 2. Light Mode Polish for Mobile Drawer & Actions Deck */
+body.lm .cmd-backdrop {
+  background: rgba(15, 23, 42, 0.45) !important;
+}
+body.lm .cmd-btn-primary {
+  background: var(--signal, #b8720a) !important;
+  color: #ffffff !important;
+  border: 1px solid var(--signal, #b8720a) !important;
+  box-shadow: 0 4px 14px rgba(184, 114, 10, 0.25) !important;
+}
+body.lm .cmd-btn-primary:active {
+  background: #9a5b00 !important;
+}
+
+/* 3. Light Mode Polish for Persistent Bottom Thumb Bar */
+body.lm .col-bottom-bar {
+  background: rgba(255, 255, 255, 0.94) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.12) !important;
+}
+body.lm .col-bottom-bar a,
+body.lm .col-bottom-bar button,
+body.lm .col-bottom-bar .bbar-item {
+  color: #475569 !important;
+}
+body.lm .col-bottom-bar a.act,
+body.lm .col-bottom-bar button.act,
+body.lm .col-bottom-bar .bbar-item.act,
+body.lm .col-bottom-bar a:active,
+body.lm .col-bottom-bar button:active {
+  background: rgba(184, 114, 10, 0.12) !important;
+  color: #b8720a !important;
+}
+body.lm .col-bottom-bar a.act svg,
+body.lm .col-bottom-bar button.act svg,
+body.lm .col-bottom-bar .bbar-item.act svg {
+  stroke: #b8720a !important;
+}
+
+/* 4. Hide BMC Floating Badge when Modals or Popups are active */
+.mo.open ~ .bmc-floating-badge,
+body:has(.mo.open) .bmc-floating-badge,
+body:has(#colAppPopup.open) .bmc-floating-badge,
+body.modal-lock .bmc-floating-badge {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateY(20px) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   DESKTOP UI/UX OVERHAUL (Floating Pill Nav, Dropdown Polish)
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* 1. Desktop Dropdown Alignment & Accessible Hover/Focus-Within */
+@media (min-width: 901px) {
+  .dropdown-content a {
+    justify-content: flex-start !important;
+    gap: 12px !important;
+  }
+  .dropdown:hover .dropdown-content,
+  .dropdown:focus-within .dropdown-content {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    transform: translateX(-50%) translateY(0) !important;
+    transition-delay: 0s !important;
+  }
+  .dropdown:hover .dropdown-btn,
+  .dropdown:focus-within .dropdown-btn {
+    color: var(--primary, #38bdf8) !important;
+  }
+  body.lm .dropdown:hover .dropdown-btn,
+  body.lm .dropdown:focus-within .dropdown-btn {
+    color: var(--signal, #c27803) !important;
+  }
+  .dropdown:hover .dropdown-btn span,
+  .dropdown:hover .dropdown-btn .darr,
+  .dropdown:focus-within .dropdown-btn span,
+  .dropdown:focus-within .dropdown-btn .darr {
+    transform: rotate(180deg) !important;
+  }
+}
+
+/* 2. Floating Pill Navbar on Scroll (min-width: 1101px) */
+@media (min-width: 1101px) {
+  .top-nav {
+    left: 0 !important;
+    right: 0 !important;
+    margin: 0 auto !important;
+    transition: top 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                max-width 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                padding 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                border-radius 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                background 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+  .top-nav::before {
+    border-radius: inherit !important;
+  }
+  .top-nav.s {
+    top: 14px !important;
+    max-width: min(1320px, calc(100vw - 48px)) !important;
+    padding: 10px 28px !important;
+    border-radius: 999px !important;
+    border: 1px solid var(--border-light, rgba(255, 255, 255, 0.16)) !important;
+    box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.55), 0 0 1px 1px rgba(255, 255, 255, 0.08) inset !important;
+  }
+  body.lm .top-nav.s {
+    border-color: rgba(15, 23, 42, 0.12) !important;
+    box-shadow: 0 16px 40px -10px rgba(15, 23, 42, 0.12), 0 0 1px 1px rgba(255, 255, 255, 0.8) inset !important;
+  }
+}
+
 
 

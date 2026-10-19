@@ -90,6 +90,22 @@
     {
       "source": "/perceptus",
       "destination": "/gesture"
+    },
+    {
+      "source": "/castflow",
+      "destination": "/CastFlow"
+    },
+    {
+      "source": "/castflow.html",
+      "destination": "/CastFlow.html"
+    },
+    {
+      "source": "/civiclogic",
+      "destination": "/Database_Logic"
+    },
+    {
+      "source": "/database_logic",
+      "destination": "/Database_Logic"
     }
   ],
   "redirects": [

@@ -523,10 +523,25 @@
           }
         )
 
+        // ─── Project Nodes with Rich 3D Geometry ───
+        var projectNodes = [
+          { name: 'ATI',        key: 'ion',    radius: 12, speed: 0.15,  page: 'ati',             y: 0,    type: 'keyboard' },
+          { name: 'Cereal',     key: 'plasma', radius: 14, speed: -0.14, page: 'cereal',           y: 1.2,  type: 'cereal' },
+          { name: 'Gesture',    key: 'plasma', radius: 17, speed: 0.12,  page: 'gesture',         y: 2,    type: 'vision' },
+          { name: 'CastFlow',   key: 'ion',    radius: 19, speed: -0.11, page: 'CastFlow',        y: -1.5, type: 'cast' },
+          { name: 'Traffic',    key: 'signal', radius: 22, speed: 0.1,   page: 'Traffic/Driving', y: 1.5,  type: 'traffic' },
+          { name: 'Database',   key: 'teal',   radius: 24, speed: -0.09, page: 'Database_Logic',  y: -1,   type: 'book' },
+          { name: 'Terra3D',    key: 'teal',   radius: 26, speed: 0.08,  page: 'Terra3D/',        y: 2.2,  type: 'globe' },
+          { name: 'Solar',      key: 'teal',   radius: 28, speed: -0.08, page: 'solar',           y: -1.8, type: 'solar' },
+          { name: 'Career',     key: 'plasma', radius: 31, speed: 0.07,  page: 'Career',          y: 1.0,  type: 'compass' },
+          { name: 'RPG',        key: 'em',     radius: 33, speed: -0.07, page: 'rpg',             y: -2,   type: 'crystal' },
+          { name: 'QR',         key: 'em',     radius: 36, speed: 0.06,  page: 'qr',              y: 0.5,  type: 'matrix' }
+        ]
+
         // Energy connecting beams
         var beamMat = new THREE.LineBasicMaterial({ color: pal().signal, transparent: true, opacity: 0.15 })
         trackTheme(beamMat, 'signal')
-        var beamPositions = new Float32Array(6 * 2 * 3)
+        var beamPositions = new Float32Array(projectNodes.length * 2 * 3)
         var beamGeo = new THREE.BufferGeometry()
         beamGeo.setAttribute('position', new THREE.BufferAttribute(beamPositions, 3))
         var beams = new THREE.LineSegments(beamGeo, beamMat)
@@ -584,16 +599,6 @@
             life: 1.0
           })
         }
-
-        // ─── Six Project Nodes with Rich 3D Geometry ───
-        var projectNodes = [
-          { name: 'ATI',     key: 'ion',    radius: 14, speed: 0.15,  page: 'ati',             y: 0,    type: 'keyboard' },
-          { name: 'Traffic', key: 'signal', radius: 20, speed: -0.1,  page: 'Traffic/Driving', y: 1.5,  type: 'traffic' },
-          { name: 'Solar',   key: 'teal',   radius: 26, speed: 0.08,  page: 'solar',           y: -1,   type: 'solar' },
-          { name: 'Gesture', key: 'plasma', radius: 17, speed: -0.12, page: 'gesture',         y: 2,    type: 'vision' },
-          { name: 'RPG',     key: 'em',     radius: 23, speed: 0.09,  page: 'rpg',             y: -2,   type: 'crystal' },
-          { name: 'QR',      key: 'dim',    radius: 30, speed: -0.07, page: 'qr',              y: 0.5,  type: 'matrix' }
-        ]
 
         var nodeObjects = []
         var whiteHex = 0xffffff
@@ -753,10 +758,80 @@
             customExtras.shards = shards
           } else if (p.type === 'matrix') {
             // QR Node: 3D Voxel cluster with corner finder targets
-            var voxelBox = new THREE.Mesh(new THREE.BoxGeometry(planetSize * 1.3, planetSize * 1.3, planetSize * 1.3), new THREE.MeshBasicMaterial({ color: pal().dim, wireframe: true, transparent: true, opacity: 0.5 }))
-            trackTheme(voxelBox.material, 'dim')
+            var voxelBox = new THREE.Mesh(new THREE.BoxGeometry(planetSize * 1.3, planetSize * 1.3, planetSize * 1.3), new THREE.MeshBasicMaterial({ color: pal().em, wireframe: true, transparent: true, opacity: 0.5 }))
+            trackTheme(voxelBox.material, 'em')
             nodeGroup.add(voxelBox)
             customExtras.voxel = voxelBox
+          } else if (p.type === 'cereal') {
+            // Cereal Node: AI Mic Capsule + floating audio waveform ring
+            var micGeo = new THREE.CylinderGeometry(0.18, 0.18, 0.6, 12)
+            var micMat = new THREE.MeshBasicMaterial({ color: pal().plasma, wireframe: true })
+            trackTheme(micMat, 'plasma')
+            var mic = new THREE.Mesh(micGeo, micMat)
+            mic.position.set(0, planetSize + 0.45, 0)
+            nodeGroup.add(mic)
+
+            var waveGeo = new THREE.TorusGeometry(planetSize * 1.4, 0.02, 4, 32)
+            var waveMat = new THREE.MeshBasicMaterial({ color: pal().plasma, transparent: true, opacity: 0.6 })
+            trackTheme(waveMat, 'plasma')
+            var wave = new THREE.Mesh(waveGeo, waveMat)
+            wave.rotation.x = Math.PI * 0.5
+            nodeGroup.add(wave)
+
+            customExtras.mic = mic
+            customExtras.wave = wave
+          } else if (p.type === 'cast') {
+            // CastFlow Node: Floating wireless screen slab + radiating beacon ring
+            var screenGeo = new THREE.BoxGeometry(0.8, 0.5, 0.08)
+            var screenMat = new THREE.MeshBasicMaterial({ color: pal().ion, wireframe: true })
+            trackTheme(screenMat, 'ion')
+            var screen = new THREE.Mesh(screenGeo, screenMat)
+            screen.position.set(0, planetSize + 0.5, 0)
+            nodeGroup.add(screen)
+
+            var castRingGeo = new THREE.TorusGeometry(planetSize * 1.35, 0.02, 4, 32)
+            var castRingMat = new THREE.MeshBasicMaterial({ color: pal().ion, transparent: true, opacity: 0.6 })
+            trackTheme(castRingMat, 'ion')
+            var castRing = new THREE.Mesh(castRingGeo, castRingMat)
+            castRing.rotation.x = Math.PI * 0.3
+            nodeGroup.add(castRing)
+
+            customExtras.screen = screen
+            customExtras.castRing = castRing
+          } else if (p.type === 'globe') {
+            // Terra3D Node: Geodesic equatorial and meridian wireframe rings
+            var geoRing1 = new THREE.Mesh(new THREE.TorusGeometry(planetSize * 1.35, 0.02, 6, 32), new THREE.MeshBasicMaterial({ color: pal().teal, transparent: true, opacity: 0.7 }))
+            trackTheme(geoRing1.material, 'teal')
+            geoRing1.rotation.x = Math.PI * 0.5
+            nodeGroup.add(geoRing1)
+
+            var geoRing2 = new THREE.Mesh(new THREE.TorusGeometry(planetSize * 1.35, 0.02, 6, 32), new THREE.MeshBasicMaterial({ color: pal().teal, transparent: true, opacity: 0.5 }))
+            trackTheme(geoRing2.material, 'teal')
+            nodeGroup.add(geoRing2)
+
+            customExtras.geoRing1 = geoRing1
+            customExtras.geoRing2 = geoRing2
+          } else if (p.type === 'compass') {
+            // Career Node: 4-pointed psychometric star / compass needle
+            var compassGeo = new THREE.OctahedronGeometry(0.9, 0)
+            var compassMat = new THREE.MeshBasicMaterial({ color: pal().plasma, wireframe: true })
+            trackTheme(compassMat, 'plasma')
+            var compass = new THREE.Mesh(compassGeo, compassMat)
+            compass.scale.set(0.4, 1.4, 0.4)
+            compass.rotation.z = Math.PI * 0.25
+            nodeGroup.add(compass)
+            customExtras.compass = compass
+          } else if (p.type === 'book') {
+            // CivicLogic Node: Database / law knowledge stack
+            var slab1 = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.12, 0.7), new THREE.MeshBasicMaterial({ color: pal().teal }))
+            trackTheme(slab1.material, 'teal')
+            slab1.position.set(0, planetSize + 0.3, 0)
+            var slab2 = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.1, 0.55), new THREE.MeshBasicMaterial({ color: 0xffffff }))
+            slab2.position.set(0, planetSize + 0.45, 0)
+            nodeGroup.add(slab1)
+            nodeGroup.add(slab2)
+            customExtras.slab1 = slab1
+            customExtras.slab2 = slab2
           }
 
           // Register node group as clickable
@@ -988,6 +1063,19 @@
             } else if (n.data.type === 'matrix' && n.extras.voxel) {
               n.extras.voxel.rotation.y = t * 0.18
               n.extras.voxel.rotation.x = t * 0.12
+            } else if (n.data.type === 'cereal' && n.extras.wave) {
+              n.extras.wave.scale.setScalar(1 + Math.sin(t * 3) * 0.12)
+              if (n.extras.mic) n.extras.mic.rotation.y = t * 0.8
+            } else if (n.data.type === 'cast' && n.extras.screen) {
+              n.extras.screen.rotation.y = t * 0.5
+              if (n.extras.castRing) n.extras.castRing.rotation.z = t * 0.6
+            } else if (n.data.type === 'globe' && n.extras.geoRing2) {
+              n.extras.geoRing2.rotation.y = t * 0.4
+            } else if (n.data.type === 'compass' && n.extras.compass) {
+              n.extras.compass.rotation.y = t * 0.7
+            } else if (n.data.type === 'book' && n.extras.slab1) {
+              n.extras.slab1.rotation.y = t * 0.3
+              if (n.extras.slab2) n.extras.slab2.rotation.y = -t * 0.4
             }
           })
           beamGeo.attributes.position.needsUpdate = true
