@@ -20,7 +20,7 @@
 ## Tools
 
 - [Perceptus Flow](https://advancedlogiclabs.dpdns.org/gesture): Touchless computer control using webcam hand gestures, pinch-to-click, voice tasks, and multimodal AI.
-- [QR Editor](https://advancedlogiclabs.dpdns.org/qr-editor): A browser-based editor for custom QR codes with colors, logos, content types, and high-resolution downloads.
+- [QR Editor](https://advancedlogiclabs.dpdns.org/qr-editor): A browser-based editor for static and dynamic QR codes: colors, gradients, logos, frames, link hubs, contact cards, smart redirects, scan analytics, passcodes, expiry and high-resolution downloads, all free.
 - [CastFlow](https://advancedlogiclabs.dpdns.org/CastFlow): Android screen casting, file sharing, and desktop mode from a browser.
 - [FutureScape](https://advancedlogiclabs.dpdns.org/Career): An interactive career and education guide with pathways, roadmaps, entrance exams, salary tiers, and AI resilience ratings.
 - [Downloads](https://advancedlogiclabs.dpdns.org/download): Available Class Of Learners apps and desktop builds.

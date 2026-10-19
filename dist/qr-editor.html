@@ -62,15 +62,13 @@
     <script defer src="qr-dynamic.js"></script>
 
 <script>
-  (function () {
-    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    if (isIOS) document.documentElement.classList.add('is-iphone');
+  ;(function () {
     try {
       if (localStorage.getItem('theme') === 'light') {
-        document.documentElement.classList.add('lm');
+        document.documentElement.classList.add('lm')
       }
     } catch (e) {}
-  })();
+  })()
 </script>
 <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
 <link rel="stylesheet" href="col-mobile.css" />
@@ -157,7 +155,7 @@ body::after {
 
 @media (min-width: 1001px) {
   body { overflow: hidden; }
-  .qr-app { display: grid; grid-template-columns: 280px 1fr 360px; height: calc(100vh - 73px); width: 100%; max-width: 1800px; margin: 0 auto; overflow: hidden; }
+  .qr-app { display: grid; grid-template-columns: 280px 1fr 360px; height: calc(100vh - 73px); height: calc(100dvh - 73px); width: 100%; max-width: 1800px; margin: 0 auto; overflow: hidden; }
 }
 
 /* Top bar: layout/blur/drawer owned by shared col-ui.css; page only sets accent via --page-theme */
@@ -523,6 +521,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   
   
 
+<link rel="stylesheet" href="col-ui.css?v=20260923-nav3">
 <script defer src="col-ui.js"></script>
 <script defer src="col-auth.js"></script>
 
@@ -567,8 +566,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
             <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
           </svg>Making
         </a>
-        <div class="dropdown" id="projDD">
-          <button class="dropdown-btn act" aria-haspopup="true" aria-expanded="false">
+        <div class="dropdown" id="projDD" onclick="this.classList.toggle('active')">
+          <button class="dropdown-btn act">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
               <line x1="8" y1="21" x2="16" y2="21" />
@@ -781,24 +780,23 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
                       <!-- Domain removed -->
                       
                       <!-- Password -->
-                      <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.05); padding-top:15px;">
-                          <div style="display:flex; align-items:center; gap:8px;">
-                              <span style="font-size:0.9rem; font-weight:600; color:var(--txt);">Password</span>
-                              <span style="background:var(--pri); color:#000; font-size:0.6rem; font-weight:800; padding:2px 6px; border-radius:4px; text-transform:uppercase;">PRO</span>
+                      <div style="border-top:1px solid rgba(255,255,255,0.05); padding-top:15px;">
+                          <div style="display:flex; justify-content:space-between; align-items:center;">
+                              <label for="advPwdOn" style="font-size:0.9rem; font-weight:600; color:var(--txt);">Password protection</label>
+                              <label class="theme-switch" style="transform: scale(0.85); margin:0;">
+                                  <input type="checkbox" id="advPwdOn" onchange="_pwdToggle()">
+                                  <div class="slider round"></div>
+                              </label>
                           </div>
-                          <label class="theme-switch" style="transform: scale(0.85); margin:0;">
-                              <input type="checkbox">
-                              <div class="slider round"></div>
-                          </label>
+                          <div id="advPwdWrap" style="display:none; margin-top:12px;">
+                              <input type="password" id="advPwd" class="fi" autocomplete="new-password" placeholder="Passcode visitors must enter" style="padding:10px 15px; font-size:0.9rem; background:rgba(0,0,0,0.2);">
+                              <p style="font-size:0.75rem; color:var(--txt-m); margin:8px 0 0;">The destination is encrypted in your browser, so only people with the passcode can open it, on any device. Dynamic types only.</p>
+                          </div>
                       </div>
-                      
-                      <!-- Short URL -->
-                      <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.05); padding-top:15px;">
-                          <span style="font-size:0.9rem; font-weight:600; color:var(--txt);">Customize Short URL</span>
-                          <label class="theme-switch" style="transform: scale(0.85); margin:0;">
-                              <input type="checkbox">
-                              <div class="slider round"></div>
-                          </label>
+                      <!-- Expiry -->
+                      <div style="border-top:1px solid rgba(255,255,255,0.05); padding-top:15px;">
+                          <label for="advExpiry" style="font-size:0.9rem; font-weight:600; color:var(--txt); display:block; margin-bottom:8px;">Expiry date (optional)</label>
+                          <input type="datetime-local" id="advExpiry" class="fi" style="padding:10px 15px; font-size:0.9rem; background:rgba(0,0,0,0.2);">
                       </div>
                   </div>
               </div>
@@ -828,11 +826,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
                       <label class="fl" style="font-size:0.75rem;">Ends at</label>
                       <input type="datetime-local" class="fi" id="advSchedEnd" style="padding:10px 15px; font-size:0.9rem; background:rgba(0,0,0,0.2); margin-bottom:15px;">
                       
-                      <label class="fl" style="font-size:0.75rem;">Time zone</label>
-                      <select class="fi" style="padding:10px 15px; font-size:0.9rem; background:rgba(0,0,0,0.2); margin-bottom:15px;"><option>Asia/Calcutta</option></select>
-                      
-                      <label class="fl" style="font-size:0.75rem;">Behavior out of schedule</label>
-                      <select class="fi" style="padding:10px 15px; font-size:0.9rem; background:rgba(0,0,0,0.2);"><option>Redirect to other URL</option><option>Show custom message</option></select>
+                      <p id="advTzNote" style="font-size:0.8rem; color:var(--txt-m); margin:0;"></p>
                   </div>
               </div>
 
@@ -1261,11 +1255,15 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 // ——— SAFE LOCAL STORAGE ———
 var Storage = {
   get: function(key) { try { return localStorage.getItem(key); } catch(e) { return null; } },
-  set: function(key, val) { try { localStorage.setItem(key, val); } catch(e) {} }
+  set: function(key, val) { try { localStorage.setItem(key, val); return true; } catch(e) { return false; } }
 };
 
 let qrInst=null, currentStep=1, selType='url', selFrame='none';
 window.activeQrId = Date.now();
+window.activeShortCode = null;
+function dynCode(){ if(!window.activeShortCode) window.activeShortCode = (typeof DYNAMIC_QR!=='undefined') ? DYNAMIC_QR.generateShortCode() : 'Q'+Date.now().toString(36).toUpperCase(); return window.activeShortCode; }
+function _pwdToggle(){ const o=document.getElementById('advPwdOn'),w=document.getElementById('advPwdWrap'); if(o&&w) w.style.display=o.checked?'block':'none'; }
+function _fields(){ const f={}; document.querySelectorAll('#cfArea input,#cfArea textarea,#cfArea select').forEach(el=>{ if(el.id) f[el.id]=el.type==='checkbox'?el.checked:el.value; }); return f; }
 let saved = [];
 
 try { const sData = Storage.get('qrs_min'); if (sData) saved = JSON.parse(sData); } catch(e) {}
@@ -1319,7 +1317,7 @@ const FORMS={
   video:`<div><label class="fl">Video URL (YouTube/Vimeo) *</label><input class="fi" id="f0" type="url" placeholder="https://youtube.com/..." oninput="lu()"></div>`,
   social:`<div><label class="fl">Social Profile URL</label><input class="fi" id="f0" type="url" placeholder="https://instagram.com/..." oninput="lu()"></div>`,
   maps:`<div><label class="fl">Location Link</label><input class="fi" id="f0" placeholder="https://maps.google.com/..." oninput="lu()"></div>`,
-  links:`<div><label class="fl">Link Hub URL</label><input class="fi" id="f0" type="url" placeholder="https://linktr.ee/..." oninput="lu()"></div>`,
+  links:`<div><label class="fl">Page title</label><input class="fi" id="hb0" placeholder="My links" oninput="lu()"></div><div><label class="fl">Short description</label><input class="fi" id="hb1" oninput="lu()"></div><div><label class="fl">Links * (one per line: Label | URL)</label><textarea class="fi" id="hb2" rows="5" placeholder="Website | https://example.com&#10;Instagram | https://instagram.com/you" oninput="lu()"></textarea></div>`,
   business:`<div><label class="fl">Business Website</label><input class="fi" id="f0" type="url" placeholder="https://yourbusiness.com" oninput="lu()"></div>`,
   event:`<div><label class="fl">Ticketing / Event Link</label><input class="fi" id="f0" type="url" placeholder="https://eventbrite.com/..." oninput="lu()"></div>`,
   feedback:`<div><label class="fl">Review Form Link</label><input class="fi" id="f0" type="url" placeholder="https://forms.google.com/..." oninput="lu()"></div>`,
@@ -1329,7 +1327,7 @@ const FORMS={
   payment:`<div><label class="fl">Checkout URL *</label><input class="fi" id="f0" type="url" placeholder="https://checkout.stripe.com/..." oninput="lu()"></div><div><label class="fl">Amount (optional)</label><input class="fi" id="f1" type="number" step="0.01" placeholder="9.99" oninput="lu()"></div><div><label class="fl">Currency</label><select class="fi" id="f2" oninput="lu()"><option value="USD">USD</option><option value="EUR">EUR</option><option value="GBP">GBP</option><option value="INR">INR</option></select></div>`,
   coupon:`<div><label class="fl">Coupon Code *</label><input class="fi" id="f0" placeholder="SAVE20" oninput="lu()"></div><div><label class="fl">Discount (%)</label><input class="fi" id="f1" type="number" min="1" max="100" placeholder="20" oninput="lu()"></div><div><label class="fl">Expiry Date</label><input class="fi" id="f2" type="date" oninput="lu()"></div>`,
   survey:`<div><label class="fl">Survey Form URL *</label><input class="fi" id="f0" type="url" placeholder="https://forms.google.com/..." oninput="lu()"></div><div><label class="fl">Incentive (optional)</label><input class="fi" id="f1" placeholder="10% off next order" oninput="lu()"></div>`,
-  'vcard+':`<div><label class="fl">vCard Plus Hub</label><input class="fi" id="f0" type="url" placeholder="https://..." oninput="lu()"></div>`,
+  'vcard+':`<div class="fr2"><div><label class="fl">Full name *</label><input class="fi" id="vp0" oninput="lu()"></div><div><label class="fl">Company</label><input class="fi" id="vp1" oninput="lu()"></div></div><div class="fr2"><div><label class="fl">Job title</label><input class="fi" id="vp2" oninput="lu()"></div><div><label class="fl">Phone</label><input class="fi" id="vp3" type="tel" oninput="lu()"></div></div><div class="fr2"><div><label class="fl">Email</label><input class="fi" id="vp4" type="email" oninput="lu()"></div><div><label class="fl">Website</label><input class="fi" id="vp5" type="url" oninput="lu()"></div></div><div><label class="fl">Address</label><input class="fi" id="vp6" oninput="lu()"></div>`,
   text:`<div><label class="fl">Raw Plain Text *</label><textarea class="fi" id="f0" placeholder="Enter alphanumeric text to encode..." oninput="lu()"></textarea></div>`,
   vcard:`
     <div class="fr2"><div><label class="fl">Full Name *</label><input class="fi" id="vc0" placeholder="John Doe" oninput="lu()"></div><div><label class="fl">Company</label><input class="fi" id="vc1" placeholder="Corp Inc." oninput="lu()"></div></div>
@@ -1338,7 +1336,7 @@ const FORMS={
     <div><label class="fl">Office Address</label><input class="fi" id="vc5" placeholder="City, Country" oninput="lu()"></div>`,
   wifi:`
     <div><label class="fl">SSID (Network Name) *</label><input class="fi" id="wf0" placeholder="MyWiFi_5G" oninput="lu()"></div>
-    <div><label class="fl">Password</label><input class="fi" id="wf1" type="password" placeholder="”¢”¢”¢”¢”¢”¢”¢”¢" oninput="lu()"></div>
+    <div><label class="fl">Password</label><input class="fi" id="wf1" type="password" placeholder="••••••••" oninput="lu()"></div>
     <div><label class="fl">Security Protocol</label><select class="fi" id="wf2" onchange="lu()"><option value="WPA">WPA / WPA2 (Secure)</option><option value="WEP">WEP (Legacy)</option><option value="">None (Open Network)</option></select></div>
     <label style="display:flex;align-items:center;gap:10px;font-size:0.9rem;color:var(--txt-m);font-weight:700;cursor:pointer"><input type="checkbox" id="wf3" style="width:16px;height:16px;accent-color:var(--pri);" onchange="lu()"> Hidden SSID Broadcast</label>`,
   whatsapp:`
@@ -1358,16 +1356,18 @@ function getContent(){
   try{
     switch(selType){
       case 'text': return g('f0') || 'Hello World';
-      case 'phone': return 'tel:' + g('ph0');
+      case 'phone': return 'tel:' + g('ph0').replace(/[^\d+]/g,'');
       case 'vcard':{
         const n=g('vc0');const o=g('vc1');const p=g('vc2');const e=g('vc3');const u=g('vc4');const a=g('vc5');
-        return `BEGIN:VCARD\nVERSION:3.0\nFN:${n}\nORG:${o}\nTEL:${p}\nEMAIL:${e}\nURL:${u}\nADR:;;${a};;;\nEND:VCARD`;
+        const _p=n.trim().split(/\s+/);const fam=_p.length>1?_p.pop():'';const giv=_p.join(' ');
+        return `BEGIN:VCARD\nVERSION:3.0\nN:${fam};${giv};;;\nFN:${n}\nORG:${o}\nTEL:${p}\nEMAIL:${e}\nURL:${u}\nADR:;;${a};;;\nEND:VCARD`;
       }
       case 'wifi':{
         const s=g('wf0');const p=g('wf1');const t=g('wf2');
         const wf3 = document.getElementById('wf3');
         const h = (wf3 && wf3.checked) ? 'true' : 'false';
-        return `WIFI:T:${t};S:${s};P:${p};H:${h};;`;
+        const esc=x=>String(x).replace(/([\\;,:"])/g,'\\$1');
+        return `WIFI:T:${t||'nopass'};S:${esc(s)};${t?`P:${esc(p)};`:''}${h==='true'?'H:true;':''};`;
       }
       case 'whatsapp':{
         const ph=g('wa0').replace(/\D/g,'');const m=encodeURIComponent(g('wa1'));
@@ -1377,57 +1377,11 @@ function getContent(){
         return `mailto:${g('em0')}?subject=${encodeURIComponent(g('em1'))}&body=${encodeURIComponent(g('em2'))}`;
       }
       case 'sms': return `sms:${g('sm0')}?body=${encodeURIComponent(g('sm1'))}`;
-      case 'appstore':{
-        const ios=g('f0');const android=g('f1');
-        return `https://advancedlogiclabs.dpdns.org/qr/a/${window.activeQrId}?ios=${encodeURIComponent(ios)}&android=${encodeURIComponent(android)}`;
-      }
-      case 'calendar':{
-        const title=encodeURIComponent(g('f0'));
-        const start=g('f1').replace(/[-:]/g,'').replace('T','');
-        const end=g('f2').replace(/[-:]/g,'').replace('T','');
-        const desc=encodeURIComponent(g('f3'));
-        const loc=encodeURIComponent(g('f4'));
-        return `https://advancedlogiclabs.dpdns.org/qr/cal/${window.activeQrId}?title=${title}&start=${start}&end=${end}&desc=${desc}&loc=${loc}`;
-      }
-      case 'payment':{
-        return `https://advancedlogiclabs.dpdns.org/qr/pay/${window.activeQrId}?amount=${g('f1')||''}&currency=${g('f2')||'USD'}&redirect=${encodeURIComponent(g('f0'))}`;
-      }
-      case 'coupon':{
-        return `https://advancedlogiclabs.dpdns.org/qr/cpn/${window.activeQrId}?code=${g('f0')}&discount=${g('f1')}&expiry=${g('f2')}`;
-      }
-      case 'survey':{
-        return `https://advancedlogiclabs.dpdns.org/qr/svy/${window.activeQrId}?url=${encodeURIComponent(g('f0'))}&incentive=${encodeURIComponent(g('f1')||'')}`;
-      }
-      case 'vcard+':{
-        return `https://advancedlogiclabs.dpdns.org/qr/vcard/${window.activeQrId}?data=${encodeURIComponent(getContent().replace('vcard','text'))}`;
-      }
-      case 'links':{
-        return `https://advancedlogiclabs.dpdns.org/qr/links/${window.activeQrId}`;
-      }
-      case 'feedback':{
-        return `https://advancedlogiclabs.dpdns.org/qr/fdb/${window.activeQrId}`;
-      }
-      case 'business':{
-        return `https://advancedlogiclabs.dpdns.org/qr/biz/${window.activeQrId}?url=${encodeURIComponent(g('f0'))}`;
-      }
-      case 'event':{
-        return `https://advancedlogiclabs.dpdns.org/qr/evt/${window.activeQrId}`;
-      }
-      case 'maps':{
-        return `https://advancedlogiclabs.dpdns.org/qr/loc/${window.activeQrId}?url=${encodeURIComponent(g('f0'))}`;
-      }
-      case 'menu':{
-        return `https://advancedlogiclabs.dpdns.org/qr/menu/${window.activeQrId}`;
-      }
-      case 'images':{
-        return `https://advancedlogiclabs.dpdns.org/qr/gal/${window.activeQrId}`;
-      }
-      case 'video':{
-        return `https://advancedlogiclabs.dpdns.org/qr/vid/${window.activeQrId}?url=${encodeURIComponent(g('f0'))}`;
-      }
-      case 'social':{
-        return `https://advancedlogiclabs.dpdns.org/qr/soc/${window.activeQrId}`;
-      }
+      case 'appstore': return DYNAMIC_QR.encodePayload({t:'app', title:'Get the app', ios:g('f0').trim(), android:g('f1').trim()});
+      case 'calendar': return DYNAMIC_QR.encodePayload({t:'event', title:g('f0'), start:g('f1'), end:g('f2'), desc:g('f3'), loc:g('f4')});
+      case 'coupon': return DYNAMIC_QR.encodePayload({t:'coupon', title:'Your coupon', code:g('f0'), off:g('f1'), expiry:g('f2')});
+      case 'links': return DYNAMIC_QR.encodePayload({t:'links', title:g('hb0')||'My links', desc:g('hb1'), links:g('hb2').split('\n').map(l=>{const i=l.indexOf('|'); return i>0?{label:l.slice(0,i).trim(), url:l.slice(i+1).trim()}:{label:l.trim(), url:l.trim()};}).filter(l=>l.url)});
+      case 'vcard+': return DYNAMIC_QR.encodePayload({t:'vcard', title:g('vp0'), desc:[g('vp1'),g('vp2')].filter(Boolean).join(' · '), name:g('vp0'), org:g('vp1'), role:g('vp2'), phone:g('vp3'), email:g('vp4'), url:g('vp5'), adr:g('vp6')});
       default: return g('f0') || 'https://advancedlogiclabs.dpdns.org';
     }
   }catch(e){return 'https://advancedlogiclabs.dpdns.org';}
@@ -1435,15 +1389,12 @@ function getContent(){
 
 // ──── QR ENGINE ────
 function getQRDataString() {
-    const isStatic = ['text','vcard','wifi','whatsapp','email','sms'].indexOf(selType) !== -1;
+    const isStatic = ['text','vcard','wifi','whatsapp','email','sms','phone'].indexOf(selType) !== -1;
     let d = '';
     if (isStatic) {
         d = getContent();
     } else {
-        const urlParams = new URLSearchParams(window.location.search);
-        const editId = urlParams.get('id');
-        const id = editId ? parseInt(editId) : window.activeQrId;
-        d = window.location.origin + '/q.html?id=' + id;
+        d = ((typeof DYNAMIC_QR !== 'undefined' && DYNAMIC_QR.baseUrl) || (window.location.origin + '/q.html')) + '?id=' + dynCode();
     }
     try { return unescape(encodeURIComponent(d)); } catch(e) { return d; }
 }
@@ -1573,7 +1524,8 @@ function applyQS(style) {
 }
 
 function updateInfo(){
-  const c=getContent();
+  _scanBadge();
+  const c=getQRDataString();
   const piSz = document.getElementById('piSz');
   if(piSz) {
       try { piSz.textContent = unescape(encodeURIComponent(c)).length + ' bytes'; }
@@ -1584,7 +1536,7 @@ function updateInfo(){
   const piCr = document.getElementById('piCr');
   if(piCr) piCr.textContent = cm[errLvl];
   const piFmt = document.getElementById('piFmt');
-  if(piFmt) piFmt.textContent = ['text','vcard','wifi','phone'].indexOf(selType) !== -1 ? 'Static QR' : 'Dynamic QR';
+  if(piFmt) piFmt.textContent = ['text','vcard','wifi','whatsapp','email','sms','phone'].indexOf(selType) !== -1 ? 'Static QR' : 'Dynamic QR';
 }
 
 function toggleDS(id){
@@ -1813,12 +1765,33 @@ function buildLogoPresets(){
     w.appendChild(b);
   });
 }
+function _lum(h){const m=/^#?([0-9a-f]{6})/i.exec(h||'');if(!m)return null;const c=[0,2,4].map(i=>parseInt(m[1].substr(i,2),16)/255).map(v=>v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4));return .2126*c[0]+.7152*c[1]+.0722*c[2];}
+function _scanBadge(){
+  const w=document.getElementById('qrWrap'); if(!w) return;
+  let b=document.getElementById('scanBadge');
+  if(!b){ b=document.createElement('div'); b.id='scanBadge'; b.setAttribute('role','status'); b.style.cssText='margin:12px auto 0;max-width:280px;text-align:center;font-size:.78rem;font-weight:700;padding:6px 10px;border-radius:8px'; w.insertAdjacentElement('afterend',b); }
+  const d=opts.dotsOptions||{}, bg=opts.backgroundOptions||{};
+  const fl=(d.gradient?d.gradient.colorStops.map(s=>s.color):[d.color]).map(_lum).filter(x=>x!==null);
+  const bl=(bg.gradient||/^#[0-9a-f]{6}00$/i.test(bg.color||''))?1:_lum(bg.color);
+  let msg='Scan-ready',bad=false;
+  if(bl!==null&&fl.length){
+    const worst=Math.min.apply(null,fl.map(f=>(Math.max(f,bl)+.05)/(Math.min(f,bl)+.05)));
+    if(fl.some(f=>f>bl)){msg='Light code on a dark background: some scanners cannot read this';bad=true;}
+    else if(worst<3){msg='Low contrast ('+worst.toFixed(1)+':1): darken the code colour';bad=true;}
+  }
+  b.textContent=msg; b.style.background=bad?'rgba(239,68,68,.15)':'rgba(16,185,129,.12)'; b.style.color=bad?'#f87171':'#10b981';
+}
 const PREMIUM_PALETTES = [
   {id:'neon', name:'Neon Cyber', fg:'#00ffcc', bg:'#0f172a', grad:['#00ffcc', '#3b82f6']},
   {id:'sunset', name:'Sunset', fg:'#ffffff', bg:'#000000', grad:['#f43f5e', '#f59e0b']},
   {id:'berry', name:'Berry', fg:'#ffffff', bg:'#000000', grad:['#d946ef', '#8b5cf6']},
   {id:'emerald', name:'Emerald', fg:'#022c22', bg:'#ecfdf5', grad:null},
   {id:'gold', name:'Gold Luxury', fg:'#000000', bg:'#111827', grad:['#fbbf24', '#f59e0b']},
+  {id:'ink', name:'Midnight Ink', fg:'#1e1b4b', bg:'#ffffff', grad:['#1e1b4b','#4338ca']},
+  {id:'deepsea', name:'Deep Ocean', fg:'#0c4a6e', bg:'#f0f9ff', grad:['#0c4a6e','#0891b2']},
+  {id:'rose', name:'Rose Quartz', fg:'#9f1239', bg:'#fff1f2', grad:['#9f1239','#db2777']},
+  {id:'evergreen', name:'Evergreen', fg:'#14532d', bg:'#f0fdf4', grad:['#14532d','#16a34a']},
+  {id:'copper', name:'Copper', fg:'#7c2d12', bg:'#fffbeb', grad:['#7c2d12','#ea580c']},
   {id:'monochrome', name:'Clean Mono', fg:'#000000', bg:'#ffffff', grad:null}
 ];
 function buildPremiumPalettes(){
@@ -1826,7 +1799,7 @@ function buildPremiumPalettes(){
   PREMIUM_PALETTES.forEach(p=>{
     const b=document.createElement('div');
     b.style.cssText = `width: 45px; height: 45px; border-radius: 50%; cursor: pointer; border: 2px solid var(--border); background: ${p.grad ? `linear-gradient(135deg, ${p.grad[0]}, ${p.grad[1]})` : p.fg}; position: relative; overflow: hidden;`;
-    b.title = p.name;
+    b.title = p.name; b.setAttribute('role','button'); b.tabIndex = 0; b.setAttribute('aria-label', p.name + ' palette'); b.onkeydown = function(ev){ if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); b.onclick(); } };
     b.onclick = function(){
       document.getElementById('fgP').value = p.fg;
       document.getElementById('fgH').value = p.fg;
@@ -1836,7 +1809,7 @@ function buildPremiumPalettes(){
           document.getElementById('fgG').checked = true;
           document.getElementById('fg1').value = p.grad[0];
           document.getElementById('fg2').value = p.grad[1];
-          document.getElementById('fgGC').style.display = 'flex';
+          document.getElementById('fgGC').style.display = 'grid';
       } else {
           document.getElementById('fgG').checked = false;
           document.getElementById('fgGC').style.display = 'none';
@@ -1948,7 +1921,7 @@ function nextFrom1(){
   buildCF();goStep(2);
 }
 function nextFrom2(){
-  const c=getContent(); if(!c||c.trim().length<2){toast('Please fill in the required fields.','');return;}
+  const v=validateContent(); if(!v.ok){toast(v.msg,'');return;}
   goStep(3);
 }
 function buildTypeGrids(){
@@ -1976,7 +1949,7 @@ function dlQR(ext){
   const szInp = document.getElementById('dlSz');
   const sz=szInp ? parseInt(szInp.value) : 800;
   const realData = getQRDataString();
-  const dlOpts = Object.assign({}, opts, {width:sz,height:sz, data: realData});
+  const dlOpts = Object.assign({}, opts, {width:sz,height:sz, data: realData, margin: Math.max(Math.round((opts.margin||0)*sz/(opts.width||280)), Math.round(sz*0.05))});
   
   if (ext === 'copy') {
     copyQRImage(dlOpts);
@@ -2016,6 +1989,7 @@ function dlQR(ext){
       if(selFrame === 'ticket') tmpWrapper.style.outline = '8px dashed rgba(16,185,129,0.7)';
       if(selFrame === 'phone') tmpWrapper.style.outline = '12px solid var(--pri)';
       if(selFrame === 'badge') tmpWrapper.style.borderRadius = '50%';
+      if(selFrame === 'rounded') tmpWrapper.style.borderRadius = '48px';
       if(selFrame === 'polaroid') { tmpWrapper.style.padding = '30px 30px 70px 30px'; tmpWrapper.style.borderRadius = '6px'; }
       if(selFrame === 'neon') { tmpWrapper.style.outline = '6px solid var(--pri)'; tmpWrapper.style.boxShadow = '0 0 40px var(--pri)'; }
   } else {
@@ -2032,10 +2006,12 @@ function dlQR(ext){
   
   const dl=new QRCodeStyling(dlOpts);
   dl.append(tmpWrapper);
+  const _lt=document.getElementById('frLbl');
+  if(selFrame==='scan' && _lt){ const c=document.createElement('div'); c.textContent=_lt.textContent; c.style.cssText='margin-top:20px;text-align:center;font:800 32px Inter,Arial,sans-serif;letter-spacing:3px;color:'+(_lt.style.color||'#10b981'); tmpWrapper.appendChild(c); }
   
   setTimeout(() => {
       html2canvas(tmpWrapper, {
-          scale: 1, 
+          scale: 2, 
           backgroundColor: null,
           useCORS: true
       }).then(canvas => {
@@ -2072,12 +2048,12 @@ function copyQRImage(dlOpts) {
 
 function printQRSheet(dlOpts) {
   toast('Preparing printable flyer...', 'green');
+  const w = window.open('', '_blank'); if(!w){ toast('Allow pop-ups to print.', ''); return; }
   const dl = new QRCodeStyling(Object.assign({}, dlOpts, {width: 1200, height: 1200}));
   dl.getRawData('png').then(blob => {
     const url = URL.createObjectURL(blob);
-    const w = window.open('', '_blank');
     const to = DYN.concat(STA).filter(x => x.id === selType)[0] || {name: 'Class Of Learners QR'};
-    const frText = document.getElementById('frTextInput') ? document.getElementById('frTextInput').value : 'SCAN WITH CAMERA';
+    const frText = String(document.getElementById('frTextInput') ? document.getElementById('frTextInput').value : 'SCAN WITH CAMERA').replace(/[&<>"']/g, c => '&#' + c.charCodeAt(0) + ';');
     w.document.write(`
       <!DOCTYPE html>
       <html>
@@ -2113,7 +2089,8 @@ function printQRSheet(dlOpts) {
 }
 
 function validateContent(){
-  const urlTypes=['url','pdf','images','video','social','maps','links','business','event','feedback','menu','vcard+','appstore','calendar','payment','coupon','survey'];
+  const _po=document.getElementById('advPwdOn'); if(_po&&_po.checked&&DYN.some(x=>x.id===selType)&&!g('advPwd')) return {ok:false,msg:'Enter a passcode or switch password protection off.'};
+  const urlTypes=['url','pdf','images','video','social','maps','business','event','feedback','menu','payment','survey'];
   if(urlTypes.indexOf(selType)!==-1){
     const u=(g('f0')||'').trim();
     if(!u) return {ok:false,msg:'Please enter a URL.'};
@@ -2126,6 +2103,8 @@ function validateContent(){
   if(selType==='email'){ if(!(g('em0')||'').trim()) return {ok:false,msg:'Please enter an email address.'}; }
   if(selType==='sms'){ if(!(g('sm0')||'').trim()) return {ok:false,msg:'Please enter a phone number.'}; }
   if(selType==='phone'){ if(!(g('ph0')||'').trim()) return {ok:false,msg:'Please enter a phone number.'}; }
+  if(selType==='links'){ if(!g('hb2').split('\n').some(l=>l.trim())) return {ok:false,msg:'Add at least one link.'}; }
+  if(selType==='vcard+'){ if(!(g('vp0')||'').trim()) return {ok:false,msg:'Full name is required.'}; }
   if(selType==='appstore'){ if(!(g('f0')||'').trim()) return {ok:false,msg:'Please enter an iOS App Store link.'}; if(!(g('f1')||'').trim()) return {ok:false,msg:'Please enter an Android Play Store link.'}; }
   if(selType==='calendar'){ if(!(g('f0')||'').trim()) return {ok:false,msg:'Event title is required.'}; if(!(g('f1')||'').trim()) return {ok:false,msg:'Start date/time is required.'}; }
   if(selType==='payment'){ if(!(g('f0')||'').trim()) return {ok:false,msg:'Please enter a checkout URL.'}; }
@@ -2173,6 +2152,16 @@ function saveQR(silent = false){
         schedStart: document.getElementById('advSchedStart') ? document.getElementById('advSchedStart').value : null,
         schedEnd: document.getElementById('advSchedEnd') ? document.getElementById('advSchedEnd').value : null
     };
+    const _pw=document.getElementById('advPwdOn'), pwdOn=!!(isDynamic&&_pw&&_pw.checked), pwd=pwdOn?g('advPwd'):'';
+    const _ex=g('advExpiry'), _iso=v=>v?new Date(v).toISOString():null;
+    advSettings.expiry=_ex?_iso(_ex):null; advSettings.passwordProtected=pwdOn;
+    // Expiry and schedule travel inside the destination so they work on every device
+    let lockedDest=getContent();
+    if(isDynamic && (advSettings.expiry || (advSettings.hasSchedule && (advSettings.schedStart||advSettings.schedEnd)))){
+        const base=DYNAMIC_QR.decodePayload(lockedDest)||{t:'go',url:lockedDest};
+        lockedDest=DYNAMIC_QR.encodePayload(Object.assign(base,{exp:advSettings.expiry,start:advSettings.hasSchedule?_iso(advSettings.schedStart):null,end:advSettings.hasSchedule?_iso(advSettings.schedEnd):null}));
+    }
+    if(pwdOn&&pwd){ try{ lockedDest=await DYNAMIC_QR.lock(lockedDest,pwd); }catch(err){ toast('Passcodes need a secure (https) connection.',''); return; } }
 
     // Preserve shortCode for dynamic QRs when editing
     let existingShortCode = null;
@@ -2181,7 +2170,7 @@ function saveQR(silent = false){
         if (existing && existing.shortCode) existingShortCode = existing.shortCode;
     }
 
-    const shortCode = existingShortCode || (isDynamic ? (typeof DYNAMIC_QR !== 'undefined' ? DYNAMIC_QR.generateShortCode() : 'QR' + Math.random().toString(36).substr(2,6).toUpperCase()) : null);
+    const shortCode = isDynamic ? (existingShortCode || dynCode()) : null;
     const shortUrl = shortCode ? (typeof DYNAMIC_QR !== 'undefined' ? `${DYNAMIC_QR.baseUrl}?id=${shortCode}` : `${window.location.origin}/q.html?id=${shortCode}`) : null;
 
     const entry={
@@ -2196,7 +2185,9 @@ function saveQR(silent = false){
         isDynamic: isDynamic,
         shortCode: shortCode,
         shortUrl: shortUrl,
-        advSettings: advSettings
+        advSettings: advSettings,
+        frame: selFrame,
+        fields: _fields()
     };
     
     if (editId) {
@@ -2208,34 +2199,37 @@ function saveQR(silent = false){
     }
     
     if(saved.length>500) saved.length=500;
-    Storage.set('qrs_min',JSON.stringify(saved));
+    if(!Storage.set('qrs_min',JSON.stringify(saved)) && !silent) toast('Browser storage is full: delete old QR codes or use a smaller logo.', '');
     
     // Sync to DYNAMIC_QR storage
     if (isDynamic && shortCode && typeof DYNAMIC_QR !== 'undefined') {
-        await DYNAMIC_QR.save({
+        await DYNAMIC_QR.save(Object.assign({
             id: idToSave,
             shortCode: shortCode,
-            destination: getContent(),
+            destination: lockedDest,
             type: selType,
             title: advSettings.name || to.name,
-            password: advSettings.password || null,
-            expiry: advSettings.expiry || null,
-            schedule: advSettings.hasSchedule ? { start: advSettings.schedStart, end: advSettings.schedEnd } : null,
-            created: entry.date
-        });
+            password: null,
+            removePassword: true,
+            isPasswordProtected: pwdOn,
+            expiry: advSettings.expiry,
+            schedule: null
+        }, editId ? {} : { created: new Date().toISOString() }));
     }
 
+    await DYNAMIC_QR.getSb();
     if (window.supabaseClient) {
         try {
-            const user = (window.colAuth && window.colAuth.currentUser) || window.colUser;
+            let user = (window.colAuth && window.colAuth.currentUser) || window.colUser;
+            if (!user) { try { const s = await window.supabaseClient.auth.getSession(); user = s.data && s.data.session && s.data.session.user; } catch(x) {} }
             const row = {
                 short_code: shortCode,
                 title: advSettings.name || to.name,
                 qr_type: selType,
-                destination_url: getContent(),
+                destination_url: lockedDest,
                 is_dynamic: isDynamic,
                 design_config: finalOpts,
-                qr_data: entry,
+                qr_data: pwdOn ? Object.assign({}, entry, {content: lockedDest, fields: {}}) : entry,
                 updated_at: new Date().toISOString()
             };
             if (user && user.id) row.user_id = user.id;
@@ -2365,6 +2359,7 @@ async function runBulkGeneration() {
 
     try {
         const zip = new JSZip();
+        const _used = new Set();
         let originalData = opts.data;
 
         for(let i=0; i<lines.length; i++) {
@@ -2375,7 +2370,7 @@ async function runBulkGeneration() {
 
             // Handle CSV format: filename,url
             const firstComma = line.indexOf(',');
-            if (firstComma > 0) {
+            if (firstComma > 0 && !/^[a-z][a-z0-9+.-]*:\/\//i.test(line.slice(0, firstComma)) && line.slice(0, firstComma).indexOf('/') === -1) {
                 const potentialName = line.substring(0, firstComma).trim();
                 const potentialUrl = line.substring(firstComma + 1).trim();
                 if (potentialName && potentialUrl) {
@@ -2389,6 +2384,7 @@ async function runBulkGeneration() {
             try { safeUrl = unescape(encodeURIComponent(url)); } catch(e) {}
             qrInst.update({ data: safeUrl });
             const blob = await qrInst.getRawData('png');
+            { let n = 2; const base = filename; while (_used.has(filename)) { filename = base.replace(/\.png$/, '_' + (n++) + '.png'); } _used.add(filename); }
             zip.file(filename, blob);
             
             prog.textContent = `Generating ${i+1}/${lines.length}...`;
@@ -2616,8 +2612,12 @@ function loadEditData() {
             selType = 'url';
             opts.dotsOptions.color = '#111827';
             opts.cornersSquareOptions = { type: 'square', color: '#111827' };
+        } else if(tmpl === 'event_promo') {
+            selType = 'calendar';
+            opts.dotsOptions.color = '#f97316';
+            opts.cornersSquareOptions = { type: 'extra-rounded', color: '#ea580c' };
         } else if(tmpl === 'social_hub') {
-            selType = 'url';
+            selType = 'links';
             opts.dotsOptions.color = '#8b5cf6';
             opts.cornersSquareOptions = { type: 'dot', color: '#6366f1' };
         }
@@ -2638,168 +2638,55 @@ function loadEditData() {
     
     const q = saved.find(x => x.id === parseInt(id));
     if(!q) return;
-    
-    selType = q.type;
-    Object.assign(opts, q.opts);
-
-    // Restore color pickers
-    if (opts.dotsOptions && opts.dotsOptions.color) {
-        const c = opts.dotsOptions.color;
-        const p = document.getElementById('fgP'); if(p) p.value = c;
-        const h = document.getElementById('fgH'); if(h) h.value = c.toUpperCase();
-    }
-    if (opts.backgroundOptions && opts.backgroundOptions.color) {
-        const c = opts.backgroundOptions.color;
-        const p = document.getElementById('bgP'); if(p) p.value = c;
-        const h = document.getElementById('bgH'); if(h) h.value = c.toUpperCase();
-    }
-    if (opts.cornersSquareOptions && opts.cornersSquareOptions.color) {
-        const el = document.getElementById('csqC');
-        if(el) el.value = opts.cornersSquareOptions.color;
-    }
-    if (opts.cornersDotOptions && opts.cornersDotOptions.color) {
-        const el = document.getElementById('cdC');
-        if(el) el.value = opts.cornersDotOptions.color;
-    }
-
-    // Restore logo image
-    if (opts.image) {
-        const logoImg = document.getElementById('logoImg');
-        if(logoImg) logoImg.src = opts.image;
-        const logoArea = document.getElementById('logoArea');
-        if(logoArea) logoArea.style.display = opts.image ? 'flex' : 'none';
-    }
-
-    // Restore dots and corners type selections in grids
-    if (opts.dotsOptions && opts.dotsOptions.type) {
-        document.querySelectorAll('.dt-b').forEach(b => {
-            if(b.dataset.dt === opts.dotsOptions.type) b.classList.add('sel');
-            else b.classList.remove('sel');
-        });
-    }
-    if (opts.cornersSquareOptions && opts.cornersSquareOptions.type) {
-        document.querySelectorAll('.cs-b').forEach(b => {
-            if(b.dataset.cs === opts.cornersSquareOptions.type) b.classList.add('sel');
-            else b.classList.remove('sel');
-        });
-    }
-    if (opts.cornersDotOptions && opts.cornersDotOptions.type) {
-        document.querySelectorAll('.cd-b').forEach(b => {
-            if(b.dataset.cd === opts.cornersDotOptions.type) b.classList.add('sel');
-            else b.classList.remove('sel');
-        });
-    }
-
-    // Restore correction level
-    if (opts.qrOptions && opts.qrOptions.errorCorrectionLevel) {
-        document.querySelectorAll('.corr-b').forEach(b => {
-            if(b.dataset.cr === opts.qrOptions.errorCorrectionLevel) b.classList.add('sel');
-            else b.classList.remove('sel');
-        });
-    }
-
-    document.querySelectorAll('.tc').forEach(x => {
-        if(x.dataset.t === q.type) x.classList.add('sel'); else x.classList.remove('sel');
-    });
-    
-    buildCF(); // Ensure form fields match the selected type
-    
-    setTimeout(() => {
-        const inps = document.getElementById('cfArea').getElementsByTagName('input');
-        const textareas = document.getElementById('cfArea').getElementsByTagName('textarea');
-        if(inps.length > 0) inps[0].value = q.content || '';
-        else if (textareas.length > 0) textareas[0].value = q.content || '';
-        
-        if(qrInst) { qrInst.update(opts); updateInfo(); }
-    }, 100);
+    selType = q.type; window.activeQrId = q.id;
+    if(q.shortCode) window.activeShortCode = q.shortCode;
+    if(q.opts) Object.assign(opts, q.opts, {width:280, height:280});
+    document.querySelectorAll('.tc').forEach(x => { const on = x.dataset.t === q.type; x.classList.toggle('sel', on); x.setAttribute('aria-checked', String(on)); });
+    buildCF();
+    if(q.fields){ Object.keys(q.fields).forEach(k => { const el = document.getElementById(k); if(!el) return; if(el.type === 'checkbox') el.checked = !!q.fields[k]; else el.value = q.fields[k]; }); }
+    else { const el = document.querySelector('#cfArea input, #cfArea textarea'); if(el) el.value = q.content || ''; }
+    const a = q.advSettings || {};
+    const set = (i, v) => { const el = document.getElementById(i); if(el && v != null) el.value = v; };
+    set('advQrName', a.name); set('advSchedStart', a.schedStart); set('advSchedEnd', a.schedEnd);
+    const hs = document.getElementById('advHasSchedule'); if(hs) hs.checked = !!a.hasSchedule;
+    if(a.expiry){ const d = new Date(a.expiry); set('advExpiry', new Date(d - d.getTimezoneOffset()*6e4).toISOString().slice(0,16)); }
+    if(a.passwordProtected){ const po = document.getElementById('advPwdOn'); if(po) po.checked = true; const pw = document.getElementById('advPwd'); if(pw) pw.placeholder = 'Re-enter the passcode to keep protection'; _pwdToggle(); }
+    if(q.frame) setFr(q.frame);
+    setTimeout(() => { if(qrInst) qrInst.update(opts); lu(); updateInfo(); }, 100);
 }
 </script>
 
 
 
 <script>
-  (function () {
-    var pdd = document.getElementById('projDD');
-    if (pdd) {
-      var btn = pdd.querySelector('.dropdown-btn');
-      if (btn) {
-        btn.addEventListener('click', function (e) {
-          e.stopPropagation();
-          var isOpen = pdd.classList.toggle('active');
-          btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-        });
-      }
-    }
-    document.addEventListener('click', function (e) {
-      var d = document.getElementById('projDD');
-      if (d && !d.contains(e.target)) {
-        d.classList.remove('active');
-        var b = d.querySelector('.dropdown-btn');
-        if (b) b.setAttribute('aria-expanded', 'false');
-      }
-    });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') {
-        var d = document.getElementById('projDD');
-        if (d && d.classList.contains('active')) {
-          d.classList.remove('active');
-          var b = d.querySelector('.dropdown-btn');
-          if (b) b.setAttribute('aria-expanded', 'false');
-        }
-      }
-    });
+window.onclick = e => { if (!e.target.matches('.dropdown-btn') && !e.target.closest('.dropdown-btn')) document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active')); };
 
-    var topNav = document.getElementById('topNav');
-    if (topNav) {
-      var ticking = false;
-      window.addEventListener('scroll', function () {
-        if (!ticking) {
-          requestAnimationFrame(function () {
-            topNav.classList.toggle('s', window.scrollY > 40);
-            ticking = false;
-          });
-          ticking = true;
-        }
-      }, { passive: true });
-    }
-  })();
-
-  function applyTheme(isLight) {
-    document.documentElement.classList.toggle('lm', isLight);
-    document.body.classList.toggle('light', isLight);
-    document.body.classList.toggle('lm', isLight);
-    try {
-      localStorage.setItem('theme', isLight ? 'light' : 'dark');
-      if (window.Storage && typeof window.Storage.set === 'function') {
-        window.Storage.set('theme', isLight ? 'light' : 'dark');
-      }
-    } catch (_e) {}
-    var tsck = document.getElementById('tsck');
-    if (tsck) tsck.checked = !isLight;
-    var lbl = document.getElementById('tLabel');
-    if (lbl) lbl.textContent = isLight ? 'Light Mode' : 'Dark Mode';
+// Close mobile menu on outside click or Escape
+document.getElementById('mmb').onclick=function(){ var nl=document.getElementById('navLinks'); var exp=this.getAttribute('aria-expanded')==='true'; this.setAttribute('aria-expanded',String(!exp)); nl.classList.toggle('active'); };
+document.addEventListener('click', function(e){
+  var nl=document.getElementById('navLinks');
+  var mb=document.getElementById('mmb');
+  if(nl && mb && nl.classList.contains('active') && !nl.contains(e.target) && !mb.contains(e.target)){
+    nl.classList.remove('active'); mb.setAttribute('aria-expanded','false');
   }
-  window.applyTheme = applyTheme;
-  window.hzToggle = function () {
-    var isLight = !document.documentElement.classList.contains('lm');
-    applyTheme(isLight);
-  };
-  window.toggleTheme = function (elem) {
-    var isLight = elem ? !elem.checked : !document.documentElement.classList.contains('lm');
-    applyTheme(isLight);
-  };
+});
+document.addEventListener('keydown', function(e){
+  if(e.key==='Escape'){
+    var nl=document.getElementById('navLinks');
+    var mb=document.getElementById('mmb');
+    if(nl && nl.classList.contains('active')){ nl.classList.remove('active'); mb.setAttribute('aria-expanded','false'); }
+    document.querySelectorAll('.dropdown').forEach(function(d){ d.classList.remove('active'); var btn=d.querySelector('.dropdown-btn'); if(btn) btn.setAttribute('aria-expanded','false'); });
+  }
+});
 
 (function(){
-  var theme = null;
-  try {
-    theme = (window.Storage && typeof window.Storage.get === 'function') ? window.Storage.get('theme') : localStorage.getItem('theme');
-  } catch (e) {
-    try { theme = localStorage.getItem('theme'); } catch (_e) {}
-  }
-  var isLight = (theme === 'light');
-  applyTheme(isLight);
+  const theme = Storage.get('theme');
+  const tsck = document.getElementById('tsck');
+  if(theme === 'light'){ document.body.classList.add('light'); if(tsck) tsck.checked = false; } 
+  else { document.body.classList.remove('light'); if(tsck) tsck.checked = true; }
   
   buildTypeGrids(); 
+  var _tz=document.getElementById('advTzNote'); if(_tz) _tz.textContent='Times use your device time zone: '+Intl.DateTimeFormat().resolvedOptions().timeZone;
   buildFrameGrid(); 
   buildDotGrid(); 
   buildCornerGrids(); 
@@ -2841,6 +2728,17 @@ function loadEditData() {
   }
   if(dStep >= 1 && dStep <= 3) { goStep(dStep); }
 })();
+
+// Theme switch owned by shared col-ui.js (window.toggleTheme, body.lm + #tsck/#tLabel).
+// Fallback kept for no-JS-shared edge: sync both theme classes.
+function toggleTheme(element){
+    var isLight = !!(element && element.checked);
+    document.body.classList.toggle('light', isLight);
+    document.body.classList.toggle('lm', isLight);
+    try { (window.Storage || Storage).set('theme', isLight ? 'light' : 'dark'); } catch (e) { try { localStorage.setItem('theme', isLight ? 'light' : 'dark'); } catch (_e) {} }
+    var lbl = document.getElementById('tLabel');
+    if (lbl) lbl.textContent = isLight ? 'Light Mode' : 'Dark Mode';
+  }
 </script>
 
 <footer class="sf">
@@ -2853,7 +2751,7 @@ function loadEditData() {
             <a href="feedback">Feedback</a>
             <a href="download">Downloads</a>
         </div>
-        <div class="fc">&copy; 2026 Neel, Ansh, &amp; Aarush (Co‑Founders).</div>
+        <div class="fc">&copy; 2026 Neel, Ansh, Aarush &amp; Yash Raj.</div>
     </div>
 </footer>
 

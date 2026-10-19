@@ -801,6 +801,30 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
                   </div>
               </div>
               
+              <!-- Smart redirect rules (free) -->
+              <details style="background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:20px 25px; box-shadow:0 10px 30px rgba(0,0,0,0.1);">
+                  <summary style="font-size:1.1rem; font-weight:800; color:var(--txt); cursor:pointer;">Smart redirect rules</summary>
+                  <p style="font-size:0.8rem; color:var(--txt-m); margin:12px 0;">Device targeting, rotation and UTM tags apply to link types. Scan limit and fallback apply to every dynamic type.</p>
+                  <label class="fl" for="advIos" style="font-size:0.75rem;">iPhone / iPad URL</label>
+                  <input type="url" class="fi" id="advIos" placeholder="https://apps.apple.com/..." style="padding:10px 15px; font-size:0.9rem; background:rgba(0,0,0,0.2); margin-bottom:12px;">
+                  <label class="fl" for="advAndroid" style="font-size:0.75rem;">Android URL</label>
+                  <input type="url" class="fi" id="advAndroid" placeholder="https://play.google.com/..." style="padding:10px 15px; font-size:0.9rem; background:rgba(0,0,0,0.2); margin-bottom:12px;">
+                  <label class="fl" for="advDesktop" style="font-size:0.75rem;">Desktop URL</label>
+                  <input type="url" class="fi" id="advDesktop" style="padding:10px 15px; font-size:0.9rem; background:rgba(0,0,0,0.2); margin-bottom:12px;">
+                  <label class="fl" for="advAB" style="font-size:0.75rem;">A/B rotation: extra URLs, one per line (each scan picks one at random)</label>
+                  <textarea class="fi" id="advAB" rows="3" style="padding:10px 15px; font-size:0.9rem; background:rgba(0,0,0,0.2); margin-bottom:12px;"></textarea>
+                  <label class="fl" for="advMaxScans" style="font-size:0.75rem;">Stop after this many scans</label>
+                  <input type="number" min="1" class="fi" id="advMaxScans" style="padding:10px 15px; font-size:0.9rem; background:rgba(0,0,0,0.2); margin-bottom:12px;">
+                  <label class="fl" for="advFallback" style="font-size:0.75rem;">Fallback URL (expired, outside schedule or scan limit reached)</label>
+                  <input type="url" class="fi" id="advFallback" style="padding:10px 15px; font-size:0.9rem; background:rgba(0,0,0,0.2); margin-bottom:12px;">
+                  <label class="fl" style="font-size:0.75rem;">UTM tags (added to the destination)</label>
+                  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:8px;">
+                      <input class="fi" id="advUtmS" placeholder="source" aria-label="UTM source" style="padding:10px 12px; font-size:0.9rem; background:rgba(0,0,0,0.2);">
+                      <input class="fi" id="advUtmM" placeholder="medium" aria-label="UTM medium" style="padding:10px 12px; font-size:0.9rem; background:rgba(0,0,0,0.2);">
+                      <input class="fi" id="advUtmC" placeholder="campaign" aria-label="UTM campaign" style="padding:10px 12px; font-size:0.9rem; background:rgba(0,0,0,0.2);">
+                  </div>
+              </details>
+
               <!-- Time Scheduling Panel -->
               <div style="background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:25px; box-shadow:0 10px 30px rgba(0,0,0,0.1);">
                   <div style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="const b=document.getElementById('advTimeWrap'); b.style.display=b.style.display==='none'?'block':'none';">
@@ -2157,9 +2181,18 @@ function saveQR(silent = false){
     advSettings.expiry=_ex?_iso(_ex):null; advSettings.passwordProtected=pwdOn;
     // Expiry and schedule travel inside the destination so they work on every device
     let lockedDest=getContent();
-    if(isDynamic && (advSettings.expiry || (advSettings.hasSchedule && (advSettings.schedStart||advSettings.schedEnd)))){
+    const _v=id=>(document.getElementById(id)||{}).value||'';
+    advSettings.rulesRaw={}; ['advIos','advAndroid','advDesktop','advAB','advMaxScans','advFallback','advUtmS','advUtmM','advUtmC'].forEach(i=>{ const v=_v(i).trim(); if(v) advSettings.rulesRaw[i]=v; });
+    const R=advSettings.rulesRaw, rules={};
+    if(R.advIos) rules.ios=R.advIos; if(R.advAndroid) rules.android=R.advAndroid; if(R.advDesktop) rules.desktop=R.advDesktop;
+    if(R.advAB) rules.ab=R.advAB.split('\n').map(s=>s.trim()).filter(Boolean);
+    if(parseInt(R.advMaxScans)>0) rules.max=parseInt(R.advMaxScans);
+    if(R.advFallback) rules.fb=R.advFallback;
+    if(R.advUtmS||R.advUtmM||R.advUtmC) rules.utm={s:R.advUtmS||'',m:R.advUtmM||'',c:R.advUtmC||''};
+    if(isDynamic && (advSettings.expiry || (advSettings.hasSchedule && (advSettings.schedStart||advSettings.schedEnd)) || Object.keys(rules).length)){
         const base=DYNAMIC_QR.decodePayload(lockedDest)||{t:'go',url:lockedDest};
-        lockedDest=DYNAMIC_QR.encodePayload(Object.assign(base,{exp:advSettings.expiry,start:advSettings.hasSchedule?_iso(advSettings.schedStart):null,end:advSettings.hasSchedule?_iso(advSettings.schedEnd):null}));
+        const keep=base.t==='go'?rules:{max:rules.max,fb:rules.fb};
+        lockedDest=DYNAMIC_QR.encodePayload(Object.assign(base,keep,{exp:advSettings.expiry,start:advSettings.hasSchedule?_iso(advSettings.schedStart):null,end:advSettings.hasSchedule?_iso(advSettings.schedEnd):null}));
     }
     if(pwdOn&&pwd){ try{ lockedDest=await DYNAMIC_QR.lock(lockedDest,pwd); }catch(err){ toast('Passcodes need a secure (https) connection.',''); return; } }
 
@@ -2648,6 +2681,7 @@ function loadEditData() {
     const a = q.advSettings || {};
     const set = (i, v) => { const el = document.getElementById(i); if(el && v != null) el.value = v; };
     set('advQrName', a.name); set('advSchedStart', a.schedStart); set('advSchedEnd', a.schedEnd);
+    Object.keys(a.rulesRaw || {}).forEach(k => set(k, a.rulesRaw[k]));
     const hs = document.getElementById('advHasSchedule'); if(hs) hs.checked = !!a.hasSchedule;
     if(a.expiry){ const d = new Date(a.expiry); set('advExpiry', new Date(d - d.getTimezoneOffset()*6e4).toISOString().slice(0,16)); }
     if(a.passwordProtected){ const po = document.getElementById('advPwdOn'); if(po) po.checked = true; const pw = document.getElementById('advPwd'); if(pw) pw.placeholder = 'Re-enter the passcode to keep protection'; _pwdToggle(); }

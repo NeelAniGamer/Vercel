@@ -361,6 +361,8 @@
     // Shared Supabase client (lazy). Works on any page that loads this file.
     getSb: async function () {
       if (window.supabaseClient) {return window.supabaseClient;}
+      for (let i = 0; i < 15 && !window.supabaseClient && document.querySelector('script[src*="col-auth"]'); i++) { await new Promise(r => setTimeout(r, 100)); }
+      if (window.supabaseClient) {return window.supabaseClient;}
       try {
         let cfg = null;
         for (const u of ['config.json', '/config.json']) {

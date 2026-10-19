@@ -65,8 +65,6 @@ Traffic/Cyberpunk/**
 **/scratch/**
 Traffic/src
 Traffic/src/**
-react-src
-react-src/**
 tests
 **/tests/**
 *.test.ts
