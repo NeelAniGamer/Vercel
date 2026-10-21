@@ -5,3 +5,9 @@ dist-electron/
 scratch/
 screen_*.png
 *.log
+Academy.zip
+traffic.db
+shots/
+tools/_shots/
+Traffic/
+analyze_files.js

@@ -2095,6 +2095,8 @@ body.lm .top-nav .brand-logo {
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease;
   line-height: 0;
   text-decoration: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .bmc-floating-badge:hover {
@@ -2118,10 +2120,10 @@ body.nav-lock .bmc-floating-badge {
   border-radius: 10px;
 }
 
-/* Dismiss control for the support badge */
-.bmc-floating-badge {
-  position: relative;
-}
+/* Dismiss control for the support badge.
+   NOTE: do NOT re-declare `position` here. The base rule above sets
+   `position: fixed`; overriding it with `relative` detaches the badge from
+   the viewport and drops it into normal flow at the bottom of <body>. */
 .bmc-dismiss {
   position: absolute;
   top: -6px;
@@ -2196,9 +2198,13 @@ body.nav-lock .bmc-floating-badge {
    LIGHT MODE & COMPONENT ELEVATION PATCHES
    ═══════════════════════════════════════════════════════════════════ */
 
-/* 1. Prevent col-ui.css body.lm h3 !important from killing card hover accent colors */
+/* 1. Prevent col-ui.css body.lm h3 !important from killing card hover accent colors.
+   Accent classes must match the ones actually used in markup:
+   .ci = ion, .ct = teal, .cs = signal, .cp = plasma, .ce = em. */
 body.lm .pc.ci:hover .pname { color: var(--ion, #0e72a0) !important; }
+body.lm .pc.ct:hover .pname,
 body.lm .pc.cg:hover .pname { color: var(--teal, #0a8c7a) !important; }
+body.lm .pc.cs:hover .pname,
 body.lm .pc.ca:hover .pname { color: var(--signal, #b8720a) !important; }
 body.lm .pc.cp:hover .pname { color: var(--plasma, #6f4fe0) !important; }
 body.lm .pc.ce:hover .pname { color: var(--em, #1b9d66) !important; }
@@ -2242,9 +2248,14 @@ body.lm .col-bottom-bar .bbar-item.act svg {
   stroke: #b8720a !important;
 }
 
-/* 4. Hide BMC Floating Badge when Modals or Popups are active */
+/* 4. Hide BMC Floating Badge when Modals or Popups are active.
+   The auth modal is #colAuthModal.col-auth-mo — it is display:none when
+   closed, but while open it is a full-viewport fixed layer with z-index
+   99999, so the badge shows through its 84% backdrop. */
 .mo.open ~ .bmc-floating-badge,
+.col-auth-mo.open ~ .bmc-floating-badge,
 body:has(.mo.open) .bmc-floating-badge,
+body:has(.col-auth-mo.open) .bmc-floating-badge,
 body:has(#colAppPopup.open) .bmc-floating-badge,
 body.modal-lock .bmc-floating-badge {
   opacity: 0 !important;

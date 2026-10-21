@@ -13,7 +13,8 @@ const excludedDirectories = new Set([
   '.freebuff', '.impeccable', '.kilo', '.opencode', '.playwright-mcp',
   '.superpowers', '.vercel', 'android', '.gradle', 'react-src', 'tests',
   'build', 'dist', 'dist-electron', 'dist-web', 'docs', 'electron',
-  'recordings', 'screenshots', 'scripts', 'scratch', 'supabase', 'Cyberpunk', 'output'
+  'recordings', 'screenshots', 'scripts', 'scratch', 'supabase', 'Cyberpunk', 'output',
+  'tools', 'shots', 'research', 'FBX format', 'OBJ format', 'traffic-ts'
 ]);
 
 const excludedFiles = new Set([
@@ -24,7 +25,19 @@ const excludedFiles = new Set([
   'serve.js', 'server.js', 'package.json', 'package-lock.json', 'tsconfig.json',
   'opencode.json', 'skills-lock.json', 'eslint.config.js', 'AdvancedTypingInstructor.exe', 'AdvancedTypingInstructor_Setup.exe',
   'AdvancedTypingInstructor_1.4.0_all.deb', 'AdvancedTypingInstructor-Linux.tar.gz', 'AdvancedTypingInstructor.apk',
-  'CoL_Ecosystem_Comprehensive_Apps_Report.pdf', 'bmcbrand.zip', 'build_col_apk.bat', 'terms.7z'
+  'CoL_Ecosystem_Comprehensive_Apps_Report.pdf', 'bmcbrand.zip', 'build_col_apk.bat', 'terms.7z',
+
+  // Root non-runtime scripts, uncompiled source, loose models, and batch data
+  'add_missing_careers.js', 'append_batch2.py', 'append_batch3.py', 'build_20_careers.py',
+  'merge_batch_to_database.py', 'new_careers_batch.json', 'LiquidGlass.jsx', 'glass-app.jsx',
+  'GLTFLoader.js', 'live_game_core.js', 'lvs.js', 'supabase.js', 'health', 'LICENSE',
+  'book.glb', 'cosmos.glb', 'envelope.glb', 'grid.glb', 'knots.glb', 'panels.glb', 'shield.glb',
+  // Traffic non-runtime scripts, tooling, prototypes, and archives
+  'Academy.zip', 'traffic.db', 'pw_test.js', 'build-electron.js', 'build-three-bundle.js',
+  'run-dev.js', 'serve_local.js', 'capture_screenshots.js', 'generate_skins.js',
+  'brace_tracker.js', 'three-shim.js', 'proc_chunks.js',
+  'proc_road.js', 'proc_terrain.js', 'model-registry.js', 'lod_test.html', 'analyze_files.js',
+  'BUILD_NOTES.md', 'CODEBASE.md', 'MATH-AUDIT.md', 'PROJECT.md', 'CREDITS.md'
 ]);
 
 const excludedFilePatterns = [
@@ -32,9 +45,15 @@ const excludedFilePatterns = [
   /\.(?:db|sqlite|sqlite3)$/i,
   /\.(?:exe|msi|dmg|appimage|pkg)$/i,
   /\.bak$/i,
+  /\.py$/i,
+  /\.jsx$/i,
+  /\.spec$/i,
   /^vite\.config\.(?:ts|mts|cts|js|mjs|cjs)$/i,
   /\.(?:fbx|obj|mtl|blend|blend1|max|3ds|dae|mb|tscn|gd)$/i,
   /\.pdf$/i,
+  /\.(?:zip|7z|tar|gz|rar)$/i,
+  /\.md$/i,
+  /^vitest\.config\.(?:ts|mts|cts|js|mjs|cjs)$/i,
   /\.(?:test|spec)\.[jt]sx?$/i
 ];
 
@@ -49,6 +68,16 @@ const excludedPaths = new Set([
   // dump costs the deployed game nothing. build.js is a DENY-list, which means an
   // unlisted 1.3 GB directory is copied verbatim on every build; this entry is the
   // only thing standing between that and a 1.3 GB deploy artifact.
+  'vercel.json',
+  'traffic-ts',
+  'Terra3D/build',
+  'Terra3D/dist',
+  'Terra3D/app.py',
+  'Terra3D/serve.ps1',
+  'Terra3D/package.json',
+  'Terra3D/vite.config.js',
+  'Terra3D/Terra3D.spec',
+  'Terra3D/Terra3D_Standalone.spec',
   'Traffic/src',
   'Traffic/Models And SFX',
   'Traffic/Models/house_interior',
@@ -69,7 +98,16 @@ const excludedPaths = new Set([
   'Traffic/col-ui.css',
   'Traffic/col-ui.js',
   'Traffic/col-router.js',
-  'Traffic/config.json'
+  'Traffic/config.json',
+  'Traffic/vercel.json',
+  'Traffic/Traffic',
+  'Traffic/tools',
+  'Traffic/research',
+  'Traffic/shots',
+  'Traffic/public',
+  'Traffic/Models/city_pack',
+  'Traffic/Models/kenney_city-pack',
+  'Traffic/Models/musik_school.glb'
 ]);
 
 // 3D assets the browser never requests.

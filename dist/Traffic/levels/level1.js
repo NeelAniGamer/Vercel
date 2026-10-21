@@ -132,7 +132,9 @@ window.LVS.push({
     { kind: 'house', x: 78, z: -40, rotY: -Math.PI / 2, w: 12, d: 10, color: 0xf0d878 },
     { kind: 'house', x: 78, z: 40, rotY: -Math.PI / 2, w: 12, d: 10, color: 0xa8c8a8 },
     { kind: 'house', x: -78, z: 64, rotY: Math.PI / 2, w: 12, d: 10, color: 0xf5e6d3 },
-    { kind: 'house', x: 78, z: 72, rotY: -Math.PI / 2, w: 12, d: 10, color: 0xe0f2fe }
+    { kind: 'house', x: 78, z: 72, rotY: -Math.PI / 2, w: 12, d: 10, color: 0xe0f2fe },
+    // Chai tapri on the NW corner: life at the junction, clear of the kerb, the zebra and the apartment block.
+    { kind: 'shop', x: -18, z: -14, rotY: Math.PI / 2, w: 7, d: 5, h: 3.4, color: 0xf4d58d, awning: 0xb91c1c, text: 'Raju Chai Tapri', sub: 'Cutting Chai • Vada Pav' }
   ],
   roadProblems: [
     { kind: 'potholes', x: -4, z: 62, count: 7, spread: 10 },
@@ -155,14 +157,22 @@ window.LVS.push({
     // Corridor lighting: the bazaar stretch was dark between z=40..100.
     { kind: 'streetlight', x: 12, z: 40, rotY: 0 },
     { kind: 'streetlight', x: -12, z: 70, rotY: Math.PI },
-    { kind: 'streetlight', x: 12, z: 96, rotY: 0 }
+    { kind: 'streetlight', x: 12, z: 96, rotY: 0 },
+    // Story set-dressing. The memorial stands on the east kerb beside the stop line, so the player reads it while
+    // waiting at the red. Last night's rain survives as puddles at the kerb, and Shanti Galli gets lamps so the walk
+    // from home to the junction is lit.
+    { kind: 'signboard', x: 13, z: -11, rotY: -Math.PI / 2, text: 'SI Vikram Sawant', sub: 'He held the line • 3:14 AM' },
+    { kind: 'signboard', x: 12, z: -36, rotY: -Math.PI / 2, text: 'Mumbai Traffic Police', sub: 'Signal Ahead • Stop At The White Line' },
+    { kind: 'puddle', x: 11.5, z: -26, r: 2 },
+    { kind: 'streetlight', x: -52, z: -122, rotY: Math.PI },
+    { kind: 'streetlight', x: -52, z: -84, rotY: Math.PI }
   ],
   story: {
     title: 'The White Line',
     // The film lives in story/campaign.js and is staged on its own map in
     // story/stage.js. This is the playable half: same junction, same syllabus,
-    // six hours later, with a different reason to obey the light.
-    briefing: 'Six hours after Vikram Sawant was shot at this signal, his partner Insp. Arjun Kadam parks the jeep he is not supposed to be driving and opens the notebook Vikram kept. Entry one: Mrs. Iyer, Shanti Galli, ten-fifteen, temple. She sees everything. Your mission today is simpler and stricter: carry Papa\u2019s dabba from Shanti Galli to Sharma General Stores before 1 PM, and obey every light on the way — because the last man who did not is lying under the junction.',
+    // three hours later, with a different reason to obey the light.
+    briefing: 'Three hours after Vikram Sawant was shot at this signal, his partner Insp. Arjun Kadam parks the jeep he is not supposed to be driving and opens the notebook Vikram kept. Entry one: Mrs. Iyer, Shanti Galli, ten-fifteen, temple. She sees everything. Your mission today is simpler and stricter: carry Papa\u2019s dabba from Shanti Galli to Sharma General Stores before 1 PM, and obey every light on the way — because the last man who did not is lying under the junction.',
     storyBeat: 'Vikram ka notebook. Pehla entry: Mrs. Iyer, Shanti Galli, 10:15, mandir. Usne likha tha — "Sab kuch dekhti hai." Tum uss signal par khel rahe ho jahaan Vikram mar gaya. Sab rules abhi bhi wahi hain. Bas wajah badal gayi hai.',
     dialogue: [
       // ── FILM DIALOGUE (Prologue) ─────────────────────────────────────────
@@ -191,13 +201,18 @@ window.LVS.push({
       // Radio dispatch and colony guidance as the player begins their route from Shanti Galli
       { triggerZ: -128, speaker: 'Havildar Desai (Radio)', line: '"All units on colony patrol: Linking Road signal junction is monitored. Observe the white line."' },
       { triggerZ: -100, speaker: 'Havildar Desai (Radio)', line: '"Approaching Colony Cross Lane: stay in your lane, signal your turn left onto Linking Road."' },
+      // The rival introduces himself early, so the race is a story thread rather than a surprise at the junction.
+      { triggerZ: -64, speaker: 'Aarush', line: '"Oye, car wale! Signal tak pehle kaun pahunchta hai — dekhte hain! Peeche mat reh jaana!"' },
       // Desai RED fires BEFORE Ansh honks: the setup ("the line is the law")
       // must land before the temptation (the horn).
       { triggerZ: -34, speaker: 'Havildar Desai (Radio)', line: '"All units: Linking Road junction RED. White line ke peeche ruko — ek line hai, koi shortcut nahi."' },
       { triggerZ: -30, speaker: 'Ansh Taxi', line: '"HORN HORN! Arey bhai chalo na! Mera meter down hai! (Ignore him — tumhe challan milega, use nahin!)"' },
       { triggerZ: -4, speaker: 'Aarush', line: '"Heh! Tum signal pe so raho, main race jeet raha hoon! Pakad ke dikhao!"' },
       { triggerZ: 24, speaker: 'Havildar Desai (Radio)', line: '"GREEN! Ab niklo — dheere, lane mein. Bazaar stretch mein tempo double-parked hai, left se niklo."' },
+      // Payoff for the horn: once the light is green, Ansh gets the last word.
+      { triggerZ: 36, speaker: 'Ansh Taxi', line: '"Arre wah! Aakhir chale! Itni der mein toh meri meter ne bhi ghar bana liya hota!"' },
       { triggerZ: 60, speaker: 'Shamika (Kirana Store)', line: '"Arre sambhal ke! Yahan roz tempo khada rehta hai aur gadde (potholes) bhi hain. Left lane pakdo!"' },
+      { triggerZ: 80, speaker: 'Havildar Desai (Radio)', line: '"Bazaar Road aa rahi hai. Sharma General Stores baayein haath par — dheere, line mein, aur dabba seedha counter par."' },
       { triggerZ: 96, speaker: 'Mrs. Iyer', line: '"Vikram bhai har roz isi signal par rukta tha. Har roz. Tum bhi ruko."' },
       { triggerZ: 98, speaker: 'Mrs. Iyer', line: '"Maine Fortuner dekha, Arjun. Aur piche baithe aadmi ko bhi."' },
       { triggerZ: 100, speaker: 'Insp. Arjun Kadam', line: '"Kaun tha woh, Mrs. Iyer?!"' },
@@ -222,19 +237,19 @@ window.LVS.push({
     offHi: 'लाल बत्ती काटना'
   },
   theory:
-    '<h2>Red Light Patience</h2><p>12:40 ki dhoop mein Papa ka dabba lekar tum Shanti Galli se nikle ho. Linking Road ke bade signal par lunch-hour jam hai — zebra crossing pe ek family cross kar rahi hai: bachche, parents, sab. Peeche Ansh taxi horn pe horn bajaa raha hai, aur bagal mein ek red-shirt biker red light kaatne ki taiyaari mein hai.</p><p>Solid white line ke peechhe ruk jao jab tak light green na ho aur crossing bilkul clear na ho. Red signal kaatna MV Act Section 119 ke under ₹500 se ₹2000 tak ka fine hai aur license bhi kat sakta hai!</p><p>Yaad rakho — Ansh ki awaaz sunkar ghabrao mat (tumhe challan milega, use nahi!), aur uss biker jaisa bilkul mat bano — woh light kaatega toh Havaldar Desai uska challan tumhare saamne likhenge!</p>',
+    '<h2>Red Light Patience</h2><p>Subah ki dhoop mein Papa ka dabba lekar tum Shanti Galli se nikle ho. Linking Road ke bade signal par morning rush ka jam hai — zebra crossing pe ek family cross kar rahi hai: bachche, parents, sab. Peeche Ansh taxi horn pe horn bajaa raha hai, aur bagal mein ek red-shirt biker red light kaatne ki taiyaari mein hai.</p><p>Solid white line ke peechhe ruk jao jab tak light green na ho aur crossing bilkul clear na ho. Red signal kaatna MV Act Section 119 ke under ₹500 se ₹2000 tak ka fine hai aur license bhi kat sakta hai!</p><p>Yaad rakho — Ansh ki awaaz sunkar ghabrao mat (tumhe challan milega, use nahi!), aur uss biker jaisa bilkul mat bano — woh light kaatega toh Havaldar Desai uska challan tumhare saamne likhenge!</p>',
   pract: 'Exit home, enter your car, wait at the red light. Let all pedestrians cross. Ignore the honking taxi. Do not copy the signal-jumping biker. Dodge potholes, pass the parked tempo, deliver the dabba.',
   mode: 'practical',
   themeType: 'signal_jump',
   tasks: [
     { id: 'exit_home', text: 'Step Out & Enter Your Parked Car [F]', type: 'enter_vehicle', done: false },
     { id: 'reach_signal', text: 'Join The Queue At Linking Road Signal', type: 'reach', target: 'checkpoint_3', done: false },
-    { id: 'wait_red', text: 'Wait At The Red Light Behind White Line', type: 'stop', target: 'red_signal', done: false },
+    { id: 'wait_red', text: 'Hold The White Line, Like Vikram Did', type: 'stop', target: 'red_signal', done: false },
     { id: 'let_cross', text: 'Let The Pedestrians Cross Fully', type: 'avoid', target: 'pedestrian', done: false },
     { id: 'ignore_honk', text: 'Do Not Honk Back (Patience)', type: 'avoid', target: 'honk', done: false },
     { id: 'move_green', text: 'Cross The Junction Only On Green', type: 'reach', target: 'green_light', done: false },
     { id: 'dodge_market', text: 'Clear Potholes & Parked Tempo In Bazaar', type: 'reach', target: 'checkpoint_6', done: false },
-    { id: 'deliver_dabba', text: 'Park Outside Sharma General Stores', type: 'reach', target: 'finish', done: false }
+    { id: 'deliver_dabba', text: 'Deliver The Dabba: Park Outside Sharma General Stores', type: 'reach', target: 'finish', done: false }
   ],
   // The `stage_*` and `city_*` groups are the "free city pack" props staged by
   // scripts/stage_assets.py. They are requested HERE rather than in story/stage.js

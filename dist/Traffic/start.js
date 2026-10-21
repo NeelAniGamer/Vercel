@@ -507,35 +507,35 @@ window.loadLevelAssets = function (keys, callback) {
 function preloadModels(callback) {
   if (typeof THREE === 'undefined' || typeof THREE.GLTFLoader === 'undefined') { callback(); return }
 
+  // Register embedded models (auto, bus, lambo, env) into ASSET_MANIFEST so they are loadable on demand
+  if (window.MODELS) {
+    Object.keys(window.MODELS).forEach(function (key) {
+      if (!window.ASSET_MANIFEST[key]) {
+        window.ASSET_MANIFEST[key] = { path: window.MODELS[key], fmt: 'glb' };
+      }
+    });
+  }
 
-  const ld = document.getElementById('loading-screen')
-  const pctEl = document.getElementById('loading-pct')
-  const barEl = document.getElementById('loading-bar')
-  const statusEl = document.getElementById('loading-status')
+  const urlParams = new URLSearchParams(window.location.search);
+  const lvId = urlParams.get('level') || urlParams.get('lv') || localStorage.getItem('traffic_lv') || '1';
+  const veh = urlParams.get('veh') || localStorage.getItem('traffic_veh');
 
+  let curLv = null;
+  if (Array.isArray(window.LVS)) {
+    curLv = window.LVS.find(function (l) { return String(l.id) === String(lvId); });
+  } else if (window.LVS && typeof window.LVS === 'object') {
+    curLv = window.LVS[lvId] || window.LVS['level' + lvId];
+  }
 
-  window.loadLevelAssets(window.CORE_ASSETS, () => {
-
-    if (window.MODELS) {
-      const loader = window._attachDraco(new THREE.GLTFLoader())
-      Object.keys(window.MODELS).forEach((key) => {
-        if (window.MODELS[key] && !window.PRELOADED_MODELS[key]) {
-          try {
-            loader.load(window.MODELS[key], (gltf) => {
-              gltf.scene.traverse((child) => {
-                if (child.isMesh) { child.castShadow = true; child.receiveShadow = true; if (child.material) { child.material.roughness = 0.8; child.material.metalness = 0.1 } }
-              })
-              gltf.scene.scale.set(4.5, 4.5, 4.5)
-              window.PRELOADED_MODELS[key] = gltf.scene
-            }, undefined, (err) => console.warn('Failed to load base64 model:', key, err))
-          } catch(e) {
-            console.error('SYNC Error parsing base64 for', key, e);
-          }
-        }
-      })
+  // Only preload the assets required for the target level + active vehicle
+  const assetsToLoad = (curLv && Array.isArray(curLv.assets)) ? [...curLv.assets] : ['car'];
+  if (veh && (window.ASSET_MANIFEST[veh] || (window.MODELS && window.MODELS[veh]))) {
+    if (!assetsToLoad.includes(veh)) {
+      assetsToLoad.push(veh);
     }
-    callback()
-  })
+  }
+
+  window.loadLevelAssets(assetsToLoad, callback);
 }
 
 window.confetti = {
@@ -748,17 +748,27 @@ preloadModels(() => {
         function _redirectToAcademy() {
           if (_drivingRedirected) {return}
           _drivingRedirected = true
-          console.warn('[Driving] Canvas timeout or level launch issue')
+          console.warn('[Driving] Canvas timeout or level launch issue - returning to the Academy level list')
+          // The safety net this function implements: if the scene never came
+          // up (a failed asset load, a thrown level build, a lost WebGL
+          // context), the player was left on a blank canvas with no way out.
+          // The engine's own comment documents the intended behaviour:
+          // "start.js's generic 15-18s 'canvas never turned on' safety net
+          // eventually fired and redirected to Academy.html?screen=levels".
+          try { window.location.href = 'Academy.html?screen=levels' } catch {}
         }
 
         const _startTime = Date.now()
-        const _drivingTimeout = setTimeout(function _checkCanvasTimeout() {
+        // The watchdog re-arms itself, so the handle has to be reassigned on
+        // every re-arm - otherwise `clearTimeout(_drivingTimeout)` cancels
+        // the id of a timer that has already fired and the poll keeps running.
+        let _drivingTimeout = setTimeout(function _checkCanvasTimeout() {
           const gc = document.getElementById('gc')
           const ls = document.getElementById('loading-screen')
           const isLoading = ls && ls.style.display !== 'none' && !ls.classList.contains('fade-out')
           if (!gc || !gc.classList.contains('on')) {
             if (isLoading || Date.now() - _startTime < 30000) {
-              setTimeout(_checkCanvasTimeout, 500)
+              _drivingTimeout = setTimeout(_checkCanvasTimeout, 500)
             } else {
               _redirectToAcademy()
             }

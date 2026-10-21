@@ -9,7 +9,12 @@ const WalletHistory = {
   getAll() {
     try {
       const raw = localStorage.getItem(this.STORAGE_KEY);
-      return raw ? JSON.parse(raw) : [];
+      if (!raw) {return [];}
+      const parsed = JSON.parse(raw);
+      // A stored value that parses but is not an array would make
+      // `transactions.push` throw inside log() - in the middle of the
+      // level-reward flow.
+      return Array.isArray(parsed) ? parsed : [];
     } catch (e) {
       return [];
     }
@@ -35,7 +40,10 @@ const WalletHistory = {
       type,
       category,
       amount: Math.abs(amount),
-      balance: (window.S && window.S.wallet) || 50000,
+      // A wallet of 0 is a real balance, not a missing one: the old `|| 50000`
+      // fallback claimed the student had fifty thousand rupees in the history
+      // row exactly when they were broke.
+      balance: (window.S && typeof window.S.wallet === 'number') ? window.S.wallet : 0,
       meta,
       timestamp: Date.now()
     };

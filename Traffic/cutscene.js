@@ -90,7 +90,7 @@
     '#cutscene-root .cs-skip-btn:hover{background:rgba(22,33,58,.98);border-color:#5ed3f0;transform:scale(1.05);box-shadow:0 6px 28px rgba(94,211,240,.5);}' +
     '#cutscene-root .cs-skip-btn:active{transform:scale(.97);}' +
     '#cutscene-root .cs-skip-icon{font-size:14px;color:#5ed3f0;}' +
-    'body.cs-playing #hud,body.cs-playing #hudbar,body.cs-playing #hwrap,body.cs-playing #player-hud-card,body.cs-playing #tasks-container,body.cs-playing #objective-overlay,body.cs-playing #kid-pedals,body.cs-playing #kid-steer,body.cs-playing #enter-vehicle-btn,body.cs-playing .hud-dashboard-card,body.cs-playing #mini-map,body.cs-playing #minimap,body.cs-playing .mobile-controls,body.cs-playing #play-overlay,body.cs-playing .nav-login-btn,body.cs-playing .lp-modal,body.cs-playing #game-briefing,body.cs-playing #gta-briefing-modal,body.cs-playing #gta-mission-intro,body.cs-playing .gta-intro-overlay,body.cs-playing #daily-bonus-modal,body.cs-playing [class*="daily-bonus"],body.cs-playing .action-btn{display:none !important;}' +
+    'body.cs-playing #hud,body.cs-playing #hudbar,body.cs-playing #hwrap,body.cs-playing #player-hud-card,body.cs-playing #top-right-hud-stack,body.cs-playing #tasks-container,body.cs-playing #task-tracker,body.cs-playing #objective-overlay,body.cs-playing #challan-summary-box,body.cs-playing #challan-stack,body.cs-playing #cockpit-drive-cluster,body.cs-playing #speed-ctrl,body.cs-playing #gp,body.cs-playing #spgauge,body.cs-playing #boostgauge,body.cs-playing #civic-controls,body.cs-playing #dn-clock,body.cs-playing #hud-ai-synth-btn,body.cs-playing #hud-rd-btn,body.cs-playing #hud-settings-btn,body.cs-playing #mobile-pause-btn,body.cs-playing #camera-joystick,body.cs-playing #kid-pedals,body.cs-playing #kid-steer,body.cs-playing #enter-vehicle-btn,body.cs-playing .hud-dashboard-card,body.cs-playing #mini-map,body.cs-playing #minimap,body.cs-playing #mmc,body.cs-playing #mobile-controls,body.cs-playing .mobile-controls,body.cs-playing #tc,body.cs-playing #play-overlay,body.cs-playing .nav-login-btn,body.cs-playing .lp-modal,body.cs-playing #game-briefing,body.cs-playing #gta-briefing-modal,body.cs-playing #gta-mission-intro,body.cs-playing .gta-intro-overlay,body.cs-playing #daily-bonus-modal,body.cs-playing [class*="daily-bonus"],body.cs-playing .action-btn,body.cs-playing #phone-gps,body.cs-playing #phone-gps-btn,body.cs-playing #sig-ind,body.cs-playing #da,body.cs-playing #ow{display:none !important;}' +
     '@media (max-width:480px){#cutscene-root .cs-title{letter-spacing:.1em;font-size:clamp(13px,3.8vw,18px);padding:0 14px;top:34%;text-wrap:balance;}}' +
     '@media (max-width:480px){#cutscene-root .cs-skip-btn{padding:8px 14px;font-size:11px;right:12px;top:max(10px,calc(6.5vh + 8px));}}' +
     '@media (max-width:480px){#cutscene-root .cs-transceiver{bottom:calc(6.5vh + 10px);padding:10px 14px;gap:10px;}}';
@@ -108,38 +108,11 @@
   var NEVER_HIDE = { 'gc': 1, '3c': 1, 'cutscene-root': 1, 'cutscene-style': 1 };
 
   function hideGameUI() {
-    var saved = [];
-    var nodes;
-    try { nodes = document.body.querySelectorAll('*'); } catch (e) { return saved; }
-    for (var i = 0; i < nodes.length; i++) {
-      var el = nodes[i];
-      if (NEVER_HIDE[el.id]) { continue; }
-      if (el.id === 'cutscene-root' || (el.closest && el.closest('#cutscene-root'))) { continue; }
-      var cs;
-      try { cs = getComputedStyle(el); } catch (e2) { continue; }
-      if (cs.position !== 'fixed' && cs.position !== 'absolute') { continue; }
-      var z = parseInt(cs.zIndex, 10);
-      if (!(z >= 40)) { continue; }
-      saved.push({
-        el: el,
-        prevDisplay: el.style.getPropertyValue('display'),
-        prevPriority: el.style.getPropertyPriority('display'),
-        prevComputed: (cs.display !== 'none') ? cs.display : ''
-      });
-    }
-    enforceHUD(saved);
-    return saved;
+    return []; // Handled zero-cost by CSS rule `body.cs-playing ... { display: none !important; }`
   }
 
   function enforceHUD(saved) {
-    for (var i = 0; i < (saved || []).length; i++) {
-      var s = saved[i];
-      try {
-        if (!s.el || !s.el.isConnected) { continue; }
-        if (getComputedStyle(s.el).display === 'none') { continue; }
-        s.el.style.setProperty('display', 'none', 'important');
-      } catch (e) {}
-    }
+    // No-op: avoids 60fps getComputedStyle() layout thrashing
   }
 
   function restoreGameUI(saved) {
@@ -539,15 +512,21 @@
           // tinted. Gameplay traffic keeps the randomness it wants.
           mesh = bv ? bv(d.type || 'car', d.color == null ? 0xffffff : d.color, { exact: true, tintAll: true }) : null;
           if (mesh && (d.id === 'vikram' || d.withRider) && typeof window._buildCutsceneRider === 'function') {
-            var rider = window._buildCutsceneRider();
+            try {
+              if (mesh.userData && mesh.userData.rider) {
+                mesh.remove(mesh.userData.rider);
+                mesh.userData.rider = null;
+              }
+            } catch (eRiderRem) {}
+            var rider = window._buildCutsceneRider(d);
             if (rider) {
               // Seated on the saddle, not standing on the pegs: the old mark
               // put feet at y=0.42 and the crane read a man standing ON the bike.
               // The guard-variant rig is also squashed to a seated crouch —
               // there is no sitting clip, and a standing rider breaks every
               // wide shot he is in.
-              rider.position.set(0, 0.12, -0.05);
-              rider.scale.set(0.92, 0.62, 0.95);
+              rider.position.set(0, 0.42, -0.08);
+              rider.scale.setScalar(0.92);
               mesh.add(rider);
               mesh.userData = mesh.userData || {};
               mesh.userData.rider = rider;
@@ -616,10 +595,10 @@
                 // Box centre expressed in the mesh's own local frame, so the lamp
                 // offsets survive whatever scale and rotation the model carries.
                 var lc = mesh.worldToLocal(lCt.clone());
-                var hx = lSz.x * 0.34;            // lateral, inboard of the flanks
-                var fz = lc.z + lSz.z * 0.47;     // just proud of the nose
-                var bz = lc.z - lSz.z * 0.47;     // just proud of the tail
-                var ly = lc.y + lSz.y * 0.30;     // bumper height, roughly
+                var hx = lSz.x * 0.30;            // Inboard of the wheel arches
+                var fz = lc.z + lSz.z * 0.48;     // Front bumper face
+                var bz = lc.z - lSz.z * 0.48;     // Rear tailboard face
+                var ly = lc.y - lSz.y * 0.06;     // Bumper/fender height (NOT roofline!)
 
                 var headMat = new THREE.MeshBasicMaterial({ color: 0xfff3d6 });
                 var fHead = new THREE.Mesh(new THREE.BoxGeometry(lSz.x * 0.16, lSz.y * 0.07, 0.06), headMat);
@@ -667,27 +646,12 @@
               // ahead and would otherwise stretch the Box3 to 23 m and strand the
               // seat math. The bust itself is ~1.4 tall, so it is scaled to fit
               // under a 1.7 m roofline.
-              try {
-                mesh.updateMatrixWorld(true);
-                var dBox = new THREE.Box3();
-                mesh.traverse(function (o) { if (o.isMesh) { try { dBox.expandByObject(o); } catch (eM) {} } });
-                var dSz = new THREE.Vector3(); dBox.getSize(dSz);
-                var dCt = new THREE.Vector3(); dBox.getCenter(dCt);
-                var dlc = mesh.worldToLocal(dCt.clone());
-                var dMinL = mesh.worldToLocal(dBox.min.clone());
-                driver.scale.setScalar(0.68);
-                driver.position.set(
-                  dlc.x - dSz.x * 0.16,
-                  dMinL.y + dSz.y * 0.12,
-                  dlc.z + dSz.z * 0.02
-                );
-              } catch (eDriverSeat) {
-                try { driver.scale.setScalar(0.68); } catch (eS) {}
-                driver.position.set(0, 0.15, 0.2);
-              }
+              driver.scale.setScalar(0.82);
+              driver.position.set(0, 0.05, 0.1);
               mesh.add(driver);
               mesh.userData = mesh.userData || {};
               mesh.userData.driver = driver;
+              driver.visible = true;
               driver.visible = false;
               // The bust only belongs in interior/dialogue shots (prologue idx 3-5):
               // in exterior two-handers it reads as a black box floating off
@@ -937,8 +901,8 @@
 
     // Per-shot OSD text, resolved once on entry rather than every frame.
     if (state.fx) {
-      if (ov.osdClock && state.osdText) { ov.osdClock.textContent = state.osdText; }
-      if (ov.osdTc && state.osdTcText) { ov.osdTc.textContent = state.osdTcText; }
+      if (ov.osdClock && state.osdText != null) { ov.osdClock.textContent = state.osdText; }
+      if (ov.osdTc && state.osdTcText != null) { ov.osdTc.textContent = state.osdTcText; }
       if (ov.osdGps && state.fx.osdGps) { ov.osdGps.textContent = state.fx.osdGps; }
       if (ov.osdUnit && state.fx.osdUnit) { ov.osdUnit.textContent = state.fx.osdUnit; }
       if (ov.osdBanner && state.fx.osdBanner) { ov.osdBanner.textContent = state.fx.osdBanner; }
@@ -1069,7 +1033,10 @@
     var fx = {
       vig: act && act.vig != null ? act.vig : 0.34,
       scan: act && act.scan != null ? act.scan : 0.12,
-      lensRain: (act && act.rain) ? 0.85 : 0,
+      // The act's own authored lens-rain weight. It was hard-coded to 0.85
+      // for any rainy act, so the 3:14am cold open - authored at 0.35 - was
+      // more than twice as obscured as intended.
+      lensRain: (act && act.lensRain != null) ? act.lensRain : ((act && act.rain) ? 0.85 : 0),
       wiper: !!(act && act.rain)
     };
     if (!shot) { return fx; }
@@ -1091,33 +1058,31 @@
   // sun puts the exact faces the camera needs into full shadow and a midday
   // scene reads as night. This lifts shadowed surfaces WITHOUT touching the sun,
   // so the lighting the player drives under is unchanged.
-  function addFillLight(game) {
+  function addFillLight(game, firstShot) {
     try {
-      var isNight = !!(game && game.mapCfg && (game.mapCfg.isNight || game.mapCfg.mode === 'night'));
+      var isNight = !!(
+        (firstShot && firstShot.act === 'night') ||
+        (game && game._stageAct === 'night') ||
+        (game && game.mapCfg && (game.mapCfg.isNight || game.mapCfg.mode === 'night'))
+      );
       var lights = [];
       if (isNight) {
-        // Balanced cinematic Mumbai night: luminous sky ambient fill, clear cool moon key, warm sodium bounce.
-        // Kept LOW on purpose: the stage act already lights the set, and this
-        // stack used to total ~1.0 ambient and wash the film to daylight gray.
-        var ambNight = new THREE.AmbientLight(0x405575, 0.22);
-        var moonKey = new THREE.DirectionalLight(0x93c5fd, 0.35);
+        var ambNight = new THREE.AmbientLight(0x1e293b, 0.14);
+        var moonKey = new THREE.DirectionalLight(0x60a5fa, 0.22);
         moonKey.position.set(20, 45, 15);
-        var sodiumBounce = new THREE.DirectionalLight(0xf59e0b, 0.25);
+        var sodiumBounce = new THREE.DirectionalLight(0xf59e0b, 0.18);
         sodiumBounce.position.set(-20, 25, -20);
         game.scene.add(ambNight);
         game.scene.add(moonKey);
         game.scene.add(sodiumBounce);
         lights.push(ambNight, moonKey, sodiumBounce);
       } else {
-        var amb = new THREE.AmbientLight(0xdde8f8, 0.55);
-        var key = new THREE.DirectionalLight(0xfff0e2, 0.65);
+        var amb = new THREE.AmbientLight(0xdde8f8, 0.35);
+        var key = new THREE.DirectionalLight(0xfff0e2, 0.45);
         key.position.set(20, 36, 12);
-        var fill = new THREE.DirectionalLight(0xa5c4f5, 0.35);
-        fill.position.set(-30, 40, -40);
         game.scene.add(amb);
         game.scene.add(key);
-        game.scene.add(fill);
-        lights.push(amb, key, fill);
+        lights.push(amb, key);
       }
       return lights;
     } catch (e) { return []; }
@@ -1311,7 +1276,7 @@
         }, ms));
       });
 
-      ACTIVE.fillLights = addFillLight(game);
+      ACTIVE.fillLights = addFillLight(game, script[0]);
 
       // Hide gameplay while the film owns the frame.
       game.playing = false;
@@ -1367,7 +1332,19 @@
     }
   }
 
-  function applyShot(p) {
+  /**
+   * Place the shot.
+   *
+   * `p` is the CAMERA's progress - the shot's progress compressed into its
+   * move window, so the move completes by (dur - hold) and the camera then
+   * sits at rest for the hold. `totalP` is the shot's own progress, and it
+   * is what the timed one-shots read: a sting cued at 30% of the frame must
+   * land at 30% of the FRAME, not at 30% of the camera's move (which is
+   * earlier in the shot by the hold fraction). Timed cues used to read the
+   * move progress, so in every shot with a hold they fired early - the body
+   * thud landed before the camera had finished descending onto the body.
+   */
+  function applyShot(p, totalP) {
     if (!ACTIVE) { return; }
     var shot = ACTIVE.script[ACTIVE.idx];
     if (!shot) { return; }
@@ -1420,8 +1397,8 @@
     if (shot.aftermath) {
       if (ACTIVE.cast && ACTIVE.cast.actors && ACTIVE.cast.actors.vikram) {
         var vBike = ACTIVE.cast.actors.vikram;
+        vBike.position.set(2.2, 0.22, -12.7);
         vBike.rotation.z = Math.PI / 2.3;
-        vBike.position.y = 0.22;
         if (vBike.userData && vBike.userData.rider) {
           vBike.userData.rider.visible = false;
         }
@@ -1434,11 +1411,12 @@
           ACTIVE._fallenOfficerMesh = fo;
         }
       }
-    } else if (ACTIVE.cast && ACTIVE.cast.actors && ACTIVE.cast.actors.vikram) {
+    } else {
+      if (ACTIVE.cast && ACTIVE.cast.actors && ACTIVE.cast.actors.vikram) {
         var vBike2 = ACTIVE.cast.actors.vikram;
         if (vBike2.rotation.z !== 0) {
           vBike2.rotation.z = 0;
-          vBike2.position.y = 0;
+          vBike2.position.set(3.6, 0, -12.5);
           if (vBike2.userData && vBike2.userData.rider) {
             vBike2.userData.rider.visible = true;
           }
@@ -1448,6 +1426,7 @@
         try { ACTIVE.game.scene.remove(ACTIVE._fallenOfficerMesh); } catch (e) {}
         ACTIVE._fallenOfficerMesh = null;
       }
+    }
 
     // ── Aftermath-only actors ──────────────────────────────────────────
     // Toggled on EVERY shot, not just on the transition, because the cast
@@ -1473,8 +1452,7 @@
           try {
             var drv = aud && aud.driver;
             if (drv) {
-              var showFig = (ACTIVE.idx === 3 || ACTIVE.idx === 4 || ACTIVE.idx === 5);
-              drv.visible = showFig;
+              drv.visible = !shot.aftermath;
             }
           } catch (eOSV) {}
 
@@ -1520,9 +1498,10 @@
 
     // Sub-shot audio cues (a sting 40% into a shot) are evaluated from the
     // tick, because the shot's own start already fired in onShotEnter.
+    // They read the shot's TOTAL progress, not the camera's move progress.
     try {
       if (window.StoryAudio && window.StoryAudio.applyTimed) {
-        window.StoryAudio.applyTimed(shot, p);
+        window.StoryAudio.applyTimed(shot, (totalP == null ? p : totalP));
       }
     } catch (e3) {}
   }
@@ -1602,6 +1581,24 @@
       try {
         if (explicit) {
           show = explicit.indexOf(t.id) >= 0;
+        } else if (speaker) {
+          // The shot speaks FOR this actor, so that actor's nameplate shows.
+          // This branch was missing: the campaign declares no shot with
+          // `tagIds`, so `explicit` was always null and every nameplate
+          // stayed hidden - the three named characters never had a label on
+          // screen. The sprite carries the label text (tagActor stores it as
+          // userData.tagText), so match the speaker against it.
+          var tagText = (t.sprite.userData && t.sprite.userData.tagText) ? String(t.sprite.userData.tagText) : '';
+          if (tagText) {
+            var norm = function (s) { return String(s || '').toLowerCase().replace(/\s*\(.*?\)\s*/g, ' ').trim(); };
+            var sp = norm(speaker);
+            var tt = norm(tagText);
+            show = (sp === tt) ||
+              (sp.indexOf(tt) >= 0) ||
+              (tt.indexOf(sp) >= 0) ||
+              // "Insp. Arjun Kadam" vs "Arjun Kadam"
+              (sp.split(' ').pop() === tt.split(' ').pop());
+          }
         }
       } catch (e) {}
       try { t.sprite.visible = show; } catch (e2) {}
@@ -1764,7 +1761,6 @@
     // Respect a pause. `performance.now()` keeps advancing while paused, so
     // without this the film plays straight through a paused game.
     if (game && game.pause) { return true; }
-    try { enforceHUD(ACTIVE.hiddenUI); } catch (e) {}
     // Clamp only what feeds character animation, so a long hitch does not
     // teleport a walking actor.
     ACTIVE._dt = Math.min(Math.max(frameDt, 0.001), 0.1);
@@ -1834,7 +1830,7 @@
       // already stopped — which is what a hold is FOR: something happens, then the
       // frame stops moving and lets it.
       var moveFrac = shot._moveFrac || 1;
-      applyShot(moveFrac > 0 ? Math.min(1, p / moveFrac) : 1);
+      applyShot(moveFrac > 0 ? Math.min(1, p / moveFrac) : 1, p);
       updateOverlay(shot, p > 1 ? 1 : p, ACTIVE);
 
       // Step cast characters (idle breathing, blinking, joint kinematics)
@@ -1867,14 +1863,18 @@
 
       // Step falling monsoon rain particles dynamically
       if (game && game.scene) {
-        var rainMesh = game.scene.getObjectByName('stage-rain');
+        var rainMesh = game._stageRain || game.scene.getObjectByName('stage-rain');
         if (rainMesh && rainMesh.geometry && rainMesh.geometry.attributes && rainMesh.geometry.attributes.position) {
           var posAttr = rainMesh.geometry.attributes.position;
           var arr = posAttr.array;
           var rainSpeed = ACTIVE._dt * 42;
+          // The rain column is 46m tall (cinematics.js buildRain), so the
+          // wrap has to add 46 back - adding 38 collapsed the whole
+          // population into the lower 38m and the top of the column visibly
+          // emptied over the first seconds of the cold open.
           for (var ri = 1; ri < arr.length; ri += 3) {
             arr[ri] -= rainSpeed;
-            if (arr[ri] < 0) { arr[ri] += 38; }
+            if (arr[ri] < 0) { arr[ri] += 46; }
           }
           posAttr.needsUpdate = true;
         }

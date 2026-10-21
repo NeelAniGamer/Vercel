@@ -262,10 +262,15 @@
       // only thing keeping the eye in the middle of the frame.
       night: {
         sky: 0x162438,
-        ambient: 0.46,
+        // The night act must stay DARKER than the day act. It used to carry
+        // the day's ambient (0.46) with the comment "lights stay dark", and
+        // then a 0.9 exposure grade on top - so the 3:14am cold open read as
+        // a flat grey overcast day. The house rule for the film is ambient
+        // ~0.30 and sun ~0.38.
+        ambient: 0.30,
         hemiSky: 0x6486b4,
         hemiGround: 0x323e4e,
-        sun: 0.42,
+        sun: 0.38,
         sunPos: [25, 60, 20],
         fogNear: 150,
         fogFar: 900,
@@ -293,12 +298,15 @@
         wet: false,
         vig: 0.26,
         scan: 0.05,
-        lensRain: 0
+        lensRain: 0,
+        // Explicit: without it the night's 0.9 grade stayed in force for the
+        // whole day act and the handover to gameplay visibly snapped.
+        exposure: 0.60
       },
       // The dawn beat. Not cosmetic: the cold open is 3:14am and the first
-      // playable beat is six hours later, so the film needs a light that belongs
+      // playable beat is about three hours later, so the film needs a light that belongs
       // to 6am specifically. Reusing `day` for both made the handover read as a
-      // time jump of hours rather than of six hours, and a low sun raking across
+      // time jump of hours rather than of three hours, and a low sun raking across
       // wet tarmac is the shot that sells "it is going to be a hot day".
       dawn: {
         sky: 0x6f86a8,
@@ -313,7 +321,8 @@
         wet: false,
         vig: 0.34,
         scan: 0.08,
-        lensRain: 0
+        lensRain: 0,
+        exposure: 0.60
       }
     })
   };

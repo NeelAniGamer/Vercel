@@ -173,6 +173,7 @@
 
   // ── Shared materials (created once per build) ─────────────────────────────
   function mats() {
+    if (mats._cache) { return mats._cache; }
     var m = {
       wallWarm: new THREE.MeshLambertMaterial({ color: 0xf5e6d3 }),
       wallTrim: new THREE.MeshLambertMaterial({ color: 0xffffff }),
@@ -235,6 +236,10 @@
       helipadMat: new THREE.MeshLambertMaterial({ map: helipadTex() }),
       courtMat: new THREE.MeshLambertMaterial({ map: courtTex() })
     };
+    Object.keys(m).forEach(function (k) {
+      if (m[k]) { m[k].userData = { _sharedAsset: true }; }
+    });
+    mats._cache = m;
     return m;
   }
 
@@ -1206,15 +1211,15 @@
     lArmUpper.rotation.z = -0.25;
     driver.add(lArmUpper);
 
-    // Forearm resting along window sill at x ≈ -0.92, y ≈ 0.96
+    // Forearm resting along window sill at x ≈ -1.05, y ≈ 0.96
     var forearm = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.11, 0.52), skinMat);
-    forearm.position.set(-0.90, 0.96, 0.18);
+    forearm.position.set(-1.05, 0.96, 0.18);
     forearm.rotation.x = 0.14;
     driver.add(forearm);
 
     // Rolled-up sleeve cuff
     var sleeveCuff = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.14, 0.08), suitMat);
-    sleeveCuff.position.set(-0.84, 0.98, 0.04);
+    sleeveCuff.position.set(-0.98, 0.98, 0.04);
     driver.add(sleeveCuff);
 
     // Luxury Gold Chronograph Watch on the resting wrist
@@ -1223,7 +1228,7 @@
     });
     var watchCase = new THREE.Mesh(new THREE.CylinderGeometry(0.044, 0.044, 0.038, 16), watchMat);
     watchCase.rotation.z = Math.PI / 2;
-    watchCase.position.set(-0.90, 0.98, 0.24);
+    watchCase.position.set(-1.05, 0.98, 0.24);
     driver.add(watchCase);
 
     var watchDial = new THREE.Mesh(
@@ -1231,12 +1236,12 @@
       new THREE.MeshStandardMaterial({ color: 0x09090b, roughness: 0.2, metalness: 0.5 })
     );
     watchDial.rotation.y = -Math.PI / 2;
-    watchDial.position.set(-0.922, 0.98, 0.24);
+    watchDial.position.set(-1.072, 0.98, 0.24);
     driver.add(watchDial);
 
     // Gold signet ring on pinky finger
     var goldRing = new THREE.Mesh(new THREE.TorusGeometry(0.016, 0.006, 8, 16), watchMat);
-    goldRing.position.set(-0.90, 0.94, 0.38);
+    goldRing.position.set(-1.05, 0.94, 0.38);
     driver.add(goldRing);
 
     // Subtle cigarette with glowing amber ash tip
@@ -1245,14 +1250,14 @@
       new THREE.MeshBasicMaterial({ color: 0xf1f5f9 })
     );
     cig.rotation.x = Math.PI / 2;
-    cig.position.set(-0.89, 0.95, 0.44);
+    cig.position.set(-1.04, 0.95, 0.44);
     driver.add(cig);
 
     var cigEmber = new THREE.Mesh(
       new THREE.SphereGeometry(0.012, 8, 8),
       new THREE.MeshBasicMaterial({ color: 0xff3b00 })
     );
-    cigEmber.position.set(-0.89, 0.95, 0.49);
+    cigEmber.position.set(-1.04, 0.95, 0.49);
     driver.add(cigEmber);
 
     // ── 2b. THE REAR-SEAT PASSENGER (the shooter) ──────────────────────────
@@ -1277,26 +1282,27 @@
     passenger.add(pHead);
     // Extended arm crossing the cabin toward the west window
     var pArm = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.10, 0.10), shadowMat);
-    pArm.position.set(-0.02, 1.00, -0.55);
+    pArm.position.set(-0.35, 1.00, -0.55);
     pArm.rotation.y = 0.18;
     passenger.add(pArm);
     // The gun: dark slide + muzzle past the driver, aimed west at Vikram
     var gunMat = new THREE.MeshStandardMaterial({ color: 0x111318, metalness: 0.7, roughness: 0.35 });
     var gun = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.09, 0.09), gunMat);
-    gun.position.set(-0.52, 1.00, -0.47);
+    gun.position.set(-0.98, 1.00, -0.47);
     passenger.add(gun);
     var muzzle = new THREE.Mesh(
       new THREE.CylinderGeometry(0.022, 0.022, 0.14, 10),
       new THREE.MeshBasicMaterial({ color: 0x1f2937 })
     );
     muzzle.rotation.z = Math.PI / 2;
-    muzzle.position.set(-0.70, 1.00, -0.45);
+    muzzle.position.set(-1.16, 1.00, -0.45);
     passenger.add(muzzle);
     g.add(passenger);
 
     g.add(cockpit);
     g.add(driver);
 
+    g.scale.x = -1; // Mirror to +X side of the SUV (facing Vikram at x = 5.2!)
     return g;
   }
 
@@ -1461,6 +1467,7 @@
       var lanyard = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.36, 0.38), lanyardMat);
       lanyard.position.set(0, 0.05, 0.02);
       lanyard.scale.set(0.9, 0.8, 1.05);
+      ud.torsoGroup.add(lanyard);
 
       var badgeHolder = new THREE.Mesh(
         new THREE.BoxGeometry(0.10, 0.14, 0.02),
@@ -1602,9 +1609,25 @@
     var b = roadBounds(roads);
     var keepOut = plotBoxes(cfg.plots);
     // Never build on the route or the spawn pads.
-    (cfg.route || []).forEach(function (p) {
-      if (p && typeof p.x === 'number') { keepOut.push({ x: p.x, z: p.z, hw: 4.5, hd: 4.5 }); }
-    });
+    // Protect the entire route corridor (not just waypoint vertices)
+    var routePts = cfg.route || [];
+    for (var ri = 0; ri < routePts.length; ri++) {
+      var rp = routePts[ri];
+      if (rp && typeof rp.x === 'number') {
+        keepOut.push({ x: rp.x, z: rp.z, hw: 10, hd: 10 });
+      }
+      if (ri + 1 < routePts.length) {
+        var rp2 = routePts[ri + 1];
+        if (rp && rp2 && typeof rp.x === 'number' && typeof rp2.x === 'number') {
+          keepOut.push({
+            x: (rp.x + rp2.x) / 2,
+            z: (rp.z + rp2.z) / 2,
+            hw: Math.abs(rp2.x - rp.x) / 2 + 10,
+            hd: Math.abs(rp2.z - rp.z) / 2 + 10
+          });
+        }
+      }
+    }
     [cfg.garageSpawn, cfg.playerSpawn, cfg.playerStart].forEach(function (s) {
       if (s && typeof s.x === 'number') { keepOut.push({ x: s.x, z: s.z, hw: 6, hd: 6 }); }
     });
@@ -1670,9 +1693,29 @@
       return false;
     }
 
+    function hitsAnyRoad(cx, cz, w, d) {
+      var hw = w / 2 + verge + 1.5;
+      var hd = d / 2 + verge + 1.5;
+      for (var i = 0; i < roads.length; i++) {
+        var r = roads[i];
+        var rHalf = (r.width || 14) / 2;
+        if (r.type === 'v') {
+          var z1 = Math.min(r.z1, r.z2) - rHalf;
+          var z2 = Math.max(r.z1, r.z2) + rHalf;
+          if (cz + hd > z1 && cz - hd < z2 && Math.abs(cx - r.x) < rHalf + hw) { return true; }
+        } else if (r.type === 'h') {
+          var x1 = Math.min(r.x1, r.x2) - rHalf;
+          var x2 = Math.max(r.x1, r.x2) + rHalf;
+          if (cx + hw > x1 && cx - hw < x2 && Math.abs(cz - r.z) < rHalf + hd) { return true; }
+        }
+      }
+      return false;
+    }
+
     /** Emit one filler building. `face` is the outward direction (0=+Z,1=-Z,2=+X,3=-X). */
     function emit(cx, cz, w, d, hgt, face, salt) {
       if (placed >= MAX_FILL) { return false; }
+      if (hitsAnyRoad(cx, cz, w, d)) { return false; }
       // Centre test first (cheap, and it is the tightest constraint for the small
       // pads), then the footprint test which is the one that actually protects the
       // lens and the carriageway.
@@ -1821,13 +1864,23 @@
 
     // ── Street-frontage terraces ────────────────────────────────────────────
     function roadAxis() {
-      var vs = [], hs = [];
+      var vMap = {}, hMap = {};
       roads.forEach(function (r) {
-        if (r.type === 'v') { vs.push({ pos: r.x, w: r.width || 14, a: Math.min(r.z1, r.z2), b: Math.max(r.z1, r.z2) }); }
-        else { hs.push({ pos: r.z, w: r.width || 14, a: Math.min(r.x1, r.x2), b: Math.max(r.x1, r.x2) }); }
+        var w = r.width || 14;
+        if (r.type === 'v') {
+          var k = Math.round(r.x);
+          var a = Math.min(r.z1, r.z2), b = Math.max(r.z1, r.z2);
+          if (!vMap[k]) { vMap[k] = { pos: r.x, w: w, a: a, b: b }; }
+          else { vMap[k].w = Math.max(vMap[k].w, w); vMap[k].a = Math.min(vMap[k].a, a); vMap[k].b = Math.max(vMap[k].b, b); }
+        } else {
+          var k2 = Math.round(r.z);
+          var a2 = Math.min(r.x1, r.x2), b2 = Math.max(r.x1, r.x2);
+          if (!hMap[k2]) { hMap[k2] = { pos: r.z, w: w, a: a2, b: b2 }; }
+          else { hMap[k2].w = Math.max(hMap[k2].w, w); hMap[k2].a = Math.min(hMap[k2].a, a2); hMap[k2].b = Math.max(hMap[k2].b, b2); }
+        }
       });
-      vs.sort(function (p, q) { return p.pos - q.pos; });
-      hs.sort(function (p, q) { return p.pos - q.pos; });
+      var vs = Object.keys(vMap).map(function (k) { return vMap[k]; }).sort(function (p, q) { return p.pos - q.pos; });
+      var hs = Object.keys(hMap).map(function (k) { return hMap[k]; }).sort(function (p, q) { return p.pos - q.pos; });
       return { vs: vs, hs: hs };
     }
 
@@ -1951,62 +2004,65 @@
     // ── Footpaths ──────────────────────────────────────────────────────────
     // Pavement strips along both kerbs of every road, properly sliced at
     // intersections so sidewalks never bridge across perpendicular carriageways.
-    function subtractIntervals(range, cuts) {
-      var intervals = [[range[0], range[1]]];
-      (cuts || []).forEach(function (c) {
-        var cMin = Math.min(c[0], c[1]);
-        var cMax = Math.max(c[0], c[1]);
-        var next = [];
-        intervals.forEach(function (inv) {
-          if (cMax <= inv[0] || cMin >= inv[1]) {
-            next.push(inv);
-          } else {
-            if (cMin > inv[0]) { next.push([inv[0], cMin]); }
-            if (cMax < inv[1]) { next.push([cMax, inv[1]]); }
-          }
+    var skipWalks = !!(opts.skipFootpaths || (typeof window !== 'undefined' && window.game && window.game.roadGraph));
+    if (!skipWalks) {
+      function subtractIntervals(range, cuts) {
+        var intervals = [[range[0], range[1]]];
+        (cuts || []).forEach(function (c) {
+          var cMin = Math.min(c[0], c[1]);
+          var cMax = Math.max(c[0], c[1]);
+          var next = [];
+          intervals.forEach(function (inv) {
+            if (cMax <= inv[0] || cMin >= inv[1]) {
+              next.push(inv);
+            } else {
+              if (cMin > inv[0]) { next.push([inv[0], cMin]); }
+              if (cMax < inv[1]) { next.push([cMax, inv[1]]); }
+            }
+          });
+          intervals = next;
         });
-        intervals = next;
+        return intervals.filter(function (inv) { return (inv[1] - inv[0]) > 0.5; });
+      }
+
+      var walk = new THREE.MeshLambertMaterial({ color: 0xb9b3a6 });
+      var kerb = new THREE.MeshLambertMaterial({ color: 0xd9d4c8 });
+      var hCuts = (ax.hs || []).map(function (h) {
+        return [h.pos - (h.w / 2 + FOOT), h.pos + (h.w / 2 + FOOT)];
       });
-      return intervals.filter(function (inv) { return (inv[1] - inv[0]) > 0.5; });
+      var vCuts = (ax.vs || []).map(function (v) {
+        return [v.pos - (v.w / 2 + FOOT), v.pos + (v.w / 2 + FOOT)];
+      });
+
+      ax.vs.forEach(function (v) {
+        var zA = v.a - 14, zB = v.b + 14;
+        var vSegs = subtractIntervals([zA, zB], hCuts);
+        [-1, 1].forEach(function (s) {
+          var x = v.pos + s * (v.w / 2 + FOOT / 2);
+          var kx = v.pos + s * (v.w / 2 + 0.09);
+          vSegs.forEach(function (seg) {
+            var len = seg[1] - seg[0];
+            var midZ = (seg[0] + seg[1]) / 2;
+            grp.add(sbox(FOOT, 0.16, len, walk, x, 0.08, midZ));
+            grp.add(sbox(0.18, 0.22, len, kerb, kx, 0.11, midZ));
+          });
+        });
+      });
+      ax.hs.forEach(function (h) {
+        var xA = h.a - 14, xB = h.b + 14;
+        var hSegs = subtractIntervals([xA, xB], vCuts);
+        [-1, 1].forEach(function (s) {
+          var z = h.pos + s * (h.w / 2 + FOOT / 2);
+          var kz = h.pos + s * (h.w / 2 + 0.09);
+          hSegs.forEach(function (seg) {
+            var len = seg[1] - seg[0];
+            var midX = (seg[0] + seg[1]) / 2;
+            grp.add(sbox(len, 0.16, FOOT, walk, midX, 0.08, z));
+            grp.add(sbox(len, 0.22, 0.18, kerb, midX, 0.11, kz));
+          });
+        });
+      });
     }
-
-    var walk = new THREE.MeshLambertMaterial({ color: 0xb9b3a6 });
-    var kerb = new THREE.MeshLambertMaterial({ color: 0xd9d4c8 });
-    var hCuts = (ax.hs || []).map(function (h) {
-      return [h.pos - (h.w / 2 + FOOT), h.pos + (h.w / 2 + FOOT)];
-    });
-    var vCuts = (ax.vs || []).map(function (v) {
-      return [v.pos - (v.w / 2 + FOOT), v.pos + (v.w / 2 + FOOT)];
-    });
-
-    ax.vs.forEach(function (v) {
-      var zA = v.a - 14, zB = v.b + 14;
-      var vSegs = subtractIntervals([zA, zB], hCuts);
-      [-1, 1].forEach(function (s) {
-        var x = v.pos + s * (v.w / 2 + FOOT / 2);
-        var kx = v.pos + s * (v.w / 2 + 0.09);
-        vSegs.forEach(function (seg) {
-          var len = seg[1] - seg[0];
-          var midZ = (seg[0] + seg[1]) / 2;
-          grp.add(sbox(FOOT, 0.16, len, walk, x, 0.08, midZ));
-          grp.add(sbox(0.18, 0.22, len, kerb, kx, 0.11, midZ));
-        });
-      });
-    });
-    ax.hs.forEach(function (h) {
-      var xA = h.a - 14, xB = h.b + 14;
-      var hSegs = subtractIntervals([xA, xB], vCuts);
-      [-1, 1].forEach(function (s) {
-        var z = h.pos + s * (h.w / 2 + FOOT / 2);
-        var kz = h.pos + s * (h.w / 2 + 0.09);
-        hSegs.forEach(function (seg) {
-          var len = seg[1] - seg[0];
-          var midX = (seg[0] + seg[1]) / 2;
-          grp.add(sbox(len, 0.16, FOOT, walk, midX, 0.08, z));
-          grp.add(sbox(len, 0.22, 0.18, kerb, midX, 0.11, kz));
-        });
-      });
-    });
 
     grp.userData.count = placed;
     grp.userData.camKeepOut = (opts.camKeepOut || []).length;
@@ -2195,7 +2251,7 @@
 
     var plane = new THREE.Mesh(new THREE.PlaneGeometry(b.x2 - b.x1, b.z2 - b.z1), M.wet);
     plane.rotation.x = -Math.PI / 2;
-    plane.position.set((b.x1 + b.x2) / 2, 0.035, (b.z1 + b.z2) / 2);
+    plane.position.set((b.x1 + b.x2) / 2, 0.082, (b.z1 + b.z2) / 2);
     g.add(plane);
 
     // Puddles: deterministic ellipses clustered near the kerbs, where water
@@ -2210,7 +2266,7 @@
       var p = new THREE.Mesh(new THREE.CircleGeometry(rad, 14), M.puddle);
       p.rotation.x = -Math.PI / 2;
       p.scale.set(1, 1, 0.55 + v * 0.4);
-      p.position.set(px, 0.055, pz);
+      p.position.set(px, 0.085, pz);
       g.add(p);
     }
     grp.add(g);
@@ -2651,9 +2707,13 @@
         if (n.isMesh) {
           n.castShadow = true;
           n.receiveShadow = true;
-          // Cloning shares materials with the cached original, so tinting a clone
-          // would recolour every future instance of that prop. Clone the ones that
-          // get tinted and leave the rest shared.
+          // A clone SHARES its geometry and materials with the cached master
+          // in window.PRELOADED_MODELS. Disposing them tears down the
+          // master's GPU buffers for every other instance of that prop in
+          // the whole game - the failure world-streamer.js documents and
+          // avoids. Mark them so disposeTree leaves them alone.
+          n.userData = n.userData || {};
+          n.userData._sharedAsset = true;
         }
       });
       return c;
@@ -2781,11 +2841,12 @@
           try { aftermathGrp.add(buildBarricade(M, spec)); } catch (eB) {}
         });
         try { aftermathGrp.add(buildEvidenceMarkers(M, az.markers)); } catch (eM) {}
-        if (az.sheet) {
-          try { aftermathGrp.add(buildEvidenceSheet(M, az.sheet)); } catch (eS) {}
-        }
+        // Omit buildEvidenceSheet so buildFallenOfficer (with helmet, vest, whistle, notebook, and crimson pool) is fully visible
+        // if (az.sheet) {
+        //   try { aftermathGrp.add(buildEvidenceSheet(M, az.sheet)); } catch (eS) {}
+        // }
         (az.cones || []).forEach(function (spec) {
-          try { aftermathGrp.add(buildCone(M, spec)); } catch (eC) {}
+          try { aftermathGrp.add(buildCone(M, spec)); } catch {}
         });
         // Patrol light bars are PARENTED to a vehicle rather than placed free,
         // so one spec lights both this car and any other patrol car on the stage.
@@ -2870,10 +2931,21 @@
 
   function disposeTree(o) {
     try {
-      if (o.geometry) { o.geometry.dispose(); }
+      // Props cloned from window.PRELOADED_MODELS share their geometry and
+      // materials with the cached master. Disposing them frees the master's
+      // GPU buffers and corrupts every other instance of that model in the
+      // game for the rest of the session.
+      if (o && o.userData && o.userData._sharedAsset) { return; }
+      if (o.geometry && !(typeof GEO !== 'undefined' && GEO && Object.values(GEO).indexOf(o.geometry) !== -1)) {
+        o.geometry.dispose();
+      }
       if (o.material) {
         var list = Array.isArray(o.material) ? o.material : [o.material];
-        list.forEach(function (m) { try { m.dispose(); } catch (e) {} });
+        list.forEach(function (m) {
+          if (m && (!m.userData || !m.userData._sharedAsset)) {
+            try { m.dispose(); } catch (e) {}
+          }
+        });
       }
     } catch (e) {}
   }
@@ -2914,11 +2986,16 @@
       // (gameplay compensates with its own per-frame exposure ramp, but the
       // film owns the frame so that ramp never runs). The act keeps its dark
       // lights — this only re-grades the same frame brighter.
-      if (a.exposure != null && game.renderCore && game.renderCore.renderer) {
+      //
+      // Every act sets its own exposure, and an act that omits one falls back
+      // to the renderer's default: the night act's 0.9 used to stay in force
+      // through the day and dawn beats, so those were rendered 50% over-exposed
+      // and the grade visibly snapped at the handover to gameplay.
+      if (game.renderCore && game.renderCore.renderer) {
         if (game._stagePrevExposure == null) {
           game._stagePrevExposure = game.renderCore.renderer.toneMappingExposure;
         }
-        game.renderCore.renderer.toneMappingExposure = a.exposure;
+        game.renderCore.renderer.toneMappingExposure = (a.exposure != null) ? a.exposure : 0.60;
       }
     } catch (e) {}
 
@@ -2959,7 +3036,11 @@
   function build(game, cfg) {
     if (!game || !game.scene) { return null; }
     var prev = game.scene.getObjectByName(GROUP_NAME);
-    if (prev) { try { game.scene.remove(prev); } catch (e) {} }
+    // The previous story-set group is removed WITHOUT being disposed, and
+    // _buildScene() then wipes the whole scene, so every level load leaked
+    // the group's ~50 materials and ~40 geometries. A stage level builds the
+    // scene twice (film map + playable map), so it leaked twice.
+    if (prev) { try { prev.traverse(disposeTree); game.scene.remove(prev); } catch {} }
     var grp = new THREE.Group();
     grp.name = GROUP_NAME;
     var M = mats();

@@ -154,6 +154,8 @@
     festival: {
       sky: ['#f39c12', '#e67e22'],
       ground: '#d4a574',
+      // The festival crowd throws confetti.
+      particles: 'confetti',
       road: { y: 0.72, lanes: 2, color: '#555', lineColor: '#fff', dashLen: 20, dashGap: 15 },
       buildings: { colors: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD'], count: 10, minH: 80, maxH: 200 },
       decorations: true,
@@ -170,6 +172,9 @@
     night_driving: {
       sky: ['#1a1a2e', '#16213e'],
       ground: '#2c3e50',
+      // Night sky: without this the renderer took the daytime branch and drew
+      // a smiling sun in the middle of a 3am street.
+      night: true,
       road: { y: 0.72, lanes: 3, color: '#333', lineColor: '#aaa', dashLen: 30, dashGap: 20 },
       buildings: { colors: ['#2c3e50', '#34495e', '#3d566e', '#4a6a8a'], count: 10, minH: 100, maxH: 240 },
       streetLights: true,
@@ -188,6 +193,9 @@
     rain_driving: {
       sky: ['#5d6d7e', '#85929e'],
       ground: '#5d6d7e',
+      // Monsoon: the whole point of the scenario, and the particle system
+      // that draws it was never switched on.
+      rain: true,
       road: { y: 0.72, lanes: 3, color: '#444', lineColor: '#888', dashLen: 25, dashGap: 18 },
       buildings: { colors: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4'], count: 8, minH: 80, maxH: 200 },
       vehicles: [{ x: 0.25, y: 0.68, w: 52, h: 26, color: '#2c3e50', type: 'car', dir: 1, speed: 0.3, headlights: true }],
@@ -419,6 +427,9 @@
     zero_visibility: {
       sky: ['#0f172a', '#1e293b'],
       ground: '#1e293b',
+      // Zero visibility is a night monsoon: dark sky AND rain.
+      night: true,
+      rain: true,
       road: { y: 0.72, lanes: 3, color: '#181e29', lineColor: '#f59e0b', dashLen: 25, dashGap: 18 },
       buildings: { colors: ['#0f172a', '#1e293b'], count: 8, minH: 100, maxH: 220 },
       vehicles: [{ x: 0.35, y: 0.68, w: 50, h: 25, color: '#3498db', type: 'car', dir: 1, speed: 0.2, headlights: true }],
@@ -778,14 +789,21 @@
     }
     const icon = icons[hazard] || '⚠️'
     const pulse = 1 + Math.sin(t * 3) * 0.1
+    // Top-left corner: the level badge (h*0.22) and the headline (h*0.35) are
+    // both centred, so a centred badge sat on top of the headline.
+    const size = Math.round(44 * Math.min(1.4, Math.max(0.6, w / 800)))
+    const cx = w * 0.1, cy = h * 0.18
     ctx.save()
-    ctx.translate(w * 0.5, h * 0.35)
+    ctx.globalAlpha = 0.92
+    ctx.fillStyle = 'rgba(0,0,0,0.45)'
+    roundRect(ctx, cx - size * 0.9, cy - size * 0.9, size * 1.8, size * 1.8, 14)
+    ctx.fill()
+    ctx.translate(cx, cy)
     ctx.scale(pulse, pulse)
-    ctx.fillStyle = 'rgba(0,0,0,0.3)'
-    roundRect(ctx - ctx.measureText ? 0 : 0, -25, 80, 50, 12) // fallback
-    ctx.font = '40px serif'
+    ctx.font = `${size}px serif`
     ctx.textAlign = 'center'
-    ctx.fillText(icon, 0, 15)
+    ctx.textBaseline = 'middle'
+    ctx.fillText(icon, 0, 0)
     ctx.restore()
   }
 
@@ -806,12 +824,17 @@
       this.isDragging = false; this.exploredElements = []; this.lv = null
     }
 
-    play(levelId, onComplete) {
-      this.lv = window.LVS ? window.LVS.find(l => l.id === levelId) : null
+    play(levelId, onComplete, scenarioKey) {
+      // The level id arrives from the syllabus path and can be a string, while
+      // the registry holds numeric ids - a strict === never matched.
+      this.lv = window.LVS ? window.LVS.find(l => String(l.id) === String(levelId)) : null
       const lv = this.lv
-      const themeType = lv ? (lv.themeType || 'signal_jump') : 'signal_jump'
+      // An explicit scenario key wins: the syllabus demo asks for a named
+      // theme, which is not always the level's own themeType.
+      const themeType = scenarioKey || (lv ? (lv.themeType || 'signal_jump') : 'signal_jump')
       const scenario = SCENARIOS[themeType] || SCENARIOS.default
       this.duration = scenario.duration || 5000
+      this._destroyed = false
 
       this.onComplete = onComplete; this.skipRequested = false; this.exploredElements = []
       this.canvas = document.createElement('canvas')
@@ -1031,6 +1054,11 @@
         }
       }
 
+      // Hazard badge - what the scenario is about (red light, ambulance,
+      // puddle, children...). Every scenario declares one and the badge was
+      // never drawn, so the main didactic device of the cinematic was missing.
+      drawHazardIndicator(ctx, scenario.hazard, w, h, t)
+
       // Law badge
       if (this.lv && this.lv.law && elapsed > 1800) {
         const lawAlpha = Ease.easeOutCubic(clamp((elapsed - 1800) / 400, 0, 0.7))
@@ -1078,14 +1106,23 @@
     }
 
     destroy() {
+      // destroy() is called from game_core's startLevel() EVERY time a level
+      // begins, so it can be reached more than once for one play. The
+      // completion callback used to survive, which meant the second call
+      // fired it AGAIN - a double navigation, or (with a level-start
+      // callback) the level launching twice.
+      if (this._destroyed) {return}
+      this._destroyed = true
+      const done = this.onComplete
+      this.onComplete = null
       this.running = false
       if (this.animFrame) {cancelAnimationFrame(this.animFrame)}
       // Stop ambient sound
       if (window.sfx && typeof window.sfx.stopAmbient === 'function') {window.sfx.stopAmbient()}
       if (this.canvas && this.canvas.parentNode) {
         this.canvas.style.transition = 'opacity 0.3s ease'; this.canvas.style.opacity = '0'
-        setTimeout(() => { if (this.canvas && this.canvas.parentNode) {this.canvas.remove();} this.canvas = null; this.ctx = null; if (this.onComplete) {this.onComplete()} }, 300)
-      } else { if (this.onComplete) {this.onComplete()} }
+        setTimeout(() => { if (this.canvas && this.canvas.parentNode) {this.canvas.remove();} this.canvas = null; this.ctx = null; if (done) {done()} }, 300)
+      } else { if (done) {done()} }
     }
   }
 

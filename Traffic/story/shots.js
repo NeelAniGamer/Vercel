@@ -127,6 +127,12 @@
       // legitimate authored beat. What is clamped is the move.
       var total = (typeof s.dur === 'number' && s.dur > 0) ? s.dur : DEFAULT_SHOT;
 
+      // The shot floor. The comment above promises "no cut shorter than 4s"
+      // and the build-time validator checks it, but the RUNTIME never applied
+      // it: a shot authored with dur 1.5 ran as a 1.5s cut, which is exactly
+      // the slideshow pacing this constant exists to prevent.
+      if (total < MIN_SHOT) { total = MIN_SHOT; }
+
       var hold = (typeof s.hold === 'number' && s.hold > 0) ? s.hold : 0;
       if (hold > MAX_HOLD) { hold = MAX_HOLD; }
 

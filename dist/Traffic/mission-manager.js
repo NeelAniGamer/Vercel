@@ -222,7 +222,12 @@ class Mission {
 class EscortMission extends Mission {
   constructor(config = {}) {
     super('ESCORT', {
-      target: config.target || 1,
+      ...config,
+      // The mission's progress target is the number of intersections to
+      // clear, not 1: updateProgress() completes the mission as soon as
+      // progress reaches `target`, so a target of 1 finished the escort after
+      // the FIRST junction while the objective text said three.
+      target: config.target || (config.data?.targetIntersections || 3),
       reward: config.reward || 5000,
       data: {
         leadVehicle: null,
@@ -230,9 +235,8 @@ class EscortMission extends Mission {
         maxDistance: 35,
         intersectionsCleared: 0,
         targetIntersections: config.data?.targetIntersections || 3,
-        ...config.data
-      },
-      ...config
+        ...(config.data || {})
+      }
     });
     this.distanceViolationTime = 0;
     this.maxViolationTime = 5; // seconds before fail
@@ -287,6 +291,7 @@ class EscortMission extends Mission {
 class ChaseMission extends Mission {
   constructor(config = {}) {
     super('CHASE', {
+      ...config,
       target: config.target || 1,
       reward: config.reward || 6000,
       data: {
@@ -295,9 +300,8 @@ class ChaseMission extends Mission {
         pitDistance: 5,
         maxChaseTime: config.data?.maxChaseTime || 120,
         chaseTime: 0,
-        ...config.data
-      },
-      ...config
+        ...(config.data || {})
+      }
     });
   }
 
@@ -336,6 +340,7 @@ class ChaseMission extends Mission {
 class ParkingMission extends Mission {
   constructor(config = {}) {
     super('PARKING', {
+      ...config,
       target: config.target || 1,
       reward: config.reward || 3000,
       data: {
@@ -344,9 +349,8 @@ class ParkingMission extends Mission {
         maxAngleDeviation: 0.3,
         parked: false,
         parkStartTime: 0,
-        ...config.data
-      },
-      ...config
+        ...(config.data || {})
+      }
     });
   }
 
@@ -357,7 +361,13 @@ class ParkingMission extends Mission {
     const dx = playerPos.x - spot.x;
     const dz = playerPos.z - spot.z;
     const dist = Math.sqrt(dx * dx + dz * dz);
-    const angleDiff = Math.abs((playerRot - spot.rotation + Math.PI) % (2 * Math.PI) - Math.PI);
+    // The shortest angular difference. JS `%` keeps the sign of the dividend,
+    // so the old expression went negative for a car pointing more than 90
+    // degrees away from the bay and reported up to 3.14 rad instead of the
+    // wrapped angle - which made the "within 0.3 rad" test pass or fail at
+    // random.
+    const _rot = playerRot - spot.rotation;
+    const angleDiff = Math.abs(Math.atan2(Math.sin(_rot), Math.cos(_rot)));
 
     this.data.currentDistance = dist;
     this.data.currentAngleDiff = angleDiff;
@@ -391,6 +401,7 @@ class ParkingMission extends Mission {
 class CargoMission extends Mission {
   constructor(config = {}) {
     super('CARGO', {
+      ...config,
       target: config.target || 100,
       reward: config.reward || 4000,
       data: {
@@ -401,9 +412,8 @@ class CargoMission extends Mission {
         maxPotholes: 3,
         distanceTarget: config.data?.distanceTarget || 500,
         distanceTraveled: 0,
-        ...config.data
-      },
-      ...config
+        ...(config.data || {})
+      }
     });
   }
 
@@ -452,6 +462,7 @@ class CargoMission extends Mission {
 class EvasionMission extends Mission {
   constructor(config = {}) {
     super('EVASION', {
+      ...config,
       target: config.target || 1,
       reward: config.reward || 5000,
       data: {
@@ -459,9 +470,8 @@ class EvasionMission extends Mission {
         safeZone: config.data?.safeZone || { x: 0, z: 0, radius: 50 },
         maxEvasionTime: config.data?.maxEvasionTime || 180,
         evasionTime: 0,
-        ...config.data
-      },
-      ...config
+        ...(config.data || {})
+      }
     });
   }
 
@@ -510,15 +520,15 @@ class EvasionMission extends Mission {
 class CrossingGuardMission extends Mission {
   constructor(config = {}) {
     super('CROSSING_GUARD', {
+      ...config,
       target: config.target || 5,
       reward: config.reward || 3000,
       data: {
         childrenCrossed: 0,
         targetChildren: config.data?.targetChildren || 5,
         currentGroup: null,
-        ...config.data
-      },
-      ...config
+        ...(config.data || {})
+      }
     });
   }
 
@@ -559,6 +569,7 @@ class CrossingGuardMission extends Mission {
 class SidewalkPatrolMission extends Mission {
   constructor(config = {}) {
     super('SIDEWALK_PATROL', {
+      ...config,
       target: config.target || 3,
       reward: config.reward || 2500,
       data: {
@@ -566,9 +577,8 @@ class SidewalkPatrolMission extends Mission {
         targetViolations: config.data?.targetViolations || 3,
         patrolRoute: config.data?.patrolRoute || [],
         currentWaypoint: 0,
-        ...config.data
-      },
-      ...config
+        ...(config.data || {})
+      }
     });
   }
 
@@ -602,15 +612,15 @@ class SidewalkPatrolMission extends Mission {
 class EmergencyClearMission extends Mission {
   constructor(config = {}) {
     super('EMERGENCY_CLEAR', {
+      ...config,
       target: config.target || 1,
       reward: config.reward || 4000,
       data: {
         ambulancePos: null,
         pathCleared: false,
         clearDistance: 25,
-        ...config.data
-      },
-      ...config
+        ...(config.data || {})
+      }
     });
   }
 
@@ -650,15 +660,15 @@ class EmergencyClearMission extends Mission {
 class SchoolPatrolMission extends Mission {
   constructor(config = {}) {
     super('SCHOOL_PATROL', {
+      ...config,
       target: config.target || 3,
       reward: config.reward || 3500,
       data: {
         speedersCaught: 0,
         targetSpeeders: config.data?.targetSpeeders || 3,
         schoolZone: config.data?.schoolZone || { x: 0, z: 0, radius: 50 },
-        ...config.data
-      },
-      ...config
+        ...(config.data || {})
+      }
     });
   }
 
@@ -666,11 +676,18 @@ class SchoolPatrolMission extends Mission {
     if (this.status !== 'active') {return;}
 
     for (const v of vehiclePositions) {
+      if (!v) {continue;}
+      // Accept either the plain {x, z, speed} projection or a raw Object3D.
+      const vx = (v.x !== undefined) ? v.x : (v.position ? v.position.x : null);
+      const vz = (v.z !== undefined) ? v.z : (v.position ? v.position.z : null);
+      if (vx === null || vz === null) {continue;}
       if (v.caught) {continue;}
-      const dx = v.x - this.data.schoolZone.x;
-      const dz = v.z - this.data.schoolZone.z;
+      const dx = vx - this.data.schoolZone.x;
+      const dz = vz - this.data.schoolZone.z;
       const dist = Math.sqrt(dx * dx + dz * dz);
-      if (dist < this.data.schoolZone.radius && v.speed > 8) {
+      const spd = (v.speed !== undefined) ? v.speed
+        : ((v.userData && typeof v.userData.spd === 'number') ? v.userData.spd * 100 : 0);
+      if (dist < this.data.schoolZone.radius && spd > 8) {
         v.caught = true;
         this.data.speedersCaught++;
         this.updateProgress(this.data.speedersCaught);
@@ -692,6 +709,7 @@ class SchoolPatrolMission extends Mission {
 class PassengerPickupMission extends Mission {
   constructor(config = {}) {
     super('PASSENGER_PICKUP', {
+      ...config,
       target: 1,
       reward: config.reward || 6500,
       tokenReward: config.tokenReward || 65,
@@ -703,9 +721,8 @@ class PassengerPickupMission extends Mission {
         passengerName: config.data?.passengerName || 'Priya (Commuter)',
         dialogue: config.data?.dialogue || 'Thanks for stopping! Please drop me at the Central Station.',
         dwellTimer: 0,
-        ...config.data
-      },
-      ...config
+        ...(config.data || {})
+      }
     });
   }
 
@@ -1479,11 +1496,29 @@ class MissionManager {
       c.dispose();
     }
     this.collectibles = [];
-    this.missions = [];
     this.totalCollected = 0;
     this.totalReward = 0;
     this.active = false;
 
+    // The passenger-pickup mission adds a mesh to the scene. Nothing knew
+    // about it here, so every level load that selected that mission leaked a
+    // group with its own geometries and materials into the scene.
+    for (const m of (this.missions || [])) {
+      const pm = m.data && m.data.passengerMesh;
+      if (!pm) {continue;}
+      try {
+        if (pm.parent) {pm.parent.remove(pm);}
+        pm.traverse(o => {
+          if (o.geometry) {o.geometry.dispose();}
+          if (o.material) {
+            const mats = Array.isArray(o.material) ? o.material : [o.material];
+            mats.forEach(mat => { if (mat && mat.dispose) {mat.dispose();} });
+          }
+        });
+      } catch {}
+      m.data.passengerMesh = null;
+    }
+    this.missions = [];
 
     if (this._collectibleGroup.parent) {
       this._collectibleGroup.parent.remove(this._collectibleGroup);

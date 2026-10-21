@@ -218,35 +218,32 @@ window.IndianVehicles = {
    * read as a flat black cylinder at close camera range.
    * `rOverride` lets the caller use the canonical tyre radius for its class.
    */
+  _wheelGeoCache: {},
   buildWheel: function (scale = 1.0, rOverride) {
+    if (!this.textures.wheel) { this.init(); }
     const d = this.dims(this._currentType);
-    const r = rOverride || (d.wr || 0.35) * scale;
-    const w = (d.ww || 0.20) * scale;
-    const g = new THREE.Group();
+    const r = +(rOverride || (d.wr || 0.35) * scale).toFixed(3);
+    const w = +((d.ww || 0.20) * scale).toFixed(3);
+    const key = r + '_' + w;
 
-    const tyre = new THREE.Mesh(new THREE.CylinderGeometry(r, r, w, 14), this.rubberMat());
-    tyre.rotation.z = Math.PI / 2;
-    g.add(tyre);
-
-    const rim = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.60, r * 0.60, w * 1.06, 12), this.rimMat());
-    rim.rotation.z = Math.PI / 2;
-    g.add(rim);
-
-    const disc = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.44, r * 0.44, w * 0.42, 10), this.darkChromeMat());
-    disc.rotation.z = Math.PI / 2;
-    g.add(disc);
-
-    const rimMat = this.rimMat();
-    for (let i = 0; i < 5; i++) {
-      const a = (i / 5) * Math.PI * 2;
-      const spoke = new THREE.Mesh(new THREE.BoxGeometry(w * 1.04, r * 0.54, r * 0.15), rimMat);
-      spoke.position.set(0, Math.sin(a) * r * 0.30, Math.cos(a) * r * 0.30);
-      spoke.rotation.x = -a;
-      g.add(spoke);
+    if (!this._wheelGeoCache) { this._wheelGeoCache = {}; }
+    if (!this._wheelGeoCache[key]) {
+      const geo = new THREE.CylinderGeometry(r, r, w, 12);
+      geo.rotateZ(Math.PI / 2); // Bake rotation into geometry once
+      this._wheelGeoCache[key] = geo;
     }
-
-    g.userData.isWheel = true;
-    return g;
+    const self = this;
+    const wheelCapsMat = this.mat('wheelCapTex', function () {
+      return new THREE.MeshPhongMaterial({
+        map: self.textures.wheel, shininess: 50
+      });
+    });
+    const wheelMats = this.mat('wheelMatArr', function () {
+      return [self.rubberMat(), wheelCapsMat, wheelCapsMat];
+    });
+    const mesh = new THREE.Mesh(this._wheelGeoCache[key], wheelMats);
+    mesh.userData.isWheel = true;
+    return mesh;
   },
 
   buildHeadlight: function (x, y, z) {

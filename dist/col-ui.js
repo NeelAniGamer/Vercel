@@ -161,8 +161,10 @@
     if (nl) {
       // — Helper: lock body scroll without layout shift —
       let _lockY = 0
+      let _navLocked = false
       function lockNav() {
         _lockY = window.scrollY
+        _navLocked = true
         const sb = window.innerWidth - document.documentElement.clientWidth
         if (sb > 0) {document.documentElement.style.setProperty('--scrollbar-comp', sb + 'px')}
         document.body.classList.add('nav-lock')
@@ -178,7 +180,14 @@
         document.body.style.top = ''
         document.body.style.width = ''
         document.documentElement.style.removeProperty('--scrollbar-comp')
-        window.scrollTo(0, _lockY)
+        // Only restore the scroll position if the nav was actually locked.
+        // Without this guard, unlockNav() ran window.scrollTo(0, 0) on every
+        // desktop resize (createOrUpdateBar calls closeMobileDrawer), which
+        // yanked the reader back to the top of the page.
+        if (_navLocked) {
+          window.scrollTo(0, _lockY)
+          _navLocked = false
+        }
         mmb.setAttribute('aria-expanded', 'false')
         nl.setAttribute('aria-hidden', 'true')
       }
@@ -261,6 +270,11 @@
                   '<a href="/rpg" class="cmd-acc-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span>RPG Game</span></a>' +
                   '<a href="/qr" class="cmd-acc-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="8" height="8" rx="1"/><rect x="14" y="2" width="8" height="8" rx="1"/><rect x="2" y="14" width="8" height="8" rx="1"/><rect x="14" y="14" width="4" height="4"/><rect x="20" y="14" width="2" height="2"/><rect x="14" y="20" width="2" height="2"/><rect x="20" y="20" width="2" height="2"/></svg><span>QR Studio Matrix</span></a>' +
                   '<a href="/Terra3D/" class="cmd-acc-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg><span>Terra3D Atlas</span></a>' +
+                  '<a href="/Career" class="cmd-acc-item"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg><span>Career Compass</span></a>' +
+                  '<a href="/Database_Logic" class="cmd-acc-item"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="9" y1="7" x2="16" y2="7"/><line x1="9" y1="11" x2="14" y2="11"/></svg><span>Database Logic DB</span></a>' +
+                  '<a href="/CastFlow" class="cmd-acc-item"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg><span>CastFlow Studio</span></a>' +
+                  '<a href="/cereal" class="cmd-acc-item"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg><span>Cereal AI App</span></a>' +
+                  '<a href="/Traffic/Driving" class="cmd-acc-item"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg><span>Traffic Academy</span></a>' +
                 '</div>' +
               '</div>' +
             '</div>' +
@@ -639,7 +653,10 @@ function initBottomBar() {
   if (isGame) {return}
 
   function createOrUpdateBar() {
-    if (window.innerWidth > 900) {
+    // 1100px matches the CSS breakpoint that hides the desktop .nav-links and
+    // shows the thumb bar. Using 900px left a 901–1100px dead zone where the
+    // desktop nav was hidden AND the bottom bar was removed.
+    if (window.innerWidth > 1100) {
       const existing = document.querySelector('.col-bottom-bar')
       if (existing) {existing.remove()}
       document.body.classList.remove('nav-lock')
@@ -750,7 +767,7 @@ function initBmcBadge() {
     badge.id = 'bmc-floating-badge'
     badge.className = 'bmc-floating-badge'
     badge.setAttribute('aria-label', 'Support Creator')
-    badge.innerHTML = '<button type="button" class="bmc-dismiss" aria-label="Dismiss support badge" title="Dismiss">&times;</button><a href="https://www.buymeacoffee.com/NeelAniGamer" target="_blank" rel="noopener noreferrer" title="Buy Me A Coffee" aria-label="Buy Me A Coffee"><img src="/bmc-button.svg" onerror="if(this.src.indexOf(\'img.buymeacoffee.com\')===-1)this.src=\'https://img.buymeacoffee.com/button-api/?text=Buy%20me%20a%20coffee&emoji=&slug=NeelAniGamer&button_colour=5F7FFF&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00\'" alt="Buy Me A Coffee" width="180" height="40" loading="lazy" /></a>'
+    badge.innerHTML = '<button type="button" class="bmc-dismiss" aria-label="Dismiss support badge" title="Dismiss">&times;</button><a href="https://www.buymeacoffee.com/NeelAniGamer" target="_blank" rel="noopener noreferrer" title="Buy Me A Coffee" aria-label="Buy Me A Coffee"><img src="/bmc-button.svg" draggable="false" onerror="if(this.src.indexOf(\'img.buymeacoffee.com\')===-1)this.src=\'https://img.buymeacoffee.com/button-api/?text=Buy%20me%20a%20coffee&emoji=&slug=NeelAniGamer&button_colour=5F7FFF&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00\'" alt="Buy Me A Coffee" width="180" height="40" loading="lazy" /></a>'
 
     document.body.appendChild(badge)
 
@@ -780,48 +797,92 @@ function initBmcBadge() {
       }
     } catch (e) {}
 
-    let dragging = false
+    // The badge surface is entirely covered by the <a> (and the dismiss
+    // button), so the old `closest('.bmc-dismiss, a')` guard made every
+    // pointer-down bail out and dragging could never start. Instead we
+    // allow a drag to begin anywhere except the dismiss button, and only
+    // treat it as a drag once the pointer has travelled more than 6px.
+    let pointerDown = false
+    let didDrag = false
+    let suppressNextClick = false
     let startX = 0, startY = 0, origX = 0, origY = 0
 
     function onDown(e) {
-      // Don't start drag from the dismiss button or the link.
-      if (e.target && e.target.closest && e.target.closest('.bmc-dismiss, a')) {return}
-      dragging = true
-      badge.style.cursor = 'grabbing'
+      if (e.target && e.target.closest && e.target.closest('.bmc-dismiss')) {return}
+      if (e.type === 'mousedown' && e.button !== 0) {return}
+      pointerDown = true
+      didDrag = false
+      suppressNextClick = false
       const pt = e.touches ? e.touches[0] : e
       startX = pt.clientX
       startY = pt.clientY
       const rect = badge.getBoundingClientRect()
       origX = rect.left
       origY = rect.top
-      e.preventDefault()
+      // Suppress the browser's native image drag. Without this the <img>
+      // starts a native drag on the first few pixels of movement, which
+      // swallows the remaining mousemove/mouseup events and the badge
+      // never tracks the pointer.
+      if (e.cancelable) {e.preventDefault()}
     }
+
     function onMove(e) {
-      if (!dragging) {return}
+      if (!pointerDown) {return}
       const pt = e.touches ? e.touches[0] : e
-      let x = origX + (pt.clientX - startX)
-      let y = origY + (pt.clientY - startY)
+      const dx = pt.clientX - startX
+      const dy = pt.clientY - startY
+      if (!didDrag && Math.hypot(dx, dy) > 6) {
+        didDrag = true
+        badge.style.cursor = 'grabbing'
+      }
+      if (!didDrag) {return}
+      if (e.cancelable) {e.preventDefault()}
       // Clamp to viewport.
       const w = badge.offsetWidth, h = badge.offsetHeight
-      x = Math.max(8, Math.min(window.innerWidth - w - 8, x))
-      y = Math.max(8, Math.min(window.innerHeight - h - 8, y))
+      const x = Math.max(8, Math.min(window.innerWidth - w - 8, origX + dx))
+      const y = Math.max(8, Math.min(window.innerHeight - h - 8, origY + dy))
       badge.style.left = x + 'px'
       badge.style.top = y + 'px'
       badge.style.right = 'auto'
       badge.style.bottom = 'auto'
     }
+
     function onUp() {
-      if (!dragging) {return}
-      dragging = false
-      badge.style.cursor = ''
-      try {
-        const rect = badge.getBoundingClientRect()
-        localStorage.setItem('bmc-pos', JSON.stringify({ x: rect.left, y: rect.top }))
-      } catch (e) {}
+      if (!pointerDown) {return}
+      pointerDown = false
+      badge.style.cursor = 'grab'
+      if (didDrag) {
+        // The click that follows a drag must not open the badge link.
+        // Use a dedicated flag rather than reusing `didDrag`, because the
+        // dismiss button's own click handler lives inside the badge and
+        // would be swallowed by a capture-phase stopPropagation().
+        suppressNextClick = true
+        try {
+          const rect = badge.getBoundingClientRect()
+          localStorage.setItem('bmc-pos', JSON.stringify({ x: rect.left, y: rect.top }))
+        } catch (e) {}
+      }
     }
 
+    // Swallow the click that ends a drag so the badge link does not open.
+    // The dismiss button is exempt so it stays usable after a drag.
+    badge.addEventListener(
+      'click',
+      function (e) {
+        if (!suppressNextClick) {return}
+        if (e.target && e.target.closest && e.target.closest('.bmc-dismiss')) {
+          suppressNextClick = false
+          return
+        }
+        e.preventDefault()
+        e.stopPropagation()
+        suppressNextClick = false
+      },
+      true
+    )
+
     badge.addEventListener('mousedown', onDown)
-    badge.addEventListener('touchstart', onDown, { passive: false })
+    badge.addEventListener('touchstart', onDown, { passive: true })
     window.addEventListener('mousemove', onMove)
     window.addEventListener('touchmove', onMove, { passive: false })
     window.addEventListener('mouseup', onUp)

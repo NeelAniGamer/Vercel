@@ -1139,7 +1139,7 @@ _applyAgeTier() {
     if (cIcon) {cIcon.style.display = 'none'}
 
     const completedLevels = Object.keys(S.comp || {}).length
-    const totalLevels = 52
+    const totalLevels = levelTotal()
 
     let totalScore = 0,
       count = 0
@@ -4077,8 +4077,9 @@ if (un) {
         if (completedCount >= 20 && !S.badges.includes('level_20')) {S.badges.push('level_20')}
         if (completedCount >= 30 && !S.badges.includes('level_30')) {S.badges.push('level_30')}
         if (completedCount >= 40 && !S.badges.includes('level_40')) {S.badges.push('level_40')}
-        if (completedCount >= 52 && !S.badges.includes('level_52')) {S.badges.push('level_52')}
-        if (completedCount >= 52 && !S.badges.includes('traffic_hero')) {S.badges.push('traffic_hero')}
+        const _total = levelTotal();
+        if (completedCount >= _total && !S.badges.includes('level_52')) {S.badges.push('level_52')}
+        if (completedCount >= _total && !S.badges.includes('traffic_hero')) {S.badges.push('traffic_hero')}
 
         const vioCount = window.game?.fst?.vio || 0
         const civicGain = vioCount === 0 ? 25 : vioCount <= 2 ? 10 : vioCount <= 4 ? 3 : 0
@@ -4106,15 +4107,17 @@ if (un) {
       if (window.location.pathname.toLowerCase().includes('driving')) {
         this.showResults(window.game?.fs || 100, window.game?.fst || { vio: 0 });
       } else {
-        if (typeof SCENARIOS !== 'undefined') {
-          const sc = SCENARIOS.find(x => x.levelRef === lv?.id)
-          if (sc) {
-            this.show2D(sc.id)
-            return
-          } else {
-            this.show2D(1)
-            return
-          }
+        // On the Academy page the practice quiz is followed by the 2D
+        // reinforcement cinematic for the lesson's theme, and then by the
+        // results. The old branch read a bare `SCENARIOS` (a global that
+        // never existed) and called `.find()` on what is an OBJECT keyed by
+        // theme, so it never ran and the results screen was the only path.
+        const sc = (window.Scenario2DData || {})[lv && lv.themeType];
+        if (sc) {
+          this.show2D(lv.themeType, () => {
+            this.showResults(window.game?.fs || 100, window.game?.fst || { vio: 0 });
+          });
+          return;
         }
         this.showResults(window.game?.fs || 100, window.game?.fst || { vio: 0 });
       }
@@ -4174,8 +4177,9 @@ if (un) {
     if (completedCount >= 20 && !S.badges.includes('level_20')) {S.badges.push('level_20')}
     if (completedCount >= 30 && !S.badges.includes('level_30')) {S.badges.push('level_30')}
     if (completedCount >= 40 && !S.badges.includes('level_40')) {S.badges.push('level_40')}
-    if (completedCount >= 52 && !S.badges.includes('level_52')) {S.badges.push('level_52')}
-    if (completedCount >= 52 && !S.badges.includes('traffic_hero')) {S.badges.push('traffic_hero')}
+    const _total = levelTotal();
+        if (completedCount >= _total && !S.badges.includes('level_52')) {S.badges.push('level_52')}
+    if (completedCount >= _total && !S.badges.includes('traffic_hero')) {S.badges.push('traffic_hero')}
 
 
     const themeTypes = {
@@ -4209,7 +4213,7 @@ if (un) {
     window.LAST_CERTIFICATE = certData
     const rcard = document.getElementById('rcard')
     if (rcard) {
-      rcard.innerHTML = `<div class="rr"><span class="rl">Score</span><span class="rv">⭐ ${Math.round(score)}</span></div><div class="rr"><span class="rl">Quiz</span><span class="rv">✅ Passed</span></div>${stats.fin ? `<div class="rr"><span class="rl">Fines issued</span><span class="rv" style="color:var(--red)">${stats.fin}</span></div>` : ''}<div class="rr"><span class="rl">Violations</span><span class="rv" style="color:${stats.vio ? 'var(--red)' : 'var(--green)'}">${stats.vio || 'None ✅'}</span></div><div class="rr"><span class="rl">Level</span><span class="rv">${lv.id} / 52</span></div>
+      rcard.innerHTML = `<div class="rr"><span class="rl">Score</span><span class="rv">⭐ ${Math.round(score)}</span></div><div class="rr"><span class="rl">Quiz</span><span class="rv">✅ Passed</span></div>${stats.fin ? `<div class="rr"><span class="rl">Fines issued</span><span class="rv" style="color:var(--red)">${stats.fin}</span></div>` : ''}<div class="rr"><span class="rl">Violations</span><span class="rv" style="color:${stats.vio ? 'var(--red)' : 'var(--green)'}">${stats.vio || 'None ✅'}</span></div><div class="rr"><span class="rl">Level</span><span class="rv">${lv.id} / ${levelTotal()}</span></div>
 ${stats.reward ? `<div class="rr"><span class="rl" style="color:var(--green, #059669)">Level Reward</span><span class="rv" style="color:var(--green, #059669)">+₹${stats.reward.toLocaleString('en-IN')}</span></div>` : ''}
 ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines Deducted</span><span class="rv" style="color:#ff3b30">-₹${stats.fineAmt.toLocaleString('en-IN')}</span></div>` : ''}
 <div class="rr" style="margin-top:10px; border-top:1px solid var(--line, rgba(0,0,0,0.15)); padding-top:10px;"><span class="rl">Career Wallet</span><span class="rv" style="color:var(--accent, #b45309); font-weight:700;">₹${(S.wallet || 0).toLocaleString('en-IN')}</span></div>
@@ -4222,9 +4226,38 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
   </button>
 </div>`
     }
-    const ro = document.getElementById('ro')
-    if (ro) {ro.classList.add('on')}
+    // Show the results screen. The card above is rendered into #rico/#rtit/
+    // #rsub/#rcard, which are CHILDREN of #screen-results - and a `.screen`
+    // is display:none until it carries `.active`. The old code looked for an
+    // element with the id 'ro', which exists in neither page, so the score,
+    // the badges, the certificate buttons and the "Next Module" button were
+    // all rendered into a screen that was never shown: the student finished
+    // the exam and stayed on the last question with nothing to click.
+    this.show('screen-results', { direction: 'forward' });
+    // "Next Module" only means something when there IS a next lesson.
+    const rnxt = document.getElementById('rnxt');
+    if (rnxt) {
+      const list = window.LVS || [];
+      const idx = list.findIndex(l => l && lv && l.id === lv.id);
+      rnxt.style.display = (idx >= 0 && list[idx + 1]) ? 'inline-block' : 'none';
+    }
     if (window.sfx && typeof window.sfx.play === 'function') {sfx.play('win')}
+  },
+  // "Next Module →" on the results screen. The button is wired in both pages
+  // but this function did not exist anywhere, so clicking it threw
+  // "ui.goNext is not a function".
+  goNext() {
+    const list = window.LVS || [];
+    const lv = this.cur || list[0];
+    const idx = list.findIndex(l => l && lv && l.id === lv.id);
+    const next = (idx >= 0) ? list[idx + 1] : null;
+    if (!next) {
+      // Last lesson of the course: back to the level grid.
+      this.showLevels();
+      return;
+    }
+    this.cur = next;
+    this.dispatchStart(this.curMode);
   },
   challanHistory: [],
   issueChallan(off, sec, amt, loc, cb) {
@@ -4529,36 +4562,49 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
     `;
   },
 
-  show2D(scenarioId) {
-    const sc = (typeof SCENARIOS !== 'undefined') ? SCENARIOS[scenarioId] : null;
+  show2D(scenarioId, onDone) {
+    // The scenario table lives in scenario2d.js, which is an IIFE - it exports
+    // it as window.Scenario2DData and the renderer as window.Scenario2D. This
+    // used to read a bare `SCENARIOS` and call `initScenario2D`, neither of
+    // which exists anywhere, so the 2D screen never opened and the complete
+    // renderer behind it was orphaned.
+    const data = window.Scenario2DData || {};
+    const sc = data[scenarioId];
     if (!sc) {
       console.warn('[ui] Scenario not found:', scenarioId);
+      if (typeof onDone === 'function') {onDone();}
       return;
     }
     this._cur2D = { ...sc, id: scenarioId };
-    document.getElementById('s2d-title').textContent = (sc.icon || '🚦') + ' ' + (sc.headline || sc.name || scenarioId);
+    const titleEl = document.getElementById('s2d-title');
+    if (titleEl) { titleEl.textContent = (sc.icon || '🚦') + ' ' + (sc.headline || sc.name || scenarioId);}
     this.show('screen-2d');
+    const lvId = (this.cur && this.cur.id) || (this.qst && this.qst.lvId) || 1;
+    const finish = () => { if (typeof onDone === 'function') {onDone();} else {this.showLevels();} };
     setTimeout(() => {
-      if (typeof initScenario2D === 'function') {
-        initScenario2D('scenario2d-container', scenarioId);
+      if (window.Scenario2D) {
+        window.Scenario2D.play(lvId, finish, scenarioId);
+      } else {
+        finish();
       }
     }, 100);
   },
   exit2D() {
-    if (typeof destroyScenario2D === 'function') {destroyScenario2D()}
+    if (window.Scenario2D && typeof window.Scenario2D.destroy === 'function') {window.Scenario2D.destroy();}
     this._cur2D = null
     this.showLevels()
   },
   restart2D() {
     if (!this._cur2D) {return}
     const id = this._cur2D.id
-    if (typeof destroyScenario2D === 'function') {destroyScenario2D()}
+    if (window.Scenario2D && typeof window.Scenario2D.destroy === 'function') {window.Scenario2D.destroy();}
     setTimeout(() => {
-      if (typeof initScenario2D === 'function') {
-        initScenario2D('scenario2d-container', id)
+      if (window.Scenario2D) {
+        const lvId = (this.cur && this.cur.id) || (this.qst && this.qst.lvId) || 1;
+        window.Scenario2D.play(lvId, () => { this.showLevels(); }, id);
       }
     }, 100)
-  }
+  },
 });
 
 
@@ -4851,9 +4897,10 @@ const _buildVehicle = window._buildVehicle = (type, col, opts) => {
       const KEEP = ['glass', 'window', 'windshield', 'windscreen', 'tyre', 'tire',
         'wheel', 'rim', 'chrome', 'metal', 'light', 'lamp', 'head', 'tail',
         'glassdark', 'black', 'trim', 'grille', 'plate', 'interior']
+      const castShad = !!opts.exact;
       baseModel.traverse((child) => {
         if (child.isMesh) {
-          child.castShadow = true
+          child.castShadow = castShad
           child.receiveShadow = true
           if (child.material) {
             const matName = (child.material.name || child.name || '').toLowerCase()
@@ -4867,6 +4914,12 @@ const _buildVehicle = window._buildVehicle = (type, col, opts) => {
               if (opts.tintAll && protectedMat) { return; }
               child.material = child.material.clone()
               child.material.color.setHex(paintColor)
+              if (child.material.metalness !== undefined) {
+                child.material.metalness = Math.min(child.material.metalness, 0.25);
+              }
+              if (child.material.roughness !== undefined) {
+                child.material.roughness = Math.max(child.material.roughness, 0.45);
+              }
             }
           }
         }
@@ -5281,6 +5334,18 @@ const _buildVehicle = window._buildVehicle = (type, col, opts) => {
  * Character Studio & High-Fidelity Human Model Implementation for UI.js
  */
 
+
+// The number of lessons the course actually contains. It was hard-coded to 52
+// in several places while the level registry holds every lesson file, so the
+// certificate and the badge thresholds fired five lessons early and the
+// result card told the student "Level 12 / 52" on a 57-lesson course.
+function levelTotal() {
+  try {
+    const n = (window.LVS && window.LVS.length) || 0;
+    return n > 0 ? n : 52;
+  } catch (e) { return 52; }
+}
+
 const SAMPLE_MODELS = [
   { id: 'player_hero', file: 'Models/character_hero_green.glb', name: 'Adventure Hero', tag: 'Hero', icon: '🏃', desc: 'Full 3D stylized adventure protagonist in green tunic' },
   { id: 'player_rpg', file: 'Models/character_rpg_hero.glb', name: 'RPG Warrior', tag: 'Warrior', icon: '🛡️', desc: 'Stylized 3D hero with shield and armor' },
@@ -5472,6 +5537,16 @@ function _kaykitClip(PM, action) {
  * @param PM   window.PRELOADED_MODELS
  * @param opts { variant, scale, rotY, action, tint }
  */
+  function _cloneSkinned(source) {
+    if (typeof THREE !== 'undefined' && THREE.SkeletonUtils && typeof THREE.SkeletonUtils.clone === 'function') {
+      return THREE.SkeletonUtils.clone(source);
+    }
+    if (typeof window.SkeletonUtils !== 'undefined' && typeof window.SkeletonUtils.clone === 'function') {
+      return window.SkeletonUtils.clone(source);
+    }
+    return source.clone ? source.clone(true) : source;
+  }
+
 function _buildKayKitRig(PM, opts) {
   opts = opts || {};
   const rig = PM.char_rig_medium_movement;
@@ -5481,7 +5556,7 @@ function _buildKayKitRig(PM, opts) {
   const sk = opts.scale || 0.74;
   let body;
   try {
-    body = rig.clone(true);
+    body = _cloneSkinned(rig);
   } catch (e) {
     return null;
   }
@@ -5560,6 +5635,7 @@ function _buildKayKitRig(PM, opts) {
       walkAction.setEffectiveWeight(0);
       idleAction.play();
       walkAction.play();
+      mixer.update(0.016); // Pose bones immediately before first render
     }
   } catch (e) {
     mixer = null;

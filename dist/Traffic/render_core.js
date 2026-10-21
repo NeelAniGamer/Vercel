@@ -345,20 +345,23 @@ class RenderCore {
         const preset = this.getPreset();
         const scale = this._dprResScale != null ? this._dprResScale : preset.resScale;
 
-        if (scale === 1.0 && this._dprResScale == null) {
-
+        if (this.composer && this.bloomPass && this.bloomPass.enabled) {
+            this.composer.render();
+        } else if (scale === 1.0 && this._dprResScale == null) {
             this.renderer.render(scene, camera);
         } else {
-
             if (!this.renderTarget) {this._setupRenderBypass();}
 
             this.renderer.setRenderTarget(this.renderTarget);
             this.renderer.render(scene, camera);
 
+            // Disable toneMapping during the fullscreen quad blit so exposure isn't applied twice
+            const prevToneMapping = this.renderer.toneMapping;
+            this.renderer.toneMapping = THREE.NoToneMapping;
             this.renderer.setRenderTarget(null);
             this.renderer.render(this.blitScene, this.blitCamera);
+            this.renderer.toneMapping = prevToneMapping;
         }
-
 
         if (this._autoQualityEnabled) {this._checkFrameBudget();}
     }
@@ -414,15 +417,15 @@ class RenderCore {
     }
 
     
-    setupPostProcessing(width, height, isMobile) {
-        if (!THREE.EffectComposer || isMobile) {
+    setupPostProcessing(width, height, isMobile, scene, camera) {
+        if (!THREE.EffectComposer || isMobile || !scene || !camera) {
             this.composer = null;
             return;
         }
 
         try {
             this.composer = new THREE.EffectComposer(this.renderer);
-            this.composer.addPass(new THREE.RenderPass(this.scene, this.camera));
+            this.composer.addPass(new THREE.RenderPass(scene, camera));
 
             const preset = this.getPreset();
             this.bloomPass = new THREE.UnrealBloomPass(

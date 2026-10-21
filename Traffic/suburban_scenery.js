@@ -15,15 +15,38 @@
 (function () {
   'use strict';
 
+  // Mark a clone of a PRELOADED_MODELS entry as sharing its geometry and
+  // materials with the cached master, so the group teardown does not dispose
+  // the master's GPU buffers out from under every other instance of that
+  // model in the game.
+  function markSharedAsset(obj) {
+    try {
+      obj.traverse(c => {
+        if (c.isMesh) {
+          c.userData = c.userData || {};
+          c.userData._sharedAsset = true;
+        }
+      });
+    } catch {}
+    return obj;
+  }
+
   function createSuburbanNeighborhood(game, cfg) {
     const scene = game.scene;
     if (!scene) {return;}
 
-    // Remove any existing suburban scenery group
+    // Remove any existing suburban scenery group.
+    //
+    // The disposal has to skip the props cloned from window.PRELOADED_MODELS:
+    // a clone SHARES its geometry and materials with the cached master, so
+    // disposing them tears down the master's GPU buffers and corrupts every
+    // other instance of that model in the game. This is the same failure
+    // world-streamer.js documents and avoids.
     const existing = scene.getObjectByName('SuburbanNeighborhoodScenery');
     if (existing) {
       scene.remove(existing);
       existing.traverse(ch => {
+        if (ch.userData && ch.userData._sharedAsset) {return;}
         if (ch.geometry) {ch.geometry.dispose();}
         if (ch.material) {
           if (Array.isArray(ch.material)) {ch.material.forEach(m => m.dispose());}
@@ -323,7 +346,7 @@
           const P = window.PRELOADED_MODELS || {};
           const lightKey = (i % 4 === 0 && P['streetlight_curved']) ? 'streetlight_curved' : (P['streetlight_square'] ? 'streetlight_square' : null);
           if (lightKey && P[lightKey]) {
-            const lightObj = P[lightKey].clone();
+            const lightObj = markSharedAsset(P[lightKey].clone());
             lightObj.scale.set(2.2, 2.2, 2.2);
             lightObj.position.set(xSign * (halfRoad + 0.5), 0.16, lotZ + 6);
             lightObj.rotation.y = xSign > 0 ? Math.PI / 2 : -Math.PI / 2;
@@ -942,7 +965,7 @@
       const key = glbKeys[lotIndex % glbKeys.length];
       const model = P[key];
       if (model) {
-        const clone = model.clone();
+        const clone = markSharedAsset(model.clone());
         clone.rotation.y = xSign > 0 ? -Math.PI / 2 : Math.PI / 2;
 
         if (key === 'house_lowpoly_isometric') {
@@ -1003,7 +1026,7 @@
   function placeSuburbanTree(x, z, materials) {
     const P = window.PRELOADED_MODELS || {};
     if (P['tree_large'] && Math.random() > 0.4) {
-      const tree = P['tree_large'].clone();
+      const tree = markSharedAsset(P['tree_large'].clone());
       tree.scale.set(2.0, 2.0, 2.0);
       tree.position.set(x, 0.14, z);
       tree.rotation.y = Math.random() * Math.PI * 2;
@@ -1016,7 +1039,7 @@
       });
       return tree;
     } else if (P['tree_small'] && Math.random() > 0.4) {
-      const tree = P['tree_small'].clone();
+      const tree = markSharedAsset(P['tree_small'].clone());
       tree.scale.set(2.0, 2.0, 2.0);
       tree.position.set(x, 0.14, z);
       tree.rotation.y = Math.random() * Math.PI * 2;

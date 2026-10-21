@@ -1,3 +1,9 @@
+// Module-level reusable scratch vectors to prevent per-frame allocations
+const _SCRATCH_FWD = (typeof THREE !== 'undefined' && THREE.Vector3) ? new THREE.Vector3() : null;
+const _SCRATCH_RIGHT = (typeof THREE !== 'undefined' && THREE.Vector3) ? new THREE.Vector3() : null;
+const _SCRATCH_DIFF = (typeof THREE !== 'undefined' && THREE.Vector3) ? new THREE.Vector3() : null;
+const _SCRATCH_UP = (typeof THREE !== 'undefined' && THREE.Vector3) ? new THREE.Vector3(0, 1, 0) : null;
+
 const NPC_STATE = {
   IDLE: 'IDLE',
   FOLLOW_LANE: 'FOLLOW_LANE',
@@ -936,6 +942,15 @@ class NPCAI {
     this.routeIndex++;
     if (this.targetNode) {
       this.vehicle.currentNode = this.targetNode;
+    }
+    // Keep the vehicle's edge in step with the AI's. The traffic manager
+    // indexes vehicles per edge for the MOBIL grouping and the lane-clear
+    // checks, and it read `vehicle.currentEdge` - which was written ONCE at
+    // spawn and never updated, so every vehicle stayed filed under the edge
+    // it was born on and the lead/follower relationships were computed
+    // against cars that were elsewhere.
+    if (this.vehicle && this.currentEdge) {
+      this.vehicle.currentEdge = this.currentEdge;
     }
     this._pickNextTarget();
   }
@@ -2080,7 +2095,13 @@ class NPCAI {
     const myPos = this.vehicle.position;
     for (const v of this.trafficManager.vehicles) {
       if (v === this.vehicle) {continue;}
-      if (v.userData && v.userData.isAmb && v.position.distanceTo(myPos) < 80) {
+      // The vehicle record has no userData of its own - the type lives on the
+      // mesh. The old `v.userData.isAmb` was therefore undefined for every
+      // vehicle, so the pull-over for an ambulance never happened and the
+      // "yield to the ambulance" behaviour was dead code.
+      const vType = (v.type) || (v.mesh && v.mesh.userData && v.mesh.userData.npcType);
+      const isAmb = vType === 'ambulance' || (v.mesh && v.mesh.userData && v.mesh.userData.isAmb);
+      if (isAmb && v.position.distanceTo(myPos) < 80) {
 
         const forward = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
         const toAmb = new THREE.Vector3().subVectors(v.position, myPos);
@@ -2108,18 +2129,20 @@ class NPCAI {
   _checkEmergencyAvoidance(playerVehicle) {
     if (this.state === NPC_STATE.CRASH || this.state === NPC_STATE.EMERGENCY_BRAKE) {return;}
     if (this.currentSpeed < 0.8) {return;}
-    const forward = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
     const myPos = this.vehicle.position;
     if (!myPos) {return;}
-    const checkRadius = 16;
+    const rotY = this.vehicle.rotation.y;
+    const fx = Math.sin(rotY), fz = Math.cos(rotY);
+    const checkRadiusSq = 16 * 16;
+
     const p = playerVehicle || (this.trafficManager?.game?.playerVehicle || this.trafficManager?.game?.player);
     if (p && p.position) {
-      const toPlayer = new THREE.Vector3().subVectors(p.position, myPos);
-      const dist = toPlayer.length();
-      if (dist < checkRadius) {
-        const proj = toPlayer.dot(forward);
-        const lateralOffset = Math.abs(toPlayer.x * forward.z - toPlayer.z * forward.x);
-        if (proj > 0 && proj < 9.0 && dist < 7.5 && lateralOffset < 1.4) {
+      const dx = p.position.x - myPos.x, dz = p.position.z - myPos.z;
+      const distSq = dx * dx + dz * dz;
+      if (distSq < checkRadiusSq) {
+        const proj = dx * fx + dz * fz;
+        const lateralOffset = Math.abs(dx * fz - dz * fx);
+        if (proj > 0 && proj < 9.0 && distSq < 56.25 && lateralOffset < 1.4) {
           this.state = NPC_STATE.EMERGENCY_BRAKE;
           this.emergencyBrakeTimer = 0;
           this.currentAcceleration = -Math.max(6.0, this.idmParams.bMax || 8.0);
@@ -2128,39 +2151,36 @@ class NPCAI {
       }
     }
 
-    if (this.trafficManager && this.trafficManager.vehicles) {
-      for (let i = 0; i < this.trafficManager.vehicles.length; i++) {
-        const v = this.trafficManager.vehicles[i];
-        if (!v || v === this.vehicle || !v.position || !v.active) {continue;}
-        const toV = new THREE.Vector3().subVectors(v.position, myPos);
-        const dist = toV.length();
-        if (dist > checkRadius) {continue;}
-        const proj = toV.dot(forward);
-        const lateralOffset = Math.abs(toV.x * forward.z - toV.z * forward.x);
+    const vehicles = this.trafficManager && this.trafficManager.vehicles;
+    if (!vehicles) {return;}
+    for (let i = 0; i < vehicles.length; i++) {
+      const v = vehicles[i];
+      if (!v || v === this.vehicle || !v.position || !v.active) {continue;}
+      const dx = v.position.x - myPos.x, dz = v.position.z - myPos.z;
+      const distSq = dx * dx + dz * dz;
+      if (distSq > checkRadiusSq) {continue;}
 
-        const vSpeed = Math.abs(v.speed !== undefined ? v.speed : (v.npcAI?.currentSpeed || 0));
-        const vState = v.npcAI?.state;
+      const proj = dx * fx + dz * fz;
+      if (proj <= 0 || proj >= 9.0 || distSq >= 56.25) {continue;}
 
-        // Never trigger emergency brake against stationary side-road traffic unless directly in our path
-        if ((vSpeed < 0.5 || vState === 'WAIT_SIGNAL' || vState === 'PARK') && (lateralOffset > 1.05 || dist > 4.5)) {
-          continue;
-        }
+      const lateralOffset = Math.abs(dx * fz - dz * fx);
+      if (lateralOffset >= 1.8) {continue;}
 
-        // Heading alignment check: perpendicular cars at side-road stop lines should not trigger emergency braking
-        const vRot = v.rotation ? (typeof v.rotation.y === 'number' ? v.rotation.y : v.rotation) : (v.mesh ? v.mesh.rotation.y : 0);
-        const headingDot = forward.x * Math.sin(vRot) + forward.z * Math.cos(vRot);
-        if (headingDot < 0.30 && lateralOffset > 1.15) {
-          continue;
-        }
-
-        if (proj > 0 && proj < 9.0 && dist < 7.5 && lateralOffset < 1.8) {
-          this.state = NPC_STATE.EMERGENCY_BRAKE;
-          this.emergencyBrakeTimer = 0;
-          this.currentAcceleration = -Math.max(6.0, this.idmParams.bMax || 8.0);
-          this._honk();
-          return;
-        }
+      const vSpeed = Math.abs(v.speed !== undefined ? v.speed : (v.npcAI?.currentSpeed || 0));
+      const vState = v.npcAI?.state;
+      if ((vSpeed < 0.5 || vState === 'WAIT_SIGNAL' || vState === 'PARK') && (lateralOffset > 1.05 || distSq > 20.25)) {
+        continue;
       }
+
+      const vRot = v.rotation ? (typeof v.rotation.y === 'number' ? v.rotation.y : v.rotation) : (v.mesh ? v.mesh.rotation.y : 0);
+      const headingDot = fx * Math.sin(vRot) + fz * Math.cos(vRot);
+      if (headingDot < 0.30 && lateralOffset > 1.15) {continue;}
+
+      this.state = NPC_STATE.EMERGENCY_BRAKE;
+      this.emergencyBrakeTimer = 0;
+      this.currentAcceleration = -Math.max(6.0, this.idmParams.bMax || 8.0);
+      this._honk();
+      return;
     }
   }
 
@@ -2489,7 +2509,12 @@ class PedestrianAI {
           const npc = npcs[i];
           const nPos = npc.position || npc.mesh?.position;
           if (!nPos) {continue;}
-          const isBus = npc.type === 'bus' || npc.userData?.npcType === 'bus' || npc.userData?.type === 'bus';
+          // The type lives on the mesh for traffic-manager vehicles, and on
+          // userData for the scene NPC meshes. The old check only looked at
+          // `npc.userData.npcType`, so a bus was never detected and the
+          // pedestrian never queued for it.
+          const npcType = npc.type || npc.userData?.npcType || npc.userData?.type || npc.mesh?.userData?.npcType;
+          const isBus = npcType === 'bus';
           const distToBus = Math.hypot(nPos.x - stopX, nPos.z - stopZ);
           if (isBus && distToBus < 15.0) {
             this.state = PED_STATE.QUEUING;

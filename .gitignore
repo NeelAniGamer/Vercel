@@ -39,3 +39,7 @@ Traffic/col-ui.css
 # slice into Traffic/Models/props and Traffic/audio, and THOSE are tracked — so
 # nothing the game needs is lost by ignoring the dump. Build.js also deny-lists it.
 /Traffic/Models And SFX/
+Traffic/shots/
+Traffic/tools/_shots/
+Traffic/Traffic/
+Traffic/analyze_files.js

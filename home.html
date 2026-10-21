@@ -1439,6 +1439,18 @@
       .pc:not(.feat) {
         grid-column: span 2;
       }
+      @media (min-width: 1025px) {
+        /* #projects holds 7 cards: 2 feature (span 3) + 5 standard (span 2).
+           Rows 1 and 2 fill the 6-column grid, but row 3 would only carry
+           2 cards (4 of 6 columns) and leave a 33% hole. Give the last two
+           cards 3 columns each so row 3 fills completely.
+           Scoped to >1024px because the 4-column layout below 1025px
+           already treats feature and standard cards identically. */
+        #projects .pgrid > .pc:nth-last-child(2),
+        #projects .pgrid > .pc:last-child {
+          grid-column: span 3;
+        }
+      }
       .pc {
         display: flex;
         flex-direction: column;
@@ -3593,7 +3605,10 @@
 
     <main id="main">
     <section class="hero" id="heroSection">
-      <canvas id="orrery"></canvas>
+      <!-- NOTE: the old <canvas id="orrery"> WebGL stage was removed.
+           It was never driven: col-3d.js is not loaded on this page, so the
+           canvas stayed at its default 300x150 with opacity 0, while the
+           CSS/SVG .hero-orbital-stage below is the actual orrery. -->
       <div class="hvig"></div>
       <div class="hvigb"></div>
 
@@ -3694,9 +3709,10 @@
           <a href="Traffic/Driving" class="ni-btn ni-btn-primary" id="niLaunchBtn">
             Launch Engine <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
-          <button class="ni-btn ni-btn-secondary" id="niFocusBtn">
-            Center View
-          </button>
+          <!-- NOTE: the "Center View" button was removed. It called
+               window.__col3d.flyToNode/zoom, but col-3d.js is not loaded on
+               this page, so window.__col3d was always undefined and the
+               button was a visible no-op. The CSS orrery has no camera. -->
           <button class="ni-btn ni-btn-ghost" id="niDismissBtn">
             Return Orbit ✕
           </button>
@@ -4067,63 +4083,12 @@
           </div>
         </a>
 
-        <a href="download" class="pc cs" data-delay="320">
-          <div class="pv" style="background: #0d0818">
-            <div class="c-bg" style="position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-              <!-- Continuous Moving Audio Wave Lines -->
-              <div class="col-moving-audio-lines" aria-hidden="true">
-                <svg class="col-audio-wave-1" viewBox="0 0 800 60" preserveAspectRatio="none">
-                  <path d="M0,30 Q100,8 200,30 T400,30 T600,30 T800,30" fill="none" stroke="rgba(236, 72, 153, 0.65)" stroke-width="2"/>
-                </svg>
-                <svg class="col-audio-wave-2" viewBox="0 0 800 60" preserveAspectRatio="none">
-                  <path d="M0,30 Q100,52 200,30 T400,30 T600,30 T800,30" fill="none" stroke="rgba(0, 240, 255, 0.5)" stroke-width="1.8"/>
-                </svg>
-              </div>
-              <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--plasma)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="position: relative; z-index: 2;">
-                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-                <line x1="12" y1="19" x2="12" y2="23"/>
-                <line x1="8" y1="23" x2="16" y2="23"/>
-              </svg>
-            </div>
-          </div>
-          <div class="pb">
-            <div class="pn">05 &mdash; Native Android</div>
-            <h3 class="pname">Cereal AI Assistant</h3>
-            <p class="pdesc">Background lecture and meeting recorder powered by Gemini 2.5 Flash, generating instant structured notes and task action items.</p>
-          </div>
-          <div class="pf">
-            <div class="ptags"><span class="tag">Kotlin</span><span class="tag">Gemini AI</span><span class="tag">Android APK</span></div>
-            <div class="plink">
-              Get APK <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-            </div>
-          </div>
-        </a>
-
-        <a href="CastFlow" class="pc ci" data-delay="400">
-          <div class="pv" style="background: #040d18">
-            <div class="c-bg" style="position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
-              <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--ion)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2" y="3" width="20" height="14" rx="2"/>
-                <line x1="8" y1="21" x2="16" y2="21"/>
-                <line x1="12" y1="17" x2="12" y2="21"/>
-                <path d="M2 16.5a1 1 0 0 0 1 1"/>
-                <path d="M2 13a4.5 4.5 0 0 1 4.5 4.5"/>
-              </svg>
-            </div>
-          </div>
-          <div class="pb">
-            <div class="pn">06 &mdash; Wireless Suite</div>
-            <h3 class="pname">CastFlow Studio</h3>
-            <p class="pdesc">High-framerate wireless screen mirroring, classroom projector casting, and remote touch control over local Wi-Fi and DLNA.</p>
-          </div>
-          <div class="pf">
-            <div class="ptags"><span class="tag">WebSockets</span><span class="tag">WebRTC</span><span class="tag">DLNA</span></div>
-            <div class="plink">
-              Launch <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-            </div>
-          </div>
-        </a>
+        <!-- Cereal AI and CastFlow Studio were duplicated here from the
+             #projects grid above (same destinations, same titles). They were
+             removed so each project appears exactly once, which also keeps
+             this 6-column grid free of a trailing 2-column hole. The APK
+             download path they offered is still reachable from the hero
+             "Download Android App" button and the nav "Downloads Hub". -->
       </div>
     </section>
     </main>
@@ -4183,39 +4148,18 @@
           applyTheme(false)
         }
 
-        // 3. Top Nav Scroll State (rAF-throttled — avoids layout thrashing)
-        var navEl = document.getElementById('topNav')
-        var navTicking = false
-        if (navEl) {
-          window.addEventListener(
-            'scroll',
-            function () {
-              if (!navTicking) {
-                requestAnimationFrame(function () {
-                  navEl.classList.toggle('s', window.scrollY > 60)
-                  navTicking = false
-                })
-                navTicking = true
-              }
-            },
-            { passive: true }
-          )
-        }
+        // 3. Top Nav Scroll State
+        // NOTE: the .top-nav `.s` scroll state is owned by col-ui.js (a single
+        // rAF-throttled listener, threshold 50px). A second listener here
+        // fought it at a 60px threshold and the two toggled the class on
+        // every frame between 50 and 60px. Do not re-add it.
 
         // 4. Accessible Dropdown Interaction & Close on Outside Click
-        var projDD = document.getElementById('projDD')
-        if (projDD) {
-          var projBtn = projDD.querySelector('.dropdown-btn')
-          if (projBtn) {
-            projBtn.addEventListener('click', function (e) {
-              e.preventDefault()
-              e.stopPropagation()
-              var willOpen = !projDD.classList.contains('active')
-              projDD.classList.toggle('active')
-              projBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false')
-            })
-          }
-        }
+        // NOTE: the Projects dropdown button is wired in col-ui.js, which
+        // handles .dropdown-btn clicks for every page and keeps
+        // `aria-expanded` in sync. A second handler here used to toggle
+        // `.active` twice per click (inline script + col-ui.js), which
+        // cancelled itself out. Do not re-add it.
         window.addEventListener('click', function (e) {
           if (!e.target.closest('.dropdown')) {
             document.querySelectorAll('.dropdown.active').forEach(function (d) {
@@ -4556,6 +4500,11 @@
           }
         }
 
+        // Alias: col-3d.js registers the civic-database planet as 'Database',
+        // and the hero orrery calls openNodeInspector() with that name.
+        // Without this alias the inspector silently does nothing.
+        PROJECTS_DATA.Database = PROJECTS_DATA.Database_Logic
+
         var heroSection = document.getElementById('heroSection')
         var inspector = document.getElementById('nodeInspector')
         var niIcon = document.getElementById('niIcon')
@@ -4567,7 +4516,6 @@
         var niTeleFps = document.getElementById('niTeleFps')
         var niDesc = document.getElementById('niDesc')
         var niLaunchBtn = document.getElementById('niLaunchBtn')
-        var niFocusBtn = document.getElementById('niFocusBtn')
         var niCloseBtn = document.getElementById('niCloseBtn')
         var niDismissBtn = document.getElementById('niDismissBtn')
 
@@ -4656,14 +4604,6 @@
         if (niDismissBtn) niDismissBtn.addEventListener('click', function () {
           window.closeNodeInspector()
           if (window.__col3d && window.__col3d.resetView) window.__col3d.resetView()
-        })
-        if (niFocusBtn) niFocusBtn.addEventListener('click', function () {
-          if (currentNodeKey && window.__col3d && window.__col3d.flyToNode) {
-            window.__col3d.flyToNode(currentNodeKey)
-          }
-          if (window.__col3d && window.__col3d.zoom) {
-            window.__col3d.zoom(-10)
-          }
         })
 
         // Dock Chips Interaction

@@ -6,9 +6,15 @@
   try {
     // Fetch global config from the deployed site. Do not let the service worker
     // cache routing/auth configuration.
-    const res = await fetch('/config.json', { cache: 'no-store' })
-    if (!res.ok) {return}
-    const config = await res.json()
+    // The promise is cached on window so col-auth.js can reuse the same
+    // request instead of issuing a second one for the same file.
+    window.__colConfigPromise =
+      window.__colConfigPromise ||
+      fetch('/config.json', { cache: 'no-store' })
+        .then((r) => (r.ok ? r.json() : null))
+        .catch(() => null)
+    const config = await window.__colConfigPromise
+    if (!config) {return}
 
     const rawPage = window.location.pathname.split('/').filter(Boolean).pop() || 'home'
     const page = rawPage.replace(/\.html$/i, '').toLowerCase()

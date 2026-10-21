@@ -157,19 +157,58 @@ class TrafficManager {
           if (vehicle.mesh && vehicle.mesh.visible) {vehicle.mesh.visible = false;}
           // Throttle AI calculation to every 4th frame
           vehicle._simTick = ((vehicle._simTick || 0) + 1) % 4;
-          if (vehicle._simTick !== 0) {return;}
+          if (vehicle._simTick !== 0) {
+            // Bank the skipped time. The AI used to be advanced with the full
+            // frame dt whenever it DID run, so far traffic integrated a
+            // quarter of the elapsed time and crawled at half speed.
+            vehicle._simAccum = (vehicle._simAccum || 0) + dt;
+            return;
+          }
         } else if (distSq > midDistSq) {
           // Mid-range: show mesh, update AI every 2nd frame
           if (vehicle.mesh && !vehicle.mesh.visible) {vehicle.mesh.visible = true;}
           vehicle._simTick = ((vehicle._simTick || 0) + 1) % 2;
-          if (vehicle._simTick !== 0) {return;}
+          if (vehicle._simTick !== 0) {
+            vehicle._simAccum = (vehicle._simAccum || 0) + dt;
+            return;
+          }
         } else {
           // Close range: full 60Hz update
           if (vehicle.mesh && !vehicle.mesh.visible) {vehicle.mesh.visible = true;}
         }
       }
 
-      vehicle.npcAI.update(dt, playerVehicle, signals);
+      // Advance the AI by the time that actually elapsed for this vehicle.
+      const _simDt = vehicle._simAccum !== undefined ? vehicle._simAccum : dt;
+      vehicle._simAccum = 0;
+      vehicle.npcAI.update(_simDt, playerVehicle, signals);
+
+      // Brake lights and indicators. IndianVehicles.setBraking() and
+      // setIndicator() exist, but nothing ever called them: every NPC car's
+      // brake lights stayed dark and no indicator ever blinked, so the
+      // player could not see the traffic ahead reacting.
+      if (window.IndianVehicles && vehicle.mesh) {
+        const acc = (vehicle.npcAI && vehicle.npcAI.currentAcceleration) || 0;
+        window.IndianVehicles.setBraking(vehicle.mesh, acc < -0.15);
+        let side = null;
+        const ai = vehicle.npcAI;
+        if (ai && ai.isChangingLane && typeof ai.currentLane === 'number' && typeof ai.laneChangeTargetLane === 'number' && ai.laneChangeTargetLane !== ai.currentLane) {
+          // A higher lane index is to the right of the EDGE direction; if the
+          // vehicle is travelling against that direction, it is its left.
+          const edge = ai.currentEdge;
+          let sameWay = true;
+          try {
+            const fwd = edge && edge.getForwardVector ? edge.getForwardVector(ai.currentNode) : null;
+            if (fwd && vehicle.rotation !== undefined) {
+              const vfx = Math.sin(vehicle.rotation.y), vfz = Math.cos(vehicle.rotation.y);
+              sameWay = (fwd.x * vfx + fwd.z * vfz) > 0;
+            }
+          } catch {}
+          const rightward = (ai.laneChangeTargetLane > ai.currentLane) === sameWay;
+          side = rightward ? 'R' : 'L';
+        }
+        window.IndianVehicles.setIndicator(vehicle.mesh, side);
+      }
       if (vehicle.mesh) {
         vehicle.mesh.position.copy(vehicle.position);
         vehicle.mesh.rotation.y = vehicle.rotation.y;
@@ -183,7 +222,11 @@ class TrafficManager {
     this.lastDensityUpdate += dt;
     if (this.lastDensityUpdate >= 4) {
       this.lastDensityUpdate = 0;
-      const targetDensity = Math.min(getBaseNPCCount() * (1 + this.densityMultiplier * 1.5), getMaxNPCCount());
+      // The multiplier is a MULTIPLIER of the base count. The old expression
+      // (base * (1 + m * 1.5)) was above the cap for every reachable value of
+      // m, so the ramp never happened and every level jumped straight to the
+      // maximum vehicle count.
+      const targetDensity = Math.min(getBaseNPCCount() * this.densityMultiplier, getMaxNPCCount());
       const currentCount = this.vehicles.filter(v => v.active).length;
       
       if (currentCount < targetDensity) {
@@ -287,15 +330,42 @@ class TrafficManager {
   }
 
   spawnInitialTraffic(roadGraph, route, count = BASE_NPC_COUNT, levelConfig = {}) {
+    // The TrafficManager instance is created ONCE and reused for every level
+    // and every retry, while _buildScene() wipes the scene and resets
+    // game.npcs. The previous level's vehicles were left in this.vehicles:
+    // still simulated every frame, still counted against the new level's
+    // spawn budget, and still collision-tested against the player at the OLD
+    // map's coordinates - invisible phantom cars.
+    this.clearAllVehicles();
     this.roadGraph = roadGraph;
     this.mainRoute = this._resolveRouteNodes(route);
     this.levelConfig = levelConfig;
     this.levelNpcTypes = levelConfig.npcTypes || [];
     this.levelNpcs = levelConfig.npcs || [];
     this.levelNpcIndex = 0;
+    this.densityMultiplier = 1;
+    this._rival = null;
     // AAA-style staggered spawn: queue instead of bursting `count` NPCs in one
     // frame (each build + NPCAI-init hitches). update() drains a few per frame.
     this._spawnQueue = (this._spawnQueue || 0) + count;
+  }
+
+  // Despawn every live vehicle. Used at the start of a level so no traffic
+  // survives from the previous one.
+  clearAllVehicles() {
+    if (!this.vehicles || !this.vehicles.length) {
+      this.vehicles = [];
+      this.platoons = [];
+      this.edgeVehicles = this.edgeVehicles || new Map();
+      return;
+    }
+    this.vehicles.slice().forEach(v => {
+      try {this._despawnVehicle(v);} catch {}
+    });
+    this.vehicles = [];
+    if (this.platoons) {this.platoons.length = 0;}
+    if (this.edgeVehicles) {this.edgeVehicles.clear();}
+    this._rival = null;
   }
 
 
@@ -322,11 +392,16 @@ class TrafficManager {
   _spawnSingleVehicle() {
 
     let type, isRuleBreaker, profileKey, color, route;
+    // Hoisted: the F2-rival branch below reads npcConfig, and it used to be
+    // a block-scoped `const` inside the scripted-NPC branch, so the rival
+    // check was permanently false and no rival was ever created - no speed
+    // boost, no nametag, and no "RIVAL BEATEN" bonus.
+    let npcConfig = null;
     const rulesCompliantLevel = !!(this.levelConfig && this.levelConfig.npcRulesCompliant);
 
     if (this.levelNpcs.length > 0 && this.levelNpcIndex < this.levelNpcs.length) {
 
-      const npcConfig = this.levelNpcs[this.levelNpcIndex];
+      npcConfig = this.levelNpcs[this.levelNpcIndex];
       type = npcConfig.type;
       route = npcConfig.route;
       color = npcConfig.color;
@@ -388,7 +463,7 @@ class TrafficManager {
     // F2 rival: scripted `rival: true` in level npcs[] — faster cruise, never
     // despawns into random traffic, taunts via the level's story dialogue.
     // (npcConfig only exists on the scripted branch — guard with typeof.)
-    if (typeof npcConfig !== 'undefined' && npcConfig && npcConfig.rival) {
+    if (npcConfig && npcConfig.rival) {
       vehicle.isRival = true;
       vehicle.rivalName = npcConfig.name || 'Rival Driver';
       if (vehicle.npcAI && vehicle.npcAI.idmParams) {
@@ -836,20 +911,25 @@ class TrafficManager {
 
 
 
-    const pos = edge.getPointAt(this._spawnTOnEdge(edge));
+    const tOnEdge = this._spawnTOnEdge(edge);
     const forward = edge.getForwardVector(startNode);
-    const right = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize();
 
     // Vehicles always drive IN LANES on the road (even in pedestrian levels —
     // road traffic is exactly what pedestrians must be taught to navigate around)
-    const offsets = edge.getLaneOffsets();
     const laneCount = Math.max(1, edge.lanes || 1);
     const lane = Math.floor(Math.random() * laneCount);
-    const dirBase = startNode === edge.startNode ? 0 : laneCount;
-    const offset = offsets[dirBase + lane] !== undefined ? offsets[dirBase + lane] : 0;
 
-    pos.addScaledVector(right, offset);
-    pos.y = 0.5;
+    // Spawn on the SAME lane the AI will drive. The old code applied the
+    // edge-absolute lane offset along a TRAVEL-relative vector, so a vehicle
+    // spawned against the far end of the edge landed on the mirror image of
+    // its lane - a 3.5m sideways jump the moment the AI took over.
+    const pos = edge.getLaneCenter(lane, tOnEdge, 0);
+    if (!pos) {return null;}
+    // The vehicle mesh is re-grounded by IndianVehicles.normalise() (its
+    // origin is the tyre contact), so the group belongs at y = 0 - the road
+    // surface is at 0.05 and the player's car sits at 0. The old 0.5 left
+    // every NPC hovering half a metre above the tarmac.
+    pos.y = 0;
 
     // Reject spawn if position is within 16m of any active vehicle or 22m of player
     const isOccupied = this.vehicles.some(v => v.active && v.position && v.position.distanceTo(pos) < 16.0);

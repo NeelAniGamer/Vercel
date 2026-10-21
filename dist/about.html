@@ -404,8 +404,6 @@
       box-shadow: 0 12px 28px -10px var(--signal);
     }
 
-    .desktop-dl {}
-
     .mobile-dl {
       display: none;
     }
@@ -773,12 +771,6 @@
 
       100% {
         top: 100%;
-      }
-    }
-
-    @keyframes fi {
-      to {
-        opacity: 1;
       }
     }
 
@@ -1283,7 +1275,7 @@
 
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 0;
       max-width: 1360px;
       margin: 0 auto;
@@ -1326,6 +1318,10 @@
 
     .stat:nth-child(4) .stat-num {
       color: var(--plasma);
+    }
+
+    .stat:nth-child(5) .stat-num {
+      color: var(--em);
     }
 
     .stat-label {
@@ -1627,6 +1623,12 @@
     }
 
     /* ==================== RESPONSIVE ==================== */
+    @media (max-width: 1280px) {
+      .stat {
+        padding: 44px 20px;
+      }
+    }
+
     @media (max-width: 1024px) {
       .team-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -1636,8 +1638,16 @@
         grid-template-columns: repeat(2, 1fr);
       }
 
-      .stat:nth-child(2) {
+      /* Even items sit on the right edge of the two-column table. */
+      .stat:nth-child(even) {
         border-right: none;
+      }
+
+      /* Odd count: let the trailing stat own the full row instead of
+         leaving a dead cell beside it. */
+      .stat:nth-child(5) {
+        grid-column: 1 / -1;
+        border-top: 1px solid var(--line);
       }
 
       .mission-grid {
@@ -1669,6 +1679,10 @@
       .stat {
         border-right: none;
         border-bottom: 1px solid var(--line);
+      }
+
+      .stat:nth-child(5) {
+        border-top: none;
       }
 
       .stat:last-child {

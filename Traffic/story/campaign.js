@@ -265,7 +265,7 @@
         prior: true,
         osd: {
           clock: '3:13:52',
-          banner: 'BANDRA-WEST CCTV // JUNCTION 04',
+          banner: 'ANDHERI-WEST CCTV // JUNCTION 04',
           rec: 'REC  ●  LIVE',
           gps: 'CAM 04 · LINKING RD / SIGNAL JUNCTION',
           unit: 'IR LOW-LUX · 24FPS · AUDIO MUTED'
@@ -310,8 +310,8 @@
         hold: 3,
         ease: 'inOutQuad',
         transition: 'cut',
-        from: [1.6, 2.4, -18.0], to: [3.0, 2.2, -15.4],
-        look: [6.0, 1.2, -12.3],
+        from: [4.85, 1.32, -14.1], to: [4.65, 1.30, -13.6],
+        look: [4.15, 1.18, -12.9],
         fov: 44,
         act: 'night',
         prior: true,
@@ -357,8 +357,8 @@
         ease: 'linear',
         transition: 'cut',
         noRain: true,
-        from: [11.8, 1.7, -14.2], to: [11.2, 1.6, -13.4],
-        look: [6.0, 1.0, -12.4],
+        from: [4.75, 1.24, -13.85], to: [4.55, 1.22, -13.60],
+        look: [4.15, 1.0, -12.4],
         fov: 28,
         act: 'night',
         prior: true,
@@ -440,7 +440,7 @@
         act: 'night',
         prior: true,
         aftermath: true,
-        title: 'Vikram Sawant · 19 Years, Traffic Division',
+        title: 'Vikram Sawant · 22 Years, Traffic Division',
         sub: {
           speaker: 'Mumbai Police Radio',
           line: '"All units, 10-33 on Linking Road! Officer down! Black Fortuner fled south towards Shanti Galli!"'
@@ -466,7 +466,7 @@
         }
       },
 
-      // 9 — TRANSITION TO SHANTI GALLI. Six hours later, dawn breaks over the colony.
+      // 9 — TRANSITION TO SHANTI GALLI. Three hours later, dawn breaks over the colony.
       //     The camera glides down onto Sharma Niwas on Shanti Galli, revealing the
       //     family home, the garage with the parked car, and Kabir's mother calling from
       //     the balcony. This establishes the player's immediate spawn point and vehicle,
@@ -477,7 +477,7 @@
         ease: 'cinematic',
         transition: 'cut',
         timePass: true,
-        title: 'Six Hours Later · Shanti Galli — Sharma Niwas',
+        title: 'Three Hours Later · Shanti Galli — Sharma Niwas',
         from: [-54, 8, -112], to: [-62, 3.2, -122],
         look: [-64.0, 1.2, -128],
         lookTo: [-64.0, 1.2, -128],
@@ -515,7 +515,7 @@
         // the exact spot the prologue spent nine shots framing.
         after: 'wait_red',
         once: true,
-        title: 'Six Hours Later · Same Signal',
+        title: 'Three Hours Later · Same Signal',
 
         // A beat films on the PLAYABLE map, so it needs its own cast in
         // playable coordinates. Declaring this does NOT reuse the stage cast —
@@ -566,7 +566,7 @@
           //
           //     `dawn`, not `day`. The prologue was 3:14am; the lesson runs at
           //     midday. This beat is the handover between them and it is staged
-          //     six hours on from the murder, so it gets its own low-sun act
+          //     three hours on from the murder, so it gets its own low-sun act
           //     rather than borrowing full daylight — a rising sun rakes across
           //     the carriageway here and throws the junction's own shadows across
           //     the stop line, which is the one image in the whole film that puts

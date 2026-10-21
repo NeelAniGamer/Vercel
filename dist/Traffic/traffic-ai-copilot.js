@@ -42,6 +42,24 @@
       this._initHUD();
     }
 
+    // The co-pilot instance is REUSED across levels (the engine resets three
+    // fields on it, not the rest), so the per-level latches below survived a
+    // level change: the first green light in the next level immediately
+    // completed "move_green" because the previous level had stopped at a red.
+    reset() {
+      this.safetyScore = 100;
+      this.hazardStatus = 'clear';
+      this.hazardMessage = 'Scanning roadway...';
+      this.overspeedTimer = 0;
+      this.stoppedAtRedLight = false;
+      this.yieldedToPedestrians = false;
+      this.yieldedToAmbulance = false;
+      this.puddleSplashCount = 0;
+      this.honkedInQuietZone = false;
+      this.lastAlertText = '';
+      this.lastSpokenTime = 0;
+    }
+
     _initHUD() {
       if (typeof document === 'undefined') {return;}
       // Check if existing HUD element exists
@@ -283,7 +301,11 @@
 
       const player = this.game.player;
       const pPos = player.position;
-      const currentSpeedKmh = Math.abs(this.game.currentSpeed || 0) * 3.6;
+      // The engine's internal speed is x100 = km/h (maxSpd 1.1 = 110 km/h).
+      // `game.currentSpeed` is never assigned - it only exists on NPC objects
+      // - so the co-pilot's speed was always 0: no overspeed warning, no
+      // safety penalty, and the safety badge pinned at 100%.
+      const currentSpeedKmh = Math.abs(this.game.speed || 0) * 100;
       const cfg = this.game.mapCfg || {};
       const speedLimit = cfg.speedLimit || (cfg.hasSchool ? 25 : 50);
 
@@ -312,9 +334,13 @@
         for (const sig of this.game.sigs) {
           const sigDist = Math.hypot(sig.position.x - pPos.x, sig.position.z - pPos.z);
           if (sigDist < 45.0) {
-            const isRed = (sig.userData && sig.userData.state === 'red');
-            const isAmb = (sig.userData && sig.userData.state === 'amber');
-            
+            // The engine writes the state onto the signal GROUP (`sig.state`),
+            // not into its userData, so the old check never saw a red light
+            // and the whole signal branch was dead.
+            const sigState = sig.state || (sig.userData && sig.userData.state);
+            const isRed = (sigState === 'red');
+            const isAmb = (sigState === 'amber' || sigState === 'yellow');
+
             if (isRed) {
               if (sigDist < 25.0) {
                 currentHazard = 'danger';
@@ -332,7 +358,7 @@
             } else if (isAmb) {
               currentHazard = 'caution';
               message = `🟡 Amber signal. Prepare to stop before white line.`;
-            } else if (sig.userData && sig.userData.state === 'green') {
+            } else if (sigState === 'green') {
               if (this.stoppedAtRedLight) {
                 this._markSyllabusTaskDone('move_green');
               }
@@ -391,10 +417,11 @@
     }
 
     _markSyllabusTaskDone(taskId) {
-      const taskLists = [
-        this.game.tasks,
-        this.game.mapCfg && this.game.mapCfg.tasks
-      ];
+      // Only the engine's OWN task list. `game.mapCfg.tasks` is the same array
+      // as the shared LVS level entry (mapCfg is a shallow merge), so writing
+      // to it permanently ticked the objective in the level definition and a
+      // retry started with it already complete.
+      const taskLists = [this.game.tasks];
 
       for (const list of taskLists) {
         if (!list || !Array.isArray(list)) {continue;}

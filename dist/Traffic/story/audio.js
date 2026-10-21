@@ -40,6 +40,20 @@
   var beds = {};          // active looping beds by name
   var unlocked = false;
 
+  // Per-shot "has this cue already fired" guards, keyed by the shot object.
+  //
+  // These used to be a single `shot.__fired` string written onto the AUTHORED
+  // shot object, which was wrong twice over:
+  //   - one slot served three cue kinds (stingAt / sampleAt / sayThen), so a
+  //     shot carrying two of them kept re-arming each other and BOTH cues
+  //     re-fired every frame for the rest of the shot;
+  //   - the guard lived on the campaign data, which every replay of the film
+  //     shares, so the second and later plays lost their cues entirely.
+  // A WeakMap keeps the state off the shared data and out of the way of
+  // garbage collection; the guard for a shot is dropped when the shot is
+  // entered, so a replay fires the same cues again.
+  var cueFired = new WeakMap();
+
   // ── Voice casting ─────────────────────────────────────────────────────────
   //
   // Matched against the speaker string in a shot's subtitle, most specific
@@ -954,6 +968,13 @@
     if (!shot) { return; }
     var a = shot.audio || {};
 
+    // A shot is ENTERED once per film. Clearing its cue guards here is what
+    // makes a replay of the film fire the same cues again: the guards used to
+    // live on the authored shot object, which the campaign data shares across
+    // every play, so the second and later plays lost their stings and their
+    // lines entirely.
+    try { cueFired.delete(shot); } catch {}
+
     if (a.beds) {
       Object.keys(a.beds).forEach(function (k) {
         var v = a.beds[k];
@@ -1006,10 +1027,22 @@
     if (!shot) { return; }
     var a = shot.audio || {};
 
+    // One guard per CUE, not one per shot: a shot may carry a sting AND a
+    // recorded sample AND a second line, and they must not evict each other.
+    var fired = cueFired.get(shot);
+    if (!fired) { fired = {}; cueFired.set(shot, fired); }
+    var once = function (key) {
+      if (fired[key]) { return false; }
+      fired[key] = true;
+      return true;
+    };
+
+    // The time gate comes FIRST: `once()` marks the cue as fired, so
+    // checking the clock after it would swallow every cue whose time had
+    // not been reached yet.
     if (a.stingAt) {
       var key = 'sting:' + (a.stingAt.name || a.stingAt.kind || 'x');
-      if (shot.__fired !== key && p >= (a.stingAt.at || 0)) {
-        shot.__fired = key;
+      if (p >= (a.stingAt.at || 0) && once(key)) {
         sting(a.stingAt.kind || 'click', a.stingAt.gain);
       }
     }
@@ -1020,8 +1053,7 @@
         var SBa = window.SampleBank;
         if (SBa) {
           var skey2 = 'sample:' + (a.sampleAt.name || a.sampleAt.key || 'x');
-          if (shot.__fired !== skey2 && p >= (a.sampleAt.at || 0)) {
-            shot.__fired = skey2;
+          if (p >= (a.sampleAt.at || 0) && once(skey2)) {
             SBa.play(a.sampleAt.name || a.sampleAt.key, { gain: a.sampleAt.gain });
           }
         }
@@ -1030,8 +1062,7 @@
 
     if (shot.sayThen && p >= (shot.sayThen.at || 0)) {
       var skey = 'say:' + shot.sayThen.speaker + ':' + String(shot.sayThen.line).slice(0, 12);
-      if (shot.__fired !== skey) {
-        shot.__fired = skey;
+      if (once(skey)) {
         say(stripQuotes(shot.sayThen.line), {
           speaker: shot.sayThen.speaker,
           radio: !!(a && a.radio)

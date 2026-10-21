@@ -219,7 +219,11 @@
           completed: false,
           verify: (g) => {
             const spd = typeof g.speed === 'number' ? g.speed : (g.spd || 0)
-            const isNearSignal = g.nearIntersection || g._nearSignal || (g.distToSignal !== undefined && g.distToSignal < 30) || (g._approachingRedLight === true)
+            // The engine's own signal-proximity helper. The old check read
+            // g.nearIntersection / g._nearSignal / g.distToSignal /
+            // g._approachingRedLight - none of which exists anywhere - so the
+            // objective could never complete.
+            const isNearSignal = typeof g._nearRedSignal === 'function' && g._nearRedSignal(40);
             return isNearSignal && spd < 0.5 && !g.violationsLog?.includes('RED_LIGHT_VIOLATION')
           }
         })
@@ -232,9 +236,21 @@
           xp: 50,
           completed: false,
           verify: (g) => {
-            const veh = g.playerVehicle || g.player || g.car
-            const spdKmh = (typeof g.speed === 'number' ? g.speed * 3.6 : (g.curSpeed || (g.spd || 0) * 3.6))
-            return g.ambulanceYielded === true || (spdKmh < 15 && Math.abs(veh?.position?.x || 0) > 3.5)
+            const veh = g.playerVehicle || g.player
+            const spdKmh = (typeof g.speed === 'number' ? g.speed : 0) * 100
+            // An ambulance has to actually be there. The old fallback
+            // awarded the flag for "not on the centreline" at any speed
+            // (the speed test used the wrong unit, so it was always true),
+            // so the objective ticked with no ambulance in the level.
+            const amb = (g.npcs || []).find(n => n && n.userData && (n.userData.npcType === 'ambulance' || n.userData.missionRole === 'ambulance'))
+            if (!amb || !amb.position) {return false}
+            const px = veh && veh.position ? veh.position.x : 0
+            const pz = veh && veh.position ? veh.position.z : 0
+            const dx = amb.position.x - px
+            const dz = amb.position.z - pz
+            const dist = Math.hypot(dx, dz)
+            // Yield = give it room (lateral offset) and slow down.
+            return dist < 40 && Math.abs(dx) > 2.5 && spdKmh < 40
           }
         })
       } else if (theme.includes('silence') || theme.includes('hospital')) {
@@ -246,7 +262,14 @@
           xp: 50,
           completed: false,
           verify: (g) => {
-            return !g.violationsLog?.includes('NO_HONKING') && (g.progressDist || 0) > 30
+            if (g.violationsLog?.includes('NO_HONKING')) {return false}
+            // "Navigate the perimeter": the engine has no distance counter, but
+            // it does know where the level started. g.progressDist does not
+            // exist, so the objective could never complete.
+            const p = g.player && g.player.position
+            const s = g._spawnPos
+            if (!p || !s) {return false}
+            return Math.hypot(p.x - s.x, p.z - s.z) > 30
           }
         })
       } else if (theme.includes('parking')) {
@@ -258,9 +281,13 @@
           xp: 50,
           completed: false,
           verify: (g) => {
-            const veh = g.playerVehicle || g.player || g.car
+            const veh = g.playerVehicle || g.player
             const spd = typeof g.speed === 'number' ? g.speed : (g.spd || 0)
-            return g.parkedCorrectly === true || (spd < 0.2 && Math.abs(veh?.position?.x || 0) > 3.5)
+            // The engine's own parking flag - it is set when the player is off
+            // the carriageway and stopped. g.parkedCorrectly does not exist,
+            // and the old proxy ("more than 3.5m from the centreline")
+            // completed the objective anywhere on the map.
+            return g._reachedParking === true && spd < 0.2 && !!veh
           }
         })
       } else {
@@ -273,11 +300,26 @@
           completed: false,
           verify: (g) => {
             const spd = typeof g.speed === 'number' ? g.speed : (g.spd || 0)
-            if (spd > 2) {
-              this.laneComplianceFrames++
-              return this.laneComplianceFrames > 90
-            }
-            return false
+            // "Maintain continuous lane alignment for at least 3 seconds
+            // without swerving". The old test was `spd > 2`, and the engine's
+            // internal speed tops out around 1.1 (110 km/h) - so the counter
+            // never advanced and the objective never completed.
+            if (spd < 0.05) { this.laneComplianceFrames = 0; return false }
+            const p = g.player && g.player.position
+            if (!p) {return false}
+            const status = typeof g._getRoadAndSidewalkStatus === 'function'
+              ? g._getRoadAndSidewalkStatus(p.x, p.z) : null
+            if (!status || !status.onRoad) { this.laneComplianceFrames = 0; return false }
+            // Stable heading between frames - a swerve resets the count.
+            const rot = g.player.rotation ? g.player.rotation.y : 0
+            const last = (this._lastLaneRot === undefined) ? rot : this._lastLaneRot
+            this._lastLaneRot = rot
+            let d = rot - last
+            while (d > Math.PI) d -= Math.PI * 2
+            while (d < -Math.PI) d += Math.PI * 2
+            if (Math.abs(d) > 0.03) { this.laneComplianceFrames = 0; return false }
+            this.laneComplianceFrames++
+            return this.laneComplianceFrames > 90
           }
         })
       }
@@ -291,7 +333,11 @@
         xp: 35,
         completed: false,
         verify: (g) => {
-          const spdKmh = (typeof g.speed === 'number' ? g.speed * 3.6 : (g.spd || 0) * 3.6)
+          // The engine's internal speed is x100 = km/h (maxSpd 1.1 = 110 km/h).
+          // The old conversion used x3.6, so the window 5-55 km/h was
+          // unreachable - the maximum attainable value was 3.96 - and this
+          // objective never completed in any level.
+          const spdKmh = (typeof g.speed === 'number' ? g.speed : (g.spd || 0)) * 100
           if (spdKmh > 5 && spdKmh <= 55) {
             this.speedComplianceFrames++
             return this.speedComplianceFrames > 90
@@ -309,7 +355,11 @@
         xp: 75,
         completed: false,
         verify: (g) => {
-          const finished = g.reachedGoal === true || g.levelCompleted === true || (g.cps && g.cps.length > 0 && g.cps.every(c => c.done))
+          // Checkpoints are THREE.Groups; their completion flag lives in
+          // userData.hit, not in a `done` property.
+          const cps = g.cps || []
+          const finished = g.reachedGoal === true || g.levelCompleted === true ||
+            (cps.length > 0 && cps.every(c => c && c.userData && c.userData.hit))
           return finished && (g.vio === 0 || (!g.violationsLog || g.violationsLog.length === 0))
         }
       })
@@ -318,7 +368,12 @@
     }
 
     update(dt) {
-      if (!this._initialized || !this.game || !this.game.playing) {return}
+      if (!this._initialized || !this.game) {return}
+      // The level-completion flag is set BEFORE stopPlay() clears `playing`,
+      // so the "Zero Violation Capstone" objective could never be evaluated
+      // at the one moment it becomes true. Keep evaluating after the level
+      // has finished.
+      if (!this.game.playing && !this.game.levelCompleted) {return}
 
       for (let i = 0; i < this.tasks.length; i++) {
         const task = this.tasks[i]

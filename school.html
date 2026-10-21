@@ -8,6 +8,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Class Of Learners" />
+    <meta name="theme-color" content="#070A14" id="themeMeta" />
     <script>
       ;(function () {
         var ua = navigator.userAgent || ''
@@ -84,15 +85,6 @@
     <script>
       ;(function () {
         try {
-          if (localStorage.getItem('theme') === 'light') {
-            document.documentElement.classList.add('lm')
-          }
-        } catch (e) {}
-      })()
-    </script>
-    <script>
-      ;(function () {
-        try {
           var c = localStorage.getItem('col_admin_config')
           if (c) {
             var cfg = JSON.parse(c),
@@ -138,7 +130,7 @@
         --mono: 'Space Mono', monospace;
         --ease: cubic-bezier(0.16, 1, 0.3, 1);
         --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
---r: 18px;
+        --r: 18px;
       }
 
       *,
@@ -377,8 +369,6 @@
         transform: translateY(-2px);
         box-shadow: 0 12px 28px -10px var(--signal);
       }
-      .desktop-dl {
-      }
       .mobile-dl {
         display: none;
       }
@@ -459,60 +449,6 @@
         color: var(--ink);
         padding-left: 18px;
       }
-      .tw {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding-left: 18px;
-        
-      }
-      .tl {
-        font-size: 0.7rem;
-        font-weight: 700;
-        color: var(--dim);
-        text-transform: uppercase;
-        letter-spacing: 0.07em;
-        min-width: 32px;
-      }
-      .tsb {
-        position: relative;
-        width: 46px;
-        height: 24px;
-        cursor: pointer;
-        display: inline-block;
-        flex-shrink: 0;
-      }
-      .tsb input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-        position: absolute;
-      }
-      .tst {
-        position: absolute;
-        inset: 0;
-        border-radius: 30px;
-        background: var(--void2);
-        border: 1px solid var(--lineb);
-        transition: 0.4s;
-      }
-      .tsth {
-        position: absolute;
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        top: 3px;
-        left: 3px;
-        background: var(--signal);
-        transition: transform 0.4s var(--spring);
-        font-size: 0.6rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      input:checked + .tst .tsth {
-        transform: translateX(22px);
-      }
       .nav-login-btn {
         background: transparent;
         color: var(--em);
@@ -572,18 +508,6 @@
         display: flex;
         align-items: center;
         overflow: hidden;
-      }
-      #schoolBg {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        display: block;
-        opacity: 0;
-        transition: opacity 1.8s var(--ease);
-      }
-      #schoolBg.v {
-        opacity: 1;
       }
       .hvig {
         position: absolute;
@@ -775,6 +699,25 @@
         border-radius: 4px;
       }
 
+      /* Content Grids */
+      .overview-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        max-width: 1360px;
+        margin: 0 auto;
+      }
+      .academics-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+      }
+      .facilities-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+      }
+
       /* Pillars Grid */
       .pillars-section {
         padding-top: 40px;
@@ -882,151 +825,7 @@
         font-size: 0.82rem;
       }
 
-      /* Auth Modal */
-      .mo {
-        position: fixed;
-        inset: 0;
-        z-index: 2000;
-        background: rgba(0, 0, 0, 0.82);
-        backdrop-filter: blur(14px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.3s var(--ease);
-      }
-      .mo.open {
-        opacity: 1;
-        pointer-events: auto;
-      }
-      .md {
-        background: var(--panel);
-        border: 1px solid var(--lineb);
-        border-radius: 24px;
-        width: 90%;
-        max-width: 440px;
-        overflow: hidden;
-        transform: translateY(26px) scale(0.96);
-        transition: transform 0.4s var(--ease);
-        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.75);
-        color: var(--ink);
-      }
-      .mo.open .md {
-        transform: translateY(0) scale(1);
-      }
-      .mhd {
-        padding: 30px;
-        border-bottom: 1px solid var(--line);
-        text-align: center;
-      }
-      .mhd h2 {
-        font-family: var(--serif);
-        font-size: 1.75rem;
-        font-weight: 400;
-      }
-      .mhd p {
-        font-size: 0.9rem;
-        color: var(--dim);
-        margin-top: 6px;
-      }
-      .mbd {
-        padding: 30px;
-      }
-      .ml2 {
-        font-size: 0.7rem;
-        font-weight: 700;
-        color: var(--dim);
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        display: block;
-        margin-bottom: 8px;
-      }
-      .mi {
-        width: 100%;
-        padding: 13px;
-        border: 1px solid var(--lineb);
-        border-radius: 12px;
-        font-size: 0.93rem;
-        outline: none;
-        margin-bottom: 18px;
-        color: var(--ink);
-        background: rgba(255, 255, 255, 0.05);
-        font-family: var(--sans);
-        transition: border-color 0.3s;
-      }
-      .mi:focus {
-        border-color: var(--em);
-        box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.15);
-      }
-      .gbtn {
-        width: 100%;
-        padding: 13px;
-        background: #fff;
-        border: 1px solid #dadce0;
-        border-radius: 8px;
-        font-weight: 500;
-        font-size: 0.88rem;
-        cursor: pointer;
-        color: #3c4043;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-        margin-bottom: 18px;
-        transition: 0.2s;
-        font-family: var(--sans);
-      }
-      .ms {
-        width: 100%;
-        padding: 13px;
-        background: var(--em);
-        border: none;
-        border-radius: 12px;
-        font-weight: 800;
-        font-size: 0.93rem;
-        cursor: pointer;
-        color: #06140e;
-        transition: 0.3s;
-        font-family: var(--sans);
-      }
-      .ms:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 24px rgba(52, 211, 153, 0.3);
-      }
-      .msk {
-        width: 100%;
-        padding: 13px;
-        background: none;
-        border: none;
-        font-size: 0.88rem;
-        font-weight: 600;
-        color: var(--dim);
-        cursor: pointer;
-        margin-top: 8px;
-        transition: 0.25s;
-        font-family: var(--sans);
-      }
-      .msk:hover {
-        color: var(--ink);
-      }
-      .mskd {
-        width: 100%;
-        padding: 13px;
-        background: transparent;
-        border: 1px solid #ef4444;
-        border-radius: 12px;
-        font-size: 0.93rem;
-        font-weight: 700;
-        color: #ef4444;
-        cursor: pointer;
-        margin-top: 10px;
-        transition: 0.25s;
-        font-family: var(--sans);
-      }
-      .mskd:hover {
-        background: rgba(239, 68, 68, 0.1);
-      }
+      /* Toast */
       .toast {
         position: fixed;
         bottom: 32px;
@@ -1066,6 +865,11 @@
         .section {
           padding: 60px 22px;
         }
+        .overview-grid,
+        .facilities-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .academics-grid,
         .pillars-grid {
           grid-template-columns: 1fr;
         }
@@ -1079,29 +883,14 @@
           flex-direction: column;
           gap: 16px;
         }
-        div[style*='grid-template-columns: repeat(4'],
-        div[style*='grid-template-columns:repeat(4'],
-        .section div[style*='grid-template-columns:repeat(4'] {
-          grid-template-columns: repeat(2, 1fr) !important;
-        }
-        div[style*='grid-template-columns: 1fr 1fr'],
-        div[style*='grid-template-columns:1fr 1fr'],
-        .section div[style*='grid-template-columns:1fr 1fr'] {
-          grid-template-columns: 1fr !important;
-        }
       }
       @media (max-width: 640px) {
         .school-hero h1 {
           font-size: 2.5rem !important;
         }
-        div[style*='grid-template-columns: repeat(4'],
-        div[style*='grid-template-columns:repeat(4'],
-        div[style*='grid-template-columns: repeat(2'],
-        div[style*='grid-template-columns:repeat(2'],
-        div[style*='grid-template-columns: 1fr 1fr'],
-        div[style*='grid-template-columns:1fr 1fr'],
-        .section div[style*='grid-template-columns'] {
-          grid-template-columns: 1fr !important;
+        .overview-grid,
+        .facilities-grid {
+          grid-template-columns: 1fr;
         }
       }
       @media (max-width: 480px) {
@@ -1208,8 +997,6 @@
     <script defer src="col-ui.js"></script>
     <script defer src="col-auth.js"></script>
     <link rel="manifest" href="manifest.json" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   </head>
   <body>
     <script>
@@ -1323,13 +1110,13 @@
       </div>
       <div class="nav-actions">
         <div class="hz-toggle" onclick="hzToggle()"><div class="hz-clouds"></div><div class="hz-stars"></div><div class="hz-orb"></div></div>
-        <button class="nav-login-btn" id="navLoginBtn" onclick="openLogin()">
+        <button class="nav-login-btn" id="navLoginBtn" onclick="if (window.openGlobalLogin) window.openGlobalLogin(); else if (window.openLogin) window.openLogin();">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
             <circle cx="12" cy="7" r="4" /></svg
           >Sign In
         </button>
-        <div class="nav-user-profile" id="navUserProfile" onclick="openLogin()">
+        <div class="nav-user-profile" id="navUserProfile" onclick="if (window.openGlobalLogin) window.openGlobalLogin(); else if (window.openLogin) window.openLogin();">
           <div class="nav-user-avatar" id="navUserAv">?</div>
           <span class="nun" id="navUserName">User</span>
         </div>
@@ -1366,24 +1153,24 @@
 
     <!-- SCHOOL OVERVIEW -->
     <section class="section rv" style="padding-top: 30px">
-      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; max-width: 1360px; margin: 0 auto">
+      <div class="overview-grid">
         <div style="background: rgba(242, 184, 75, 0.06); border: 1px solid rgba(242, 184, 75, 0.2); border-radius: 16px; padding: 28px; text-align: center">
-          <div style="font-size: 2rem; margin-bottom: 8px">??</div>
+          <div style="font-size: 2rem; margin-bottom: 8px">&#128218;</div>
           <div style="font-family: var(--serif); font-size: 1.5rem; color: var(--signal); margin-bottom: 4px">CBSE</div>
           <div style="color: var(--dim); font-size: 0.85rem">Affiliation</div>
         </div>
         <div style="background: rgba(94, 212, 245, 0.06); border: 1px solid rgba(94, 212, 245, 0.2); border-radius: 16px; padding: 28px; text-align: center">
-          <div style="font-size: 2rem; margin-bottom: 8px">??</div>
+          <div style="font-size: 2rem; margin-bottom: 8px">&#128205;</div>
           <div style="font-family: var(--serif); font-size: 1.5rem; color: var(--ion); margin-bottom: 4px">Mumbai</div>
           <div style="color: var(--dim); font-size: 0.85rem">Maharashtra, India</div>
         </div>
         <div style="background: rgba(52, 211, 153, 0.06); border: 1px solid rgba(52, 211, 153, 0.2); border-radius: 16px; padding: 28px; text-align: center">
-          <div style="font-size: 2rem; margin-bottom: 8px">??</div>
+          <div style="font-size: 2rem; margin-bottom: 8px">&#127979;</div>
           <div style="font-family: var(--serif); font-size: 1.5rem; color: var(--em); margin-bottom: 4px">K-12</div>
           <div style="color: var(--dim); font-size: 0.85rem">Education Range</div>
         </div>
         <div style="background: rgba(184, 155, 255, 0.06); border: 1px solid rgba(184, 155, 255, 0.2); border-radius: 16px; padding: 28px; text-align: center">
-          <div style="font-size: 2rem; margin-bottom: 8px">??</div>
+          <div style="font-size: 2rem; margin-bottom: 8px">&#128187;</div>
           <div style="font-family: var(--serif); font-size: 1.5rem; color: var(--plasma); margin-bottom: 4px">CS Focus</div>
           <div style="color: var(--dim); font-size: 0.85rem">Technology Program</div>
         </div>
@@ -1395,7 +1182,7 @@
       <div style="max-width: 1360px; margin: 0 auto">
         <div class="hey" style="margin-bottom: 6px">Academics</div>
         <h2 style="font-family: var(--serif); font-size: 2.4rem; font-weight: 400; margin-bottom: 32px; color: var(--ink)">Academic <em style="color: var(--ion)">Excellence</em></h2>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px">
+        <div class="academics-grid">
           <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--line); border-radius: 20px; padding: 36px">
             <h3 style="font-family: var(--serif); font-size: 1.4rem; font-weight: 400; color: var(--ink); margin-bottom: 14px">CBSE Curriculum</h3>
             <p style="color: var(--dim); line-height: 1.8; font-size: 0.95rem">
@@ -1419,7 +1206,7 @@
       <div style="max-width: 1360px; margin: 0 auto">
         <div class="hey" style="margin-bottom: 6px">Campus</div>
         <h2 style="font-family: var(--serif); font-size: 2.4rem; font-weight: 400; margin-bottom: 32px; color: var(--ink)">School <em style="color: var(--teal)">Facilities</em></h2>
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px">
+        <div class="facilities-grid">
           <div
             class="rv"
             style="
@@ -1534,7 +1321,21 @@
       </div>
     </section>
 
-    <!-- AUTH MODAL -->
+    <!-- FOOTER -->
+    <footer class="sf" style="content-visibility:auto; contain-intrinsic-size: 0 200px">
+      <div class="fi">
+        <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
+        <div class="fl">
+          <a href="making">Making</a>
+          <a href="privacy">Privacy</a>
+          <a href="terms">Terms</a>
+          <a href="feedback">Feedback</a>
+          <a href="download">Downloads</a>
+        </div>
+        <div class="fc">&copy; 2026 Neel, Ansh, &amp; Aarush (Co‑Founders).</div>
+      </div>
+    </footer>
+
     <div class="toast" id="toast"></div>
 
     <script>
@@ -1592,26 +1393,7 @@
         applyTheme(false)
       }
 
-      // 3. Top Nav Scroll State (rAF-throttled)
-      var navEl = document.getElementById('topNav')
-      var navTicking = false
-      if (navEl) {
-        window.addEventListener(
-          'scroll',
-          function () {
-            if (!navTicking) {
-              requestAnimationFrame(function () {
-                navEl.classList.toggle('s', window.scrollY > 60)
-                navTicking = false
-              })
-              navTicking = true
-            }
-          },
-          { passive: true }
-        )
-      }
-
-      // 4. Accessible Dropdown Interaction & Close on Outside Click
+      // 3. Accessible Dropdown Interaction & Close on Outside Click
       var projDD = document.getElementById('projDD')
       if (projDD) {
         var projBtn = projDD.querySelector('.dropdown-btn')
@@ -1635,7 +1417,7 @@
         }
       })
 
-      // 5. Scroll reveals
+      // 4. Scroll reveals
       ;(function () {
         var els = document.querySelectorAll('.rv')
         var io = new IntersectionObserver(
@@ -1654,18 +1436,5 @@
         })
       })()
     </script>
-
-    <footer class="sf" style="content-visibility:auto; contain-intrinsic-size: 0 200px">
-      <div class="fi">
-        <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
-        <div class="fl">
-          <a href="making">Making</a>
-          <a href="privacy">Privacy</a>
-          <a href="terms">Terms</a>
-          <a href="feedback">Feedback</a>
-          <a href="download">Downloads</a>
-        </div>
-        <div class="fc">&copy; 2026 Neel, Ansh, &amp; Aarush (Co‑Founders).</div>
-      </div>
   </body>
 </html>

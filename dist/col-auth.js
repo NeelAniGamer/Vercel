@@ -49,6 +49,20 @@ window.closeMo = function () {
   if (window._colAuthRunning) {return}
   window._colAuthRunning = true
 
+  // Single entry point for dismissing the auth modal. closeGlobalAuth()
+  // also restores aria-hidden="true" and the inert attribute; the raw
+  // `mo.classList.remove('open')` calls that used to be scattered through
+  // the sign-in / OTP / logout handlers left the modal exposed to
+  // assistive tech and to background focus.
+  function closeAuthModal() {
+    if (typeof window.closeGlobalAuth === 'function') {
+      window.closeGlobalAuth()
+      return
+    }
+    const mo = document.getElementById('colAuthModal')
+    if (mo) {mo.classList.remove('open')}
+  }
+
   // --- Local Account Storage Utilities ---
   // Local profiles are intentionally non-sensitive. Passwords are never
   // persisted in localStorage; offline credentials are represented only by a
@@ -348,14 +362,18 @@ window.closeMo = function () {
   }
 
   // 1. Fetch Global Configuration to get Supabase Keys (root-absolute so /Traffic/* pages resolve)
+  // The request is shared with col-router.js via window.__colConfigPromise so
+  // the site does not fetch /config.json twice on every page load.
   let authConfig = null
   try {
-    const res = await fetch('/config.json?t=' + new Date().getTime())
-    if (res.ok) {
-      const config = await res.json()
-      if (config.auth && config.auth.url && config.auth.key) {
-        authConfig = config.auth
-      }
+    window.__colConfigPromise =
+      window.__colConfigPromise ||
+      fetch('/config.json?t=' + new Date().getTime())
+        .then((r) => (r.ok ? r.json() : null))
+        .catch(() => null)
+    const config = await window.__colConfigPromise
+    if (config && config.auth && config.auth.url && config.auth.key) {
+      authConfig = config.auth
     }
   } catch (e) {
     console.warn('[col-auth] Could not load config.json — authentication disabled.')
@@ -1202,6 +1220,13 @@ window.closeMo = function () {
     const body = document.getElementById('colAuthBody')
     if (!body) {return}
 
+    // promptForUsername() hides .col-auth-hd so the "Choose a username"
+    // screen reads as a welcome card. It never restores the header, so
+    // every later modal opened would have no title and no close button.
+    // Restore it whenever we render a normal panel.
+    const hd = document.querySelector('.col-auth-hd')
+    if (hd) {hd.style.display = ''}
+
     const hdTitle = document.getElementById('colAuthTitle')
     const hdSub = document.getElementById('colAuthSub') || document.querySelector('.col-auth-hd p')
 
@@ -1818,8 +1843,7 @@ window.closeMo = function () {
       if (error) {throw error}
 
       colOtpState = { step: 'send', email: '' }
-      const mo = document.getElementById('colAuthModal')
-      if (mo) {mo.classList.remove('open')}
+      closeAuthModal()
       const loginMo = document.getElementById('loginMo')
       if (loginMo) {loginMo.classList.remove('open')}
       dispatchAuthEvent()
@@ -1894,8 +1918,7 @@ window.closeMo = function () {
               : 'This legacy local account must be recreated with a secure password.')
           }
           setActiveLocalUser(matched)
-          const mo = document.getElementById('colAuthModal')
-          if (mo) {mo.classList.remove('open')}
+          closeAuthModal()
           const loginMo = document.getElementById('loginMo')
           if (loginMo) {loginMo.classList.remove('open')}
           dispatchAuthEvent()
@@ -1926,8 +1949,7 @@ window.closeMo = function () {
                 badges: acc.badges || [],
                 updatedAt: new Date().toISOString()
               })
-              const mo = document.getElementById('colAuthModal')
-              if (mo) {mo.classList.remove('open')}
+              closeAuthModal()
               const loginMo = document.getElementById('loginMo')
               if (loginMo) {loginMo.classList.remove('open')}
               dispatchAuthEvent()
@@ -1951,8 +1973,7 @@ window.closeMo = function () {
         })
 
         if (res.error) {throw res.error}
-        const mo = document.getElementById('colAuthModal')
-        if (mo) {mo.classList.remove('open')}
+        closeAuthModal()
         const loginMo = document.getElementById('loginMo')
         if (loginMo) {loginMo.classList.remove('open')}
       } else {
@@ -1972,8 +1993,7 @@ window.closeMo = function () {
               errDiv.style.color = '#10b981'
               errDiv.style.display = 'block'
             } else {
-              const mo = document.getElementById('colAuthModal')
-              if (mo) {mo.classList.remove('open')}
+              closeAuthModal()
             }
           } catch (cloudErr) {
             console.warn('[col-auth] Cloud signup failed, saving to account system:', cloudErr)
@@ -2007,8 +2027,7 @@ window.closeMo = function () {
               console.warn('[col-auth] Account system cloud registration failed:', regErr)
             }
             setActiveLocalUser(newAcc)
-            const mo = document.getElementById('colAuthModal')
-            if (mo) {mo.classList.remove('open')}
+            closeAuthModal()
             dispatchAuthEvent()
             updateAuthUI()
             return
@@ -2029,8 +2048,7 @@ window.closeMo = function () {
             authSalt: credential.authSalt
           }
           setActiveLocalUser(newAcc)
-          const mo = document.getElementById('colAuthModal')
-          if (mo) {mo.classList.remove('open')}
+          closeAuthModal()
           dispatchAuthEvent()
           updateAuthUI()
         }
@@ -2047,8 +2065,7 @@ window.closeMo = function () {
   window.colDoLogout = async () => {
     if (window.colLocalUser?.isLocal) {
       clearActiveLocalUser()
-      const modal = document.getElementById('colAuthModal')
-      if (modal) {modal.classList.remove('open')}
+      closeAuthModal()
       const loginMo = document.getElementById('loginMo')
       if (loginMo) {loginMo.classList.remove('open')}
       dispatchAuthEvent()
@@ -2061,8 +2078,7 @@ window.closeMo = function () {
       } catch (e) {}
     }
     clearActiveLocalUser()
-    const modal = document.getElementById('colAuthModal')
-    if (modal) {modal.classList.remove('open')}
+    closeAuthModal()
     const loginMo = document.getElementById('loginMo')
     if (loginMo) {loginMo.classList.remove('open')}
     dispatchAuthEvent()
@@ -2088,7 +2104,7 @@ window.closeMo = function () {
   // --- Secure Profile Linking (Verification Code Flow) ---
   window.colAuthGenerateCode = async () => {
     if (!window.supabaseClient || !window.colUser) {
-      toast('Please log in to generate a linking code', '#ef4444');
+      if (typeof toast === 'function') {toast('Please log in to generate a linking code', '#ef4444')}
       return null;
     }
     try {
@@ -2143,14 +2159,16 @@ window.closeMo = function () {
         return
       }
       window.colApkFingerprint = fp
-      // Fetch expected fingerprint from config
+      // Fetch expected fingerprint from config (shared request, see window.__colConfigPromise)
       let expected = null
       try {
-        const res = await fetch('/config.json?t=' + Date.now())
-        if (res.ok) {
-          const cfg = await res.json()
-          expected = cfg.apkCertFingerprint || null
-        }
+        window.__colConfigPromise =
+          window.__colConfigPromise ||
+          fetch('/config.json?t=' + Date.now())
+            .then((r) => (r.ok ? r.json() : null))
+            .catch(() => null)
+        const cfg = await window.__colConfigPromise
+        if (cfg) {expected = cfg.apkCertFingerprint || null}
       } catch (e) {}
       if (expected && fp.toUpperCase() === expected.toUpperCase()) {
         window.colApkVerified = true

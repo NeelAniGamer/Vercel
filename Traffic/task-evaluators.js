@@ -336,9 +336,14 @@
       if (!pp) return false;
       const hyd = (game._fireHydrantPos) || { x: 12, z: 15 };
       const near = Math.abs(pp.x - hyd.x) <= 3 && Math.abs(pp.z - hyd.z) <= 3;
+      const close = Math.hypot(pp.x - hyd.x, pp.z - hyd.z) <= 25;
       if (near) { task['_failed_hydrant'] = true; return false; }
-      if (task['_armed_hydrant'] && !task['_failed_hydrant']) return true;
-      if (task['_failed_hydrant']) task['_armed_hydrant'] = false;
+      if (task['_failed_hydrant']) return false;
+      // Approach, do not hit it, drive away: done. The old code read
+      // `_armed_hydrant`, which nothing ever set, so the objective was dead
+      // and the next objective in the level never unlocked.
+      if (close) { task['_armed_hydrant'] = true; return false; }
+      if (task['_armed_hydrant']) { task['_armed_hydrant'] = false; return true; }
       return false;
     },
 
@@ -460,7 +465,10 @@
         if (!p || !p.position) continue;
         if (dist2D(pp, p.position) <= 12) {
           nearFlood = true;
-          if (p.userData && p.userData.splashed) splashed = true;
+          // The engine stamps `splashedUntil` (a timer) on the puddle, not a
+          // boolean `splashed` - so the "you did not splash" half of this
+          // objective was dead code.
+          if (p.userData && p.userData.splashedUntil && game.timer < p.userData.splashedUntil) splashed = true;
         }
       }
       if (splashed) { task['_failed_splash'] = true; return false; }
@@ -603,8 +611,11 @@
       const tx = cfg.tollX !== undefined ? cfg.tollX : 0;
       const tz = cfg.tollZ !== undefined ? cfg.tollZ : 60;
       if (Math.abs(pp.z - tz) > 20) return false;
-      // Lanes sit at tx-8, tx, tx+8. The FASTAG lane is the middle one.
-      const laneOffset = pp.x - tx;
+      // Lanes sit at tx-8, tx, tx+8. The FASTAG lane is the GREEN one at
+      // tx-8 - the engine signs it '🏷️ FASTAG' and the other two '💵 CASH'.
+      // The old test aimed at the MIDDLE lane, so the objective completed
+      // for driving into the cash booth on a lesson that teaches FASTAG.
+      const laneOffset = (pp.x - tx) + 8;
       if (Math.abs(laneOffset) > 3) return false;
       return dwell(task, 'tolllane', 1, 30);
     },
@@ -764,8 +775,11 @@
     // momentary.
     'toggle/gear': function (game, task) {
       const cfg = cfgOf(game);
-      // Only meaningful on a gradient level.
-      if (!cfg.hasHill && !cfg.isHill) return false;
+      // Only meaningful on a gradient level. The engine's own builder keys
+      // the hill off `hasHillPhysics` (level 32 declares that), so the old
+      // test for hasHill/isHill was false on every frame of that level and
+      // the objective could never complete.
+      if (!cfg.hasHill && !cfg.hasHillPhysics && !cfg.isHill) return false;
       if (game.gear !== 'D') return false;
       // Climbing: still moving, but not flooring it.
       if (Math.abs(game.speed) < 0.05) return false;
@@ -790,9 +804,14 @@
   function speedCapFor(game, cfg) {
     if (typeof cfg.taskSpeedCap === 'number') return cfg.taskSpeedCap;
     if (game.isPedestrian) return 0.18;
-    // 3.6 converts the engine's world-unit speed to km/h.
+    // The engine's internal speed unit is x100 = km/h (maxSpd 1.1 = 110 km/h),
+    // so the cap has to be expressed in those units too. The old conversion
+    // (speedLimit / 3.6) produced 13.9 for a 50 km/h limit - about 1390 km/h -
+    // and the objective could therefore never fail: "Crawl at walking pace"
+    // was free. 70% of the posted limit matches the sibling night cap (0.35
+    // for a 50 km/h limit).
     if (typeof cfg.speedLimit === 'number' && cfg.speedLimit > 0) {
-      return Math.max(0.1, cfg.speedLimit / 3.6);
+      return Math.max(0.1, (cfg.speedLimit / 100) * 0.7);
     }
     return 0.28;
   }
@@ -814,14 +833,18 @@
       if (cls === null || game._lastCollisionType === cls) { task['_failed_class'] = true; return false; }
     }
     if (task['_failed_class']) return false;
-    // There has to be something of that class nearby for the objective to mean
-    // anything.
-    const near = nearestOfType(game, cls, 30);
-    if (!near) return false;
-    task['_armed_class'] = true;
-    // Clear of it and still intact: done.
-    if (near.dist > 30) return true;
-    return false;
+    // "Keep distance from buses" / "give trucks turning space" / "don't crash
+    // at the blind curve": arm while a vehicle of that class is close, and
+    // complete once the player has come out the far side of it unharmed.
+    //
+    // The old code looked for `near.dist > 30` on a value nearestOfType can
+    // only return with dist < 30 (it seeds bestD at maxDist), so that branch
+    // was unreachable and the objective never completed. With cls === null it
+    // was worse: nearestOfType was handed [null] and matched nothing at all.
+    const RANGE = 30;
+    const anyVehicle = ['car', 'bus', 'truck', 'auto', 'bike', 'ambulance', 'police', 'tractor'];
+    const near = (cls === null) ? nearestOfType(game, anyVehicle, RANGE) : nearestOfType(game, cls, RANGE);
+    return passedCleanly(task, 'class', !!near, false);
   }
 
   function avoidedWrongSide(game, task, key) {
