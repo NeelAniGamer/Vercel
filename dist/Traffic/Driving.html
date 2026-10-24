@@ -673,7 +673,7 @@
       font-family: 'Inter', sans-serif;
     }
 
-    #3c {
+    [id="3c"], #\33 c {
       display: block;
       position: absolute;
       top: 0;
@@ -3610,7 +3610,7 @@
     #dn-clock {
       position: fixed;
       top: 3vw;
-      /*right:*/ 3vw;
+      right: 3vw;
       z-index: 25;
       display: none;
       align-items: center;
@@ -5440,7 +5440,7 @@
       #dn-clock {
         top: 4px;
         left: 8px;
-        /*right:*/ auto;
+        right: auto;
         padding: 2px 8px;
         font-size: clamp(0.55rem, 1vw, 0.7rem);
       }
@@ -8760,7 +8760,7 @@
   <script>
     window.LVS = []
   </script>
-  <script defer src="levels/level1.js?v=20261007_v1"></script>
+  <script defer src="levels/level1.js?v=20261023_v4"></script>
   <script defer src="levels/level2.js"></script>
   <script defer src="levels/level3.js"></script>
   <script defer src="levels/level4.js"></script>
@@ -8860,14 +8860,14 @@
   <script defer src="traffic-audio.js?v=20261008_v1"></script>
   <script defer src="unhandled-task-targets.js?v=20260925_v1"></script>
   <script defer src="task-evaluators.js?v=20260925_v1"></script>
-  <script defer src="game_core.js?v=20261008_v1"></script>
+  <script defer src="game_core.js?v=20261024_v2"></script>
   <script defer src="npc-ai.js?v=20260831_v9"></script>
   <script defer src="traffic-manager.js?v=20260831_v9"></script>
   <script defer src="minecraft_character.js"></script>
   <script defer src="ai-scene-generator.js"></script>
   <script defer src="traffic-ai-copilot.js"></script>
   <script defer src="ai-map-llm.js"></script>
-  <script defer src="ui.js?v=20261008_v2"></script>
+  <script defer src="ui.js?v=20261024_v1"></script>
   <!-- Story Mode. Load order is a real dependency chain, not alphabetical:
          stage.js   — the cinematic map configs (no deps; pure data)
          campaign.js— words + shot lists (no deps; pure data)
@@ -8881,17 +8881,17 @@
                         loads rather than before this script executes.
        All must load before start.js boots the Game, and after ui.js (which
        provides _buildHuman/_makeNametag). -->
-  <script defer src="story/stage.js?v=20261008_v1"></script>
-  <script defer src="story/campaign.js?v=20261008_v3"></script>
-  <script defer src="story/shots.js?v=20261008_v3"></script>
+  <script defer src="story/stage.js?v=20261024_v2"></script>
+  <script defer src="story/campaign.js?v=20261024_v2"></script>
+  <script defer src="story/shots.js?v=20261024_v2"></script>
   <!-- Recorded-audio bank. MUST load before audio.js: audio.js reads
        window.SampleBank while applying a shot, and a film cue that fires before
        the bank exists is silently lost rather than deferred. -->
-  <script defer src="story/samples.js?v=20261008_v1"></script>
-  <script defer src="story/audio.js?v=20261008_v2"></script>
-  <script defer src="cinematics.js?v=20261008_v3"></script>
-  <script defer src="cutscene.js?v=20261008_v3"></script>
-  <script defer src="start.js?v=20261008_v1"></script>
+  <script defer src="story/samples.js?v=20261024_v2"></script>
+  <script defer src="story/audio.js?v=20261024_v2"></script>
+  <script defer src="cinematics.js?v=20261024_v2"></script>
+  <script defer src="cutscene.js?v=20261024_v2"></script>
+  <script defer src="start.js?v=20261024_v2"></script>
 
   
   <div id="kid-steer"></div>
@@ -9723,7 +9723,11 @@
           window.TrafficAudio.setMasterVolume(normalised);
         }
         if (window.sfx) {
-          if (typeof window.sfx.setVolume === 'function') { window.sfx.setVolume(normalised); }
+          if (typeof window.sfx.setVolume === 'function') {
+            window.sfx.setVolume(normalised);
+          } else if (typeof window.sfx.setVol === 'function') {
+            ['engine', 'sfx', 'ui', 'env', 'ambient'].forEach(c => window.sfx.setVol(c, normalised));
+          }
           const gain = window.sfx._masterGain || window.sfx._g;
           if (gain && gain.gain) gain.gain.value = normalised;
 

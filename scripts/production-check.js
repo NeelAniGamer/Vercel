@@ -37,7 +37,7 @@ function isExternalOrNonFileUrl(url) {
 }
 
 function checkLocalReference(htmlFile, rawUrl) {
-  const url = rawUrl.split('#')[0].split('?')[0]
+  let url = rawUrl.split('#')[0].split('?')[0]; try { url = decodeURIComponent(url); } catch (e) {}
   if (!url || url === '/' || url === '/home' || url.includes('${') || url.includes('{{')) {return true}
   const target = url.startsWith('/')
     ? path.join(distRoot, url.replace(/^\/+/, ''))

@@ -64,7 +64,7 @@ window.LVS.push({
   // unsignalized so traffic flows and NPCs queue only where the player must.
   signalizedJunctions: [[0, 0]],
   route: [
-    { x: -58, z: -128, desc: 'Back out of the Sharma Niwas garage onto Shanti Galli' },
+    { x: -58, z: -128, desc: 'Back out of the safehouse garage onto Shanti Galli' },
     { x: -52, z: -100, desc: 'Follow Shanti Galli to Colony Cross Lane' },
     { x: 4, z: -96.5, desc: 'Turn left onto Linking Road and keep to the left lane' },
 
@@ -88,7 +88,7 @@ window.LVS.push({
     { x: 4, z: 20, desc: 'GREEN! Cross the junction cleanly past the zebra' },
     { x: 4, z: 60, desc: 'Bazaar stretch — potholes + double-parked tempo, stay left' },
     { x: 20, z: 96.5, desc: 'Turn left into Bazaar Road' },
-    { x: 40, z: 100, desc: '🏁 Park outside Sharma General Stores — deliver Papa\u2019s dabba to Mrs. Iyer before 1 PM' }
+    { x: 40, z: 100, desc: '🏁 Park outside Sharma General Stores — question eyewitness Mrs. Iyer' }
   ],
 
   plots: [
@@ -172,8 +172,8 @@ window.LVS.push({
     // The film lives in story/campaign.js and is staged on its own map in
     // story/stage.js. This is the playable half: same junction, same syllabus,
     // three hours later, with a different reason to obey the light.
-    briefing: 'Three hours after Vikram Sawant was shot at this signal, his partner Insp. Arjun Kadam parks the jeep he is not supposed to be driving and opens the notebook Vikram kept. Entry one: Mrs. Iyer, Shanti Galli, ten-fifteen, temple. She sees everything. Your mission today is simpler and stricter: carry Papa\u2019s dabba from Shanti Galli to Sharma General Stores before 1 PM, and obey every light on the way — because the last man who did not is lying under the junction.',
-    storyBeat: 'Vikram ka notebook. Pehla entry: Mrs. Iyer, Shanti Galli, 10:15, mandir. Usne likha tha — "Sab kuch dekhti hai." Tum uss signal par khel rahe ho jahaan Vikram mar gaya. Sab rules abhi bhi wahi hain. Bas wajah badal gayi hai.',
+    briefing: 'Three hours after SI Vikram Sawant was murdered at this signal, his partner Insp. Arjun Kadam opens the notebook Vikram left behind. Entry one: Mrs. Iyer, Bazaar Road, 10:15 AM. She was waiting at the corner and saw the black Fortuner. Drive through the Linking Road corridor, obey the white line where Vikram made his stand, and interview Mrs. Iyer before the trail goes cold.',
+    storyBeat: 'Vikram ka notebook. Pehla entry: Mrs. Iyer, Bazaar Road, 10:15. Usne likha tha — "Sab kuch dekhti hai." Linking Road par wahi red light hai jahaan Vikram ne jaan di. Sab rules abhi bhi wahi hain — white line ke peeche ruko, aur witness tak pahuncho.',
     dialogue: [
       // ── FILM DIALOGUE (Prologue) ─────────────────────────────────────────
       // Subtitles reused verbatim in story/campaign.js for L1 prologue shots.
@@ -184,7 +184,7 @@ window.LVS.push({
       { filmOnly: true, speaker: 'Fortuner Escort Driver', line: '"Tujhe nahi pata andar kaun baitha hai. Yeh aakhri warning hai."' },
       { filmOnly: true, speaker: 'Shadowed VIP Passenger', line: '"Isko hatao yahan se."' },
       { filmOnly: true, speaker: 'Mumbai Police Radio', line: '"All units, 10-33 on Linking Road! Officer down! Black Fortuner fled south towards Shanti Galli!"' },
-      { filmOnly: true, speaker: 'Mummy (Balcony)', line: '"Kabir! Papa forgot his lunch dabba on the counter! Take the car and deliver it to Mrs. Iyer at Linking Road!"' },
+      { filmOnly: true, speaker: 'Insp. Arjun Kadam', line: '"Three hours later... Vikram\'s notebook. Entry one: Mrs. Iyer. She sees everything. I have to reach her at Bazaar Road."' },
 
       // ── BEAT (mid-level, present tense) ─────────────────────────────────
       { triggerZ: -8, speaker: 'Insp. Arjun Kadam', line: '"Entry one. Mrs. Iyer. She sees everything."' },
@@ -219,7 +219,7 @@ window.LVS.push({
       { triggerZ: 102, speaker: 'Mrs. Iyer', line: '"Police uniform thi uski. Aur agla entry tumhare notebook mein... Shanti Galli ka hai."' }
     ]
   },
-  ds: 'Hop in your parked car with [F] and drive the first entry in Vikram Sawant\u2019s notebook: Mrs. Iyer, Shanti Galli, temple. Hold the white line at Linking Road junction, ignore Ansh the honking taxi, don\u2019t copy the signal-jumping biker, clear the bazaar potholes and the double-parked tempo, and deliver Papa\u2019s dabba to the Sharma General Stores counter before 1 PM.',
+  ds: 'Step into your car with [F] and follow the first entry in Vikram Sawant\u2019s notebook: Mrs. Iyer at the Bazaar Road corner. Hold the white line at Linking Road junction, ignore Ansh the honking taxi, don\u2019t copy the signal-jumping biker, clear the road hazards, and reach Sharma General Stores to question the witness.',
   hps: [
     'Step out of the building and press [F] near your parked car to get in.',
     'Stop behind the solid white stop line at signals.',
@@ -237,8 +237,8 @@ window.LVS.push({
     offHi: 'लाल बत्ती काटना'
   },
   theory:
-    '<h2>Red Light Patience</h2><p>Subah ki dhoop mein Papa ka dabba lekar tum Shanti Galli se nikle ho. Linking Road ke bade signal par morning rush ka jam hai — zebra crossing pe ek family cross kar rahi hai: bachche, parents, sab. Peeche Ansh taxi horn pe horn bajaa raha hai, aur bagal mein ek red-shirt biker red light kaatne ki taiyaari mein hai.</p><p>Solid white line ke peechhe ruk jao jab tak light green na ho aur crossing bilkul clear na ho. Red signal kaatna MV Act Section 119 ke under ₹500 se ₹2000 tak ka fine hai aur license bhi kat sakta hai!</p><p>Yaad rakho — Ansh ki awaaz sunkar ghabrao mat (tumhe challan milega, use nahi!), aur uss biker jaisa bilkul mat bano — woh light kaatega toh Havaldar Desai uska challan tumhare saamne likhenge!</p>',
-  pract: 'Exit home, enter your car, wait at the red light. Let all pedestrians cross. Ignore the honking taxi. Do not copy the signal-jumping biker. Dodge potholes, pass the parked tempo, deliver the dabba.',
+    '<h2>Red Light Patience</h2><p>Linking Road ke bade signal par morning rush ka jam hai — zebra crossing pe pedestrians cross kar rahe hain. Peeche Ansh taxi horn pe horn bajaa raha hai, aur bagal mein ek red-shirt biker red light kaatne ki taiyaari mein hai.</p><p>Solid white line ke peechhe ruk jao jab tak light green na ho aur crossing bilkul clear na ho. Red signal kaatna MV Act Section 119 ke under ₹500 se ₹2000 tak ka fine hai aur license bhi kat sakta hai!</p><p>Yaad rakho — Ansh ki awaaz sunkar ghabrao mat (tumhe challan milega, use nahi!), aur uss biker jaisa bilkul mat bano — woh light kaatega toh Havaldar Desai uska challan tumhare saamne likhenge!</p>',
+  pract: 'Exit the safehouse, enter your car, wait at the red light. Let all pedestrians cross. Ignore the honking taxi. Do not copy the signal-jumping biker. Clear hazards and interview the witness.',
   mode: 'practical',
   themeType: 'signal_jump',
   tasks: [
@@ -249,7 +249,7 @@ window.LVS.push({
     { id: 'ignore_honk', text: 'Do Not Honk Back (Patience)', type: 'avoid', target: 'honk', done: false },
     { id: 'move_green', text: 'Cross The Junction Only On Green', type: 'reach', target: 'green_light', done: false },
     { id: 'dodge_market', text: 'Clear Potholes & Parked Tempo In Bazaar', type: 'reach', target: 'checkpoint_6', done: false },
-    { id: 'deliver_dabba', text: 'Deliver The Dabba: Park Outside Sharma General Stores', type: 'reach', target: 'finish', done: false }
+    { id: 'deliver_dabba', text: 'Question Witness: Park Outside Sharma General Stores', type: 'reach', target: 'finish', done: false }
   ],
   // The `stage_*` and `city_*` groups are the "free city pack" props staged by
   // scripts/stage_assets.py. They are requested HERE rather than in story/stage.js

@@ -97,7 +97,7 @@ class RenderCore {
           || (window.innerWidth || 9999) <= 767;
         this.renderer = new THREE.WebGLRenderer({
             canvas: canvas,
-            antialias: !isMobileGL,
+            antialias: true,
             powerPreference: 'high-performance',
             alpha: false,
             depth: true,
@@ -196,12 +196,11 @@ class RenderCore {
         else if (msPerFrame > 10) {score -= 1;}
 
 
-        let finalPreset = 'MED';
-        if (score <= 0) {finalPreset = 'LOW';}
-        else if (score === 1) {finalPreset = 'LOW';}
-        else if (score === 2) {finalPreset = 'MED';}
-        else if (score === 3) {finalPreset = 'HIGH';}
-        else if (score >= 4) {finalPreset = 'ULTRA';}
+        let finalPreset = 'HIGH';
+        if (score <= -1) {finalPreset = 'LOW';}
+        else if (score <= 1) {finalPreset = 'MED';}
+        else if (score <= 3) {finalPreset = 'HIGH';}
+        else {finalPreset = 'ULTRA';}
 
 
         if (msPerFrame > 33) {finalPreset = 'LOW';}
@@ -212,7 +211,7 @@ class RenderCore {
         const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || vw <= 767;
         if (isMobile) {
             // 720p budget phones (360w @3x): force LOW, 1080p mid: cap at MED, 2K tablets allow HIGH
-            if (vw <= 389 && dpr >= 2.8) {finalPreset = 'LOW';}
+            if (vw <= 389 && dpr >= 2.8) {finalPreset = 'HIGH';}
             else if (vw <= 479 && finalPreset === 'ULTRA') {finalPreset = 'HIGH';}
             else if (vw <= 599 && finalPreset === 'ULTRA') {finalPreset = 'HIGH';}
         }
@@ -227,7 +226,15 @@ class RenderCore {
         const dpr = window.devicePixelRatio || 1;
         const vw = window.innerWidth;
         const isMobile = vw <= 767 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-        if (!isMobile || dpr <= 1.5) {return;}
+        const effectiveDpr = (this.renderer && typeof this.renderer.getPixelRatio === 'function')
+            ? this.renderer.getPixelRatio()
+            : (isMobile ? 1.0 : dpr);
+        // If renderer is already capped to <= 1.0 DPR (game_core _initR caps mobile to 1.0),
+        // no extra DPR downscaling or offscreen WebGLRenderTarget pass is necessary.
+        if (!isMobile || effectiveDpr <= 1.0 || dpr <= 1.5) {
+            this._dprResScale = null;
+            return;
+        }
         const preset = QUALITY_PRESETS[this.currentPreset];
         if (!preset) {return;}
         // 720p@3x: multiply by 0.62 → ~0.52 effective; 1080p@2.6x: 0.71; 2K tablet@2x: 0.82

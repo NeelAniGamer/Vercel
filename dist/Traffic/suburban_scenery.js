@@ -1255,13 +1255,13 @@
     // ── 2. Real 3D School Building Model (building_high_school.glb) ───────────
     const P = window.PRELOADED_MODELS || {};
     if (P['building_high_school']) {
-      const highSchoolModel = P['building_high_school'];
+      const highSchoolModel = P['building_high_school'].clone(true);
       highSchoolModel.scale.set(1.1, 1.1, 1.1);
       highSchoolModel.position.set(halfRoad + sidewalkWidth + 30, 0.15, schoolZ);
       highSchoolModel.rotation.y = -Math.PI / 2;
       highSchoolModel.userData = { noLod: true };
       highSchoolModel.traverse(c => {
-        c.frustumCulled = false;
+        c.frustumCulled = true;
         if (c.isMesh) {
           c.castShadow = false;
           c.receiveShadow = true;
@@ -4702,18 +4702,13 @@ function buildStXavierCampusBoundaryRailings(length, opts) {
       g.add(rail);
     });
 
-    // Vertical railing bars (every 0.4m)
-    const numBars = Math.floor(spanLen / 0.4);
+    // Vertical railing bars (spaced 1.2m)
+    const numBars = Math.floor(spanLen / 1.2);
     for (let b = 0; b < numBars; b++) {
-      const bz = pz1 + 0.2 + b * 0.4;
-      const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, railH, 6), mIron);
-      bar.position.set(0, 0.65 + railH / 2, bz);
+      const bz = pz1 + 0.6 + b * 1.2;
+      const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, railH + 0.15, 6), mIron);
+      bar.position.set(0, 0.65 + (railH + 0.15) / 2, bz);
       g.add(bar);
-
-      // Spearhead pointed tip
-      const tip = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.15, 6), mIron);
-      tip.position.set(0, 0.65 + railH + 0.075, bz);
-      g.add(tip);
     }
   }
 
@@ -5356,17 +5351,14 @@ function buildSocietyBoundaryWall(length, opts) {
   coping.position.set(0, 1.46, length / 2);
   g.add(coping);
 
-  // Ornamental Black Steel Spearhead Vertical Railings (1.1m high on top)
+  // Ornamental Black Steel Spearhead Vertical Railings (1.1m high on top, spaced 1.5m)
   const railH = 1.1;
-  const numPales = Math.floor(length / 0.5);
+  const numPales = Math.floor(length / 1.5);
   for (let i = 0; i < numPales; i++) {
-    const pz = i * 0.5 + 0.25;
-    const pale = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, railH, 4), mMetal);
-    pale.position.set(0, 1.52 + railH / 2, pz);
+    const pz = i * 1.5 + 0.75;
+    const pale = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, railH + 0.12, 4), mMetal);
+    pale.position.set(0, 1.52 + (railH + 0.12) / 2, pz);
     g.add(pale);
-    const spear = new THREE.Mesh(new THREE.ConeGeometry(0.045, 0.14, 4), mMetal);
-    spear.position.set(0, 1.52 + railH + 0.07, pz);
-    g.add(spear);
   }
 
   // Horizontal Support Bars for Railings

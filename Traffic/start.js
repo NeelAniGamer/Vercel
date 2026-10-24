@@ -346,7 +346,7 @@ window._expandAssets = function (assets) {  if (!assets || !assets.length) {retu
   // Auto-include street props and building kit for urban levels
   if (out.has('suburban') || out.has('industrial') || out.has('modular')) {
     if (window.ASSET_GROUPS.street_props) {window.ASSET_GROUPS.street_props.forEach(k => out.add(k));}
-    if (window.ASSET_GROUPS.bkit) {window.ASSET_GROUPS.bkit.forEach(k => out.add(k));}
+    if (out.has('modular') && window.ASSET_GROUPS.bkit) {window.ASSET_GROUPS.bkit.forEach(k => out.add(k));}
   }
   return [...out];
 };
@@ -401,10 +401,11 @@ window.loadLevelAssets = function (keys, callback) {
 
 
   function postProcess(root, key) {
+    const isDynamic = /car|vehicle|hero|char|ped|bus|truck|auto|motorcycle|bike/i.test(key);
     root.traverse((child) => {
       if (child.isMesh) {
-        child.castShadow = !key.includes('road')
-        child.receiveShadow = true
+        child.castShadow = isDynamic;
+        child.receiveShadow = true;
         if (child.material) {
           if (child.material.map) { child.material.map.magFilter = THREE.NearestFilter; child.material.map.minFilter = THREE.NearestFilter; child.material.map.needsUpdate = true }
           if ('roughness' in child.material) {child.material.roughness = 0.8}

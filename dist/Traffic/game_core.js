@@ -1700,8 +1700,7 @@ class Game {
         this._isMobile = isMobile;
 
         // PERFORMANCE: Cap pixel ratio lower on mobile to reduce render cost
-        let dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.0 : 2);
-        const maxW = 1920, maxH = 1080;
+        let dpr = Math.min(window.devicePixelRatio || 1, 2.5); const maxW = 3840, maxH = 2160;
         const w = innerWidth, h = innerHeight;
         if (w * dpr > maxW) {dpr = maxW / w;}
         if (h * dpr > maxH) {dpr = maxH / h;}
@@ -1728,7 +1727,7 @@ class Game {
         // resizes on the first window resize event, causing a corner render.
         this._rsz();
       }
-      _rsz() { if (!this.renderCore.renderer) {return;} const maxW = 1920, maxH = 1080; const isMobile = this._isMobile; const w = innerWidth, h = innerHeight; let dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.0 : 2); if (w * dpr > maxW) {dpr = maxW / w;} if (h * dpr > maxH) {dpr = maxH / h;} this._dpr = dpr; this.renderCore.renderer.setSize(w * dpr, h * dpr, false); if (this.renderCore.renderer.domElement && this.renderCore.renderer.domElement.style) { this.renderCore.renderer.domElement.style.width = w + 'px'; this.renderCore.renderer.domElement.style.height = h + 'px'; } if (this.composer) { this.composer.setSize(w * dpr, h * dpr); } this.renderCore.resizePostProcessing(w, h); if (this.camera) { this.camera.aspect = w / h; this.camera.far = Math.max(1400, (this.renderDistance || 500) * 2.5); this.camera.updateProjectionMatrix(); } this._checkOrientation(); }
+      _rsz() { if (!this.renderCore.renderer) {return;} const maxW = 3840, maxH = 2160; const isMobile = this._isMobile; const w = innerWidth, h = innerHeight; let dpr = Math.min(window.devicePixelRatio || 1, 2.5); if (w * dpr > maxW) {dpr = maxW / w;} if (h * dpr > maxH) {dpr = maxH / h;} this._dpr = dpr; this.renderCore.renderer.setSize(w * dpr, h * dpr, false); if (this.renderCore.renderer.domElement && this.renderCore.renderer.domElement.style) { this.renderCore.renderer.domElement.style.width = w + 'px'; this.renderCore.renderer.domElement.style.height = h + 'px'; } if (this.composer) { this.composer.setSize(w * dpr, h * dpr); } this.renderCore.resizePostProcessing(w, h); if (this.camera) { this.camera.aspect = w / h; this.camera.far = Math.max(1400, (this.renderDistance || 500) * 2.5); this.camera.updateProjectionMatrix(); } this._checkOrientation(); }
 
       _checkOrientation() {
         if (!this._isMobile) {return;}
@@ -2959,11 +2958,15 @@ class Game {
 
         const safeVx = Math.max(0.3, Math.abs(speedMs));
         
-        // Steering angle in radians
+        // Steering angle in radians (inspired by Slow Roads steerSpeed & speed-sensitive attenuation)
         const sSens = this.steerSensitivity || 1.0;
-        const maxSteer = (this.turn || 0.08) * 4.5 * sSens;
-        const steerAngle = tAmt * maxSteer * (isRev ? -1 : 1);
-        this._steerAngle = steerAngle;
+        const speedLerp = Math.min(1.0, Math.abs(speedMs) / 35.0);
+        const highSpeedAtten = 1.0 - (speedLerp * 0.30);
+        const maxSteer = (this.turn || 0.08) * 4.5 * sSens * highSpeedAtten;
+        const targetSteer = tAmt * maxSteer * (isRev ? -1 : 1);
+        const steerSpeedRate = (this.vehMode === 'bike' || this.vehMode === 'splendor' || this.vehMode === 'cycle') ? 14.0 : ((this.vehMode === 'bus' || this.vehMode === 'truck') ? 6.5 : 10.5);
+        this._steerAngle = (this._steerAngle || 0) + (targetSteer - (this._steerAngle || 0)) * Math.min(1.0, dt * steerSpeedRate * sSens);
+        const steerAngle = this._steerAngle;
 
         // Current lateral velocity in vehicle frame and yaw rate
         const vy = this._localVy || 0;
@@ -3059,30 +3062,45 @@ class Game {
       }
 
       _updateSuspension(dt) {
-        const cfg = (typeof VEHICLE_PACEJKA_CONFIG !== 'undefined' && VEHICLE_PACEJKA_CONFIG[this.vehMode]) || { cg_height: 0.55, maxSpeed: 1.2 };
+        const cfg = (typeof VEHICLE_PACEJKA_CONFIG !== 'undefined' && VEHICLE_PACEJKA_CONFIG[this.vehMode]) || { cg_height: 0.55, maxSpeed: 1.2, wheelbase: 2.7, track_width: 1.5 };
         const speed = (typeof this.speed === 'number' && isFinite(this.speed)) ? Math.abs(this.speed) : 0;
-        if (speed < 0.01) {
-          this._bodyRoll = 0;
-          this._bodyPitch = 0;
+        const isBike = (this.vehMode === 'bike' || this.vehMode === 'splendor' || this.vehMode === 'activa' || this.vehMode === 'cycle' || this.vehMode === 'twowheeler' || this.vehMode === 'cyberpunk_bike');
+
+        if (speed < 0.005) {
+          // Smoothly decay body attitude when stopped rather than abrupt snap
+          this._bodyRoll = (this._bodyRoll || 0) * Math.pow(0.82, dt * 60);
+          this._bodyPitch = (this._bodyPitch || 0) * Math.pow(0.82, dt * 60);
           this._suspensionY = 0;
           if (this.playerVehicle) {
-            this.playerVehicle.rotation.z = 0;
-            this.playerVehicle.rotation.x = 0;
+            this.playerVehicle.rotation.z = this._bodyRoll;
+            this.playerVehicle.rotation.x = this._bodyPitch;
             this.playerVehicle.position.y = (this._enterState === 'IDLE' && this.isPedestrian ? 0 : 0.2);
+            this._updatePlayerWheels(dt, 0, cfg);
           }
           return;
         }
+
         const lateralAccel = isFinite(this._lateralAccel) ? this._lateralAccel : 0;
-        const targetRoll = -lateralAccel * 0.03 * (cfg.cg_height || 0.55);
-        this._bodyRoll = (isFinite(this._bodyRoll) ? this._bodyRoll : 0) + (targetRoll - (isFinite(this._bodyRoll) ? this._bodyRoll : 0)) * Math.min(1, dt * 8);
-        this._bodyRoll = Math.max(-0.12, Math.min(0.12, this._bodyRoll));
-        const accel = this.keys['w'] || this.keys['arrowup'];
-        const brake = this.keys['s'] || this.keys['arrowdown'];
-        let targetPitch = 0;
-        if (brake && speed > 0.1) {targetPitch = 0.06;} // nose dive
-        else if (accel && speed < (cfg.maxSpeed || 1.2)) {targetPitch = -0.03;} // nose lift
-        this._bodyPitch = (isFinite(this._bodyPitch) ? this._bodyPitch : 0) + (targetPitch - (isFinite(this._bodyPitch) ? this._bodyPitch : 0)) * Math.min(1, dt * 6);
-        this._bodyPitch = Math.max(-0.08, Math.min(0.08, this._bodyPitch));
+        const longAccel = isFinite(this._longitudinalAccel) ? this._longitudinalAccel : 0;
+
+        // Dynamic chassis attitude inspired by Slow Roads' rockLon & rockLat:
+        // 1. Longitudinal pitch (dive under braking, squat under acceleration)
+        const targetPitch = -(longAccel / 9.81) * (cfg.cg_height || 0.55) * 0.26;
+        this._bodyPitch = (isFinite(this._bodyPitch) ? this._bodyPitch : 0) + (targetPitch - (isFinite(this._bodyPitch) ? this._bodyPitch : 0)) * Math.min(1, dt * 7.5);
+        this._bodyPitch = Math.max(-0.085, Math.min(0.085, this._bodyPitch));
+
+        // 2. Lateral roll: four-wheelers roll outward with centrifugal force; two-wheelers lean inward
+        let targetRoll = 0;
+        if (isBike) {
+          const steerMax = (this.turn || 0.08) * 4.5;
+          const steerRatio = (this._steerAngle || 0) / Math.max(0.01, steerMax);
+          targetRoll = steerRatio * 0.38 * Math.min(1.0, (speed * 30) / 7.0);
+        } else {
+          targetRoll = -(lateralAccel / 9.81) * (cfg.cg_height || 0.55) * 0.32;
+        }
+        this._bodyRoll = (isFinite(this._bodyRoll) ? this._bodyRoll : 0) + (targetRoll - (isFinite(this._bodyRoll) ? this._bodyRoll : 0)) * Math.min(1, dt * 8.5);
+        this._bodyRoll = Math.max(-0.14, Math.min(0.14, this._bodyRoll));
+
         if (this.playerVehicle) {
           this.playerVehicle.rotation.z = this._bodyRoll;
           this.playerVehicle.rotation.x = this._bodyPitch;
@@ -3091,6 +3109,56 @@ class Game {
           const t = isFinite(this.timer) ? this.timer : 0;
           this._suspensionY = Math.sin(t * bounceFreq) * bounceAmp;
           this.playerVehicle.position.y = (isFinite(this._suspensionY) ? this._suspensionY : 0) + (this._enterState === 'IDLE' && this.isPedestrian ? 0 : 0.2);
+
+          // Animate wheels (Ackermann steering geometry & wheel roll spin)
+          this._updatePlayerWheels(dt, this.speed, cfg);
+        }
+      }
+
+      _updatePlayerWheels(dt, speedVal, cfg) {
+        if (!this.playerVehicle) return;
+        if (!this._playerWheelsList || this._playerWheelsSource !== this.playerVehicle) {
+          this._playerWheelsList = [];
+          this._playerWheelsSource = this.playerVehicle;
+          this.playerVehicle.traverse((child) => {
+            if (child.isMesh && (child.userData.isWheel || (child.name && child.name.toLowerCase().includes('wheel')))) {
+              this._playerWheelsList.push(child);
+            }
+          });
+        }
+        if (this._playerWheelsList.length === 0) return;
+
+        const spd = (typeof speedVal === 'number' && isFinite(speedVal)) ? speedVal : 0;
+        const distDelta = spd * dt * 60; // Game units traveled
+
+        // Ackermann angles calculation for steering wheels (from Slow Roads updateSteer)
+        const steer = this._steerAngle || 0;
+        const wb = cfg.wheelbase || 2.7;
+        const tw = cfg.track_width || 1.5;
+        const s = Math.sin(steer);
+        const c = Math.cos(steer) * wb * 2;
+        const steerL = Math.atan(2 * wb * s / Math.max(0.1, c - tw * s));
+        const steerR = Math.atan(2 * wb * s / Math.max(0.1, c + tw * s));
+
+        for (let i = 0; i < this._playerWheelsList.length; i++) {
+          const wh = this._playerWheelsList[i];
+          const radius = (wh.userData && wh.userData.wheelRadius) || 0.32;
+          const rollDelta = distDelta / radius;
+
+          // Rolling spin along wheel axle (X axis)
+          wh.rotation.x += rollDelta;
+
+          // Front wheel steering: if front wheel, yaw around Y axis
+          const isFront = (wh.userData && wh.userData.isFront !== undefined) ? wh.userData.isFront : (wh.position.z < 0);
+          if (isFront) {
+            if (wh.userData && wh.userData.side === 'left') {
+              wh.rotation.y = steerL;
+            } else if (wh.userData && wh.userData.side === 'right') {
+              wh.rotation.y = steerR;
+            } else {
+              wh.rotation.y = steer;
+            }
+          }
         }
       }
 
@@ -5951,7 +6019,9 @@ class Game {
             this.maxSpd = 0.12; this.accel = 0.06; this.turn = 0.05; this.fric = 0.88;
             this._createVehicleBeacon();
             setTimeout(() => {
-                toast('🚶 In front of household: Walk to your garage & press F to enter your car!', '#3498db', 6000);
+                if (!window.Cutscene || !window.Cutscene.isActive || !window.Cutscene.isActive()) {
+                  toast('🚶 In front of household: Walk to your garage & press F to enter your car!', '#3498db', 6000);
+                }
             }, 500);
           } else {
             this.isPedestrian = false;
@@ -7317,8 +7387,8 @@ class Game {
           console.log(`[FreeRoam] WorldStreamer created, waiting for player. PRELOADED_MODELS keys: ${Object.keys(window.PRELOADED_MODELS || {}).length}`);
         }
 
-        // Initialize missions and collectibles for this level
-        if (this.missionManager) {
+        // Initialize missions and collectibles for this level (never on film stage maps)
+        if (this.missionManager && !this._stageBuild && (!cfg.route || cfg.route.length > 0)) {
           this.playerScore = 0;
           this.rupees = ((typeof S !== 'undefined' && S && S.wallet) || 50000);
           this.missionTokens = ((typeof S !== 'undefined' && S && S.missionTokens) || 0);
@@ -7399,7 +7469,7 @@ class Game {
             const _isPed = cfg.isPedestrian;
             const _swW = _isPed ? 6 : 4;
             const _roadTex = this._getRoadTexture();
-            const _roadMat = _roadTex ? new THREE.MeshLambertMaterial({ map: _roadTex }) : new THREE.MeshLambertMaterial({ color: 0x25282e });
+            const _roadMat = _roadTex ? new THREE.MeshLambertMaterial({ color: 0x8a94a0, map: _roadTex }) : new THREE.MeshLambertMaterial({ color: 0x48515c });
             const _paveMat = new THREE.MeshLambertMaterial({ color: 0x767c85 });
 
 
@@ -8088,8 +8158,8 @@ class Game {
           });
         }
 
-        // Mumbai Landmarks (Spawned randomly in non-pedestrian levels to add flavor)
-        if (!this._stageBuild && !cfg.isPedestrian && !cfg.isBridge) {
+        // Mumbai Landmarks (Spawned randomly ONLY in generic non-authored levels without plots)
+        if (!this._stageBuild && !cfg.isPedestrian && !cfg.isBridge && cfg.themeType !== 'mumbai_city' && (!cfg.plots || !cfg.plots.length)) {
           const buildLandmark = (type, bx, bz) => {
             const lg = new THREE.Group();
             if (type === 'gateway') {
@@ -8837,7 +8907,7 @@ class Game {
 
         // Road material (visible) — use real asphalt texture if available
         const _rTex = this._getRoadTexture();
-        const roadMat = _rTex ? new THREE.MeshLambertMaterial({ map: _rTex }) : new THREE.MeshLambertMaterial({ color: 0x25282e });
+        const roadMat = _rTex ? new THREE.MeshLambertMaterial({ color: 0x8a94a0, map: _rTex }) : new THREE.MeshLambertMaterial({ color: 0x48515c });
         const paveMat = new THREE.MeshLambertMaterial({ color: 0x767c85 });
         const tactileMat = new THREE.MeshLambertMaterial({ color: 0xd4a017 });
 
@@ -8892,6 +8962,12 @@ class Game {
               }
               this.scene.add(tile);
             }
+          }
+
+          // If this is a cinematic stage with dedicated wet road dressing, skip procedural sidewalks & markings
+          const isStageWet = this._stageBuild && cfg && cfg.dressing && cfg.dressing.wetRoad;
+          if (isStageWet) {
+            return;
           }
 
           // Sidewalks — truncated before intersection boundaries so curbs NEVER cross into crossing traffic
@@ -8950,48 +9026,74 @@ class Game {
           });
 
           // ── Road Lane Markings (White dashed center line & solid edge lines) ──
-          const dashLen = 3.5;
-          const gapLen = 3.5;
+          const dashLen = 4.0;
+          const gapLen = 4.0;
           const stride = dashLen + gapLen;
-          const numDashes = Math.max(1, Math.floor(len / stride));
-          const startMark = (len - numDashes * stride) / 2;
-          const markStart = isV ? Math.min(n0.position.z, n1.position.z) + startMark : Math.min(n0.position.x, n1.position.x) + startMark;
-          const whiteLineMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.92 });
-          const yellowLineMat = new THREE.MeshBasicMaterial({ color: 0xffb703, transparent: true, opacity: 0.92 });
+          const numDashes = Math.max(1, Math.floor(swLen / stride));
+          const startMark = (swLen - numDashes * stride) / 2;
+          const markStart = (swCenterCoord - swLen / 2) + startMark;
+          const whiteLineMat = new THREE.MeshBasicMaterial({
+            color: 0xf8fafc,
+            transparent: true,
+            opacity: 0.95,
+            polygonOffset: true,
+            polygonOffsetFactor: -1.0,
+            polygonOffsetUnits: -4.0
+          });
+          const yellowLineMat = new THREE.MeshBasicMaterial({
+            color: 0xffb703,
+            transparent: true,
+            opacity: 0.95,
+            polygonOffset: true,
+            polygonOffsetFactor: -1.0,
+            polygonOffsetUnits: -4.0
+          });
 
           const lanes = edge.lanes || (roadWidth >= 18 ? 4 : 2);
           if (lanes >= 4) {
-            [-0.25, 0.25].forEach(yOff => {
+            [-0.35, 0.35].forEach(yOff => {
               const dLine = new THREE.Mesh(
-                isV ? new THREE.PlaneGeometry(0.16, len) : new THREE.PlaneGeometry(len, 0.16),
+                isV ? new THREE.PlaneGeometry(0.30, swLen) : new THREE.PlaneGeometry(swLen, 0.30),
                 yellowLineMat
               );
               dLine.rotation.x = -Math.PI / 2;
-              dLine.position.set(isV ? cx + yOff : cx, 0.088, isV ? cz : cz + yOff);
+              dLine.position.set(isV ? cx + yOff : swCenterCoord, 0.092, isV ? swCenterCoord : cz + yOff);
               this.scene.add(dLine);
+            });
+            [-actualWidth / 4, actualWidth / 4].forEach(laneOff => {
+              for (let d = 0; d < numDashes; d++) {
+                const dashCenter = markStart + d * stride + dashLen / 2;
+                const dashMesh = new THREE.Mesh(
+                  isV ? new THREE.PlaneGeometry(0.25, dashLen) : new THREE.PlaneGeometry(dashLen, 0.25),
+                  whiteLineMat
+                );
+                dashMesh.rotation.x = -Math.PI / 2;
+                dashMesh.position.set(isV ? cx + laneOff : dashCenter, 0.092, isV ? dashCenter : cz + laneOff);
+                this.scene.add(dashMesh);
+              }
             });
           } else {
             for (let d = 0; d < numDashes; d++) {
               const dashCenter = markStart + d * stride + dashLen / 2;
               const dashMesh = new THREE.Mesh(
-                isV ? new THREE.PlaneGeometry(0.24, dashLen) : new THREE.PlaneGeometry(dashLen, 0.24),
+                isV ? new THREE.PlaneGeometry(0.25, dashLen) : new THREE.PlaneGeometry(dashLen, 0.25),
                 whiteLineMat
               );
               dashMesh.rotation.x = -Math.PI / 2;
-              dashMesh.position.set(isV ? cx : dashCenter, 0.088, isV ? dashCenter : cz);
+              dashMesh.position.set(isV ? cx : dashCenter, 0.092, isV ? dashCenter : cz);
               this.scene.add(dashMesh);
             }
           }
 
           [-1, 1].forEach(edgeSide => {
-            const edgeX = isV ? cx + edgeSide * (actualWidth / 2 - 0.4) : cx;
-            const edgeZ = isV ? cz : cz + edgeSide * (actualWidth / 2 - 0.4);
+            const edgeX = isV ? cx + edgeSide * (actualWidth / 2 - 0.45) : swCenterCoord;
+            const edgeZ = isV ? swCenterCoord : cz + edgeSide * (actualWidth / 2 - 0.45);
             const edgeLine = new THREE.Mesh(
-              isV ? new THREE.PlaneGeometry(0.18, len) : new THREE.PlaneGeometry(len, 0.18),
+              isV ? new THREE.PlaneGeometry(0.28, swLen) : new THREE.PlaneGeometry(swLen, 0.28),
               whiteLineMat
             );
             edgeLine.rotation.x = -Math.PI / 2;
-            edgeLine.position.set(edgeX, 0.088, edgeZ);
+            edgeLine.position.set(edgeX, 0.092, edgeZ);
             this.scene.add(edgeLine);
           });
 
@@ -10839,10 +10941,19 @@ class Game {
         if (!graph) {return;}
         const cfg = this.mapCfg || {};
 
+        // Urban authored levels provide deliberate plots and streetscapes.
+        // Never spawn random suburban park slabs or roadside fir trees on authored city maps.
+        if (cfg.themeType === 'mumbai_city' || (cfg.plots && cfg.plots.length)) {
+          return;
+        }
+
         const isCityMap = cfg.themeType === 'mumbai_city';
-        const grassMat  = new THREE.MeshToonMaterial({ color: 0x4caf50, gradientMap: window._toonGrad });
-        const benchMat  = new THREE.MeshToonMaterial({ color: 0x6d4c41, gradientMap: window._toonGrad });
-        const pathMat   = new THREE.MeshToonMaterial({ color: 0xd7ccc8, gradientMap: window._toonGrad });
+        const plazaMat  = new THREE.MeshLambertMaterial({ color: 0x5a6575 });
+        const grassMat  = isCityMap
+          ? new THREE.MeshLambertMaterial({ color: 0x476344 })
+          : new THREE.MeshToonMaterial({ color: 0x4caf50, gradientMap: window._toonGrad });
+        const benchMat  = new THREE.MeshLambertMaterial({ color: 0x4a3528 });
+        const pathMat   = new THREE.MeshLambertMaterial({ color: 0x8a929e });
 
         const trunkMat  = new THREE.MeshToonMaterial({ color: 0x5d4037, gradientMap: window._toonGrad });
         const folMat1   = new THREE.MeshToonMaterial({ color: 0x2e7d32, gradientMap: window._toonGrad });
@@ -10873,8 +10984,8 @@ class Game {
           const pw = 18 + Math.random() * 10;
           const pd = 16 + Math.random() * 8;
 
-          // Grass base
-          const base = new THREE.Mesh(new THREE.BoxGeometry(pw, 0.15, pd), grassMat);
+          // Base: paved urban plaza for city maps, grass for suburbs
+          const base = new THREE.Mesh(new THREE.BoxGeometry(pw, 0.15, pd), isCityMap ? plazaMat : grassMat);
           base.position.set(pos.x, 0.08, pos.z);
           base.rotation.y = rot;
           base.receiveShadow = true;

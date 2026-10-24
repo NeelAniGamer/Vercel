@@ -38,6 +38,10 @@ window.sfx = Object.assign(window.sfx || {}, {
     } catch (e) {}
   },
   setVol(cat, v) { if (this.vol[cat] !== undefined) {this.vol[cat] = Math.max(0, Math.min(1, v));} },
+  setVolume(v) {
+    const val = Math.max(0, Math.min(1, v));
+    Object.keys(this.vol).forEach(k => { this.vol[k] = val; });
+  },
   play(t) {
     if (!this._c) {return}
     if (t === 'horn') {
@@ -5712,11 +5716,15 @@ function _buildKayKitRig(PM, opts) {
     /** Crossfade between idle and locomotion by speed. */
     setMoving: function (moving, fast) {
       if (!mixer || !idleAction || !walkAction) { return; }
-      const target = moving ? 1 : 0;
       const secs = 0.22;
-      idleAction.setEffectiveWeight(moving ? Math.max(0, 1 - target) : 1);
-      walkAction.setEffectiveWeight(target);
-      if (moving && fast) { walkAction.timeScale = 1.45; } else { walkAction.timeScale = 1; }
+      if (moving) {
+        walkAction.enabled = true;
+        idleAction.crossFadeTo(walkAction, secs, true);
+        if (fast) { walkAction.timeScale = 1.45; } else { walkAction.timeScale = 1; }
+      } else {
+        idleAction.enabled = true;
+        walkAction.crossFadeTo(idleAction, secs, true);
+      }
     },
     update: function (dt, speed) {
       if (mixer) {
@@ -5789,7 +5797,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
   // 15, and index 0 on `general` is `Use_Item` — so an NPC handed that path would
   // stand on Linking Road indefinitely miming a door opening. Clips are matched
   // by name instead, with the same explicit lists below as the fallback order.
-  if (!isPlayer && PM.char_rig_medium_movement && typeof THREE.AnimationMixer !== 'undefined') {
+  if (!isPlayer && !app.procedural && !app.seated && !app.deterministic && PM.char_rig_medium_movement && typeof THREE.AnimationMixer !== 'undefined') {
     const kk = _buildKayKitRig(PM, {
       variant: variant,
       scale: variant === 'child' ? 0.58 : 0.74,
@@ -5808,7 +5816,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
   }
 
   // ── FBX-First Animated Character Model (NPCs only) ────────────────────────
-  if (!isPlayer) {
+  if (!isPlayer && !app.procedural && !app.seated && !app.deterministic) {
     const fbxKey = app.animPack ? 'anim_' + app.animPack : 'anim_protagonists';
     const fbxChar = PM[fbxKey] || PM['anim_retro'] || PM['anim_survivors'];
     if (fbxChar && typeof THREE.AnimationMixer !== 'undefined' && variant === 'normal') {
@@ -5949,17 +5957,17 @@ const _buildHuman = (isPlayer = false, appearance) => {
   const npcPants = [0x555555, 0x2c3e50, 0x444444, 0x3d3d3d, 0x2d2d2d]
   const npcHairs = [0x1a1a1a, 0x3d2b1f, 0x654321, 0x8B4513, 0x2c1810, 0xb5651d]
 
-  const skinColor = isPlayer ? (app.skin || 0xd4a574) : npcSkins[Math.floor(Math.random() * npcSkins.length)]
+  const skinColor = (app.skin != null) ? app.skin : (isPlayer ? 0xd4a574 : npcSkins[Math.floor(Math.random() * npcSkins.length)])
   const skinColorDk = new THREE.Color(skinColor).multiplyScalar(0.88).getHex()
-  const hairColor = isPlayer ? (app.hair || 0x1a1a1a) : npcHairs[Math.floor(Math.random() * npcHairs.length)]
-  const hairHighlight = isPlayer ? (app.hairHighlight || 0x3498db) : hairColor
-  const shirtColor = isPlayer ? (app.shirt || 0xe74c3c) : npcShirts[Math.floor(Math.random() * npcShirts.length)]
-  const shirtAccent = isPlayer ? (app.shirtAccent || 0xffffff) : 0xffffff
+  const hairColor = (app.hair != null) ? app.hair : (isPlayer ? 0x1a1a1a : npcHairs[Math.floor(Math.random() * npcHairs.length)])
+  const hairHighlight = (app.hairHighlight != null) ? app.hairHighlight : (isPlayer ? 0x3498db : hairColor)
+  const shirtColor = (app.shirt != null) ? app.shirt : (isPlayer ? 0xe74c3c : npcShirts[Math.floor(Math.random() * npcShirts.length)])
+  const shirtAccent = (app.shirtAccent != null) ? app.shirtAccent : 0xffffff
   const shirtDk = new THREE.Color(shirtColor).multiplyScalar(0.75).getHex()
-  const pantsColor = isPlayer ? (app.pants || 0x2c3e50) : npcPants[Math.floor(Math.random() * npcPants.length)]
+  const pantsColor = (app.pants != null) ? app.pants : (isPlayer ? 0x2c3e50 : npcPants[Math.floor(Math.random() * npcPants.length)])
   const pantsDk = new THREE.Color(pantsColor).multiplyScalar(0.78).getHex()
-  const shoeColor = isPlayer ? (app.shoes || 0x1a1a1a) : 0x222222
-  const eyeColor = isPlayer ? (app.eyeColor || 0x4a90d9) : 0x3d2b1f
+  const shoeColor = (app.shoes != null) ? app.shoes : (isPlayer ? 0x1a1a1a : 0x222222)
+  const eyeColor = (app.eyeColor != null) ? app.eyeColor : (isPlayer ? 0x4a90d9 : 0x3d2b1f)
 
   const tGrad = window._toonGrad || null
   const SKIN = new THREE.MeshToonMaterial({ color: skinColor, gradientMap: tGrad })
@@ -6079,7 +6087,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
   headGroup.add(lip)
 
   // Facial Hair
-  const facialHair = isPlayer ? (app.facialHair || 'none') : 'none'
+  const facialHair = app.facialHair || (isPlayer ? (app.facialHair || 'none') : 'none')
   if (facialHair === 'stubble') {
     const stubble = new THREE.Mesh(new THREE.SphereGeometry(0.22 * sk, 14, 10), HAIR)
     stubble.position.set(0, -0.18 * sk, 0.10 * sk)
@@ -6098,7 +6106,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
   }
 
   // ─── 2. HAIRSTYLES (11 STYLES) ────────────────────────────────────
-  const hairStyle = isPlayer ? (app.hairStyle || 'quiff') : 'quiff'
+  const hairStyle = app.hairStyle || (isPlayer ? (app.hairStyle || 'quiff') : 'quiff')
   if (hairStyle !== 'bald') {
     if (hairStyle === 'buzz' || hairStyle === 'short') {
       const buzz = new THREE.Mesh(new THREE.SphereGeometry(0.29 * sk, 16, 12, 0, Math.PI * 2, 0, Math.PI * 0.55), HAIR)
@@ -6274,7 +6282,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
   chest.position.y = tH * 0.15
   torsoGroup.add(chest)
 
-  const outfit = isPlayer ? (app.outfit || 'streetwear') : 'streetwear'
+  const outfit = app.outfit || (isPlayer ? (app.outfit || 'streetwear') : 'streetwear')
   if (outfit === 'kaali_peeli') {
     // Kaali-Peeli Taxi Hero Yellow Chest Stripe
     const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.36 * sk, 0.09 * sk, 0.28 * sk), new THREE.MeshToonMaterial({ color: 0xf5b81e, gradientMap: tGrad }))

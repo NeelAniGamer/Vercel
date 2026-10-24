@@ -102,8 +102,8 @@
     // `fortuner` is NOT here — it is stage dressing, because it has to survive
     // into the act change and is never addressed or tagged.
     cast: [
-      { id: 'vikram', kind: 'vehicle', type: 'bike', color: 0x3a4c68, x: 3.6, y: 0, z: -12.5, rotY: 0, withRider: true },
-      { id: 'fortuner', kind: 'vehicle', type: 'suv', color: 0x22262e, x: 6.8, y: 0, z: -12.5, rotY: 0, withDriver: true },
+      { id: 'vikram', kind: 'vehicle', type: 'bike', color: 0xf8fafc, x: 3.6, y: 0, z: -12.5, rotY: 0, withRider: true },
+      { id: 'fortuner', kind: 'vehicle', type: 'suv', color: 0x111317, x: 6.4, y: 0, z: -12.5, rotY: 0, withDriver: true },
 
       // ── The two people who are actually IN this film ──────────────────────
       //
@@ -177,49 +177,40 @@
     // an optional one-shot, and — because a shot with a subtitle speaks by
     // default — an actual synthesised voice.
     prologue: [
-      // 1 — ESTABLISH. Crane down out of the rain onto the junction, held wide
-      //     and long enough that the geography is legible before anyone is in it:
-      //     Linking Road running away south, the cross street, the signal head on
-      //     its east kerb, sodium lamps, four empty lanes at 3am.
-      //
-      //     Framed from the NORTH-EAST and high, and it STAYS high. Two failed
-      //     versions are encoded here:
-      //       · from the WEST — the signal head is on the east kerb, so a western
-      //         crane puts the whole street wall between camera and junction.
-      //       · descending to y≈11 at z=-46 — that is level with the (34,-34)
-      //         block's street wall, so the crane finished pointed at a building
-      //         rather than at the road.
-      //
-      //     It ends HIGH ENOUGH to see over the frontages. No subtitle: nobody
-      //     has spoken yet, and a card over an empty junction would be telling
-      //     the audience what the frame already says.
+      // 1 — ESTABLISH. Elevated crane tracking shot overlooking the junction.
+      //     Looking north as the menacing Fortuner and SI Vikram Sawant approach
+      //     through the rain, headlamps sweeping the wet asphalt, and decelerate to a halt
+      //     at the solid white stop line.
       {
         dur: 12,
-        hold: 4,
+        hold: 3,
         ease: 'cinematic',
         transition: 'cut',
-        from: [8, 38, -75], to: [6, 16, -38],
-        look: [5.2, 1.0, -12.5],
-        lookTo: [5.2, 1.0, -12.5],
-        fov: 46,
+        from: [1.2, 3.6, -5.5], to: [1.8, 2.2, -8.8],
+        look: [5.0, 1.0, -20.0],
+        lookTo: [5.0, 1.0, -12.5],
+        fov: 38,
         act: 'night',
         prior: true,
+        motion: [
+          { id: 'fortuner', from: [5.2, 0, -48], to: [6.4, 0, -12.5] },
+          { id: 'vikram', from: [3.6, 0, -36], to: [3.6, 0, -12.5] }
+        ],
+        motionEase: 'outQuad',
         title: 'Linking Road Signal · 3:14 AM',
-        audio: { beds: { rain: 0.04, room: 0.01 } }
+        audio: { beds: { rain: 0.04, engine: 0.05 } }
       },
 
-      // 2 — THE LINE. Push in along the stop line so the paint fills the bottom
-      //     of frame and the two vehicles sit beyond it, stopped. THIS IS THE
-      //     BEAT PROMISED BY THE TITLE: the Fortuner is now clearly in frame, a
-      //     black SUV alongside a motorcycle, both stationary. The subtitle names
-      //     the vehicle the audience is now looking at.
+      // 2 — THE LINE. Low-angle medium hero shot of Vikram holding the white line.
+      //     Framed from the front-left three-quarter angle in front of the line, showing Vikram's
+      //     tactical police motorcycle, reflective rain vest, and the Fortuner idling alongside.
       {
         dur: 8,
         ease: 'outCubic',
         transition: 'cut',
-        from: [-4, 3.2, -4], to: [0.5, 1.15, -8.5],
-        look: [4.6, 0.7, -12.4],
-        fov: 40,
+        from: [1.5, 1.18, -8.6], to: [2.0, 1.22, -9.4],
+        look: [4.6, 1.28, -12.5],
+        fov: 32,
         act: 'night',
         prior: true,
         sub: {
@@ -229,38 +220,32 @@
         audio: { beds: { rain: 0.04, engine: 0.05 } }
       },
 
-      // 3 — CCTV INSERT. Movement II's first half: a black Fortuner draws up on the
-      //     southbound lane and stops, and we watch it from a fixed camera on the
-      //     WEST kerb.
-      //
-      //     Framed from the west because this is the only shot in the film that is
-      //     not allowed to be composed — a mast-mounted camera sees what it sees,
-      //     and it is on the opposite side of the road from the signal. That is
-      //     also why it is safe to put it there: from the west the camera looks
-      //     east across the carriageway at the far (east) kerb, so the signal head
-      //     and both vehicles are all in the same half of frame with no building
-      //     between.
-      //
-      //     HIGH and WIDE (fov 62) because that is what a real mast camera gives
-      //     you: the whole carriageway, both vehicles, and a slice of the cross
-      //     street. `from` equals `to` and `ease` is 'linear' — the camera does
-      //     not move at all, and `locked: true` also suppresses the handheld
-      //     breathing drift in story/shots.js, because a fixed camera does not
-      //     breathe.
-      //
-      //     The OSD carries its own clock and unit label, so it reads as a
-      //     different camera from the investigation overlay used elsewhere. Its
-      //     timecode is a few seconds BEHIND the film's 3:14am opening, which is
-      //     the detail that matters: this is footage of something that already
-      //     happened.
+      // 2b — THE SIGNAL & CCTV. Low-angle upward hero view of the overhead traffic signal
+      //      burning deep red against the monsoon night sky, with the Mumbai Police CCTV surveillance
+      //      camera recording the intersection below.
+      {
+        dur: 4,
+        ease: 'outQuad',
+        transition: 'cut',
+        from: [4.6, 1.5, -13.5], to: [4.8, 1.7, -14.2],
+        look: [6.8, 5.25, -16.5],
+        fov: 38,
+        act: 'night',
+        prior: true,
+        title: 'Mumbai Police Traffic Surveillance · Camera 04',
+        audio: { beds: { rain: 0.04, room: 0.01 }, sting: 'click', stingGain: 0.25 }
+      },
+
+      // 3 — CCTV INSERT. High-angle surveillance monitor feed from the camera we just established,
+      //     recording the Fortuner and Vikram stopped at the white line with live OSD timecode.
       {
         dur: 7,
         ease: 'linear',
         locked: true,
         transition: 'cut',
-        from: [-5.5, 6.4, -6.5], to: [-5.5, 6.4, -6.5],
-        look: [5.0, 0.8, -13.0],
-        fov: 62,
+        from: [-7.8, 7.0, -7.5], to: [-7.8, 7.0, -7.5],
+        look: [5.0, 0.8, -12.5],
+        fov: 44,
         act: 'night',
         prior: true,
         osd: {
@@ -273,24 +258,17 @@
         audio: { beds: { rain: 0.04, room: 0.01 }, sting: 'click', stingGain: 0.2 }
       },
 
-      // 4 — COMPLICATION. Hard cut to the Fortuner's flank, window down, the
-      //     driver's hand on the sill. The antagonist SPEAKS FIRST, which is
-      //     what makes the following exchange an exchange: he arrives, he is
-      //     already talking, and Vikram has to answer.
-      //
-      //     The camera barely moves. A near-locked frame is the only way to make
-      //     a threat feel patient. Coming straight out of the CCTV insert, this
-      //     cut is the moment the film admits it has a camera operator — and it
-      //     says so by getting close, which surveillance could not.
-      //     The camera sits higher than the first pass: the old mark filmed from
-      //     y≈1.4 and the frame was three-quarters void sky.
+      // 4 — COMPLICATION. Intense confrontation through the lowered driver window.
+      //     Framed looking into the Fortuner's lowered driver window in the corridor between vehicles,
+      //     where the escort driver leans out speaking dismissively in the electric dashboard and warm cabin glow.
       {
         dur: 8,
         ease: 'linear',
         transition: 'cut',
-        from: [1.8, 2.1, -17.0], to: [2.8, 1.9, -15.0],
-        look: [6.2, 1.2, -12.3],
-        fov: 42,
+        from: [4.45, 1.32, -12.10], to: [4.65, 1.30, -12.10],
+        look: [5.70, 1.25, -12.15],
+        lookTo: [5.70, 1.25, -12.15],
+        fov: 34,
         act: 'night',
         prior: true,
         sub: {
@@ -300,65 +278,44 @@
         audio: { beds: { rain: 0.04, engine: 0.05 }, sting: 'click', stingGain: 0.2 }
       },
 
-      // 5 — FRICTION. Across Vikram's shoulder, the Fortuner filling frame. He
-      //     explains himself: he is late, it is only a light. Then Vikram gives
-      //     the film's thesis in one line — a rule is not a suggestion, and there
-      //     is something on the ground. Both men are in the same shot, which is
-      //     the whole point: this is a scene between two people.
+      // 5 — FRICTION. Hero medium close-up on SI Vikram Sawant holding the line.
+      //     Framed looking back at Vikram from the front three-quarter driver perspective,
+      //     revealing his steadfast gaze, human face, official white helmet, and authoritative traffic command gesture.
       {
         dur: 14,
         hold: 3,
         ease: 'inOutQuad',
         transition: 'cut',
-        from: [4.85, 1.32, -14.1], to: [4.65, 1.30, -13.6],
-        look: [4.15, 1.18, -12.9],
-        fov: 44,
+        from: [4.90, 1.40, -10.20], to: [4.60, 1.38, -10.90],
+        look: [3.60, 1.35, -12.50],
+        lookTo: [3.60, 1.35, -12.50],
+        fov: 34,
         act: 'night',
         prior: true,
         sub: {
           speaker: 'SI Vikram Sawant',
           line: '"Sir, CM ka kaafila bhi ho toh red light red hoti hai. Gaadi white line ke peeche lijiye."'
         },
-        // Second line lands late in the same shot. This is what an exchange
-        // looks like in a shot list: two utterances, one cut.
         sayThen: {
           at: 0.42,
           speaker: 'Fortuner Escort Driver',
           line: '"Tujhe nahi pata andar kaun baitha hai. Yeh aakhri warning hai."'
         },
-        // The hold is the shot's real payload. "Yeh aakhri warning hai" is the
-        // last thing said before a man is shot, and at 11s the camera had barely
-        // finished moving when the threat was already over. The extra 3s are the
-        // film not cutting away — the audience is left on a face that has just
-        // been told something and has not yet moved.
         audio: { beds: { rain: 0.04, engine: 0.05 } }
       },
 
-      // 6 — GUNSHOT. Movement IV, first half. Outside the Fortuner's EAST
-      //     (passenger-side) window, looking in at the rear seat: the muzzle
-      //     shot is staged on the PASSENGER, and the old mark sat on the
-      //     driver side where the bodywork filled 80% of frame.
-      //
-      //     This is the shot the whole cold open exists to arrive at, so it is
-      //     cut in three separate pieces rather than covered in one move:
-      //       6  the interior, the muzzle of the passenger's gun rising
-      //       7  the flash and the report
-      //       8  the road again, empty, one second later
-      //
-      //     Cutting away from the shooter before the shot is the oldest trick in
-      //     the grammar and it still works: the audience supplies the impact. If
-      //     the camera stayed on the man doing it, it would be a stunt.
-      //
-      //     `flashAt` fires the overlay's white blowout on the same frame the
-      //     audio sting lands, so the light and the report are one event rather
-      //     than two things half a second apart.
+      // 6 — THE VIP EXECUTION ORDER.
+      //     Intimate close-up directly through the Fortuner\'s lowering rear passenger window.
+      //     In the dark cabin, the peaked cap of the Commissioner emerges into the reading light, gun in hand:
+      //     "Isko hatao yahan se."
       {
         dur: 5,
         ease: 'linear',
         transition: 'cut',
         noRain: true,
-        from: [4.75, 1.24, -13.85], to: [4.55, 1.22, -13.60],
-        look: [4.15, 1.0, -12.4],
+        from: [4.50, 1.40, -12.85], to: [4.75, 1.36, -12.85],
+        look: [5.70, 1.26, -12.85],
+        lookTo: [5.70, 1.26, -12.85],
         fov: 28,
         act: 'night',
         prior: true,
@@ -369,74 +326,42 @@
         audio: { beds: { rain: 0.02, room: 0.01, engine: 0.04 } }
       },
 
-      // 7 — THE FLASH. One frame of white, then the Fortuner is already moving.
-      //     Almost no camera movement: the whip belongs to the CAR, not to us.
-      //     `flashAt: 0.08` puts the blowout eight hundredths into an 8s shot,
-      //     which at 60fps is roughly frame five — early enough that the flash
-      //     reads as the cause of the movement that follows it.
+      // 7 — THE FLASH. One frame of white, then the Fortuner accelerates away.
+      //     Dynamic tracking camera keeping the fleeing Fortuner in frame as its red tail lamps blaze
+      //     and it speeds across the white line into the dark rainy avenue.
       {
         dur: 8,
         ease: 'outQuint',
         transition: 'cut',
-        from: [1.5, 1.7, -17.0], to: [5.2, 1.6, -3.0],
-        look: [6.8, 1.0, -12.5],
-        lookTo: [6.8, 1.4, 12],
+        from: [2.6, 1.35, -15.5], to: [3.8, 1.50, -8.0],
+        look: [6.4, 1.15, -10.0],
+        lookTo: [6.4, 1.30, 40.0],
         fov: 44,
         act: 'night',
         prior: true,
         flashAt: 0.08,
         flashGain: 0.9,
         motion: [
-          { id: 'fortuner', from: [6.8, 0, -12.5], to: [6.8, 0, 95] }
+          { id: 'fortuner', from: [6.4, 0, -12.5], to: [6.4, 0, 85] }
         ],
-        // `inCubic` — the car ACCELERATES away.
-        //
-        // The default is `linear`, which is constant velocity, and constant
-        // velocity for a car pulling away from a crime scene is wrong twice over:
-        // it looks like the car is being slid rather than driven, and it is
-        // already doing 48 km/h in the first frame, with nothing on screen to
-        // explain where that came from. Ease-in spends the first third of the shot
-        // pulling away from the kerb at walking pace and only then opens up, so the
-        // shot has a beginning. Measured across the film, the escape went from
-        // "teleports to z=95" to "leaves under its own power".
         motionEase: 'inCubic',
         audio: {
           beds: { rain: 0.04, engine: 0.06 },
           stingAt: { name: 'gun', kind: 'shot', at: 0.08, gain: 0.9 },
-          // The SYNTHESISED report is still the gunshot — it is the right
-          // sound. The recorded take underneath is the car's own glass and
-          // bodywork letting go, which is a different event two frames later and
-          // is the one the audience hears with their eyes shut. Wiper and blowout
-          // both at 8% because they are the same frame.
           sampleAt: { name: 'sfx_windscreen', at: 0.09, gain: 0.5 }
         }
       },
 
       // 8 — CONSEQUENCE. Back to the stop line. The Fortuner is gone, the rain
       //     has not stopped, and there is a shape across the paint.
-      //
-      //     LOW — 1.1m, almost on the tarmac — because the last thing the camera
-      //     sees of Vikram before it leaves him should be at his level, not above
-      //     it. A high angle here would already be pulling away from a man.
-      //
-      //     `aftermath: true` is what switches on the crime-scene dressing in
-      //     cinematics.js: the barricade across the road, the numbered markers, the
-      //     sheet over him, and a patrol bar strobing on the wet tarmac. The shot
-      //     is three seconds long and says nothing. The props say everything.
-      //
-      //     `thud` lands at 30% — the body hitting the road, heard rather than
-      //     seen, because we are looking at a sheet-covered shape and not at him.
-      //     LOW crane that still shows body, markers, zebra AND the red signal in
-      //     one frame. The old mark sat 4 m out and the evidence sheet filled
-      //     the lens; the crime scene read as a gray wall.
       {
         dur: 13,
         hold: 5,
         ease: 'linear',
         transition: 'cut',
-        from: [-3.0, 2.4, -5.5], to: [-1.8, 1.7, -7.5],
-        look: [3.6, 0.5, -12.5],
-        fov: 50,
+        from: [-2.2, 2.0, -6.5], to: [-1.2, 1.5, -8.5],
+        look: [3.6, 0.35, -12.5],
+        fov: 46,
         act: 'night',
         prior: true,
         aftermath: true,
@@ -477,7 +402,7 @@
         ease: 'cinematic',
         transition: 'cut',
         timePass: true,
-        title: 'Three Hours Later · Shanti Galli — Sharma Niwas',
+        title: 'Three Hours Later · Shanti Galli — Arjun\'s Safehouse',
         from: [-54, 8, -112], to: [-62, 3.2, -122],
         look: [-64.0, 1.2, -128],
         lookTo: [-64.0, 1.2, -128],
@@ -486,8 +411,8 @@
         prior: true,
         sampleStop: ['sfx_police_siren'],
         sub: {
-          speaker: 'Mummy (Balcony)',
-          line: '"Kabir! Papa forgot his lunch dabba on the counter! Take the car and deliver it to Mrs. Iyer at Linking Road!"'
+          speaker: 'Insp. Arjun Kadam',
+          line: '"Three hours later... Vikram\'s notebook. Entry one: Mrs. Iyer. She sees everything. I have to reach her at Bazaar Road."'
         },
         audio: { beds: { room: 0.10, engine: 0.02, birds: 0.04 } }
       }

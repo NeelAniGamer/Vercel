@@ -250,10 +250,18 @@
     Object.keys(loops).forEach(function (k) {
       try {
         var a = loops[k];
-        var target = Math.max(0, a.volume * factor);
-        a.volume = target;
-        setTimeout(function () { try { a.volume = target / Math.max(0.01, factor); } catch (e) {} },
-          holdMs || 1200);
+        if (typeof a._baseVolume !== 'number') { a._baseVolume = a.volume; }
+        if (a._duckTimer) { clearTimeout(a._duckTimer); a._duckTimer = 0; }
+        a.volume = Math.max(0, Math.min(1, a._baseVolume * factor));
+        a._duckTimer = setTimeout(function () {
+          try {
+            if (typeof a._baseVolume === 'number') {
+              a.volume = a._baseVolume;
+              delete a._baseVolume;
+            }
+            a._duckTimer = 0;
+          } catch (e) {}
+        }, holdMs || 1200);
       } catch (e) {}
     });
   }

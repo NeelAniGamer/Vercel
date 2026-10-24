@@ -295,13 +295,22 @@ window.IndianVehicles = {
     const self = this
     const r = (d.wr || 0.31) * s
     const corners = [
-      [halfTrack, -halfWB], [-halfTrack, -halfWB],
-      [halfTrack, halfWB], [-halfTrack, halfWB]
+      { x: halfTrack, z: -halfWB, isFront: true, side: 'right' },
+      { x: -halfTrack, z: -halfWB, isFront: true, side: 'left' },
+      { x: halfTrack, z: halfWB, isFront: false, side: 'right' },
+      { x: -halfTrack, z: halfWB, isFront: false, side: 'left' }
     ]
+    g.userData = g.userData || {}
+    g.userData.wheels = g.userData.wheels || []
     corners.forEach(function (c) {
       const wh = self.buildWheel(s, r)
-      wh.position.set(c[0], r, c[1])
+      wh.position.set(c.x, r, c.z)
+      wh.userData.isWheel = true
+      wh.userData.isFront = c.isFront
+      wh.userData.side = c.side
+      wh.userData.wheelRadius = r
       g.add(wh)
+      g.userData.wheels.push(wh)
     })
   },
 
@@ -725,9 +734,12 @@ window.IndianVehicles = {
 
       const w1 = this.buildWheel(0.9)
       w1.position.set(0, 0.35, -0.6)
+      w1.userData.isWheel = true; w1.userData.isFront = true; w1.userData.wheelRadius = 0.35
       const w2 = this.buildWheel(0.9)
       w2.position.set(0, 0.35, 0.6)
+      w2.userData.isWheel = true; w2.userData.isFront = false; w2.userData.wheelRadius = 0.35
       g.add(w1, w2)
+      g.userData = g.userData || {}; g.userData.wheels = [w1, w2]
     } else if (type === 'activa' || type === 'scooter') {
 
       body = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.4, 1.4), bMat)
@@ -760,9 +772,12 @@ window.IndianVehicles = {
 
       const w1 = this.buildWheel(0.8)
       w1.position.set(0, 0.3, -0.55)
+      w1.userData.isWheel = true; w1.userData.isFront = true; w1.userData.wheelRadius = 0.30
       const w2 = this.buildWheel(0.8)
       w2.position.set(0, 0.3, 0.55)
+      w2.userData.isWheel = true; w2.userData.isFront = false; w2.userData.wheelRadius = 0.30
       g.add(w1, w2)
+      g.userData = g.userData || {}; g.userData.wheels = [w1, w2]
     }
 
     else if (type === 'auto') {
@@ -827,11 +842,15 @@ window.IndianVehicles = {
 
       const w1 = this.buildWheel(0.9)
       w1.position.set(0, 0.35, -1.2)
+      w1.userData.isWheel = true; w1.userData.isFront = true; w1.userData.wheelRadius = 0.35
       const w2 = this.buildWheel(0.8)
       w2.position.set(-0.55, 0.35, 0.8)
+      w2.userData.isWheel = true; w2.userData.isFront = false; w2.userData.wheelRadius = 0.32
       const w3 = this.buildWheel(0.8)
       w3.position.set(0.55, 0.35, 0.8)
+      w3.userData.isWheel = true; w3.userData.isFront = false; w3.userData.wheelRadius = 0.32
       g.add(w1, w2, w3)
+      g.userData = g.userData || {}; g.userData.wheels = [w1, w2, w3]
     }
 
     else if (type === 'wagonr' || type === 'car') {
@@ -1277,9 +1296,12 @@ window.IndianVehicles = {
 
       const w1 = this.buildWheel(0.85)
       w1.position.set(0, 0.35, -0.65)
+      w1.userData.isWheel = true; w1.userData.isFront = true; w1.userData.wheelRadius = 0.35
       const w2 = this.buildWheel(0.85)
       w2.position.set(0, 0.35, 0.65)
+      w2.userData.isWheel = true; w2.userData.isFront = false; w2.userData.wheelRadius = 0.35
       g.add(w1, w2)
+      g.userData = g.userData || {}; g.userData.wheels = [w1, w2]
     }
 
     else if (type === 'cycle') {
@@ -1311,10 +1333,13 @@ window.IndianVehicles = {
       const w1 = this.buildWheel(0.7)
       w1.scale.set(1, 1, 0.3)
       w1.position.set(0, 0.35, -0.45)
+      w1.userData.isWheel = true; w1.userData.isFront = true; w1.userData.wheelRadius = 0.35
       const w2 = this.buildWheel(0.7)
       w2.scale.set(1, 1, 0.3)
       w2.position.set(0, 0.35, 0.45)
+      w2.userData.isWheel = true; w2.userData.isFront = false; w2.userData.wheelRadius = 0.35
       g.add(w1, w2)
+      g.userData = g.userData || {}; g.userData.wheels = [w1, w2]
     }
 
     else if (type === 'tractor') {
@@ -1338,15 +1363,20 @@ window.IndianVehicles = {
 
       const w1 = this.buildWheel(1.1)
       w1.position.set(-0.85, 0.5, 0.8)
+      w1.userData.isWheel = true; w1.userData.isFront = false; w1.userData.wheelRadius = 0.5
       const w2 = this.buildWheel(1.1)
       w2.position.set(0.85, 0.5, 0.8)
+      w2.userData.isWheel = true; w2.userData.isFront = false; w2.userData.wheelRadius = 0.5
       g.add(w1, w2)
 
       const w3 = this.buildWheel(0.75)
       w3.position.set(-0.75, 0.35, -1.0)
+      w3.userData.isWheel = true; w3.userData.isFront = true; w3.userData.wheelRadius = 0.35
       const w4 = this.buildWheel(0.75)
       w4.position.set(0.75, 0.35, -1.0)
+      w4.userData.isWheel = true; w4.userData.isFront = true; w4.userData.wheelRadius = 0.35
       g.add(w3, w4)
+      g.userData = g.userData || {}; g.userData.wheels = [w1, w2, w3, w4]
     }
 
     else if (type === 'auto_yellow') {
@@ -1373,11 +1403,15 @@ window.IndianVehicles = {
 
       const w1 = this.buildWheel(0.9)
       w1.position.set(0, 0.35, -1.2)
+      w1.userData.isWheel = true; w1.userData.isFront = true; w1.userData.wheelRadius = 0.35
       const w2 = this.buildWheel(0.8)
       w2.position.set(-0.55, 0.35, 0.8)
+      w2.userData.isWheel = true; w2.userData.isFront = false; w2.userData.wheelRadius = 0.32
       const w3 = this.buildWheel(0.8)
       w3.position.set(0.55, 0.35, 0.8)
+      w3.userData.isWheel = true; w3.userData.isFront = false; w3.userData.wheelRadius = 0.32
       g.add(w1, w2, w3)
+      g.userData = g.userData || {}; g.userData.wheels = [w1, w2, w3]
     }
 
     else {

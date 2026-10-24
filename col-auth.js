@@ -521,7 +521,9 @@ window.closeMo = function () {
               .eq('id', userId)
               .maybeSingle()
 
-            if (error && error.code !== 'PGRST116') {throw error}
+            if (error && error.code !== 'PGRST116') {
+              console.warn('[col-auth] Cloud profile lookup notice:', error.message || error.code || error)
+            }
 
             if (profile) {
               window.colUser.uid = profile.id
@@ -534,7 +536,7 @@ window.closeMo = function () {
             }
           }
         } catch (e) {
-          console.error('[col-auth] Profile sync error:', e)
+          console.warn('[col-auth] Profile sync notice:', e && e.message ? e.message : e)
         }
 
         // Session data remains in memory only. Never persist Supabase

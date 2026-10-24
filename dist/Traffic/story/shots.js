@@ -269,7 +269,12 @@
         // Face the direction of travel so actors do not moonwalk.
         var dx = m.to[0] - m.from[0], dz = m.to[2] - m.from[2];
         if (dx !== 0 || dz !== 0) { a.rotation.y = Math.atan2(dx, dz); }
-        if (typeof ctx.game._animateCharacterWalk === 'function') {
+        if (a.userData && typeof a.userData.setMoving === 'function') {
+          a.userData.setMoving(!!m.walk, false);
+        }
+        if (a.userData && typeof a.userData.update === 'function') {
+          a.userData.update(ctx.dt || 0.016, m.walk ? 1.4 : 0);
+        } else if (typeof ctx.game._animateCharacterWalk === 'function') {
           ctx.game._animateCharacterWalk(a, m.walk ? 1.4 : 0, ctx.dt || 0.016);
         }
       } catch (e) {}
@@ -304,19 +309,16 @@
       var a = world(shot.from);
       var t = world(shot.look || shot.to);
       if (!a || !t) { return; }
-      // For high crane / establishing shots where camera is elevated, sample the sight-line
-      // with a focused corridor so filler buildings do not occlude the view down to the street.
-      var highCrane = (shot.from && shot.from[1] > 8);
-      if (highCrane) {
-        var SAMPLES = 12;
-        for (var i = 1; i < SAMPLES; i++) {
-          var f = i / SAMPLES;
-          out.push({
-            x: a[0] + (t[0] - a[0]) * f,
-            z: a[2] + (t[2] - a[2]) * f,
-            hw: LINE_DISC, hd: LINE_DISC
-          });
-        }
+      // Sample the camera->subject sight-line with a corridor so filler buildings
+      // never occlude the view down to the street or action on any camera angle.
+      var SAMPLES = 10;
+      for (var i = 1; i < SAMPLES; i++) {
+        var f = i / SAMPLES;
+        out.push({
+          x: a[0] + (t[0] - a[0]) * f,
+          z: a[2] + (t[2] - a[2]) * f,
+          hw: LINE_DISC, hd: LINE_DISC
+        });
       }
     });
     return out;

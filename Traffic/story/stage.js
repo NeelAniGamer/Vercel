@@ -131,7 +131,7 @@
       themeType: 'mumbai_city',
       mode: 'night',
       sky: 0x1e2e46,
-      ground: 0x243042,
+      ground: 0x27303d,
       isNight: true,
       hasRain: true,
       hasPuddles: true,
@@ -174,6 +174,24 @@
     // ── Film-only dressing ────────────────────────────────────────────────
     dressing: cfg({
       signalHead: { x: 11.4, z: -16.5, rotY: Math.PI / 2, state: 'red', ground: { x: 5, z: -12.5, halfW: 5, halfD: 0.3 } },
+      zebra: { x: 0, z: -8.5, width: 18, depth: 2.8 },
+
+      // Weatherproof traffic enforcement CCTV camera on street pole with active blinking red recording LED
+      cctv: { x: -11.5, y: 6.2, z: -6.5, rotY: Math.PI / 4, withPole: true, tilt: 0.38 },
+
+      // Authentic corner Chai Tapri tea stall with warm tungsten bulb & tea counter
+      chaiTapri: { x: -16.5, y: 0.08, z: -14.0, rotY: Math.PI / 2 },
+
+      // Authentic Mumbai BEST bus stop shelter with curved canopy & bench
+      busStop: { x: 13.5, y: 0.08, z: -20.0, rotY: -Math.PI / 2 },
+
+      // Ambient pedestrians along sidewalks
+      pedestrians: [
+        { x: -12.5, y: 0.08, z: -18.0, rotY: 0, variant: 'normal' },
+        { x: 12.8, y: 0.08, z: -28.0, rotY: Math.PI, variant: 'normal' },
+        { x: -12.6, y: 0.08, z: -4.0, rotY: 0.2, variant: 'elderly' },
+        { x: 12.5, y: 0.08, z: 12.0, rotY: -Math.PI / 2, variant: 'normal' }
+      ],
 
       // Wet road: specular plane with puddle patches.
       wetRoad: true,
@@ -261,16 +279,11 @@
       // playback, while a light vignette over a 3am rain scene throws away the
       // only thing keeping the eye in the middle of the frame.
       night: {
-        sky: 0x162438,
-        // The night act must stay DARKER than the day act. It used to carry
-        // the day's ambient (0.46) with the comment "lights stay dark", and
-        // then a 0.9 exposure grade on top - so the 3:14am cold open read as
-        // a flat grey overcast day. The house rule for the film is ambient
-        // ~0.30 and sun ~0.38.
-        ambient: 0.30,
+        sky: 0x1e2e46,
+        ambient: 0.36,
         hemiSky: 0x6486b4,
         hemiGround: 0x323e4e,
-        sun: 0.38,
+        sun: 0.46,
         sunPos: [25, 60, 20],
         fogNear: 150,
         fogFar: 900,
@@ -283,7 +296,7 @@
         // on real displays (gameplay has its own per-frame exposure ramp; the
         // film owns the frame so that ramp never runs). Lights stay dark —
         // only the grade lifts. Restored by clearStage.
-        exposure: 0.9
+        exposure: 0.95
       },
       day: {
         sky: 0x9dc4e0,

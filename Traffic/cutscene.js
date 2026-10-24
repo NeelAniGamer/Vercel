@@ -39,7 +39,7 @@
   var STYLE_ID = 'cutscene-style';
   var CSS =
     '#cutscene-root{position:fixed;inset:0;z-index:20000;pointer-events:none;font-family:Inter,system-ui,sans-serif;text-transform:none;overflow:hidden;}' +
-    '#cutscene-root .cs-bar{position:absolute;left:0;right:0;height:6.5vh;min-height:22px;background:#030508;transform:scaleY(0);will-change:transform;z-index:20010;border-bottom:1px solid rgba(255,255,255,0.08);}' +
+    '#cutscene-root .cs-bar{position:absolute;left:0;right:0;height:12vh;min-height:48px;background:#030508;transform:scaleY(0);will-change:transform;z-index:20010;border-bottom:1px solid rgba(255,255,255,0.08);}' +
     '#cutscene-root .cs-bar.top{top:0;transform-origin:top center;}' +
     '#cutscene-root .cs-bar.bot{bottom:0;transform-origin:bottom center;border-bottom:none;border-top:1px solid rgba(255,255,255,0.08);}' +
     '#cutscene-root .cs-vig{position:absolute;inset:0;opacity:0;will-change:opacity;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 60%,rgba(3,6,12,0.28) 100%);z-index:20001;}' +
@@ -49,7 +49,7 @@
     '#cutscene-root .cs-rain-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:20003;opacity:0.85;}' +
     '#cutscene-root .cs-title{position:absolute;left:0;right:0;top:38%;text-align:center;color:#fff;opacity:0;will-change:opacity,transform;font-size:clamp(16px,4.5vw,28px);font-weight:900;letter-spacing:.22em;text-transform:uppercase;text-shadow:0 2px 20px rgba(0,0,0,0.95);z-index:20012;}' +
     // TACTICAL FOUND-FOOTAGE / INTERCEPTOR OSD
-    '#cutscene-root .cs-osd{position:absolute;inset:6.5vh 24px calc(6.5vh + 10px) 24px;pointer-events:none;z-index:20005;display:flex;flex-direction:column;justify-content:space-between;opacity:0;transition:opacity .45s ease;}' +
+    '#cutscene-root .cs-osd{position:absolute;inset:12vh 24px calc(12vh + 10px) 24px;pointer-events:none;z-index:20005;display:flex;flex-direction:column;justify-content:space-between;opacity:0;transition:opacity .45s ease;}' +
     '#cutscene-root .cs-osd-top{display:flex;justify-content:space-between;align-items:center;font-family:"Space Mono",monospace;font-size:11px;color:rgba(255,255,255,0.75);letter-spacing:0.12em;text-shadow:0 1px 4px rgba(0,0,0,0.8);}' +
     '#cutscene-root .cs-osd-rec{display:inline-flex;align-items:center;gap:7px;color:#ef4444;font-weight:800;}' +
     '#cutscene-root .cs-rec-dot{width:8px;height:8px;border-radius:50%;background:#ef4444;box-shadow:0 0 10px #ef4444;animation:csBlink 1s infinite;}' +
@@ -63,7 +63,7 @@
     '#cutscene-root .cs-osd-bot{display:flex;justify-content:space-between;align-items:flex-end;font-family:"Space Mono",monospace;font-size:10px;color:rgba(94,211,240,0.85);letter-spacing:0.08em;text-shadow:0 1px 4px rgba(0,0,0,0.8);}' +
     '#cutscene-root .cs-osd-tc{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-family:"Space Mono",monospace;font-size:clamp(13px,2.2vw,19px);font-weight:700;letter-spacing:0.22em;color:rgba(255,255,255,0.92);text-shadow:0 2px 10px rgba(0,0,0,0.95);}' +
     // NOIR TRANSCEIVER DIALOGUE CARD
-    '#cutscene-root .cs-transceiver{position:absolute;left:50%;transform:translateX(-50%) translateY(14px);bottom:calc(6.5vh + 14px);width:min(94vw,760px);display:flex;align-items:center;gap:14px;padding:12px 18px;border-radius:14px;background:rgba(8,12,22,0.92);border:1px solid rgba(94,211,240,0.32);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 8px 32px rgba(0,0,0,0.85),0 0 20px rgba(94,211,240,0.12);color:#fff;opacity:0;will-change:opacity,transform;z-index:20025;transition:transform .22s cubic-bezier(0.16,1,0.3,1),opacity .22s ease;}' +
+    '#cutscene-root .cs-transceiver{position:absolute;left:50%;transform:translateX(-50%) translateY(14px);bottom:calc(12vh + 14px);width:min(94vw,760px);display:flex;align-items:center;gap:14px;padding:12px 18px;border-radius:14px;background:rgba(8,12,22,0.92);border:1px solid rgba(94,211,240,0.32);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 8px 32px rgba(0,0,0,0.85),0 0 20px rgba(94,211,240,0.12);color:#fff;opacity:0;will-change:opacity,transform;z-index:20025;transition:transform .22s cubic-bezier(0.16,1,0.3,1),opacity .22s ease;}' +
     '#cutscene-root .cs-avatar{width:44px;height:44px;border-radius:10px;background:rgba(18,26,45,0.9);border:1.5px solid rgba(94,211,240,0.5);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;box-shadow:inset 0 0 12px rgba(94,211,240,0.25);position:relative;overflow:hidden;}' +
     '#cutscene-root .cs-content{flex:1;min-width:0;text-align:left;}' +
     '#cutscene-root .cs-meta{display:flex;align-items:center;gap:8px;margin-bottom:4px;}' +
@@ -77,9 +77,13 @@
     '#cutscene-root .cs-eq-bar:nth-child(5){height:5px;animation-delay:0.25s;}' +
     '@keyframes csEq{0%{transform:scaleY(0.3);}100%{transform:scaleY(1.2);}}' +
     '#cutscene-root .cs-dialogue-line{font-size:clamp(13px,3.2vw,16.5px);line-height:1.45;color:#e8edf5;font-weight:500;text-shadow:0 1px 2px rgba(0,0,0,0.8);}' +
+    // THEATRICAL SUBTITLES
+    '#cutscene-root .cs-theatrical-sub{position:absolute;left:50%;transform:translateX(-50%) translateY(6px);bottom:calc(12vh + 12px);max-width:min(90vw,880px);width:max-content;display:flex;flex-direction:column;align-items:center;text-align:center;pointer-events:none;z-index:20026;opacity:0;transition:opacity .2s ease,transform .2s ease;}' +
+    '#cutscene-root .cs-theatrical-speaker{font-family:Inter,system-ui,sans-serif;font-size:clamp(10px,1.8vw,12px);font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#facc15;margin-bottom:4px;text-shadow:0 1px 4px rgba(0,0,0,0.9),0 0 10px rgba(0,0,0,0.8);}' +
+    '#cutscene-root .cs-theatrical-line{font-family:Inter,system-ui,sans-serif;font-size:clamp(14px,2.8vw,19px);font-weight:600;line-height:1.4;color:#ffffff;letter-spacing:0.02em;text-shadow:0 2px 4px rgba(0,0,0,0.95),0 0 12px rgba(0,0,0,0.85),0 0 24px rgba(0,0,0,0.7);}' +
     // WINDSHIELD WIPER BLADE
     '#cutscene-root .cs-wiper{position:absolute;bottom:0;left:15%;width:9px;height:125vh;background:linear-gradient(to right,rgba(15,20,30,0.9),rgba(45,55,75,0.95),rgba(10,15,25,0.9));transform-origin:bottom center;transform:rotate(-68deg);z-index:20004;opacity:0;pointer-events:none;box-shadow:0 0 16px rgba(0,0,0,0.9);transition:transform 0.45s cubic-bezier(0.2,0.8,0.3,1),opacity 0.2s ease;}' +
-    '#cutscene-root .cs-skip-btn{position:absolute;top:max(14px,calc(6.5vh + 10px));right:18px;z-index:20030;' +
+    '#cutscene-root .cs-skip-btn{position:absolute;top:max(16px,calc(12vh + 12px));right:18px;z-index:20030;' +
     'pointer-events:auto;display:inline-flex;align-items:center;gap:8px;padding:10px 20px;' +
     'border-radius:9999px;background:rgba(10,15,29,.95);border:1.5px solid rgba(94,211,240,.6);' +
     'backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#fff;' +
@@ -90,10 +94,11 @@
     '#cutscene-root .cs-skip-btn:hover{background:rgba(22,33,58,.98);border-color:#5ed3f0;transform:scale(1.05);box-shadow:0 6px 28px rgba(94,211,240,.5);}' +
     '#cutscene-root .cs-skip-btn:active{transform:scale(.97);}' +
     '#cutscene-root .cs-skip-icon{font-size:14px;color:#5ed3f0;}' +
-    'body.cs-playing #hud,body.cs-playing #hudbar,body.cs-playing #hwrap,body.cs-playing #player-hud-card,body.cs-playing #top-right-hud-stack,body.cs-playing #tasks-container,body.cs-playing #task-tracker,body.cs-playing #objective-overlay,body.cs-playing #challan-summary-box,body.cs-playing #challan-stack,body.cs-playing #cockpit-drive-cluster,body.cs-playing #speed-ctrl,body.cs-playing #gp,body.cs-playing #spgauge,body.cs-playing #boostgauge,body.cs-playing #civic-controls,body.cs-playing #dn-clock,body.cs-playing #hud-ai-synth-btn,body.cs-playing #hud-rd-btn,body.cs-playing #hud-settings-btn,body.cs-playing #mobile-pause-btn,body.cs-playing #camera-joystick,body.cs-playing #kid-pedals,body.cs-playing #kid-steer,body.cs-playing #enter-vehicle-btn,body.cs-playing .hud-dashboard-card,body.cs-playing #mini-map,body.cs-playing #minimap,body.cs-playing #mmc,body.cs-playing #mobile-controls,body.cs-playing .mobile-controls,body.cs-playing #tc,body.cs-playing #play-overlay,body.cs-playing .nav-login-btn,body.cs-playing .lp-modal,body.cs-playing #game-briefing,body.cs-playing #gta-briefing-modal,body.cs-playing #gta-mission-intro,body.cs-playing .gta-intro-overlay,body.cs-playing #daily-bonus-modal,body.cs-playing [class*="daily-bonus"],body.cs-playing .action-btn,body.cs-playing #phone-gps,body.cs-playing #phone-gps-btn,body.cs-playing #sig-ind,body.cs-playing #da,body.cs-playing #ow{display:none !important;}' +
+    'body.cs-playing #hud,body.cs-playing #hudbar,body.cs-playing #hwrap,body.cs-playing #player-hud-card,body.cs-playing #top-right-hud-stack,body.cs-playing #tasks-container,body.cs-playing #task-tracker,body.cs-playing #objective-overlay,body.cs-playing #challan-summary-box,body.cs-playing #challan-stack,body.cs-playing #cockpit-drive-cluster,body.cs-playing #speed-ctrl,body.cs-playing #gp,body.cs-playing #spgauge,body.cs-playing #boostgauge,body.cs-playing #civic-controls,body.cs-playing #dn-clock,body.cs-playing #hud-ai-synth-btn,body.cs-playing #hud-rd-btn,body.cs-playing #hud-settings-btn,body.cs-playing #mobile-pause-btn,body.cs-playing #camera-joystick,body.cs-playing #kid-pedals,body.cs-playing #kid-steer,body.cs-playing #enter-vehicle-btn,body.cs-playing .hud-dashboard-card,body.cs-playing #mini-map,body.cs-playing #minimap,body.cs-playing #mmc,body.cs-playing #mobile-controls,body.cs-playing .mobile-controls,body.cs-playing #tc,body.cs-playing #play-overlay,body.cs-playing .nav-login-btn,body.cs-playing .lp-modal,body.cs-playing #game-briefing,body.cs-playing #gta-briefing-modal,body.cs-playing #gta-mission-intro,body.cs-playing .gta-intro-overlay,body.cs-playing #daily-bonus-modal,body.cs-playing [class*="daily-bonus"],body.cs-playing .action-btn,body.cs-playing #phone-gps,body.cs-playing #phone-gps-btn,body.cs-playing #sig-ind,body.cs-playing #da,body.cs-playing #ow,body.cs-playing #toast{display:none !important;}' +
     '@media (max-width:480px){#cutscene-root .cs-title{letter-spacing:.1em;font-size:clamp(13px,3.8vw,18px);padding:0 14px;top:34%;text-wrap:balance;}}' +
-    '@media (max-width:480px){#cutscene-root .cs-skip-btn{padding:8px 14px;font-size:11px;right:12px;top:max(10px,calc(6.5vh + 8px));}}' +
-    '@media (max-width:480px){#cutscene-root .cs-transceiver{bottom:calc(6.5vh + 10px);padding:10px 14px;gap:10px;}}';
+    '@media (max-width:480px){#cutscene-root .cs-skip-btn{padding:8px 14px;font-size:11px;right:12px;top:max(10px,calc(12vh + 8px));}}' +
+    '@media (max-width:480px){#cutscene-root .cs-transceiver{bottom:calc(12vh + 10px);padding:10px 14px;gap:10px;}}' +
+    '@media (max-width:480px){#cutscene-root .cs-theatrical-sub{bottom:calc(12vh + 8px);max-width:94vw;}}';
 
   function ensureStyle() {
     if (document.getElementById(STYLE_ID)) { return; }
@@ -318,6 +323,10 @@
           '<div class="cs-dialogue-line" id="csLine"></div>' +
         '</div>' +
       '</div>' +
+      '<div class="cs-theatrical-sub" id="csTheatricalSub">' +
+        '<div class="cs-theatrical-speaker" id="csTheatricalSpeaker"></div>' +
+        '<div class="cs-theatrical-line" id="csTheatricalLine"></div>' +
+      '</div>' +
       '<button class="cs-skip-btn" type="button" aria-label="Skip Cutscene">' +
         '<span>Skip Cutscene</span> <span class="cs-skip-icon">⏭</span>' +
       '</button>';
@@ -354,6 +363,9 @@
       avatar: root.querySelector('#csAvatar'),
       badge: root.querySelector('#csBadge'),
       line: root.querySelector('#csLine'),
+      theatricalSub: root.querySelector('#csTheatricalSub'),
+      theatricalSpeaker: root.querySelector('#csTheatricalSpeaker'),
+      theatricalLine: root.querySelector('#csTheatricalLine'),
       skipBtn: root.querySelector('.cs-skip-btn')
     };
   }
@@ -460,36 +472,54 @@
 
   var LAST_SPEAKER = '';
   function setSubtitle(ov, text) {
-    if (!ov || !ov.transceiver) { return; }
+    if (!ov) { return; }
     if (!text) {
-      ov.transceiver.style.opacity = '0';
-      ov.transceiver.style.transform = 'translateX(-50%) translateY(14px)';
+      if (ov.transceiver) {
+        ov.transceiver.style.opacity = '0';
+        ov.transceiver.style.transform = 'translateX(-50%) translateY(14px)';
+      }
+      if (ov.theatricalSub) {
+        ov.theatricalSub.style.opacity = '0';
+        ov.theatricalSub.style.transform = 'translateX(-50%) translateY(6px)';
+      }
       return;
     }
     var rawSpeaker = text.speaker ? String(text.speaker).trim() : '';
     var meta = getCharacterMeta(rawSpeaker);
     var line = text.line == null ? '' : String(text.line);
+    var isRadio = /radio|wireless|dispatch|control/i.test(rawSpeaker) || !!text.isRadio;
 
     if (rawSpeaker && rawSpeaker !== LAST_SPEAKER) {
       LAST_SPEAKER = rawSpeaker;
-      try {
-        if (window.StoryAudio && typeof window.StoryAudio.sting === 'function') {
-          window.StoryAudio.sting('squelch', 0.55);
-        }
-      } catch (eSq) {}
+      if (isRadio) {
+        try {
+          if (window.StoryAudio && typeof window.StoryAudio.sting === 'function') {
+            window.StoryAudio.sting('squelch', 0.55);
+          }
+        } catch (eSq) {}
+      }
     }
 
-    if (ov.avatar) {
-      ov.avatar.textContent = meta.icon;
-      ov.avatar.style.borderColor = meta.col;
-    }
-    if (ov.badge) {
-      ov.badge.textContent = meta.name + ' · ' + meta.dept;
-      ov.badge.style.color = meta.col;
-      ov.badge.style.borderColor = meta.col;
-    }
-    if (ov.line) {
-      ov.line.innerHTML = escapeHtml(line);
+    if (isRadio) {
+      if (ov.avatar) {
+        ov.avatar.textContent = meta.icon;
+        ov.avatar.style.borderColor = meta.col;
+      }
+      if (ov.badge) {
+        ov.badge.textContent = meta.name + ' · ' + meta.dept;
+        ov.badge.style.color = meta.col;
+        ov.badge.style.borderColor = meta.col;
+      }
+      if (ov.line) {
+        ov.line.innerHTML = escapeHtml(line);
+      }
+    } else {
+      if (ov.theatricalSpeaker) {
+        ov.theatricalSpeaker.textContent = rawSpeaker ? titleCase(rawSpeaker) : '';
+      }
+      if (ov.theatricalLine) {
+        ov.theatricalLine.innerHTML = escapeHtml(line);
+      }
     }
   }
 
@@ -531,25 +561,144 @@
               mesh.userData = mesh.userData || {};
               mesh.userData.rider = rider;
             }
-            // Halogen headlamp and red taillight for Vikram's motorcycle
+            // Mumbai Traffic Police motorcycle equipment & lighting for SI Vikram Sawant
             try {
-              var hLamp = new THREE.Mesh(
-                new THREE.SphereGeometry(0.12, 14, 12),
-                new THREE.MeshBasicMaterial({ color: 0xfef08a })
+              // Retint motorcycle body to official Mumbai Traffic Police white
+              mesh.traverse(function (c) {
+                if (c.isMesh && c.material) {
+                  var mName = (c.material.name || c.name || '').toLowerCase();
+                  if (mName.indexOf('body') >= 0 || mName.indexOf('paint') >= 0 || mName.indexOf('tank') >= 0 || mName.indexOf('fender') >= 0) {
+                    c.material = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.28, metalness: 0.15 });
+                  }
+                }
+              });
+
+              // Halogen headlamp: chrome bezel housing with recessed lens & forward projection
+              var headBezel = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.11, 0.11, 0.05, 16),
+                new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.85, roughness: 0.2 })
               );
-              hLamp.position.set(0, 0.72, 0.82);
-              mesh.add(hLamp);
-              var bSpot = new THREE.SpotLight(0xfff7ed, 3.2, 30, Math.PI / 6, 0.35, 1.2);
+              headBezel.rotation.x = Math.PI / 2;
+              headBezel.position.set(0, 0.72, 0.80);
+              mesh.add(headBezel);
+
+              var headLens = new THREE.Mesh(
+                new THREE.CircleGeometry(0.10, 16),
+                new THREE.MeshStandardMaterial({
+                  color: 0xfffbeb,
+                  emissive: 0xfef08a,
+                  emissiveIntensity: 0.65,
+                  roughness: 0.1,
+                  metalness: 0.1
+                })
+              );
+              headLens.position.set(0, 0.72, 0.826);
+              mesh.add(headLens);
+
+              var bSpot = new THREE.SpotLight(0xfff7ed, 1.4, 24, Math.PI / 6, 0.40, 1.3);
               bSpot.position.set(0, 0.72, 0.85);
               bSpot.target.position.set(0, 0, 16);
               mesh.add(bSpot);
               mesh.add(bSpot.target);
+
               var tLamp = new THREE.Mesh(
                 new THREE.BoxGeometry(0.14, 0.08, 0.04),
                 new THREE.MeshBasicMaterial({ color: 0xef4444 })
               );
               tLamp.position.set(0, 0.65, -0.84);
               mesh.add(tLamp);
+
+              // ── Twin Hard-Case Police Pannier Utility Boxes with Yellow/Blue Chevrons ──
+              var panMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.35, metalness: 0.1 });
+              var panBandMat = new THREE.MeshBasicMaterial({ color: 0x1e3a8a }); // Navy Police stripe
+              var chevronYellowMat = new THREE.MeshBasicMaterial({ color: 0xfacc15 }); // High-visibility yellow
+              [-0.32, 0.32].forEach(function (px) {
+                var panBox = new THREE.Mesh(new THREE.BoxGeometry(0.20, 0.30, 0.46), panMat);
+                panBox.position.set(px, 0.52, -0.56);
+                mesh.add(panBox);
+                var panStripe = new THREE.Mesh(new THREE.BoxGeometry(0.206, 0.07, 0.38), panBandMat);
+                panStripe.position.set(px, 0.52, -0.56);
+                mesh.add(panStripe);
+                var chevStripe = new THREE.Mesh(new THREE.BoxGeometry(0.208, 0.032, 0.38), chevronYellowMat);
+                chevStripe.position.set(px, 0.56, -0.56);
+                mesh.add(chevStripe);
+              });
+
+              // ── Aerodynamic Clear Front Windscreen & PA Siren Speaker ──────
+              var screenMat = new THREE.MeshStandardMaterial({
+                color: 0xe0f2fe,
+                transparent: true,
+                opacity: 0.45,
+                roughness: 0.1,
+                metalness: 0.1
+              });
+              var windScreen = new THREE.Mesh(new THREE.PlaneGeometry(0.36, 0.44), screenMat);
+              windScreen.position.set(0, 1.05, 0.72);
+              windScreen.rotation.x = -0.32;
+              mesh.add(windScreen);
+
+              var sirenMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.5 });
+              var sirenHorn = new THREE.Mesh(new THREE.ConeGeometry(0.065, 0.12, 12), sirenMat);
+              sirenHorn.position.set(0.24, 0.58, 0.54);
+              sirenHorn.rotation.x = Math.PI / 2;
+              mesh.add(sirenHorn);
+
+              // ── Rear Police Radio Mast with Flashing Deep Blue LED Beacon ──
+              // Mounted to the kerb side (left, x = -0.22) so it does not obstruct the car view
+              var mastPole = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.016, 0.02, 1.15, 8),
+                new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.8, roughness: 0.3 })
+              );
+              mastPole.position.set(-0.22, 1.10, -0.78);
+              mesh.add(mastPole);
+
+              var blueBeaconMat = new THREE.MeshBasicMaterial({ color: 0x2563eb });
+              var beaconCap = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.042, 0.042, 0.10, 12),
+                blueBeaconMat
+              );
+              beaconCap.position.set(-0.22, 1.68, -0.78);
+              mesh.add(beaconCap);
+
+              var throwBlue = new THREE.PointLight(0x2563eb, 0.25, 4.0, 2.0);
+              throwBlue.position.set(-0.22, 1.70, -0.78);
+              mesh.add(throwBlue);
+
+              // ── Front Tubular Crash Guard Bars with Red & Blue Strobes ─────
+              var redStrobeMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
+              var blueStrobeMat = new THREE.MeshBasicMaterial({ color: 0x3b82f6 });
+
+              var fStrobeL = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.08, 0.05), redStrobeMat);
+              fStrobeL.position.set(-0.28, 0.48, 0.44);
+              mesh.add(fStrobeL);
+
+              var fStrobeR = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.08, 0.05), blueStrobeMat);
+              fStrobeR.position.set(0.28, 0.48, 0.44);
+              mesh.add(fStrobeR);
+
+              var throwFrontStrobe = new THREE.PointLight(0x3b82f6, 0.4, 6, 2.0);
+              throwFrontStrobe.position.set(0, 0.45, 0.50);
+              mesh.add(throwFrontStrobe);
+
+              // Alternating Police Flashing Beacon & Strobe ticker
+              var bPhase = 0;
+              var bTimer = null;
+              var bTick = function (dt) {
+                bPhase += (dt || 0.016);
+                var pulse = (bPhase % 0.8) < 0.4;
+                blueBeaconMat.color.setHex(pulse ? 0x38bdf8 : 0x0c2461);
+                throwBlue.intensity = pulse ? 0.35 : 0.05;
+                redStrobeMat.color.setHex(pulse ? 0xff2222 : 0x450a0a);
+                blueStrobeMat.color.setHex(pulse ? 0x1e3a8a : 0x38bdf8);
+                throwFrontStrobe.color.setHex(pulse ? 0xef4444 : 0x3b82f6);
+                throwFrontStrobe.intensity = 0.35;
+              };
+              if (typeof window !== 'undefined' && window.setInterval) {
+                bTimer = window.setInterval(function () { bTick(0.05); }, 50);
+              }
+              mesh.userData = mesh.userData || {};
+              mesh.userData.stageTick = bTick;
+              mesh.userData.stopTick = function () { if (bTimer) { clearInterval(bTimer); } };
             } catch (eL) {}
           }
           if (mesh && (d.id === 'fortuner' || d.withDriver)) {
@@ -583,7 +732,7 @@
 
               // The beam is safe unconditionally: a SpotLight has no geometry, so
               // it cannot be misplaced in a way the audience reads as an object.
-              var fBeam = new THREE.SpotLight(0xfff7ed, 4.0, 34, Math.PI / 7, 0.45, 1.3);
+              var fBeam = new THREE.SpotLight(0xfff7ed, 1.8, 30, Math.PI / 7, 0.45, 1.3);
               fBeam.position.set(0, 0.8, plausible ? lSz.z * 0.5 : 2.2);
               fBeam.target.position.set(0, -0.4, 22);
               mesh.add(fBeam);
@@ -607,6 +756,60 @@
                 var fHead2 = fHead.clone();
                 fHead2.position.x = lc.x - hx;
                 mesh.add(fHead2);
+
+                // Cleanly remove ONLY the side window aperture polygons on the driver and passenger sides
+                try {
+                  var bodyMesh = null;
+                  mesh.traverse(function (c) { if (c.isMesh && c.name === 'body') bodyMesh = c; });
+                  if (bodyMesh && bodyMesh.geometry && bodyMesh.geometry.index) {
+                    var bGeom = bodyMesh.geometry.clone();
+                    bodyMesh.geometry = bGeom;
+                    var bPos = bGeom.attributes.position;
+                    var bNorm = bGeom.attributes.normal;
+                    var bIdx = bGeom.index;
+                    var newIndices = [];
+                    for (var ti = 0; ti < bIdx.count; ti += 3) {
+                      var ia = bIdx.getX(ti), ib = bIdx.getX(ti + 1), ic = bIdx.getX(ti + 2);
+                      var xa = bPos.getX(ia), ya = bPos.getY(ia), za = bPos.getZ(ia);
+                      var xb = bPos.getX(ib), yb = bPos.getY(ib), zb = bPos.getZ(ib);
+                      var xc = bPos.getX(ic), yc = bPos.getY(ic), zc = bPos.getZ(ic);
+                      var mX = (xa + xb + xc) / 3;
+                      var mY = (ya + yb + yc) / 3;
+                      var mZ = (za + zb + zc) / 3;
+                      var naX = bNorm ? (bNorm.getX(ia) + bNorm.getX(ib) + bNorm.getX(ic)) / 3 : -1;
+                      // Aperture rule: precisely cuts the window glass polygons on both sides of the SUV cabin
+                      // (mX inset at ~0.55 between 0.48 and 0.62, window height mY 0.30 to 1.05, spanning cabin mZ -1.05 to 0.65),
+                      // leaving the roof, hood, tailgate, doors, and pillars 100% solid and intact!
+                      var isSideWindow = (Math.abs(mX) >= 0.48 && Math.abs(mX) <= 0.62 && Math.abs(naX) > 0.70 && mY >= 0.30 && mY <= 1.05 && mZ >= -1.05 && mZ <= 0.65);
+                      if (!isSideWindow) {
+                        newIndices.push(ia, ib, ic);
+                      }
+                    }
+                    bGeom.setIndex(newIndices);
+                    bGeom.computeVertexNormals();
+                  }
+                } catch (eWinCut) {}
+
+                // Roll-down automotive tinted glass windows on the side facing Vikram
+                var winMat = new THREE.MeshBasicMaterial({
+                  color: 0x090d16,
+                  transparent: true,
+                  opacity: 0.35,
+                  depthWrite: false
+                });
+                var driverWin = new THREE.Mesh(new THREE.PlaneGeometry(0.74, 0.42), winMat);
+                driverWin.position.set(-0.81, 1.25, 0.38);
+                driverWin.rotation.y = -Math.PI / 2;
+                mesh.add(driverWin);
+                mesh.userData.driverWin = driverWin;
+                mesh.userData.driverWinInitY = driverWin.position.y;
+
+                var rearWin = new THREE.Mesh(new THREE.PlaneGeometry(0.72, 0.42), winMat.clone());
+                rearWin.position.set(-0.81, 1.25, -0.35);
+                rearWin.rotation.y = -Math.PI / 2;
+                mesh.add(rearWin);
+                mesh.userData.rearWin = rearWin;
+                mesh.userData.rearWinInitY = rearWin.position.y;
 
                 var tailMat = new THREE.MeshBasicMaterial({ color: 0x7f1d1d });
                 var brakeMat = new THREE.MeshBasicMaterial({ color: 0x2a0505 });
@@ -635,28 +838,44 @@
             } catch (eFortLights) {}
           }
           if (mesh && (d.id === 'fortuner' || d.withDriver) && typeof window._buildCutsceneDriver === 'function') {
+            // Apply authentic deep obsidian black automotive finish, preserving texture atlas
+            try {
+              mesh.traverse(function (c) {
+                if (c.isMesh && c.material) {
+                  var mName = (c.material.name || c.name || '').toLowerCase();
+                  if (mName.indexOf('glass') >= 0 || mName.indexOf('window') >= 0) {
+                    c.material = new THREE.MeshBasicMaterial({
+                      color: 0x05070a,
+                      transparent: true,
+                      opacity: 0.70,
+                      depthWrite: false
+                    });
+                  } else if (mName.indexOf('light') < 0 && mName.indexOf('lamp') < 0 && mName.indexOf('wheel') < 0 && mName.indexOf('tyre') < 0) {
+                    var prevMap = c.material.map || null;
+                    c.material = new THREE.MeshStandardMaterial({
+                      map: prevMap,
+                      color: 0x18181b, // Deep Obsidian VIP black, preserving texture atlas
+                      metalness: 0.85,
+                      roughness: 0.18
+                    });
+                  }
+                }
+              });
+            } catch (eMatFort) {}
+
             var driver = window._buildCutsceneDriver();
             if (driver) {
-              // The driver sat at the vehicle origin, which is INSIDE the engine
-              // bay — a black blob half-buried in the bonnet, visible in the shot
-              // that cuts to the interior. Seat them in the cabin instead: left of
-              // centre (this is left-hand traffic), at roughly seated hip height.
-              //
-              // Measured MESH-ONLY: the spotlight target added above sits 22 m
-              // ahead and would otherwise stretch the Box3 to 23 m and strand the
-              // seat math. The bust itself is ~1.4 tall, so it is scaled to fit
-              // under a 1.7 m roofline.
-              driver.scale.setScalar(0.82);
-              driver.position.set(0, 0.05, 0.1);
+              driver.scale.setScalar(0.92);
+              driver.position.set(0, 0, 0);
               mesh.add(driver);
               mesh.userData = mesh.userData || {};
               mesh.userData.driver = driver;
               driver.visible = true;
-              driver.visible = false;
-              // The bust only belongs in interior/dialogue shots (prologue idx 3-5):
-              // in exterior two-handers it reads as a black box floating off
-              // the cabin. applyShot() enforces this.
-              try { driver.userData = driver.userData || {}; driver.userData.onlyShot = 5; } catch (eOS) {}
+
+              // Subtle ambient fill on the driver side so metallic paint, wheels, and interior read cinematically without lens blowout
+              var fortSideFill = new THREE.PointLight(0x94a3b8, 0.35, 4.0, 2.0);
+              fortSideFill.position.set(-2.0, 1.8, 0);
+              mesh.add(fortSideFill);
             }
           }
         } else {
@@ -812,11 +1031,27 @@
       var tags = window._namedTags;
       if (tags && tags.length) {
         for (var i = tags.length - 1; i >= 0; i--) {
-          if (tags[i] && cast.group === tags[i].parent) { tags.splice(i, 1); }
+          var t = tags[i];
+          if (t && (cast.group === t.parent || (t.parent && t.parent.userData && t.parent.userData.isCast))) {
+            tags.splice(i, 1);
+          }
         }
       }
       cast.group.traverse(function (o) {
-        if (o.parent) { o.parent.remove(o); }
+        if (o.isMesh) {
+          if (o.geometry && !(typeof window.GEO !== 'undefined' && window.GEO && Object.values(window.GEO).indexOf(o.geometry) !== -1)) {
+            try { o.geometry.dispose(); } catch (eG) {}
+          }
+          if (o.material && !o.userData.sharedMat) {
+            var ms = Array.isArray(o.material) ? o.material : [o.material];
+            ms.forEach(function (m) {
+              try {
+                if (m.map) { m.map.dispose(); }
+                m.dispose();
+              } catch (eM) {}
+            });
+          }
+        }
       });
       if (cast.group.parent) { cast.group.parent.remove(cast.group); }
     } catch (e) {}
@@ -983,29 +1218,47 @@
       }
     }
 
-    // Dialogue card. Note this is `transceiver`, not `sub` — the overlay was
-    // rebuilt around the transceiver card, and the old `ov.sub` branch had been
-    // left behind. It could never fire, so every line in the film was silent on
-    // screen while the audio still played: the exact failure that reads as
-    // "the subtitles are broken" rather than "a property was renamed".
-    if (ov.transceiver) {
-      var line = shot.sub || null;
-      // `sayThen` is the answer inside the SAME shot (audio.js voices it at
-      // `at`, a fraction of the shot). The caption has to swap with the voice,
-      // or the viewer hears a second speaker while reading the first one's line.
-      if (shot.sayThen && shot.sayThen.line && p >= (shot.sayThen.at || 0)) {
-        line = shot.sayThen;
-      }
-      if (line) {
-        // Fade with the SHOT envelope (dialogue belongs to shots), while the
-        // letterbox above stays pinned to the film.
-        var sp = shotBar;
-        setSubtitle(ov, line);
-        ov.transceiver.style.opacity = String(Math.max(0, Math.min(1, sp)));
-        ov.transceiver.style.transform = 'translateX(-50%) translateY(' + ((1 - Math.max(0, Math.min(1, sp))) * 10) + 'px)';
+    // Dialogue card (radio dispatch) or clean centered theatrical subtitles (in-person dialogue)
+    var line = shot.sub || null;
+    // `sayThen` is the answer inside the SAME shot (audio.js voices it at
+    // `at`, a fraction of the shot). The caption has to swap with the voice,
+    // or the viewer hears a second speaker while reading the first one's line.
+    if (shot.sayThen && shot.sayThen.line && p >= (shot.sayThen.at || 0)) {
+      line = shot.sayThen;
+    }
+    if (line) {
+      var rawSpeaker = line.speaker ? String(line.speaker).trim() : '';
+      var isRadio = /radio|wireless|dispatch|control/i.test(rawSpeaker) || !!line.isRadio;
+      var sp = shotBar;
+      var op = String(Math.max(0, Math.min(1, sp)));
+      setSubtitle(ov, line);
+      if (isRadio) {
+        if (ov.transceiver) {
+          ov.transceiver.style.opacity = op;
+          ov.transceiver.style.transform = 'translateX(-50%) translateY(' + ((1 - Math.max(0, Math.min(1, sp))) * 10) + 'px)';
+        }
+        if (ov.theatricalSub) {
+          ov.theatricalSub.style.opacity = '0';
+          ov.theatricalSub.style.transform = 'translateX(-50%) translateY(6px)';
+        }
       } else {
+        if (ov.transceiver) {
+          ov.transceiver.style.opacity = '0';
+          ov.transceiver.style.transform = 'translateX(-50%) translateY(10px)';
+        }
+        if (ov.theatricalSub) {
+          ov.theatricalSub.style.opacity = op;
+          ov.theatricalSub.style.transform = 'translateX(-50%) translateY(' + ((1 - Math.max(0, Math.min(1, sp))) * 6) + 'px)';
+        }
+      }
+    } else {
+      if (ov.transceiver) {
         ov.transceiver.style.opacity = '0';
         ov.transceiver.style.transform = 'translateX(-50%) translateY(10px)';
+      }
+      if (ov.theatricalSub) {
+        ov.theatricalSub.style.opacity = '0';
+        ov.theatricalSub.style.transform = 'translateX(-50%) translateY(6px)';
       }
     }
   }
@@ -1067,10 +1320,10 @@
       );
       var lights = [];
       if (isNight) {
-        var ambNight = new THREE.AmbientLight(0x1e293b, 0.14);
-        var moonKey = new THREE.DirectionalLight(0x60a5fa, 0.22);
+        var ambNight = new THREE.AmbientLight(0x384a62, 0.35);
+        var moonKey = new THREE.DirectionalLight(0x70a5ea, 0.45);
         moonKey.position.set(20, 45, 15);
-        var sodiumBounce = new THREE.DirectionalLight(0xf59e0b, 0.18);
+        var sodiumBounce = new THREE.DirectionalLight(0xffbe65, 0.42);
         sodiumBounce.position.set(-20, 25, -20);
         game.scene.add(ambNight);
         game.scene.add(moonKey);
@@ -1257,6 +1510,16 @@
         rehideTimers: []
       };
 
+      try {
+        if (game && game.missionManager && game.missionManager._collectibleGroup) {
+          game.missionManager._collectibleGroup.visible = false;
+        }
+        if (game && game.scene) {
+          var collObj = game.scene.getObjectByName('collectibles');
+          if (collObj) { collObj.visible = false; }
+        }
+      } catch (eColl) {}
+
       // The engine reveals more HUD layers after start() returns, so take one
       // extra snapshot a moment later to catch panels that did not exist yet.
       [400, 1200].forEach(function (ms) {
@@ -1277,6 +1540,21 @@
       });
 
       ACTIVE.fillLights = addFillLight(game, script[0]);
+
+      // Temporary post-processing bloom during film
+      try {
+        var rc = game.renderCore || (game.renderer && game.renderer.renderCore);
+        if (rc && rc.bloomPass) {
+          ACTIVE._prevBloomEnabled = rc.bloomPass.enabled;
+          ACTIVE._prevBloomStrength = rc.bloomPass.strength;
+          ACTIVE._prevBloomRadius = rc.bloomPass.radius;
+          ACTIVE._prevBloomThreshold = rc.bloomPass.threshold;
+          rc.bloomPass.enabled = true;
+          rc.bloomPass.strength = 0.12;
+          rc.bloomPass.radius = 0.35;
+          rc.bloomPass.threshold = 0.90;
+        }
+      } catch (eBloom) {}
 
       // Hide gameplay while the film owns the frame.
       game.playing = false;
@@ -1452,9 +1730,52 @@
           try {
             var drv = aud && aud.driver;
             if (drv) {
-              drv.visible = !shot.aftermath;
+              drv.visible = (ACTIVE.idx >= 0 && ACTIVE.idx <= 7) && !shot.aftermath;
             }
           } catch (eOSV) {}
+
+          // Interactive power-window lowering and VIP passenger leaning animation
+          try {
+            if (actor && actor.userData) {
+              var dWin = actor.userData.driverWin;
+              var dInitY = actor.userData.driverWinInitY || 0;
+              if (dWin) {
+                // Lower front window when driver speaks (shots 4 and 5)
+                if (ACTIVE.idx >= 3 && !shot.aftermath) {
+                  var dProgress = Math.min(1.0, 0.45 + totalP * 2.0);
+                  dWin.position.y = dInitY - dProgress * 0.45;
+                } else {
+                  dWin.position.y = dInitY;
+                }
+              }
+
+              var rWin = actor.userData.rearWin;
+              var rInitY = actor.userData.rearWinInitY || 0;
+              if (rWin) {
+                // Lower rear window when VIP passenger speaks ("Isko hatao yahan se.")
+                var isVipShot = (shot.sub && shot.sub.speaker && shot.sub.speaker.indexOf('Passenger') >= 0) || ACTIVE.idx === 6;
+                var rProgress = isVipShot ? Math.min(1.0, 0.50 + totalP * 2.0) : 0;
+                if (isVipShot && !shot.aftermath) {
+                  rWin.position.y = rInitY - rProgress * 0.45;
+                } else if (ACTIVE.idx < 6) {
+                  rWin.position.y = rInitY;
+                }
+                if (drv) {
+                  var passFig = drv.getObjectByName('vip-passenger-figure');
+                  if (passFig) {
+                    passFig.visible = (ACTIVE.idx >= 0 && ACTIVE.idx <= 7) && !shot.aftermath;
+                    if (isVipShot) {
+                      passFig.rotation.y = -0.20 * rProgress;
+                    }
+                  }
+                  var drvFig = drv.getObjectByName('vip-driver-figure');
+                  if (drvFig) {
+                    drvFig.visible = (ACTIVE.idx >= 0 && ACTIVE.idx <= 7) && !shot.aftermath;
+                  }
+                }
+              }
+            }
+          } catch (eWinAnim) {}
 
           // Brake lights follow DECELERATION, which is measurable and cheap.
           //
@@ -1581,13 +1902,9 @@
       try {
         if (explicit) {
           show = explicit.indexOf(t.id) >= 0;
-        } else if (speaker) {
-          // The shot speaks FOR this actor, so that actor's nameplate shows.
-          // This branch was missing: the campaign declares no shot with
-          // `tagIds`, so `explicit` was always null and every nameplate
-          // stayed hidden - the three named characters never had a label on
-          // screen. The sprite carries the label text (tagActor stores it as
-          // userData.tagText), so match the speaker against it.
+        } else if (speaker && shot.showTags) {
+          // Explicitly opted-in tags for shots that want on-screen nameplates.
+          // By default, theatrical films hide 3D billboard text in favour of subtitle bars.
           var tagText = (t.sprite.userData && t.sprite.userData.tagText) ? String(t.sprite.userData.tagText) : '';
           if (tagText) {
             var norm = function (s) { return String(s || '').toLowerCase().replace(/\s*\(.*?\)\s*/g, ' ').trim(); };
@@ -1884,6 +2201,16 @@
       // stall cannot desynchronise the timeline.
       var guard = 0;
       while (elapsed >= durMs && guard < 64) {
+        if (shot && shot.motion && ACTIVE.cast && ACTIVE.cast.actors) {
+          try {
+            shot.motion.forEach(function (m) {
+              if (m && m.id && m.to && ACTIVE.cast.actors[m.id]) {
+                var a = ACTIVE.cast.actors[m.id];
+                a.position.set(m.to[0], m.to[1], m.to[2]);
+              }
+            });
+          } catch (eSnap) {}
+        }
         elapsed -= durMs;
         ACTIVE.shotStartedAt += durMs;
         ACTIVE.idx++;
@@ -1934,6 +2261,16 @@
     ACTIVE = null;
     try {
       if (state.detachSkip) { state.detachSkip(); }
+      // Restore collectibles if gameplay resumed on a playable map
+      if (state.game && !state.game._stageBuild) {
+        if (state.game.missionManager && state.game.missionManager._collectibleGroup) {
+          state.game.missionManager._collectibleGroup.visible = true;
+        }
+        if (state.game.scene) {
+          var collObj = state.game.scene.getObjectByName('collectibles');
+          if (collObj) { collObj.visible = true; }
+        }
+      }
       // Brief black so the handoff is not a hard cut.
       if (state.overlay && state.overlay.fade) {
         state.overlay.fade.style.transition = 'opacity 220ms linear';
@@ -1979,6 +2316,7 @@
       // against the film map would drop the player into a stage with no route.
       if (state.stage) {
         try {
+          g._stageBuild = false;
           g._buildScene(state.levelConfig.mode);
           try {
             if (window.Cinematics && typeof window.Cinematics.clearStage === 'function') {
@@ -2003,6 +2341,17 @@
       // state matters, but a prologue always resumes unpaused.
       g.pause = (state.kind === 'beat') ? !!state.prevPause : false;
       if (g.clock) { try { g.clock.getDelta(); } catch (e3) {} }
+
+      // Restore post-processing bloom quality settings
+      try {
+        var rc = g && (g.renderCore || (g.renderer && g.renderer.renderCore));
+        if (rc && rc.bloomPass && state._prevBloomEnabled !== undefined) {
+          rc.bloomPass.enabled = state._prevBloomEnabled;
+          rc.bloomPass.strength = state._prevBloomStrength;
+          rc.bloomPass.radius = state._prevBloomRadius;
+          rc.bloomPass.threshold = state._prevBloomThreshold;
+        }
+      } catch (eBloomRes) {}
     } catch (e) {}
 
     if (markPlayed !== false && !rebuildErr) {
@@ -2152,6 +2501,20 @@
     ACTIVE.idx = i;
     ACTIVE.shotStartedAt = (window.performance && performance.now) ? performance.now() : Date.now();
     try {
+      // Settle all prior motions up to shot i so actors are positioned on their expected marks
+      if (ACTIVE.script && ACTIVE.cast && ACTIVE.cast.actors) {
+        for (var sIdx = 0; sIdx < i; sIdx++) {
+          var sShot = ACTIVE.script[sIdx];
+          if (sShot && sShot.motion) {
+            sShot.motion.forEach(function (m) {
+              if (m && m.id && m.to && ACTIVE.cast.actors[m.id]) {
+                var a = ACTIVE.cast.actors[m.id];
+                a.position.set(m.to[0], m.to[1], m.to[2]);
+              }
+            });
+          }
+        }
+      }
       applyShot(0);
       // onShotEnter() is required here, not just applyShot(). applyShot moves the
       // camera and toggles the aftermath dressing, but the overlay GRADE, the OSD
@@ -2162,6 +2525,14 @@
       updateOverlay(ACTIVE.script[i], 0, ACTIVE);
     } catch (e) {}
     return true;
+  }
+
+  /** True when the given level has a runnable prologue script. */
+  function hasFor(level) {
+    if (!level) { return false; }
+    var script = null;
+    try { script = resolveScript(level); } catch (e) { script = null; }
+    return !!(script && script.length);
   }
 
   /** True when the loaded level has a prologue worth offering a Replay for. */
@@ -2214,6 +2585,7 @@
     seek: seek,
     hasPrologue: hasPrologue,
     hasStage: hasStage,
+    hasFor: hasFor,
     clearSeen: clearSeen,
     hasSeen: hasSeen,
     isActive: function () { return !!ACTIVE; },

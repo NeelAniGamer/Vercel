@@ -79,6 +79,7 @@
 <script defer src="col-router.js"></script>
 <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU"/>
   <link rel="manifest" href="manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>
@@ -2150,7 +2151,7 @@ function goStep(n){
     var stepNames=['QR Type','Content','Theme'];
     var to=DYN.concat(STA).filter(function(x){return x.id===selType;})[0];
     var typeName=to?to.name:'';
-    bc.innerHTML='<span>Step '+n+'</span><span aria-hidden="true">&rsaquo;</span><span>'&mdash;</span><span>'+(n===2?typeName:stepNames[n-1])+'</span>';
+    bc.innerHTML='<span>Step '+n+'</span><span aria-hidden="true">&rsaquo;</span><span>&mdash;</span><span>'+(n===2?typeName:stepNames[n-1])+'</span>';
   }
   if(n===2){
     const to=DYN.concat(STA).filter(x=>x.id===selType)[0]; const h=document.getElementById('s2h'); if(h&&to) h.textContent='Content: '+to.name;
