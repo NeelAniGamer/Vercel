@@ -431,7 +431,7 @@ window.closeMo = function () {
     if (window.colUser) {return}
     // Don't show One Tap on Driving.html levels screen or briefing screen
     const path = window.location.pathname.toLowerCase()
-    if (path.includes('driving') && (new URLSearchParams(window.location.search).get('screen') === 'levels' || new URLSearchParams(window.location.search).get('lv'))) {
+    if (path.includes('setup') || (path.includes('driving') && (new URLSearchParams(window.location.search).get('screen') === 'levels' || new URLSearchParams(window.location.search).get('lv')))) {
       return
     }
     google.accounts.id.initialize({
@@ -492,7 +492,25 @@ window.closeMo = function () {
 
           if (upProfile) {
             window.colUser.uid = upProfile.id || upProfile.user_id
+            window.colUser.profile = upProfile
             if (upProfile.display_name) {window.colUser.name = upProfile.display_name}
+            if (upProfile.display_name || upProfile.username) {
+              try {
+                const safeTrafficUser = {
+                  id: userId,
+                  name: upProfile.display_name || displayName,
+                  username: upProfile.username || ('@' + (upProfile.display_name || displayName).toLowerCase().replace(/\s+/g, '')),
+                  vehicle: upProfile.preferred_vehicle || 'Car',
+                  age: upProfile.age || 18,
+                  language: upProfile.language || 'en',
+                  studentId: upProfile.student_id || null,
+                  picture: upProfile.avatar_url || photo || null,
+                  updatedAt: upProfile.updated_at || new Date().toISOString()
+                }
+                localStorage.setItem('traffic_local_user', JSON.stringify(safeTrafficUser))
+                localStorage.setItem('trafficSetupComplete', 'true')
+              } catch (e) {}
+            }
             if (upProfile.avatar_url && !window.colUser.picture) {
               window.colUser.picture = upProfile.avatar_url
             }

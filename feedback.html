@@ -9,6 +9,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Class Of Learners" />
+    <meta name="theme-color" content="#070A14" id="themeMeta" />
     <script>
       ;(function () {
         var ua = navigator.userAgent || ''
@@ -49,7 +50,7 @@
     <link rel="icon" type="image/png" href="Icon.png">
     <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/feedback" />
 
-    <script>(function () { try { var c = localStorage.getItem('col_admin_config'); if (c) { var cfg = JSON.parse(c), p = window.location.pathname.split('/').pop() || 'index.html', s = cfg.pages[p] || '200'; if (s === '503' || s === '404') { document.addEventListener('DOMContentLoaded', function () { try { document.body.innerHTML = '<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:' + (s === '503' ? '#F2B84B' : '#ef4444') + '">' + s + '</h1><h2>' + (s === '503' ? 'System Maintenance' : 'Page Not Found') + '</h2><a href="home.html" style="margin-top:20px;color:#F2B84B;text-decoration:none;font-weight:bold">Return Home</a></div>'; } catch (e) {} }); } } } catch (e) { } })()</script>
+    <script>(function () { try { var c = localStorage.getItem('col_admin_config'); if (c) { var cfg = JSON.parse(c), p = window.location.pathname.split('/').pop() || 'home', s = cfg.pages[p] || '200'; if (s === '503' || s === '404') { document.addEventListener('DOMContentLoaded', function () { try { document.body.innerHTML = '<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:' + (s === '503' ? '#F2B84B' : '#ef4444') + '">' + s + '</h1><h2>' + (s === '503' ? 'System Maintenance' : 'Page Not Found') + '</h2><a href="/" style="margin-top:20px;color:#F2B84B;text-decoration:none;font-weight:bold">Return Home</a></div>'; } catch (e) {} }); } } } catch (e) { } })()</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -67,15 +68,37 @@
             --signal: #F2B84B;
             --ion: #5ED4F5;
             --teal: #00F0CC;
+            --teal-glow: rgba(0, 240, 204, .15);
             --plasma: #B89BFF;
             --em: #34D399;
-            --nav: rgba(7, 10, 20, .68);
+            --danger: #ef4444;
+            --nav: rgba(7, 10, 20, .72);
             --serif: 'Instrument Serif', Georgia, serif;
             --sans: 'Inter', system-ui, sans-serif;
             --mono: 'Space Mono', monospace;
             --ease: cubic-bezier(.16, 1, .3, 1);
             --spring: cubic-bezier(.34, 1.56, .64, 1);
-            --r: 18px
+            --r: 20px
+        }
+
+        body.lm {
+            --void: #f0ede4;
+            --void2: #e6e2d8;
+            --panel: #ffffff;
+            --line: rgba(0, 0, 0, 0.09);
+            --lineb: rgba(0, 0, 0, 0.18);
+            --ink: #0f172a;
+            --dim: #475569;
+            --signal: #b8720a;
+            --ion: #0e72a0;
+            --teal: #0a8c7a;
+            --teal-glow: rgba(10, 140, 122, .12);
+            --plasma: #6f4fe0;
+            --em: #15803d;
+            --danger: #dc2626;
+            --nav: rgba(240, 237, 228, 0.88);
+            background: var(--void) !important;
+            color: var(--ink) !important;
         }
 
         *,
@@ -110,13 +133,13 @@
             max-width: 100%
         }
 
-        button {
+        button, input, select, textarea {
             font-family: var(--sans)
         }
 
         ::selection {
-            background: var(--signal);
-            color: #0a0800
+            background: var(--teal);
+            color: #04100e
         }
 
         ::-webkit-scrollbar {
@@ -134,9 +157,10 @@
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: var(--signal)
+            background: var(--teal)
         }
 
+        /* Loader */
         .loader {
             position: fixed;
             inset: 0;
@@ -164,7 +188,7 @@
         }
 
         .lid span {
-            color: var(--signal)
+            color: var(--teal)
         }
 
         .lbar {
@@ -179,7 +203,7 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: var(--signal);
+            background: var(--teal);
             transform-origin: left;
             transform: scaleX(0);
             animation: lf 1.1s var(--ease) .2s forwards
@@ -191,6 +215,7 @@
             }
         }
 
+        /* Ambient Cursor */
         .cd,
         .cr {
             position: fixed;
@@ -206,13 +231,13 @@
         .cd {
             width: 6px;
             height: 6px;
-            background: var(--signal)
+            background: var(--teal)
         }
 
         .cr {
             width: 36px;
             height: 36px;
-            border: 1px solid rgba(94, 212, 245, .5);
+            border: 1px solid rgba(0, 240, 204, .5);
             opacity: .55;
             transition: width .22s var(--ease), height .22s var(--ease), border-color .22s, opacity .22s
         }
@@ -220,18 +245,18 @@
         body.ch .cr {
             width: 64px;
             height: 64px;
-            border-color: var(--signal);
+            border-color: var(--teal);
             opacity: .9
         }
 
         @media(pointer:coarse) {
-
             .cd,
             .cr {
                 display: none
             }
         }
 
+        /* Navigation */
         .top-nav {
             position: fixed;
             top: 0;
@@ -241,7 +266,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 22px 52px;
+            padding: 14px 32px;
             background: var(--nav);
             backdrop-filter: blur(18px) saturate(1.4);
             border-bottom: 1px solid var(--line);
@@ -251,7 +276,7 @@
         }
 
         .top-nav.s {
-            padding: 14px 52px;
+            padding: 10px 32px;
             border-bottom-color: var(--lineb)
         }
 
@@ -262,7 +287,7 @@
         }
 
         .brand-logo {
-            height: 33px;
+            height: 28px;
             width: auto;
             border-radius: 8px
         }
@@ -278,7 +303,7 @@
 
         .nav-links {
             display: flex;
-            gap: 26px;
+            gap: 18px;
             align-items: center;
             flex-wrap: wrap
         }
@@ -286,9 +311,17 @@
         .nav-link {
             color: var(--dim);
             font-weight: 500;
-            font-size: .9rem;
+            font-size: .82rem;
             transition: color .25s;
-            position: relative
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px
+        }
+
+        .nav-link svg {
+            width: 15px;
+            height: 15px
         }
 
         .nav-link::after {
@@ -298,7 +331,7 @@
             bottom: -7px;
             width: 0;
             height: 1px;
-            background: var(--signal);
+            background: var(--teal);
             transition: width .3s var(--ease)
         }
 
@@ -318,7 +351,7 @@
         .nav-dl-btn {
             background: var(--signal);
             color: #0A0500;
-            padding: 10px 24px;
+            padding: 8px 18px;
             border-radius: 30px;
             font-weight: 700;
             font-size: .84rem;
@@ -330,10 +363,8 @@
             box-shadow: 0 12px 28px -10px var(--signal)
         }
 
-        .desktop-dl {}
-
-        .mobile-dl {
-            display: none
+        .desktop-dl {
+            display: inline-flex
         }
 
         .dropdown {
@@ -344,7 +375,7 @@
             color: var(--dim);
             background: none;
             border: none;
-            font-size: .9rem;
+            font-size: .85rem;
             font-weight: 500;
             cursor: pointer;
             display: flex;
@@ -353,6 +384,11 @@
             font-family: var(--sans);
             transition: color .25s;
             padding: 0
+        }
+
+        .dropdown-btn svg {
+            width: 15px;
+            height: 15px
         }
 
         .dropdown.active .dropdown-btn,
@@ -404,14 +440,21 @@
 
         .dropdown-content a {
             color: var(--dim);
-            padding: 11px 14px;
-            font-size: .88rem;
+            padding: 10px 14px;
+            font-size: .86rem;
             font-weight: 500;
             border-radius: 8px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 10px;
             transition: .2s
+        }
+
+        .dropdown-content a svg {
+            width: 15px;
+            height: 15px;
+            color: var(--teal);
+            flex-shrink: 0
         }
 
         .dropdown-content a:hover {
@@ -420,72 +463,21 @@
             padding-left: 18px
         }
 
-        .tw {
+        body.lm .dropdown-content a:hover {
+            background: rgba(0, 0, 0, .05)
+        }
+
+        .nav-actions {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding-left: 18px;
-            border-left: 1px solid var(--lineb)
-        }
-
-        .tl {
-            font-size: .7rem;
-            font-weight: 700;
-            color: var(--dim);
-            text-transform: uppercase;
-            letter-spacing: .07em;
-            min-width: 32px
-        }
-
-        .tsb {
-            position: relative;
-            width: 46px;
-            height: 24px;
-            cursor: pointer;
-            display: inline-block;
-            flex-shrink: 0
-        }
-
-        .tsb input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-            position: absolute
-        }
-
-        .tst {
-            position: absolute;
-            inset: 0;
-            border-radius: 30px;
-            background: var(--void2);
-            border: 1px solid var(--lineb);
-            transition: .4s
-        }
-
-        .tsth {
-            position: absolute;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            top: 3px;
-            left: 3px;
-            background: var(--signal);
-            transition: transform .4s var(--spring);
-            font-size: .6rem;
-            display: flex;
-            align-items: center;
-            justify-content: center
-        }
-
-        input:checked+.tst .tsth {
-            transform: translateX(22px)
+            gap: 14px
         }
 
         .nav-login-btn {
             background: transparent;
             color: var(--em);
             border: 1px solid var(--em);
-            padding: 8px 20px;
+            padding: 7px 18px;
             border-radius: 30px;
             font-weight: 700;
             font-size: .82rem;
@@ -495,6 +487,11 @@
             gap: 8px;
             transition: .25s;
             font-family: var(--sans)
+        }
+
+        .nav-login-btn svg {
+            width: 15px;
+            height: 15px
         }
 
         .nav-login-btn:hover {
@@ -555,7 +552,7 @@
         .col-hero {
             position: relative;
             width: 100%;
-            min-height: 75vh;
+            min-height: 65vh;
             display: flex;
             align-items: center;
             overflow: hidden
@@ -589,7 +586,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            height: 220px;
+            height: 180px;
             background: linear-gradient(to top, var(--void), transparent);
             pointer-events: none;
             z-index: 1
@@ -601,7 +598,7 @@
             max-width: 1360px;
             width: 100%;
             margin: 0 auto;
-            padding: 160px 52px 40px;
+            padding: 140px 32px 40px;
             text-align: center
         }
 
@@ -625,9 +622,14 @@
             animation: fu .7s var(--ease) .9s forwards
         }
 
+        .hero-badge svg {
+            width: 14px;
+            height: 14px
+        }
+
         .pg-title {
             font-family: var(--serif);
-            font-size: clamp(3.2rem, 8vw, 6rem);
+            font-size: clamp(3.2rem, 7vw, 5.8rem);
             font-weight: 400;
             line-height: 1.05;
             letter-spacing: -.01em;
@@ -644,11 +646,11 @@
         }
 
         .pg-desc {
-            font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+            font-size: clamp(1.02rem, 1.4vw, 1.2rem);
             line-height: 1.7;
             color: var(--dim);
-            max-width: 55ch;
-            margin: 28px auto 0;
+            max-width: 62ch;
+            margin: 20px auto 0;
             opacity: 0;
             transform: translateY(18px);
             animation: fu .8s var(--ease) 1.25s forwards
@@ -661,18 +663,18 @@
             }
         }
 
+        /* Page Layout */
         .page-wrap {
-            max-width: 1100px;
+            max-width: 1140px;
             margin: 0 auto;
-            padding: 0 52px;
+            padding: 0 32px 100px;
             position: relative;
-            z-index: 2;
-            padding-bottom: 100px
+            z-index: 2
         }
 
         .rv {
             opacity: 0;
-            transform: translateY(36px);
+            transform: translateY(32px);
             transition: opacity .8s var(--ease), transform .8s var(--ease)
         }
 
@@ -681,30 +683,24 @@
             transform: translateY(0)
         }
 
-        /* Feedback Layout */
+        /* Feedback Grid */
         .fb-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 32px;
             align-items: start
-        }
-
-        @media(max-width:800px) {
-            .fb-grid {
-                grid-template-columns: 1fr
-            }
         }
 
         .fb-card {
             background: rgba(255, 255, 255, .015);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(14px);
             border: 1px solid var(--line);
             border-radius: 24px;
-            padding: 36px;
+            padding: 38px;
             box-shadow: 0 30px 60px rgba(0, 0, 0, .3);
-            transition: .5s;
+            transition: border-color .4s, box-shadow .4s, transform .4s;
             position: relative;
-            overflow: hidden;
+            overflow: hidden
         }
 
         .fb-card::after {
@@ -721,30 +717,33 @@
             -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.8) 40%, rgba(0, 0, 0, 0) 100%);
             mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.8) 40%, rgba(0, 0, 0, 0) 100%);
             pointer-events: none;
-            z-index: 5;
+            z-index: 5
+        }
+
+        .fb-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 0px), rgba(0, 240, 204, .08), transparent 50%);
+            pointer-events: none
         }
 
         .fb-card:hover {
             border-color: rgba(0, 240, 204, .3);
-            box-shadow: 0 40px 80px -20px rgba(0, 240, 204, .15)
-        }
-
-        .history-card {
-            border-top: 1px solid var(--line)
-        }
-
-        .history-card:hover {
-            border-color: var(--lineb);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, .3)
+            box-shadow: 0 35px 70px -15px rgba(0, 240, 204, .12)
         }
 
         .fbr {
-            margin-bottom: 24px
+            margin-bottom: 22px;
+            position: relative;
+            z-index: 2
         }
 
         .fbr>label {
-            display: block;
-            font-size: .85rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: .8rem;
             font-weight: 700;
             color: var(--dim);
             text-transform: uppercase;
@@ -753,6 +752,21 @@
             font-family: var(--mono)
         }
 
+        .char-counter {
+            font-size: .75rem;
+            color: var(--dim);
+            font-weight: 500
+        }
+
+        .char-counter.warning {
+            color: var(--signal)
+        }
+
+        .char-counter.danger {
+            color: var(--danger)
+        }
+
+        /* Category Radio Pills */
         .fb-types {
             display: flex;
             gap: 10px;
@@ -770,21 +784,30 @@
         }
 
         .ft-pill span {
-            display: block;
-            padding: 10px 18px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 16px;
             border: 1px solid var(--lineb);
             border-radius: 30px;
-            font-size: .9rem;
+            font-size: .86rem;
             font-weight: 600;
             color: var(--dim);
-            transition: .3s;
+            transition: all .25s var(--ease);
             background: rgba(255, 255, 255, .02)
+        }
+
+        .ft-pill span svg {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0
         }
 
         .ft-pill input:checked+span {
             border-color: var(--teal);
             color: var(--teal);
-            background: rgba(0, 240, 204, .08)
+            background: rgba(0, 240, 204, .1);
+            box-shadow: 0 0 16px -4px var(--teal)
         }
 
         .ft-pill:hover span {
@@ -792,12 +815,67 @@
             color: var(--ink)
         }
 
-        /* Enhanced Animated Urgency Slider */
+        /* Grievance Notice Banner */
+        .grievance-notice {
+            display: none;
+            padding: 14px 18px;
+            border-radius: 14px;
+            background: rgba(242, 184, 75, 0.08);
+            border: 1px solid rgba(242, 184, 75, 0.3);
+            color: var(--signal);
+            font-size: .86rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2
+        }
+
+        .grievance-notice strong {
+            display: block;
+            margin-bottom: 4px;
+            font-family: var(--sans);
+            font-size: .9rem
+        }
+
+        /* Input Controls */
+        .mi {
+            width: 100%;
+            padding: 13px 16px;
+            border: 1px solid var(--lineb);
+            border-radius: 12px;
+            font-size: .93rem;
+            outline: none;
+            color: var(--ink);
+            background: rgba(255, 255, 255, 0.04);
+            font-family: var(--sans);
+            transition: border-color .3s, box-shadow .3s;
+            resize: vertical
+        }
+
+        .mi:focus {
+            border-color: var(--teal);
+            box-shadow: 0 0 0 3px rgba(0, 240, 204, 0.15)
+        }
+
+        select.mi {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238891AA' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 40px;
+            cursor: pointer
+        }
+
+        select.mi option {
+            background: var(--panel);
+            color: var(--ink)
+        }
+
+        /* Urgency Range Slider */
         .urg-slider {
             position: relative;
             margin-top: 10px;
-            --active-color: var(--teal);
-            /* Default starting color */
+            --active-color: var(--teal)
         }
 
         .urg-slider input {
@@ -805,12 +883,11 @@
             -webkit-appearance: none;
             appearance: none;
             height: 8px;
-            /* Slightly thicker for the animation */
             background: linear-gradient(to right, var(--active-color) 0%, var(--lineb) 0%);
             border-radius: 4px;
             outline: none;
             cursor: pointer;
-            transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1)
         }
 
         .urg-slider input::-webkit-slider-thumb {
@@ -822,13 +899,13 @@
             background: var(--active-color);
             cursor: pointer;
             transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease, background 0.3s ease;
-            box-shadow: 0 0 12px var(--active-color);
+            box-shadow: 0 0 12px var(--active-color)
         }
 
         .urg-slider input::-webkit-slider-thumb:hover,
         .urg-slider input:active::-webkit-slider-thumb {
             transform: scale(1.3);
-            box-shadow: 0 0 20px var(--active-color);
+            box-shadow: 0 0 20px var(--active-color)
         }
 
         .urg-labels {
@@ -837,74 +914,285 @@
             margin-top: 12px;
             font-size: 0.8rem;
             color: var(--dim);
-            font-weight: 600;
+            font-weight: 600
         }
 
         .urg-labels span {
             transition: color 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            transform-origin: center;
+            transform-origin: center
         }
 
         .urg-labels span.active {
-            transform: scale(1.1);
+            transform: scale(1.1)
         }
 
-        .file-up {
+        .emr {
+            color: var(--danger) !important
+        }
+
+        /* File Upload Dropzone */
+        .file-dropzone {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 12px;
-            padding: 14px;
+            padding: 16px;
             border: 1px dashed var(--lineb);
-            border-radius: 12px;
+            border-radius: 14px;
             cursor: pointer;
-            transition: .3s;
+            transition: border-color .3s, background .3s;
             color: var(--dim);
-            background: rgba(255, 255, 255, .02)
+            background: rgba(255, 255, 255, .02);
+            position: relative
         }
 
-        .file-up:hover {
+        .file-dropzone.dragover,
+        .file-dropzone:hover {
             border-color: var(--teal);
             color: var(--teal);
             background: rgba(0, 240, 204, .05)
         }
 
-        .file-up input {
-            display: none
+        .file-dropzone input {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%
         }
 
-        .file-up span {
-            font-size: .9rem;
+        .file-dropzone-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            pointer-events: none;
+            font-size: .88rem;
+            font-weight: 600
+        }
+
+        .file-dropzone-content svg {
+            width: 18px;
+            height: 18px
+        }
+
+        /* Attachment Thumbnail Preview */
+        .file-preview {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 12px;
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--line);
+            border-radius: 12px
+        }
+
+        .file-preview-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            overflow: hidden
+        }
+
+        .file-preview img {
+            width: 44px;
+            height: 44px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid var(--lineb);
+            flex-shrink: 0
+        }
+
+        .file-preview-meta {
+            overflow: hidden
+        }
+
+        .file-preview-name {
+            font-size: .85rem;
             font-weight: 600;
+            color: var(--ink);
+            white-space: nowrap;
             overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap
+            text-overflow: ellipsis
         }
 
+        .file-preview-size {
+            font-size: .75rem;
+            color: var(--dim);
+            font-family: var(--mono)
+        }
+
+        .file-remove-btn {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: .75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background .2s
+        }
+
+        .file-remove-btn:hover {
+            background: rgba(239, 68, 68, 0.2)
+        }
+
+        /* Toggle Switches */
         .inline-t {
             display: flex;
             justify-content: space-between;
-            align-items: center
+            align-items: center;
+            padding: 4px 0
         }
 
         .sml {
             font-size: .8rem;
             color: var(--dim);
-            margin-top: 4px
+            margin-top: 3px
+        }
+
+        .tsb {
+            position: relative;
+            width: 46px;
+            height: 24px;
+            cursor: pointer;
+            display: inline-block;
+            flex-shrink: 0
+        }
+
+        .tsb input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            position: absolute
+        }
+
+        .tst {
+            position: absolute;
+            inset: 0;
+            border-radius: 30px;
+            background: var(--void2);
+            border: 1px solid var(--lineb);
+            transition: .4s
+        }
+
+        .tsth {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            top: 3px;
+            left: 3px;
+            background: var(--teal);
+            transition: transform .4s var(--spring)
+        }
+
+        input:checked+.tst .tsth {
+            transform: translateX(22px)
+        }
+
+        /* Submit Button */
+        .ms {
+            width: 100%;
+            padding: 14px;
+            background: var(--teal);
+            border: none;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: .95rem;
+            cursor: pointer;
+            color: #04100e;
+            transition: transform .3s var(--ease), box-shadow .3s, background .3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px
+        }
+
+        .ms svg {
+            width: 18px;
+            height: 18px
+        }
+
+        .ms:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(0, 240, 204, .3)
+        }
+
+        .ms:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none
+        }
+
+        /* History Column */
+        .history-card {
+            border-top: 1px solid var(--line)
+        }
+
+        .history-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px
+        }
+
+        .history-card-header h3 {
+            font-family: var(--sans);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 4px
+        }
+
+        .history-filters {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+            scrollbar-width: none
+        }
+
+        .h-filter {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--line);
+            color: var(--dim);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: .75rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all .2s
+        }
+
+        .h-filter:hover,
+        .h-filter.act {
+            color: var(--ink);
+            border-color: var(--teal);
+            background: rgba(0, 240, 204, 0.08)
         }
 
         .fb-list {
             display: flex;
             flex-direction: column;
-            gap: 16px;
-            margin-top: 20px
+            gap: 14px;
+            max-height: 540px;
+            overflow-y: auto;
+            padding-right: 4px
         }
 
         .fbi {
-            padding: 16px;
+            padding: 16px 18px;
             border: 1px solid var(--line);
-            border-radius: 12px;
+            border-radius: 14px;
             background: rgba(255, 255, 255, .02);
-            transition: .3s
+            transition: border-color .3s, background .3s
         }
 
         .fbi:hover {
@@ -916,50 +1204,159 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px
+            margin-bottom: 8px;
+            gap: 10px
         }
 
-        .fbi-type {
-            font-size: .75rem;
+        .fbi-type-badge {
+            font-size: .72rem;
             font-weight: 700;
             color: var(--teal);
             background: rgba(0, 240, 204, .1);
-            padding: 4px 10px;
+            padding: 3px 10px;
             border-radius: 20px;
             text-transform: uppercase;
             letter-spacing: .05em
         }
 
+        .fbi-status-badge {
+            font-size: .68rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .fbi-status-badge.open {
+            color: var(--ion);
+            background: rgba(94, 212, 245, 0.12);
+            border: 1px solid rgba(94, 212, 245, 0.25);
+        }
+        .fbi-status-badge.in_progress {
+            color: #f59e0b;
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+        }
+        .fbi-status-badge.resolved {
+            color: var(--em);
+            background: rgba(52, 211, 153, 0.12);
+            border: 1px solid rgba(52, 211, 153, 0.25);
+        }
+        .history-status-filters {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+            overflow-x: auto;
+            padding-bottom: 2px;
+        }
+        .h-filter-status {
+            padding: 4px 10px;
+            border-radius: 14px;
+            border: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--dim);
+            font-size: .75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .2s;
+            white-space: nowrap;
+        }
+        .h-filter-status:hover, .h-filter-status.act {
+            border-color: var(--teal);
+            color: var(--teal);
+            background: rgba(0, 240, 204, 0.08);
+        }
+        .fbi-type-badge.grievance {
+            color: var(--signal);
+            background: rgba(242, 184, 75, 0.1)
+        }
+
         .fbi-date {
-            font-size: .8rem;
+            font-size: .78rem;
             color: var(--dim);
             font-family: var(--mono)
         }
 
+        .fbi-app {
+            font-size: .75rem;
+            color: var(--dim);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: var(--mono);
+            display: inline-block;
+            margin-bottom: 8px
+        }
+
         .fbi-msg {
-            font-size: .95rem;
+            font-size: .92rem;
             color: var(--ink);
-            line-height: 1.6
+            line-height: 1.6;
+            word-break: break-word
         }
 
         .fbi-meta {
             margin-top: 12px;
-            font-size: .8rem;
+            font-size: .78rem;
             color: var(--dim);
             display: flex;
-            gap: 14px;
+            justify-content: space-between;
+            align-items: center;
             border-top: 1px solid var(--line);
             padding-top: 10px
         }
 
-        .fbi-meta span {
+        .fbi-meta-left {
             display: flex;
-            align-items: center;
-            gap: 6px
+            gap: 12px;
+            align-items: center
         }
 
-        .emr {
-            color: #ef4444 !important
+        .fbi-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px
+        }
+
+        .fbi-id-copy {
+            cursor: pointer;
+            color: var(--dim);
+            font-family: var(--mono);
+            font-size: .72rem;
+            transition: color .2s
+        }
+
+        .fbi-id-copy:hover {
+            color: var(--teal)
+        }
+
+        .clear-history-btn {
+            background: none;
+            border: none;
+            color: var(--dim);
+            font-size: .8rem;
+            text-decoration: underline;
+            cursor: pointer;
+            margin-top: 20px;
+            font-family: var(--sans);
+            padding: 8px 4px;
+            transition: color .2s
+        }
+
+        .clear-history-btn:hover {
+            color: var(--danger)
+        }
+
+        /* Honeypot anti-spam trap */
+        .hp-field {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            position: absolute !important;
+            left: -9999px !important
         }
 
         /* Footer */
@@ -967,7 +1364,7 @@
             border-top: 1px solid var(--line);
             background: rgba(255, 255, 255, .012);
             backdrop-filter: blur(8px);
-            padding: 48px 52px 36px;
+            padding: 48px 32px 36px;
             transition: border-color .5s, background .5s;
             position: relative;
             z-index: 2
@@ -1008,8 +1405,13 @@
             transition: color .25s
         }
 
-        .fl a:hover {
+        .fl a:hover,
+        .fl a.act {
             color: var(--ink)
+        }
+
+        .fl a.act {
+            font-weight: 700
         }
 
         .fc {
@@ -1017,13 +1419,75 @@
             font-size: .82rem
         }
 
+        /* Floating Toast */
+        .toast {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            background: var(--panel);
+            border: 1px solid var(--teal);
+            color: var(--ink);
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: .88rem;
+            font-weight: 600;
+            z-index: 3000;
+            transform: translateY(14px);
+            opacity: 0;
+            transition: .35s var(--ease);
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, .4)
+        }
+
+        .toast svg {
+            color: var(--teal);
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto
+        }
+
+        .toast.green {
+            border-color: var(--em);
+            color: var(--ink)
+        }
+
+        .toast.green svg {
+            color: var(--em)
+        }
+
+        .toast.danger {
+            border-color: var(--danger);
+            color: var(--ink)
+        }
+
+        .toast.danger svg {
+            color: var(--danger)
+        }
+
+        /* Responsive */
+        @media(max-width:900px) {
+            .fb-grid {
+                grid-template-columns: 1fr;
+                gap: 24px
+            }
+        }
+
         @media(max-width:768px) {
             .top-nav {
-                padding: 16px 20px
+                padding: 14px 20px
             }
 
             .top-nav.s {
-                padding: 12px 20px
+                padding: 10px 20px
             }
 
             .mmb {
@@ -1034,95 +1498,24 @@
                 display: none
             }
 
-            .mobile-dl {
-                display: block
-            }
-
             .nav-links {
-                display: none;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                width: 100%;
-                background: var(--nav);
-                backdrop-filter: blur(18px);
-                border-top: 1px solid var(--line);
-                border-bottom: 1px solid var(--line);
-                flex-direction: column;
-                gap: 0;
-                padding: 14px 0;
-                z-index: 999
-            }
-
-            .nav-links .nav-link {
-                padding: 11px 22px
-            }
-
-            .nav-links .tw {
-                padding: 11px 22px;
-                border-left: none;
-                border-top: 1px solid var(--line);
-                margin-top: 6px
-            }
-
-            .nav-links.open {
-                display: flex
-            }
-
-            .dropdown-content {
-                left: 16px;
-                transform: none
-            }
-
-            .dropdown.active .dropdown-content {
-                transform: none
+                display: none
             }
 
             .shc {
-                padding: 100px 22px 40px
+                padding: 120px 20px 30px
             }
 
             .page-wrap {
-                padding: 0 22px
+                padding: 0 20px 80px
             }
 
             .fb-card {
-                padding: 28px
-            }
-
-            /* 360px grid blowout guard: form min-content must never exceed track */
-            .fb-grid,
-            .fb-grid > *,
-            .fb-card,
-            .fb-card form,
-            .file-up,
-            .file-up span {
-                min-width: 0
-            }
-            .fb-card {
-                max-width: 100%;
-                overflow: clip
-            }
-
-            @media(max-width:480px) {
-                .top-nav {
-                    padding: 12px;
-                    gap: 8px
-                }
-                .brand-name {
-                    font-size: .92rem;
-                    max-width: 128px;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: nowrap
-                }
-                .nav-actions {
-                    gap: 8px
-                }
+                padding: 24px
             }
 
             .sf {
-                padding: 40px 22px 28px
+                padding: 40px 20px 28px
             }
 
             .fi {
@@ -1133,84 +1526,125 @@
 
         @media(max-width:480px) {
             .pg-title {
-                font-size: 2.8rem
+                font-size: 2.6rem
             }
         }
 
-        /* ──── FEEDBACK LIGHT MODE (WCAG 2.2 AA COMPLIANT) ──── */
-        body.lm {
-            --void: #f0ede4;
-            --void2: #e6e2d8;
-            --panel: #ffffff;
-            --line: rgba(0, 0, 0, 0.09);
-            --lineb: rgba(0, 0, 0, 0.18);
-            --ink: #0f172a;
-            --dim: #475569;
-            --signal: #b8720a;
-            --ion: #0e72a0;
-            --teal: #0a8c7a;
-            --plasma: #6f4fe0;
-            --em: #1b9d66;
-            --nav: rgba(240, 237, 228, 0.85);
-            background: var(--void) !important;
-            color: var(--ink) !important;
+        /* Light Mode High-Contrast Overrides */
+        body.lm .hvig {
+            background: linear-gradient(to right, var(--void) 0%, rgba(240, 237, 228, 0.95) 20%, rgba(240, 237, 228, 0.6) 40%, rgba(240, 237, 228, 0.05) 60%, transparent 80%) !important;
         }
+
+        body.lm .hvigb {
+            background: linear-gradient(to top, var(--void), transparent) !important;
+        }
+
         body.lm .fb-card {
             background: #ffffff !important;
             border: 1px solid rgba(0, 0, 0, 0.08) !important;
-            border-top: 3px solid var(--teal) !important;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04) !important;
         }
+
         body.lm .history-card {
             border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
         }
+
         body.lm .ft-pill span {
             background: rgba(0, 0, 0, 0.03) !important;
             border: 1px solid rgba(0, 0, 0, 0.12) !important;
             color: #334155 !important;
         }
+
         body.lm .ft-pill input:checked+span {
             border-color: var(--teal) !important;
             color: var(--teal) !important;
             background: rgba(10, 140, 122, 0.08) !important;
+            box-shadow: 0 0 12px rgba(10, 140, 122, 0.2) !important;
         }
+
         body.lm .mi {
             background: #ffffff !important;
             border: 1px solid rgba(0, 0, 0, 0.14) !important;
             color: #0f172a !important;
         }
+
         body.lm .mi:focus {
             border-color: var(--teal) !important;
             box-shadow: 0 0 0 3px rgba(10, 140, 122, 0.15) !important;
         }
-        body.lm .file-up {
+
+        body.lm select.mi option {
+            background: #ffffff;
+            color: #0f172a
+        }
+
+        body.lm .file-dropzone {
             background: rgba(0, 0, 0, 0.02) !important;
             border: 1px dashed rgba(0, 0, 0, 0.18) !important;
             color: #334155 !important;
         }
+
+        body.lm .file-preview {
+            background: rgba(0, 0, 0, 0.03) !important;
+            border-color: rgba(0, 0, 0, 0.08) !important;
+        }
+
         body.lm .urg-labels span {
             color: #64748b !important;
         }
+
         body.lm .urg-labels span.emr {
             color: #dc2626 !important;
         }
+
         body.lm .hero-badge {
             background: rgba(10, 140, 122, 0.08) !important;
             border: 1px solid rgba(10, 140, 122, 0.25) !important;
             color: var(--teal) !important;
         }
+
         body.lm .pg-title {
             color: #0f172a !important;
         }
+
         body.lm .pg-desc {
             color: #475569 !important;
         }
+
+        body.lm .fbi {
+            background: rgba(0, 0, 0, 0.015) !important;
+            border-color: rgba(0, 0, 0, 0.06) !important;
+        }
+
+        body.lm .fbi-app {
+            background: rgba(0, 0, 0, 0.06) !important;
+            color: #475569 !important;
+        }
+
+        body.lm .h-filter {
+            background: rgba(0, 0, 0, 0.03) !important;
+            border-color: rgba(0, 0, 0, 0.08) !important;
+            color: #475569 !important;
+        }
+
+        body.lm .h-filter.act {
+            background: #0a8c7a !important;
+            color: #ffffff !important;
+            border-color: #0a8c7a !important;
+        }
+
         body.lm .ms {
             background: var(--teal) !important;
             color: #ffffff !important;
         }
+
         body.lm .ms:hover {
             background: #087364 !important;
+        }
+
+        body.lm .sf {
+            border-color: rgba(0, 0, 0, 0.08) !important;
+            background: transparent !important;
         }
     </style>
     <script defer src="col-router.js"></script>
@@ -1239,42 +1673,42 @@
             <span class="brand-name">Class Of Learners</span>
         </a>
         <div class="nav-links" id="navLinks">
-            <a href="/" class="nav-link"
-              ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                <polyline points="9 22 9 12 15 12 15 22" /></svg
-              >Home</a
-            >
-            <a href="about" class="nav-link"
-              ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <path d="M12 16v-4" />
-                <path d="M12 8h.01" /></svg
-              >About</a
-            >
-            <a href="school" class="nav-link"
-              ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" />
-                <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" /></svg
-              >School</a
-            >
-            <a href="sneh-asha" class="nav-link"
-              ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" /></svg
-              >Sneh Asha</a
-            >
-            <a href="making" class="nav-link"
-              ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg
-              >Making</a
-            >
+            <a href="/" class="nav-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                    <polyline points="9 22 9 12 15 12 15 22" />
+                </svg>Home
+            </a>
+            <a href="about" class="nav-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 16v-4" />
+                    <path d="M12 8h.01" />
+                </svg>About
+            </a>
+            <a href="school" class="nav-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" />
+                    <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />
+                </svg>School
+            </a>
+            <a href="sneh-asha" class="nav-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+                </svg>Sneh Asha
+            </a>
+            <a href="making" class="nav-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                </svg>Making
+            </a>
             <div class="dropdown" id="projDD">
-                <button class="dropdown-btn" aria-haspopup="true" aria-expanded="false">
+                <button class="dropdown-btn" type="button" aria-haspopup="true" aria-expanded="false">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
                     <line x1="8" y1="21" x2="16" y2="21" />
-                    <line x1="12" y1="17" x2="12" y2="21" /></svg
-                  >Projects <span class="darr">&#9660;</span>
+                    <line x1="12" y1="17" x2="12" y2="21" />
+                  </svg>Projects <span class="darr">&#9660;</span>
                 </button>
                 <div class="dropdown-content">
                     <div class="dropdown-content-inner">
@@ -1289,8 +1723,8 @@
             </div>
         </div>
         <div class="nav-actions">
-            <div class="hz-toggle" onclick="hzToggle()"><div class="hz-clouds"></div><div class="hz-stars"></div><div class="hz-orb"></div></div>
-            <button class="nav-login-btn" id="navLoginBtn"
+            <div class="hz-toggle" onclick="hzToggle()" title="Toggle Appearance"><div class="hz-clouds"></div><div class="hz-stars"></div><div class="hz-orb"></div></div>
+            <button class="nav-login-btn" id="navLoginBtn" type="button"
                 onclick="window.openGlobalLogin?window.openGlobalLogin():(window.openLogin?window.openLogin():null)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -1303,7 +1737,7 @@
                 <span class="nun" id="navUserName">User</span>
             </div>
             <a href="download" class="nav-dl-btn desktop-dl">Downloads Hub</a>
-            <button class="mmb" id="mmb" aria-label="Toggle menu">
+            <button class="mmb" id="mmb" type="button" aria-label="Toggle menu">
                 <svg viewBox="0 0 24 24" fill="none">
                     <path d="M3 6H21M3 12H21M3 18H21" stroke-width="1.5" stroke-linecap="round" stroke="currentColor" />
                 </svg>
@@ -1311,68 +1745,143 @@
         </div>
     </nav>
 
+    <!-- HERO -->
     <section class="col-hero">
+        <canvas id="bgCanvas"></canvas>
         <div class="hvig"></div>
         <div class="hvigb"></div>
         <div class="shc">
-            <div class="hero-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Voice Your Thoughts</div>
+            <div class="hero-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>Voice Your Thoughts
+            </div>
             <h1 class="pg-title">Feedback <i>Portal</i>.</h1>
-            <p class="pg-desc">Found a bug? Have a brilliant feature idea? Let us know. We read every piece of feedback
-                to improve the Class Of Learners experience.</p>
+            <p class="pg-desc">Found a bug? Have a feature idea? Need statutory data deletion? Submit your report directly to our development team and Grievance Officer.</p>
         </div>
     </section>
 
-    <div class="col-wrap">
+    <div class="page-wrap">
         <div class="fb-grid rv">
-            <div class="fb-card">
+            <!-- Form Card -->
+            <div class="fb-card" id="feedbackFormCard">
                 <form id="fbForm" onsubmit="submitFeedback(event)">
+                    <!-- Anti-spam Honeypot Trap (Hidden from genuine users) -->
+                    <div class="hp-field" aria-hidden="true">
+                        <label for="fbHpCompany">Company</label>
+                        <input type="text" id="fbHpCompany" name="hp_company" tabindex="-1" autocomplete="off">
+                    </div>
+
                     <div class="fbr">
-                        <label>Feedback Type</label>
+                        <label>Feedback Category</label>
                         <div class="fb-types">
-                            <label class="ft-pill"><input type="radio" name="fbType" value="Bug Report" checked><span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><path d="M8 2v3"/><path d="M16 2v3"/><path d="M3.42 10.59a10 10 0 0 0 0 2.82"/><path d="M20.58 10.59a10 10 0 0 1 0 2.82"/><path d="M4 19a10 10 0 0 0 16 0"/><rect x="8" y="7" width="8" height="13" rx="4"/></svg>Bug Report</span></label>
-                            <label class="ft-pill"><input type="radio" name="fbType" value="Feature Request"><span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Feature Request</span></label>
-                            <label class="ft-pill"><input type="radio" name="fbType" value="General"><span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>General</span></label>
+                            <label class="ft-pill">
+                                <input type="radio" name="fbType" value="Bug Report" checked onchange="onCategoryChange(this.value)">
+                                <span>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v3"/><path d="M16 2v3"/><path d="M3.42 10.59a10 10 0 0 0 0 2.82"/><path d="M20.58 10.59a10 10 0 0 1 0 2.82"/><path d="M4 19a10 10 0 0 0 16 0"/><rect x="8" y="7" width="8" height="13" rx="4"/></svg>Bug Report
+                                </span>
+                            </label>
+                            <label class="ft-pill">
+                                <input type="radio" name="fbType" value="Feature Request" onchange="onCategoryChange(this.value)">
+                                <span>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Feature Request
+                                </span>
+                            </label>
+                            <label class="ft-pill">
+                                <input type="radio" name="fbType" value="Grievance / Deletion" onchange="onCategoryChange(this.value)">
+                                <span>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Grievance / Deletion
+                                </span>
+                            </label>
+                            <label class="ft-pill">
+                                <input type="radio" name="fbType" value="General" onchange="onCategoryChange(this.value)">
+                                <span>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>General
+                                </span>
+                            </label>
                         </div>
                     </div>
 
-                    <div class="fbr">
-                        <label for="fbMsg">Message</label>
-                        <textarea id="fbMsg" class="mi" rows="5" placeholder="Describe your issue or idea in detail..."
-                            required></textarea>
+                    <!-- Grievance Notice Banner -->
+                    <div id="grievanceNotice" class="grievance-notice">
+                        <strong>Statutory Redressal &amp; Data Deletion Request</strong>
+                        Under Rule 3(2) of the Information Technology Rules, all deletion and content inquiries submitted here are routed directly to our Grievance Officer and processed within 24 hours.
                     </div>
 
                     <div class="fbr">
-                        <label>Urgency Level</label>
+                        <label for="fbApp">Affected Application / Area</label>
+                        <select id="fbApp" class="mi">
+                            <option value="General Platform">General Platform &amp; Website</option>
+                            <option value="ATI 1.4 (Typing Instructor)">01 &mdash; Advanced Typing Instructor 1.4</option>
+                            <option value="Solar System Engine">02 &mdash; Solar System Engine V3.3</option>
+                            <option value="Perceptus Flow">03 &mdash; Perceptus Flow: Vision Co-Pilot</option>
+                            <option value="QR Studio Matrix">04 &mdash; QR Studio Matrix</option>
+                            <option value="The Career Compass">05 &mdash; The Career Compass</option>
+                            <option value="Database Logic">06 &mdash; Database Logic &amp; Query Engine</option>
+                            <option value="Traffic Hero & Academy">07 &mdash; Mumbai Traffic Hero &amp; Academy</option>
+                            <option value="CastFlow Studio">08 &mdash; CastFlow Studio</option>
+                            <option value="Cereal AI Assistant">09 &mdash; Cereal AI Assistant</option>
+                            <option value="Terra3D World Atlas">10 &mdash; Terra3D World Atlas</option>
+                            <option value="Quest Master RPG">★ &mdash; Quest Master: RPG Engine</option>
+                            <option value="Account / OAuth">Account Sync &amp; Google Sign-In</option>
+                        </select>
+                    </div>
+
+                    <div class="fbr">
+                        <label for="fbMsg">
+                            <span>Detailed Description</span>
+                            <span id="charCount" class="char-counter">0 / 1000</span>
+                        </label>
+                        <textarea id="fbMsg" class="mi" rows="5" maxlength="1000" placeholder="Describe the issue or feature in detail..." required oninput="updateCharCount()"></textarea>
+                    </div>
+
+                    <div class="fbr" id="emailRow">
+                        <label for="fbEmail">Contact Email (Optional for updates)</label>
+                        <input type="email" id="fbEmail" class="mi" placeholder="name@example.com" maxlength="120">
+                    </div>
+
+                    <div class="fbr">
+                        <label>Priority Level</label>
                         <div class="urg-slider">
                             <input type="range" id="fbUrg" min="1" max="3" value="1">
-                            <div class="urg-labels"><span>Low Priority</span><span>Medium</span><span
-                                    class="emr">Critical</span></div>
+                            <div class="urg-labels">
+                                <span>Low Priority</span>
+                                <span>Medium</span>
+                                <span class="emr">Critical</span>
+                            </div>
                         </div>
                     </div>
 
+                    <!-- Screenshot File Dropzone -->
                     <div class="fbr">
-                        <label class="file-up" style="flex-direction:column;align-items:flex-start;gap:8px">
-                            <div style="display:flex;align-items:center;gap:8px">
-                                <input type="file" id="fbFile" accept="image/*" onchange="upFN(this)">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <label>Screenshot / Evidence (Optional, max 5MB)</label>
+                        <div class="file-dropzone" id="fileDropzone">
+                            <input type="file" id="fbFile" accept="image/png,image/jpeg,image/webp,image/gif" onchange="handleFileSelect(this)">
+                            <div class="file-dropzone-content">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                                     <polyline points="17 8 12 3 7 8" />
                                     <line x1="12" y1="3" x2="12" y2="15" />
                                 </svg>
-                                <span id="fName">Attach Screenshot (Optional)</span>
+                                <span id="dropzoneLabel">Click, drop image, or paste screenshot (Ctrl+V)</span>
                             </div>
-                            <div id="fileThumbPreview" style="display:none;align-items:center;gap:12px;margin-top:8px">
-                                <img id="thumbImg" src="" alt="Feedback Attachment Thumbnail" style="width:50px;height:50px;object-fit:cover;border-radius:6px;border:1px solid var(--border-light)">
-                                <button type="button" onclick="removeAttachedFile(event)" style="background:rgba(239,68,68,0.1);color:var(--danger);border:1px solid rgba(239,68,68,0.3);padding:4px 8px;border-radius:4px;font-size:0.75rem;cursor:pointer">Remove</button>
+                        </div>
+                        <div id="filePreview" class="file-preview">
+                            <div class="file-preview-left">
+                                <img id="thumbImg" src="" alt="Screenshot Thumbnail">
+                                <div class="file-preview-meta">
+                                    <div id="previewName" class="file-preview-name">screenshot.png</div>
+                                    <div id="previewSize" class="file-preview-size">0 KB</div>
+                                </div>
                             </div>
-                        </label>
+                            <button type="button" class="file-remove-btn" onclick="removeAttachedFile()">Remove</button>
+                        </div>
                     </div>
 
                     <div class="fbr inline-t">
                         <div>
                             <label style="margin-bottom:0">Contact Permission</label>
-                            <p class="sml">Can we email you if we need more details?</p>
+                            <p class="sml">Can we email you if our team needs more details?</p>
                         </div>
                         <label class="tsb" style="margin-bottom:0">
                             <input type="checkbox" id="fbContact" checked>
@@ -1382,20 +1891,58 @@
                         </label>
                     </div>
 
-                    <button type="submit" class="ms">Submit Feedback</button>
+                    <div class="fbr inline-t">
+                        <div>
+                            <label style="margin-bottom:0">Attach Diagnostics</label>
+                            <p class="sml">Attach browser and display metrics (privacy-preserving)</p>
+                        </div>
+                        <label class="tsb" style="margin-bottom:0">
+                            <input type="checkbox" id="fbDiag" checked>
+                            <div class="tst">
+                                <div class="tsth"></div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="ms" id="submitBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13" />
+                            <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                        </svg>Submit Feedback
+                    </button>
                 </form>
             </div>
 
-            <div class="fb-card history-card">
-                <h3 style="font-family:var(--sans);font-size:1.2rem;margin-bottom:4px">Your Past Submissions</h3>
-                <p style="font-size:.85rem;color:var(--dim);margin-bottom:16px">Stored locally on your device.</p>
-
-                <div id="fbList" class="fb-list">
+            <!-- History Card -->
+            <div class="fb-card history-card" id="historyCard">
+                <div class="history-card-header">
+                    <div>
+                        <h3>Past Submissions</h3>
+                        <p style="font-size:.85rem;color:var(--dim)">Stored locally and synced with your session.</p>
+                    </div>
                 </div>
 
-                <button onclick="clearFb()"
-                    style="background:none;border:none;color:var(--dim);font-size:.8rem;text-decoration:underline;cursor:pointer;margin-top:24px;font-family:var(--sans);min-height:44px;padding:10px 4px">Clear
-                    History</button>
+                <div class="history-filters">
+                    <button type="button" class="h-filter act" onclick="filterHistory('All', this)">All Categories</button>
+                    <button type="button" class="h-filter" onclick="filterHistory('Bug Report', this)">Bugs</button>
+                    <button type="button" class="h-filter" onclick="filterHistory('Feature Request', this)">Features</button>
+                    <button type="button" class="h-filter" onclick="filterHistory('Grievance / Deletion', this)">Grievances</button>
+                </div>
+                <div class="history-status-filters">
+                    <button type="button" class="h-filter-status act" onclick="filterStatus('all', this)">All Statuses</button>
+                    <button type="button" class="h-filter-status" onclick="filterStatus('open', this)">Open</button>
+                    <button type="button" class="h-filter-status" onclick="filterStatus('in_progress', this)">In Review</button>
+                    <button type="button" class="h-filter-status" onclick="filterStatus('resolved', this)">Resolved</button>
+                </div>
+
+                <div id="fbList" class="fb-list">
+                    <!-- Populated by JavaScript -->
+                </div>
+
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
+                    <button type="button" class="clear-history-btn" onclick="clearFb()">Clear History</button>
+                    <span id="historyCount" style="font-size:.78rem;color:var(--dim);font-family:var(--mono)">0 items</span>
+                </div>
             </div>
         </div>
     </div>
@@ -1407,15 +1954,23 @@
                 <a href="making">Making</a>
                 <a href="privacy">Privacy</a>
                 <a href="terms">Terms</a>
-                <a href="feedback">Feedback</a>
+                <a href="feedback" class="act">Feedback</a>
                 <a href="download">Downloads</a>
             </div>
             <div class="fc">&copy; 2026 Neel, Ansh, &amp; Aarush (Co‑Founders).</div>
         </div>
     </footer>
 
-    <div class="toast" id="toast"></div>
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12" />
+        </svg>
+        <span id="toastMsg">Feedback submitted securely.</span>
+    </div>
 
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script defer src="col-3d.js"></script>
     <script>
         // 1. Fast Loader Dismissal (150ms after DOMContentLoaded)
         function removeLoader() {
@@ -1431,17 +1986,15 @@
         }
         window.addEventListener('load', removeLoader, { once: true })
 
-        // 2. Unified Theme Controller — syncs BOTH <html> and <body>
+        // 2. Unified Theme Controller — syncs both documentElement and body
         function applyTheme(isLight) {
           document.documentElement.classList.toggle('lm', isLight)
           document.body.classList.toggle('lm', isLight)
           document.querySelectorAll('.hz-toggle').forEach(function (el) {
             el.classList.toggle('night', !isLight)
           })
-          var desc = document.getElementById('cmdThemeDesc')
-          if (desc) desc.textContent = isLight ? 'Light Mica' : 'Dark VisionOS'
           var tm = document.getElementById('themeMeta')
-          if (tm) tm.setAttribute('content', isLight ? '#f4f3ee' : '#070A14')
+          if (tm) tm.setAttribute('content', isLight ? '#f0ede4' : '#070A14')
         }
 
         window.hzToggle = function () {
@@ -1502,193 +2055,472 @@
           }
         })
 
-        (function () { var els = document.querySelectorAll('.rv'); var io = new IntersectionObserver(function (entries) { entries.forEach(function (entry) { if (entry.isIntersecting) { entry.target.classList.add('vis'); io.unobserve(entry.target); } }); }, { threshold: .08 }); els.forEach(function (el) { io.observe(el); }); })();
+        // 5. Scroll Reveal Intersection Observer
+        ;(function () {
+          var els = document.querySelectorAll('.rv')
+          var io = new IntersectionObserver(
+            function (entries) {
+              entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                  entry.target.classList.add('vis')
+                  io.unobserve(entry.target)
+                }
+              })
+            },
+            { threshold: 0.08 }
+          )
+          els.forEach(function (el) {
+            io.observe(el)
+          })
+        })()
 
-        // Feedback logic & Screenshot Preview
-        function upFN(inp) {
-            var l = document.getElementById('fName');
-            var prev = document.getElementById('fileThumbPreview');
-            var img = document.getElementById('thumbImg');
-            if (inp.files && inp.files[0]) {
-                l.textContent = inp.files[0].name;
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    if (img) img.src = e.target.result;
-                    if (prev) prev.style.display = 'flex';
-                };
-                reader.readAsDataURL(inp.files[0]);
-            } else {
-                l.textContent = 'Attach Screenshot (Optional)';
-                if (prev) prev.style.display = 'none';
-            }
+        // 6. Interactive Spotlight Follower for Cards
+        ;(function () {
+          var cards = document.querySelectorAll('.fb-card')
+          cards.forEach(function (card) {
+            card.addEventListener('mousemove', function (e) {
+              var rect = card.getBoundingClientRect()
+              card.style.setProperty('--mouse-x', (e.clientX - rect.left) + 'px')
+              card.style.setProperty('--mouse-y', (e.clientY - rect.top) + 'px')
+            })
+          })
+        })()
+
+        // 7. Robust Safe Storage Helper (Fixes TypeError: Storage.get is not a function)
+        const SafeStorage = {
+          get: function (key) {
+            try { return localStorage.getItem(key) } catch (e) { return null }
+          },
+          set: function (key, val) {
+            try { localStorage.setItem(key, val); return true } catch (e) { return false }
+          }
+        }
+        window.Storage = SafeStorage
+
+        // 8. Security: Comprehensive HTML Entity Sanitizer
+        function escapeHtml(str) {
+          if (!str) return ''
+          return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
         }
 
-        function removeAttachedFile(e) {
-            if (e) { e.preventDefault(); e.stopPropagation(); }
-            var inp = document.getElementById('fbFile');
-            if (inp) inp.value = '';
-            var l = document.getElementById('fName');
-            if (l) l.textContent = 'Attach Screenshot (Optional)';
-            var prev = document.getElementById('fileThumbPreview');
-            if (prev) prev.style.display = 'none';
-            var img = document.getElementById('thumbImg');
-            if (img) img.src = '';
+        // 9. Floating Toast Notification Controller
+        var toastTimer = null
+        function showToast(msg, type) {
+          var t = document.getElementById('toast')
+          var tm = document.getElementById('toastMsg')
+          if (!t) return
+          if (tm) tm.textContent = msg
+          t.className = 'toast'
+          if (type === 'green') t.classList.add('green')
+          else if (type === 'danger') t.classList.add('danger')
+          t.classList.add('show')
+          if (toastTimer) clearTimeout(toastTimer)
+          toastTimer = setTimeout(function () {
+            t.classList.remove('show')
+          }, 3200)
+        }
+
+        // 10. Character Counter & Dynamic Placeholders
+        function updateCharCount() {
+          var msg = document.getElementById('fbMsg')
+          var cnt = document.getElementById('charCount')
+          if (!msg || !cnt) return
+          var len = msg.value.length
+          cnt.textContent = len + ' / 1000'
+          cnt.classList.toggle('warning', len >= 850 && len < 980)
+          cnt.classList.toggle('danger', len >= 980)
+        }
+
+        function onCategoryChange(cat) {
+          var notice = document.getElementById('grievanceNotice')
+          var urg = document.getElementById('fbUrg')
+          var msg = document.getElementById('fbMsg')
+          var emailRow = document.getElementById('emailRow')
+          if (notice) notice.style.display = (cat === 'Grievance / Deletion') ? 'block' : 'none'
+          if (cat === 'Grievance / Deletion') {
+            if (urg) { urg.value = '3'; updateSlider() }
+            if (msg) msg.placeholder = 'State your grievance or data deletion request with relevant account details...'
+          } else if (cat === 'Bug Report') {
+            if (msg) msg.placeholder = 'Describe the bug, steps to reproduce, and what you expected to happen...'
+          } else if (cat === 'Feature Request') {
+            if (msg) msg.placeholder = 'Describe your feature idea and how it would improve the application...'
+          } else {
+            if (msg) msg.placeholder = 'Share your thoughts, suggestions, or feedback...'
+          }
+        }
+
+        // 11. File Upload, Drag & Drop, and Clipboard Paste (Ctrl+V)
+        var attachedFileData = null
+        var MAX_FILE_BYTES = 5 * 1024 * 1024 // 5 MB
+
+        function validateAndPreviewFile(file) {
+          if (!file) return
+          if (!/^image\/(png|jpe?g|webp|gif)$/i.test(file.type)) {
+            showToast('Only PNG, JPG, WebP, or GIF images are allowed.', 'danger')
+            return
+          }
+          if (file.size > MAX_FILE_BYTES) {
+            showToast('Image size exceeds 5MB limit.', 'danger')
+            return
+          }
+
+          var reader = new FileReader()
+          reader.onload = function (e) {
+            attachedFileData = {
+              name: file.name || 'clipboard-screenshot.png',
+              size: (file.size / 1024).toFixed(1) + ' KB',
+              dataUrl: e.target.result
+            }
+            var prev = document.getElementById('filePreview')
+            var img = document.getElementById('thumbImg')
+            var pName = document.getElementById('previewName')
+            var pSize = document.getElementById('previewSize')
+            if (img) img.src = attachedFileData.dataUrl
+            if (pName) pName.textContent = attachedFileData.name
+            if (pSize) pSize.textContent = attachedFileData.size
+            if (prev) prev.style.display = 'flex'
+            showToast('Image attached successfully.', 'green')
+          }
+          reader.readAsDataURL(file)
+        }
+
+        function handleFileSelect(inp) {
+          if (inp.files && inp.files[0]) {
+            validateAndPreviewFile(inp.files[0])
+          }
+        }
+
+        function removeAttachedFile() {
+          var inp = document.getElementById('fbFile')
+          if (inp) inp.value = ''
+          attachedFileData = null
+          var prev = document.getElementById('filePreview')
+          if (prev) prev.style.display = 'none'
+          var img = document.getElementById('thumbImg')
+          if (img) img.src = ''
+        }
+
+        // Drag & Drop
+        var dropzone = document.getElementById('fileDropzone')
+        if (dropzone) {
+          ;['dragenter', 'dragover'].forEach(function (eventName) {
+            dropzone.addEventListener(eventName, function (e) {
+              e.preventDefault(); e.stopPropagation()
+              dropzone.classList.add('dragover')
+            })
+          })
+          ;['dragleave', 'drop'].forEach(function (eventName) {
+            dropzone.addEventListener(eventName, function (e) {
+              e.preventDefault(); e.stopPropagation()
+              dropzone.classList.remove('dragover')
+            })
+          })
+          dropzone.addEventListener('drop', function (e) {
+            var dt = e.dataTransfer
+            if (dt && dt.files && dt.files[0]) {
+              validateAndPreviewFile(dt.files[0])
+            }
+          })
+        }
+
+        // Clipboard Paste Listener (Ctrl+V)
+        window.addEventListener('paste', function (e) {
+          var items = (e.clipboardData || e.originalEvent.clipboardData || {}).items
+          if (!items) return
+          for (var i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf('image') !== -1) {
+              var blob = items[i].getAsFile()
+              validateAndPreviewFile(blob)
+              break
+            }
+          }
+        })
+
+        // 12. Animated Range Slider Logic
+        var urgSlider = document.getElementById('fbUrg')
+        var urgLabels = document.querySelectorAll('.urg-labels span')
+        var sliderContainer = document.querySelector('.urg-slider')
+
+        function updateSlider() {
+          if (!urgSlider || !sliderContainer) return
+          var val = ((urgSlider.value - urgSlider.min) / (urgSlider.max - urgSlider.min)) * 100
+          var activeHex = 'var(--teal)'
+          if (urgSlider.value == 2) {
+            activeHex = '#F2B84B'
+          } else if (urgSlider.value == 3) {
+            activeHex = '#ef4444'
+          }
+          sliderContainer.style.setProperty('--active-color', activeHex)
+          urgSlider.style.background = 'linear-gradient(to right, ' + activeHex + ' ' + val + '%, var(--lineb) ' + val + '%)'
+
+          urgLabels.forEach(function (lbl, index) {
+            if (index + 1 == urgSlider.value) {
+              lbl.classList.add('active')
+              lbl.style.color = activeHex
+            } else {
+              lbl.classList.remove('active')
+              lbl.style.color = 'var(--dim)'
+            }
+          })
+        }
+        if (urgSlider) {
+          urgSlider.addEventListener('input', updateSlider)
+          updateSlider()
+        }
+
+        // 13. Submissions History & Filtering
+        var currentFilter = 'All'
+        var currentStatusFilter = 'all'
+        var cachedFeedbackList = []
+
+        function filterHistory(cat, btn) {
+          currentFilter = cat
+          document.querySelectorAll('.h-filter').forEach(function (b) { b.classList.remove('act') })
+          if (btn) btn.classList.add('act')
+          renderFeedbackList()
+        }
+
+        function filterStatus(stat, btn) {
+          currentStatusFilter = stat
+          document.querySelectorAll('.h-filter-status').forEach(function (b) { b.classList.remove('act') })
+          if (btn) btn.classList.add('act')
+          renderFeedbackList()
+        }
+
+        function renderFeedbackList() {
+          var ls = document.getElementById('fbList')
+          var cnt = document.getElementById('historyCount')
+          if (!ls) return
+
+          var filtered = cachedFeedbackList.filter(function (item) {
+            var catMatch = (currentFilter === 'All') || (item.category || item.type) === currentFilter
+            var stat = (item.status || 'open').toLowerCase()
+            var statMatch = (currentStatusFilter === 'all') || (stat === currentStatusFilter)
+            return catMatch && statMatch
+          })
+
+          if (cnt) cnt.textContent = filtered.length + ' item' + (filtered.length === 1 ? '' : 's')
+
+          if (filtered.length === 0) {
+            ls.innerHTML = '<p style="color:var(--dim);font-size:.88rem;font-style:italic;text-align:center;padding:24px 0">No matching submissions found.</p>'
+            return
+          }
+
+          var html = ''
+          filtered.forEach(function (f) {
+            var cat = escapeHtml(f.category || f.type || 'General')
+            var isGrievance = cat.toLowerCase().includes('grievance') || cat.toLowerCase().includes('deletion')
+            var urg = parseInt(f.urgency || f.urg) || 1
+            var urgColor = urg === 3 ? 'var(--danger, #ef4444)' : (urg === 2 ? '#f59e0b' : 'var(--teal, #00f0cc)')
+            var urgText = urg === 3 ? 'Critical' : (urg === 2 ? 'Medium' : 'Low')
+            var dateStr = f.created_at ? new Date(f.created_at).toLocaleDateString() : (f.date ? new Date(f.date).toLocaleDateString() : 'Recent')
+            var appStr = escapeHtml(f.app || 'Class Of Learners')
+            var msgStr = escapeHtml(f.message || f.msg || '')
+            var refId = escapeHtml(f.id || '')
+            var rawStat = (f.status || 'open').toLowerCase()
+            var statClass = rawStat === 'resolved' ? 'resolved' : (rawStat === 'in_progress' ? 'in_progress' : 'open')
+            var statLabel = rawStat === 'resolved' ? 'Resolved ✓' : (rawStat === 'in_progress' ? 'In Review ⧗' : 'Open ⬡')
+
+            html += '<div class="fbi">'
+            html += '  <div class="fbi-hd">'
+            html += '    <div style="display:flex;align-items:center;gap:8px">'
+            html += '      <span class="fbi-type-badge ' + (isGrievance ? 'grievance' : '') + '">' + cat + '</span>'
+            html += '      <span class="fbi-status-badge ' + statClass + '">' + statLabel + '</span>'
+            html += '    </div>'
+            html += '    <span class="fbi-date">' + dateStr + '</span>'
+            html += '  </div>'
+            html += '  <div class="fbi-app">' + appStr + '</div>'
+            html += '  <div class="fbi-msg">' + msgStr + '</div>'
+            html += '  <div class="fbi-meta">'
+            html += '    <div class="fbi-meta-left">'
+            html += '      <span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:' + urgColor + ';box-shadow:0 0 6px ' + urgColor + '"></span>' + urgText + '</span>'
+            if (f.file || f.has_file) {
+              html += '      <span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>Image</span>'
+            }
+            if (f.contact) {
+              html += '      <span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Contact OK</span>'
+            }
+            html += '    </div>'
+            if (refId) {
+              html += '    <span class="fbi-id-copy" onclick="copyRefId(\'' + refId + '\')" title="Click to copy tracking ID">Ref #' + refId.substring(0, 6) + '</span>'
+            }
+            html += '  </div>'
+            html += '</div>'
+          })
+
+          ls.innerHTML = html
+        }
+
+        window.copyRefId = function (id) {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(id).then(function () {
+              showToast('Tracking ID copied to clipboard: #' + id, 'green')
+            })
+          }
         }
 
         async function loadFb() {
-            var ls = document.getElementById('fbList');
-            if (window.supabaseClient && window.colUser) {
-                try {
-                    const { data, error } = await window.supabaseClient
-                        .from('feedback')
-                        .select('*')
-                        .eq('user_id', window.colUser.id)
-                        .order('created_at', { ascending: false });
-                    
-                    if (!error && data && data.length > 0) {
-                        ls.innerHTML = '';
-                        data.forEach(function (f) {
-                            var urgColor = f.urgency == 3 ? 'var(--ati-err, #ef4444)' : (f.urgency == 2 ? '#f59e0b' : '#10b981');
-                            var urgLabel = f.urgency == 3 ? '<span class="emr">Critical</span>' : (f.urgency == 2 ? 'Medium' : 'Low');
-                            var urgDot = '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:' + urgColor + ';box-shadow:0 0 6px ' + urgColor + ';margin-right:6px"></span>';
-                            var ht = '<div class="fbi"><div class="fbi-hd"><span class="fbi-type">' + f.category + '</span><span class="fbi-date">' + new Date(f.created_at).toLocaleDateString() + '</span></div>';
-                            ht += '<div class="fbi-msg">' + f.message.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</div>';
-                            ht += '<div class="fbi-meta"><span>' + urgDot + urgLabel + ' Priority</span>';
-                            if (f.user_agent && f.user_agent.includes('contact:true')) ht += '<span style="display:inline-flex;align-items:center;gap:4px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Contact OK</span>';
-                            ht += '</div></div>';
-                            ls.innerHTML += ht;
-                        });
-                        return;
-                    }
-                } catch (e) {}
-            }
+          cachedFeedbackList = []
+          if (window.supabaseClient && window.colUser) {
+            try {
+              const { data, error } = await window.supabaseClient
+                .from('feedback')
+                .select('*')
+                .eq('user_id', window.colUser.id)
+                .order('created_at', { ascending: false })
 
-            var d = Storage.get('col_fbs');
-            if (!d) { ls.innerHTML = '<p style="color:var(--dim);font-size:.9rem;font-style:italic">No feedback submitted yet.</p>'; return; }
-            var p = JSON.parse(d);
-            if (p.length === 0) { ls.innerHTML = '<p style="color:var(--dim);font-size:.9rem;font-style:italic">No feedback submitted yet.</p>'; return; }
-            ls.innerHTML = '';
-            p.slice().reverse().forEach(function (f) {
-                var urgColor = f.urg == 3 ? 'var(--ati-err, #ef4444)' : (f.urg == 2 ? '#f59e0b' : '#10b981');
-                var urgLabel = f.urg == 3 ? '<span class="emr">Critical</span>' : (f.urg == 2 ? 'Medium' : 'Low');
-                var urgDot = '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:' + urgColor + ';box-shadow:0 0 6px ' + urgColor + ';margin-right:6px"></span>';
-                var ht = '<div class="fbi"><div class="fbi-hd"><span class="fbi-type">' + f.type + '</span><span class="fbi-date">' + new Date(f.date).toLocaleDateString() + '</span></div>';
-                ht += '<div class="fbi-msg">' + f.msg.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</div>';
-                ht += '<div class="fbi-meta"><span>' + urgDot + urgLabel + ' Priority</span>';
-                if (f.file) ht += '<span style="display:inline-flex;align-items:center;gap:4px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>Attached</span>';
-                if (f.contact) ht += '<span style="display:inline-flex;align-items:center;gap:4px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Contact OK</span>';
-                ht += '</div></div>';
-                ls.innerHTML += ht;
-            });
+              if (!error && data && data.length > 0) {
+                cachedFeedbackList = data
+                renderFeedbackList()
+                return
+              }
+            } catch (e) {}
+          }
+
+          var raw = SafeStorage.get('col_fbs')
+          if (raw) {
+            try {
+              var parsed = JSON.parse(raw)
+              if (Array.isArray(parsed)) {
+                cachedFeedbackList = parsed.slice().reverse()
+              }
+            } catch (e) {}
+          }
+          renderFeedbackList()
         }
 
+        // 14. Secure Submission Handler (Anti-Spam + Rate-Limiting + Honeypot)
+        var lastSubmissionTime = 0
+        var SUBMIT_COOLDOWN_MS = 15000 // 15 seconds cooldown
+
         async function submitFeedback(e) {
-            e.preventDefault();
-            var types = document.getElementsByName('fbType');
-            var type = 'General';
-            for (var i = 0; i < types.length; i++) { if (types[i].checked) { type = types[i].value; break; } }
-            var msg = document.getElementById('fbMsg').value;
-            var urg = document.getElementById('fbUrg').value;
-            var contact = document.getElementById('fbContact').checked;
-            var fileInp = document.getElementById('fbFile');
-            var hasFile = fileInp.files && fileInp.files.length > 0;
+          e.preventDefault()
 
-            if (!msg.trim()) return;
+          // A. Honeypot Verification: reject if bot filled the hidden trap
+          var hp = document.getElementById('fbHpCompany')
+          if (hp && hp.value.trim() !== '') {
+            console.warn('Bot submission trapped.')
+            showToast('Feedback submitted securely.', 'green')
+            return
+          }
 
-            if (window.supabaseClient) {
-                try {
-                    await window.supabaseClient.from('feedback').insert([{
-                        user_id: window.colUser ? window.colUser.id : null,
-                        category: type,
-                        message: msg.substring(0, 500),
-                        urgency: parseInt(urg) || 1,
-                        user_agent: navigator.userAgent + (contact ? ' contact:true' : ''),
-                        email: window.colUser ? window.colUser.email : null
-                    }]);
-                } catch(err) {
-                    console.error(err);
-                }
+          // B. Rate Limiting Cooldown: prevent rapid-fire spam
+          var now = Date.now()
+          if (now - lastSubmissionTime < SUBMIT_COOLDOWN_MS) {
+            var waitSec = Math.ceil((SUBMIT_COOLDOWN_MS - (now - lastSubmissionTime)) / 1000)
+            showToast('Please wait ' + waitSec + 's before submitting another report.', 'danger')
+            return
+          }
+
+          // C. Form Fields Gathering
+          var types = document.getElementsByName('fbType')
+          var type = 'General'
+          for (var i = 0; i < types.length; i++) {
+            if (types[i].checked) { type = types[i].value; break }
+          }
+          var app = document.getElementById('fbApp') ? document.getElementById('fbApp').value : 'General Platform'
+          var msg = document.getElementById('fbMsg').value.trim()
+          var email = document.getElementById('fbEmail') ? document.getElementById('fbEmail').value.trim() : ''
+          var urg = document.getElementById('fbUrg').value
+          var contact = document.getElementById('fbContact').checked
+          var diag = document.getElementById('fbDiag').checked
+
+          if (!msg) {
+            showToast('Please provide a message description.', 'danger')
+            return
+          }
+
+          // D. Optional Diagnostics String
+          var diagStr = ''
+          if (diag) {
+            diagStr = ' [Diag: ' + (navigator.platform || 'Unknown') + ' / ' + (window.innerWidth + 'x' + window.innerHeight) + ']'
+          }
+
+          // E. Disable submit button to avoid double taps
+          var btn = document.getElementById('submitBtn')
+          if (btn) {
+            btn.disabled = true
+            btn.textContent = 'Submitting...'
+          }
+
+          var feedbackId = Date.now().toString(36) + Math.random().toString(36).substring(2, 6)
+          var userAgentMeta = navigator.userAgent + (contact ? ' contact:true' : '') + ' app:' + app + diagStr
+
+          // F. Supabase Push
+          if (window.supabaseClient) {
+            try {
+              await window.supabaseClient.from('feedback').insert([{
+                user_id: window.colUser ? window.colUser.id : null,
+                category: type,
+                message: msg.substring(0, 1000),
+                urgency: parseInt(urg) || 1,
+                user_agent: userAgentMeta.substring(0, 500),
+                email: email || (window.colUser ? window.colUser.email : null)
+              }])
+            } catch (err) {
+              console.error(err)
             }
+          }
 
-            var nw = {
-                id: Date.now().toString(36),
-                type: type,
-                msg: msg.substring(0, 500),
-                urg: urg,
-                contact: contact,
-                file: hasFile,
-                date: Date.now()
-            };
+          // G. Local Cache Persistence via SafeStorage
+          var localItem = {
+            id: feedbackId,
+            type: type,
+            app: app,
+            msg: msg.substring(0, 1000),
+            urg: urg,
+            contact: contact,
+            file: Boolean(attachedFileData),
+            email: email,
+            status: 'open',
+            date: Date.now()
+          }
 
-            var d = Storage.get('col_fbs');
-            var p = d ? JSON.parse(d) : [];
-            p.push(nw);
-            Storage.set('col_fbs', JSON.stringify(p));
+          var raw = SafeStorage.get('col_fbs')
+          var list = []
+          if (raw) {
+            try { list = JSON.parse(raw) } catch (err) {}
+          }
+          list.push(localItem)
+          SafeStorage.set('col_fbs', JSON.stringify(list))
 
-            document.getElementById('fbForm').reset();
-            document.getElementById('fName').textContent = 'Attach Screenshot (Optional)';
-            showToast('Feedback submitted securely.', true);
-            loadFb();
-            if (typeof updateSlider === 'function') updateSlider(); // Reset slider visual
+          // H. Reset Form & UI Feedback
+          lastSubmissionTime = Date.now()
+          document.getElementById('fbForm').reset()
+          removeAttachedFile()
+          updateCharCount()
+          if (typeof updateSlider === 'function') updateSlider()
+
+          if (btn) {
+            btn.disabled = false
+            btn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" /></svg>Submit Feedback'
+          }
+
+          showToast('Feedback submitted securely. Reference #' + feedbackId.substring(0, 6), 'green')
+          loadFb()
         }
 
         function clearFb() {
-            if (confirm("Clear all feedback history?")) {
-                Storage.set('col_fbs', '[]');
-                loadFb();
-            }
+          if (confirm('Clear all feedback submission history from this device?')) {
+            SafeStorage.set('col_fbs', '[]')
+            loadFb()
+            showToast('Submission history cleared.', 'green')
+          }
         }
 
-        function showToast(msg, isSuccess) {
-            var t = document.getElementById('toast');
-            t.textContent = msg;
-            if (isSuccess) t.classList.add('green'); else t.classList.remove('green');
-            t.classList.add('show');
-            setTimeout(function () { t.classList.remove('show'); }, 3000);
-        }
-
-        window.addEventListener('DOMContentLoaded', loadFb);
-        window.addEventListener('col-auth-changed', loadFb);
-
-        // Animated Range Slider Logic
-        var urgSlider = document.getElementById('fbUrg');
-        var urgLabels = document.querySelectorAll('.urg-labels span');
-        var sliderContainer = document.querySelector('.urg-slider');
-
-        if (urgSlider && urgLabels.length === 3 && sliderContainer) {
-            function updateSlider() {
-                var val = ((urgSlider.value - urgSlider.min) / (urgSlider.max - urgSlider.min)) * 100;
-
-                var activeHex = 'var(--teal)'; // Low
-                if (urgSlider.value == 2) {
-                    activeHex = '#F2B84B'; // Medium
-                } else if (urgSlider.value == 3) {
-                    activeHex = '#ef4444'; // Critical
-                }
-
-                sliderContainer.style.setProperty('--active-color', activeHex);
-                urgSlider.style.background = `linear-gradient(to right, ${activeHex} ${val}%, var(--lineb) ${val}%)`;
-
-            urgLabels.forEach(function(lbl, index) {
-                if (index + 1 == urgSlider.value) {
-                    lbl.classList.add('active');
-                    lbl.style.color = activeHex;
-                } else {
-                    lbl.classList.remove('active');
-                    lbl.style.color = 'var(--dim)'; 
-                }
-            });
-        }
-
-        urgSlider.addEventListener('input', updateSlider);
-        updateSlider(); 
-    }
-
-    document.querySelectorAll('.fb-card').forEach(function(el){
-        el.addEventListener('mouseenter', function(){ document.body.classList.add('ch'); });
-        el.addEventListener('mouseleave', function(){ document.body.classList.remove('ch'); });
-    });
-
+        window.addEventListener('DOMContentLoaded', loadFb)
+        window.addEventListener('col-auth-changed', function() {
+          loadFb();
+          if (window.colUser && window.colUser.email) {
+            var emInput = document.getElementById('fbEmail');
+            if (emInput && !emInput.value) emInput.value = window.colUser.email;
+          }
+        })
     </script>
 </body>
 

@@ -5,6 +5,7 @@
      crossorigin="anonymous"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#070A14" id="themeMeta" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Class Of Learners" />
@@ -2397,7 +2398,7 @@
         <div class="hero-tag">
           2026 Edition · Class Of Learners
         </div>
-        <h1>Find a Career<br /><span class="gradient-text">Worth Committing To</span></h1>
+        <h1>Find A Career<br /><span class="gradient-text">Worth Committing To</span></h1>
         <p class="hero-sub">
           436 careers written out properly: what the work actually involves, which degree gets you there,
           the entrance exams, real salary bands, and how exposed the job is to AI. Every occupation in the
@@ -2407,7 +2408,7 @@
         <div class="hero-actions">
           <button class="nav-btn primary" style="padding:14px 28px; font-size:15px;" onclick="openCompassModal()">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
-            Take the 60-Second Quiz
+            Take The 60-Second Quiz
           </button>
           <button class="nav-btn" style="padding:14px 28px; font-size:15px;" onclick="scrollToExplore(event)">
             Browse Every Career ↓
@@ -2562,7 +2563,7 @@
           <div class="modal-header">
             <div class="modal-top-row">
               <span class="cat-tag cat-tech">Quick Match</span>
-              <button class="modal-close" onclick="closeCompassModal()">✕</button>
+              <button class="modal-close" onclick="closeCompassModal()" aria-label="Close modal">✕</button>
             </div>
             <div class="modal-title-row">
               <div class="modal-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div>
@@ -3004,7 +3005,7 @@
           <div class="modal-header">
             <div class="modal-top-row">
               <span class="cat-tag cat-tech">Getting Started</span>
-              <button class="modal-close" onclick="closeInternshipHub()">✕</button>
+              <button class="modal-close" onclick="closeInternshipHub()" aria-label="Close modal">✕</button>
             </div>
             <div class="modal-title-row">
               <div class="modal-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
@@ -3073,10 +3074,10 @@
         <div class="modal-card" style="max-width: 1100px;">
           <div class="modal-header">
             <div class="modal-top-row">
-              <h2 class="modal-title">Side-by-Side Career Comparison</h2>
+              <h2 class="modal-title">Side-By-Side Career Comparison</h2>
               <div style="display:flex; gap:8px;">
                 <button class="nav-btn" onclick="window.print()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Print Comparison</button>
-                <button class="modal-close" onclick="closeComparisonModal()">✕</button>
+                <button class="modal-close" onclick="closeComparisonModal()" aria-label="Close modal">✕</button>
               </div>
             </div>
             <p style="color:var(--text-secondary); font-size:14px;">Compare educational requirements, salaries, AI impact, and entrance exams across your selected pathways.</p>
@@ -3149,11 +3150,15 @@
         } catch (e) {}
         document.documentElement.classList.toggle('lm', isLight);
         document.body.classList.toggle('lm', isLight);
+        var tm = document.getElementById('themeMeta');
+        if (tm) tm.setAttribute('content', isLight ? '#f4f3ee' : '#070A14');
       }
       function toggleSiteTheme() {
         var isLight = !document.documentElement.classList.contains('lm');
         document.documentElement.classList.toggle('lm', isLight);
         document.body.classList.toggle('lm', isLight);
+        var tm = document.getElementById('themeMeta');
+        if (tm) tm.setAttribute('content', isLight ? '#f4f3ee' : '#070A14');
         try {
           localStorage.setItem('theme', isLight ? 'light' : 'dark');
           localStorage.setItem('fs_theme', isLight ? 'light' : 'dark');
@@ -4204,7 +4209,7 @@
         html += '<button class="nav-btn btn-print" title="Print full career blueprint"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Print Blueprint</button>';
         html += '<button class="nav-btn btn-modal-fav ' + (isFav ? 'primary' : '') + '">' + (isFav ? '★ Saved' : '☆ Save') + '</button>';
         html += '<button class="nav-btn btn-modal-cmp ' + (isCmp ? 'active' : '') + '">' + (isCmp ? 'Added to Compare' : 'Add to Compare') + '</button>';
-        html += '<button class="modal-close" title="Close [Esc]">✕</button>';
+        html += '<button class="modal-close" title="Close [Esc]" aria-label="Close modal">✕</button>';
         html += '</div></div>';
 
         // 2. Main Document Container
@@ -5047,11 +5052,11 @@
           high_earning: allCareers.filter(c => maxPay(c) >= 150).length
         };
         const labels = {
-          all: 'All Careers',
+          all: 'All Pathways',
           flagship: 'Deep Master Guides',
-          growth: 'Fast-Growing 10%+',
+          growth: 'Fast Growing (10%+)',
           ai: 'Harder To Automate',
-          high_earning: 'High Earning $150K+'
+          high_earning: 'High Earning ($150K+)'
         };
         // The segmented bar renders .seg-btn (not the old .pill-btn/.mode-btn).
         document.querySelectorAll('#view-mode-bar .seg-btn').forEach(btn => {

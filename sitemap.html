@@ -5,6 +5,7 @@
      crossorigin="anonymous"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#070A14" id="themeMeta" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Class Of Learners" />
@@ -1058,6 +1059,183 @@
       body.lm .page-subtitle {
         color: #475569 !important;
       }
+    
+      /* Sitemap Toolbar & Filter Chips */
+      .sitemap-toolbar {
+        max-width: 1200px;
+        margin: 0 auto 36px auto;
+        padding: 0 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .sitemap-search-wrap {
+        position: relative;
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      .sitemap-search-wrap svg {
+        position: absolute;
+        left: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 18px;
+        height: 18px;
+        stroke: var(--muted);
+        pointer-events: none;
+      }
+      .sitemap-search-input {
+        width: 100%;
+        padding: 14px 44px 14px 48px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 999px;
+        color: var(--white);
+        font-family: inherit;
+        font-size: 15px;
+        outline: none;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        transition: all 0.25s ease;
+      }
+      .sitemap-search-input:focus {
+        background: rgba(255, 255, 255, 0.07);
+        border-color: rgba(99, 102, 241, 0.5);
+        box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+      }
+      .sitemap-search-clear {
+        position: absolute;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 14px;
+        display: none;
+        padding: 4px 8px;
+        border-radius: 6px;
+      }
+      .sitemap-search-clear:hover {
+        color: var(--white);
+      }
+      .sitemap-filters {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+      }
+      .sm-chip {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: var(--muted);
+        padding: 8px 16px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        user-select: none;
+      }
+      .sm-chip:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--white);
+        border-color: rgba(255, 255, 255, 0.15);
+      }
+      .sm-chip.active {
+        background: var(--blue-glow);
+        color: #fff;
+        border-color: rgba(99, 102, 241, 0.5);
+        box-shadow: 0 0 16px rgba(99, 102, 241, 0.35);
+      }
+      .sm-stats-bar {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 20px;
+      }
+      .sm-stat-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 14px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        color: var(--muted);
+      }
+      .sm-stat-pill strong {
+        color: var(--white);
+      }
+      .badge-flagship {
+        background: rgba(245, 158, 11, 0.12);
+        color: #f59e0b;
+        border: 1px solid rgba(245, 158, 11, 0.25);
+      }
+      .badge-android {
+        background: rgba(34, 197, 94, 0.12);
+        color: #22c55e;
+        border: 1px solid rgba(34, 197, 94, 0.25);
+      }
+      .badge-spatial {
+        background: rgba(168, 85, 247, 0.12);
+        color: #a855f7;
+        border: 1px solid rgba(168, 85, 247, 0.25);
+      }
+      .sm-empty {
+        display: none;
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--muted);
+      }
+      .sm-empty h3 {
+        font-size: 20px;
+        color: var(--white);
+        margin-bottom: 8px;
+      }
+      /* Light mode overrides */
+      body.lm .sitemap-search-input {
+        background: rgba(0, 0, 0, 0.03);
+        border-color: rgba(0, 0, 0, 0.12);
+        color: #0f172a;
+      }
+      body.lm .sitemap-search-input:focus {
+        background: #ffffff;
+        border-color: #6366f1;
+        box-shadow: 0 0 16px rgba(99, 102, 241, 0.15);
+      }
+      body.lm .sm-chip {
+        background: rgba(0, 0, 0, 0.03);
+        border-color: rgba(0, 0, 0, 0.08);
+        color: #475569;
+      }
+      body.lm .sm-chip:hover {
+        background: rgba(0, 0, 0, 0.06);
+        color: #0f172a;
+      }
+      body.lm .sm-chip.active {
+        background: #6366f1;
+        color: #ffffff;
+        border-color: #6366f1;
+      }
+      body.lm .sm-stat-pill {
+        background: rgba(0, 0, 0, 0.02);
+        border-color: rgba(0, 0, 0, 0.06);
+        color: #64748b;
+      }
+      body.lm .sm-stat-pill strong {
+        color: #0f172a;
+      }
+      body.lm .sm-empty h3 {
+        color: #0f172a;
+      }
+
     </style>
 
     <script defer src="col-router.js"></script>
@@ -1207,201 +1385,250 @@
       <div class="sey">Site Map</div>
       <h1>Navigate Our <em>Studio</em>.</h1>
       <p class="page-subtitle">A complete directory of all pages on the Class Of Learners website. Find projects, tools, and resources quickly.</p>
+      <div class="sm-stats-bar">
+        <span class="sm-stat-pill"><strong>26</strong> Endpoints</span>
+        <span class="sm-stat-pill"><strong>2</strong> Flagship Models</span>
+        <span class="sm-stat-pill"><strong>4</strong> Creative Studios</span>
+        <span class="sm-stat-pill"><strong>5</strong> Traffic &amp; Academics</span>
+        <span class="sm-stat-pill"><strong>2</strong> Android Apps</span>
+        <span class="sm-stat-pill"><strong>2</strong> 3D Simulations</span>
+      </div>
     </section>
+
+    <!-- ==================== SEARCH & FILTERS ==================== -->
+    <div class="sitemap-toolbar">
+      <div class="sitemap-search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="sitemapSearch" class="sitemap-search-input" placeholder="Search pages, simulators, models, and docs (Press '/' to focus)..." aria-label="Search sitemap" autocomplete="off" />
+        <button id="searchClear" class="sitemap-search-clear" aria-label="Clear search">&times;</button>
+      </div>
+
+      <div class="sitemap-filters" role="tablist" aria-label="Filter pages by category">
+        <button class="sm-chip active" data-category="all">All Endpoints (26)</button>
+        <button class="sm-chip" data-category="flagships">Flagship Models (2)</button>
+        <button class="sm-chip" data-category="productivity">Spatial &amp; Productivity (4)</button>
+        <button class="sm-chip" data-category="educational">Traffic &amp; Academics (5)</button>
+        <button class="sm-chip" data-category="android">Android Mobile (2)</button>
+        <button class="sm-chip" data-category="geospatial">3D &amp; Worlds (2)</button>
+        <button class="sm-chip" data-category="foundations">Foundations (6)</button>
+        <button class="sm-chip" data-category="legal">Governance &amp; Security (5)</button>
+      </div>
+    </div>
 
     <!-- ==================== SITEMAP ==================== -->
     <section class="sitemap-section">
-      <!-- Main Pages -->
-      <div class="sitemap-group">
-        <div class="sitemap-group-title">Main Pages</div>
-        <div class="sitemap-grid">
-          <a href="/" class="sitemap-card csig">
-            <div class="sc-icon">&#127968;</div>
-            <h3 class="sc-name">Home</h3>
-            <p class="sc-desc">Studio hub — explore our projects and meet the team behind Class Of Learners.</p>
-            <span class="sc-badge badge-proj">Home</span>
-          </a>
-          <a href="about" class="sitemap-card cion">
-            <div class="sc-icon">&#128100;</div>
-            <h3 class="sc-name">About</h3>
-            <p class="sc-desc">The team, the story, and the mission behind the studio. Meet Neel, Ansh, and Aarush.</p>
-            <span class="sc-badge badge-info">Team</span>
-          </a>
-          <a href="school" class="sitemap-card cpla">
-            <div class="sc-icon">&#127891;</div>
-            <h3 class="sc-name">School</h3>
-            <p class="sc-desc">CBSE Bhavani Shankar School — where we built our technical foundation.</p>
-            <span class="sc-badge badge-info">Education</span>
-          </a>
-          <a href="sneh-asha" class="sitemap-card cemp">
-            <div class="sc-icon">&#128153;</div>
-            <h3 class="sc-name">Sneh Asha</h3>
-            <p class="sc-desc">Social impact initiative using technology to help students in need.</p>
-            <span class="sc-badge badge-info">Initiative</span>
-          </a>
-          <a href="making" class="sitemap-card csig">
-            <div class="sc-icon">&#9889;</div>
-            <h3 class="sc-name">Making</h3>
-            <p class="sc-desc">How we built everything — services, models, local AI setups, and architecture.</p>
-            <span class="sc-badge badge-info">Architecture</span>
-          </a>
-        </div>
-      </div>
-
-      <!-- Projects -->
-      <div class="sitemap-group">
-        <div class="sitemap-group-title">Projects</div>
+      <!-- 1. Flagship Models & Engines -->
+      <div class="sitemap-group" data-category="flagships">
+        <div class="sitemap-group-title">Flagship Models &amp; Engines</div>
         <div class="sitemap-grid">
           <a href="ati" class="sitemap-card csig">
             <div class="sc-icon">&#9000;&#65039;</div>
-            <h3 class="sc-name">ATI — Advanced Typing Instructor</h3>
-            <p class="sc-desc">Master Python, C++, and JavaScript syntax with adaptive heatmaps and a virtual mechanical keyboard.</p>
-            <span class="sc-badge badge-proj">Project</span>
+            <h3 class="sc-name">ATI — Advanced Typing Instructor 1.4</h3>
+            <p class="sc-desc">Cross-platform touch-typing tutor, curriculum engine, and multiplayer competition with mechanical switch synthesis.</p>
+            <span class="sc-badge badge-flagship">Flagship Engine</span>
           </a>
           <a href="solar" class="sitemap-card cion">
             <div class="sc-icon">&#127760;</div>
-            <h3 class="sc-name">Solar Engine</h3>
-            <p class="sc-desc">Deep-space telemetry and accurate orbital mechanics simulated in a standalone 3D engine.</p>
-            <span class="sc-badge badge-proj">Project</span>
+            <h3 class="sc-name">Solar System Engine V3.3</h3>
+            <p class="sc-desc">Deep-space 3D astronomical simulator with Keplerian physics, planetary ephemerides, and space telemetry.</p>
+            <span class="sc-badge badge-flagship">Flagship 3D Engine</span>
           </a>
+        </div>
+      </div>
+
+      <!-- 2. Spatial & Creative Productivity -->
+      <div class="sitemap-group" data-category="productivity">
+        <div class="sitemap-group-title">Spatial &amp; Creative Productivity</div>
+        <div class="sitemap-grid">
           <a href="gesture" class="sitemap-card ctea">
             <div class="sc-icon">&#128400;&#65039;</div>
             <h3 class="sc-name">Perceptus Flow</h3>
-            <p class="sc-desc">Machine-vision hand tracking — control your PC with real-time webcam gestures.</p>
-            <span class="sc-badge badge-proj">Project</span>
-          </a>
-          <a href="rpg" class="sitemap-card cpla">
-            <div class="sc-icon">&#9876;&#65039;</div>
-            <h3 class="sc-name">RPG Game</h3>
-            <p class="sc-desc">Epic role-playing adventure with battles, levels, and deep story — coming soon.</p>
-            <span class="sc-badge badge-proj">Coming Soon</span>
+            <p class="sc-desc">Computer-vision hand tracking and air-gesture desktop controller via MediaPipe &amp; WebSockets.</p>
+            <span class="sc-badge badge-spatial">Spatial Studio</span>
           </a>
           <a href="qr" class="sitemap-card cemp">
             <div class="sc-icon">&#11035;</div>
-            <h3 class="sc-name">QR Code Generator</h3>
-            <p class="sc-desc">Create static and dynamic QR codes for links, Wi-Fi, contacts and more, with editable destinations, scan analytics, passcodes and expiry, all free.</p>
-            <span class="sc-badge badge-proj">Project</span>
+            <h3 class="sc-name">QR Studio Matrix</h3>
+            <p class="sc-desc">Enterprise QR matrix generator with dynamic link redirection, scan telemetry, and custom landing hubs.</p>
+            <span class="sc-badge badge-proj">Matrix Suite</span>
           </a>
           <a href="qr-editor" class="sitemap-card cemp">
             <div class="sc-icon">&#127912;</div>
-            <h3 class="sc-name">QR Editor</h3>
-            <p class="sc-desc">Style QR codes with gradients, logos and frames, check scannability live, and add link-hub, contact and app-store landing pages.</p>
-            <span class="sc-badge badge-tool">Tool</span>
+            <h3 class="sc-name">QR Studio Editor</h3>
+            <p class="sc-desc">Custom vector styling canvas with frame presets, gradients, logo embeds, and live scannability scoring.</p>
+            <span class="sc-badge badge-tool">Creative Canvas</span>
           </a>
-          <a href="Terra3D/" class="sitemap-card cion">
-            <div class="sc-icon">&#127757;</div>
-            <h3 class="sc-name">Terra3D Atlas</h3>
-            <p class="sc-desc">Interactive 3D geospatial atlas with real-time terrain rendering and spatial data visualization.</p>
-            <span class="sc-badge badge-proj">Project</span>
-          </a>
-        </div>
-      </div>
-
-      <!-- Tools & Demos -->
-      <div class="sitemap-group">
-        <div class="sitemap-group-title">Tools & Demos</div>
-        <div class="sitemap-grid">
-          <a href="CastFlow" class="sitemap-card csig">
-            <div class="sc-icon">&#128241;</div>
-            <h3 class="sc-name">CastFlow</h3>
-            <p class="sc-desc">Cast your Android screen, share files, and use desktop mode — all from your browser.</p>
-            <span class="sc-badge badge-tool">App</span>
-          </a>
-
-          <a href="cereal" class="sitemap-card csig">
-            <div class="sc-icon">&#129384;</div>
-            <h3 class="sc-name">Cereal AI</h3>
-            <p class="sc-desc">Record lectures and generate Gemini 2.5 Flash notes synced to Google Calendar and Tasks (Android app).</p>
-            <span class="sc-badge badge-tool">Android</span>
-          </a>
-
-          <a href="download" class="sitemap-card cemp">
-            <div class="sc-icon">&#128229;</div>
-            <h3 class="sc-name">Downloads</h3>
-            <p class="sc-desc">Get Class Of Learners apps including ATI, Solar Engine, and Perceptus Flow.</p>
-            <span class="sc-badge badge-tool">Downloads</span>
-          </a>
-          <a href="feedback" class="sitemap-card ctea">
-            <div class="sc-icon">&#128172;</div>
-            <h3 class="sc-name">Feedback</h3>
-            <p class="sc-desc">Share feedback — report bugs, suggest features, or send general comments.</p>
-            <span class="sc-badge badge-info">Contact</span>
-          </a>
-        </div>
-      </div>
-
-      <!-- Educational & Deep Dives -->
-      <div class="sitemap-group">
-        <div class="sitemap-group-title">Educational & Deep Dives</div>
-        <div class="sitemap-grid">
           <a href="Career" class="sitemap-card cion">
             <div class="sc-icon">&#128188;</div>
-            <h3 class="sc-name">The Career</h3>
-            <p class="sc-desc">Discover your ideal career path with immersive exploration across professional domains.</p>
-            <span class="sc-badge badge-info">Educational</span>
+            <h3 class="sc-name">The Career Compass</h3>
+            <p class="sc-desc">Interactive vocational guide and career trajectory simulator navigating modern professional domains.</p>
+            <span class="sc-badge badge-info">Guidance Engine</span>
           </a>
+        </div>
+      </div>
+
+      <!-- 3. Educational Systems & Civilian Simulators -->
+      <div class="sitemap-group" data-category="educational">
+        <div class="sitemap-group-title">Educational Systems &amp; Civilian Simulators</div>
+        <div class="sitemap-grid">
           <a href="Database_Logic" class="sitemap-card csig">
             <div class="sc-icon">&#128452;&#65039;</div>
-            <h3 class="sc-name">Database Logic</h3>
-            <p class="sc-desc">Explore database design, query optimization, and complex data relationships.</p>
-            <span class="sc-badge badge-info">Educational</span>
-          </a>
-          <a href="Traffic/Academy" class="sitemap-card ctea">
-            <div class="sc-icon">&#128663;</div>
-            <h3 class="sc-name">Traffic</h3>
-            <p class="sc-desc">Learn about traffic simulation, vehicle kinematics, and autonomous driving algorithms.</p>
-            <span class="sc-badge badge-info">Educational</span>
+            <h3 class="sc-name">Database Logic &amp; Query Engine</h3>
+            <p class="sc-desc">Interactive relational database laboratory, index optimization simulator, and schema analyzer.</p>
+            <span class="sc-badge badge-info">Educational Lab</span>
           </a>
           <a href="Traffic/Driving" class="sitemap-card csig">
             <div class="sc-icon">&#128664;</div>
-            <h3 class="sc-name">Traffic Simulator</h3>
-            <p class="sc-desc">Interactive Mumbai traffic driving simulator with various vehicles and scenarios.</p>
-            <span class="sc-badge badge-info">Simulation</span>
+            <h3 class="sc-name">Mumbai Traffic Simulator</h3>
+            <p class="sc-desc">Full-scale 3D Mumbai urban driving simulation featuring 57 interactive levels, real-time physics, and NPC AI.</p>
+            <span class="sc-badge badge-info">Simulation Engine</span>
+          </a>
+          <a href="Traffic/Academy" class="sitemap-card ctea">
+            <div class="sc-icon">&#128663;</div>
+            <h3 class="sc-name">Mumbai Traffic Academy</h3>
+            <p class="sc-desc">Interactive civilian driver training curriculum covering Indian traffic laws, signals, and road safety theory.</p>
+            <span class="sc-badge badge-info">Civic Academy</span>
           </a>
           <a href="Traffic/TrafficDashboard" class="sitemap-card cpla">
             <div class="sc-icon">&#128200;</div>
-            <h3 class="sc-name">Traffic Dashboard</h3>
-            <p class="sc-desc">Track driving statistics, manage your virtual vehicles, and monitor progress.</p>
-            <span class="sc-badge badge-info">Dashboard</span>
+            <h3 class="sc-name">Traffic Civilian Dashboard</h3>
+            <p class="sc-desc">Driver score tracking, garage management, civilian violations ledger, and achievement credentials.</p>
+            <span class="sc-badge badge-tool">Telemetry Hub</span>
           </a>
           <a href="Traffic/TrafficSetup" class="sitemap-card cemp">
             <div class="sc-icon">&#9881;&#65039;</div>
-            <h3 class="sc-name">Traffic Setup</h3>
-            <p class="sc-desc">Configure environment details, game preferences, and performance settings.</p>
-            <span class="sc-badge badge-info">Configuration</span>
+            <h3 class="sc-name">Traffic Environment Setup</h3>
+            <p class="sc-desc">Hardware performance toggles, graphics fidelity presets, sound channels, and simulator parameters.</p>
+            <span class="sc-badge badge-tool">Configuration</span>
           </a>
         </div>
       </div>
 
-      <!-- Legal & Support -->
-      <div class="sitemap-group">
-        <div class="sitemap-group-title">Legal & Support</div>
+      <!-- 4. Native Android Mobile Ecosystem -->
+      <div class="sitemap-group" data-category="mobile">
+        <div class="sitemap-group-title">Native Android Mobile Ecosystem</div>
         <div class="sitemap-grid">
+          <a href="CastFlow" class="sitemap-card csig">
+            <div class="sc-icon">&#128241;</div>
+            <h3 class="sc-name">CastFlow Studio</h3>
+            <p class="sc-desc">High-performance wireless screen mirroring, bidirectional clipboard sync, and browser-based DeX desktop mode.</p>
+            <span class="sc-badge badge-android">Android App</span>
+          </a>
+          <a href="cereal" class="sitemap-card csig">
+            <div class="sc-icon">&#129384;</div>
+            <h3 class="sc-name">Cereal AI Assistant</h3>
+            <p class="sc-desc">Classroom lecture recorder powered by Gemini 2.5 Flash, generating structured summaries synced to Google Calendar.</p>
+            <span class="sc-badge badge-android">Android Companion</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- 5. Geospatial Shaders & Experimental Worlds -->
+      <div class="sitemap-group" data-category="geospatial">
+        <div class="sitemap-group-title">Geospatial Shaders &amp; Experimental Worlds</div>
+        <div class="sitemap-grid">
+          <a href="Terra3D/" class="sitemap-card cion">
+            <div class="sc-icon">&#127757;</div>
+            <h3 class="sc-name">Terra3D World Atlas</h3>
+            <p class="sc-desc">Photorealistic 3D geospatial planetary explorer with procedural terrain shaders and spatial data overlays.</p>
+            <span class="sc-badge badge-info">Geospatial 3D</span>
+          </a>
+          <a href="rpg" class="sitemap-card cpla">
+            <div class="sc-icon">&#9876;&#65039;</div>
+            <h3 class="sc-name">Quest Master: RPG Engine</h3>
+            <p class="sc-desc">Procedural narrative role-playing engine with tactical turn-based battle mechanics and fantasy character progression.</p>
+            <span class="sc-badge badge-proj">Adventure Engine</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- 6. Core Studio & Academic Foundations -->
+      <div class="sitemap-group" data-category="studio">
+        <div class="sitemap-group-title">Core Studio &amp; Academic Foundations</div>
+        <div class="sitemap-grid">
+          <a href="/" class="sitemap-card csig">
+            <div class="sc-icon">&#127968;</div>
+            <h3 class="sc-name">Home Hub</h3>
+            <p class="sc-desc">Main studio portal, interactive 3D lab hero, featured projects, and real-time ecosystem showcase.</p>
+            <span class="sc-badge badge-proj">Studio Hub</span>
+          </a>
+          <a href="about" class="sitemap-card cion">
+            <div class="sc-icon">&#128100;</div>
+            <h3 class="sc-name">About Us</h3>
+            <p class="sc-desc">The founding story, technical ethos, and the student engineers behind Class Of Learners — Neel, Ansh &amp; Aarush.</p>
+            <span class="sc-badge badge-info">Team Ethos</span>
+          </a>
+          <a href="school" class="sitemap-card cpla">
+            <div class="sc-icon">&#127891;</div>
+            <h3 class="sc-name">School (CBSE)</h3>
+            <p class="sc-desc">CBSE Bhavani Shankar School — academic roots, science laboratories, and early computational projects.</p>
+            <span class="sc-badge badge-info">Academic Roots</span>
+          </a>
+          <a href="sneh-asha" class="sitemap-card cemp">
+            <div class="sc-icon">&#128153;</div>
+            <h3 class="sc-name">Sneh Asha Initiative</h3>
+            <p class="sc-desc">Social impact and non-profit computational access program empowering underserved youth through technology.</p>
+            <span class="sc-badge badge-info">Social Impact</span>
+          </a>
+          <a href="making" class="sitemap-card csig">
+            <div class="sc-icon">&#9889;</div>
+            <h3 class="sc-name">Making &amp; Architecture</h3>
+            <p class="sc-desc">Comprehensive systems architecture, server specifications, local AI models, and infrastructure breakdown.</p>
+            <span class="sc-badge badge-info">Technical Specs</span>
+          </a>
+          <a href="download" class="sitemap-card cemp">
+            <div class="sc-icon">&#128229;</div>
+            <h3 class="sc-name">Downloads Hub</h3>
+            <p class="sc-desc">Official repository of standalone Windows binaries, Linux packages, Android APKs, and source distributions.</p>
+            <span class="sc-badge badge-tool">Binary Repository</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- 7. Governance, Support & Security -->
+      <div class="sitemap-group" data-category="legal">
+        <div class="sitemap-group-title">Governance, Support &amp; Security</div>
+        <div class="sitemap-grid">
+          <a href="feedback" class="sitemap-card ctea">
+            <div class="sc-icon">&#128172;</div>
+            <h3 class="sc-name">Feedback Portal</h3>
+            <p class="sc-desc">Public transmission channel for bug reports, architectural suggestions, feature requests, and support triage.</p>
+            <span class="sc-badge badge-info">User Triage</span>
+          </a>
+          <a href="verify" class="sitemap-card cemp">
+            <div class="sc-icon">&#127891;</div>
+            <h3 class="sc-name">Certificate Verification</h3>
+            <p class="sc-desc">Cryptographic validation gateway for authenticating official course completion credentials and honors.</p>
+            <span class="sc-badge badge-tool">Verification</span>
+          </a>
           <a href="privacy" class="sitemap-card cion">
             <div class="sc-icon">&#128274;</div>
             <h3 class="sc-name">Privacy Policy</h3>
-            <p class="sc-desc">How we handle your data across ATI, Solar Engine, Gesture Controller, and QR Studio.</p>
-            <span class="sc-badge badge-legal">Legal</span>
+            <p class="sc-desc">Statutory privacy documentation detailing zero-telemetry policy, local-first storage, and data protection.</p>
+            <span class="sc-badge badge-legal">Statutory Legal</span>
           </a>
           <a href="terms" class="sitemap-card cion">
             <div class="sc-icon">&#128220;</div>
             <h3 class="sc-name">Terms Of Service</h3>
-            <p class="sc-desc">Rules and guidelines for using Class Of Learners projects and tools.</p>
-            <span class="sc-badge badge-legal">Legal</span>
-          </a>
-          <a href="verify" class="sitemap-card cemp">
-            <div class="sc-icon">&#127891;</div>
-            <h3 class="sc-name">Verify Certificate</h3>
-            <p class="sc-desc">Cryptographically verify official student achievement certificates and course credentials.</p>
-            <span class="sc-badge badge-tool">Verification</span>
+            <p class="sc-desc">Terms, acceptable use policy, licensing guidelines, and conditions governing the Class Of Learners platform.</p>
+            <span class="sc-badge badge-legal">Statutory Legal</span>
           </a>
           <a href="admin" class="sitemap-card cpla">
             <div class="sc-icon">&#128736;</div>
-            <h3 class="sc-name">Admin Dashboard</h3>
-            <p class="sc-desc">Internal dashboard for managing projects, analytics, and team operations.</p>
-            <span class="sc-badge badge-legal">Internal</span>
+            <h3 class="sc-name">Admin Mission Control</h3>
+            <p class="sc-desc">Restricted operations console for routing overrides, live announcement broadcasts, feedback, and user management.</p>
+            <span class="sc-badge badge-legal">Internal Terminal</span>
           </a>
         </div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="sm-empty" id="smEmpty">
+        <h3>No Matching Endpoints Found</h3>
+        <p>Try searching for a different keyword or select "All Endpoints".</p>
       </div>
     </section>
 
@@ -1502,6 +1729,93 @@
           })
         }
       })
+    
+      // 5. Sitemap Real-time Search & Filter System
+      ;(function() {
+        var searchInput = document.getElementById('sitemapSearch');
+        var clearBtn = document.getElementById('searchClear');
+        var chips = document.querySelectorAll('.sm-chip');
+        var groups = document.querySelectorAll('.sitemap-group');
+        var emptyState = document.getElementById('smEmpty');
+        var activeCategory = 'all';
+
+        function filterSitemap() {
+          var query = (searchInput.value || '').trim().toLowerCase();
+          var visibleCardsCount = 0;
+
+          if (clearBtn) {
+            clearBtn.style.display = query.length > 0 ? 'block' : 'none';
+          }
+
+          groups.forEach(function(group) {
+            var groupCat = group.getAttribute('data-category');
+            var matchesCategory = (activeCategory === 'all' || activeCategory === groupCat);
+
+            var groupVisibleCards = 0;
+            var groupCards = group.querySelectorAll('.sitemap-card');
+
+            groupCards.forEach(function(card) {
+              var text = (card.innerText || '').toLowerCase();
+              var matchesQuery = !query || text.includes(query);
+
+              if (matchesCategory && matchesQuery) {
+                card.style.display = '';
+                groupVisibleCards++;
+                visibleCardsCount++;
+              } else {
+                card.style.display = 'none';
+              }
+            });
+
+            if (groupVisibleCards > 0) {
+              group.style.display = '';
+            } else {
+              group.style.display = 'none';
+            }
+          });
+
+          if (emptyState) {
+            emptyState.style.display = visibleCardsCount === 0 ? 'block' : 'none';
+          }
+        }
+
+        if (searchInput) {
+          searchInput.addEventListener('input', filterSitemap);
+        }
+
+        if (clearBtn) {
+          clearBtn.addEventListener('click', function() {
+            searchInput.value = '';
+            filterSitemap();
+            searchInput.focus();
+          });
+        }
+
+        chips.forEach(function(chip) {
+          chip.addEventListener('click', function() {
+            chips.forEach(function(c) { c.classList.remove('active'); });
+            chip.classList.add('active');
+            activeCategory = chip.getAttribute('data-category') || 'all';
+            filterSitemap();
+          });
+        });
+
+        // Keyboard shortcuts: '/' to focus search, 'Escape' to clear
+        document.addEventListener('keydown', function(e) {
+          if (e.key === '/' && document.activeElement !== searchInput) {
+            e.preventDefault();
+            if (searchInput) searchInput.focus();
+          } else if (e.key === 'Escape' && document.activeElement === searchInput) {
+            if (searchInput.value) {
+              searchInput.value = '';
+              filterSitemap();
+            } else {
+              searchInput.blur();
+            }
+          }
+        });
+      })();
+
     </script>
   </body>
 </html>

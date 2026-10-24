@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995"
-     crossorigin="anonymous"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995" crossorigin="anonymous"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Class Of Learners" />
+    <meta name="theme-color" content="#070A14" id="themeMeta" />
     <script>
       ;(function () {
         var ua = navigator.userAgent || ''
@@ -41,7 +41,7 @@
       })()
     </script>
     <meta name="description" content="Privacy Policy for Class Of Learners — How we handle your data, Google API compliance, analytics cookies, and your rights. All processing is local-first." />
-    <meta name="keywords" content="privacy policy, data protection, Class Of Learners privacy, GDPR compliance, user data policy, cookie policy, analytics privacy, Google API compliance, student data protection">
+    <meta name="keywords" content="privacy policy, data protection, Class Of Learners privacy, GDPR compliance, user data policy, cookie policy, analytics privacy, Google API compliance, student data protection" />
     <meta property="og:site_name" content="Class Of Learners" />
     <meta property="og:title" content="Privacy Policy | Class Of Learners" />
     <meta property="og:description" content="How Class Of Learners handles account data, authentication, analytics, and user choices." />
@@ -65,18 +65,10 @@
         "name": "Privacy Policy | Class Of Learners",
         "url": "https://advancedlogiclabs.dpdns.org/privacy",
         "inLanguage": "en-IN",
+        "description": "Privacy Policy for Class Of Learners — How we handle your data, Google API compliance, analytics cookies, and user choices with local-first processing.",
         "isPartOf": { "@id": "https://advancedlogiclabs.dpdns.org/#website" },
         "about": { "@id": "https://advancedlogiclabs.dpdns.org/#organization" }
       }
-    </script>
-    <script>
-      ;(function () {
-        try {
-          if (localStorage.getItem('theme') === 'light') {
-            document.documentElement.classList.add('lm')
-          }
-        } catch (e) {}
-      })()
     </script>
     <script>
       ;(function () {
@@ -119,28 +111,30 @@
         --teal: #00f0cc;
         --plasma: #b89bff;
         --em: #34d399;
-        --nav: rgba(7, 10, 20, 0.68);
+        --em-glow: rgba(52, 211, 153, 0.14);
+        --nav: rgba(7, 10, 20, 0.72);
         --serif: 'Instrument Serif', Georgia, serif;
         --sans: 'Inter', system-ui, sans-serif;
         --mono: 'Space Mono', monospace;
         --ease: cubic-bezier(0.16, 1, 0.3, 1);
         --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-        --r: 18px;
+        --r: 20px;
       }
       body.lm {
-        --void: #f0ede4;
-        --void2: #e6e2d8;
-        --panel: #fff;
-        --line: rgba(0, 0, 0, 0.09);
-        --lineb: rgba(0, 0, 0, 0.18);
-        --ink: #15181f;
-        --dim: #5c6175;
+        --void: #fbfaf5;
+        --void2: #f1efe6;
+        --panel: #ffffff;
+        --line: rgba(0, 0, 0, 0.08);
+        --lineb: rgba(0, 0, 0, 0.16);
+        --ink: #0f172a;
+        --dim: #475569;
         --signal: #b8720a;
         --ion: #0e72a0;
         --teal: #0a8c7a;
         --plasma: #6f4fe0;
-        --em: #1b9d66;
-        --nav: rgba(240, 237, 228, 0.75);
+        --em: #15803d;
+        --em-glow: rgba(21, 128, 61, 0.1);
+        --nav: rgba(251, 250, 245, 0.88);
       }
 
       *,
@@ -176,8 +170,8 @@
         font-family: var(--sans);
       }
       ::selection {
-        background: var(--signal);
-        color: #0a0800;
+        background: var(--em);
+        color: #06140e;
       }
       ::-webkit-scrollbar {
         width: 10px;
@@ -191,9 +185,10 @@
         border: 3px solid var(--void);
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: var(--signal);
+        background: var(--em);
       }
 
+      /* Loader */
       .loader {
         position: fixed;
         inset: 0;
@@ -220,7 +215,7 @@
         text-transform: uppercase;
       }
       .lid span {
-        color: var(--signal);
+        color: var(--em);
       }
       .lbar {
         width: 180px;
@@ -233,7 +228,7 @@
         content: '';
         position: absolute;
         inset: 0;
-        background: var(--signal);
+        background: var(--em);
         transform-origin: left;
         transform: scaleX(0);
         animation: lf 1.1s var(--ease) 0.2s forwards;
@@ -243,6 +238,8 @@
           transform: scaleX(1);
         }
       }
+
+      /* Cursor */
       .cd,
       .cr {
         position: fixed;
@@ -257,12 +254,12 @@
       .cd {
         width: 6px;
         height: 6px;
-        background: var(--signal);
+        background: var(--em);
       }
       .cr {
         width: 36px;
         height: 36px;
-        border: 1px solid rgba(94, 212, 245, 0.5);
+        border: 1px solid rgba(52, 211, 153, 0.5);
         opacity: 0.55;
         transition:
           width 0.22s var(--ease),
@@ -273,7 +270,7 @@
       body.ch .cr {
         width: 64px;
         height: 64px;
-        border-color: var(--signal);
+        border-color: var(--em);
         opacity: 0.9;
       }
       @media (pointer: coarse) {
@@ -283,6 +280,7 @@
         }
       }
 
+      /* Navigation */
       .top-nav {
         position: fixed;
         top: 0;
@@ -337,6 +335,13 @@
         font-size: 0.82rem;
         transition: color 0.25s;
         position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .nav-link svg {
+        width: 15px;
+        height: 15px;
       }
       .nav-link::after {
         content: '';
@@ -345,7 +350,7 @@
         bottom: -7px;
         width: 0;
         height: 1px;
-        background: var(--signal);
+        background: var(--em);
         transition: width 0.3s var(--ease);
       }
       .nav-link:hover {
@@ -374,9 +379,7 @@
         box-shadow: 0 12px 28px -10px var(--signal);
       }
       .desktop-dl {
-      }
-      .mobile-dl {
-        display: none;
+        display: inline-flex;
       }
       .dropdown {
         position: relative;
@@ -385,7 +388,7 @@
         color: var(--dim);
         background: none;
         border: none;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         font-weight: 500;
         cursor: pointer;
         display: flex;
@@ -394,6 +397,10 @@
         font-family: var(--sans);
         transition: color 0.25s;
         padding: 0;
+      }
+      .dropdown-btn svg {
+        width: 15px;
+        height: 15px;
       }
       .dropdown.active .dropdown-btn,
       .dropdown-btn:hover {
@@ -441,79 +448,40 @@
       }
       .dropdown-content a {
         color: var(--dim);
-        padding: 11px 14px;
-        font-size: 0.88rem;
+        padding: 10px 14px;
+        font-size: 0.86rem;
         font-weight: 500;
         border-radius: 8px;
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        gap: 10px;
         transition: 0.2s;
+      }
+      .dropdown-content a svg {
+        width: 15px;
+        height: 15px;
+        color: var(--em);
+        flex-shrink: 0;
       }
       .dropdown-content a:hover {
         background: rgba(255, 255, 255, 0.07);
         color: var(--ink);
         padding-left: 18px;
       }
-      .tw {
+      body.lm .dropdown-content a:hover {
+        background: rgba(0, 0, 0, 0.05);
+      }
+
+      .nav-actions {
         display: flex;
         align-items: center;
-        gap: 10px;
-        padding-left: 18px;
-        border-left: 1px solid var(--lineb);
-      }
-      .tl {
-        font-size: 0.7rem;
-        font-weight: 700;
-        color: var(--dim);
-        text-transform: uppercase;
-        letter-spacing: 0.07em;
-        min-width: 32px;
-      }
-      .tsb {
-        position: relative;
-        width: 46px;
-        height: 24px;
-        cursor: pointer;
-        display: inline-block;
-        flex-shrink: 0;
-      }
-      .tsb input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-        position: absolute;
-      }
-      .tst {
-        position: absolute;
-        inset: 0;
-        border-radius: 30px;
-        background: var(--void2);
-        border: 1px solid var(--lineb);
-        transition: 0.4s;
-      }
-      .tsth {
-        position: absolute;
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        top: 3px;
-        left: 3px;
-        background: var(--signal);
-        transition: transform 0.4s var(--spring);
-        font-size: 0.6rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      input:checked + .tst .tsth {
-        transform: translateX(22px);
+        gap: 14px;
       }
       .nav-login-btn {
         background: transparent;
         color: var(--em);
         border: 1px solid var(--em);
-        padding: 8px 20px;
+        padding: 7px 18px;
         border-radius: 30px;
         font-weight: 700;
         font-size: 0.82rem;
@@ -523,6 +491,10 @@
         gap: 8px;
         transition: 0.25s;
         font-family: var(--sans);
+      }
+      .nav-login-btn svg {
+        width: 15px;
+        height: 15px;
       }
       .nav-login-btn:hover {
         background: var(--em);
@@ -576,7 +548,7 @@
       .col-hero {
         position: relative;
         width: 100%;
-        min-height: 90vh;
+        min-height: 70vh;
         display: flex;
         align-items: center;
         overflow: hidden;
@@ -606,7 +578,7 @@
         bottom: 0;
         left: 0;
         right: 0;
-        height: 220px;
+        height: 180px;
         background: linear-gradient(to top, var(--void), transparent);
         pointer-events: none;
         z-index: 1;
@@ -617,7 +589,7 @@
         max-width: 1360px;
         width: 100%;
         margin: 0 auto;
-        padding: 160px 52px 80px;
+        padding: 150px 32px 50px;
         text-align: center;
       }
       .hero-badge {
@@ -641,7 +613,7 @@
       }
       .pg-title {
         font-family: var(--serif);
-        font-size: clamp(3.2rem, 8vw, 6rem);
+        font-size: clamp(3.2rem, 7vw, 5.8rem);
         font-weight: 400;
         line-height: 1.05;
         letter-spacing: -0.01em;
@@ -656,11 +628,11 @@
         font-style: italic;
       }
       .pg-desc {
-        font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+        font-size: clamp(1.02rem, 1.4vw, 1.2rem);
         line-height: 1.7;
         color: var(--dim);
-        max-width: 55ch;
-        margin: 28px auto 0;
+        max-width: 62ch;
+        margin: 22px auto 0;
         opacity: 0;
         transform: translateY(18px);
         animation: fu 0.8s var(--ease) 1.25s forwards;
@@ -672,30 +644,169 @@
         }
       }
 
+      /* Page Wrap */
       .page-wrap {
-        max-width: 900px;
+        max-width: 1000px;
         margin: 0 auto;
-        padding: 0 52px;
+        padding: 0 32px 100px;
         position: relative;
         z-index: 2;
-        padding-bottom: 100px;
       }
-      .agreement-card {
-        background: rgba(255, 255, 255, 0.015);
-        backdrop-filter: blur(10px);
+
+      /* Executive Highlights Bento */
+      .privacy-highlights {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-bottom: 34px;
+      }
+      .highlight-card {
+        background: rgba(255, 255, 255, 0.02);
+        backdrop-filter: blur(14px);
         border: 1px solid var(--line);
-        border-radius: 24px;
-        padding: 44px;
-        margin-bottom: 30px;
-        transition: 0.5s var(--ease);
-        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+        border-radius: 20px;
+        padding: 26px 24px;
         position: relative;
         overflow: hidden;
+        transition: transform 0.35s var(--ease), border-color 0.35s, box-shadow 0.35s;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
       }
-      .agreement-card:hover {
-        border-color: rgba(52, 211, 153, 0.3);
-        box-shadow: 0 40px 80px -20px rgba(52, 211, 153, 0.15);
-        transform: translateY(-5px);
+      .highlight-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 0px), rgba(52, 211, 153, 0.09), transparent 60%);
+        opacity: 0;
+        transition: opacity 0.3s;
+        pointer-events: none;
+      }
+      .highlight-card:hover::before {
+        opacity: 1;
+      }
+      .highlight-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(52, 211, 153, 0.35);
+        box-shadow: 0 20px 40px -15px rgba(52, 211, 153, 0.15);
+      }
+      .hl-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: rgba(52, 211, 153, 0.1);
+        border: 1px solid rgba(52, 211, 153, 0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--em);
+        flex-shrink: 0;
+      }
+      .hl-icon svg {
+        width: 22px;
+        height: 22px;
+      }
+      .hl-tag {
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--em);
+        font-weight: 700;
+      }
+      .highlight-card h3 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin: 4px 0 6px;
+      }
+      .highlight-card p {
+        font-size: 0.92rem;
+        color: var(--dim);
+        line-height: 1.6;
+      }
+
+      /* Quick-Jump TOC Bar */
+      .quick-nav-bar {
+        position: sticky;
+        top: 72px;
+        z-index: 50;
+        margin-bottom: 30px;
+        background: var(--nav);
+        backdrop-filter: blur(16px);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        transition: background 0.4s var(--ease), border-color 0.4s;
+      }
+      .quick-nav-label {
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--dim);
+        font-weight: 700;
+        white-space: nowrap;
+        padding-left: 6px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .quick-nav-label svg {
+        width: 14px;
+        height: 14px;
+        color: var(--em);
+      }
+      .quick-nav-pills {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        padding-right: 4px;
+      }
+      .quick-nav-pills::-webkit-scrollbar {
+        display: none;
+      }
+      .qpill {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--dim);
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--line);
+        padding: 6px 14px;
+        border-radius: 20px;
+        white-space: nowrap;
+        transition: all 0.25s var(--ease);
+      }
+      .qpill:hover {
+        color: var(--ink);
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.18);
+      }
+      .qpill.act {
+        color: #06140e;
+        background: var(--em);
+        border-color: var(--em);
+        font-weight: 700;
+        box-shadow: 0 0 16px -4px var(--em);
+      }
+
+      /* Agreement Card */
+      .agreement-card {
+        background: rgba(255, 255, 255, 0.015);
+        backdrop-filter: blur(14px);
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        padding: 48px;
+        position: relative;
+        overflow: hidden;
+        transition: border-color 0.4s var(--ease), box-shadow 0.4s;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
       }
       .agreement-card::after {
         content: '';
@@ -716,17 +827,152 @@
       .agreement-card::before {
         content: '';
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 200px;
-        background: radial-gradient(ellipse at top, rgba(52, 211, 153, 0.08), transparent);
+        inset: 0;
+        background: radial-gradient(700px circle at var(--mouse-x, 50%) var(--mouse-y, 0px), rgba(52, 211, 153, 0.08), transparent 50%);
         pointer-events: none;
       }
 
+      /* Sections */
+      .agreement-section {
+        margin-bottom: 40px;
+        position: relative;
+        z-index: 2;
+        scroll-margin-top: 140px;
+      }
+      .agreement-section:last-child {
+        margin-bottom: 0;
+      }
+      .sec-title {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: 16px;
+        font-family: var(--sans);
+      }
+      .sec-num {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: rgba(52, 211, 153, 0.08);
+        border: 1px solid rgba(52, 211, 153, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.86rem;
+        font-weight: 800;
+        color: var(--em);
+        flex-shrink: 0;
+        font-family: var(--mono);
+      }
+      .anchor-copy-btn {
+        background: none;
+        border: none;
+        color: var(--dim);
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.2s, color 0.2s;
+        margin-left: 6px;
+      }
+      .sec-title:hover .anchor-copy-btn,
+      .anchor-copy-btn:focus {
+        opacity: 1;
+      }
+      .anchor-copy-btn:hover {
+        color: var(--em);
+      }
+      .agreement-section p {
+        font-size: 1.05rem;
+        color: var(--dim);
+        line-height: 1.8;
+        padding-left: 48px;
+        margin-bottom: 14px;
+      }
+      .agreement-section ul {
+        font-size: 1.02rem;
+        color: var(--dim);
+        line-height: 1.8;
+        padding-left: 48px;
+        list-style-type: none;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        margin-top: 16px;
+      }
+      .agreement-section ul li {
+        position: relative;
+        padding-left: 28px;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 16px 20px 16px 36px;
+        transition: border-color 0.25s;
+      }
+      .agreement-section ul li:hover {
+        border-color: rgba(52, 211, 153, 0.25);
+      }
+      .agreement-section ul li::before {
+        content: '\2192';
+        position: absolute;
+        left: 14px;
+        top: 15px;
+        color: var(--em);
+        font-weight: 800;
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+      .agreement-section strong {
+        color: var(--ink);
+        font-weight: 700;
+      }
+      .agreement-section code {
+        font-family: var(--mono);
+        font-size: 0.85rem;
+        padding: 3px 8px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--ion);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .policy-link {
+        color: var(--ion);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        transition: color 0.2s;
+      }
+      .policy-link:hover {
+        color: var(--em);
+      }
+
+      /* Micro badges */
+      .scope-badges {
+        display: inline-flex;
+        gap: 8px;
+        margin-left: 8px;
+        vertical-align: middle;
+      }
+      .scope-badge {
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        padding: 2px 8px;
+        border-radius: 4px;
+        background: rgba(52, 211, 153, 0.1);
+        border: 1px solid rgba(52, 211, 153, 0.3);
+        color: var(--em);
+        font-weight: 600;
+      }
+
+      /* Reveal Animation */
       .rv {
         opacity: 0;
-        transform: translateY(36px);
+        transform: translateY(32px);
         transition:
           opacity 0.8s var(--ease),
           transform 0.8s var(--ease);
@@ -736,82 +982,12 @@
         transform: translateY(0);
       }
 
-      .agreement-section {
-        margin-bottom: 30px;
-        position: relative;
-        z-index: 2;
-      }
-      .agreement-section:last-child {
-        margin-bottom: 0;
-      }
-      .sec-title {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: var(--ink);
-        margin-bottom: 14px;
-        font-family: var(--sans);
-      }
-      .sec-num {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        background: rgba(52, 211, 153, 0.05);
-        border: 1px solid rgba(52, 211, 153, 0.3);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.85rem;
-        font-weight: 800;
-        color: var(--em);
-        flex-shrink: 0;
-        font-family: var(--mono);
-      }
-      .agreement-section p {
-        font-size: 1.05rem;
-        color: var(--dim);
-        line-height: 1.8;
-        padding-left: 44px;
-        margin-bottom: 12px;
-      }
-      .agreement-section ul {
-        font-size: 1.05rem;
-        color: var(--dim);
-        line-height: 1.8;
-        padding-left: 64px;
-        list-style-type: none;
-      }
-      .agreement-section ul li {
-        margin-bottom: 12px;
-        position: relative;
-      }
-      .agreement-section ul li::before {
-        content: '?';
-        position: absolute;
-        left: -22px;
-        color: var(--em);
-        font-weight: bold;
-      }
-      .agreement-section strong {
-        color: var(--ink);
-      }
-      .agreement-section code {
-        font-family: var(--mono);
-        font-size: 0.85rem;
-        padding: 2px 6px;
-        border-radius: 4px;
-        background: rgba(255, 255, 255, 0.05);
-        color: var(--ion);
-      }
-
       /* Footer */
       .sf {
         border-top: 1px solid var(--line);
         background: rgba(255, 255, 255, 0.012);
         backdrop-filter: blur(8px);
-        padding: 48px 52px 36px;
+        padding: 48px 32px 36px;
         transition:
           border-color 0.5s,
           background 0.5s;
@@ -848,197 +1024,64 @@
         font-weight: 500;
         transition: color 0.25s;
       }
-      .fl a:hover {
+      .fl a:hover,
+      .fl a.act {
         color: var(--ink);
+      }
+      .fl a.act {
+        font-weight: 700;
       }
       .fc {
         color: var(--dim);
         font-size: 0.82rem;
       }
 
-      /* Auth Modal */
-      .mo {
-        position: fixed;
-        inset: 0;
-        z-index: 2000;
-        background: rgba(0, 0, 0, 0.82);
-        backdrop-filter: blur(14px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.3s var(--ease);
-      }
-      .mo.open {
-        opacity: 1;
-        pointer-events: auto;
-      }
-      .md {
-        background: var(--panel);
-        border: 1px solid var(--lineb);
-        border-radius: 24px;
-        width: 90%;
-        max-width: 440px;
-        overflow: hidden;
-        transform: translateY(26px) scale(0.96);
-        transition: transform 0.4s var(--ease);
-        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.75);
-        color: var(--ink);
-      }
-      .mo.open .md {
-        transform: translateY(0) scale(1);
-      }
-      .mhd {
-        padding: 30px;
-        border-bottom: 1px solid var(--line);
-        text-align: center;
-      }
-      .mhd h2 {
-        font-family: var(--serif);
-        font-size: 1.75rem;
-        font-weight: 400;
-      }
-      .mhd p {
-        font-size: 0.9rem;
-        color: var(--dim);
-        margin-top: 6px;
-      }
-      .mbd {
-        padding: 30px;
-      }
-      .ml2 {
-        font-size: 0.7rem;
-        font-weight: 700;
-        color: var(--dim);
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        display: block;
-        margin-bottom: 8px;
-      }
-      .mi {
-        width: 100%;
-        padding: 13px;
-        border: 1px solid var(--lineb);
-        border-radius: 12px;
-        font-size: 0.93rem;
-        outline: none;
-        margin-bottom: 18px;
-        color: var(--ink);
-        background: rgba(255, 255, 255, 0.05);
-        font-family: var(--sans);
-        transition: border-color 0.3s;
-      }
-      .mi:focus {
-        border-color: var(--em);
-        box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.15);
-      }
-      .gbtn {
-        width: 100%;
-        padding: 13px;
-        background: #fff;
-        border: 1px solid #dadce0;
-        border-radius: 8px;
-        font-weight: 500;
-        font-size: 0.88rem;
-        cursor: pointer;
-        color: #3c4043;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-        margin-bottom: 18px;
-        transition: 0.2s;
-        font-family: var(--sans);
-      }
-      body.lm .gbtn {
-        background: #4285f4;
-        border: none;
-        color: #fff;
-      }
-      .ms {
-        width: 100%;
-        padding: 13px;
-        background: var(--em);
-        border: none;
-        border-radius: 12px;
-        font-weight: 800;
-        font-size: 0.93rem;
-        cursor: pointer;
-        color: #06140e;
-        transition: 0.3s;
-        font-family: var(--sans);
-      }
-      .ms:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 24px rgba(52, 211, 153, 0.3);
-      }
-      .msk {
-        width: 100%;
-        padding: 13px;
-        background: none;
-        border: none;
-        font-size: 0.88rem;
-        font-weight: 600;
-        color: var(--dim);
-        cursor: pointer;
-        margin-top: 8px;
-        transition: 0.25s;
-        font-family: var(--sans);
-      }
-      .msk:hover {
-        color: var(--ink);
-      }
-      .mskd {
-        width: 100%;
-        padding: 13px;
-        background: transparent;
-        border: 1px solid #ef4444;
-        border-radius: 12px;
-        font-size: 0.93rem;
-        font-weight: 700;
-        color: #ef4444;
-        cursor: pointer;
-        margin-top: 10px;
-        transition: 0.25s;
-        font-family: var(--sans);
-      }
-      .mskd:hover {
-        background: rgba(239, 68, 68, 0.1);
-      }
+      /* Toast Notification */
       .toast {
         position: fixed;
         bottom: 32px;
         right: 32px;
         background: var(--panel);
-        border: 1px solid var(--lineb);
+        border: 1px solid var(--em);
         color: var(--ink);
-        padding: 13px 22px;
+        padding: 12px 20px;
         border-radius: 12px;
         font-size: 0.88rem;
-        font-weight: 700;
+        font-weight: 600;
         z-index: 3000;
         transform: translateY(14px);
         opacity: 0;
         transition: 0.35s var(--ease);
         pointer-events: none;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+      }
+      .toast svg {
+        color: var(--em);
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
       }
       .toast.show {
         transform: translateY(0);
         opacity: 1;
         pointer-events: auto;
       }
-      .toast.green {
-        border-color: var(--em);
-        color: var(--em);
-      }
 
+      /* Responsive */
+      @media (max-width: 900px) {
+        .privacy-highlights {
+          grid-template-columns: 1fr;
+        }
+      }
       @media (max-width: 768px) {
         .top-nav {
-          padding: 16px 20px;
+          padding: 14px 20px;
         }
         .top-nav.s {
-          padding: 12px 20px;
+          padding: 10px 20px;
         }
         .mmb {
           display: flex;
@@ -1046,92 +1089,49 @@
         .desktop-dl {
           display: none;
         }
-        .mobile-dl {
-          display: block;
-        }
         .nav-links {
           display: none;
-          position: absolute;
-          top: 100%;
-          left: 0;
-          width: 100%;
-          background: var(--nav);
-          backdrop-filter: blur(18px);
-          border-top: 1px solid var(--line);
-          border-bottom: 1px solid var(--line);
-          flex-direction: column;
-          gap: 0;
-          padding: 14px 0;
-          z-index: 999;
-        }
-        .nav-links .nav-link {
-          padding: 11px 22px;
-        }
-        .nav-links .tw {
-          padding: 11px 22px;
-          border-left: none;
-          border-top: 1px solid var(--line);
-          margin-top: 6px;
-        }
-        .nav-links.open {
-          display: flex;
-        }
-        .dropdown-content {
-          left: 16px;
-          transform: none;
-        }
-        .dropdown.active .dropdown-content {
-          transform: none;
         }
         .shc {
-          padding: 120px 22px 60px;
+          padding: 120px 20px 40px;
         }
         .page-wrap {
-          padding: 0 22px;
+          padding: 0 20px 80px;
         }
         .agreement-card {
-          padding: 28px;
+          padding: 28px 20px;
+        }
+        .agreement-section p {
+          padding-left: 0;
+        }
+        .agreement-section ul {
+          padding-left: 0;
+        }
+        .agreement-section ul li {
+          padding: 14px 16px 14px 34px;
         }
         .sf {
-          padding: 40px 22px 28px;
+          padding: 40px 20px 28px;
         }
         .fi {
           flex-direction: column;
           gap: 16px;
         }
-        .agreement-section p,
-        .agreement-section ul {
-          padding-left: 0;
+        .quick-nav-bar {
+          top: 60px;
+          padding: 8px 10px;
         }
-        .agreement-section ul li::before {
-          left: -16px;
-        }
-        .agreement-section ul {
-          padding-left: 20px;
+        .quick-nav-label {
+          display: none;
         }
       }
       @media (max-width: 480px) {
         .pg-title {
-          font-size: 2.8rem;
+          font-size: 2.6rem;
         }
       }
 
-      /* ── PRIVACY LIGHT MODE POLISH ── */
-      body.lm {
-        --void: #fbfaf5 !important;
-        --void2: #f1efe6 !important;
-        --panel: #ffffff !important;
-        --line: rgba(0, 0, 0, 0.08) !important;
-        --lineb: rgba(0, 0, 0, 0.16) !important;
-        --ink: #0f172a !important;
-        --dim: #475569 !important;
-        --signal: #b8720a !important;
-        --ion: #0e72a0 !important;
-        --teal: #0a8c7a !important;
-        --plasma: #6f4fe0 !important;
-        --em: #1b9d66 !important;
-        --nav: rgba(251, 250, 245, 0.88) !important;
-      }
+      /* Light Mode Overrides */
       body.lm .hvig {
         background: linear-gradient(to right, var(--void) 0%, rgba(251, 250, 245, 0.95) 20%, rgba(251, 250, 245, 0.6) 40%, rgba(251, 250, 245, 0.05) 60%, transparent 80%) !important;
       }
@@ -1141,33 +1141,114 @@
       body.lm .agreement-card {
         background: #ffffff !important;
         border: 1px solid rgba(0, 0, 0, 0.08) !important;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04) !important;
+      }
+      body.lm .highlight-card {
+        background: #ffffff !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.03) !important;
+      }
+      body.lm .highlight-card:hover {
+        border-color: rgba(21, 128, 61, 0.4) !important;
+        box-shadow: 0 14px 32px rgba(21, 128, 61, 0.1) !important;
+      }
+      body.lm .quick-nav-bar {
+        background: rgba(251, 250, 245, 0.9) !important;
+        border-color: rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.04) !important;
+      }
+      body.lm .qpill {
+        background: rgba(0, 0, 0, 0.03) !important;
+        border-color: rgba(0, 0, 0, 0.08) !important;
+        color: #475569 !important;
+      }
+      body.lm .qpill:hover {
+        background: rgba(0, 0, 0, 0.06) !important;
+        color: #0f172a !important;
+      }
+      body.lm .qpill.act {
+        background: #15803d !important;
+        color: #ffffff !important;
+        border-color: #15803d !important;
+        box-shadow: 0 4px 14px rgba(21, 128, 61, 0.3) !important;
       }
       body.lm .sec-title {
         color: #0f172a !important;
       }
       body.lm .sec-num {
-        background: rgba(184, 114, 10, 0.1) !important;
-        color: #b8720a !important;
-        border: 1px solid rgba(184, 114, 10, 0.25) !important;
+        background: rgba(21, 128, 61, 0.1) !important;
+        color: #15803d !important;
+        border: 1px solid rgba(21, 128, 61, 0.25) !important;
+      }
+      body.lm .hero-badge {
+        background: rgba(21, 128, 61, 0.08) !important;
+        color: #15803d !important;
+        border: 1px solid rgba(21, 128, 61, 0.25) !important;
       }
       body.lm .agreement-section p {
         color: #475569 !important;
       }
-      body.lm .hero-badge {
-        background: rgba(184, 114, 10, 0.08) !important;
-        color: #b8720a !important;
-        border: 1px solid rgba(184, 114, 10, 0.25) !important;
-      }
-      body.lm .col-hero h1 {
-        color: #0f172a !important;
-      }
-      body.lm .hlede {
+      body.lm .pg-desc {
         color: #475569 !important;
+      }
+      body.lm .agreement-section ul li {
+        background: rgba(0, 0, 0, 0.015) !important;
+        border-color: rgba(0, 0, 0, 0.06) !important;
+      }
+      body.lm .agreement-section ul li:hover {
+        border-color: rgba(21, 128, 61, 0.3) !important;
+      }
+      body.lm .agreement-section ul li::before {
+        color: #15803d !important;
+      }
+      body.lm .agreement-section code {
+        background: rgba(14, 114, 160, 0.08) !important;
+        border: 1px solid rgba(14, 114, 160, 0.2) !important;
+        color: #0369a1 !important;
+      }
+      body.lm .policy-link {
+        color: #0369a1 !important;
+      }
+      body.lm .policy-link:hover {
+        color: #15803d !important;
       }
       body.lm .sf {
         border-color: rgba(0, 0, 0, 0.08) !important;
         background: transparent !important;
+      }
+
+      /* Print Styles */
+      @media print {
+        .top-nav,
+        .loader,
+        .cd,
+        .cr,
+        #bgCanvas,
+        .hvig,
+        .hvigb,
+        .sf,
+        .quick-nav-bar,
+        .anchor-copy-btn,
+        .toast {
+          display: none !important;
+        }
+        body {
+          background: #ffffff !important;
+          color: #000000 !important;
+        }
+        .page-wrap {
+          max-width: 100% !important;
+          padding: 0 !important;
+        }
+        .agreement-card {
+          border: none !important;
+          box-shadow: none !important;
+          padding: 0 !important;
+          background: transparent !important;
+        }
+        .shc {
+          padding: 30px 0 20px !important;
+        }
       }
     </style>
     <script defer src="col-router.js"></script>
@@ -1179,8 +1260,6 @@
     <script defer src="col-ui.js"></script>
     <script defer src="col-auth.js"></script>
     <link rel="manifest" href="manifest.json" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   </head>
   <body>
     <script>
@@ -1203,53 +1282,54 @@
         <span class="brand-name">Class Of Learners</span>
       </a>
       <div class="nav-links" id="navLinks">
-        <a href="/" class="nav-link"
-          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <a href="/" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-            <polyline points="9 22 9 12 15 12 15 22" /></svg
-          >Home</a
-        >
-        <a href="about" class="nav-link"
-          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 22 9 12 15 12 15 22" />
+          </svg>Home
+        </a>
+        <a href="about" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10" />
             <path d="M12 16v-4" />
-            <path d="M12 8h.01" /></svg
-          >About</a
-        >
-        <a href="school" class="nav-link"
-          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 8h.01" />
+          </svg>About
+        </a>
+        <a href="school" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" />
-            <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" /></svg
-          >School</a
-        >
-        <a href="sneh-asha" class="nav-link"
-          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" /></svg
-          >Sneh Asha</a
-        >
-        <a href="making" class="nav-link"
-          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg
-          >Making</a
-        >
+            <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />
+          </svg>School
+        </a>
+        <a href="sneh-asha" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+          </svg>Sneh Asha
+        </a>
+        <a href="making" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+          </svg>Making
+        </a>
         <div class="dropdown" id="projDD">
-          <button class="dropdown-btn" aria-haspopup="true" aria-expanded="false">
+          <button class="dropdown-btn" type="button" aria-haspopup="true" aria-expanded="false">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
               <line x1="8" y1="21" x2="16" y2="21" />
-              <line x1="12" y1="17" x2="12" y2="21" /></svg
-            >Projects <span class="darr">&#9660;</span>
+              <line x1="12" y1="17" x2="12" y2="21" />
+            </svg>Projects <span class="darr">&#9660;</span>
           </button>
           <div class="dropdown-content">
             <div class="dropdown-content-inner">
-              <a href="ati"
-                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <a href="ati">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="4 7 4 4 20 4 20 7" />
                   <line x1="9" y1="20" x2="15" y2="20" />
-                  <line x1="12" y1="4" x2="12" y2="20" /></svg
-                >Typing Instructor</a
-              ><a href="solar"
-                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="4" x2="12" y2="20" />
+                </svg>Typing Instructor
+              </a>
+              <a href="solar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="5" />
                   <line x1="12" y1="1" x2="12" y2="3" />
                   <line x1="12" y1="21" x2="12" y2="23" />
@@ -1258,55 +1338,63 @@
                   <line x1="1" y1="12" x2="3" y2="12" />
                   <line x1="21" y1="12" x2="23" y2="12" />
                   <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" /></svg
-                >Solar Engine</a
-              ><a href="gesture"
-                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                </svg>Solar Engine
+              </a>
+              <a href="gesture">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M18 8h1a4 4 0 010 8h-1" />
                   <path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z" />
                   <line x1="6" y1="1" x2="6" y2="4" />
                   <line x1="10" y1="1" x2="10" y2="4" />
-                  <line x1="14" y1="1" x2="14" y2="4" /></svg
-                >Perceptus Flow</a
-              ><a href="rpg"
-                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg
-                >RPG Game</a
-              ><a href="qr"
-                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="14" y1="1" x2="14" y2="4" />
+                </svg>Perceptus Flow
+              </a>
+              <a href="rpg">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                </svg>RPG Game
+              </a>
+              <a href="qr">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <rect x="2" y="2" width="8" height="8" rx="1" />
                   <rect x="14" y="2" width="8" height="8" rx="1" />
                   <rect x="2" y="14" width="8" height="8" rx="1" />
                   <rect x="14" y="14" width="4" height="4" />
                   <rect x="20" y="14" width="2" height="2" />
                   <rect x="14" y="20" width="2" height="2" />
-                  <rect x="20" y="20" width="2" height="2" /></svg
-                >QR Studio Matrix</a
-              ><a href="Terra3D/"
-                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="20" y="20" width="2" height="2" />
+                </svg>QR Studio Matrix
+              </a>
+              <a href="Terra3D/">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="10" />
                   <line x1="2" y1="12" x2="22" y2="12" />
-                  <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" /></svg
-                >Terra3D Atlas</a
-              >
+                  <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+                </svg>Terra3D Atlas
+              </a>
             </div>
           </div>
         </div>
       </div>
       <div class="nav-actions">
-        <div class="hz-toggle" onclick="hzToggle()"><div class="hz-clouds"></div><div class="hz-stars"></div><div class="hz-orb"></div></div>
-        <button class="nav-login-btn" id="navLoginBtn" onclick="if(window.openGlobalLogin)window.openGlobalLogin();else if(window.openLogin)window.openLogin();">
+        <div class="hz-toggle" onclick="hzToggle()" title="Toggle Appearance">
+          <div class="hz-clouds"></div>
+          <div class="hz-stars"></div>
+          <div class="hz-orb"></div>
+        </div>
+        <button class="nav-login-btn" id="navLoginBtn" type="button" onclick="if(window.openGlobalLogin)window.openGlobalLogin();else if(window.openLogin)window.openLogin();">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
-            <circle cx="12" cy="7" r="4" /></svg
-          >Sign In
+            <circle cx="12" cy="7" r="4" />
+          </svg>Sign In
         </button>
         <div class="nav-user-profile" id="navUserProfile" onclick="if(window.openGlobalLogin)window.openGlobalLogin();else if(window.openLogin)window.openLogin();">
           <div class="nav-user-avatar" id="navUserAv">?</div>
           <span class="nun" id="navUserName">User</span>
         </div>
         <a href="download" class="nav-dl-btn desktop-dl">Downloads Hub</a>
-        <button class="mmb" id="mmb" aria-label="Toggle menu">
+        <button class="mmb" id="mmb" type="button" aria-label="Toggle menu">
           <svg viewBox="0 0 24 24" fill="none"><path d="M3 6H21M3 12H21M3 18H21" stroke-width="1.5" stroke-linecap="round" stroke="currentColor" /></svg>
         </button>
       </div>
@@ -1321,109 +1409,214 @@
         <div class="hero-badge">Data &amp; Privacy Policy</div>
         <h1 class="pg-title">Privacy <i>Policy</i>.</h1>
         <p class="pg-desc">
-          Effective Date: April 2026. We are committed to protecting your privacy across our applications, including ATI, Solar Engine, Gesture Controller, and QR Studio. Read on to learn how we
-          handle your data responsibly.
+          Effective Date: April 2026. We are committed to protecting your privacy across our applications, including ATI, Solar Engine, Gesture Controller, and QR Studio. Read on to learn how we handle your data responsibly.
         </p>
       </div>
     </section>
 
     <div class="page-wrap">
-      <div class="agreement-card rv">
-        <div class="agreement-section">
-          <div class="sec-title">
-            <div class="sec-num">1</div>
-            Local Processing
+      <!-- Executive Summary / Core Guarantees Bento -->
+      <div class="privacy-highlights rv">
+        <div class="highlight-card">
+          <div class="hl-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              <path d="m9 12 2 2 4-4" />
+            </svg>
           </div>
-          <p>
-            We prioritize your privacy by keeping data on your device whenever possible. Most of our software is engineered to run entirely on your local machine without phoning home to external
-            servers. Your projects, calculations, and Perceptus Flow machine-vision gestures are processed locally within your browser or desktop application.
-          </p>
+          <div class="hl-content">
+            <div class="hl-tag">Architecture</div>
+            <h3>Local-First Processing</h3>
+            <p>Machine-vision gestures, typing calculations, and orbital physics process entirely on your local machine. No sensory telemetry is streamed to our servers.</p>
+          </div>
         </div>
-
-        <div class="agreement-section">
-          <div class="sec-title">
-            <div class="sec-num">2</div>
-            Google API Services User Data Policy Compliance
+        <div class="highlight-card">
+          <div class="hl-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <path d="m4.93 4.93 4.24 4.24" />
+              <path d="m14.83 9.17 4.24-4.24" />
+              <path d="m14.83 14.83 4.24 4.24" />
+              <path d="m9.17 14.83-4.24 4.24" />
+            </svg>
           </div>
+          <div class="hl-content">
+            <div class="hl-tag">OAuth Compliance</div>
+            <h3>Limited Use Google Scopes</h3>
+            <p>We request only basic profile identity (name and email) for cross-device sync. Never sensitive or restricted scopes like Google Drive files or Gmail messages.</p>
+          </div>
+        </div>
+        <div class="highlight-card">
+          <div class="hl-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 6h18" />
+              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+              <line x1="10" y1="11" x2="10" y2="17" />
+              <line x1="14" y1="11" x2="14" y2="17" />
+            </svg>
+          </div>
+          <div class="hl-content">
+            <div class="hl-tag">Data Rights</div>
+            <h3>Guaranteed Deletion</h3>
+            <p>You own your data. Submit an instant purge request through our Grievance Portal to permanently erase your account and database records within 24 hours.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Navigation Bar -->
+      <div class="quick-nav-bar rv" id="quickNavBar">
+        <div class="quick-nav-label">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="8" y1="6" x2="21" y2="6" />
+            <line x1="8" y1="12" x2="21" y2="12" />
+            <line x1="8" y1="18" x2="21" y2="18" />
+            <line x1="3" y1="6" x2="3.01" y2="6" />
+            <line x1="3" y1="12" x2="3.01" y2="12" />
+            <line x1="3" y1="18" x2="3.01" y2="18" />
+          </svg>Quick Jump
+        </div>
+        <div class="quick-nav-pills" id="quickNavPills">
+          <a href="#local-processing" class="qpill act">1. Local Processing</a>
+          <a href="#google-api" class="qpill">2. Google API Compliance</a>
+          <a href="#qr-studio" class="qpill">3. QR Studio Codes</a>
+          <a href="#data-retention" class="qpill">4. Data Deletion</a>
+          <a href="#cookies-analytics" class="qpill">5. Cookies &amp; Ads</a>
+          <a href="#third-party" class="qpill">6. Infrastructure</a>
+          <a href="#grievance" class="qpill">7. Grievance Redressal</a>
+        </div>
+      </div>
+
+      <!-- Agreement Card -->
+      <div class="agreement-card rv" id="agreementCard">
+        <section class="agreement-section" id="local-processing">
+          <h2 class="sec-title">
+            <span class="sec-num">1</span>
+            Local Processing
+            <button class="anchor-copy-btn" type="button" onclick="copySectionLink('local-processing')" title="Copy Link To Section" aria-label="Copy Link To Local Processing Section">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+              </svg>
+            </button>
+          </h2>
           <p>
-            Our applications may allow you to authenticate using your Google Account. In doing so, we strictly comply with the Google API Services User Data Policy, including the Limited Use
-            requirements. We disclose the following regarding your Google user data:
+            We prioritize your privacy by keeping data on your device whenever possible. Most of our software is engineered to run entirely on your local machine without phoning home to external servers. Your projects, calculations, and Perceptus Flow machine-vision gestures are processed locally within your browser or desktop application.
+          </p>
+        </section>
+
+        <section class="agreement-section" id="google-api">
+          <h2 class="sec-title">
+            <span class="sec-num">2</span>
+            Google API Services User Data Policy Compliance
+            <button class="anchor-copy-btn" type="button" onclick="copySectionLink('google-api')" title="Copy Link To Section" aria-label="Copy Link To Google API Compliance Section">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+              </svg>
+            </button>
+          </h2>
+          <p>
+            Our applications may allow you to authenticate using your Google Account. In doing so, we strictly comply with the Google API Services User Data Policy, including the Limited Use requirements. We disclose the following regarding your Google user data:
           </p>
           <ul>
             <li>
-              <strong>Data Accessed:</strong> If you choose to sign in with Google, we access your basic profile information (Name and Profile Picture) and your Email Address via the standard Google
-              OAuth scopes (<code>userinfo.profile</code>, <code>userinfo.email</code>). We do NOT request or access any sensitive or restricted scopes like Google Drive files or Gmail.
+              <strong>Data Accessed:</strong> If you choose to sign in with Google, we access your basic profile information (Name and Profile Picture) and your Email Address via the standard Google OAuth scopes (<code>userinfo.profile</code>, <code>userinfo.email</code>). We do NOT request or access any sensitive or restricted scopes like Google Drive files or Gmail.
             </li>
             <li>
-              <strong>Data Usage:</strong> We use this accessed data solely for the purpose of authenticating your identity on our platform and displaying your name and profile picture in your account
-              dashboard. Your email is used as a unique identifier to securely sync your saved items across your devices.
+              <strong>Data Usage:</strong> We use this accessed data solely for the purpose of authenticating your identity on our platform and displaying your name and profile picture in your account dashboard. Your email is used as a unique identifier to securely sync your saved items across your devices.
             </li>
             <li>
-              <strong>Data Storage:</strong> Your Name, Email, and Profile Picture URL are securely transmitted and stored in our managed database (Supabase) to maintain your session and sync history.
-              We do not store your Google password or raw OAuth tokens persistently on our backend. All database records are protected by row-level security.
+              <strong>Data Storage:</strong> Your Name, Email, and Profile Picture URL are securely transmitted and stored in our managed database (Supabase) to maintain your session and sync history. We do not store your Google password or raw OAuth tokens persistently on our backend. All database records are protected by row-level security.
             </li>
             <li>
-              <strong>Data Sharing:</strong> We absolutely do <strong>NOT</strong> share, sell, transfer, or disclose your Google user data to any third parties, advertisers, or data brokers. Your
-              data is used exclusively to provide the core functionality of the Class Of Learners applications.
+              <strong>Data Sharing:</strong> We absolutely do <strong>NOT</strong> share, sell, transfer, or disclose your Google user data to any third parties, advertisers, or data brokers. Your data is used exclusively to provide the core functionality of the Class Of Learners applications.
             </li>
           </ul>
-        </div>
+        </section>
 
-        <div class="agreement-section">
-          <div class="sec-title">
-            <div class="sec-num">3</div>
+        <section class="agreement-section" id="qr-studio">
+          <h2 class="sec-title">
+            <span class="sec-num">3</span>
             QR Studio &amp; Dynamic Codes
-          </div>
+            <button class="anchor-copy-btn" type="button" onclick="copySectionLink('qr-studio')" title="Copy Link To Section" aria-label="Copy Link To QR Studio Section">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+              </svg>
+            </button>
+          </h2>
           <p>
             Static QR codes are created and saved on your device. If you sign in, saved codes can also sync to your account in our database so they follow you across devices.
           </p>
           <p>
-            When someone scans a dynamic code, our redirect page looks up the code and records limited technical information: the scan time, device type, browser, operating system, referring page and a
-            pseudonymous identifier used to count unique visitors. The owner of the code sees this as analytics for that code. Passcodes are never sent to our servers, and protected destinations are stored in
-            encrypted form. The website a visitor is forwarded to has its own privacy practices. Code owners can delete a code at any time.
+            When someone scans a dynamic code, our redirect page looks up the code and records limited technical information: the scan time, device type, browser, operating system, referring page, and a pseudonymous identifier used to count unique visitors. The owner of the code sees this as analytics for that code. Passcodes are never sent to our servers, and protected destinations are stored in encrypted form. The website a visitor is forwarded to has its own privacy practices. Code owners can delete a code at any time.
           </p>
-        </div>
+        </section>
 
-        <div class="agreement-section">
-          <div class="sec-title">
-            <div class="sec-num">4</div>
-            Data Retention & Deletion
-          </div>
+        <section class="agreement-section" id="data-retention">
+          <h2 class="sec-title">
+            <span class="sec-num">4</span>
+            Data Retention &amp; Deletion
+            <button class="anchor-copy-btn" type="button" onclick="copySectionLink('data-retention')" title="Copy Link To Section" aria-label="Copy Link To Data Retention Section">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+              </svg>
+            </button>
+          </h2>
           <p>
-            We believe in data minimization. Your feedback and session data are stored securely on Supabase but are not kept indefinitely. If you wish to delete your account or any data associated
-            with it, you can request full deletion via our feedback form, and we will purge your records from our database.
+            We believe in data minimization. Your feedback and session data are stored securely on Supabase but are not kept indefinitely. If you wish to delete your account or any data associated with it, you can request full deletion via our feedback form, and we will purge your records from our database within twenty-four hours.
           </p>
-        </div>
+        </section>
 
-        <div class="agreement-section">
-          <div class="sec-title">
-            <div class="sec-num">5</div>
+        <section class="agreement-section" id="cookies-analytics">
+          <h2 class="sec-title">
+            <span class="sec-num">5</span>
             Analytics, Cookies &amp; Advertising Disclosures
-          </div>
+            <button class="anchor-copy-btn" type="button" onclick="copySectionLink('cookies-analytics')" title="Copy Link To Section" aria-label="Copy Link To Cookies and Analytics Section">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+              </svg>
+            </button>
+          </h2>
           <p>
-            Class Of Learners Uses Essential Cookies Solely To Retain Visual Theme Preferences And Authenticated Sessions. In Addition, Third-Party Vendors, Including Google, Use Cookies To Serve Relevant Advertisements Based On A User's Prior Visits To Our Web Applications Or Other Websites On The Internet. Google's Use Of Advertising Cookies Enables It And Its Partners To Deliver Non-Intrusive Ads. Users May Freely Opt Out Of Personalized Advertising By Visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" style="color: var(--ion); text-decoration: underline">Google Ads Settings</a> Or By Consulting <a href="https://www.aboutads.info/choices" target="_blank" rel="noopener noreferrer" style="color: var(--ion); text-decoration: underline">AboutAds Choices</a>.
+            Class Of Learners uses essential cookies solely to retain visual theme preferences and authenticated sessions. In addition, third-party vendors, including Google, use cookies to serve relevant advertisements based on a user's prior visits to our web applications or other websites on the internet. Google's use of advertising cookies enables it and its partners to deliver non-intrusive ads. Users may freely opt out of personalized advertising by visiting the <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" class="policy-link">Google Ads Settings</a> or by consulting <a href="https://www.aboutads.info/choices" target="_blank" rel="noopener noreferrer" class="policy-link">AboutAds Choices</a>.
           </p>
-        </div>
+        </section>
 
-        <div class="agreement-section">
-          <div class="sec-title">
-            <div class="sec-num">6</div>
+        <section class="agreement-section" id="third-party">
+          <h2 class="sec-title">
+            <span class="sec-num">6</span>
             Third-Party Services &amp; Infrastructure
-          </div>
+            <button class="anchor-copy-btn" type="button" onclick="copySectionLink('third-party')" title="Copy Link To Section" aria-label="Copy Link To Third-Party Services Section">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+              </svg>
+            </button>
+          </h2>
           <p>
-            While Our Core Simulators And Vision Modules Execute Locally On Your Device, We Rely On Industry-Standard Infrastructure Partners: Vercel (Edge Hosting), Supabase (Encrypted Data Storage Protected By Row-Level Security), And Google AdSense (Publisher Advertising). We Do Not Sell, Trade, Or Rent Your Personal Data To Advertisers Or Third-Party Brokers.
+            While our core simulators and vision modules execute locally on your device, we rely on industry-standard infrastructure partners: Vercel (Edge Hosting), Supabase (Encrypted Data Storage protected by Row-Level Security), and Google AdSense (Publisher Advertising). We do not sell, trade, or rent your personal data to advertisers or third-party brokers.
           </p>
-        </div>
+        </section>
 
-        <div class="agreement-section">
-          <div class="sec-title">
-            <div class="sec-num">7</div>
+        <section class="agreement-section" id="grievance">
+          <h2 class="sec-title">
+            <span class="sec-num">7</span>
             Contact Us &amp; Grievance Redressal
-          </div>
+            <button class="anchor-copy-btn" type="button" onclick="copySectionLink('grievance')" title="Copy Link To Section" aria-label="Copy Link To Contact and Grievance Section">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+              </svg>
+            </button>
+          </h2>
           <p>
-            Developed And Maintained By Neel, Ansh, And Aarush As An Educational Initiative. Under Applicable Digital Personal Data Protection Standards And Rule 3(2) Of The Information Technology Rules, Any Inquiries Concerning Data Deletion, Rectification, Or Content Grievances May Be Submitted Directly To Our Designated Grievance Officer Through The <a href="feedback" style="color: var(--ion); text-decoration: underline">Feedback &amp; Grievance Portal</a>. We Acknowledge All Submissions Within Twenty-Four Hours.
+            Developed and maintained by Neel, Ansh, and Aarush as an educational initiative. Under applicable Digital Personal Data Protection standards and Rule 3(2) of the Information Technology Rules, any inquiries concerning data deletion, rectification, or content grievances may be submitted directly to our designated Grievance Officer through the <a href="feedback" class="policy-link">Feedback &amp; Grievance Portal</a>. We acknowledge all submissions within twenty-four hours.
           </p>
-        </div>
+        </section>
       </div>
     </div>
 
@@ -1432,7 +1625,7 @@
         <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
         <div class="fl">
           <a href="making">Making</a>
-          <a href="privacy">Privacy</a>
+          <a href="privacy" class="act">Privacy</a>
           <a href="terms">Terms</a>
           <a href="feedback">Feedback</a>
           <a href="download">Downloads</a>
@@ -1441,7 +1634,12 @@
       </div>
     </footer>
 
-    <div class="toast" id="toast"></div>
+    <div class="toast" id="toast">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12" />
+      </svg>
+      <span id="toastMsg">Section Link Copied!</span>
+    </div>
 
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script defer src="col-3d.js"></script>
@@ -1460,17 +1658,15 @@
       }
       window.addEventListener('load', removeLoader, { once: true })
 
-      // 2. Unified Theme Controller — syncs BOTH <html> and <body>
+      // 2. Unified Theme Controller — syncs both documentElement and body
       function applyTheme(isLight) {
         document.documentElement.classList.toggle('lm', isLight)
         document.body.classList.toggle('lm', isLight)
         document.querySelectorAll('.hz-toggle').forEach(function (el) {
           el.classList.toggle('night', !isLight)
         })
-        var desc = document.getElementById('cmdThemeDesc')
-        if (desc) desc.textContent = isLight ? 'Light Mica' : 'Dark VisionOS'
         var tm = document.getElementById('themeMeta')
-        if (tm) tm.setAttribute('content', isLight ? '#f4f3ee' : '#070A14')
+        if (tm) tm.setAttribute('content', isLight ? '#fbfaf5' : '#070A14')
       }
 
       window.hzToggle = function () {
@@ -1531,6 +1727,7 @@
         }
       })
 
+      // 5. Scroll Reveal Intersection Observer
       ;(function () {
         var els = document.querySelectorAll('.rv')
         var io = new IntersectionObserver(
@@ -1548,6 +1745,75 @@
           io.observe(el)
         })
       })()
+
+      // 6. Interactive Spotlight Follower for Cards
+      ;(function () {
+        var spotlightCards = document.querySelectorAll('.agreement-card, .highlight-card')
+        spotlightCards.forEach(function (card) {
+          card.addEventListener('mousemove', function (e) {
+            var rect = card.getBoundingClientRect()
+            card.style.setProperty('--mouse-x', (e.clientX - rect.left) + 'px')
+            card.style.setProperty('--mouse-y', (e.clientY - rect.top) + 'px')
+          })
+        })
+      })()
+
+      // 7. Active TOC Pill Highlight on Scroll
+      ;(function () {
+        var sections = document.querySelectorAll('.agreement-section')
+        var pills = document.querySelectorAll('.qpill')
+        if (!sections.length || !pills.length) return
+
+        var observer = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                var id = entry.target.getAttribute('id')
+                pills.forEach(function (pill) {
+                  var href = pill.getAttribute('href')
+                  var isActive = href === '#' + id
+                  pill.classList.toggle('act', isActive)
+                  if (isActive) {
+                    pill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+                  }
+                })
+              }
+            })
+          },
+          { rootMargin: '-20% 0px -70% 0px' }
+        )
+
+        sections.forEach(function (sec) {
+          observer.observe(sec)
+        })
+      })()
+
+      // 8. Copy Deep Link to Section & Toast
+      var toastTimer = null
+      function showToast(msg) {
+        var t = document.getElementById('toast')
+        var tm = document.getElementById('toastMsg')
+        if (!t) return
+        if (tm) tm.textContent = msg
+        t.classList.add('show')
+        if (toastTimer) clearTimeout(toastTimer)
+        toastTimer = setTimeout(function () {
+          t.classList.remove('show')
+        }, 2400)
+      }
+
+      window.copySectionLink = function (sectionId) {
+        var url = window.location.origin + window.location.pathname + '#' + sectionId
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(function () {
+            showToast('Section Link Copied!')
+          }).catch(function () {
+            showToast('Link: #' + sectionId)
+          })
+        } else {
+          showToast('Link: #' + sectionId)
+        }
+      }
     </script>
   </body>
 </html>

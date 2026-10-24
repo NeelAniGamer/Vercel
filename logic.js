@@ -49,13 +49,14 @@ const scene  = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, 0.05, 20000000);
 camera.position.set(0, 1100, 2500);
 
-const renderer = new THREE.WebGLRenderer({ antialias: window.devicePixelRatio < 2, powerPreference:'high-performance', alpha:false, stencil:false, depth:true });
-let currentPixelRatio = Math.min(window.devicePixelRatio, 1.4);
+const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference:'high-performance', alpha:false, stencil:false, depth:true });
+let currentPixelRatio = Math.min(window.devicePixelRatio || 1, 2.5);
 renderer.setPixelRatio(currentPixelRatio);
 renderer.setSize(innerWidth, innerHeight);
 renderer.toneMapping         = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.05;
-renderer.shadowMap.enabled   = false;
+renderer.shadowMap.enabled   = true;
+renderer.shadowMap.type      = THREE.PCFSoftShadowMap;
 document.body.appendChild(renderer.domElement);
 
 const labelRenderer = new CSS2DRenderer();
@@ -3988,13 +3989,13 @@ _updSpeed();
 
 // ── LOD: Dynamic pixel-ratio based on camera distance ──────────────────────
 const LOD_THRESHOLDS = [
-    { dist: 200,      pr: 1.4  },
-    { dist: 600,      pr: 1.2  },
-    { dist: 2000,     pr: 1.0  },
-    { dist: 8000,     pr: 0.9  },
-    { dist: 40000,    pr: 0.75 },
-    { dist: 200000,   pr: 0.6  },
-    { dist: Infinity, pr: 0.45  },
+    { dist: 200,      pr: 2.0  },
+    { dist: 600,      pr: 1.75 },
+    { dist: 2000,     pr: 1.5  },
+    { dist: 8000,     pr: 1.25 },
+    { dist: 40000,    pr: 1.0  },
+    { dist: 200000,   pr: 1.0  },
+    { dist: Infinity, pr: 1.0  },
 ];
 let _lastLodPr = -1;
 function updateLOD(camDist) {
@@ -4709,9 +4710,10 @@ function animate() {
         const avgFps = fpsAcc / fpsN;
         EL_FPS.textContent = avgFps.toFixed(0) + ' FPS';
         fpsAcc = 0; fpsN = 0;
-        if (!perfMode && _frameId - _adaptCooldown > 900 && avgFps < 32) {
+        // Full unthrottled high-performance render: allow hardware to utilize system resources without artificial downsampling
+        if (!perfMode && _frameId - _adaptCooldown > 1800 && avgFps < 16) {
             const cur = renderer.getPixelRatio();
-            const next = cur > 1.01 ? 1.0 : (cur > 0.76 ? 0.75 : 0.6);
+            const next = cur > 1.2 ? 1.0 : cur;
             if (next < cur) {
                 _prCap = next; _lastLodPr = next;
                 renderer.setPixelRatio(Math.min(next, window.devicePixelRatio));
@@ -4847,6 +4849,6 @@ window.addEventListener('resize', () => {
     camera.updateProjectionMatrix();
     renderer.setSize(innerWidth, innerHeight);
     labelRenderer.setSize(innerWidth, innerHeight);
-    currentPixelRatio = Math.min(window.devicePixelRatio, 1.4);
+    currentPixelRatio = Math.min(window.devicePixelRatio || 1, 2.5);
     if (!perfMode) {renderer.setPixelRatio(currentPixelRatio);}
 });

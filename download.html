@@ -5,6 +5,7 @@
      crossorigin="anonymous"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#070A14" id="themeMeta" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Class Of Learners" />
@@ -1362,7 +1363,376 @@
         background: rgba(0, 0, 0, 0.04) !important;
         color: #0f172a !important;
       }
-    </style>
+    
+      /* ── Enhanced Filter Toolbar ── */
+      .filter-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 30px;
+        margin-bottom: 34px;
+      }
+      .filter-btn {
+        font-family: var(--mono);
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        padding: 8px 18px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--dim);
+        border: 1px solid var(--line);
+        cursor: pointer;
+        transition: all 0.25s var(--ease);
+      }
+      .filter-btn:hover {
+        color: var(--ink);
+        border-color: var(--lineb);
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .filter-btn.active {
+        background: var(--signal);
+        color: #0a0500;
+        border-color: var(--signal);
+        box-shadow: 0 4px 14px rgba(242, 184, 75, 0.3);
+      }
+      .pc.hidden-card {
+        display: none !important;
+      }
+
+      /* ── Unlock All Action Button ── */
+      .unlock-all-btn {
+        font-family: var(--mono);
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        padding: 10px 18px;
+        border-radius: 8px;
+        background: rgba(52, 211, 153, 0.12);
+        color: var(--em);
+        border: 1px solid rgba(52, 211, 153, 0.35);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        white-space: nowrap;
+        transition: all 0.25s var(--ease);
+      }
+      .unlock-all-btn:hover {
+        background: var(--em);
+        color: #06140e;
+        box-shadow: 0 4px 18px rgba(52, 211, 153, 0.35);
+        transform: translateY(-1px);
+      }
+      .unlock-all-btn.all-accepted {
+        background: rgba(52, 211, 153, 0.2);
+        border-color: var(--em);
+        cursor: default;
+      }
+
+      /* ── Extra Card Color Accents ── */
+      .pc.cast-card { --card-accent: #ff7b72; }
+      .pc.cast-card::before { border-color: #ff7b72; }
+      .pc.cast-card:hover {
+        box-shadow: 0 20px 40px -10px rgba(255, 123, 114, 0.18);
+        border-color: rgba(255, 123, 114, 0.35);
+      }
+      .cast-card .card-checkbox-wrapper:not(.accepted):hover {
+        border-color: #ff7b72;
+        background: rgba(255, 123, 114, 0.05);
+      }
+      #check-cast:checked + label::before {
+        content: '';
+        background-color: #ff7b72;
+        border-color: #ff7b72;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 12px 12px;
+      }
+      .cast-btn {
+        background: #ff7b72;
+        color: #1f0806;
+      }
+      .cast-card .btn-download:not(.locked):hover {
+        box-shadow: 0 10px 20px -5px rgba(255, 123, 114, 0.4);
+      }
+
+      .pc.terra-card { --card-accent: #38bdf8; }
+      .pc.terra-card::before { border-color: #38bdf8; }
+      .pc.terra-card:hover {
+        box-shadow: 0 20px 40px -10px rgba(56, 189, 248, 0.18);
+        border-color: rgba(56, 189, 248, 0.35);
+      }
+      .terra-card .card-checkbox-wrapper:not(.accepted):hover {
+        border-color: #38bdf8;
+        background: rgba(56, 189, 248, 0.05);
+      }
+      #check-terra:checked + label::before {
+        content: '';
+        background-color: #38bdf8;
+        border-color: #38bdf8;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 12px 12px;
+      }
+      .terra-btn {
+        background: #38bdf8;
+        color: #021a29;
+      }
+      .terra-card .btn-download:not(.locked):hover {
+        box-shadow: 0 10px 20px -5px rgba(56, 189, 248, 0.4);
+      }
+
+      /* ── Click-Aware Locked Download Buttons ── */
+      .btn-download.locked {
+        background: var(--void2) !important;
+        color: var(--dim) !important;
+        cursor: pointer !important;
+        pointer-events: auto !important;
+        border: 1px dashed var(--lineb) !important;
+        opacity: 0.85;
+        position: relative;
+      }
+      .btn-download.locked:hover {
+        background: rgba(255, 255, 255, 0.08) !important;
+        color: var(--ink) !important;
+        border-color: var(--signal) !important;
+      }
+      .btn-download.locked::after {
+        content: ' (Locked)';
+        font-size: 0.72rem;
+        opacity: 0.7;
+      }
+
+      /* ── Cryptographic Checksums Drawer ── */
+      .checksum-drawer {
+        margin-top: 50px;
+        background: rgba(255, 255, 255, 0.025);
+        border: 1px solid var(--line);
+        border-radius: var(--r);
+        overflow: hidden;
+        transition: border-color 0.3s;
+      }
+      .checksum-header {
+        padding: 22px 28px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        user-select: none;
+        background: rgba(255, 255, 255, 0.015);
+        border-bottom: 1px solid transparent;
+        transition: background 0.25s;
+      }
+      .checksum-header:hover {
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .checksum-drawer.open .checksum-header {
+        border-bottom-color: var(--line);
+      }
+      .checksum-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        background: rgba(94, 212, 245, 0.1);
+        color: var(--ion);
+        border: 1px solid rgba(94, 212, 245, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .checksum-arrow {
+        font-size: 0.85rem;
+        color: var(--dim);
+        transition: transform 0.3s var(--ease);
+      }
+      .checksum-drawer.open .checksum-arrow {
+        transform: rotate(180deg);
+      }
+      .checksum-content {
+        display: none;
+        padding: 28px;
+      }
+      .checksum-drawer.open .checksum-content {
+        display: block;
+      }
+      .checksum-table-wrapper {
+        overflow-x: auto;
+        border-radius: 8px;
+        border: 1px solid var(--line);
+      }
+      .checksum-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.86rem;
+        text-align: left;
+      }
+      .checksum-table th {
+        background: rgba(255, 255, 255, 0.04);
+        padding: 12px 16px;
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--dim);
+        border-bottom: 1px solid var(--line);
+      }
+      .checksum-table td {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--line);
+        color: var(--ink);
+        vertical-align: middle;
+      }
+      .checksum-table tr:last-child td {
+        border-bottom: none;
+      }
+      .checksum-table tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+      .hash-code {
+        font-family: var(--mono);
+        font-size: 0.76rem;
+        color: var(--ion);
+        background: rgba(0, 0, 0, 0.35);
+        padding: 4px 8px;
+        border-radius: 4px;
+        border: 1px solid var(--lineb);
+        word-break: break-all;
+        user-select: all;
+      }
+      .copy-hash-btn {
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 6px 12px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--ink);
+        border: 1px solid var(--lineb);
+        cursor: pointer;
+        transition: 0.2s;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .copy-hash-btn:hover {
+        background: var(--signal);
+        color: #0a0500;
+        border-color: var(--signal);
+      }
+      .checksum-cli-hint {
+        margin-top: 18px;
+        padding: 14px 18px;
+        background: rgba(0, 0, 0, 0.25);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        font-size: 0.82rem;
+        color: var(--dim);
+      }
+      .checksum-cli-hint code {
+        font-family: var(--mono);
+        color: var(--signal);
+        background: rgba(255, 255, 255, 0.08);
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+      .platform-tag {
+        display: inline-block;
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        padding: 2px 8px;
+        border-radius: 4px;
+        letter-spacing: 0.04em;
+      }
+      .platform-tag.win { background: rgba(94, 212, 245, 0.15); color: var(--ion); border: 1px solid rgba(94, 212, 245, 0.35); }
+      .platform-tag.android { background: rgba(52, 211, 153, 0.15); color: var(--em); border: 1px solid rgba(52, 211, 153, 0.35); }
+      .platform-tag.linux { background: rgba(242, 184, 75, 0.15); color: var(--signal); border: 1px solid rgba(242, 184, 75, 0.35); }
+      .platform-tag.web { background: rgba(184, 155, 255, 0.15); color: var(--plasma); border: 1px solid rgba(184, 155, 255, 0.35); }
+
+      /* ── Light Mode Overrides for Enhanced Components ── */
+      body.lm .filter-btn {
+        background: #ffffff !important;
+        color: #475569 !important;
+        border-color: rgba(0, 0, 0, 0.12) !important;
+      }
+      body.lm .filter-btn:hover {
+        background: rgba(0, 0, 0, 0.04) !important;
+        color: #0f172a !important;
+      }
+      body.lm .filter-btn.active {
+        background: var(--signal) !important;
+        color: #ffffff !important;
+        border-color: var(--signal) !important;
+      }
+      body.lm .unlock-all-btn {
+        background: rgba(27, 157, 102, 0.1) !important;
+        color: #1b9d66 !important;
+        border-color: rgba(27, 157, 102, 0.35) !important;
+      }
+      body.lm .unlock-all-btn:hover {
+        background: #1b9d66 !important;
+        color: #ffffff !important;
+      }
+      body.lm .checksum-drawer {
+        background: #ffffff !important;
+        border-color: rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03) !important;
+      }
+      body.lm .checksum-header {
+        background: rgba(0, 0, 0, 0.015) !important;
+      }
+      body.lm .checksum-header:hover {
+        background: rgba(0, 0, 0, 0.03) !important;
+      }
+      body.lm .checksum-table th {
+        background: rgba(0, 0, 0, 0.03) !important;
+        color: #475569 !important;
+      }
+      body.lm .checksum-table td {
+        color: #0f172a !important;
+      }
+      body.lm .hash-code {
+        background: rgba(0, 0, 0, 0.04) !important;
+        color: #0e72a0 !important;
+        border-color: rgba(0, 0, 0, 0.1) !important;
+      }
+      body.lm .copy-hash-btn {
+        background: rgba(0, 0, 0, 0.04) !important;
+        color: #0f172a !important;
+        border-color: rgba(0, 0, 0, 0.12) !important;
+      }
+      body.lm .copy-hash-btn:hover {
+        background: var(--signal) !important;
+        color: #ffffff !important;
+        border-color: var(--signal) !important;
+      }
+      body.lm .checksum-cli-hint {
+        background: rgba(0, 0, 0, 0.03) !important;
+        color: #475569 !important;
+        border-color: rgba(0, 0, 0, 0.08) !important;
+      }
+      body.lm .checksum-cli-hint code {
+        background: rgba(0, 0, 0, 0.06) !important;
+        color: #b8720a !important;
+      }
+      body.lm .btn-download.locked {
+        background: #f1f5f9 !important;
+        color: #94a3b8 !important;
+        border-color: #cbd5e1 !important;
+      }
+      body.lm .btn-download.locked:hover {
+        background: #e2e8f0 !important;
+        color: #334155 !important;
+        border-color: var(--signal) !important;
+      }
+</style>
 
     <script defer src="col-router.js"></script>
     <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
@@ -1518,24 +1888,37 @@
         </button>
       </div>
     </nav>
-
     <section class="section">
       <div class="sey">Distribution Hub</div>
-      <h1 class="st">Production Builds</h1>
-      <p class="sdesc">Review the setup instructions and accept the terms to unlock your downloads. All applications are completely free.</p>
+      <h1 class="st">Production Builds &amp; Applications</h1>
+      <p class="sdesc">Verify cryptographic SHA-256 signatures, review setup instructions, and accept terms to unlock production software suites. 100% free, open-source, and verified.</p>
 
       <div class="info-banner" style="margin-top: 30px">
-        <span class="banner-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span>
-        <div class="banner-text">
-          <strong>Download Requirements</strong>
-          <span>Click the checkbox on any card below to review its specific terms. Reading the terms will unlock the download button.</span>
+        <span class="banner-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
+        <div class="banner-text" style="flex: 1">
+          <strong>Download Requirements &amp; License Acceptance</strong>
+          <span>Click the checkbox on any application card below to review its usage conditions and unlock binaries. Returning users enjoy persistent unlocked sessions across reloads.</span>
         </div>
+        <button id="unlockAllBtn" class="unlock-all-btn" onclick="unlockAllApps()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+          Unlock All Applications
+        </button>
+      </div>
+
+      <!-- Platform Filtering Toolbar -->
+      <div class="filter-toolbar" role="tablist" aria-label="Filter applications by platform">
+        <button class="filter-btn active" data-filter="all" onclick="filterPlatform('all', this)" role="tab" aria-selected="true">All Platforms (6)</button>
+        <button class="filter-btn" data-filter="windows" onclick="filterPlatform('windows', this)" role="tab" aria-selected="false">Windows (5)</button>
+        <button class="filter-btn" data-filter="android" onclick="filterPlatform('android', this)" role="tab" aria-selected="false">Android (2)</button>
+        <button class="filter-btn" data-filter="linux" onclick="filterPlatform('linux', this)" role="tab" aria-selected="false">Linux (1)</button>
+        <button class="filter-btn" data-filter="web" onclick="filterPlatform('web', this)" role="tab" aria-selected="false">Web &amp; Portable (3)</button>
       </div>
 
       <div class="file-grid">
-        <div class="pc ati-card">
-          <h3>Typing Instructor <span style="font-size:0.75rem; background:rgba(242,184,75,0.15); color:var(--signal); border:1px solid rgba(242,184,75,0.4); padding:2px 8px; border-radius:12px; margin-left:8px; vertical-align:middle;">v3.2.0</span></h3>
-          <p>Syntax mastery for Python, C++, and JS, Live Multiplayer races, 6 Mechanical switch synthesizers &amp; Auto-Updater.</p>
+        <!-- Card 1: Advanced Typing Instructor -->
+        <div class="pc ati-card" data-platforms="windows linux web" id="card-ati">
+          <h3>Typing Instructor <span style="font-size:0.75rem; background:rgba(242,184,75,0.15); color:var(--signal); border:1px solid rgba(242,184,75,0.4); padding:2px 8px; border-radius:12px; margin-left:8px; vertical-align:middle;">v3.2.2 • Win / Linux</span></h3>
+          <p>Syntax mastery for Python, C++, and JS. Live Multiplayer races, 6 mechanical switch sound synthesizers, custom keyboard layouts &amp; auto-updater.</p>
 
           <details>
             <summary>Setup Instructions</summary>
@@ -1546,22 +1929,24 @@
             </ol>
           </details>
 
-          <div class="card-checkbox-wrapper" onclick="handleBoxClick('ati')" id="wrap-ati">
-            <input type="checkbox" id="check-ati" class="locked-box" />
+          <div class="card-checkbox-wrapper" onclick="handleBoxClick('ati')" id="wrap-ati" tabindex="0" role="checkbox" aria-checked="false" onkeydown="handleCheckboxKeyDown(event, 'ati')">
+            <input type="checkbox" id="check-ati" class="locked-box" tabindex="-1" />
             <label id="label-ati">Click to Read Terms &amp; Unlock</label>
           </div>
 
-          <div style="display: flex; gap: 10px; width: 100%; margin-top: auto">
-            <a id="btn-ati" class="btn-download locked" style="flex: 1">Download .EXE</a>
-            <a href="ati-demo" class="btn-download" style="flex: 1; background: rgba(242, 184, 75, 0.1); border: 1px solid rgba(242, 184, 75, 0.4); color: var(--signal); box-shadow: none;" title="Test in browser without installing">
+          <div style="display: flex; gap: 8px; width: 100%; margin-top: auto; flex-wrap: wrap;">
+            <a id="btn-ati-setup" class="btn-download locked" style="flex: 1 1 110px" onclick="handleLockedClick(event, 'ati')">.EXE (Setup)</a>
+            <a id="btn-ati-portable" class="btn-download locked" style="flex: 1 1 110px" onclick="handleLockedClick(event, 'ati')">.EXE (Portable)</a>
+            <a href="ati-demo" class="btn-download" style="flex: 1 1 110px; background: rgba(242, 184, 75, 0.1); border: 1px solid rgba(242, 184, 75, 0.4); color: var(--signal); box-shadow: none;" title="Test in browser without installing">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><polygon points="5 3 19 12 5 21 5 3"/></svg>Web Demo
             </a>
           </div>
         </div>
 
-        <div class="pc solar-card">
-          <h3>Solar Engine <span style="font-size:0.75rem; background:rgba(94,212,245,0.15); color:var(--ion); border:1px solid rgba(94,212,245,0.4); padding:2px 8px; border-radius:12px; margin-left:8px; vertical-align:middle;">v3.3</span></h3>
-          <p>Standalone deep-space simulation with real-time planetary telemetry and high-performance 3D rendering.</p>
+        <!-- Card 2: Solar System Engine -->
+        <div class="pc solar-card" data-platforms="windows web" id="card-solar">
+          <h3>Solar Engine <span style="font-size:0.75rem; background:rgba(94,212,245,0.15); color:var(--ion); border:1px solid rgba(94,212,245,0.4); padding:2px 8px; border-radius:12px; margin-left:8px; vertical-align:middle;">v3.3 • Windows 3D</span></h3>
+          <p>Standalone deep-space simulation with real-time planetary telemetry, Keplerian orbits, and high-performance 3D rendering.</p>
 
           <details>
             <summary style="color: var(--ion)">Setup Instructions</summary>
@@ -1573,19 +1958,20 @@
             </ol>
           </details>
 
-          <div class="card-checkbox-wrapper" onclick="handleBoxClick('solar')" id="wrap-solar">
-            <input type="checkbox" id="check-solar" class="locked-box" />
+          <div class="card-checkbox-wrapper" onclick="handleBoxClick('solar')" id="wrap-solar" tabindex="0" role="checkbox" aria-checked="false" onkeydown="handleCheckboxKeyDown(event, 'solar')">
+            <input type="checkbox" id="check-solar" class="locked-box" tabindex="-1" />
             <label id="label-solar">Click to Read Terms &amp; Unlock</label>
           </div>
 
-          <div style="display: flex; gap: 10px; width: 100%; margin-top: auto">
-            <a id="btn-solar-exe" class="btn-download solar-btn locked" style="flex: 1">.EXE (App)</a>
-            <a id="btn-solar-zip" class="btn-download solar-btn locked" style="flex: 1">.7Z (Web)</a>
+          <div style="display: flex; gap: 10px; width: 100%; margin-top: auto; flex-wrap: wrap;">
+            <a id="btn-solar-exe" class="btn-download solar-btn locked" style="flex: 1 1 120px" onclick="handleLockedClick(event, 'solar')">.EXE (Setup)</a>
+            <a id="btn-solar-zip" class="btn-download solar-btn locked" style="flex: 1 1 120px" onclick="handleLockedClick(event, 'solar')">.7Z (Source)</a>
           </div>
         </div>
 
-        <div class="pc perceptus-card">
-          <h3>Perceptus Flow <span style="font-size:0.75rem; background:rgba(184,155,255,0.15); color:var(--plasma); border:1px solid rgba(184,155,255,0.4); padding:2px 8px; border-radius:12px; margin-left:8px; vertical-align:middle;">v2.5.0</span></h3>
+        <!-- Card 3: Perceptus Flow -->
+        <div class="pc perceptus-card" data-platforms="windows" id="card-perceptus">
+          <h3>Perceptus Flow <span style="font-size:0.75rem; background:rgba(184,155,255,0.15); color:var(--plasma); border:1px solid rgba(184,155,255,0.4); padding:2px 8px; border-radius:12px; margin-left:8px; vertical-align:middle;">v2.5.0 • Windows Vision</span></h3>
           <p>Autonomous touchless machine vision, multimodal AI co-pilot &amp; frameless glass cockpit. Control Windows using your standard webcam.</p>
 
           <details>
@@ -1598,59 +1984,203 @@
             </ol>
           </details>
 
-          <div class="card-checkbox-wrapper" onclick="handleBoxClick('perceptus')" id="wrap-perceptus">
-            <input type="checkbox" id="check-perceptus" class="locked-box" />
+          <div class="card-checkbox-wrapper" onclick="handleBoxClick('perceptus')" id="wrap-perceptus" tabindex="0" role="checkbox" aria-checked="false" onkeydown="handleCheckboxKeyDown(event, 'perceptus')">
+            <input type="checkbox" id="check-perceptus" class="locked-box" tabindex="-1" />
             <label id="label-perceptus">Click to Read Terms &amp; Unlock</label>
           </div>
 
-          <div style="display: flex; gap: 10px; width: 100%; margin-top: auto">
-            <a id="btn-perceptus-exe" class="btn-download perceptus-btn locked" style="flex: 1">.EXE (App)</a>
-            <a id="btn-perceptus-zip" class="btn-download perceptus-btn locked" style="flex: 1">.7Z (Source)</a>
+          <div style="display: flex; gap: 10px; width: 100%; margin-top: auto; flex-wrap: wrap;">
+            <a id="btn-perceptus-exe" class="btn-download perceptus-btn locked" style="flex: 1 1 120px" onclick="handleLockedClick(event, 'perceptus')">.EXE (App)</a>
+            <a id="btn-perceptus-zip" class="btn-download perceptus-btn locked" style="flex: 1 1 120px" onclick="handleLockedClick(event, 'perceptus')">.7Z (Source)</a>
           </div>
         </div>
 
-        <div class="pc col-card">
+        <!-- Card 4: Class Of Learners Mobile -->
+        <div class="pc col-card" data-platforms="android" id="card-col">
           <h3>Class Of Learners <span style="font-size:0.75rem; background:rgba(52,211,153,0.15); color:var(--em); border:1px solid rgba(52,211,153,0.4); padding:2px 8px; border-radius:12px; margin-left:8px; vertical-align:middle;">v2.0.0 • Android APK</span></h3>
           <p>5-Tab Native Android Command Center with 4 Built-In Offline Labs (Mumbai MVA Traffic Drill, 60 FPS Solar Orbital Physics, 44.1 kHz Typing Arena, ISO-18004 QR Studio), Career Compass, Focus Timer &amp; 12 Unlockable Badges.</p>
 
           <details>
             <summary style="color: var(--em)">Setup Instructions</summary>
             <ol class="setup-list">
-              <li>Download <code>COL.apk</code> (v2.0.0) below onto your Android device.</li>
+              <li>Download <code>COL.apk</code> (v2.0.0, 7.2 MB) below onto your Android device.</li>
               <li>Open the downloaded APK and tap "Install" (enable "Install from Unknown Sources" in Android settings if prompted).</li>
               <li>Enjoy instant 100% offline native labs or switch to the Live Cloud Portal anytime.</li>
             </ol>
           </details>
 
-          <div class="card-checkbox-wrapper" onclick="handleBoxClick('col')" id="wrap-col">
-            <input type="checkbox" id="check-col" class="locked-box" />
+          <div class="card-checkbox-wrapper" onclick="handleBoxClick('col')" id="wrap-col" tabindex="0" role="checkbox" aria-checked="false" onkeydown="handleCheckboxKeyDown(event, 'col')">
+            <input type="checkbox" id="check-col" class="locked-box" tabindex="-1" />
             <label id="label-col">Click to Read Terms &amp; Unlock</label>
           </div>
 
-          <a id="btn-col" class="btn-download col-btn locked" style="margin-top: auto">Download .APK (Android)</a>
+          <a id="btn-col" class="btn-download col-btn locked" style="margin-top: auto" onclick="handleLockedClick(event, 'col')">Download .APK (7.2 MB)</a>
+        </div>
+
+        <!-- Card 5: CastFlow Studio -->
+        <div class="pc cast-card" data-platforms="android windows" id="card-cast">
+          <h3>CastFlow Studio <span style="font-size:0.75rem; background:rgba(255,123,114,0.15); color:#ff7b72; border:1px solid rgba(255,123,114,0.4); padding:2px 8px; border-radius:12px; margin-left:8px; vertical-align:middle;">v1.2.0 • Android APK</span></h3>
+          <p>Universal wireless screen casting, remote trackpad injection via accessibility service, DLNA streaming server, and custom desktop DeX interface.</p>
+
+          <details>
+            <summary style="color: #ff7b72">Setup Instructions</summary>
+            <ol class="setup-list">
+              <li>Download <code>app-debug.apk</code> (76.2 MB) on your Android 11+ device.</li>
+              <li>Install the application and grant the Foreground Media Projection and Accessibility permissions.</li>
+              <li>Connect your PC and Android device to the same Wi-Fi network and launch the Cast server.</li>
+            </ol>
+          </details>
+
+          <div class="card-checkbox-wrapper" onclick="handleBoxClick('cast')" id="wrap-cast" tabindex="0" role="checkbox" aria-checked="false" onkeydown="handleCheckboxKeyDown(event, 'cast')">
+            <input type="checkbox" id="check-cast" class="locked-box" tabindex="-1" />
+            <label id="label-cast">Click to Read Terms &amp; Unlock</label>
+          </div>
+
+          <a id="btn-cast" class="btn-download cast-btn locked" style="margin-top: auto" onclick="handleLockedClick(event, 'cast')">Download .APK (76.2 MB)</a>
+        </div>
+
+        <!-- Card 6: Terra 3D Earth Globe -->
+        <div class="pc terra-card" data-platforms="windows web" id="card-terra">
+          <h3>Terra 3D Globe <span style="font-size:0.75rem; background:rgba(56,189,248,0.15); color:#38bdf8; border:1px solid rgba(56,189,248,0.4); padding:2px 8px; border-radius:12px; margin-left:8px; vertical-align:middle;">v1.0.0 • Windows x64</span></h3>
+          <p>Interactive high-resolution 3D planetary globe with topographic relief, day/night atmospheric terminator shaders, and real-time orbital tracking.</p>
+
+          <details>
+            <summary style="color: #38bdf8">Setup Instructions</summary>
+            <ol class="setup-list">
+              <li>Download <code>Terra3D.exe</code> (13.6 MB) standalone Windows executable.</li>
+              <li>Extract or run directly with hardware GPU acceleration enabled for full 60 FPS globe rendering.</li>
+              <li>Explore orbital satellite paths, bathymetry layers, and dynamic celestial lighting.</li>
+            </ol>
+          </details>
+
+          <div class="card-checkbox-wrapper" onclick="handleBoxClick('terra')" id="wrap-terra" tabindex="0" role="checkbox" aria-checked="false" onkeydown="handleCheckboxKeyDown(event, 'terra')">
+            <input type="checkbox" id="check-terra" class="locked-box" tabindex="-1" />
+            <label id="label-terra">Click to Read Terms &amp; Unlock</label>
+          </div>
+
+          <div style="display: flex; gap: 10px; width: 100%; margin-top: auto; flex-wrap: wrap;">
+            <a id="btn-terra" class="btn-download terra-btn locked" style="flex: 1 1 140px" onclick="handleLockedClick(event, 'terra')">Download .EXE</a>
+            <a href="Terra3D/" class="btn-download" style="flex: 1 1 120px; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8; box-shadow: none;" title="Explore live in browser">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><polygon points="5 3 19 12 5 21 5 3"/></svg>Web Atlas
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cryptographic Checksums & SHA-256 Verification Drawer -->
+      <div class="checksum-drawer" id="checksumDrawer">
+        <div class="checksum-header" onclick="toggleChecksumDrawer()" role="button" tabindex="0" aria-expanded="false" id="checksumTrigger" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleChecksumDrawer();}">
+          <div style="display: flex; align-items: center; gap: 14px">
+            <div class="checksum-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="4"/><path d="M9 12l2 2 4-4"/></svg>
+            </div>
+            <div>
+              <h2 style="font-family: var(--serif); font-size: 1.35rem; font-weight: 400; color: var(--ink)">Cryptographic Signatures &amp; SHA-256 Checksums</h2>
+              <p style="font-size: 0.82rem; color: var(--dim)">Verify binary integrity and cryptographic authenticity before executing on your system.</p>
+            </div>
+          </div>
+          <span class="checksum-arrow">&#9660;</span>
+        </div>
+        <div class="checksum-content" id="checksumBody">
+          <div class="checksum-table-wrapper">
+            <table class="checksum-table">
+              <thead>
+                <tr>
+                  <th>Application Package</th>
+                  <th>Platform / Target</th>
+                  <th>Version</th>
+                  <th>Size</th>
+                  <th>Cryptographic SHA-256 Hash</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Advanced Typing Instructor (Setup)</strong></td>
+                  <td><span class="platform-tag win">Windows x64</span></td>
+                  <td>v3.2.2</td>
+                  <td>54.7 MB</td>
+                  <td><code class="hash-code">A856DF44707E12B232E3744E96E88EDC8FC766F3DFB68055BB981EE601445640</code></td>
+                  <td><button class="copy-hash-btn" onclick="copyHash('A856DF44707E12B232E3744E96E88EDC8FC766F3DFB68055BB981EE601445640', this)">Copy</button></td>
+                </tr>
+                <tr>
+                  <td><strong>Advanced Typing Instructor (Portable)</strong></td>
+                  <td><span class="platform-tag win">Windows x64</span></td>
+                  <td>v3.2.2</td>
+                  <td>53.0 MB</td>
+                  <td><code class="hash-code">0F09D3FAA2EECC2F3D4D2501DA82603E89D4C0EEFA6DDF32AE9412AE443EEAF5</code></td>
+                  <td><button class="copy-hash-btn" onclick="copyHash('0F09D3FAA2EECC2F3D4D2501DA82603E89D4C0EEFA6DDF32AE9412AE443EEAF5', this)">Copy</button></td>
+                </tr>
+                <tr>
+                  <td><strong>Class Of Learners Mobile (COL.apk)</strong></td>
+                  <td><span class="platform-tag android">Android 8.0+</span></td>
+                  <td>v2.0.0</td>
+                  <td>7.2 MB</td>
+                  <td><code class="hash-code">8D62370C62AD6C88E46697E48DB69119842134BA933BED4A81040AAE0A812BE8</code></td>
+                  <td><button class="copy-hash-btn" onclick="copyHash('8D62370C62AD6C88E46697E48DB69119842134BA933BED4A81040AAE0A812BE8', this)">Copy</button></td>
+                </tr>
+                <tr>
+                  <td><strong>Solar System Engine (Setup)</strong></td>
+                  <td><span class="platform-tag win">Windows x64</span></td>
+                  <td>v3.3</td>
+                  <td>85.2 MB</td>
+                  <td><code class="hash-code">E9B2771B6554D8A415064FD6782AE4DFF1A4658B3597D9D079A46416A34F5C5A</code></td>
+                  <td><button class="copy-hash-btn" onclick="copyHash('E9B2771B6554D8A415064FD6782AE4DFF1A4658B3597D9D079A46416A34F5C5A', this)">Copy</button></td>
+                </tr>
+                <tr>
+                  <td><strong>Perceptus Flow (Standalone)</strong></td>
+                  <td><span class="platform-tag win">Windows x64</span></td>
+                  <td>v2.5.0</td>
+                  <td>64.1 MB</td>
+                  <td><code class="hash-code">F44AC23BC7715B8C7AE90C502EAA43F7223C7DE8E97FB77FE382B1B6BE0B739C</code></td>
+                  <td><button class="copy-hash-btn" onclick="copyHash('F44AC23BC7715B8C7AE90C502EAA43F7223C7DE8E97FB77FE382B1B6BE0B739C', this)">Copy</button></td>
+                </tr>
+                <tr>
+                  <td><strong>CastFlow Studio (Cast.apk)</strong></td>
+                  <td><span class="platform-tag android">Android 11+</span></td>
+                  <td>v1.2.0</td>
+                  <td>76.2 MB</td>
+                  <td><code class="hash-code">7894003D2906F38C20125E936E5634C89FDD552485E06255F47B56AAA4F54910</code></td>
+                  <td><button class="copy-hash-btn" onclick="copyHash('7894003D2906F38C20125E936E5634C89FDD552485E06255F47B56AAA4F54910', this)">Copy</button></td>
+                </tr>
+                <tr>
+                  <td><strong>Terra 3D Earth Globe (Terra3D.exe)</strong></td>
+                  <td><span class="platform-tag win">Windows x64</span></td>
+                  <td>v1.0.0</td>
+                  <td>13.6 MB</td>
+                  <td><code class="hash-code">B1E80F34A86ED95183DD521D1D6CF88DDCAE462A94110912A76C96D515635EAE</code></td>
+                  <td><button class="copy-hash-btn" onclick="copyHash('B1E80F34A86ED95183DD521D1D6CF88DDCAE462A94110912A76C96D515635EAE', this)">Copy</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="checksum-cli-hint">
+            <strong>Verification Command:</strong>
+            <code>Get-FileHash -Path ".\filename.exe" -Algorithm SHA256</code> (PowerShell) &bull;
+            <code>sha256sum filename</code> (Linux / macOS)
+          </div>
         </div>
       </div>
     </section>
 
     <!-- Terms Modal using CoL standard modal style -->
-    <div class="mo" id="termsModal">
+    <div class="mo" id="termsModal" role="dialog" aria-modal="true" aria-labelledby="modalTitleText">
       <div class="md" id="modalBox">
         <div class="mhd">
           <div class="modal-icon-badge" id="modalIcon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"/></svg></div>
-          <h2 id="modalTitleText">License & Terms</h2>
+          <h2 id="modalTitleText">License &amp; Terms</h2>
           <p>Please review the usage conditions before downloading.</p>
         </div>
         <div class="mbd" id="modalText">
           <!-- Dynamic Content -->
         </div>
         <div class="mbd" style="padding-top: 0">
-          <button class="ms" id="modalAcceptBtn" onclick="acceptModalTerms()">I Agree & Unlock</button>
+          <button class="ms" id="modalAcceptBtn" onclick="acceptModalTerms()">I Agree &amp; Unlock</button>
           <button class="msk" onclick="closeTermsModal()">Cancel</button>
         </div>
       </div>
     </div>
-
-    <footer class="sf">
+<footer class="sf">
       <div class="fi">
         <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
         <div class="fl">
@@ -1705,110 +2235,301 @@
         }
       })
 
-      // ── TERMS LOGIC ──
+      // ── TERMS LOGIC & DOWNLOAD CONTROLLER ──
+      const STORAGE_KEY = 'col_accepted_terms';
+
       const termsData = {
         ati: {
           title: 'Typing Instructor Terms',
           icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>',
           color: 'var(--signal)',
           textColor: '#0A0500',
-          acceptedText: 'I Accept The Terms',
-          html: '<div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:var(--signal); color:var(--signal);"></span>1. About This Project</div><div class="modal-term-desc">Created by Neel, Ansh, and Aarush (Co‑Founders), with contributions from Yashraj Jadhav, Aaryaman Jadhav, and John Doe as a student learning project focused on syntax mastery.</div></div><div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:var(--signal); color:var(--signal);"></span>2. Free To Use</div><div class="modal-term-desc">Provided completely free of charge without strict copyrights.</div></div>',
-          link: 'https://github.com/NeelAniGamer/Vercel/releases/download/Projects/AdvancedTypingInstructor_Setup.exe',
-          btnId: 'btn-ati'
+          acceptedText: 'Terms Accepted & Unlocked',
+          html: '<div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:var(--signal); color:var(--signal);"></span>1. About This Project</div><div class="modal-term-desc">Created by Neel, Ansh, and Aarush (Co‑Founders) with contributions from Yashraj Jadhav, Aaryaman Jadhav, and John Doe as a student learning project focused on syntax mastery.</div></div><div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:var(--signal); color:var(--signal);"></span>2. Free To Use</div><div class="modal-term-desc">Provided completely free of charge without strict copyrights. Fully offline capable with optional LAN/Supabase cloud racing.</div></div>',
+          links: [
+            { id: 'btn-ati-setup', url: 'https://github.com/NeelAniGamer/Vercel/releases/download/Projects/AdvancedTypingInstructor_Setup.exe' },
+            { id: 'btn-ati-portable', url: 'https://github.com/NeelAniGamer/Vercel/releases/download/Projects/AdvancedTypingInstructor.exe' }
+          ]
         },
         solar: {
           title: 'Solar Engine Terms',
           icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>',
           color: 'var(--ion)',
           textColor: '#001f29',
-          acceptedText: 'I Accept The Terms',
-          html: '<div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:var(--ion); color:var(--ion);"></span>1. About This Project</div><div class="modal-term-desc">Advanced physics and telemetry showcase.</div></div><div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:var(--ion); color:var(--ion);"></span>2. Standard Disclaimer</div><div class="modal-term-desc">Use "as is". Not responsible for simulated planetary collisions!</div></div>',
-          link: 'https://github.com/NeelAniGamer/Vercel/releases/download/Projects/SolarSystemEngine_v3.3_Setup.exe',
-          btnId: 'btn-solar-exe',
-          link2: 'https://github.com/NeelAniGamer/Vercel/releases/download/Projects/solar.7z',
-          btnId2: 'btn-solar-zip'
+          acceptedText: 'Terms Accepted & Unlocked',
+          html: '<div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:var(--ion); color:var(--ion);"></span>1. About This Project</div><div class="modal-term-desc">Advanced orbital physics and planetary telemetry showcase designed for educational exploration.</div></div><div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:var(--ion); color:var(--ion);"></span>2. Standard Disclaimer</div><div class="modal-term-desc">Use "as is". Not responsible for simulated planetary collisions! Hardware GPU acceleration recommended.</div></div>',
+          links: [
+            { id: 'btn-solar-exe', url: 'https://github.com/NeelAniGamer/Vercel/releases/download/Projects/SolarSystemEngine_v3.3_Setup.exe' },
+            { id: 'btn-solar-zip', url: 'https://github.com/NeelAniGamer/Vercel/releases/download/Projects/solar.7z' }
+          ]
         },
         perceptus: {
           title: 'Perceptus Flow Terms',
           icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>',
           color: 'var(--plasma)',
           textColor: '#120524',
-          acceptedText: 'I Accept The Terms',
-          html: '<div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:var(--plasma); color:var(--plasma);"></span>1. Local Privacy</div><div class="modal-term-desc">Computer vision and gesture processing run 100% locally on your machine. No webcam footage is sent to the cloud.</div></div><div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:var(--plasma); color:var(--plasma);"></span>2. Disclaimer</div><div class="modal-term-desc">Freely distributed for personal and educational use. Not responsible for unintended spatial clicks.</div></div>',
-          link: 'https://github.com/NeelAniGamer/Vercel/releases/download/Projects/PerceptusFlow.exe',
-          btnId: 'btn-perceptus-exe',
-          link2: 'https://github.com/NeelAniGamer/Vercel/releases/download/Projects/Hand.Gestures.By.ANA.7z',
-          btnId2: 'btn-perceptus-zip'
+          acceptedText: 'Terms Accepted & Unlocked',
+          html: '<div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:var(--plasma); color:var(--plasma);"></span>1. Local Privacy First</div><div class="modal-term-desc">Computer vision and hand landmarking run 100% locally on your machine. No webcam footage or spatial telemetry is transmitted to any external server.</div></div><div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:var(--plasma); color:var(--plasma);"></span>2. Disclaimer</div><div class="modal-term-desc">Freely distributed for personal and educational use. Calibration required for optimal lighting conditions.</div></div>',
+          links: [
+            { id: 'btn-perceptus-exe', url: 'https://github.com/NeelAniGamer/Vercel/releases/download/Projects/PerceptusFlow.exe' },
+            { id: 'btn-perceptus-zip', url: 'https://github.com/NeelAniGamer/Vercel/releases/download/Projects/Hand.Gestures.By.ANA.7z' }
+          ]
         },
         col: {
           title: 'Class Of Learners Mobile Terms',
           icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>',
           color: 'var(--em)',
           textColor: '#022014',
-          acceptedText: 'I Accept The Terms',
-          html: '<div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:var(--em); color:var(--em);"></span>1. Android Distribution</div><div class="modal-term-desc">Direct APK distribution for Android devices. Verified clean and free of ads or trackers.</div></div><div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:var(--em); color:var(--em);"></span>2. Educational Use</div><div class="modal-term-desc">Provided free of charge for learners worldwide.</div></div>',
-          link: 'https://github.com/NeelAniGamer/Vercel/releases/download/Projects/COL.apk',
-          btnId: 'btn-col'
+          acceptedText: 'Terms Accepted & Unlocked',
+          html: '<div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:var(--em); color:var(--em);"></span>1. Direct Android Distribution</div><div class="modal-term-desc">Direct APK distribution for Android 8.0+ devices. Verified clean, ad-free, tracker-free, and contains full offline interactive labs.</div></div><div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:var(--em); color:var(--em);"></span>2. Educational License</div><div class="modal-term-desc">Provided free of charge for students, educators, and schools worldwide.</div></div>',
+          links: [
+            { id: 'btn-col', url: 'https://github.com/NeelAniGamer/Vercel/releases/download/Projects/COL.apk' }
+          ]
+        },
+        cast: {
+          title: 'CastFlow Studio Terms',
+          icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
+          color: '#ff7b72',
+          textColor: '#1f0806',
+          acceptedText: 'Terms Accepted & Unlocked',
+          html: '<div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:#ff7b72; color:#ff7b72;"></span>1. Wireless Casting & Privacy</div><div class="modal-term-desc">Screen streaming runs strictly within your local LAN. Embedded Ktor server binds to port 8080 and does not route video over public WAN servers.</div></div><div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:#ff7b72; color:#ff7b72;"></span>2. Accessibility Service</div><div class="modal-term-desc">Remote cursor control requires optional accessibility permissions to inject touch/gesture events. You retain full system control.</div></div>',
+          links: [
+            { id: 'btn-cast', url: 'https://github.com/NeelAniGamer/Vercel/releases/download/Projects/Cast.apk' }
+          ]
+        },
+        terra: {
+          title: 'Terra 3D Earth Globe Terms',
+          icon: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>',
+          color: '#38bdf8',
+          textColor: '#021a29',
+          acceptedText: 'Terms Accepted & Unlocked',
+          html: '<div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:#38bdf8; color:#38bdf8;"></span>1. Scientific Visualization</div><div class="modal-term-desc">High-precision digital elevation and geospatial textures compiled for educational and academic exploration.</div></div><div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:#38bdf8; color:#38bdf8;"></span>2. Performance Notice</div><div class="modal-term-desc">Shader execution requires OpenGL 3.3+ or DirectX 11 capable graphics hardware for optimal frame rates.</div></div>',
+          links: [
+            { id: 'btn-terra', url: 'https://github.com/NeelAniGamer/Vercel/releases/download/Projects/Terra3D.exe' }
+          ]
+        }
+      };
+
+      let currentApp = '';
+
+      function getSavedAcceptances() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          return raw ? JSON.parse(raw) : [];
+        } catch (e) {
+          return [];
         }
       }
 
-      let currentApp = ''
+      function saveAcceptance(appId) {
+        try {
+          const list = getSavedAcceptances();
+          if (!list.includes(appId)) {
+            list.push(appId);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+          }
+        } catch (e) {}
+      }
+
+      function unlockAppUI(appId, animated) {
+        const data = termsData[appId];
+        if (!data) return;
+
+        const cb = document.getElementById('check-' + appId);
+        const lbl = document.getElementById('label-' + appId);
+        const wrapper = document.getElementById('wrap-' + appId);
+
+        if (cb) {
+          cb.classList.remove('locked-box');
+          cb.checked = true;
+        }
+        if (lbl) {
+          lbl.innerText = data.acceptedText;
+        }
+        if (wrapper) {
+          wrapper.classList.add('accepted');
+          wrapper.setAttribute('aria-checked', 'true');
+          if (animated) {
+            wrapper.classList.add('just-accepted');
+            setTimeout(function () { wrapper.classList.remove('just-accepted'); }, 500);
+          }
+        }
+
+        data.links.forEach(function (item) {
+          const btn = document.getElementById(item.id);
+          if (btn) {
+            btn.classList.remove('locked');
+            btn.setAttribute('download', '');
+            btn.href = item.url;
+            btn.removeAttribute('onclick');
+          }
+        });
+      }
+
       function handleBoxClick(appId) {
-        const cb = document.getElementById('check-' + appId)
-        if (!cb.classList.contains('locked-box')) return
-        currentApp = appId
-        const data = termsData[appId]
-        document.getElementById('modalTitleText').innerText = data.title
-        document.getElementById('modalText').innerHTML = data.html
+        const cb = document.getElementById('check-' + appId);
+        if (!cb || !cb.classList.contains('locked-box')) return;
+        currentApp = appId;
+        const data = termsData[appId];
+        if (!data) return;
 
-        const iconEl = document.getElementById('modalIcon')
-        iconEl.innerHTML = data.icon
-        iconEl.style.backgroundColor = `rgba(255, 255, 255, 0.05)`
-        iconEl.style.color = data.color
-        iconEl.style.border = `1px solid ${data.color}`
+        document.getElementById('modalTitleText').innerText = data.title;
+        document.getElementById('modalText').innerHTML = data.html;
 
-        const accBtn = document.getElementById('modalAcceptBtn')
-        accBtn.style.background = data.color
-        accBtn.style.color = data.textColor
+        const iconEl = document.getElementById('modalIcon');
+        iconEl.innerHTML = data.icon;
+        iconEl.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+        iconEl.style.color = data.color;
+        iconEl.style.border = '1px solid ' + data.color;
 
-        document.getElementById('termsModal').classList.add('open')
+        const accBtn = document.getElementById('modalAcceptBtn');
+        accBtn.style.background = data.color;
+        accBtn.style.color = data.textColor;
+
+        document.getElementById('termsModal').classList.add('open');
+      }
+
+      function handleCheckboxKeyDown(event, appId) {
+        if (event.key === ' ' || event.key === 'Enter') {
+          event.preventDefault();
+          handleBoxClick(appId);
+        }
+      }
+
+      function handleLockedClick(event, appId) {
+        event.preventDefault();
+        showToast('Please review and accept the terms to unlock this download.');
+        handleBoxClick(appId);
       }
 
       function acceptModalTerms() {
-        document.getElementById('termsModal').classList.remove('open')
-        const cb = document.getElementById('check-' + currentApp)
-        const lbl = document.getElementById('label-' + currentApp)
-        const wrapper = document.getElementById('wrap-' + currentApp)
+        document.getElementById('termsModal').classList.remove('open');
+        if (!currentApp) return;
 
-        cb.classList.remove('locked-box')
-        cb.checked = true
-        lbl.innerText = termsData[currentApp].acceptedText
+        unlockAppUI(currentApp, true);
+        saveAcceptance(currentApp);
+        showToast('Download unlocked successfully!', true);
 
-        wrapper.classList.add('accepted')
-        wrapper.classList.add('just-accepted')
-        setTimeout(() => wrapper.classList.remove('just-accepted'), 500)
-
-        const data = termsData[currentApp]
-        const btn1 = document.getElementById(data.btnId)
-        if (btn1) {
-          btn1.classList.remove('locked')
-          btn1.setAttribute('download', '')
-          btn1.href = data.link
-        }
-        if (data.btnId2) {
-          const btn2 = document.getElementById(data.btnId2)
-          if (btn2) {
-            btn2.classList.remove('locked')
-            btn2.setAttribute('download', '')
-            btn2.href = data.link2
-          }
-        }
+        // Check if all are now unlocked
+        checkAllUnlockedState();
       }
+
       function closeTermsModal() {
-        document.getElementById('termsModal').classList.remove('open')
+        document.getElementById('termsModal').classList.remove('open');
       }
-    </script>
+
+      function unlockAllApps() {
+        Object.keys(termsData).forEach(function (appId) {
+          unlockAppUI(appId, true);
+          saveAcceptance(appId);
+        });
+        const btn = document.getElementById('unlockAllBtn');
+        if (btn) {
+          btn.classList.add('all-accepted');
+          btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> All Downloads Unlocked';
+        }
+        showToast('All 6 application suites unlocked!', true);
+      }
+
+      function checkAllUnlockedState() {
+        const saved = getSavedAcceptances();
+        const allKeys = Object.keys(termsData);
+        const allDone = allKeys.every(function (k) { return saved.includes(k); });
+        const btn = document.getElementById('unlockAllBtn');
+        if (btn && allDone) {
+          btn.classList.add('all-accepted');
+          btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> All Downloads Unlocked';
+        }
+      }
+
+      function filterPlatform(platform, clickedBtn) {
+        document.querySelectorAll('.filter-btn').forEach(function (btn) {
+          btn.classList.remove('active');
+          btn.setAttribute('aria-selected', 'false');
+        });
+        if (clickedBtn) {
+          clickedBtn.classList.add('active');
+          clickedBtn.setAttribute('aria-selected', 'true');
+        }
+
+        const cards = document.querySelectorAll('.file-grid .pc');
+        cards.forEach(function (card) {
+          const platforms = (card.getAttribute('data-platforms') || '').split(' ');
+          if (platform === 'all' || platforms.includes(platform)) {
+            card.classList.remove('hidden-card');
+          } else {
+            card.classList.add('hidden-card');
+          }
+        });
+      }
+
+      function toggleChecksumDrawer() {
+        const drawer = document.getElementById('checksumDrawer');
+        const trigger = document.getElementById('checksumTrigger');
+        if (!drawer) return;
+        const isOpen = drawer.classList.toggle('open');
+        if (trigger) trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      }
+
+      function copyHash(hash, btn) {
+        if (!navigator.clipboard) {
+          const ta = document.createElement('textarea');
+          ta.value = hash;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+        } else {
+          navigator.clipboard.writeText(hash);
+        }
+        const origText = btn.innerText;
+        btn.innerText = 'Copied!';
+        btn.style.background = 'var(--em)';
+        btn.style.color = '#06140e';
+        showToast('Copied SHA-256 Hash to Clipboard!', true);
+        setTimeout(function () {
+          btn.innerText = origText;
+          btn.style.background = '';
+          btn.style.color = '';
+        }, 2000);
+      }
+
+      function showToast(msg, isSuccess) {
+        let t = document.getElementById('dlToast');
+        if (!t) {
+          t = document.createElement('div');
+          t.id = 'dlToast';
+          t.className = 'toast';
+          document.body.appendChild(t);
+        }
+        t.innerText = msg;
+        t.className = 'toast show' + (isSuccess ? ' green' : '');
+        setTimeout(function () {
+          t.className = 'toast';
+        }, 3200);
+      }
+
+      // Restore previously saved terms on load
+      document.addEventListener('DOMContentLoaded', function () {
+        const saved = getSavedAcceptances();
+        saved.forEach(function (appId) {
+          unlockAppUI(appId, false);
+        });
+        checkAllUnlockedState();
+      });
+
+      // Keyboard & backdrop listeners for modal
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+          closeTermsModal();
+        }
+      });
+      document.getElementById('termsModal').addEventListener('click', function (e) {
+        if (e.target === this) {
+          closeTermsModal();
+        }
+      });
+</script>
     <script>
       ;(function () {
         function applyTheme(isLight) {

@@ -315,10 +315,7 @@
         z-index: -1;
         pointer-events: none;
       }
-      .top-nav.s {
-        padding: 10px 32px;
-        border-bottom-color: var(--lineb);
-      }
+      .top-nav.s { border-bottom-color: var(--lineb); }
       .nav-brand {
         display: flex;
         align-items: center;
@@ -571,20 +568,8 @@
       /* =========================================================
          INTERACTIVE 3D ORRERY LABORATORY & STAGE MODE
          ========================================================= */
-      #orrery {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        display: block;
-        opacity: 0;
-        transition: opacity 1.8s var(--ease);
-        z-index: 1;
-        pointer-events: auto;
-      }
-      #orrery.v {
-        opacity: 1;
-      }
+      
+      
       .hvig {
         position: absolute;
         inset: 0;
@@ -616,7 +601,7 @@
         max-width: 1360px;
         width: 100%;
         margin: 0 auto;
-        padding: 160px 52px 80px;
+        padding: 130px 52px 50px;
         /* Isolate layout so h1/p repaints don't bubble up to full page */
         contain: layout style;
         pointer-events: none;
@@ -1139,7 +1124,7 @@
       }
       .hero h1 {
         font-family: var(--serif);
-        font-size: clamp(2.8rem, 7.2vw, 6.4rem);
+        font-size: clamp(2.6rem, 5.8vw, 5.4rem);
         font-weight: 400;
         line-height: 1.07;
         max-width: 15ch;
@@ -1152,18 +1137,18 @@
         color: var(--signal);
       }
       .hlede {
-        font-size: clamp(0.98rem, 1.4vw, 1.15rem);
-        line-height: 1.78;
+        font-size: clamp(0.98rem, 1.3vw, 1.12rem);
+        line-height: 1.7;
         color: var(--dim);
         max-width: 44ch;
-        margin-top: 28px;
+        margin-top: 22px;
         opacity: 0;
         transform: translateY(18px);
       }
       .hcta {
-        margin-top: 48px;
+        margin-top: 36px;
         display: flex;
-        gap: 16px;
+        gap: 14px;
         flex-wrap: wrap;
         opacity: 0;
         transform: translateY(14px);
@@ -1240,42 +1225,96 @@
       .scl::after {
         content: '';
         position: absolute;
-        top: -100%;
+        top: 0;
         left: 0;
         width: 100%;
         height: 100%;
         background: linear-gradient(transparent, var(--signal));
+        transform: translateY(-100%);
         animation: sf 2.2s ease-in-out 2.3s infinite;
       }
       @keyframes sf {
         0% {
-          top: -100%;
+          transform: translateY(-100%);
         }
         60% {
-          top: 100%;
+          transform: translateY(100%);
         }
         100% {
-          top: 100%;
+          transform: translateY(100%);
         }
       }
       .hst {
-        position: absolute;
-        right: 52px;
-        bottom: 46px;
-        z-index: 2;
+        margin-top: 34px;
+        display: inline-flex;
+        align-items: center;
+        gap: 14px;
+        padding: 8px 18px;
+        background: rgba(255, 255, 255, 0.035);
+        border: 1px solid var(--line);
+        border-radius: var(--r-pill, 9999px);
         font-family: var(--mono);
-        font-size: 0.7rem;
-        color: var(--dim);
-        text-align: right;
-        line-height: 2;
+        font-size: 0.74rem;
         letter-spacing: 0.05em;
-        text-transform: capitalize;
+        color: var(--dim);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
         opacity: 0;
-        animation: fi 1s var(--ease) 2.1s forwards;
+        transform: translateY(14px);
+        animation: fu 0.8s var(--ease) 0.35s forwards;
+        pointer-events: auto;
+      }
+      .hst-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
       }
       .hst b {
         color: var(--ion);
-        font-weight: 400;
+        font-weight: 600;
+      }
+      .hst-dot {
+        color: var(--lineb);
+        user-select: none;
+      }
+      body.lm .hst {
+        background: rgba(15, 23, 42, 0.04);
+        border-color: rgba(15, 23, 42, 0.1);
+        color: #64748b;
+      }
+      body.lm .hst b {
+        color: var(--ion);
+      }
+      body.lm .hst-dot {
+        color: rgba(15, 23, 42, 0.2);
+      }
+      @media (min-width: 769px) and (max-height: 920px) {
+        .hc {
+          padding-top: 110px;
+          padding-bottom: 40px;
+        }
+        .hey {
+          margin-bottom: 16px;
+        }
+        .hero h1 {
+          font-size: clamp(2.4rem, 5.2vw, 4.2rem);
+        }
+        .hlede {
+          margin-top: 18px;
+          font-size: 1rem;
+          line-height: 1.6;
+        }
+        .hcta {
+          margin-top: 28px;
+          gap: 12px;
+        }
+        .btn-p, .btn-g {
+          padding: 12px 26px;
+          font-size: 0.88rem;
+        }
+        .hst {
+          margin-top: 22px;
+        }
       }
       @keyframes fi {
         to {
@@ -1346,6 +1385,7 @@
         max-width: 1360px;
         margin: 0 auto;
         padding: 60px 52px 20px;
+        contain: layout style;
       }
       .vp-grid {
         display: grid;
@@ -1359,7 +1399,8 @@
         padding: 40px 30px;
         text-align: center;
         transition: 0.4s var(--ease);
-        backdrop-filter: blur(10px);
+        backdrop-filter: blur(8px);
+        contain: layout paint;
       }
       .vp-card:hover {
         border-color: var(--lineb);
@@ -1389,6 +1430,7 @@
         max-width: 1360px;
         margin: 0 auto;
         padding: 130px 52px 150px;
+        contain: layout style;
       }
       .sh {
         display: flex;
@@ -1440,32 +1482,33 @@
         grid-column: span 2;
       }
       @media (min-width: 1025px) {
-        /* #projects holds 7 cards: 2 feature (span 3) + 5 standard (span 2).
-           Rows 1 and 2 fill the 6-column grid, but row 3 would only carry
-           2 cards (4 of 6 columns) and leave a 33% hole. Give the last two
-           cards 3 columns each so row 3 fills completely.
-           Scoped to >1024px because the 4-column layout below 1025px
-           already treats feature and standard cards identically. */
-        #projects .pgrid > .pc:nth-last-child(2),
-        #projects .pgrid > .pc:last-child {
+        /* Section 2 (Educational) and Section 3 (Android) have 2 cards each:
+           giving each card span 3 fills the 6-column grid completely. */
+        #educational .pgrid > .pc,
+        #mobile .pgrid > .pc {
           grid-column: span 3;
         }
       }
       .pc {
         display: flex;
         flex-direction: column;
-        background: rgba(255, 255, 255, 0.035);
-        border: 1px solid var(--line);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.015) 35%, rgba(10, 16, 28, 0.35) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-top: 1.5px solid rgba(255, 255, 255, 0.32);
         border-radius: var(--r);
+        box-shadow:
+          0 14px 32px -8px rgba(0, 0, 0, 0.5),
+          inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.22),
+          inset 0 -1px 1.5px 0 rgba(0, 0, 0, 0.3);
         overflow: hidden;
         position: relative;
-        will-change: transform;
+        contain: layout paint;
         cursor: pointer;
         opacity: 0;
         transform: translateY(32px);
         transition:
-          border-color 0.4s var(--ease),
-          box-shadow 0.4s var(--ease);
+          border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+          box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
       }
       .pc.rev {
         opacity: 1;
@@ -1512,6 +1555,21 @@
         border-color: var(--lineb);
         transform: translateY(-11px);
       }
+      /* Continuous GPU hardware accelerated card animations */
+      .pc, .pv, .ati-visual-stage, .sol-visual-stage, .perc-visual-stage,
+      .qr-visual-stage, .car-visual-stage, .db-visual-stage, .tr-visual-stage,
+      .cf-visual-stage, .ce-visual-stage, .t3-visual-stage, .rpg-visual-stage {
+        transform: translateZ(0);
+        backface-visibility: hidden;
+        will-change: transform;
+      }
+      
+      
+      .hero.stage-mode .hero-orbital-stage {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.5s var(--ease);
+      }
       /* Hover effects only make sense with a fine pointer; on touch they fire
          on tap and then stick. Also caps the image-scale transition repaints. */
       @media (pointer: coarse) {
@@ -1523,24 +1581,29 @@
         }
       }
       .pc.ci:hover {
-        box-shadow: 0 28px 60px -20px rgba(94, 212, 245, 0.22);
-        border-color: rgba(94, 212, 245, 0.32);
+        box-shadow: 0 28px 60px -16px rgba(0, 0, 0, 0.65), 0 0 28px -4px rgba(94, 212, 245, 0.22), inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.45), inset 0 -1px 2px 0 rgba(0, 0, 0, 0.4);
+        border-color: rgba(94, 212, 245, 0.38);
+        border-top-color: rgba(255, 255, 255, 0.75);
       }
       .pc.cs:hover {
-        box-shadow: 0 28px 60px -20px rgba(242, 184, 75, 0.22);
-        border-color: rgba(242, 184, 75, 0.32);
+        box-shadow: 0 28px 60px -16px rgba(0, 0, 0, 0.65), 0 0 28px -4px rgba(242, 184, 75, 0.22), inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.45), inset 0 -1px 2px 0 rgba(0, 0, 0, 0.4);
+        border-color: rgba(242, 184, 75, 0.38);
+        border-top-color: rgba(255, 255, 255, 0.75);
       }
       .pc.ct:hover {
-        box-shadow: 0 28px 60px -20px rgba(0, 240, 204, 0.22);
-        border-color: rgba(0, 240, 204, 0.32);
+        box-shadow: 0 28px 60px -16px rgba(0, 0, 0, 0.65), 0 0 28px -4px rgba(0, 240, 204, 0.22), inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.45), inset 0 -1px 2px 0 rgba(0, 0, 0, 0.4);
+        border-color: rgba(0, 240, 204, 0.38);
+        border-top-color: rgba(255, 255, 255, 0.75);
       }
       .pc.ce:hover {
-        box-shadow: 0 28px 60px -20px rgba(52, 211, 153, 0.22);
-        border-color: rgba(52, 211, 153, 0.32);
+        box-shadow: 0 28px 60px -16px rgba(0, 0, 0, 0.65), 0 0 28px -4px rgba(52, 211, 153, 0.22), inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.45), inset 0 -1px 2px 0 rgba(0, 0, 0, 0.4);
+        border-color: rgba(52, 211, 153, 0.38);
+        border-top-color: rgba(255, 255, 255, 0.75);
       }
       .pc.cp:hover {
-        box-shadow: 0 28px 60px -20px rgba(184, 155, 255, 0.22);
-        border-color: rgba(184, 155, 255, 0.32);
+        box-shadow: 0 28px 60px -16px rgba(0, 0, 0, 0.65), 0 0 28px -4px rgba(184, 155, 255, 0.22), inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.45), inset 0 -1px 2px 0 rgba(0, 0, 0, 0.4);
+        border-color: rgba(184, 155, 255, 0.38);
+        border-top-color: rgba(255, 255, 255, 0.75);
       }
       .pv {
         height: 230px;
@@ -1576,205 +1639,383 @@
       .pc:hover .pv::after {
         opacity: 0.45;
       }
+      /* ── CARD 03: PERCEPTUS FLOW (SPATIAL VISION AI) ── */
       .vg {
         width: 100%;
         height: 100%;
-        background: #060d10;
+        background: radial-gradient(circle at 50% 50%, rgba(0, 240, 255, 0.16) 0%, rgba(4, 15, 24, 0.85) 55%, #03080e 100%);
         display: flex;
         align-items: center;
         justify-content: center;
         position: relative;
         overflow: hidden;
       }
-      .gg {
+      .pf-stage {
+        position: relative;
+        width: 220px;
+        height: 170px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .pf-reticle {
         position: absolute;
         inset: 0;
-        opacity: 0.22;
-        background:
-          repeating-linear-gradient(0deg, transparent, transparent 18px, #00f0cc 18px, #00f0cc 19px), repeating-linear-gradient(90deg, transparent, transparent 18px, #00f0cc 18px, #00f0cc 19px);
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
       }
-      .gh {
-        font-size: 5rem;
+      .pf-ring-outer {
+        animation: pfRotate 24s linear infinite;
+        transform-origin: 110px 85px;
+      }
+      .pf-ring-inner {
+        animation: pfRotateRev 16s linear infinite;
+        transform-origin: 110px 85px;
+      }
+      @keyframes pfRotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      @keyframes pfRotateRev {
+        from { transform: rotate(360deg); }
+        to { transform: rotate(0deg); }
+      }
+      .pf-hand-svg {
+        position: relative;
         z-index: 2;
-        filter: drop-shadow(0 0 22px rgba(0, 240, 204, 0.7));
-        transition: transform 0.4s var(--ease);
+        width: 130px;
+        height: 130px;
+        filter: drop-shadow(0 0 14px rgba(0, 240, 255, 0.65));
+        transition: transform 0.4s var(--ease), filter 0.4s;
       }
-      .pc:hover .gh {
-        transform: scale(1.12) translateY(-7px);
+      .pc:hover .pf-hand-svg {
+        transform: scale(1.08) translateY(-4px);
+        filter: drop-shadow(0 0 22px rgba(0, 240, 255, 0.95));
       }
-      .gsc {
+      .pf-laser-scan {
         position: absolute;
         left: 0;
         right: 0;
         height: 2px;
         top: 0;
-        background: #00f0cc;
-        box-shadow:
-          0 0 12px #00f0cc,
-          0 0 28px #00f0cc;
-        animation: sl 2.8s linear infinite;
-        z-index: 3;
-        opacity: 0.75;
+        background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.4) 15%, #00f0ff 50%, rgba(0, 240, 255, 0.4) 85%, transparent);
+        box-shadow: 0 0 10px #00f0ff, 0 0 24px rgba(0, 240, 255, 0.6);
+        animation: pfLaserSweep 3.2s ease-in-out infinite alternate;
+        z-index: 4;
+        opacity: 0.85;
+        pointer-events: none;
       }
-      @keyframes sl {
-        0% {
-          top: 0;
-          opacity: 0;
-        }
-        5% {
-          opacity: 0.8;
-        }
-        95% {
-          opacity: 0.8;
-        }
-        100% {
-          top: 100%;
-          opacity: 0;
-        }
+      @keyframes pfLaserSweep {
+        0% { top: 12px; opacity: 0.3; }
+        15% { opacity: 0.9; }
+        85% { opacity: 0.9; }
+        100% { top: calc(100% - 14px); opacity: 0.3; }
       }
+      .pf-pulse-ring {
+        animation: pfPulseWave 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        transform-origin: 56px 36px;
+      }
+      @keyframes pfPulseWave {
+        0% { r: 5; opacity: 0.9; stroke-width: 2; }
+        70% { r: 16; opacity: 0; stroke-width: 1; }
+        100% { r: 16; opacity: 0; stroke-width: 0; }
+      }
+      .pf-hud-chip {
+        position: absolute;
+        padding: 3px 8px;
+        background: rgba(3, 14, 22, 0.75);
+        border: 1px solid rgba(0, 240, 255, 0.3);
+        border-radius: 4px;
+        font-family: var(--mono, 'Space Mono', monospace);
+        font-size: 0.62rem;
+        font-weight: 700;
+        color: #00f0ff;
+        letter-spacing: 0.8px;
+        z-index: 5;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        pointer-events: none;
+      }
+      .pf-hud-chip.tl { top: 12px; left: 14px; }
+      .pf-hud-chip.br {
+        bottom: 12px;
+        right: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .pf-dot-live {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #00f0ff;
+        box-shadow: 0 0 8px #00f0ff;
+        animation: pfDotBlink 1.4s ease-in-out infinite alternate;
+      }
+      @keyframes pfDotBlink {
+        from { opacity: 0.4; }
+        to { opacity: 1; }
+      }
+
+      /* ── CARD 04: QR STUDIO MATRIX (CYBER MATRIX SCANNER) ── */
       .vq {
         width: 100%;
         height: 100%;
-        background: #040e08;
+        background: radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.18) 0%, rgba(3, 18, 11, 0.85) 55%, #020804 100%);
         display: flex;
         align-items: center;
         justify-content: center;
         position: relative;
         overflow: hidden;
       }
+      .qr-showcase {
+        position: relative;
+        width: 146px;
+        height: 146px;
+        box-sizing: border-box;
+        padding: 12px;
+        background: rgba(2, 14, 8, 0.7);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        border-radius: 12px;
+        box-shadow: 0 0 24px rgba(16, 185, 129, 0.15), inset 0 0 16px rgba(16, 185, 129, 0.08);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+        transition: transform 0.4s var(--ease), border-color 0.4s, box-shadow 0.4s;
+      }
+      .pc:hover .qr-showcase {
+        transform: scale(1.06);
+        border-color: rgba(16, 185, 129, 0.6);
+        box-shadow: 0 0 32px rgba(16, 185, 129, 0.35), inset 0 0 20px rgba(16, 185, 129, 0.15);
+      }
+      .qr-finder {
+        position: absolute;
+        width: 34px;
+        height: 34px;
+        box-sizing: border-box;
+        border: 3px solid #10b981;
+        border-radius: 6px;
+        background: rgba(2, 14, 8, 0.95);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+        z-index: 3;
+      }
+      .qr-finder-core {
+        width: 14px;
+        height: 14px;
+        background: #10b981;
+        border-radius: 3px;
+        box-shadow: 0 0 6px #10b981;
+      }
+      .qr-finder.tl { top: 10px; left: 10px; }
+      .qr-finder.tr { top: 10px; right: 10px; }
+      .qr-finder.bl { bottom: 10px; left: 10px; }
       .qm2 {
         display: grid;
         grid-template-columns: repeat(9, 1fr);
         gap: 3px;
-        width: 122px;
-        height: 122px;
+        width: 100%;
+        height: 100%;
         z-index: 2;
-        transition: transform 0.4s var(--ease);
-      }
-      .pc:hover .qm2 {
-        transform: scale(1.1);
       }
       .qc {
         border-radius: 2px;
-        background: rgba(52, 211, 153, 0.11);
+        background: rgba(52, 211, 153, 0.12);
+        transition: background 0.3s, box-shadow 0.3s;
       }
       .qc.on {
         background: #34d399;
-        box-shadow: 0 0 3px rgba(52, 211, 153, 0.4);
+        box-shadow: 0 0 5px rgba(52, 211, 153, 0.6);
       }
       .pc:hover .qc.on {
-        box-shadow: 0 0 7px rgba(52, 211, 153, 0.75);
+        box-shadow: 0 0 9px rgba(52, 211, 153, 0.9);
       }
-      .qb {
+      .qr-center-badge {
         position: absolute;
-        top: 0;
-        bottom: 0;
-        width: 1px;
-        background: linear-gradient(to bottom, transparent, rgba(52, 211, 153, 0.8), transparent);
-        animation: qb2 2.2s ease-in-out infinite;
-        opacity: 0.45;
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        background: rgba(4, 18, 10, 0.92);
+        border: 1px solid rgba(52, 211, 153, 0.55);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #34d399;
+        box-shadow: 0 0 14px rgba(52, 211, 153, 0.4);
         z-index: 3;
+        pointer-events: none;
       }
-      @keyframes qb2 {
-        0% {
-          left: 20%;
-        }
-        50% {
-          left: 80%;
-        }
-        100% {
-          left: 20%;
-        }
-      }
-      .qgl {
+      .qr-scan-beam {
         position: absolute;
-        inset: 0;
-        background: radial-gradient(ellipse at center, rgba(52, 211, 153, 0.07) 0%, transparent 70%);
+        left: 0;
+        right: 0;
+        height: 2px;
+        top: 0;
+        background: linear-gradient(90deg, transparent, rgba(52, 211, 153, 0.4) 15%, #34d399 50%, rgba(52, 211, 153, 0.4) 85%, transparent);
+        box-shadow: 0 0 10px #34d399, 0 0 20px rgba(52, 211, 153, 0.5);
+        animation: qrScanBeam 2.5s ease-in-out infinite alternate;
+        z-index: 4;
+        opacity: 0.9;
+        pointer-events: none;
       }
+      @keyframes qrScanBeam {
+        0% { top: 4px; opacity: 0.3; }
+        15% { opacity: 0.95; }
+        85% { opacity: 0.95; }
+        100% { top: calc(100% - 6px); opacity: 0.3; }
+      }
+      .qr-hud-chip {
+        position: absolute;
+        padding: 3px 8px;
+        background: rgba(2, 14, 8, 0.75);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        border-radius: 4px;
+        font-family: var(--mono, 'Space Mono', monospace);
+        font-size: 0.62rem;
+        font-weight: 700;
+        color: #10b981;
+        letter-spacing: 0.8px;
+        z-index: 5;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        pointer-events: none;
+      }
+      .qr-hud-chip.tl { top: 12px; left: 14px; }
+      .qr-hud-chip.br {
+        bottom: 12px;
+        right: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .qr-dot-live {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #10b981;
+        box-shadow: 0 0 8px #10b981;
+        animation: qrDotBlink 1.4s ease-in-out infinite alternate;
+      }
+      @keyframes qrDotBlink {
+        from { opacity: 0.4; }
+        to { opacity: 1; }
+      }
+
+      /* ── CARD 05: RPG GAME ENGINE (ARCANE RUNIC ADVENTURE) ── */
       .vr {
         width: 100%;
         height: 100%;
-        background: radial-gradient(ellipse at 50% 80%, #150c2a 0%, #080514 100%);
+        background: radial-gradient(circle at 50% 45%, rgba(168, 85, 247, 0.22) 0%, rgba(245, 158, 11, 0.08) 42%, #080314 85%);
         display: flex;
         align-items: center;
         justify-content: center;
         position: relative;
         overflow: hidden;
       }
-      .rc {
+      .rpg-stage {
+        position: relative;
+        width: 200px;
+        height: 160px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .rpg-rune-svg {
+        position: absolute;
+        width: 156px;
+        height: 156px;
+        animation: rpgRuneRotate 28s linear infinite;
+        transform-origin: center;
+        pointer-events: none;
+        opacity: 0.65;
+        filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.4));
+      }
+      @keyframes rpgRuneRotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      .rpg-blade-svg {
+        position: relative;
+        z-index: 2;
+        width: 90px;
+        height: 90px;
+        filter: drop-shadow(0 0 16px rgba(168, 85, 247, 0.85)) drop-shadow(0 0 28px rgba(245, 158, 11, 0.45));
+        animation: rpgSwordLevitate 3.6s ease-in-out infinite alternate;
+        transition: transform 0.4s var(--ease), filter 0.4s;
+      }
+      .pc:hover .rpg-blade-svg {
+        transform: scale(1.15) translateY(-6px) rotate(8deg);
+        filter: drop-shadow(0 0 26px rgba(168, 85, 247, 1)) drop-shadow(0 0 40px rgba(245, 158, 11, 0.7));
+      }
+      @keyframes rpgSwordLevitate {
+        0% { transform: translateY(0) rotate(-3deg); }
+        100% { transform: translateY(-10px) rotate(4deg); }
+      }
+      .rpg-sparks {
         position: absolute;
         inset: 0;
-        background:
-          radial-gradient(1px 1px at 15% 25%, rgba(184, 155, 255, 0.85) 0%, transparent 100%), radial-gradient(1px 1px at 75% 15%, rgba(255, 255, 255, 0.7) 0%, transparent 100%),
-          radial-gradient(1px 1px at 45% 55%, rgba(200, 180, 255, 0.65) 0%, transparent 100%), radial-gradient(1px 1px at 85% 70%, rgba(255, 255, 255, 0.5) 0%, transparent 100%),
-          radial-gradient(2px 2px at 30% 80%, rgba(250, 200, 20, 0.4) 0%, transparent 100%);
-        background-size: 12px 12px;
-      }
-      .rg {
-        position: absolute;
-        bottom: -20px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 180px;
-        height: 70px;
-        background: radial-gradient(ellipse, rgba(139, 92, 246, 0.35) 0%, transparent 70%);
-      }
-      .ri {
-        font-size: 4.5rem;
-        z-index: 2;
-        filter: drop-shadow(0 0 20px rgba(184, 155, 255, 0.7));
-        transition:
-          transform 0.4s var(--ease),
-          filter 0.4s;
-      }
-      .pc:hover .ri {
-        transform: scale(1.16) translateY(-8px) rotate(6deg);
-        filter: drop-shadow(0 0 32px rgba(184, 155, 255, 1));
-      }
-      .ro {
-        position: absolute;
-        bottom: 18px;
-        left: 50%;
-        transform: translateX(-50%);
-        display: flex;
-        gap: 10px;
+        pointer-events: none;
         z-index: 3;
       }
-      .rob {
-        width: 7px;
-        height: 7px;
+      .rpg-spark {
+        position: absolute;
         border-radius: 50%;
-        animation: op 1.6s ease-in-out infinite alternate;
+        background: #fbbf24;
+        box-shadow: 0 0 8px #fbbf24, 0 0 16px #a855f7;
+        animation: rpgSparkFloat 2.8s ease-in-out infinite alternate;
       }
-      .rob:nth-child(1) {
-        background: rgba(184, 155, 255, 0.7);
-        animation-delay: 0s;
+      .rpg-spark.s1 { width: 4px; height: 4px; top: 32%; left: 30%; animation-delay: 0s; }
+      .rpg-spark.s2 { width: 5px; height: 5px; top: 68%; left: 24%; background: #c084fc; animation-delay: 0.6s; }
+      .rpg-spark.s3 { width: 3px; height: 3px; top: 22%; right: 28%; animation-delay: 1.1s; }
+      .rpg-spark.s4 { width: 4px; height: 4px; top: 74%; right: 26%; background: #c084fc; animation-delay: 1.7s; }
+      @keyframes rpgSparkFloat {
+        0% { transform: translateY(0) scale(0.8); opacity: 0.4; }
+        100% { transform: translateY(-14px) scale(1.2); opacity: 1; }
       }
-      .rob:nth-child(2) {
-        background: rgba(250, 200, 20, 0.6);
-        animation-delay: 0.3s;
+      .rpg-hud-chip {
+        position: absolute;
+        padding: 3px 8px;
+        background: rgba(14, 6, 26, 0.75);
+        border: 1px solid rgba(168, 85, 247, 0.35);
+        border-radius: 4px;
+        font-family: var(--mono, 'Space Mono', monospace);
+        font-size: 0.62rem;
+        font-weight: 700;
+        color: #d8b4fe;
+        letter-spacing: 0.8px;
+        z-index: 5;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        pointer-events: none;
       }
-      .rob:nth-child(3) {
-        background: rgba(196, 181, 253, 0.55);
-        animation-delay: 0.6s;
+      .rpg-hud-chip.tl {
+        top: 12px;
+        left: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
       }
-      .rob:nth-child(4) {
-        background: rgba(250, 200, 20, 0.6);
-        animation-delay: 0.9s;
+      .rpg-hud-chip.br {
+        bottom: 12px;
+        right: 14px;
+        color: #fbbf24;
+        border-color: rgba(251, 191, 36, 0.35);
       }
-      .rob:nth-child(5) {
-        background: rgba(184, 155, 255, 0.7);
-        animation-delay: 1.2s;
+      .rpg-gem-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #a855f7;
+        box-shadow: 0 0 8px #a855f7;
+        animation: rpgGemPulse 1.6s ease-in-out infinite alternate;
       }
-      @keyframes op {
-        from {
-          opacity: 0.3;
-          transform: scale(1);
-        }
-        to {
-          opacity: 1;
-          transform: scale(1.4);
-        }
+      @keyframes rpgGemPulse {
+        from { opacity: 0.5; transform: scale(0.9); }
+        to { opacity: 1; transform: scale(1.2); }
       }
       .pb {
         padding: 26px 28px 20px;
@@ -2143,7 +2384,11 @@
           padding: calc(env(safe-area-inset-top, 0px) + 100px) 20px 40px;
         }
         .hst {
-          display: none;
+          margin-top: 24px;
+          gap: 10px;
+          padding: 6px 14px;
+          font-size: 0.68rem;
+          display: inline-flex;
         }
         .sci {
           left: 20px;
@@ -2312,43 +2557,42 @@
           height: 220px;
         }
       }
-      /* ── MOBILE PERF: kill expensive GPU effects on non-iPhone ── */
-      @media (max-width: 768px) {
-        /* Kill all backdrop-filter blur on non-iPhone mobile */
-        html:not(.is-iphone) .top-nav, html:not(.is-iphone) .top-nav::before, html:not(.is-iphone) .orrery-dock, html:not(.is-iphone) .node-inspector,
-        html:not(.is-iphone) .col-bottom-bar, html:not(.is-iphone) .hud-group, html:not(.is-iphone) .mo .md, html:not(.is-iphone) .dropdown-content-inner,
-        html:not(.is-iphone) .stage-hint, html:not(.is-iphone) .toast {
+      /* ── MOBILE PERF & ACCESSIBILITY ── */
+      @media (prefers-reduced-transparency: reduce) {
+        .top-nav, .orrery-dock, .node-inspector, .col-bottom-bar, .dropdown-content-inner {
           backdrop-filter: none !important;
           -webkit-backdrop-filter: none !important;
+          background: rgba(10, 15, 28, 0.98) !important;
         }
-        html:not(.is-iphone) .top-nav { background: rgba(7,10,20,0.94) !important; }
-        html:not(.is-iphone) .top-nav::before { display: none !important; }
-        html:not(.is-iphone) .orrery-dock { background: rgba(10,14,26,0.94) !important; }
-        html:not(.is-iphone) .node-inspector { background: rgba(10,14,26,0.96) !important; }
-        html:not(.is-iphone) .col-bottom-bar { background: rgba(17,24,39,0.96) !important; }
-        html:not(.is-iphone) .dropdown-content-inner { background: rgba(17,24,39,0.96) !important; }
-        html:not(.is-iphone) body.lm .top-nav { background: rgba(243,242,235,0.96) !important; }
-        html:not(.is-iphone) body.lm .orrery-dock { background: rgba(243,242,235,0.96) !important; }
-        html:not(.is-iphone) body.lm .col-bottom-bar { background: rgba(243,242,235,0.96) !important; }
-        /* Kill QR animation */
-        .qm2 { animation: none !important; }
-        .qb { display: none !important; }
-        /* Kill RPG dots */
-        .rob { animation: none !important; opacity: 0.6 !important; }
+      }
+      @media (max-width: 768px) {
+        /* Mobile performance card optimizations */
+        .pf-ring-outer, .pf-ring-inner { animation: none !important; }
+        .pf-laser-scan { animation: none !important; top: 40% !important; opacity: 0.5 !important; }
+        .qr-scan-beam { animation: none !important; top: 40% !important; opacity: 0.5 !important; }
+        .rpg-rune-svg { animation: none !important; }
+        .rpg-blade-svg { animation: none !important; }
+        .rpg-spark { animation: none !important; }
+        .c-ring-outer, .c-ring-inner { animation: none !important; }
+        .c-needle-svg { animation: none !important; }
+        .db-pulse-beam { animation: none !important; }
+        .tr-radar-sweep { animation: none !important; }
+        .cf-wave-arc { animation: none !important; }
+        .cf-packet { animation: none !important; }
+        .ce-wave { animation: none !important; }
+        .ce-eq-bar { animation: none !important; }
+        .t3-globe { animation: none !important; }
+        .t3r-1, .t3r-2, .t3r-3 { animation: none !important; }
         /* Kill hero vignette overlays */
         .hvig, .hvigb { display: none !important; }
-        /* Kill grid overlay on cards */
-        .gg { opacity: 0.1 !important; }
-        /* Kill star field */
-        .rc { opacity: 0.3 !important; }
-        /* Kill scan line */
-        .gsc { display: none !important; }
         /* Simplify card transitions */
         .pc { transition: border-color 0.2s ease, box-shadow 0.2s ease !important; }
         .pc .pv img { transition: opacity 0.2s ease !important; transform: none !important; }
         .pc:hover .pv img { transform: none !important; }
-        /* Simplify card shadows */
-        .pc, .vp-card { box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important; }
+        /* Refined liquid glass card shadows on mobile */
+        .pc, .vp-card {
+          box-shadow: 0 8px 24px -6px rgba(0,0,0,0.45), inset 0 1px 1.5px 0 rgba(255,255,255,0.22), inset 0 -1px 1.5px 0 rgba(0,0,0,0.3) !important;
+        }
         /* GPU hints */
         .top-nav, .nav-links { will-change: transform; transform: translateZ(0); }
         .col-bottom-bar { will-change: transform; }
@@ -2489,381 +2733,506 @@
       }
 
       /* =========================================================
-         EDUCATIONAL FEATURE CARDS (CAREER, DATABASE, TRAFFIC)
+         FEATURE CARDS: CAREER, DATABASE, TRAFFIC, CASTFLOW, CEREAL
          ========================================================= */
-      /* Career (Briefcase & Network) */
+
+      /* ── CARD 05: THE CAREER COMPASS (PSYCHOMETRICS & 8D VECTORS) ── */
       .c-bg {
         width: 100%;
         height: 100%;
-        position: relative;
-        overflow: hidden;
+        background: radial-gradient(circle at 50% 50%, rgba(129, 140, 248, 0.2) 0%, rgba(15, 12, 38, 0.85) 55%, #050614 100%);
         display: flex;
         align-items: center;
         justify-content: center;
-        background: #040710;
+        position: relative;
+        overflow: hidden;
       }
-      .c-glow {
-        position: absolute;
-        width: 150px;
-        height: 150px;
-        background: radial-gradient(circle, rgba(129, 140, 248, 0.4) 0%, transparent 70%);
-        z-index: 1;
-        animation: c-pulse 3s ease-in-out infinite alternate;
+      .c-stage {
+        position: relative;
+        width: 200px;
+        height: 160px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
-      @keyframes c-pulse {
-        0% { transform: scale(1); opacity: 0.6; }
-        100% { transform: scale(1.3); opacity: 1; }
-      }
-      .c-grid {
+      .c-gimbal-svg {
         position: absolute;
         inset: 0;
-        background:
-          radial-gradient(circle at 50% 50%, rgba(129, 140, 248, 0.15) 0%, transparent 60%), linear-gradient(0deg, rgba(129, 140, 248, 0.05) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(129, 140, 248, 0.05) 1px, transparent 1px);
-        background-size:
-          100% 100%,
-          20px 20px,
-          20px 20px;
-        z-index: 2;
-        perspective: 400px;
-        transform: rotateX(60deg) scale(2);
-        transform-origin: bottom;
-        opacity: 0.8;
-        animation: c-grid-move 10s linear infinite;
-      }
-      @keyframes c-grid-move {
-        0% { background-position: 0 0, 0 0, 0 0; }
-        100% { background-position: 0 0, 0 20px, 20px 0; }
-      }
-      .c-icon-wrap {
-        z-index: 3;
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 64px;
-        height: 64px;
-        border: 1px solid rgba(129, 140, 248, 0.5);
-        border-radius: 16px;
-        background: rgba(5, 10, 20, 0.8);
-        box-shadow: 0 0 20px rgba(129, 140, 248, 0.3);
-        transform: rotate(45deg);
-        overflow: hidden;
-        transition:
-          transform 0.4s var(--ease),
-          box-shadow 0.4s var(--ease);
-      }
-      .pc:hover .c-icon-wrap {
-        transform: rotate(45deg) scale(1.15);
-        box-shadow: 0 0 30px rgba(129, 140, 248, 0.7);
-      }
-      .c-svg {
-        width: 36px;
-        height: 36px;
-        filter: drop-shadow(0 0 8px rgba(129, 140, 248, 0.9));
-        transform: rotate(-45deg);
-        color: #818cf8;
-      }
-
-      /* Database Logic (Server Stack & Data Streams) */
-      .db-bg {
         width: 100%;
         height: 100%;
+        pointer-events: none;
+      }
+      .c-ring-outer {
+        animation: cRotate 32s linear infinite;
+        transform-origin: 100px 80px;
+      }
+      .c-ring-inner {
+        animation: cRotateRev 22s linear infinite;
+        transform-origin: 100px 80px;
+      }
+      @keyframes cRotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      @keyframes cRotateRev {
+        from { transform: rotate(360deg); }
+        to { transform: rotate(0deg); }
+      }
+      .c-needle-svg {
         position: relative;
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #020a08;
+        z-index: 2;
+        width: 84px;
+        height: 84px;
+        filter: drop-shadow(0 0 14px rgba(129, 140, 248, 0.7));
+        animation: cNeedleOscillate 4s ease-in-out infinite alternate;
+        transition: transform 0.4s var(--ease), filter 0.4s;
       }
-      .db-stack {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        z-index: 3;
-        perspective: 500px;
-        transform: rotateX(20deg);
-        transition: transform 0.4s var(--ease);
+      .pc:hover .c-needle-svg {
+        transform: scale(1.12) rotate(32deg);
+        filter: drop-shadow(0 0 24px rgba(129, 140, 248, 0.95));
       }
-      .pc:hover .db-stack {
-        transform: rotateX(20deg) scale(1.1) translateY(-10px);
+      @keyframes cNeedleOscillate {
+        0% { transform: rotate(20deg); }
+        100% { transform: rotate(32deg); }
       }
-      .db-server {
-        width: 80px;
-        height: 24px;
-        background: rgba(5, 15, 15, 0.8);
-        border: 1px solid rgba(0, 255, 204, 0.4);
-        border-radius: 4px;
-        box-shadow:
-          0 5px 15px rgba(0, 0, 0, 0.5),
-          inset 0 0 10px rgba(0, 255, 204, 0.1);
-        display: flex;
-        align-items: center;
-        padding: 0 10px;
-        position: relative;
-        overflow: hidden;
-      }
-      .db-server::before {
-        content: '';
+      .c-hud-chip {
         position: absolute;
-        left: 0;
-        top: 0;
-        height: 100%;
-        width: 20%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
-        animation: sweep 3s linear infinite;
+        padding: 3px 8px;
+        background: rgba(5, 6, 20, 0.75);
+        border: 1px solid rgba(129, 140, 248, 0.35);
+        border-radius: 4px;
+        font-family: var(--mono, 'Space Mono', monospace);
+        font-size: 0.62rem;
+        font-weight: 700;
+        color: #818cf8;
+        letter-spacing: 0.8px;
+        z-index: 5;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        pointer-events: none;
       }
-      .dbs-1::before { animation-delay: 0s; }
-      .dbs-2::before { animation-delay: 0.5s; }
-      .dbs-3::before { animation-delay: 1s; }
-      @keyframes sweep {
-        0% { left: -50%; }
-        100% { left: 150%; }
+      .c-hud-chip.tl { top: 12px; left: 14px; }
+      .c-hud-chip.br {
+        bottom: 12px;
+        right: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
       }
-      .db-led {
+      .c-dot-live {
         width: 6px;
         height: 6px;
         border-radius: 50%;
-        background: #00ffcc;
-        box-shadow: 0 0 8px #00ffcc;
-        animation: blink 1.5s steps(2, start) infinite;
-        margin-right: 8px;
-        flex-shrink: 0;
+        background: #818cf8;
+        box-shadow: 0 0 8px #818cf8;
+        animation: cDotBlink 1.4s ease-in-out infinite alternate;
       }
-      .dbs-2 .db-led {
-        animation-duration: 2.1s;
-        background: #38bdf8;
-        box-shadow: 0 0 8px #38bdf8;
-      }
-      .dbs-3 .db-led {
-        animation-duration: 0.8s;
-      }
-      @keyframes blink {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.2; }
-      }
-      .db-line {
-        flex: 1;
-        height: 2px;
-        background: rgba(0, 255, 204, 0.2);
-        position: relative;
-        overflow: hidden;
-      }
-      .db-line::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 100%;
-        width: 30%;
-        background: #00ffcc;
-        animation: db-data 2s infinite;
-      }
-      .dbs-1 .db-line::after { animation-duration: 1.2s; }
-      .dbs-2 .db-line::after {
-        animation-duration: 2.5s;
-        background: #38bdf8;
-      }
-      .dbs-3 .db-line::after { animation-duration: 1.7s; }
-      @keyframes db-data {
-        0% { left: -30%; opacity: 1; }
-        100% { left: 100%; opacity: 0; }
-      }
-      .db-scan {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 2px;
-        background: #00ffcc;
-        box-shadow: 0 0 30px 6px rgba(0, 255, 204, 0.4);
-        z-index: 4;
-        animation: scan 3s ease-in-out infinite alternate;
-        opacity: 0.6;
-      }
-      @keyframes scan {
-        0% { top: 10%; }
-        100% { top: 90%; }
-      }
-      .db-glow {
-        position: absolute;
-        width: 120px;
-        height: 120px;
-        background: radial-gradient(circle, rgba(0, 255, 204, 0.3) 0%, transparent 70%);
-        z-index: 1;
-        filter: blur(20px);
-        animation: pulse-glow 4s infinite alternate;
-      }
-      @keyframes pulse-glow {
-        0% { opacity: 0.5; transform: scale(0.8); }
-        100% { opacity: 1; transform: scale(1.2); }
+      @keyframes cDotBlink {
+        from { opacity: 0.4; }
+        to { opacity: 1; }
       }
 
-      /* Traffic (Road & Signal) */
-      .tr-bg {
+      /* ── CARD 06: DATABASE LOGIC & QUERY ENGINE (RELATIONAL ARCHITECTURE) ── */
+      .db-bg {
         width: 100%;
         height: 100%;
-        position: relative;
-        overflow: hidden;
+        background: radial-gradient(circle at 50% 50%, rgba(56, 189, 248, 0.18) 0%, rgba(4, 18, 30, 0.85) 55%, #020a14 100%);
         display: flex;
         align-items: center;
         justify-content: center;
-        background: #080502;
-        perspective: 600px;
+        position: relative;
+        overflow: hidden;
       }
-      .tr-glow {
-        position: absolute;
-        width: 160px;
+      .db-stage {
+        position: relative;
+        width: 220px;
         height: 160px;
-        background: radial-gradient(circle, rgba(255, 204, 0, 0.2) 0%, transparent 70%);
-        z-index: 1;
-        animation: pulse-glow 3s infinite alternate;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
-      .tr-streaks {
+      .db-rack-svg {
         position: absolute;
         inset: 0;
-        z-index: 2;
-        transform: rotateX(60deg);
-        transform-origin: center;
+        width: 100%;
+        height: 100%;
+      }
+      .db-pulse-beam {
+        animation: dbBeamPulse 2.4s ease-in-out infinite alternate;
+      }
+      @keyframes dbBeamPulse {
+        0% { stroke-dashoffset: 0; opacity: 0.4; }
+        100% { stroke-dashoffset: 20; opacity: 1; }
+      }
+      .db-shard {
+        transition: transform 0.4s var(--ease), filter 0.4s;
+      }
+      .pc:hover .db-shard.s1 {
+        transform: translate(80px, 24px) scale(1.05);
+        filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.8));
+      }
+      .pc:hover .db-shard.s2 {
+        transform: translate(80px, 68px) scale(1.05);
+        filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.8));
+      }
+      .pc:hover .db-shard.s3 {
+        transform: translate(80px, 112px) scale(1.05);
+        filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.8));
+      }
+      .db-hud-chip {
+        position: absolute;
+        padding: 3px 8px;
+        background: rgba(2, 10, 20, 0.75);
+        border: 1px solid rgba(56, 189, 248, 0.35);
+        border-radius: 4px;
+        font-family: var(--mono, 'Space Mono', monospace);
+        font-size: 0.62rem;
+        font-weight: 700;
+        color: #38bdf8;
+        letter-spacing: 0.8px;
+        z-index: 5;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        pointer-events: none;
+      }
+      .db-hud-chip.tl { top: 12px; left: 14px; }
+      .db-hud-chip.br {
+        bottom: 12px;
+        right: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .db-dot-live {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #38bdf8;
+        box-shadow: 0 0 8px #38bdf8;
+        animation: dbDotBlink 1.4s ease-in-out infinite alternate;
+      }
+      @keyframes dbDotBlink {
+        from { opacity: 0.4; }
+        to { opacity: 1; }
+      }
+
+      /* ── CARD 07: TRAFFIC HERO SIMULATION & ACADEMY (LIDAR & AI) ── */
+      .tr-bg {
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.18) 0%, rgba(24, 16, 4, 0.85) 55%, #0d0802 100%);
         display: flex;
+        align-items: center;
         justify-content: center;
-        gap: 40px;
-      }
-      .trs {
-        width: 2px;
-        height: 150%;
-        background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.8), transparent);
-        position: absolute;
-        top: -25%;
-        opacity: 0;
-      }
-      .s1 {
-        left: 20%;
-        background: linear-gradient(180deg, transparent, #ffcc00, transparent);
-        animation: streak 2s infinite 0.1s;
-      }
-      .s2 {
-        left: 40%;
-        background: linear-gradient(180deg, transparent, #ff3366, transparent);
-        animation: streak 1.5s infinite 0.7s;
-      }
-      .s3 {
-        left: 60%;
-        background: linear-gradient(180deg, transparent, #ffcc00, transparent);
-        animation: streak-up 2.2s infinite 0.3s;
-      }
-      .s4 {
-        left: 80%;
-        background: linear-gradient(180deg, transparent, #00ffcc, transparent);
-        animation: streak-up 1.8s infinite 0.9s;
-      }
-      @keyframes streak {
-        0% { transform: translateY(-100%); opacity: 0; }
-        50% { opacity: 1; }
-        100% { transform: translateY(100%); opacity: 0; }
-      }
-      @keyframes streak-up {
-        0% { transform: translateY(100%); opacity: 0; }
-        50% { opacity: 1; }
-        100% { transform: translateY(-100%); opacity: 0; }
-      }
-      .tr-light-box {
-        z-index: 3;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        padding: 12px;
-        background: rgba(10, 10, 10, 0.95);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
-        transition:
-          transform 0.4s var(--ease),
-          box-shadow 0.4s var(--ease);
-      }
-      .pc:hover .tr-light-box {
-        transform: scale(1.1) translateY(-10px);
-        box-shadow: 0 15px 40px rgba(255, 204, 0, 0.3);
-      }
-      .trl {
-        width: 18px;
-        height: 18px;
-        border-radius: 50%;
-        background: #222;
-        border: 2px solid #111;
-        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
         position: relative;
+        overflow: hidden;
       }
-      .trl::before {
-        content: '';
+      .tr-stage {
+        position: relative;
+        width: 220px;
+        height: 160px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .tr-aerial-svg {
         position: absolute;
-        inset: -6px;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .tr-radar-sweep {
+        animation: trSweepRotate 4s linear infinite;
+        transform-origin: 110px 80px;
+      }
+      @keyframes trSweepRotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      .tr-sig-red { animation: trSigRed 6s infinite; }
+      .tr-sig-yel { animation: trSigYel 6s infinite; }
+      .tr-sig-grn { animation: trSigGrn 6s infinite; }
+      @keyframes trSigRed {
+        0%, 35% { fill: #ef4444; filter: drop-shadow(0 0 6px #ef4444); }
+        36%, 100% { fill: #27272a; filter: none; }
+      }
+      @keyframes trSigYel {
+        0%, 35% { fill: #27272a; filter: none; }
+        36%, 55% { fill: #f59e0b; filter: drop-shadow(0 0 6px #f59e0b); }
+        56%, 100% { fill: #27272a; filter: none; }
+      }
+      @keyframes trSigGrn {
+        0%, 55% { fill: #27272a; filter: none; }
+        56%, 100% { fill: #10b981; filter: drop-shadow(0 0 6px #10b981); }
+      }
+      .pc:hover .tr-aerial-svg {
+        filter: drop-shadow(0 0 16px rgba(245, 158, 11, 0.45));
+      }
+      .tr-hud-chip {
+        position: absolute;
+        padding: 3px 8px;
+        background: rgba(13, 8, 2, 0.75);
+        border: 1px solid rgba(245, 158, 11, 0.35);
+        border-radius: 4px;
+        font-family: var(--mono, 'Space Mono', monospace);
+        font-size: 0.62rem;
+        font-weight: 700;
+        color: #f59e0b;
+        letter-spacing: 0.8px;
+        z-index: 5;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        pointer-events: none;
+      }
+      .tr-hud-chip.tl { top: 12px; left: 14px; }
+      .tr-hud-chip.br {
+        bottom: 12px;
+        right: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .tr-dot-live {
+        width: 6px;
+        height: 6px;
         border-radius: 50%;
-        opacity: 0;
-        transition: opacity 0.3s;
-        z-index: -1;
+        background: #f59e0b;
+        box-shadow: 0 0 8px #f59e0b;
+        animation: trDotBlink 1.4s ease-in-out infinite alternate;
       }
-      .red-l { animation: tl-red 6s infinite; }
-      .red-l::before {
-        background: radial-gradient(circle, rgba(255, 51, 102, 0.6) 0%, transparent 70%);
-        animation: tl-red-glow 6s infinite;
+      @keyframes trDotBlink {
+        from { opacity: 0.4; }
+        to { opacity: 1; }
       }
-      .yellow-l { animation: tl-yellow 6s infinite; }
-      .yellow-l::before {
-        background: radial-gradient(circle, rgba(255, 204, 0, 0.6) 0%, transparent 70%);
-        animation: tl-yellow-glow 6s infinite;
+
+      /* ── CARD 08: CASTFLOW STUDIO (WIRELESS DISPLAY & WEBRTC) ── */
+      .cf-bg {
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at 50% 50%, rgba(14, 165, 233, 0.2) 0%, rgba(4, 16, 32, 0.85) 55%, #030a16 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
       }
-      .green-l { animation: tl-green 6s infinite; }
-      .green-l::before {
-        background: radial-gradient(circle, rgba(0, 255, 204, 0.6) 0%, transparent 70%);
-        animation: tl-green-glow 6s infinite;
+      .cf-stage {
+        position: relative;
+        width: 220px;
+        height: 160px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
-      @keyframes tl-red {
-        0%, 33% {
-          background: #ff3366;
-          box-shadow: 0 0 15px #ff3366, inset 0 0 5px #fff;
-        }
-        34%, 100% {
-          background: #222;
-          box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
-        }
+      .cf-cast-svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.4s var(--ease);
       }
-      @keyframes tl-yellow {
-        0%, 33% {
-          background: #222;
-          box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
-        }
-        34%, 50% {
-          background: #ffcc00;
-          box-shadow: 0 0 15px #ffcc00, inset 0 0 5px #fff;
-        }
-        51%, 100% {
-          background: #222;
-          box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
-        }
+      .pc:hover .cf-cast-svg {
+        transform: scale(1.05);
+        filter: drop-shadow(0 0 16px rgba(14, 165, 233, 0.6));
       }
-      @keyframes tl-green {
-        0%, 50% {
-          background: #222;
-          box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
-        }
-        51%, 100% {
-          background: #00ffcc;
-          box-shadow: 0 0 15px #00ffcc, inset 0 0 5px #fff;
-        }
+      .cf-wave-arc {
+        animation: cfWaveRadiate 2.4s ease-out infinite;
       }
-      @keyframes tl-red-glow {
-        0%, 33% { opacity: 1; }
-        34%, 100% { opacity: 0; }
+      .cf-wave-arc.w1 { animation-delay: 0s; }
+      .cf-wave-arc.w2 { animation-delay: 0.6s; }
+      .cf-wave-arc.w3 { animation-delay: 1.2s; }
+      @keyframes cfWaveRadiate {
+        0% { opacity: 0.2; transform: scale(0.92); transform-origin: 90px 80px; }
+        50% { opacity: 0.9; }
+        100% { opacity: 0.2; transform: scale(1.08); transform-origin: 90px 80px; }
       }
-      @keyframes tl-yellow-glow {
-        0%, 33% { opacity: 0; }
-        34%, 50% { opacity: 1; }
-        51%, 100% { opacity: 0; }
+      .cf-packet {
+        animation: cfPacketFly 2s linear infinite;
       }
-      @keyframes tl-green-glow {
-        0%, 50% { opacity: 0; }
-        51%, 100% { opacity: 1; }
+      .cf-packet.p1 { animation-delay: 0s; }
+      .cf-packet.p2 { animation-delay: 0.7s; }
+      .cf-packet.p3 { animation-delay: 1.4s; }
+      @keyframes cfPacketFly {
+        0% { transform: translateX(-15px); opacity: 0; }
+        25% { opacity: 1; }
+        75% { opacity: 1; }
+        100% { transform: translateX(25px); opacity: 0; }
+      }
+      .cf-hud-chip {
+        position: absolute;
+        padding: 3px 8px;
+        background: rgba(3, 10, 22, 0.75);
+        border: 1px solid rgba(14, 165, 233, 0.35);
+        border-radius: 4px;
+        font-family: var(--mono, 'Space Mono', monospace);
+        font-size: 0.62rem;
+        font-weight: 700;
+        color: #0ea5e9;
+        letter-spacing: 0.8px;
+        z-index: 5;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        pointer-events: none;
+      }
+      .cf-hud-chip.tl { top: 12px; left: 14px; }
+      .cf-hud-chip.br {
+        bottom: 12px;
+        right: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .cf-dot-live {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #0ea5e9;
+        box-shadow: 0 0 8px #0ea5e9;
+        animation: cfDotBlink 1.4s ease-in-out infinite alternate;
+      }
+      @keyframes cfDotBlink {
+        from { opacity: 0.4; }
+        to { opacity: 1; }
+      }
+
+      /* ── CARD 09: CEREAL AI ASSISTANT (GEMINI 2.5 & MULTIMODAL AUDIO) ── */
+      .ce-bg {
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at 50% 50%, rgba(236, 72, 153, 0.2) 0%, rgba(28, 4, 22, 0.85) 55%, #10020e 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .ce-stage {
+        position: relative;
+        width: 220px;
+        height: 160px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .ce-neural-svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.4s var(--ease);
+      }
+      .pc:hover .ce-neural-svg {
+        transform: scale(1.06);
+        filter: drop-shadow(0 0 18px rgba(236, 72, 153, 0.65));
+      }
+      .ce-wave.w1 { animation: ceWaveFlow 3.6s ease-in-out infinite alternate; }
+      .ce-wave.w2 { animation: ceWaveFlowRev 4.8s ease-in-out infinite alternate; }
+      .ce-wave.w3 { animation: ceWaveFlow 6s ease-in-out infinite alternate; }
+      @keyframes ceWaveFlow {
+        0% { transform: translateY(-4px); }
+        100% { transform: translateY(4px); }
+      }
+      @keyframes ceWaveFlowRev {
+        0% { transform: translateY(5px); }
+        100% { transform: translateY(-5px); }
+      }
+      .ce-eq-bar {
+        animation: ceEqBounce 1.4s ease-in-out infinite alternate;
+        transform-origin: bottom;
+      }
+      .ce-eq-bar.b1 { animation-delay: 0.1s; }
+      .ce-eq-bar.b2 { animation-delay: 0.4s; }
+      .ce-eq-bar.b3 { animation-delay: 0.2s; }
+      .ce-eq-bar.b4 { animation-delay: 0.5s; }
+      .ce-eq-bar.b5 { animation-delay: 0.3s; }
+      .ce-eq-bar.b6 { animation-delay: 0.6s; }
+      .ce-eq-bar.b7 { animation-delay: 0.25s; }
+      .ce-eq-bar.b8 { animation-delay: 0.45s; }
+      @keyframes ceEqBounce {
+        0% { transform: scaleY(0.4); opacity: 0.6; }
+        100% { transform: scaleY(1.15); opacity: 1; }
+      }
+      .ce-hud-chip {
+        position: absolute;
+        padding: 3px 8px;
+        background: rgba(16, 2, 14, 0.75);
+        border: 1px solid rgba(236, 72, 153, 0.35);
+        border-radius: 4px;
+        font-family: var(--mono, 'Space Mono', monospace);
+        font-size: 0.62rem;
+        font-weight: 700;
+        color: #ec4899;
+        letter-spacing: 0.8px;
+        z-index: 5;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        pointer-events: none;
+      }
+      .ce-hud-chip.tl { top: 12px; left: 14px; }
+      .ce-hud-chip.br {
+        bottom: 12px;
+        right: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .ce-dot-live {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #ec4899;
+        box-shadow: 0 0 8px #ec4899;
+        animation: ceDotBlink 1.4s ease-in-out infinite alternate;
+      }
+      @keyframes ceDotBlink {
+        from { opacity: 0.4; }
+        to { opacity: 1; }
+      }
+
+      /* ── CARD 10: TERRA3D WORLD ATLAS HUD & GRATICULE ── */
+      .t3-globe-svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 3;
+        pointer-events: none;
+      }
+      .t3-hud-chip {
+        position: absolute;
+        padding: 3px 8px;
+        background: rgba(1, 6, 13, 0.75);
+        border: 1px solid rgba(0, 240, 204, 0.35);
+        border-radius: 4px;
+        font-family: var(--mono, 'Space Mono', monospace);
+        font-size: 0.62rem;
+        font-weight: 700;
+        color: #00f0cc;
+        letter-spacing: 0.8px;
+        z-index: 5;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        pointer-events: none;
+      }
+      .t3-hud-chip.tl { top: 12px; left: 14px; }
+      .t3-hud-chip.br {
+        bottom: 12px;
+        right: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .t3-dot-live {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #00f0cc;
+        box-shadow: 0 0 8px #00f0cc;
+        animation: t3DotBlink 1.4s ease-in-out infinite alternate;
+      }
+      @keyframes t3DotBlink {
+        from { opacity: 0.4; }
+        to { opacity: 1; }
       }
 
       /* =========================================================
@@ -2998,136 +3367,186 @@
 
       /* Perceptus Flow (Hand Vision) */
       body.lm .vg {
-        background: radial-gradient(circle at 50% 50%, #e6fffa 0%, #f0fdfa 100%) !important;
+        background: radial-gradient(circle at 50% 50%, #e6fffa 0%, #ccfbf1 60%, #f0fdfa 100%) !important;
       }
-      body.lm .gg {
-        opacity: 0.18;
-        background:
-          repeating-linear-gradient(0deg, transparent, transparent 18px, #0d9488 18px, #0d9488 19px),
-          repeating-linear-gradient(90deg, transparent, transparent 18px, #0d9488 18px, #0d9488 19px);
+      body.lm .pf-hand-svg {
+        filter: drop-shadow(0 2px 10px rgba(13, 148, 136, 0.4)) !important;
       }
-      body.lm .gsc {
-        background: #0d9488;
-        box-shadow: 0 0 10px #0d9488;
+      body.lm .pf-laser-scan {
+        background: linear-gradient(90deg, transparent, rgba(13, 148, 136, 0.3) 15%, #0d9488 50%, rgba(13, 148, 136, 0.3) 85%, transparent) !important;
+        box-shadow: 0 0 8px #0d9488 !important;
+      }
+      body.lm .pf-hud-chip {
+        background: rgba(255, 255, 255, 0.88) !important;
+        border-color: rgba(13, 148, 136, 0.4) !important;
+        color: #0f766e !important;
       }
 
       /* QR Studio Matrix */
       body.lm .vq {
-        background: radial-gradient(circle at 50% 50%, #ecfdf5 0%, #f0fdf4 100%) !important;
+        background: radial-gradient(circle at 50% 50%, #ecfdf5 0%, #d1fae5 60%, #f0fdf4 100%) !important;
+      }
+      body.lm .qr-showcase {
+        background: rgba(255, 255, 255, 0.85) !important;
+        border-color: rgba(5, 150, 105, 0.4) !important;
+        box-shadow: 0 4px 16px rgba(5, 150, 105, 0.15) !important;
+      }
+      body.lm .qr-finder {
+        border-color: #059669 !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+        box-shadow: 0 0 6px rgba(5, 150, 105, 0.3) !important;
+      }
+      body.lm .qr-finder-core {
+        background: #059669 !important;
       }
       body.lm .qc {
-        background: rgba(16, 185, 129, 0.15) !important;
-        border: 1px solid rgba(16, 185, 129, 0.3) !important;
-        box-sizing: border-box;
+        background: rgba(5, 150, 105, 0.14) !important;
       }
       body.lm .qc.on {
         background: #047857 !important;
-        box-shadow: 0 0 8px rgba(4, 120, 87, 0.5) !important;
-        border-color: transparent !important;
+        box-shadow: 0 0 6px rgba(4, 120, 87, 0.4) !important;
       }
-      body.lm .qb {
-        background: linear-gradient(to bottom, transparent, rgba(4, 120, 87, 0.6), transparent) !important;
+      body.lm .qr-center-badge {
+        background: rgba(255, 255, 255, 0.92) !important;
+        border-color: #059669 !important;
+        color: #047857 !important;
       }
-      body.lm .qgl {
-        background: radial-gradient(ellipse at center, rgba(4, 120, 87, 0.08) 0%, transparent 70%) !important;
+      body.lm .qr-scan-beam {
+        background: linear-gradient(90deg, transparent, rgba(5, 150, 105, 0.3) 15%, #059669 50%, rgba(5, 150, 105, 0.3) 85%, transparent) !important;
+        box-shadow: 0 0 8px #059669 !important;
+      }
+      body.lm .qr-hud-chip {
+        background: rgba(255, 255, 255, 0.88) !important;
+        border-color: rgba(5, 150, 105, 0.4) !important;
+        color: #047857 !important;
       }
 
-      /* RPG Card (Fix invisible white stars on light background) */
+      /* RPG Card */
       body.lm .vr {
-        background: radial-gradient(ellipse at 50% 80%, #ede9fe 0%, #f5f3ff 100%) !important;
+        background: radial-gradient(circle at 50% 50%, #f5f3ff 0%, #ede9fe 60%, #faf5ff 100%) !important;
       }
-      body.lm .rc {
-        opacity: 0.75;
-        background:
-          radial-gradient(1.5px 1.5px at 15% 25%, #7c3aed 0%, transparent 100%),
-          radial-gradient(1.5px 1.5px at 75% 15%, #6d28d9 0%, transparent 100%),
-          radial-gradient(1.5px 1.5px at 45% 55%, #8b5cf6 0%, transparent 100%),
-          radial-gradient(1.5px 1.5px at 85% 70%, #5b21b6 0%, transparent 100%),
-          radial-gradient(2px 2px at 30% 80%, #d97706 0%, transparent 100%);
-        background-size: 12px 12px;
+      body.lm .rpg-rune-svg {
+        opacity: 0.35 !important;
       }
-      body.lm .ri {
-        color: #6d28d9;
-        filter: drop-shadow(0 4px 12px rgba(109, 40, 217, 0.35)) !important;
+      body.lm .rpg-blade-svg {
+        filter: drop-shadow(0 4px 14px rgba(109, 40, 217, 0.35)) !important;
+      }
+      body.lm .rpg-hud-chip {
+        background: rgba(255, 255, 255, 0.88) !important;
+        border-color: rgba(124, 58, 237, 0.35) !important;
+        color: #6d28d9 !important;
+      }
+      body.lm .rpg-hud-chip.br {
+        border-color: rgba(217, 119, 6, 0.35) !important;
+        color: #b45309 !important;
       }
 
-      /* Traffic Card (Soften housing & boost streak contrast) */
+      /* Traffic Hero Card */
       body.lm .tr-bg {
-        background: radial-gradient(circle at 50% 50%, #fef3c7 0%, #fffbeb 100%) !important;
+        background: radial-gradient(circle at 50% 50%, #fffbeb 0%, #fef3c7 60%, #f8fafc 100%) !important;
       }
-      body.lm .tr-light-box {
-        background: #1e293b !important; /* Keep signal housing dark slate so LEDs pop */
-        border: 2px solid #334155 !important;
-        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.2) !important;
+      body.lm .tr-hud-chip {
+        background: rgba(255, 255, 255, 0.88) !important;
+        border-color: rgba(217, 119, 6, 0.4) !important;
+        color: #b45309 !important;
+      }
+      body.lm .tr-aerial-svg path {
+        fill: #334155 !important;
+        stroke: #f59e0b !important;
       }
 
-      /* Career Card (Boost grid visibility) */
+      /* Career Compass Card */
       body.lm .c-bg {
-        background: radial-gradient(circle at 50% 50%, #e0e7ff 0%, #eef2ff 100%) !important;
+        background: radial-gradient(circle at 50% 50%, #eef2ff 0%, #e0e7ff 60%, #f8fafc 100%) !important;
       }
-      body.lm .c-grid {
-        background:
-          radial-gradient(circle at 50% 50%, rgba(79, 70, 229, 0.18) 0%, transparent 60%),
-          linear-gradient(0deg, rgba(79, 70, 229, 0.12) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(79, 70, 229, 0.12) 1px, transparent 1px);
-        background-size: 100% 100%, 20px 20px, 20px 20px;
+      body.lm .c-hud-chip {
+        background: rgba(255, 255, 255, 0.88) !important;
+        border-color: rgba(99, 102, 241, 0.4) !important;
+        color: #4f46e5 !important;
       }
-      body.lm .c-icon-wrap {
-        background: #eef2ff !important;
-        border: 2px solid rgba(129, 140, 248, 0.6) !important;
-        box-shadow: 0 8px 20px rgba(129, 140, 248, 0.15) !important;
-      }
-      body.lm .c-svg {
-        color: #4f46e5;
+      body.lm .c-needle-svg {
+        filter: drop-shadow(0 4px 12px rgba(99, 102, 241, 0.35)) !important;
       }
 
       /* Database Logic Card */
       body.lm .db-bg {
-        background: radial-gradient(circle at 50% 50%, #e6fffa 0%, #f0fdfa 100%) !important;
+        background: radial-gradient(circle at 50% 50%, #f0f9ff 0%, #e0f2fe 60%, #f8fafc 100%) !important;
       }
-      body.lm .db-server {
-        background: #ffffff !important;
-        border: 2px solid #0d9488 !important;
-        box-shadow: 0 8px 20px rgba(13, 148, 136, 0.15) !important;
+      body.lm .db-hud-chip {
+        background: rgba(255, 255, 255, 0.88) !important;
+        border-color: rgba(2, 132, 199, 0.4) !important;
+        color: #0284c7 !important;
       }
-      body.lm .db-scan {
-        background: #0d9488 !important;
-        box-shadow: 0 0 15px rgba(13, 148, 136, 0.4) !important;
+      body.lm .db-rack-svg rect {
+        fill: #ffffff !important;
+        stroke: #0284c7 !important;
       }
-      body.lm .db-glow {
-        background: radial-gradient(circle, rgba(13, 148, 136, 0.15) 0%, transparent 70%) !important;
+      body.lm .db-shard path {
+        fill: #e0f2fe !important;
+        stroke: #0284c7 !important;
       }
-      body.lm .db-line {
-        background: rgba(13, 148, 136, 0.2) !important;
+      body.lm .db-shard ellipse {
+        fill: #bae6fd !important;
+        stroke: #0284c7 !important;
       }
-      body.lm .db-line::after {
-        background: #0d9488 !important;
+
+      /* CastFlow Studio Card */
+      body.lm .cf-bg {
+        background: radial-gradient(circle at 50% 50%, #f0f9ff 0%, #e0f2fe 60%, #f8fafc 100%) !important;
       }
-      body.lm .db-led {
-        background: #0d9488 !important;
-        box-shadow: 0 0 8px #0d9488 !important;
+      body.lm .cf-hud-chip {
+        background: rgba(255, 255, 255, 0.88) !important;
+        border-color: rgba(14, 165, 233, 0.4) !important;
+        color: #0369a1 !important;
+      }
+      body.lm .cf-cast-svg rect {
+        fill: #ffffff !important;
+        stroke: #0ea5e9 !important;
+      }
+      body.lm .cf-cast-svg rect:nth-of-type(2) {
+        fill: #e0f2fe !important;
+      }
+
+      /* Cereal AI Card */
+      body.lm .ce-bg {
+        background: radial-gradient(circle at 50% 50%, #fdf2f8 0%, #fce7f3 60%, #f8fafc 100%) !important;
+      }
+      body.lm .ce-hud-chip {
+        background: rgba(255, 255, 255, 0.88) !important;
+        border-color: rgba(219, 39, 119, 0.4) !important;
+        color: #be185d !important;
+      }
+      body.lm .ce-neural-svg rect {
+        fill: #ffffff !important;
+        stroke: #db2777 !important;
+      }
+      body.lm .ce-eq-bar {
+        fill: #db2777 !important;
       }
 
       /* Terra3D Atlas Card */
       body.lm .t3-bg {
-        background: radial-gradient(ellipse at 50% 55%, #dff3f6 0%, #eef4f8 70%) !important;
+        background: radial-gradient(ellipse at 50% 55%, #e6fffa 0%, #ccfbf1 60%, #f0fdfa 100%) !important;
       }
       body.lm .t3-core {
-        background: radial-gradient(circle at 34% 30%, #3aa7bd 0%, #17607a 60%, #0b3550 100%) !important;
+        background: radial-gradient(circle at 34% 30%, #5eead4 0%, #0d9488 60%, #115e59 100%) !important;
       }
       body.lm .t3-stars {
         opacity: 0.18 !important;
       }
+      body.lm .t3-hud-chip {
+        background: rgba(255, 255, 255, 0.88) !important;
+        border-color: rgba(13, 148, 136, 0.4) !important;
+        color: #0f766e !important;
+      }
 
-      /* 6. Fix Mobile Non-iPhone Light Mode Specificity Bug */
+      /* 6. Mobile Light Mode Refinements */
       @media (max-width: 768px) {
-        html:not(.is-iphone) body.lm .node-inspector,
-        html.lm:not(.is-iphone) .node-inspector {
+        body.lm .node-inspector {
           background: rgba(255, 255, 255, 0.98) !important;
           border-color: rgba(15, 23, 42, 0.14) !important;
         }
-        html:not(.is-iphone) body.lm .dropdown-content-inner,
-        html.lm:not(.is-iphone) .dropdown-content-inner {
+        body.lm .dropdown-content-inner {
           background: transparent !important;
         }
       }
@@ -3148,13 +3567,29 @@
           position: absolute;
           top: 50%;
           right: max(16px, calc(50vw - 680px));
-          transform: translateY(-50%);
+          transform: translateY(-50%) scale(var(--hos-scale, 1));
+          transform-origin: center center;
           width: min(660px, 48vw);
           height: min(660px, 48vw);
           z-index: 4;
           pointer-events: auto;
           user-select: none;
-          transition: opacity 0.4s var(--ease), filter 0.4s var(--ease);
+          transition: opacity 0.4s var(--ease), filter 0.4s var(--ease), transform 0.4s var(--ease);
+        }
+        @media (min-width: 901px) and (max-width: 1240px) {
+          .hero-orbital-stage {
+            --hos-scale: 0.82;
+          }
+        }
+        @media (min-width: 901px) and (max-height: 920px) {
+          .hero-orbital-stage {
+            --hos-scale: 0.8;
+          }
+        }
+        @media (min-width: 901px) and (max-width: 1240px) and (max-height: 920px) {
+          .hero-orbital-stage {
+            --hos-scale: 0.7;
+          }
         }
         .hero:has(.node-inspector.active) .hero-orbital-stage,
         .hero.inspector-active .hero-orbital-stage {
@@ -3213,6 +3648,8 @@
         body.lm .hos-r4 {
           border-color: rgba(194, 65, 12, 0.22);
         }
+
+        
 
         @keyframes hosSpin {
           from {
@@ -3414,6 +3851,11 @@
         width: 200%;
         height: 80px;
         will-change: transform;
+        animation-play-state: paused;
+      }
+      .pc.rev .col-moving-audio-lines svg,
+      .pc:hover .col-moving-audio-lines svg {
+        animation-play-state: running;
       }
       .col-audio-wave-1 {
         animation: colAudioGlide 5.2s linear infinite;
@@ -3605,10 +4047,6 @@
 
     <main id="main">
     <section class="hero" id="heroSection">
-      <!-- NOTE: the old <canvas id="orrery"> WebGL stage was removed.
-           It was never driven: col-3d.js is not loaded on this page, so the
-           canvas stayed at its default 300x150 with opacity 0, while the
-           CSS/SVG .hero-orbital-stage below is the actual orrery. -->
       <div class="hvig"></div>
       <div class="hvigb"></div>
 
@@ -3627,6 +4065,13 @@
           <a href="download" class="btn-g">Apps &amp; Downloads &#8594;</a>
           <a href="about" class="btn-g">Our Story &#8594;</a>
           <a href="COL.apk" class="btn-g mobile-dl" download style="border-color: var(--signal); color: var(--signal)">Download Android App</a>
+        </div>
+        <div class="hst" aria-label="Studio Statistics">
+          <span class="hst-item"><b>Projects</b> &mdash; 16</span>
+          <span class="hst-dot" aria-hidden="true">&middot;</span>
+          <span class="hst-item"><b>Team</b> &mdash; 06</span>
+          <span class="hst-dot" aria-hidden="true">&middot;</span>
+          <span class="hst-item"><b>Base</b> &mdash; Mumbai</span>
         </div>
       </div>
 
@@ -3709,10 +4154,9 @@
           <a href="Traffic/Driving" class="ni-btn ni-btn-primary" id="niLaunchBtn">
             Launch Engine <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
-          <!-- NOTE: the "Center View" button was removed. It called
-               window.__col3d.flyToNode/zoom, but col-3d.js is not loaded on
-               this page, so window.__col3d was always undefined and the
-               button was a visible no-op. The CSS orrery has no camera. -->
+          <button class="ni-btn ni-btn-ghost" id="niCenterBtn" onclick="if (window.__col3d && window.__col3d.flyToNode) { window.__col3d.flyToNode(window.__currentInspectorNodeKey || 'core'); }">
+            Center View ⌖
+          </button>
           <button class="ni-btn ni-btn-ghost" id="niDismissBtn">
             Return Orbit ✕
           </button>
@@ -3734,14 +4178,9 @@
         <span>Scroll</span>
         <div class="scl"></div>
       </div>
-      <div class="hst">
-        <div><b>Projects</b> &mdash; 16</div>
-        <div><b>Team</b> &mdash; 06</div>
-        <div><b>Base</b> &mdash; Mumbai</div>
-      </div>
     </section>
 
-    <section class="vp-section" style="content-visibility:auto; contain-intrinsic-size: 0 600px">
+    <section class="vp-section" style="content-visibility:auto; contain-intrinsic-size: auto 500px">
       <div class="vp-grid">
         <div class="vp-card rv">
           <div class="vp-icon">
@@ -3767,21 +4206,20 @@
       </div>
     </section>
 
-    <section class="ps" id="projects" style="content-visibility:auto; contain-intrinsic-size: 0 1200px">
+    <section class="ps" id="projects" style="content-visibility:auto; contain-intrinsic-size: auto 1200px">
       <div class="sh">
         <div>
           <div class="sey">Portfolio</div>
-          <h2 class="st">Seven Engines.<br />One Studio.</h2>
+          <h2 class="st">Five Engines.<br />One Studio.</h2>
         </div>
         <p class="ssb">
-          Each project is a standalone engine &mdash; a focused exploration of a specific domain of computer science and interactive design, engineered from scratch to show what web
-          applications can really do.
+          Each project is a standalone engine &mdash; a focused exploration of computer science, real-time astrophysics, machine vision, dynamic matrices, and career psychometrics engineered from scratch.
         </p>
       </div>
       <div class="pgrid">
         <a href="ati" class="pc cs feat" data-delay="0"
           ><div class="badge bflag" style="background: linear-gradient(135deg, #00f0ff, #0284c7); color: #040810; font-weight: 800; box-shadow: 0 0 20px rgba(0, 240, 255, 0.45)">★ Primary Flagship</div>
-          <div class="pv"><img src="ATI 1.png" alt="Advanced Typing Instructor" width="900" height="500" loading="lazy" decoding="async" /></div>
+          <div class="pv"><img src="ATI%201.png" alt="Advanced Typing Instructor" width="900" height="500" loading="lazy" decoding="async" /></div>
           <div class="pb">
             <div class="pn">01 &mdash; Founding Flagship &amp; Suite</div>
             <h3 class="pname">Advanced Typing Instructor 1.4</h3>
@@ -3813,132 +4251,467 @@
             </div></div
         ></a>
         <a href="gesture" class="pc ct" data-delay="160"
-          ><div class="badge bp">Autonomous AI</div>
-          <div class="pv" style="background: #060d10">
+          ><div class="badge bp" style="background: rgba(0, 240, 255, 0.16); border-color: rgba(0, 240, 255, 0.45); color: #00f0ff; box-shadow: 0 0 14px rgba(0, 240, 255, 0.25);">Spatial Vision AI</div>
+          <div class="pv" style="background: #03080e">
             <div class="vg">
-              <div class="gg"></div>
-              <div class="gsc"></div>
-              <div class="gh"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg></div>
+              <span class="pf-hud-chip tl">FPS: 60 &bull; 21 PTS</span>
+              <span class="pf-hud-chip br"><span class="pf-dot-live"></span>AIR PINCH</span>
+              <div class="pf-laser-scan"></div>
+              <div class="pf-stage">
+                <!-- Dual Reticle Rings -->
+                <svg class="pf-reticle" viewBox="0 0 220 170" fill="none">
+                  <circle class="pf-ring-outer" cx="110" cy="85" r="70" stroke="rgba(0, 240, 255, 0.22)" stroke-width="1.2" stroke-dasharray="6 8" />
+                  <circle class="pf-ring-inner" cx="110" cy="85" r="54" stroke="rgba(0, 240, 255, 0.18)" stroke-width="1" stroke-dasharray="3 6" />
+                  <!-- Viewfinder Brackets -->
+                  <path d="M 28 32 H 18 V 42" stroke="rgba(0, 240, 255, 0.4)" stroke-width="1.5" stroke-linecap="round" />
+                  <path d="M 192 32 H 202 V 42" stroke="rgba(0, 240, 255, 0.4)" stroke-width="1.5" stroke-linecap="round" />
+                  <path d="M 28 138 H 18 V 128" stroke="rgba(0, 240, 255, 0.4)" stroke-width="1.5" stroke-linecap="round" />
+                  <path d="M 192 138 H 202 V 128" stroke="rgba(0, 240, 255, 0.4)" stroke-width="1.5" stroke-linecap="round" />
+                </svg>
+                <!-- Skeletal Biometric Hand -->
+                <svg class="pf-hand-svg" viewBox="0 0 160 160" fill="none">
+                  <!-- Skeletal Rays / Bones -->
+                  <g stroke="rgba(0, 240, 255, 0.65)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <!-- Wrist & Palm Crossbar -->
+                    <path d="M70 148 L90 148 L80 125 Z" fill="rgba(0, 240, 255, 0.08)" />
+                    <!-- Thumb: Wrist -> Base -> Joint -> Tip -->
+                    <path d="M72 135 L50 115 L38 98 L30 84" />
+                    <!-- Index: Palm -> Joint1 -> Joint2 -> Tip -->
+                    <path d="M76 122 L66 88 L60 62 L56 36" />
+                    <!-- Middle: Palm -> Joint1 -> Joint2 -> Tip -->
+                    <path d="M80 120 L80 82 L80 54 L80 26" />
+                    <!-- Ring: Palm -> Joint1 -> Joint2 -> Tip -->
+                    <path d="M84 122 L94 88 L100 64 L104 42" />
+                    <!-- Pinky: Palm -> Joint1 -> Joint2 -> Tip -->
+                    <path d="M88 126 L110 98 L118 78 L124 60" />
+                    <!-- Palm Core Mesh Connections -->
+                    <path d="M50 115 L66 88 L80 82 L94 88 L110 98" stroke="rgba(0, 240, 255, 0.35)" stroke-width="1" />
+                  </g>
+                  <!-- Joint Nodes -->
+                  <g fill="#00f0ff">
+                    <circle cx="80" cy="125" r="4" fill="#ffffff" stroke="#00f0ff" stroke-width="2" />
+                    <!-- Thumb joints -->
+                    <circle cx="50" cy="115" r="2.5" />
+                    <circle cx="38" cy="98" r="2.5" />
+                    <circle cx="30" cy="84" r="3.5" fill="#ffffff" stroke="#00f0ff" stroke-width="1.5" />
+                    <!-- Index joints -->
+                    <circle cx="66" cy="88" r="2.5" />
+                    <circle cx="60" cy="62" r="2.5" />
+                    <circle cx="56" cy="36" r="4.5" fill="#ffffff" stroke="#00f0ff" stroke-width="2" />
+                    <!-- Middle joints -->
+                    <circle cx="80" cy="82" r="2.5" />
+                    <circle cx="80" cy="54" r="2.5" />
+                    <circle cx="80" cy="26" r="3.5" fill="#ffffff" stroke="#00f0ff" stroke-width="1.5" />
+                    <!-- Ring joints -->
+                    <circle cx="94" cy="88" r="2.5" />
+                    <circle cx="100" cy="64" r="2.5" />
+                    <circle cx="104" cy="42" r="3.5" fill="#ffffff" stroke="#00f0ff" stroke-width="1.5" />
+                    <!-- Pinky joints -->
+                    <circle cx="110" cy="98" r="2.5" />
+                    <circle cx="118" cy="78" r="2.5" />
+                    <circle cx="124" cy="60" r="3.5" fill="#ffffff" stroke="#00f0ff" stroke-width="1.5" />
+                  </g>
+                  <!-- Active Target Crosshair on Index Tip -->
+                  <g>
+                    <circle cx="56" cy="36" r="10" stroke="#00f0ff" stroke-width="1.2" stroke-dasharray="2 3" />
+                    <circle class="pf-pulse-ring" cx="56" cy="36" r="6" stroke="#00f0ff" stroke-width="1.5" fill="none" />
+                  </g>
+                </svg>
+              </div>
             </div>
           </div>
           <div class="pb">
-            <div class="pn">03</div>
+            <div class="pn">03 &mdash; Spatial Vision</div>
             <h3 class="pname">Perceptus Flow: Vision Co-Pilot</h3>
             <p class="pdesc">
-              Touchless spatial machine vision and multimodal AI co-pilot using standard webcams. Zero extra hardware required — control cursor, pinch-click, scroll, and air-draw in mid-air.
+              Touchless spatial machine vision and multimodal AI co-pilot using standard webcams. Zero extra hardware required &mdash; control cursor, pinch-click, scroll, and air-draw in mid-air.
             </p>
           </div>
           <div class="pf">
-            <div class="ptags"><span class="tag">AI Vision</span><span class="tag">Spatial UI</span><span class="tag">Webcam</span></div>
+            <div class="ptags"><span class="tag">AI Vision</span><span class="tag">Spatial UI</span><span class="tag">MediaPipe</span></div>
             <div class="plink">
-              Explore <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+              Launch Co-Pilot <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
             </div></div
         ></a>
         <a href="qr" class="pc ce" data-delay="240"
-          ><div class="pv" style="background: #040e08">
+          ><div class="badge bp" style="background: rgba(16, 185, 129, 0.16); border-color: rgba(16, 185, 129, 0.45); color: #10b981; box-shadow: 0 0 14px rgba(16, 185, 129, 0.25);">Dynamic Matrix</div>
+          <div class="pv" style="background: #020804">
             <div class="vq">
-              <div class="qgl"></div>
-              <div class="qb"></div>
-              <div class="qm2" id="qrm"></div>
+              <span class="qr-hud-chip tl">MATRIX V4</span>
+              <span class="qr-hud-chip br"><span class="qr-dot-live"></span>LIVE SYNC</span>
+              <div class="qr-showcase">
+                <!-- Top-Left Finder -->
+                <div class="qr-finder tl"><div class="qr-finder-core"></div></div>
+                <!-- Top-Right Finder -->
+                <div class="qr-finder tr"><div class="qr-finder-core"></div></div>
+                <!-- Bottom-Left Finder -->
+                <div class="qr-finder bl"><div class="qr-finder-core"></div></div>
+                <!-- Center Shield Glyph -->
+                <div class="qr-center-badge">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                    <path d="M14 14h3v3h-3z"></path>
+                    <path d="M17 17h4v4h-4z"></path>
+                  </svg>
+                </div>
+                <!-- Laser Scan Line -->
+                <div class="qr-scan-beam"></div>
+                <!-- Dynamic Interactive Grid -->
+                <div class="qm2" id="qrm"></div>
+              </div>
             </div>
           </div>
           <div class="pb">
-            <div class="pn">04</div>
+            <div class="pn">04 &mdash; Dynamic Matrix</div>
             <h3 class="pname">QR Studio Matrix</h3>
             <p class="pdesc">
               Static &amp; dynamic QR engine with cloud redirection, real-time scan analytics, custom geometric styles, logo embedding, camera scanner, and bulk generation.
             </p>
           </div>
           <div class="pf">
-            <div class="ptags"><span class="tag">Dynamic QR</span><span class="tag">Analytics</span><span class="tag">Cloud Sync</span></div>
+            <div class="ptags"><span class="tag">Dynamic QR</span><span class="tag">Cloud Sync</span><span class="tag">Analytics</span></div>
             <div class="plink">
-              Studio <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+              Launch Studio <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
             </div></div
         ></a>
-        <a href="rpg" class="pc cp" data-delay="320"
-          ><div class="badge bs">Coming Soon</div>
-          <div class="pv" style="background: #080514">
-            <div class="vr">
-              <div class="rc"></div>
-              <div class="rg"></div>
-              <div class="ri"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M16 16l4 4"/><path d="M19 21l2-2"/></svg></div>
-              <div class="ro">
-                <div class="rob"></div>
-                <div class="rob"></div>
-                <div class="rob"></div>
-                <div class="rob"></div>
-                <div class="rob"></div>
+        <a href="Career" class="pc cp" data-delay="320">
+          <div class="badge bp" style="background: rgba(129, 140, 248, 0.16); border-color: rgba(129, 140, 248, 0.45); color: #818cf8; box-shadow: 0 0 14px rgba(129, 140, 248, 0.25);">Career Architecture</div>
+          <div class="pv" style="background: #050614">
+            <div class="c-bg">
+              <span class="c-hud-chip tl">436 PATHS &bull; 8D VECTOR</span>
+              <span class="c-hud-chip br"><span class="c-dot-live"></span>COSINE MATCH</span>
+              <div class="c-stage">
+                <!-- Astrolabe Outer & Inner Gimbal Rings -->
+                <svg class="c-gimbal-svg" viewBox="0 0 200 160" fill="none">
+                  <circle class="c-ring-outer" cx="100" cy="80" r="68" stroke="rgba(129, 140, 248, 0.3)" stroke-width="1.2" stroke-dasharray="3 5" />
+                  <circle class="c-ring-inner" cx="100" cy="80" r="50" stroke="rgba(165, 180, 252, 0.22)" stroke-width="1" stroke-dasharray="6 3" />
+                  <!-- Cardinal Tick Marks -->
+                  <line x1="100" y1="8" x2="100" y2="18" stroke="#818cf8" stroke-width="2" />
+                  <line x1="100" y1="142" x2="100" y2="152" stroke="rgba(129, 140, 248, 0.4)" stroke-width="1.5" />
+                  <line x1="28" y1="80" x2="38" y2="80" stroke="rgba(129, 140, 248, 0.4)" stroke-width="1.5" />
+                  <line x1="162" y1="80" x2="172" y2="80" stroke="rgba(129, 140, 248, 0.4)" stroke-width="1.5" />
+                  <!-- Constellation Cluster Nodes -->
+                  <g stroke="rgba(129, 140, 248, 0.35)" stroke-width="0.9" stroke-dasharray="2 3">
+                    <line x1="100" y1="80" x2="70" y2="48" />
+                    <line x1="100" y1="80" x2="135" y2="52" />
+                    <line x1="100" y1="80" x2="140" y2="112" />
+                    <line x1="100" y1="80" x2="62" y2="110" />
+                    <line x1="70" y1="48" x2="135" y2="52" />
+                  </g>
+                  <circle cx="70" cy="48" r="3.5" fill="#818cf8" />
+                  <circle cx="135" cy="52" r="3.5" fill="#a5b4fc" />
+                  <circle cx="140" cy="112" r="3" fill="#6366f1" />
+                  <circle cx="62" cy="110" r="3" fill="#818cf8" />
+                </svg>
+                <!-- Floating 3D Vector Needle -->
+                <svg class="c-needle-svg" viewBox="0 0 100 100" fill="none">
+                  <!-- North Pointer (Glowing Royal Violet) -->
+                  <polygon points="50,14 43,50 50,46" fill="#818cf8" />
+                  <polygon points="50,14 57,50 50,46" fill="#a5b4fc" />
+                  <!-- South Pointer (Slate Gunmetal) -->
+                  <polygon points="50,86 43,50 50,54" fill="#312e81" />
+                  <polygon points="50,86 57,50 50,54" fill="#4338ca" />
+                  <!-- Center Pivot Gem -->
+                  <circle cx="50" cy="50" r="5" fill="#e0e7ff" stroke="#818cf8" stroke-width="2" />
+                  <circle cx="50" cy="50" r="2" fill="#4f46e5" />
+                  <!-- North Star Apex Glint -->
+                  <circle cx="50" cy="14" r="2.5" fill="#ffffff" />
+                </svg>
               </div>
             </div>
           </div>
           <div class="pb">
-            <div class="pn">05</div>
-            <h3 class="pname">RPG Game</h3>
+            <div class="pn">05 &mdash; Career Architecture</div>
+            <h3 class="pname">The Career Compass</h3>
             <p class="pdesc">
-              An epic role-playing adventure featuring dynamic battles, leveling systems, and a deep story. Currently in active development by the studio, blending classic mechanics with modern
-              interactive design.
+              Interactive career navigation system mapping 436 Indian and global career pathways. Employs 8-dimensional psychometric vector matching to provide personalized education roadmaps, skill matrices, and salary trajectories.
             </p>
           </div>
           <div class="pf">
-            <div class="ptags"><span class="tag">Game Dev</span><span class="tag">Canvas</span></div>
+            <div class="ptags"><span class="tag">Psychometrics</span><span class="tag">8D Vectors</span><span class="tag">Career AI</span></div>
             <div class="plink">
-              Preview <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-            </div></div
-        ></a>
-        <a href="CastFlow" class="pc ci" data-delay="360"
-          ><div class="badge bp" style="background: rgba(14, 165, 233, 0.18); border-color: rgba(14, 165, 233, 0.4); color: #0ea5e9;">Wireless Display</div>
-          <div class="pv" style="background: #040914">
-            <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-              <div style="position: absolute; width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle, rgba(14, 165, 233, 0.22) 0%, transparent 70%);"></div>
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 16px rgba(14, 165, 233, 0.6));">
-                <rect x="2" y="3" width="20" height="14" rx="2" />
-                <line x1="8" y1="21" x2="16" y2="21" />
-                <line x1="12" y1="17" x2="12" y2="21" />
-                <path d="M2 16.5a1 1 0 0 0 1 1" />
-                <path d="M2 13a4.5 4.5 0 0 1 4.5 4.5" />
-              </svg>
+              Launch Compass <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+            </div>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section class="ps" id="educational" style="content-visibility:auto; contain-intrinsic-size: auto 600px; padding-top: 40px">
+      <div class="sh">
+        <div>
+          <div class="sey">Educational Deep Dives</div>
+          <h2 class="st">Systems Architecture.<br />Interactive Labs.</h2>
+        </div>
+        <p class="ssb">Explore deep computational systems including multi-tier relational database architectures and real-time civic traffic simulation engines.</p>
+      </div>
+      <div class="pgrid">
+        <a href="Database_Logic" class="pc ci" data-delay="0">
+          <div class="badge bp" style="background: rgba(56, 189, 248, 0.16); border-color: rgba(56, 189, 248, 0.45); color: #38bdf8; box-shadow: 0 0 14px rgba(56, 189, 248, 0.25);">Relational Architecture</div>
+          <div class="pv" style="background: #020a14">
+            <div class="db-bg">
+              <span class="db-hud-chip tl">50 MODULES &bull; B-TREE</span>
+              <span class="db-hud-chip br"><span class="db-dot-live"></span>QUERY: 0.4ms</span>
+              <div class="db-stage">
+                <!-- Holographic Relational Shard Rack & Connectors -->
+                <svg class="db-rack-svg" viewBox="0 0 220 160" fill="none">
+                  <!-- Relational Graph Connectors -->
+                  <g stroke="rgba(56, 189, 248, 0.35)" stroke-width="1.2" stroke-dasharray="3 4">
+                    <path d="M55 45 L110 50 L165 45" />
+                    <path d="M55 85 L110 85 L165 85" />
+                    <path d="M55 125 L110 120 L165 125" />
+                  </g>
+                  <!-- Satellite Node 1: Schema / MVA -->
+                  <g transform="translate(30, 68)">
+                    <rect x="0" y="0" width="36" height="24" rx="4" fill="rgba(6, 25, 42, 0.85)" stroke="rgba(56, 189, 248, 0.5)" stroke-width="1.2" />
+                    <text x="18" y="15" fill="#38bdf8" font-size="7" font-weight="700" text-anchor="middle" font-family="monospace">MVA</text>
+                  </g>
+                  <!-- Satellite Node 2: RTO Challan Rules -->
+                  <g transform="translate(154, 68)">
+                    <rect x="0" y="0" width="36" height="24" rx="4" fill="rgba(6, 25, 42, 0.85)" stroke="rgba(56, 189, 248, 0.5)" stroke-width="1.2" />
+                    <text x="18" y="15" fill="#38bdf8" font-size="7" font-weight="700" text-anchor="middle" font-family="monospace">RULES</text>
+                  </g>
+                  <!-- Center Vertical Data Bus -->
+                  <line class="db-pulse-beam" x1="110" y1="20" x2="110" y2="145" stroke="#38bdf8" stroke-width="2" stroke-dasharray="4 6" />
+                  <!-- Cylinder 1 (Top / Ingestion) -->
+                  <g class="db-shard s1" transform="translate(80, 32)">
+                    <path d="M0 8 C0 3, 60 3, 60 8 L60 22 C60 27, 0 27, 0 22 Z" fill="rgba(14, 42, 68, 0.8)" stroke="#38bdf8" stroke-width="1.2" />
+                    <ellipse cx="30" cy="8" rx="30" ry="7" fill="rgba(56, 189, 248, 0.35)" stroke="#38bdf8" stroke-width="1.2" />
+                    <circle cx="12" cy="17" r="2" fill="#00f0ff" />
+                    <line x1="20" y1="17" x2="48" y2="17" stroke="rgba(56, 189, 248, 0.6)" stroke-width="1.5" stroke-linecap="round" />
+                  </g>
+                  <!-- Cylinder 2 (Middle / B-Tree Index) -->
+                  <g class="db-shard s2" transform="translate(80, 68)">
+                    <path d="M0 8 C0 3, 60 3, 60 8 L60 22 C60 27, 0 27, 0 22 Z" fill="rgba(10, 32, 54, 0.85)" stroke="#38bdf8" stroke-width="1.2" />
+                    <ellipse cx="30" cy="8" rx="30" ry="7" fill="rgba(56, 189, 248, 0.35)" stroke="#38bdf8" stroke-width="1.2" />
+                    <circle cx="12" cy="17" r="2" fill="#34d399" />
+                    <line x1="20" y1="17" x2="48" y2="17" stroke="rgba(52, 211, 153, 0.6)" stroke-width="1.5" stroke-linecap="round" />
+                  </g>
+                  <!-- Cylinder 3 (Bottom / Storage Tables) -->
+                  <g class="db-shard s3" transform="translate(80, 104)">
+                    <path d="M0 8 C0 3, 60 3, 60 8 L60 22 C60 27, 0 27, 0 22 Z" fill="rgba(7, 24, 42, 0.9)" stroke="#38bdf8" stroke-width="1.2" />
+                    <ellipse cx="30" cy="8" rx="30" ry="7" fill="rgba(56, 189, 248, 0.35)" stroke="#38bdf8" stroke-width="1.2" />
+                    <circle cx="12" cy="17" r="2" fill="#38bdf8" />
+                    <line x1="20" y1="17" x2="48" y2="17" stroke="rgba(56, 189, 248, 0.6)" stroke-width="1.5" stroke-linecap="round" />
+                  </g>
+                </svg>
+              </div>
             </div>
           </div>
           <div class="pb">
-            <div class="pn">06 &mdash; Wireless Streaming</div>
+            <div class="pn">06 &mdash; Database Architecture</div>
+            <h3 class="pname">Database Logic &amp; Query Engine</h3>
+            <p class="pdesc">
+              Comprehensive 50-module interactive civic engineering and statutory laws database. Delivers live RTO challan simulations, IRC standards, and deep Motor Vehicles Act jurisprudence for Mumbai road users.
+            </p>
+          </div>
+          <div class="pf">
+            <div class="ptags"><span class="tag">Relational DB</span><span class="tag">Query Engine</span><span class="tag">MVA 2019</span></div>
+            <div class="plink">
+              Open Database <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+            </div>
+          </div>
+        </a>
+
+        <a href="Traffic/Academy" class="pc cs" data-delay="80">
+          <div class="badge bp" style="background: rgba(245, 158, 11, 0.16); border-color: rgba(245, 158, 11, 0.45); color: #f59e0b; box-shadow: 0 0 14px rgba(245, 158, 11, 0.25);">Kinematics &amp; AI</div>
+          <div class="pv" style="background: #0d0802">
+            <div class="tr-bg">
+              <span class="tr-hud-chip tl">LIDAR: 120m &bull; 60 FPS</span>
+              <span class="tr-hud-chip br"><span class="tr-dot-live"></span>AI TELEMETRY</span>
+              <div class="tr-stage">
+                <!-- Aerial Mumbai Intersection & LiDAR Radar Scanner -->
+                <svg class="tr-aerial-svg" viewBox="0 0 220 160" fill="none">
+                  <!-- Concentric LiDAR Range Rings -->
+                  <circle cx="110" cy="80" r="70" stroke="rgba(245, 158, 11, 0.2)" stroke-width="1" stroke-dasharray="4 6" />
+                  <circle cx="110" cy="80" r="46" stroke="rgba(245, 158, 11, 0.28)" stroke-width="1" stroke-dasharray="3 4" />
+                  <circle cx="110" cy="80" r="22" stroke="rgba(245, 158, 11, 0.35)" stroke-width="1" stroke-dasharray="2 3" />
+                  <!-- 4-Way Intersection Asphalt Cross -->
+                  <path d="M92 10 H128 V62 H190 V98 H128 V150 H92 V98 H30 V62 H92 Z" fill="rgba(18, 14, 10, 0.85)" stroke="rgba(245, 158, 11, 0.4)" stroke-width="1.2" />
+                  <!-- Road Center Markings (Yellow Medians) -->
+                  <line x1="110" y1="10" x2="110" y2="60" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5 4" />
+                  <line x1="110" y1="100" x2="110" y2="150" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5 4" />
+                  <line x1="30" y1="80" x2="90" y2="80" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5 4" />
+                  <line x1="130" y1="80" x2="190" y2="80" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5 4" />
+                  <!-- Zebra Crossings -->
+                  <g stroke="rgba(255, 255, 255, 0.6)" stroke-width="1.5">
+                    <line x1="94" y1="62" x2="126" y2="62" stroke-dasharray="3 3" />
+                    <line x1="94" y1="98" x2="126" y2="98" stroke-dasharray="3 3" />
+                    <line x1="92" y1="64" x2="92" y2="96" stroke-dasharray="3 3" />
+                    <line x1="128" y1="64" x2="128" y2="96" stroke-dasharray="3 3" />
+                  </g>
+                  <!-- LiDAR Rotating Radar Sweep -->
+                  <g class="tr-radar-sweep">
+                    <line x1="110" y1="80" x2="180" y2="80" stroke="#f59e0b" stroke-width="1.8" />
+                    <polygon points="110,80 178,54 180,80" fill="rgba(245, 158, 11, 0.18)" />
+                  </g>
+                  <!-- Host Vehicle (Yellow Cab) with Autopilot Trajectory Vector -->
+                  <g transform="translate(116, 108)">
+                    <rect x="0" y="0" width="8" height="14" rx="2" fill="#fbbf24" stroke="#d97706" stroke-width="1" />
+                    <line x1="4" y1="0" x2="4" y2="-22" stroke="#34d399" stroke-width="1.5" stroke-dasharray="3 2" />
+                    <circle cx="4" cy="-22" r="2" fill="#34d399" />
+                  </g>
+                  <!-- NPC Vehicle 1 (Auto-Rickshaw) -->
+                  <g transform="translate(96, 38)">
+                    <rect x="0" y="0" width="7" height="11" rx="2" fill="#00f0ff" stroke="#0284c7" stroke-width="1" />
+                  </g>
+                  <!-- NPC Vehicle 2 (Commuter Bus) -->
+                  <g transform="translate(48, 66)">
+                    <rect x="0" y="0" width="16" height="7" rx="1.5" fill="#f43f5e" stroke="#be123c" stroke-width="1" />
+                  </g>
+                  <!-- 3-Aspect Traffic Signal Head -->
+                  <g transform="translate(138, 38)">
+                    <rect x="0" y="0" width="12" height="26" rx="3" fill="#18181b" stroke="#3f3f46" stroke-width="1" />
+                    <circle cx="6" cy="6" r="2.5" fill="#ef4444" class="tr-sig-red" />
+                    <circle cx="6" cy="13" r="2.5" fill="#f59e0b" class="tr-sig-yel" />
+                    <circle cx="6" cy="20" r="2.5" fill="#10b981" class="tr-sig-grn" />
+                  </g>
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div class="pb">
+            <div class="pn">07 &mdash; Traffic Simulation</div>
+            <h3 class="pname">Traffic Hero Simulation &amp; Academy</h3>
+            <p class="pdesc">
+              An authentic Mumbai city driving simulator featuring procedurally controlled intersections, real-time traffic signal logic, pedestrians, and dynamic camera angles.
+            </p>
+          </div>
+          <div class="pf">
+            <div class="ptags"><span class="tag">Three.js</span><span class="tag">LiDAR AI</span><span class="tag">Mumbai Roads</span></div>
+            <div class="plink">
+              Launch Academy <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+            </div>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section class="ps" id="mobile" style="content-visibility:auto; contain-intrinsic-size: auto 600px; padding-top: 40px">
+      <div class="sh">
+        <div>
+          <div class="sey">Android Ecosystem</div>
+          <h2 class="st">Native Mobility.<br />Edge Intelligence.</h2>
+        </div>
+        <p class="ssb">High-performance Android applications built with Jetpack Compose, hardware-accelerated wireless streaming, and on-device Gemini AI orchestration.</p>
+      </div>
+      <div class="pgrid">
+        <a href="CastFlow" class="pc ci" data-delay="0">
+          <div class="badge bp" style="background: rgba(14, 165, 233, 0.16); border-color: rgba(14, 165, 233, 0.45); color: #0ea5e9; box-shadow: 0 0 14px rgba(14, 165, 233, 0.25);">Wireless Display</div>
+          <div class="pv" style="background: #030a16">
+            <div class="cf-bg">
+              <span class="cf-hud-chip tl">4K MSS &bull; 60 FPS</span>
+              <span class="cf-hud-chip br"><span class="cf-dot-live"></span>LATENCY: 8ms</span>
+              <div class="cf-stage">
+                <!-- Dual Device Wireless Mirroring Array -->
+                <svg class="cf-cast-svg" viewBox="0 0 220 160" fill="none">
+                  <!-- Transmitter Waves (Concentric Radiating Arcs) -->
+                  <g stroke="rgba(14, 165, 233, 0.45)" stroke-width="1.5" stroke-linecap="round">
+                    <path class="cf-wave-arc w1" d="M102 70 A16 16 0 0 1 102 90" />
+                    <path class="cf-wave-arc w2" d="M110 63 A26 26 0 0 1 110 97" />
+                    <path class="cf-wave-arc w3" d="M118 56 A36 36 0 0 1 118 104" />
+                  </g>
+                  <!-- Floating Stream Packets -->
+                  <circle class="cf-packet p1" cx="106" cy="80" r="2.5" fill="#00f0ff" />
+                  <circle class="cf-packet p2" cx="114" cy="74" r="2" fill="#38bdf8" />
+                  <circle class="cf-packet p3" cx="114" cy="86" r="2" fill="#38bdf8" />
+                  <!-- Left Device: Laptop Workstation -->
+                  <g transform="translate(34, 52)">
+                    <rect x="0" y="0" width="56" height="38" rx="3" fill="rgba(6, 22, 40, 0.9)" stroke="#0ea5e9" stroke-width="1.4" />
+                    <rect x="4" y="4" width="48" height="30" rx="1.5" fill="rgba(14, 165, 233, 0.15)" />
+                    <!-- Laptop Base Stand -->
+                    <path d="M-6 38 H62 L58 44 H-2 Z" fill="#0c2b4d" stroke="#0ea5e9" stroke-width="1" />
+                    <!-- Screen Content Lines -->
+                    <line x1="8" y1="12" x2="30" y2="12" stroke="#00f0ff" stroke-width="1.5" stroke-linecap="round" />
+                    <line x1="8" y1="18" x2="42" y2="18" stroke="rgba(14, 165, 233, 0.6)" stroke-width="1.2" stroke-linecap="round" />
+                    <line x1="8" y1="24" x2="36" y2="24" stroke="rgba(14, 165, 233, 0.6)" stroke-width="1.2" stroke-linecap="round" />
+                  </g>
+                  <!-- Right Device: Android TV Display -->
+                  <g transform="translate(130, 48)">
+                    <rect x="0" y="0" width="62" height="42" rx="3" fill="rgba(6, 22, 40, 0.9)" stroke="#0ea5e9" stroke-width="1.4" />
+                    <rect x="4" y="4" width="54" height="34" rx="1.5" fill="rgba(14, 165, 233, 0.22)" />
+                    <!-- Mirrored Screen Content -->
+                    <line x1="8" y1="12" x2="34" y2="12" stroke="#00f0ff" stroke-width="1.5" stroke-linecap="round" />
+                    <line x1="8" y1="18" x2="48" y2="18" stroke="rgba(14, 165, 233, 0.7)" stroke-width="1.2" stroke-linecap="round" />
+                    <line x1="8" y1="24" x2="40" y2="24" stroke="rgba(14, 165, 233, 0.7)" stroke-width="1.2" stroke-linecap="round" />
+                    <!-- Cast Icon Badge in Corner -->
+                    <path d="M46 30 A5 5 0 0 1 51 35 M46 26 A9 9 0 0 1 55 35" stroke="#00f0ff" stroke-width="1.2" stroke-linecap="round" fill="none" />
+                    <circle cx="46" cy="35" r="1" fill="#00f0ff" />
+                    <!-- TV Stand Legs -->
+                    <line x1="18" y1="42" x2="12" y2="48" stroke="#0ea5e9" stroke-width="1.5" />
+                    <line x1="44" y1="42" x2="50" y2="48" stroke="#0ea5e9" stroke-width="1.5" />
+                  </g>
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div class="pb">
+            <div class="pn">08 &mdash; Wireless Streaming</div>
             <h3 class="pname">CastFlow Studio</h3>
             <p class="pdesc">
-              High-framerate wireless screen mirroring and remote control suite. Stream laptop displays to Android TVs and browser clients with zero latency and hardware-accelerated MSS capture.
+              Cross-platform wireless screen-mirroring and remote touch-control suite. Streams laptop displays to Android TVs and browser clients via WebSockets, DLNA, and hardware-accelerated MSS capture at ultra-low latency.
             </p>
           </div>
           <div class="pf">
             <div class="ptags"><span class="tag">Screen Cast</span><span class="tag">WebRTC</span><span class="tag">Android TV</span></div>
             <div class="plink">
               Launch Studio <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-            </div></div
-        ></a>
-        <a href="cereal" class="pc cp" data-delay="420"
-          ><div class="badge bp" style="background: rgba(236, 72, 153, 0.18); border-color: rgba(236, 72, 153, 0.4); color: #ec4899;">Gemini 2.5 AI</div>
-          <div class="pv" style="background: #100612">
-            <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-              <div style="position: absolute; width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle, rgba(236, 72, 153, 0.22) 0%, transparent 70%);"></div>
-              <!-- Continuous Moving Audio Wave Lines -->
-              <div class="col-moving-audio-lines" aria-hidden="true">
-                <svg class="col-audio-wave-1" viewBox="0 0 800 60" preserveAspectRatio="none">
-                  <path d="M0,30 Q100,6 200,30 T400,30 T600,30 T800,30" fill="none" stroke="rgba(236, 72, 153, 0.65)" stroke-width="2.2"/>
-                </svg>
-                <svg class="col-audio-wave-2" viewBox="0 0 800 60" preserveAspectRatio="none">
-                  <path d="M0,30 Q100,54 200,30 T400,30 T600,30 T800,30" fill="none" stroke="rgba(0, 240, 255, 0.5)" stroke-width="1.8"/>
-                </svg>
-                <svg class="col-audio-wave-3" viewBox="0 0 800 60" preserveAspectRatio="none">
-                  <path d="M0,30 Q100,18 200,30 T400,30 T600,30 T800,30" fill="none" stroke="rgba(168, 85, 247, 0.4)" stroke-width="1.4"/>
+            </div>
+          </div>
+        </a>
+
+        <a href="cereal" class="pc cp" data-delay="80">
+          <div class="badge bp" style="background: rgba(236, 72, 153, 0.16); border-color: rgba(236, 72, 153, 0.45); color: #ec4899; box-shadow: 0 0 14px rgba(236, 72, 153, 0.25);">Gemini 2.5 AI</div>
+          <div class="pv" style="background: #10020e">
+            <div class="ce-bg">
+              <span class="ce-hud-chip tl">GEMINI 2.5 &bull; FLASH</span>
+              <span class="ce-hud-chip br"><span class="ce-dot-live"></span>LIVE SPEECH-TO-TEXT</span>
+              <div class="ce-stage">
+                <!-- Neural Audio Synthesizer & Floating Studio Capsule -->
+                <svg class="ce-neural-svg" viewBox="0 0 220 160" fill="none">
+                  <!-- Multi-Harmonic Sound Wave Streams -->
+                  <g stroke-linecap="round" fill="none">
+                    <path class="ce-wave w1" d="M10 80 Q35 50 60 80 T110 80 T160 80 T210 80" stroke="rgba(236, 72, 153, 0.65)" stroke-width="1.8" />
+                    <path class="ce-wave w2" d="M10 80 Q35 110 60 80 T110 80 T160 80 T210 80" stroke="rgba(0, 240, 255, 0.45)" stroke-width="1.5" />
+                    <path class="ce-wave w3" d="M10 80 Q45 65 75 80 T135 80 T195 80" stroke="rgba(168, 85, 247, 0.35)" stroke-width="1.2" />
+                  </g>
+                  <!-- Dynamic Equalizer Bars -->
+                  <g fill="rgba(236, 72, 153, 0.85)">
+                    <rect class="ce-eq-bar b1" x="42" y="65" width="3" height="30" rx="1.5" />
+                    <rect class="ce-eq-bar b2" x="50" y="55" width="3" height="50" rx="1.5" />
+                    <rect class="ce-eq-bar b3" x="58" y="70" width="3" height="20" rx="1.5" />
+                    <rect class="ce-eq-bar b4" x="66" y="60" width="3" height="40" rx="1.5" />
+                    <rect class="ce-eq-bar b5" x="150" y="60" width="3" height="40" rx="1.5" />
+                    <rect class="ce-eq-bar b6" x="158" y="70" width="3" height="20" rx="1.5" />
+                    <rect class="ce-eq-bar b7" x="166" y="55" width="3" height="50" rx="1.5" />
+                    <rect class="ce-eq-bar b8" x="174" y="65" width="3" height="30" rx="1.5" />
+                  </g>
+                  <!-- Central Studio Condenser Capsule -->
+                  <g transform="translate(94, 48)">
+                    <!-- Ambient Capsule Halo Glow -->
+                    <circle cx="16" cy="22" r="28" fill="rgba(236, 72, 153, 0.14)" />
+                    <!-- Microphone Capsule Body -->
+                    <rect x="8" y="4" width="16" height="28" rx="8" fill="#1c071a" stroke="#ec4899" stroke-width="1.5" />
+                    <!-- Mesh Grille Texture Lines -->
+                    <line x1="10" y1="12" x2="22" y2="12" stroke="rgba(236, 72, 153, 0.7)" stroke-width="1" />
+                    <line x1="10" y1="16" x2="22" y2="16" stroke="rgba(236, 72, 153, 0.7)" stroke-width="1" />
+                    <line x1="10" y1="20" x2="22" y2="20" stroke="rgba(236, 72, 153, 0.7)" stroke-width="1" />
+                    <!-- U-Shaped Metal Shockmount Cradle -->
+                    <path d="M3 20 C3 34, 29 34, 29 20" stroke="#ec4899" stroke-width="1.5" fill="none" />
+                    <!-- Stand Stem & Mount -->
+                    <line x1="16" y1="34" x2="16" y2="44" stroke="#ec4899" stroke-width="1.8" />
+                    <line x1="10" y1="44" x2="22" y2="44" stroke="#ec4899" stroke-width="2" stroke-linecap="round" />
+                    <!-- Live Core Gem Indicator -->
+                    <circle cx="16" cy="16" r="2.5" fill="#ffffff" />
+                  </g>
                 </svg>
               </div>
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 16px rgba(236, 72, 153, 0.6)); position: relative; z-index: 2;">
-                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
-                <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-                <line x1="12" y1="19" x2="12" y2="23" />
-                <line x1="8" y1="23" x2="16" y2="23" />
-              </svg>
             </div>
           </div>
           <div class="pb">
-            <div class="pn">07 &mdash; AI Note Taker</div>
+            <div class="pn">09 &mdash; AI Note Taker</div>
             <h3 class="pname">Cereal AI Assistant</h3>
             <p class="pdesc">
               Native Android AI lecture and meeting assistant built with Jetpack Compose. Records background audio, extracts structured notes with Gemini 2.5 Flash, and syncs to Google Calendar &amp; Tasks.
@@ -3948,113 +4721,27 @@
             <div class="ptags"><span class="tag">Android</span><span class="tag">Gemini 2.5</span><span class="tag">Audio Notes</span></div>
             <div class="plink">
               Explore Cereal <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-            </div></div
-        ></a>
+            </div>
+          </div>
+        </a>
       </div>
     </section>
 
-    <section class="ps" id="educational" style="content-visibility:auto; contain-intrinsic-size: 0 600px; padding-top: 40px">
+    <section class="ps" id="atlas" style="content-visibility:auto; contain-intrinsic-size: auto 600px; padding-top: 40px">
       <div class="sh">
         <div>
-          <div class="sey">Educational</div>
-          <h2 class="st">Advanced Topics.<br />Deep Dives.</h2>
+          <div class="sey">Planetary &amp; Lab Showcase</div>
+          <h2 class="st">Geospatial Shaders.<br />Experimental Realms.</h2>
         </div>
-        <p class="ssb">Explore deeper technical topics including career roadmaps, database logic, and traffic simulation mechanics.</p>
+        <p class="ssb">Interactive WebGL spherical geodesy with atmospheric Rayleigh scattering, alongside our upcoming browser action RPG engine.</p>
       </div>
       <div class="pgrid">
-        <a href="Career" class="pc ci" data-delay="0">
-          <div class="pv" style="background: #040710">
-            <div class="c-bg">
-              <div class="c-glow"></div>
-              <div class="c-grid"></div>
-              <div class="c-icon-wrap">
-                <svg class="c-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-                </svg>
-              </div>
-            </div>
-          </div>
-          <div class="pb">
-            <div class="pn">01 &mdash; Guide</div>
-            <h3 class="pname">The Career</h3>
-            <p class="pdesc">Find your ideal career path with guided breakdowns of what different tech roles actually look like.</p>
-          </div>
-          <div class="pf">
-            <div class="ptags"><span class="tag">Educational</span><span class="tag">Career</span></div>
-            <div class="plink">
-              Read <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-            </div>
-          </div>
-        </a>
-
-        <a href="Database_Logic" class="pc cs" data-delay="80">
-          <div class="pv" style="background: #020a08">
-            <div class="db-bg">
-              <div class="db-glow"></div>
-              <div class="db-scan"></div>
-              <div class="db-stack">
-                <div class="db-server dbs-1">
-                  <div class="db-led"></div>
-                  <div class="db-line"></div>
-                </div>
-                <div class="db-server dbs-2">
-                  <div class="db-led"></div>
-                  <div class="db-line"></div>
-                </div>
-                <div class="db-server dbs-3">
-                  <div class="db-led"></div>
-                  <div class="db-line"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="pb">
-            <div class="pn">02 &mdash; Concepts</div>
-            <h3 class="pname">Database Logic</h3>
-            <p class="pdesc">Explore database design, query optimization, and complex data relationships.</p>
-          </div>
-          <div class="pf">
-            <div class="ptags"><span class="tag">Educational</span><span class="tag">Database</span></div>
-            <div class="plink">
-              Read <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-            </div>
-          </div>
-        </a>
-
-        <a href="Traffic/Academy" class="pc ct" data-delay="160">
-          <div class="pv" style="background: #080502">
-            <div class="tr-bg">
-              <div class="tr-glow"></div>
-              <div class="tr-streaks">
-                <div class="trs s1"></div>
-                <div class="trs s2"></div>
-                <div class="trs s3"></div>
-                <div class="trs s4"></div>
-              </div>
-              <div class="tr-light-box">
-                <div class="trl red-l"></div>
-                <div class="trl yellow-l"></div>
-                <div class="trl green-l"></div>
-              </div>
-            </div>
-          </div>
-          <div class="pb">
-            <div class="pn">03 &mdash; Simulation</div>
-            <h3 class="pname">Traffic</h3>
-            <p class="pdesc">Learn about traffic simulation, vehicle kinematics, and autonomous driving algorithms.</p>
-          </div>
-          <div class="pf">
-            <div class="ptags"><span class="tag">Educational</span><span class="tag">Traffic</span></div>
-            <div class="plink">
-              Read <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-            </div>
-          </div>
-        </a>
-
-        <a href="Terra3D/" class="pc ct t3-wide" data-delay="240">
-          <div class="pv" style="background: #030812">
+        <a href="Terra3D/" class="pc ct t3-wide" data-delay="0">
+          <div class="badge bp" style="background: rgba(0, 240, 204, 0.16); border-color: rgba(0, 240, 204, 0.45); color: #00f0cc; box-shadow: 0 0 14px rgba(0, 240, 204, 0.25);">Geospatial WebGL</div>
+          <div class="pv" style="background: #01060d">
             <div class="t3-bg">
+              <span class="t3-hud-chip tl">195 NATIONS &bull; 60 FPS</span>
+              <span class="t3-hud-chip br"><span class="t3-dot-live"></span>RAYLEIGH SHADER</span>
               <div class="t3-glow"></div>
               <div class="t3-stars"></div>
               <div class="t3-globe">
@@ -4062,14 +4749,26 @@
                 <div class="t3-ring t3r-2"></div>
                 <div class="t3-ring t3r-3"></div>
                 <div class="t3-core"></div>
+                <!-- SVG Continents & Graticule Overlay -->
+                <svg class="t3-globe-svg" viewBox="0 0 120 120" fill="none">
+                  <!-- Latitude & Longitude Graticule Lines -->
+                  <ellipse cx="60" cy="60" rx="46" ry="16" stroke="rgba(0, 240, 204, 0.25)" stroke-width="0.8" />
+                  <ellipse cx="60" cy="60" rx="46" ry="32" stroke="rgba(0, 240, 204, 0.25)" stroke-width="0.8" />
+                  <line x1="14" y1="60" x2="106" y2="60" stroke="rgba(0, 240, 204, 0.35)" stroke-width="0.8" />
+                  <line x1="60" y1="14" x2="60" y2="106" stroke="rgba(0, 240, 204, 0.35)" stroke-width="0.8" />
+                  <!-- Stylized Continent Outlines (India, Eurasia, Americas) -->
+                  <path d="M58 48 Q64 54 62 62 Q58 68 56 62 Z" fill="rgba(0, 240, 204, 0.45)" stroke="#00f0cc" stroke-width="0.8" />
+                  <path d="M46 36 Q58 34 68 40 Q74 46 66 50 Q52 48 46 36 Z" fill="rgba(0, 240, 204, 0.3)" />
+                  <path d="M28 42 Q36 40 38 48 Q32 58 26 52 Z" fill="rgba(0, 240, 204, 0.25)" />
+                </svg>
               </div>
             </div>
           </div>
           <div class="pb">
-            <div class="pn">04 &mdash; 3D Atlas</div>
+            <div class="pn">10 &mdash; Geospatial WebGL</div>
             <h3 class="pname">Terra3D World Atlas</h3>
             <p class="pdesc">
-              An interactive 3D globe built on WebGL. Explore every country with live demographic data, historical timelines, and cultural insights rendered on a fully navigable planetary surface.
+              An interactive 3D globe built on WebGL. Explore every country with live demographic data, historical timelines, and cultural insights rendered on a fully navigable planetary surface with atmospheric Rayleigh scattering.
             </p>
             <div class="t3-credits" style="margin-top: 10px; font-size: 0.82rem; font-weight: 600; color: var(--signal); letter-spacing: 0.5px;">
               Special Space Credit &bull; Made by Aaryaman Jadhav &amp; Yashraj Jadhav
@@ -4083,17 +4782,83 @@
           </div>
         </a>
 
-        <!-- Cereal AI and CastFlow Studio were duplicated here from the
-             #projects grid above (same destinations, same titles). They were
-             removed so each project appears exactly once, which also keeps
-             this 6-column grid free of a trailing 2-column hole. The APK
-             download path they offered is still reachable from the hero
-             "Download Android App" button and the nav "Downloads Hub". -->
+        <a href="rpg" class="pc cp t3-wide" data-delay="80">
+          <div class="badge bp" style="background: linear-gradient(135deg, rgba(168, 85, 247, 0.22), rgba(245, 158, 11, 0.16)); border-color: rgba(168, 85, 247, 0.45); color: #d8b4fe; box-shadow: 0 0 14px rgba(168, 85, 247, 0.3); font-weight: 700;">Coming Soon Showcase</div>
+          <div class="pv" style="background: #080314">
+            <div class="vr">
+              <span class="rpg-hud-chip tl"><span class="rpg-gem-dot"></span>LVL 99 REALM</span>
+              <span class="rpg-hud-chip br">CANVAS 2D &bull; 60FPS</span>
+              <div class="rpg-sparks">
+                <div class="rpg-spark s1"></div>
+                <div class="rpg-spark s2"></div>
+                <div class="rpg-spark s3"></div>
+                <div class="rpg-spark s4"></div>
+              </div>
+              <div class="rpg-stage">
+                <!-- Rotating Runic Magic Circle -->
+                <svg class="rpg-rune-svg" viewBox="0 0 160 160" fill="none">
+                  <circle cx="80" cy="80" r="74" stroke="rgba(192, 132, 252, 0.35)" stroke-width="1.5" stroke-dasharray="4 6" />
+                  <circle cx="80" cy="80" r="62" stroke="rgba(245, 158, 11, 0.3)" stroke-width="1.2" />
+                  <circle cx="80" cy="80" r="48" stroke="rgba(192, 132, 252, 0.25)" stroke-width="1" stroke-dasharray="8 4" />
+                  <!-- 8-Pointed Celestial Star Geometry -->
+                  <polygon points="80,18 95,65 142,80 95,95 80,142 65,95 18,80 65,65" stroke="rgba(192, 132, 252, 0.3)" stroke-width="1.2" />
+                  <polygon points="36,36 124,36 124,124 36,124" stroke="rgba(245, 158, 11, 0.22)" stroke-width="1" />
+                  <!-- Cardinal Nodes -->
+                  <circle cx="80" cy="18" r="2.5" fill="#c084fc" />
+                  <circle cx="142" cy="80" r="2.5" fill="#fbbf24" />
+                  <circle cx="80" cy="142" r="2.5" fill="#c084fc" />
+                  <circle cx="18" cy="80" r="2.5" fill="#fbbf24" />
+                </svg>
+                <!-- Legendary Enchanted Blade -->
+                <svg class="rpg-blade-svg" viewBox="0 0 100 100" fill="none">
+                  <defs>
+                    <linearGradient id="bladeGrad2" x1="0%" y1="100%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="#cbd5e1" />
+                      <stop offset="50%" stop-color="#f8fafc" />
+                      <stop offset="100%" stop-color="#e2e8f0" />
+                    </linearGradient>
+                    <linearGradient id="runeChannel2" x1="0%" y1="100%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="#c084fc" />
+                      <stop offset="50%" stop-color="#fbbf24" />
+                      <stop offset="100%" stop-color="#c084fc" />
+                    </linearGradient>
+                  </defs>
+                  <path d="M 28 72 L 78 22 L 86 14 L 78 28 L 28 78 Z" fill="url(#bladeGrad2)" stroke="#94a3b8" stroke-width="1" />
+                  <line x1="32" y1="68" x2="74" y2="26" stroke="url(#runeChannel2)" stroke-width="2" stroke-linecap="round" />
+                  <line x1="32" y1="68" x2="74" y2="26" stroke="#ffffff" stroke-width="0.8" stroke-linecap="round" />
+                  <path d="M 16 64 C 22 66, 32 76, 34 82 L 40 76 C 36 70, 26 60, 22 58 Z" fill="#fbbf24" stroke="#d97706" stroke-width="1" />
+                  <path d="M 20 60 L 40 80" stroke="#f59e0b" stroke-width="3" stroke-linecap="round" />
+                  <circle cx="28" cy="72" r="3.5" fill="#a855f7" stroke="#fbbf24" stroke-width="1.2" />
+                  <circle cx="27" cy="71" r="1" fill="#ffffff" />
+                  <line x1="26" y1="74" x2="16" y2="84" stroke="#78350f" stroke-width="3" stroke-linecap="round" />
+                  <line x1="24" y1="76" x2="22" y2="78" stroke="#fbbf24" stroke-width="1" />
+                  <line x1="20" y1="80" x2="18" y2="82" stroke="#fbbf24" stroke-width="1" />
+                  <circle cx="14" cy="86" r="3" fill="#fbbf24" stroke="#b45309" stroke-width="1" />
+                  <circle cx="86" cy="14" r="2.5" fill="#ffffff" />
+                  <path d="M 86 9 L 86 19 M 81 14 L 91 14" stroke="#ffffff" stroke-width="0.8" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div class="pb">
+            <div class="pn">&starf; &mdash; In Development</div>
+            <h3 class="pname">Quest Master: RPG Engine</h3>
+            <p class="pdesc">
+              An epic retro-action RPG engineered for the browser. Features real-time dungeon crawling, procedural tilemaps, branching skill trees, particle spellcasting, and an ultra-responsive 60 FPS canvas engine.
+            </p>
+          </div>
+          <div class="pf">
+            <div class="ptags"><span class="tag">Action RPG</span><span class="tag">Canvas 2D</span><span class="tag">Game Engine</span><span class="tag" style="border-color: #c084fc; color: #c084fc;">Coming Soon</span></div>
+            <div class="plink">
+              Preview Realm <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+            </div>
+          </div>
+        </a>
       </div>
     </section>
     </main>
 
-<footer class="sf" style="content-visibility:auto; contain-intrinsic-size: 0 200px">
+<footer class="sf" style="content-visibility:auto; contain-intrinsic-size: auto 200px">
       <div class="fi">
         <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
         <div class="fl"><a href="making">Making</a><a href="privacy">Privacy</a><a href="terms">Terms</a><a href="feedback">Feedback</a><a href="download">Downloads</a></div>
@@ -4170,28 +4935,31 @@
           }
         })
 
-        // 5. Single Unified IntersectionObserver for .pc and .rv
+        // 5. Single Unified IntersectionObserver for .pc and .rv (Viewport-Gated for 60 FPS)
         var revealIo = new IntersectionObserver(
           function (entries) {
             entries.forEach(function (entry) {
-              if (!entry.isIntersecting) return
               var el = entry.target
-              if (el.classList.contains('pc')) {
-                var d = parseInt(el.dataset.delay || 0, 10)
-                setTimeout(function () { el.classList.add('rev') }, d)
+              if (entry.isIntersecting) {
+                el.classList.add('in-view')
+                if (el.classList.contains('pc')) {
+                  var d = parseInt(el.dataset.delay || 0, 10)
+                  setTimeout(function () { el.classList.add('rev') }, d)
+                } else {
+                  el.classList.add('vis')
+                }
               } else {
-                el.classList.add('vis')
+                el.classList.remove('in-view')
               }
-              revealIo.unobserve(el)
             })
           },
-          { threshold: 0.08 }
+          { threshold: 0.01, rootMargin: '600px 0px 600px 0px' }
         )
         document.querySelectorAll('.pc, .rv').forEach(function (el) {
           revealIo.observe(el)
         })
 
-        // 6. Desktop Specular Spotlight + Lag-Free 3D Card Tilt
+        // 6. Desktop Specular Spotlight + Silky 60FPS Hardware-Accelerated 3D Card Tilt
         if (window.innerWidth >= 768 && !window.matchMedia('(pointer: coarse)').matches) {
           document.querySelectorAll('.pc, .vp-card').forEach(function (card) {
             var rafId = null, ex = 0, ey = 0, rect = null
@@ -4214,14 +4982,15 @@
                 if (!rect) rect = card.getBoundingClientRect()
                 var relX = ex - rect.left
                 var relY = ey - rect.top
-                card.style.setProperty('--card-mx', relX.toFixed(0) + 'px')
-                card.style.setProperty('--card-my', relY.toFixed(0) + 'px')
 
-                if (isProjectCard) {
+                if (!isProjectCard) {
+                  card.style.setProperty('--card-mx', relX.toFixed(0) + 'px')
+                  card.style.setProperty('--card-my', relY.toFixed(0) + 'px')
+                } else {
                   var x = relX / rect.width - 0.5
                   var y = relY / rect.height - 0.5
                   card.style.transform =
-                    'translateY(-8px) perspective(900px) rotateX(' + (-y * 4.5).toFixed(2) + 'deg) rotateY(' + (x * 4.5).toFixed(2) + 'deg)'
+                    'translate3d(0, -8px, 0) perspective(900px) rotateX(' + (-y * 4.5).toFixed(2) + 'deg) rotateY(' + (x * 4.5).toFixed(2) + 'deg)'
                 }
               })
             }, { passive: true })
@@ -4232,7 +5001,10 @@
                 rafId = null
               }
               rect = null
-              if (isProjectCard) {
+              if (!isProjectCard) {
+                card.style.removeProperty('--card-mx')
+                card.style.removeProperty('--card-my')
+              } else {
                 card.classList.remove('is-tilting')
                 document.body.classList.remove('ch')
                 card.style.transform = ''
@@ -4257,6 +5029,8 @@
             }
           })
         }
+
+        // 6b. Hero Orbital Stage running at full continuous hardware-accelerated 60/120 FPS
 
         // 7. Viewport-Gated QR Matrix Animation (only ticks when visible & tab active)
         var qrm = document.getElementById('qrm')
@@ -4409,19 +5183,19 @@
             cta: 'Launch CastFlow'
           },
           RPG: {
-            name: 'RPG Game Engine',
+            name: 'Quest Master: RPG Engine',
             badge: 'Gameplay & Physics',
-            key: 'em',
+            key: 'plasma',
             page: 'rpg',
             icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
             stats: {
-              status: 'ACTIVE DEV',
+              status: 'IN DEVELOPMENT',
               engine: 'CUSTOM CANVAS 2D',
               orbit: 'R=18 AU',
               fps: '60 STABLE'
             },
-            desc: 'An epic retro-modern browser RPG exploring procedural dungeon crawling, tilemap streaming, leveling mechanics, and dynamic battle state machines.',
-            cta: 'Preview RPG Game'
+            desc: 'An epic retro-action browser RPG exploring procedural dungeon crawling, tilemaps, branching skill trees, particle spellcasting, and dynamic battle state machines.',
+            cta: 'Preview RPG Engine'
           },
           Database_Logic: {
             name: 'Database Logic: TRAFFIC.EDU',

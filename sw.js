@@ -1,5 +1,5 @@
-const CACHE_NAME = 'col-cache-v12'
-const SW_VERSION = '2026-10-18-v1'
+const CACHE_NAME = 'col-cache-v13'
+const SW_VERSION = '2026-10-23-v2'
 const OFFLINE_FALLBACK = '/home.html'
 const urlsToCache = [
   '/home.html',
@@ -45,6 +45,7 @@ function shouldHandleRequest(request) {
   if (request.headers.has('range')) {return false}
 
   const url = new URL(request.url)
+  if (url.hostname === 'localhost' || url.hostname === '127.0.0.1' || url.port === '3000' || url.port === '5173') { return false }
   if (url.origin !== self.location.origin) {return false}
   if (isPrivateOrDynamicPath(url.pathname)) {return false}
 

@@ -4,6 +4,7 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995" crossorigin="anonymous"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#070A14" id="themeMeta" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Class Of Learners" />
@@ -90,8 +91,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" /></noscript>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 
     <style>
       :root {
@@ -137,7 +137,7 @@
         transition: background 0.4s var(--ease), color 0.4s var(--ease);
       }
 
-      /* Light Theme Overrides */
+      /* Light Theme Overrides & WCAG AA Contrast Compliance */
       body.lm {
         --void: #f5f4ef;
         --void2: #eae8df;
@@ -148,6 +148,121 @@
         --ink: #18191f;
         --dim: #5c6275;
         --nav: rgba(245, 244, 239, 0.85);
+      }
+      body.lm .bento-card {
+        background: #ffffff !important;
+        border-color: rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+      }
+      body.lm .bento-card:hover {
+        border-color: rgba(0, 0, 0, 0.16) !important;
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08) !important;
+      }
+      body.lm .stat-card,
+      body.lm .control-bar,
+      body.lm .mk-doubt {
+        background: #ffffff !important;
+        border-color: rgba(0, 0, 0, 0.08) !important;
+      }
+      /* Contrast mappings for dark-mode neon accents in light mode */
+      body.lm .bento-card[style*="--card-accent: #ffffff;"],
+      body.lm .bento-card[style*="--card-accent: #ffffff"] {
+        --card-accent: #0f172a !important;
+      }
+      body.lm .bento-card[style*="--card-accent: #f2b84b"] {
+        --card-accent: #b45309 !important;
+      }
+      body.lm .bento-card[style*="--card-accent: #5ed4f5"] {
+        --card-accent: #0369a1 !important;
+      }
+      body.lm .bento-card[style*="--card-accent: #b89bff"] {
+        --card-accent: #7c3aed !important;
+      }
+      body.lm .bento-card[style*="--card-accent: #00f0cc"] {
+        --card-accent: #0f766e !important;
+      }
+      body.lm .bento-card[style*="--card-accent: #38bdf8"] {
+        --card-accent: #0284c7 !important;
+      }
+      body.lm .bento-card[style*="--card-accent: #3ddc84"] {
+        --card-accent: #15803d !important;
+      }
+      body.lm .bento-card[style*="--card-accent: #3ecf8e"] {
+        --card-accent: #047857 !important;
+      }
+
+      /* Loader & Cursor */
+      .loader {
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        background: var(--void);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 24px;
+        transition: opacity 0.6s var(--ease), visibility 0.6s;
+      }
+      .loader.gone {
+        opacity: 0;
+        visibility: hidden;
+      }
+      .lid {
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        letter-spacing: 0.42em;
+        color: var(--dim);
+        text-transform: uppercase;
+      }
+      .lid span { color: var(--signal); }
+      .lbar {
+        width: 180px;
+        height: 1px;
+        background: var(--lineb);
+        position: relative;
+        overflow: hidden;
+      }
+      .lbar::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: var(--signal);
+        transform-origin: left;
+        transform: scaleX(0);
+        animation: lf 1s var(--ease) 0.15s forwards;
+      }
+      @keyframes lf { to { transform: scaleX(1); } }
+      .cd, .cr {
+        position: fixed;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        z-index: 9999;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        will-change: transform;
+      }
+      .cd {
+        width: 6px;
+        height: 6px;
+        background: var(--signal);
+      }
+      .cr {
+        width: 36px;
+        height: 36px;
+        border: 1px solid rgba(94, 212, 245, 0.5);
+        opacity: 0.55;
+        transition: width 0.22s var(--ease), height 0.22s var(--ease), border-color 0.22s, opacity 0.22s;
+      }
+      body.ch .cr {
+        width: 64px;
+        height: 64px;
+        border-color: var(--signal);
+        opacity: 0.9;
+      }
+      @media (pointer: coarse) {
+        .cd, .cr { display: none; }
       }
 
       a { color: inherit; text-decoration: none; }
@@ -503,6 +618,31 @@
         border-color: var(--signal);
         box-shadow: 0 2px 10px rgba(242, 184, 75, 0.25);
       }
+      .filter-pill span {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.12);
+        padding: 1px 7px;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-family: var(--mono);
+        margin-left: 6px;
+        opacity: 0.85;
+      }
+      .filter-pill.active span {
+        background: rgba(0, 0, 0, 0.2);
+        color: #070a14;
+        font-weight: 700;
+        opacity: 1;
+      }
+      body.lm .filter-pill span {
+        background: rgba(0, 0, 0, 0.08);
+      }
+      body.lm .filter-pill.active span {
+        background: rgba(0, 0, 0, 0.25);
+        color: #ffffff;
+      }
       .search-box {
         position: relative;
         flex: 1;
@@ -761,9 +901,10 @@
         content: '';
         position: absolute;
         inset: 0;
-        background: radial-gradient(450px circle at top left, color-mix(in srgb, var(--card-accent, var(--signal)) 8%, transparent), transparent 70%);
+        background: radial-gradient(550px circle at var(--mouse-x, 25%) var(--mouse-y, 20%), color-mix(in srgb, var(--card-accent, var(--signal)) 10%, transparent), transparent 70%);
         pointer-events: none;
         z-index: 0;
+        transition: opacity 0.3s;
       }
       .bento-card > * {
         position: relative;
@@ -1229,8 +1370,6 @@
     <script defer src="col-ui.js"></script>
     <script defer src="col-auth.js"></script>
     <link rel="manifest" href="manifest.json" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   </head>
   <body>
     <script>
@@ -1240,6 +1379,13 @@
         } catch (e) {}
       })()
     </script>
+
+    <div class="loader" id="loader">
+      <div class="lid"><span>CoL</span> &middot; The Making</div>
+      <div class="lbar"></div>
+    </div>
+    <div class="cd" id="cDot"></div>
+    <div class="cr" id="cRing"></div>
 
     <!-- Ambient Aurora -->
     <div class="bg-aurora">
@@ -1365,11 +1511,11 @@
       <!-- Filter & Search Controls -->
       <div class="control-bar">
         <div class="filter-pills" id="filterPills" role="group" aria-label="Filter Systems By Category">
-          <button class="filter-pill active" data-filter="all" aria-pressed="true">All 15 Systems</button>
-          <button class="filter-pill" data-filter="agentic" aria-pressed="false">Agentic Coding</button>
-          <button class="filter-pill" data-filter="intelligence" aria-pressed="false">AI Intelligence</button>
-          <button class="filter-pill" data-filter="cloud" aria-pressed="false">Cloud &amp; DNS</button>
-          <button class="filter-pill" data-filter="tools" aria-pressed="false">Developer Tools</button>
+          <button class="filter-pill active" data-filter="all" aria-pressed="true">All Systems <span>15</span></button>
+          <button class="filter-pill" data-filter="agentic" aria-pressed="false">Agentic Coding <span>2</span></button>
+          <button class="filter-pill" data-filter="intelligence" aria-pressed="false">AI Intelligence <span>3</span></button>
+          <button class="filter-pill" data-filter="cloud" aria-pressed="false">Cloud &amp; DNS <span>4</span></button>
+          <button class="filter-pill" data-filter="tools" aria-pressed="false">Developer Tools <span>6</span></button>
         </div>
 
         <div class="search-box">
@@ -2634,6 +2780,7 @@ response = requests.post(url, json=payload, headers=headers)</code>
             { keys: ['digitalplat', 'dpdns', 'dynamic dns', 'reverse proxy'], title: 'Digitalplat', answer: '<strong>Digitalplat:</strong> Routes The Custom Domain advancedlogiclabs.dpdns.org Over Dynamic DNS, With A Caddy Or Nginx Reverse Proxy Terminating SSL On Port 443.' },
             { keys: ['cloudns', 'dns', 'nameserver', 'txt'], title: 'ClouDNS', answer: '<strong>ClouDNS:</strong> Authoritative Anycast DNS With Fast TXT Propagation. Point Nameservers To ClouDNS Nodes And Keep TTL At 300 Seconds While Iterating.' },
             { keys: ['wispr', 'flow', 'voice', 'dictation', 'speak'], title: 'Wispr Flow', answer: '<strong>Wispr Flow:</strong> Voice Dictation At About 4x Typing Speed In Every App. Hold The Hotkey, Speak Naturally, And Its AI Strips Filler Words Automatically.' },
+            { keys: ['sarvam', 'bulbul', 'tts', 'indic', 'speech', 'hindi', 'marathi', 'voice'], title: 'Sarvam AI', answer: '<strong>Sarvam AI:</strong> Powers Regional Indian Speech And Translation Across Our Studio. We Use Bulbul TTS For Hindi And Marathi Voice Advisories In The Driving Academy, Plus Saaras ASR And Mayura Translation.' },
             { keys: ['typing', 'ati', 'instructor', 'wpm', 'type'], title: 'Typing Instructor', answer: '<strong>Typing Instructor:</strong> The Demo On The ATI Page Tests Words, JavaScript, Python, Rust, And Literature At 15, 30, Or 60 Seconds With Grades From F To S And A Saved Personal Best.' },
             { keys: ['solar', 'space', 'orbit', 'kepler', 'planet'], title: 'Solar Engine', answer: '<strong>Solar Engine:</strong> A Keplerian 3D Simulator On The Solar Page. Drag To Pan, Scroll Or Pinch To Zoom, And Click Any Body For Live Telemetry, Plus A Planetary Database Below.' },
             { keys: ['terra', 'atlas', 'globe', 'earth 3d'], title: 'Terra3D Atlas', answer: '<strong>Terra3D Atlas:</strong> The Interactive 3D Globe Project In The Projects Menu, Built For Exploring Geography In Real Time.' },
@@ -2644,10 +2791,10 @@ response = requests.post(url, json=payload, headers=headers)</code>
             { keys: ['hello', 'hi', 'hey', 'namaste'], title: 'Greeting', answer: '<strong>Hello.</strong> Ask Me About Any Studio Tool Or Shipped Project. Try A Topic Chip Above To Start.' },
             { keys: ['thank', 'thanks', 'shukriya'], title: 'Thanks', answer: '<strong>You Are Welcome.</strong> The Full Playbook For Every Tool Lives On The Cards Above.' },
             { keys: ['who are you', 'your name', 'what are you'], title: 'About Me', answer: '<strong>I Am The Projects Doubt Solver,</strong> A Built-In Studio Notes Assistant. I Answer Questions About The Team Stack And Every Shipped Project.' },
-            { keys: ['help', 'what can you', 'how to ask', 'topics'], title: 'Help', answer: '<strong>I Can Answer:</strong> Studio Setup, All 14 Systems, Downloads, And Deploy Steps. Mix Two Topics In One Question And I Answer Both.' },
+            { keys: ['help', 'what can you', 'how to ask', 'topics'], title: 'Help', answer: '<strong>I Can Answer:</strong> Studio Setup, All 15 Systems, Downloads, And Deploy Steps. Mix Two Topics In One Question And I Answer Both.' },
             { keys: ['bye', 'alvida', 'see you'], title: 'Farewell', answer: '<strong>Goodbye For Now.</strong> Replicate Any Card Above And Ship Something Of Your Own.' }
           ]
-          var CHIP_TOPICS = ['Deploy Like You', 'Supabase Auth', 'Zero Cost AI', 'Wispr Flow', 'Typing Instructor', 'Solar Engine']
+          var CHIP_TOPICS = ['Deploy Like You', 'Supabase Auth', 'Zero Cost AI', 'Sarvam AI', 'Wispr Flow', 'Typing Instructor', 'Solar Engine']
           var STOPWORDS = ['what', 'why', 'how', 'when', 'where', 'which', 'is', 'are', 'was', 'were', 'do', 'does', 'did', 'tell', 'me', 'about', 'the', 'a', 'an', 'of', 'in', 'on', 'and', 'or', 'for', 'to', 'it', 'its', 'please', 'something', 'anything', 'question', 'doubt', 'know', 'my', 'like', 'you']
 
           function stem(w) {
@@ -2795,6 +2942,20 @@ response = requests.post(url, json=payload, headers=headers)</code>
         }
       })
 
+      // 1. Fast Loader Dismissal (150ms after DOMContentLoaded)
+      function removeLoader() {
+        var l = document.getElementById('loader')
+        if (l && !l.classList.contains('gone')) l.classList.add('gone')
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function () {
+          setTimeout(removeLoader, 150)
+        })
+      } else {
+        setTimeout(removeLoader, 150)
+      }
+      window.addEventListener('load', removeLoader, { once: true })
+
       // Filter Pills Logic
       var filterButtons = document.querySelectorAll('.filter-pill')
       var techCards = document.querySelectorAll('.bento-card')
@@ -2804,9 +2965,20 @@ response = requests.post(url, json=payload, headers=headers)</code>
       var emptyReset = document.getElementById('emptyReset')
       var totalCards = techCards.length
 
-      filterButtons.forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          filterButtons.forEach(function(b) {
+      // Dynamic cursor spotlight on bento cards
+      techCards.forEach(function (card) {
+        card.addEventListener('mousemove', function (e) {
+          var rect = card.getBoundingClientRect()
+          var x = ((e.clientX - rect.left) / rect.width) * 100
+          var y = ((e.clientY - rect.top) / rect.height) * 100
+          card.style.setProperty('--mouse-x', x.toFixed(1) + '%')
+          card.style.setProperty('--mouse-y', y.toFixed(1) + '%')
+        })
+      })
+
+      filterButtons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          filterButtons.forEach(function (b) {
             b.classList.remove('active')
             b.setAttribute('aria-pressed', 'false')
           })
@@ -2818,14 +2990,21 @@ response = requests.post(url, json=payload, headers=headers)</code>
 
       var searchClearBtn = document.getElementById('searchClearBtn')
       if (searchInput) {
-        searchInput.addEventListener('input', function() {
+        searchInput.addEventListener('input', function () {
           if (searchClearBtn) searchClearBtn.classList.toggle('visible', searchInput.value.length > 0)
           applyFilters()
+        })
+        searchInput.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') {
+            searchInput.value = ''
+            if (searchClearBtn) searchClearBtn.classList.remove('visible')
+            applyFilters()
+          }
         })
       }
 
       if (searchClearBtn) {
-        searchClearBtn.addEventListener('click', function() {
+        searchClearBtn.addEventListener('click', function () {
           if (searchInput) searchInput.value = ''
           searchClearBtn.classList.remove('visible')
           applyFilters()
@@ -2834,12 +3013,12 @@ response = requests.post(url, json=payload, headers=headers)</code>
       }
 
       if (emptyReset) {
-        emptyReset.addEventListener('click', function() {
+        emptyReset.addEventListener('click', function () {
           if (searchInput) {
             searchInput.value = ''
             if (searchClearBtn) searchClearBtn.classList.remove('visible')
           }
-          filterButtons.forEach(function(b) {
+          filterButtons.forEach(function (b) {
             var isAll = b.dataset.filter === 'all'
             b.classList.toggle('active', isAll)
             b.setAttribute('aria-pressed', isAll ? 'true' : 'false')
@@ -2855,7 +3034,7 @@ response = requests.post(url, json=payload, headers=headers)</code>
         var query = searchInput ? searchInput.value.toLowerCase().trim() : ''
         var visible = 0
 
-        techCards.forEach(function(card) {
+        techCards.forEach(function (card) {
           var cat = card.dataset.category || ''
           var cardText = card.innerText.toLowerCase()
 
@@ -2880,7 +3059,7 @@ response = requests.post(url, json=payload, headers=headers)</code>
 
       applyFilters()
 
-      // Copy Code Utility (Clean Developer Tooling - No Unjust Gimmicks)
+      // Copy Code Utility with Checkmark Morph
       function copyCode(btn) {
         var codeBox = btn.closest('.code-box')
         var codeEl = codeBox ? codeBox.querySelector('code') : null
@@ -2890,11 +3069,17 @@ response = requests.post(url, json=payload, headers=headers)</code>
 
         function showSuccess() {
           var label = btn.querySelector('.copy-text') || btn
+          var icon = btn.querySelector('svg')
+          var originalSvg = icon ? icon.innerHTML : ''
           var originalText = label.textContent
           btn.classList.add('copied')
+          if (icon) {
+            icon.innerHTML = '<polyline points="20 6 9 17 4 12"></polyline>'
+          }
           label.textContent = 'Copied!'
-          setTimeout(function() {
+          setTimeout(function () {
             btn.classList.remove('copied')
+            if (icon) icon.innerHTML = originalSvg
             label.textContent = originalText
           }, 2000)
         }
@@ -2917,7 +3102,7 @@ response = requests.post(url, json=payload, headers=headers)</code>
         }
 
         if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(textToCopy).then(showSuccess).catch(function() {
+          navigator.clipboard.writeText(textToCopy).then(showSuccess).catch(function () {
             fallbackCopy()
           })
         } else {

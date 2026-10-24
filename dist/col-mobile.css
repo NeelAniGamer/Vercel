@@ -175,11 +175,17 @@ code {
     max-width: 440px !important;
     max-height: min(88vh, 760px) !important;
     margin: auto !important;
-    background: rgba(10, 15, 28, 0.95) !important;
-    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.03) 24%, rgba(14, 20, 36, 0.75) 68%, rgba(8, 12, 24, 0.92) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.22) !important;
+    border-top: 1.5px solid rgba(255, 255, 255, 0.65) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
     border-radius: 26px !important;
     padding: 18px 16px !important;
-    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.85) !important;
+    box-shadow:
+      0 32px 72px -12px rgba(0, 0, 0, 0.85),
+      0 0 28px -4px rgba(242, 184, 75, 0.15),
+      inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.55),
+      inset 0 -1.5px 2px 0 rgba(0, 0, 0, 0.35) !important;
     backdrop-filter: blur(36px) saturate(200%) !important;
     -webkit-backdrop-filter: blur(36px) saturate(200%) !important;
     display: flex !important;
@@ -613,7 +619,7 @@ code {
   /* ─────────────────────────────────────────────────────────────────
      3. MOBILE FLOATING BOTTOM THUMB BAR (PERSISTENT ON SCROLL)
      ───────────────────────────────────────────────────────────────── */
-  .col-bottom-bar {
+    .col-bottom-bar {
     display: flex !important;
     position: fixed !important;
     left: 10px !important;
@@ -621,21 +627,32 @@ code {
     margin: 0 auto !important;
     bottom: max(12px, env(safe-area-inset-bottom, 0px)) !important;
     width: min(calc(100vw - 20px), 440px) !important;
-    background: var(--panel, rgba(14, 20, 32, 0.95)) !important;
-    border: 1px solid var(--lineb, rgba(255, 255, 255, 0.14)) !important;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 28%, rgba(14, 20, 34, 0.65) 72%, rgba(7, 10, 20, 0.85) 100%) !important;
+    backdrop-filter: blur(20px) saturate(190%) contrast(105%) brightness(1.08) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(190%) contrast(105%) brightness(1.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.22) !important;
+    border-top: 1.5px solid rgba(255, 255, 255, 0.65) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
     border-radius: var(--r-pill) !important;
-    padding: 4px 6px !important;
-    gap: 2px !important;
+    padding: 5px 8px !important;
+    gap: 4px !important;
     z-index: 999 !important;
-    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.45) !important;
+    box-shadow:
+      0 20px 48px -10px rgba(0, 0, 0, 0.65),
+      0 6px 16px -4px rgba(0, 0, 0, 0.4),
+      0 0 28px -4px rgba(242, 184, 75, 0.14),
+      inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.55),
+      inset 0 -1.5px 2px 0 rgba(0, 0, 0, 0.35),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.10) !important;
     align-items: center !important;
     justify-content: space-between !important;
-    transition: transform var(--dur-med, 280ms) var(--ease-out, ease), opacity var(--dur-fast, 160ms) var(--ease-out, ease) !important;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease !important;
     -webkit-user-select: none;
     user-select: none;
     opacity: 1 !important;
     transform: translateY(0) !important;
     pointer-events: auto !important;
+    will-change: transform;
   }
   /* Bottom bar stays visible while scrolling - only hidden if explicitly closed or modal */
   body.nav-lock .col-bottom-bar {
@@ -1118,3 +1135,29 @@ code {
     justify-content: center;
   }
 }
+
+
+  /* 120Hz Mobile Tactile Kinematics & Center Menu Button */
+  .col-bottom-bar .bbar-item {
+    transition: transform 0.16s cubic-bezier(0.2, 0.9, 0.3, 1), color 0.2s ease !important;
+    touch-action: manipulation;
+  }
+  .col-bottom-bar .bbar-item:active {
+    transform: scale(0.92) translateY(1px);
+  }
+  .col-bottom-bar .bbar-menu-center {
+    background: linear-gradient(135deg, rgba(242, 184, 75, 0.25) 0%, rgba(224, 145, 14, 0.15) 100%) !important;
+    border: 1px solid rgba(242, 184, 75, 0.4) !important;
+    box-shadow: 0 0 14px rgba(242, 184, 75, 0.25), inset 0 1px 1.5px rgba(255, 255, 255, 0.4) !important;
+  }
+  .col-bottom-bar .bbar-menu-center:active {
+    transform: scale(0.88);
+  }
+  .pc:active, .vp-card:active {
+    transform: scale(0.985);
+    transition: transform 0.12s cubic-bezier(0.2, 0.9, 0.3, 1) !important;
+  }
+  .btn:active, .nav-dl-btn:active, .nav-login-btn:active {
+    transform: scale(0.965);
+    transition: transform 0.12s cubic-bezier(0.2, 0.9, 0.3, 1) !important;
+  }

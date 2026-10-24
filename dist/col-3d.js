@@ -57,19 +57,19 @@
     // SKIP Three.js entirely on mobile — massive perf win.
     // The 3D orrery is hidden via CSS on mobile anyway, so no need to
     // parse/compile/execute the ~600KB Three.js library + scene setup.
+    // Mobile and desktop both access the full 3D scene with GPU hardware acceleration
     if (isMobile) {
-      // Still expose the API so HUD buttons don't throw errors
-      window.__col3d = window.__col3d || {}
-      return
+      // Ensure canvas is hardware accelerated on touch devices
+      canvas.style.touchAction = 'none';
     }
 
     // Low-power mode: heavy page OR modest hardware → leaner scene budget
-    var isLowPower = /ati|gesture|qr|dashboard|feedback|verify/i.test(path)
+    var isLowPower = false
 
     // ─── Renderer ───
-    var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: !isMobile, alpha: true, powerPreference: isMobile ? 'low-power' : 'high-performance' })
+    var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true, powerPreference: 'high-performance', stencil: false, depth: true })
     renderer.setSize(window.innerWidth, window.innerHeight)
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1 : 1.5))
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2.5))
     renderer.setClearColor(0x000000, 0)
     if (!isMobile) {canvas.style.willChange = 'transform'}
 
@@ -458,6 +458,7 @@
         baseZoom = 50
 
         var root = new THREE.Group()
+        if (window.innerWidth >= 1024) { root.position.set(15, 0, 0); }
         scene.add(root)
 
         // ─── Central CoL Core ───
@@ -972,6 +973,11 @@
 
         // ─── Main Animation Loop for Home Scene ───
         return function (t) {
+          var targetX = stageMode ? 0 : (window.innerWidth >= 1024 ? 15 : 0);
+          var targetY = stageMode ? 0 : (window.innerWidth >= 1024 ? 0 : -6);
+          root.position.x += (targetX - root.position.x) * 0.08;
+          root.position.y += (targetY - root.position.y) * 0.08;
+
           // 1. Shockwaves & Sparks update
           for (var sw = activeShockwaves.length - 1; sw >= 0; sw--) {
             var s = activeShockwaves[sw]
@@ -1664,20 +1670,12 @@
     setTimeout(function () { canvas.style.opacity = '1'; if (canvas.classList) {canvas.classList.add('v')} }, 120)
 
     // ─── Animation loop ───
-    // 30fps cap on desktop, 24fps on mobile/low-power. Skips ALL work when the
-    // tab is hidden OR the canvas is scrolled off-screen (huge win on long pages).
+    // Native high-refresh rate (60Hz / 120Hz / 144Hz) unthrottled rendering
     var clock = new THREE.Clock()
-    // Cap at 24fps on mobile/low-power, 24fps on desktop too for smoother
-    // frame pacing (most monitors are 60Hz, 24fps = every 2.5 frames = less GPU)
-    var FRAME_MS = 1000 / (isLowPower ? 20 : 24)
-    var lastFrame = 0
 
     function animate(now) {
       requestAnimationFrame(animate)
       if (!visible || !canvasVisible) {return}
-      var elapsed = now - lastFrame
-      if (elapsed < FRAME_MS) {return}
-      lastFrame = now - (elapsed % FRAME_MS)
       mouseX = _pmx
       mouseY = _pmy
       _hoverCurrent += (_hoverTarget - _hoverCurrent) * 0.05

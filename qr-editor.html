@@ -7,6 +7,7 @@
     <meta name="keywords" content="QR code generator, custom QR code, QR code maker, create QR code free, QR code with logo, QR code editor, dynamic QR code, QR code design, browser QR generator, free QR code maker, QR code creator online, custom QR code generator">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#070A14" id="themeMeta" />
     <meta property="og:site_name" content="Class Of Learners">
     <meta property="og:title" content="QR Editor | Create Custom QR Codes In Browser">
     <meta property="og:description" content="Create custom QR codes for links, text, contact details, payments, events, and files with editable colors, logos, sizes, and high-resolution downloads.">
@@ -20,7 +21,7 @@
     <meta name="twitter:image" content="https://advancedlogiclabs.dpdns.org/og/qr.jpg">
     <meta name="twitter:image:alt" content="Custom QR code editor from Class Of Learners">
     <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/qr-editor" />
-    <title>QR Editor | Create Custom QR Codes In Browser</title>
+    <title>Dynamic QR Studio | Class Of Learners</title>
     <link rel="icon" type="image/png" href="Icon.png" />
     <script type="application/ld+json">
       {
@@ -46,7 +47,7 @@
   "name": "How To Create A Custom QR Code",
   "description": "Create custom QR codes for links, text, contact details, payments, events, and files with editable colors, logos, and high-resolution downloads.",
   "step": [
-    {"@type": "HowToStep", "name": "Choose Content Type", "text": "Select the type of QR code content — URL, text, contact, payment, or event."},
+    {"@type": "HowToStep", "name": "Choose Content Type", "text": "Select the type of QR code content &mdash; URL, text, contact, payment, or event."},
     {"@type": "HowToStep", "name": "Enter Your Data", "text": "Enter the content data for your QR code."},
     {"@type": "HowToStep", "name": "Customize Design", "text": "Choose colors, add a logo, and adjust size."},
     {"@type": "HowToStep", "name": "Download", "text": "Download your custom QR code in high resolution."}
@@ -81,7 +82,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>
-/* ──── EXACT UI THEME ──── */
+/* ---- EXACT UI THEME ---- */
 :root {
   --bg: #030712; --panel: rgba(17, 24, 39, 0.6); --panel-hover: rgba(31, 41, 55, 0.8);
   --border: rgba(255, 255, 255, 0.08); --border-focus: #10b981;
@@ -295,7 +296,7 @@ select.fi { cursor: pointer; appearance: none; background-image: url('data:image
 .btn-nx, .btn-cp { padding: 15px 40px; background: var(--pri); border: none; border-radius: 12px; font-weight: 800; font-size: 1rem; cursor: pointer; color: #000; transition: 0.3s; box-shadow: 0 10px 30px var(--glow-strong); display: flex; align-items: center; gap: 10px; margin-left: auto; }
 .btn-nx:hover, .btn-cp:hover { background: #fff; transform: translateY(-2px); box-shadow: 0 15px 40px var(--pri); }
 
-/* ──── PREVIEW PANEL ──── */
+/* ---- PREVIEW PANEL ---- */
 .prev-p { background: var(--panel); border-left: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; box-shadow: -10px 0 30px rgba(0,0,0,0.2); z-index: 10;}
 .prev-hd { padding: 25px 25px 15px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; text-align: center; }
 .prev-hd h3 { font-size: 1rem; font-weight: 800; color: var(--txt-m); text-transform: uppercase; letter-spacing: 2px; }
@@ -491,7 +492,71 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 /* Screen reader only utility */
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
-</style>
+
+      /* QR Editor Studio Enhancements */
+      .quick-presets-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 20px;
+      }
+      .preset-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 14px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--txt);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .preset-chip:hover {
+        border-color: var(--pri);
+        transform: translateY(-1px);
+      }
+      .preset-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+      }
+      .quick-sample-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.8rem;
+        padding: 4px 10px;
+        background: rgba(99, 102, 241, 0.1);
+        border: 1px solid rgba(99, 102, 241, 0.25);
+        color: var(--pri);
+        border-radius: 6px;
+        cursor: pointer;
+        margin-top: 8px;
+      }
+      .quick-sample-btn:hover {
+        background: rgba(99, 102, 241, 0.2);
+      }
+      /* Light mode overrides for QR Editor */
+      body.lm .preset-chip {
+        background: #ffffff;
+        border-color: rgba(0, 0, 0, 0.1);
+        color: #0f172a;
+      }
+      body.lm .prev-inf {
+        background: #f8fafc;
+        border-color: rgba(0, 0, 0, 0.08);
+      }
+      body.lm .prev-inf .pi span {
+        color: #64748b;
+      }
+      body.lm .prev-inf .pi strong {
+        color: #0f172a;
+      }
+
+    </style>
 
 <script>
 (function() {
@@ -528,7 +593,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   </head>
 <body>
 
-<h1 class="sr-only">QR Editor — Create Custom QR Codes In Your Browser</h1>
+<h1 class="sr-only">QR Editor &mdash; Create Custom QR Codes In Your Browser</h1>
 <a href="#mainContent" class="sr-only" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:9999;padding:8px 16px;background:var(--pri);color:#fff;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;" onfocus="this.style.cssText='position:fixed;left:0;top:0;width:auto;height:auto;z-index:9999;padding:8px 16px;background:var(--pri);color:#fff;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;'" onblur="this.style.cssText='position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:9999;padding:8px 16px;background:var(--pri);color:#fff;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;'">Skip to main content</a>
 
 <nav class="top-nav" id="topNav">
@@ -736,7 +801,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     </div>
 
     <nav class="breadcrumb" id="breadcrumb" aria-label="Editor progress">
-      <span>Step 1</span><span aria-hidden="true">—</span><span>QR Type</span>
+      <span>Step 1</span><span aria-hidden="true">&rsaquo;</span>&mdash;</span><span>QR Type</span>
     </nav>
 
     <div class="sp act" id="sp1">
@@ -747,7 +812,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
         <p class="type-slbl" style="margin-top: 30px;">Static Formats (Offline & Encoded)</p>
         <div class="type-grid" id="statG" role="radiogroup" aria-label="Static QR code types"></div>
       </div>
-      <div class="sn-row"><div style="flex:1"></div><button class="btn-nx" id="btn-next-1" onclick="nextFrom1()">Continue to Content →</button></div>
+      <div class="sn-row"><div style="flex:1"></div><button class="btn-nx" id="btn-next-1" onclick="nextFrom1()">Continue to Content &rarr;</button></div>
     </div>
 
     <div class="sp" id="sp2">
@@ -856,11 +921,34 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
           </div>
       </div>
-      <div class="sn-row"><button class="btn-bk" onclick="goStep(1)">← Back</button><button class="btn-nx" id="btn-next-2" onclick="nextFrom2()">Proceed to Design →</button></div>
+      <div class="sn-row"><button class="btn-bk" onclick="goStep(1)">&larr; Back</button><button class="btn-nx" id="btn-next-2" onclick="nextFrom2()">Proceed to Design &rarr;</button></div>
     </div>
 
     <div class="sp" id="sp3">
       <div><div class="sh">Design the QR</div></div>
+
+      <!-- Quick Designer Themes -->
+      <div style="margin-bottom: 24px;">
+        <label style="display:block; font-size:0.85rem; font-weight:600; margin-bottom:10px; color:var(--txt);">Designer Color Presets</label>
+        <div class="quick-presets-bar">
+          <button class="preset-chip" onclick="applyPresetTheme('#000000', '#ffffff', 'square'); return false;">
+            <span class="preset-dot" style="background:#000000; border:1px solid #ccc;"></span> Classic Mono
+          </button>
+          <button class="preset-chip" onclick="applyPresetTheme('#4f46e5', '#ffffff', 'rounded'); return false;">
+            <span class="preset-dot" style="background:#4f46e5;"></span> Studio Indigo
+          </button>
+          <button class="preset-chip" onclick="applyPresetTheme('#059669', '#ffffff', 'dots'); return false;">
+            <span class="preset-dot" style="background:#059669;"></span> Emerald Cyber
+          </button>
+          <button class="preset-chip" onclick="applyPresetTheme('#ea580c', '#ffffff', 'extra-rounded'); return false;">
+            <span class="preset-dot" style="background:#ea580c;"></span> Sunset Amber
+          </button>
+          <button class="preset-chip" onclick="applyPresetTheme('#db2777', '#ffffff', 'classy'); return false;">
+            <span class="preset-dot" style="background:#db2777;"></span> Cyber Magenta
+          </button>
+        </div>
+      </div>
+
       
       <div class="qrfy-tabs">
           <div class="qrfy-tab act">Personalized design</div>
@@ -1062,9 +1150,15 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     <div id="qrWrap"></div>
     <div class="fr-lbl" id="frLbl"></div>
   </div>
+  <!-- Live Scannability Indicator -->
+  <div id="scannabilityBadge" style="display:flex; align-items:center; justify-content:center; gap:8px; padding:6px 14px; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); border-radius:999px; margin:0 20px 14px 20px; font-size:0.8rem; font-weight:600; color:#10b981;">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+    <span id="scannabilityScore">Optimal &bull; 99% Scannability</span>
+  </div>
+
   <div class="prev-inf">
-    <div class="pi"><span>Payload</span><strong id="piSz">—</strong></div>
-    <div class="pi"><span>Redundancy</span><strong id="piCr">H – 30%</strong></div>
+    <div class="pi"><span>Payload</span><strong id="piSz">&mdash;</strong>&mdash;</strong></div>
+    <div class="pi"><span>Redundancy</span><strong id="piCr">H &bull; 30%</strong>&ndash; 30%</strong></div>
     <div class="pi"><span>Format</span><strong id="piFmt">Dynamic</strong></div>
   </div>
   <div class="prev-act">
@@ -1158,7 +1252,71 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .modal-actions {
     display: flex; justify-content: flex-end; gap: 15px;
 }
-</style>
+
+      /* QR Editor Studio Enhancements */
+      .quick-presets-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 20px;
+      }
+      .preset-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 14px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--txt);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .preset-chip:hover {
+        border-color: var(--pri);
+        transform: translateY(-1px);
+      }
+      .preset-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+      }
+      .quick-sample-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.8rem;
+        padding: 4px 10px;
+        background: rgba(99, 102, 241, 0.1);
+        border: 1px solid rgba(99, 102, 241, 0.25);
+        color: var(--pri);
+        border-radius: 6px;
+        cursor: pointer;
+        margin-top: 8px;
+      }
+      .quick-sample-btn:hover {
+        background: rgba(99, 102, 241, 0.2);
+      }
+      /* Light mode overrides for QR Editor */
+      body.lm .preset-chip {
+        background: #ffffff;
+        border-color: rgba(0, 0, 0, 0.1);
+        color: #0f172a;
+      }
+      body.lm .prev-inf {
+        background: #f8fafc;
+        border-color: rgba(0, 0, 0, 0.08);
+      }
+      body.lm .prev-inf .pi span {
+        color: #64748b;
+      }
+      body.lm .prev-inf .pi strong {
+        color: #0f172a;
+      }
+
+    </style>
 
 <div class="modal-backdrop" id="bulkModal" role="dialog" aria-modal="true" aria-labelledby="bulkModalTitle">
     <div class="modal-card">
@@ -1273,10 +1431,74 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 .msk:hover { color: var(--txt); }
 .msk-danger { width: 100%; padding: 15px; background: transparent; border: 1px solid var(--danger); border-radius: 12px; font-size: 1rem; font-weight: 800; color: var(--danger); cursor: pointer; transition: 0.3s; margin-bottom: 10px;}
 .msk-danger:hover { background: rgba(239, 68, 68, 0.1); }
-</style>
+
+      /* QR Editor Studio Enhancements */
+      .quick-presets-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 20px;
+      }
+      .preset-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 14px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--txt);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .preset-chip:hover {
+        border-color: var(--pri);
+        transform: translateY(-1px);
+      }
+      .preset-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+      }
+      .quick-sample-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.8rem;
+        padding: 4px 10px;
+        background: rgba(99, 102, 241, 0.1);
+        border: 1px solid rgba(99, 102, 241, 0.25);
+        color: var(--pri);
+        border-radius: 6px;
+        cursor: pointer;
+        margin-top: 8px;
+      }
+      .quick-sample-btn:hover {
+        background: rgba(99, 102, 241, 0.2);
+      }
+      /* Light mode overrides for QR Editor */
+      body.lm .preset-chip {
+        background: #ffffff;
+        border-color: rgba(0, 0, 0, 0.1);
+        color: #0f172a;
+      }
+      body.lm .prev-inf {
+        background: #f8fafc;
+        border-color: rgba(0, 0, 0, 0.08);
+      }
+      body.lm .prev-inf .pi span {
+        color: #64748b;
+      }
+      body.lm .prev-inf .pi strong {
+        color: #0f172a;
+      }
+
+    </style>
 
 <script>
-// ——— SAFE LOCAL STORAGE ———
+// &mdash;&mdash;&mdash; SAFE LOCAL STORAGE &mdash;&mdash;&mdash;
 var Storage = {
   get: function(key) { try { return localStorage.getItem(key); } catch(e) { return null; } },
   set: function(key, val) { try { localStorage.setItem(key, val); return true; } catch(e) { return false; } }
@@ -1360,7 +1582,7 @@ const FORMS={
     <div><label class="fl">Office Address</label><input class="fi" id="vc5" placeholder="City, Country" oninput="lu()"></div>`,
   wifi:`
     <div><label class="fl">SSID (Network Name) *</label><input class="fi" id="wf0" placeholder="MyWiFi_5G" oninput="lu()"></div>
-    <div><label class="fl">Password</label><input class="fi" id="wf1" type="password" placeholder="••••••••" oninput="lu()"></div>
+    <div><label class="fl">Password</label><input class="fi" id="wf1" type="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" oninput="lu()"></div>
     <div><label class="fl">Security Protocol</label><select class="fi" id="wf2" onchange="lu()"><option value="WPA">WPA / WPA2 (Secure)</option><option value="WEP">WEP (Legacy)</option><option value="">None (Open Network)</option></select></div>
     <label style="display:flex;align-items:center;gap:10px;font-size:0.9rem;color:var(--txt-m);font-weight:700;cursor:pointer"><input type="checkbox" id="wf3" style="width:16px;height:16px;accent-color:var(--pri);" onchange="lu()"> Hidden SSID Broadcast</label>`,
   whatsapp:`
@@ -1411,7 +1633,7 @@ function getContent(){
   }catch(e){return 'https://advancedlogiclabs.dpdns.org';}
 }
 
-// ──── QR ENGINE ────
+// ---- QR ENGINE ----
 function getQRDataString() {
     const isStatic = ['text','vcard','wifi','whatsapp','email','sms','phone'].indexOf(selType) !== -1;
     let d = '';
@@ -1555,7 +1777,7 @@ function updateInfo(){
       try { piSz.textContent = unescape(encodeURIComponent(c)).length + ' bytes'; }
       catch(e) { piSz.textContent = c.length + ' bytes'; }
   }
-  const cm={L:'L – 7%',M:'M – 15%',Q:'Q – 25%',H:'H – 30%'};
+  const cm={L:'L &ndash; 7%',M:'M &ndash; 15%',Q:'Q &ndash; 25%',H:'H &ndash; 30%'};
   const errLvl = (opts.qrOptions && opts.qrOptions.errorCorrectionLevel) ? opts.qrOptions.errorCorrectionLevel : 'H';
   const piCr = document.getElementById('piCr');
   if(piCr) piCr.textContent = cm[errLvl];
@@ -1928,7 +2150,7 @@ function goStep(n){
     var stepNames=['QR Type','Content','Theme'];
     var to=DYN.concat(STA).filter(function(x){return x.id===selType;})[0];
     var typeName=to?to.name:'';
-    bc.innerHTML='<span>Step '+n+'</span><span aria-hidden="true">—</span><span>'+(n===2?typeName:stepNames[n-1])+'</span>';
+    bc.innerHTML='<span>Step '+n+'</span><span aria-hidden="true">&rsaquo;</span><span>'&mdash;</span><span>'+(n===2?typeName:stepNames[n-1])+'</span>';
   }
   if(n===2){
     const to=DYN.concat(STA).filter(x=>x.id===selType)[0]; const h=document.getElementById('s2h'); if(h&&to) h.textContent='Content: '+to.name;
@@ -2082,7 +2304,7 @@ function printQRSheet(dlOpts) {
       <!DOCTYPE html>
       <html>
       <head>
-        <title>Printable QR Flyer - ${to.name}</title>
+        <title>Dynamic QR Studio | Class Of Learners</title>
         <style>
           body { font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; background: #fff; color: #111; text-align: center; }
           .card { border: 3px solid #111; border-radius: 24px; padding: 40px; max-width: 500px; width: 90%; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
@@ -2092,7 +2314,71 @@ function printQRSheet(dlOpts) {
           .cta { font-size: 1.2rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: #10b981; margin-bottom: 8px; }
           .footer { font-size: 0.8rem; color: #888; margin-top: 20px; }
           @media print { body { background: #fff; } .card { box-shadow: none; } }
-        </style>
+        
+      /* QR Editor Studio Enhancements */
+      .quick-presets-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 20px;
+      }
+      .preset-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 14px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--txt);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .preset-chip:hover {
+        border-color: var(--pri);
+        transform: translateY(-1px);
+      }
+      .preset-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+      }
+      .quick-sample-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.8rem;
+        padding: 4px 10px;
+        background: rgba(99, 102, 241, 0.1);
+        border: 1px solid rgba(99, 102, 241, 0.25);
+        color: var(--pri);
+        border-radius: 6px;
+        cursor: pointer;
+        margin-top: 8px;
+      }
+      .quick-sample-btn:hover {
+        background: rgba(99, 102, 241, 0.2);
+      }
+      /* Light mode overrides for QR Editor */
+      body.lm .preset-chip {
+        background: #ffffff;
+        border-color: rgba(0, 0, 0, 0.1);
+        color: #0f172a;
+      }
+      body.lm .prev-inf {
+        background: #f8fafc;
+        border-color: rgba(0, 0, 0, 0.08);
+      }
+      body.lm .prev-inf .pi span {
+        color: #64748b;
+      }
+      body.lm .prev-inf .pi strong {
+        color: #0f172a;
+      }
+
+    </style>
       </head>
       <body>
         <div class="card">
@@ -2100,7 +2386,7 @@ function printQRSheet(dlOpts) {
           <div class="sub">Scan the code below with your smartphone camera</div>
           <img class="qr-img" src="${url}" alt="QR Code" />
           <div class="cta">${frText}</div>
-          <div class="footer">Powered by Class Of Learners • advancedlogiclabs.dpdns.org</div>
+          <div class="footer">Powered by Class Of Learners &bull; advancedlogiclabs.dpdns.org</div>
         </div>
         <script>
           window.onload = function() { window.print(); }
@@ -2451,7 +2737,7 @@ async function runBulkGeneration() {
     }
 }
 
-// ──── SCANNER MODAL CONTROLLER ────
+// ---- SCANNER MODAL CONTROLLER ----
 let scanStream = null;
 let scanAnimationId = null;
 let lastScannedPayload = '';
@@ -2773,6 +3059,78 @@ function toggleTheme(element){
     var lbl = document.getElementById('tLabel');
     if (lbl) lbl.textContent = isLight ? 'Light Mode' : 'Dark Mode';
   }
+
+// Preset theme application
+function applyPresetTheme(fg, bg, dotStyle) {
+  if (opts.dotsOptions) {
+    opts.dotsOptions.color = fg;
+    if (dotStyle) opts.dotsOptions.type = dotStyle;
+  }
+  if (opts.cornersSquareOptions) opts.cornersSquareOptions.color = fg;
+  if (opts.cornersDotOptions) opts.cornersDotOptions.color = fg;
+  if (opts.backgroundOptions) opts.backgroundOptions.color = bg;
+
+  // Sync color inputs if present
+  var fgInp = document.getElementById('dotCol');
+  if (fgInp) fgInp.value = fg;
+  var bgInp = document.getElementById('bgCol');
+  if (bgInp) bgInp.value = bg;
+
+  if (qrInst) {
+    qrInst.update(opts);
+    updateInfo();
+  }
+  toast('Applied theme preset', 'green');
+}
+
+// Scannability score telemetry calculation
+function updateScannability() {
+  var badge = document.getElementById('scannabilityBadge');
+  var scoreEl = document.getElementById('scannabilityScore');
+  if (!badge || !scoreEl) return;
+
+  var fg = (opts.dotsOptions && opts.dotsOptions.color) ? opts.dotsOptions.color : '#000000';
+  var bg = (opts.backgroundOptions && opts.backgroundOptions.color) ? opts.backgroundOptions.color : '#ffffff';
+
+  // Contrast calculation
+  function getLuminance(hex) {
+    hex = hex.replace('#', '');
+    if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+    var r = parseInt(hex.substring(0,2), 16) / 255;
+    var g = parseInt(hex.substring(2,4), 16) / 255;
+    var b = parseInt(hex.substring(4,6), 16) / 255;
+    var a = [r, g, b].map(function(v) {
+      return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    });
+    return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+  }
+
+  try {
+    var l1 = getLuminance(fg);
+    var l2 = getLuminance(bg);
+    var ratio = (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+
+    if (ratio >= 7) {
+      badge.style.background = 'rgba(16, 185, 129, 0.12)';
+      badge.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+      badge.style.color = '#10b981';
+      scoreEl.innerHTML = 'Optimal Scannability &bull; High Contrast (' + ratio.toFixed(1) + ':1)';
+    } else if (ratio >= 4.5) {
+      badge.style.background = 'rgba(59, 130, 246, 0.12)';
+      badge.style.borderColor = 'rgba(59, 130, 246, 0.3)';
+      badge.style.color = '#3b82f6';
+      scoreEl.innerHTML = 'Good Scannability &bull; Standard (' + ratio.toFixed(1) + ':1)';
+    } else {
+      badge.style.background = 'rgba(239, 68, 68, 0.12)';
+      badge.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+      badge.style.color = '#ef4444';
+      scoreEl.innerHTML = 'Warning: Low Contrast (' + ratio.toFixed(1) + ':1) &bull; May fail scan';
+    }
+  } catch(e) {
+    scoreEl.innerHTML = 'Scannability Ready';
+  }
+}
+
 </script>
 
 <footer class="sf">

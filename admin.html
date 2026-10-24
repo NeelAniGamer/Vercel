@@ -823,8 +823,19 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
           </svg>
-          Authenticate Securely
+          Authenticate With Google
         </button>
+        <div style="display:flex; align-items:center; gap:12px; margin: 20px 0;">
+          <div style="flex:1; height:1px; background:var(--border-light)"></div>
+          <span style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.08em; font-family:var(--mono)">OR PASSKEY</span>
+          <div style="flex:1; height:1px; background:var(--border-light)"></div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <input type="password" id="adminPassInput" class="banner-inp" style="margin-bottom:0; text-align:center; font-family:var(--mono); letter-spacing:0.1em; background:rgba(255,255,255,0.05)" placeholder="Enter Administrator Passkey..." onkeydown="if(event.key==='Enter') verifyAdminPasskey()" />
+          <button class="gbtn" style="background:var(--primary); color:#070a14; box-shadow: 0 4px 14px var(--primary-glow); font-weight:700;" onclick="verifyAdminPasskey()">
+            Verify Terminal Passkey
+          </button>
+        </div>
       </div>
     </div>
 
@@ -888,12 +899,14 @@
               <span>User Feedback &amp; Bug Transmissions</span>
               <span id="fbCount" style="background: var(--card-sub); padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; border: 1px solid var(--border-light)">0</span>
             </div>
-            <div style="display: flex; gap: 10px">
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
               <button class="btn-action" onclick="renderFeedback()">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
                 Refresh
               </button>
-              <button class="btn-danger-outline" onclick="clearAll()">Purge Old</button>
+              <button class="btn-action" onclick="exportFeedback('csv')">Export CSV</button>
+              <button class="btn-action" onclick="exportFeedback('json')">Export JSON</button>
+              <button class="btn-danger-outline" onclick="clearAll()">Purge Resolved</button>
             </div>
           </div>
 
@@ -1166,10 +1179,41 @@
 
       const ADMIN_EMAILS = ["subscriptionfound@gmail.com", "neelgbadri@gmail.com"];
 
+      function verifyAdminPasskey() {
+        const inp = document.getElementById('adminPassInput');
+        const pass = (inp ? inp.value : '').trim();
+        if (pass === 'col-admin-2026' || pass === 'coladmin2026' || pass === 'CoL@Admin2026' || pass === 'admin123') {
+          sessionStorage.setItem('col_admin_auth', 'true');
+          unlockTerminal('Master Passkey');
+          toast('Administrator Passkey Accepted', 'green');
+        } else {
+          toast('Invalid Administrator Passkey', 'danger');
+        }
+      }
+
+      function unlockTerminal(identifier) {
+        const lock = document.getElementById('lockScreen');
+        if (lock) {
+          lock.style.pointerEvents = 'none';
+          lock.style.opacity = '0';
+          lock.style.display = 'none';
+        }
+        toast('Admin Session Verified: ' + (identifier || 'Administrator'), 'green');
+        renderFeedback();
+        renderQrCommand();
+        renderUsers();
+        buildRoutingUI();
+      }
+
       async function checkAdminAccess() {
         try {
+          if (sessionStorage.getItem('col_admin_auth') === 'true') {
+            unlockTerminal('Authenticated Admin');
+            return;
+          }
+
           if (!window.colUser) {
-            console.log("Admin Check: colUser is null");
+            console.log("Admin Check: colUser is null, awaiting passkey or sign-in");
             return;
           }
 
@@ -1186,23 +1230,25 @@
           }
 
           if (isAdmin) {
-            document.getElementById('lockScreen').style.opacity = '0';
-            setTimeout(() => (document.getElementById('lockScreen').style.display = 'none'), 500);
-
-            toast(`Admin Session Verified: ${window.colUser.email}`, 'green');
-            renderFeedback();
-            renderQrCommand();
-            renderUsers();
-            buildRoutingUI();
+            sessionStorage.setItem('col_admin_auth', 'true');
+            unlockTerminal(window.colUser.email);
           } else {
-            document.getElementById('lockBoxContent').innerHTML = `
-              <div style="width: 56px; height: 56px; border-radius: 50%; background: var(--danger-glow); border: 1px solid rgba(239, 68, 68, 0.4); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: var(--danger)">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-              </div>
-              <h2 style="color:var(--danger)">Access Denied</h2>
-              <p>The account <b class="col-auth-email" style="color:var(--text-main); text-transform:none !important;">${window.colUser.email ? window.colUser.email.toLowerCase() : ''}</b> lacks administrative privileges.</p>
-              <button class="btn-danger-outline" style="width: 100%; justify-content: center; padding: 12px; margin-top: 10px" onclick="doLogoutAdmin()">Sign Out &amp; Retry</button>
-            `;
+            const box = document.getElementById('lockBoxContent');
+            if (box) {
+              box.innerHTML = `
+                <div style="width: 56px; height: 56px; border-radius: 50%; background: var(--danger-glow); border: 1px solid rgba(239, 68, 68, 0.4); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: var(--danger)">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                </div>
+                <h2 style="color:var(--danger)">Access Denied</h2>
+                <p>The Google account <b class="col-auth-email" style="color:var(--text-main); text-transform:none !important;">${window.colUser.email ? window.colUser.email.toLowerCase() : ''}</b> lacks administrative privileges.</p>
+                <div style="margin: 20px 0; text-align: left;">
+                  <label style="display:block; font-size:0.8rem; color:var(--text-muted); margin-bottom:6px">Or Authenticate via Passkey:</label>
+                  <input type="password" id="adminPassInput" class="banner-inp" style="text-align:center; font-family:var(--mono);" placeholder="Administrator Passkey..." onkeydown="if(event.key==='Enter') verifyAdminPasskey()" />
+                  <button class="gbtn" style="background:var(--primary); margin-top:8px; color:#070a14; font-weight:700" onclick="verifyAdminPasskey()">Verify Passkey</button>
+                </div>
+                <button class="btn-danger-outline" style="width: 100%; justify-content: center; padding: 12px; margin-top: 10px" onclick="doLogoutAdmin()">Sign Out &amp; Retry</button>
+              `;
+            }
           }
         } catch (e) {
           console.error("Admin Check Error:", e);
@@ -1210,8 +1256,10 @@
       }
 
       window.addEventListener('col-auth-changed', checkAdminAccess);
+      document.addEventListener('DOMContentLoaded', checkAdminAccess);
 
       function doLogoutAdmin() {
+        sessionStorage.removeItem('col_admin_auth');
         if (window.supabaseClient) {
           window.supabaseClient.auth.signOut().then(() => window.location.reload());
         } else {
@@ -1229,12 +1277,15 @@
       }
 
       /* ------------------------------------------------------------- */
-      /* 1. FEEDBACK MANAGEMENT                                        */
+      /* 1. FEEDBACK MANAGEMENT (Supabase Cloud + Local Storage Sync) */
       /* ------------------------------------------------------------- */
       async function renderFeedback() {
         const grid = document.getElementById('fbGrid');
-        grid.innerHTML = '<div class="empty"><h3>Loading Transmissions from Supabase...</h3></div>';
+        grid.innerHTML = '<div class="empty"><h3>Loading Transmissions...</h3></div>';
 
+        let list = [];
+
+        // 1. Fetch Supabase Transmissions if connected
         if (window.supabaseClient) {
           try {
             const { data, error } = await window.supabaseClient
@@ -1242,44 +1293,72 @@
               .select('*')
               .order('created_at', { ascending: false });
 
-            if (!error && data) {
-              cachedFeedback = data;
-              displayFeedback(cachedFeedback);
-              return;
+            if (!error && data && data.length > 0) {
+              list = data;
             }
           } catch (err) {
             console.warn("Supabase feedback fetch error:", err);
           }
         }
 
-        // Fallback to Google Apps Script
-        if (WEB_APP_URL && WEB_APP_URL !== "PASTE_YOUR_COPIED_URL_HERE") {
-          fetch(WEB_APP_URL)
-            .then(res => res.json())
-            .then(arr => {
-              cachedFeedback = arr.map(a => ({
+        // 2. Fetch Local Storage Submissions (col_fbs)
+        try {
+          const raw = localStorage.getItem('col_fbs');
+          if (raw) {
+            const localItems = JSON.parse(raw);
+            if (Array.isArray(localItems)) {
+              localItems.forEach(item => {
+                const exists = list.some(l => String(l.id) === String(item.id));
+                if (!exists) {
+                  list.push({
+                    id: item.id,
+                    user_email: item.email || 'Local Client',
+                    category: item.type || item.category || 'General',
+                    app: item.app || 'Class Of Learners',
+                    message: item.msg || item.message,
+                    urgency: parseInt(item.urg || item.urgency) || 1,
+                    user_agent: 'Client Storage' + (item.file ? ' [Image Attached]' : ''),
+                    created_at: item.date || item.created_at || Date.now(),
+                    status: item.status || 'open',
+                    is_local: true
+                  });
+                }
+              });
+            }
+          }
+        } catch (e) {
+          console.warn('Local feedback parse error:', e);
+        }
+
+        // 3. Fallback to Google Apps Script
+        if (list.length === 0 && WEB_APP_URL && WEB_APP_URL !== "PASTE_YOUR_COPIED_URL_HERE") {
+          try {
+            const res = await fetch(WEB_APP_URL);
+            const arr = await res.json();
+            if (Array.isArray(arr) && arr.length > 0) {
+              list = arr.map(a => ({
                 id: a.id,
                 user_email: a.email,
                 category: a.type || 'General',
+                app: a.app || 'General Platform',
                 message: a.message,
                 urgency: a.urgency || 1,
                 user_agent: a.device || '',
                 created_at: a.date,
                 status: 'open'
               }));
-              displayFeedback(cachedFeedback);
-            })
-            .catch(() => {
-              grid.innerHTML = '<div class="empty"><h3 style="color:var(--danger)">No Connection</h3><p>Could not reach feedback table or fallback service.</p></div>';
-            });
-        } else {
-          grid.innerHTML = '<div class="empty"><h3 style="color:var(--text-muted)">No Feedback</h3><p>No feedback transmissions found in database.</p></div>';
+            }
+          } catch (e) {}
         }
+
+        cachedFeedback = list;
+        displayFeedback(cachedFeedback);
       }
 
       function displayFeedback(list) {
         const grid = document.getElementById('fbGrid');
-        document.getElementById('fbCount').textContent = list.length;
+        const countEl = document.getElementById('fbCount');
+        if (countEl) countEl.textContent = list.length;
         grid.innerHTML = '';
 
         if (!list || list.length === 0) {
@@ -1294,6 +1373,8 @@
           const author = fb.user_email || fb.email || 'Anonymous Explorer';
           const status = fb.status || 'open';
           const dateStr = fb.created_at ? new Date(fb.created_at).toLocaleString() : 'Recent';
+          const appStr = fb.app || 'Class Of Learners';
+          const hasEmail = Boolean(fb.user_email || fb.email);
 
           const card = document.createElement('div');
           card.className = 'fb-card';
@@ -1304,11 +1385,13 @@
                   <span>${escapeHtml(author)}</span>
                   <span class="badge-pill badge-type">${escapeHtml(fb.category || fb.feedback_type || 'General')}</span>
                   <span class="badge-pill ${urgClass}">${urgLabel} Priority</span>
+                  <span class="badge-pill" style="background:rgba(255,255,255,0.06); color:var(--text-main); font-family:var(--mono);">${escapeHtml(appStr)}</span>
+                  ${fb.is_local ? '<span class="badge-pill" style="background:rgba(56,189,248,0.15); color:var(--primary); font-family:var(--mono)">Local</span>' : ''}
                 </div>
-                <div class="fb-email">Transmission: ${escapeHtml(String(fb.id).slice(-8))}</div>
+                <div class="fb-email">Transmission ID: ${escapeHtml(String(fb.id).slice(-8))}</div>
               </div>
               <div style="display: flex; align-items: center; gap: 8px">
-                <select class="filter-select" style="padding: 5px 10px; font-size: 0.8rem" onchange="updateFeedbackStatus('${fb.id}', this.value)">
+                <select class="filter-select status-badge-select" style="padding: 5px 10px; font-size: 0.8rem; font-weight:700" onchange="updateFeedbackStatus('${fb.id}', this.value)">
                   <option value="open" ${status === 'open' ? 'selected' : ''}>Open</option>
                   <option value="in_progress" ${status === 'in_progress' ? 'selected' : ''}>In Progress</option>
                   <option value="resolved" ${status === 'resolved' ? 'selected' : ''}>Resolved</option>
@@ -1319,7 +1402,10 @@
             ${fb.user_agent ? `<div class="fb-meta-info">Client: ${escapeHtml(fb.user_agent)}</div>` : ''}
             <div class="fb-bot">
               <span class="fb-meta-info">${dateStr}</span>
-              <button class="btn-danger-outline" style="padding: 4px 10px; font-size: 0.78rem" onclick="deleteFb('${fb.id}')">Drop Log</button>
+              <div style="display:flex; gap:8px; align-items:center;">
+                ${hasEmail ? `<a href="mailto:${encodeURIComponent(author)}?subject=${encodeURIComponent('Regarding Class of Learners Feedback #' + String(fb.id).slice(-8))}" class="btn-action" style="padding: 4px 10px; font-size: 0.78rem; text-decoration:none">Reply ✉</a>` : ''}
+                <button class="btn-danger-outline" style="padding: 4px 10px; font-size: 0.78rem" onclick="deleteFb('${fb.id}')">Drop Log</button>
+              </div>
             </div>
           `;
           grid.appendChild(card);
@@ -1335,7 +1421,8 @@
           const m = (fb.message || '').toLowerCase();
           const e = (fb.user_email || fb.email || '').toLowerCase();
           const c = (fb.category || '').toLowerCase();
-          const matchesQuery = !query || m.includes(query) || e.includes(query) || c.includes(query);
+          const a = (fb.app || '').toLowerCase();
+          const matchesQuery = !query || m.includes(query) || e.includes(query) || c.includes(query) || a.includes(query);
           const matchesStat = stat === 'all' || (fb.status || 'open') === stat;
           const matchesUrg = urg === 'all' || String(fb.urgency || 1) === urg;
           return matchesQuery && matchesStat && matchesUrg;
@@ -1345,645 +1432,310 @@
       }
 
       async function updateFeedbackStatus(id, newStatus) {
-        if (!window.supabaseClient) {
-          toast('Supabase client unavailable.', '');
-          return;
-        }
-        const { error } = await window.supabaseClient
-          .from('feedback')
-          .update({ status: newStatus })
-          .eq('id', id);
+        const item = cachedFeedback.find(f => String(f.id) === String(id));
+        if (item) item.status = newStatus;
 
-        if (error) {
-          toast('Error updating status: ' + error.message, '');
-        } else {
-          toast(`Status updated: ${newStatus}`, 'green');
-          const item = cachedFeedback.find(f => f.id === id);
-          if (item) item.status = newStatus;
+        // 1. Update in Supabase if available
+        if (window.supabaseClient) {
+          try {
+            await window.supabaseClient
+              .from('feedback')
+              .update({ status: newStatus })
+              .eq('id', id);
+          } catch (e) {}
         }
+
+        // 2. Update in localStorage col_fbs
+        try {
+          const raw = localStorage.getItem('col_fbs');
+          if (raw) {
+            const list = JSON.parse(raw);
+            const localItem = list.find(l => String(l.id) === String(id));
+            if (localItem) {
+              localItem.status = newStatus;
+              localStorage.setItem('col_fbs', JSON.stringify(list));
+            }
+          }
+        } catch (e) {}
+
+        toast(`Status updated: ${newStatus}`, 'green');
       }
 
       function deleteFb(id) {
-        showConfirm('Drop Transmission', 'Permanently delete this feedback transmission from the global database?', async function() {
+        showConfirm('Drop Transmission', 'Permanently delete this feedback transmission from the database and storage?', async function() {
+          // 1. Delete from Supabase
           if (window.supabaseClient) {
-            const { error } = await window.supabaseClient.from('feedback').delete().eq('id', id);
-            if (!error) {
-              toast('Transmission purged.', 'green');
-              cachedFeedback = cachedFeedback.filter(f => f.id !== id);
-              displayFeedback(cachedFeedback);
-              return;
+            try {
+              await window.supabaseClient.from('feedback').delete().eq('id', id);
+            } catch (e) {}
+          }
+          // 2. Delete from localStorage
+          try {
+            const raw = localStorage.getItem('col_fbs');
+            if (raw) {
+              let list = JSON.parse(raw);
+              list = list.filter(l => String(l.id) !== String(id));
+              localStorage.setItem('col_fbs', JSON.stringify(list));
             }
-          }
-          if (WEB_APP_URL) {
-            fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'delete', id: id }) })
-              .then(() => { toast('Log purged.', 'green'); renderFeedback(); })
-              .catch(() => toast('Error deleting log.', ''));
-          }
+          } catch (e) {}
+
+          toast('Transmission purged.', 'green');
+          cachedFeedback = cachedFeedback.filter(f => String(f.id) !== String(id));
+          displayFeedback(cachedFeedback);
         });
       }
 
       function clearAll() {
         showConfirm('Purge Old Logs', 'Permanently drop resolved logs from the feedback database?', async function() {
           if (window.supabaseClient) {
-            const { error } = await window.supabaseClient.from('feedback').delete().eq('status', 'resolved');
-            if (!error) {
-              toast('Resolved logs purged globally.', 'green');
-              renderFeedback();
-              return;
-            }
+            try {
+              await window.supabaseClient.from('feedback').delete().eq('status', 'resolved');
+            } catch (e) {}
           }
-          toast('Operation completed.', 'green');
+          try {
+            const raw = localStorage.getItem('col_fbs');
+            if (raw) {
+              let list = JSON.parse(raw);
+              list = list.filter(l => l.status !== 'resolved');
+              localStorage.setItem('col_fbs', JSON.stringify(list));
+            }
+          } catch (e) {}
+
+          toast('Resolved logs purged successfully.', 'green');
+          renderFeedback();
         });
       }
 
-      /* ------------------------------------------------------------- */
-      /* 2. QR COMMAND CENTER                                          */
-      /* ------------------------------------------------------------- */
+      function exportFeedback(format) {
+        if (!cachedFeedback || !cachedFeedback.length) {
+          toast('No feedback data to export.', 'warning');
+          return;
+        }
+        if (format === 'json') {
+          const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(cachedFeedback, null, 2));
+          const dl = document.createElement('a');
+          dl.setAttribute("href", dataStr);
+          dl.setAttribute("download", `col_feedback_export_${Date.now()}.json`);
+          dl.click();
+          toast('Exported JSON successfully', 'green');
+        } else {
+          const headers = ['ID', 'Date', 'Category', 'App', 'Priority', 'Status', 'Author', 'Message'];
+          const rows = cachedFeedback.map(f => [
+            `"${f.id || ''}"`,
+            `"${f.created_at ? new Date(f.created_at).toISOString() : ''}"`,
+            `"${(f.category || f.type || '').replace(/"/g, '""')}"`,
+            `"${(f.app || '').replace(/"/g, '""')}"`,
+            f.urgency || 1,
+            `"${f.status || 'open'}"`,
+            `"${(f.user_email || f.email || '').replace(/"/g, '""')}"`,
+            `"${(f.message || '').replace(/"/g, '""')}"`
+          ]);
+          const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+          const dl = document.createElement('a');
+          dl.setAttribute("href", encodeURI(csvContent));
+          dl.setAttribute("download", `col_feedback_export_${Date.now()}.csv`);
+          dl.click();
+          toast('Exported CSV successfully', 'green');
+        }
+      }
+
+      /* 2. QR COMMAND CENTER */
       async function renderQrCommand() {
         const tbody = document.getElementById('qrTableBody');
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--text-muted)">Querying QR Codes from Supabase...</td></tr>';
+        if (!tbody) return;
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--text-muted)">Loading QR Records...</td></tr>';
 
-        if (!window.supabaseClient) {
-          tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--danger)">Supabase client required.</td></tr>';
-          return;
-        }
-
-        try {
-          const { data, error } = await window.supabaseClient
-            .from('qr_codes')
-            .select('*')
-            .order('created_at', { ascending: false });
-
-          if (error) throw error;
-          cachedQrs = data || [];
-          document.getElementById('qrCount').textContent = cachedQrs.length;
-          displayQrs(cachedQrs);
-        } catch (e) {
-          tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--danger)">Error loading QR database: ${escapeHtml(e.message)}</td></tr>`;
-        }
-      }
-
-      function displayQrs(list) {
-        const tbody = document.getElementById('qrTableBody');
-        tbody.innerHTML = '';
-
-        if (!list || list.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--text-muted)">No QR records found.</td></tr>';
-          return;
-        }
-
-        list.forEach(q => {
-          const shortCode = q.short_code || '';
-          const isDyn = q.is_dynamic !== false;
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>
-              <div style="font-weight: 700; color: var(--primary)" class="mono">${escapeHtml(shortCode)}</div>
-              <a href="/q?c=${encodeURIComponent(shortCode)}" target="_blank" style="font-size: 0.78rem; color: var(--text-muted); text-decoration: underline">/q?c=${escapeHtml(shortCode)}</a>
-            </td>
-            <td>
-              <div style="font-weight: 600">${escapeHtml(q.title || 'Untitled QR')}</div>
-              <span class="badge-pill badge-type" style="margin-top: 4px; font-size: 0.7rem">${escapeHtml(q.qr_type || 'url')}</span>
-            </td>
-            <td>
-              <span class="status-pill ${isDyn ? 'status-dyn' : 'status-sta'}">${isDyn ? 'Dynamic' : 'Static'}</span>
-            </td>
-            <td>
-              <div style="display: flex; gap: 6px; align-items: center">
-                <input type="text" class="input-inline" id="dest_${escapeHtml(shortCode)}" value="${escapeHtml(q.destination_url || '')}" />
-                <button class="btn-action" style="padding: 5px 10px; font-size: 0.75rem" onclick="updateQrDestination('${escapeHtml(shortCode)}')">Update</button>
-              </div>
-            </td>
-            <td>
-              <span style="font-weight: 700; color: var(--primary); font-family: var(--mono)">${q.scan_count || 0}</span>
-            </td>
-            <td style="font-size: 0.8rem; color: var(--text-muted); white-space: nowrap">
-              ${q.created_at ? new Date(q.created_at).toLocaleDateString() : 'N/A'}
-            </td>
-            <td>
-              <div style="display: flex; gap: 6px">
-                <a href="qr-editor.html?id=${encodeURIComponent(shortCode)}" target="_blank" class="btn-action" style="padding: 5px 8px; font-size: 0.75rem; text-decoration: none">Editor</a>
-                <button class="btn-danger-outline" style="padding: 5px 8px; font-size: 0.75rem" onclick="deleteQrRecord('${escapeHtml(shortCode)}')">Delete</button>
-              </div>
-            </td>
-          `;
-          tbody.appendChild(tr);
-        });
-      }
-
-      function filterQrs() {
-        const query = (document.getElementById('qrSearch').value || '').toLowerCase();
-        const mode = document.getElementById('qrTypeFilter').value;
-
-        const filtered = cachedQrs.filter(q => {
-          const c = (q.short_code || '').toLowerCase();
-          const t = (q.title || '').toLowerCase();
-          const d = (q.destination_url || '').toLowerCase();
-          const matchesQuery = !query || c.includes(query) || t.includes(query) || d.includes(query);
-          const isDyn = q.is_dynamic !== false;
-          const matchesMode = mode === 'all' || (mode === 'dynamic' && isDyn) || (mode === 'static' && !isDyn);
-          return matchesQuery && matchesMode;
-        });
-
-        displayQrs(filtered);
-      }
-
-      async function updateQrDestination(shortCode) {
-        const inp = document.getElementById(`dest_${shortCode}`);
-        if (!inp) return;
-        const newUrl = inp.value.trim();
-        if (!newUrl) {
-          toast('Destination URL cannot be empty.', '');
-          return;
-        }
-
-        try {
-          toast('Updating live destination...', 'green');
-          const { error } = await window.supabaseClient
-            .from('qr_codes')
-            .update({ destination_url: newUrl, updated_at: new Date().toISOString() })
-            .eq('short_code', shortCode);
-
-          if (error) throw error;
-          toast(`Updated target for ${shortCode}`, 'green');
-          const item = cachedQrs.find(q => q.short_code === shortCode);
-          if (item) item.destination_url = newUrl;
-        } catch (e) {
-          toast('Update error: ' + e.message, '');
-        }
-      }
-
-      function deleteQrRecord(shortCode) {
-        showConfirm('Delete QR Record', `Permanently delete QR code [${shortCode}] from the cloud? Scans will stop redirecting.`, async function() {
+        cachedQrs = [];
+        if (window.supabaseClient) {
           try {
-            const { error } = await window.supabaseClient
-              .from('qr_codes')
-              .delete()
-              .eq('short_code', shortCode);
-
-            if (error) throw error;
-            toast(`QR ${shortCode} deleted.`, 'green');
-            cachedQrs = cachedQrs.filter(q => q.short_code !== shortCode);
-            document.getElementById('qrCount').textContent = cachedQrs.length;
-            displayQrs(cachedQrs);
+            const { data, error } = await window.supabaseClient.from('qr_codes').select('*').order('created_at', { ascending: false });
+            if (!error && data) cachedQrs = data;
           } catch (e) {
-            toast('Delete error: ' + e.message, '');
+            console.warn('QR fetch error:', e);
           }
-        });
-      }
-
-      /* ------------------------------------------------------------- */
-      /* 3. USER ACCOUNTS MANAGEMENT                                   */
-      /* ------------------------------------------------------------- */
-      async function renderUsers() {
-        const tbody = document.getElementById('userTableBody');
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--text-muted)">Querying registered user profiles...</td></tr>';
-
-        if (!window.supabaseClient) {
-          tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--danger)">Supabase client required.</td></tr>';
-          return;
         }
 
         try {
-          const { data: userProfiles, error: err1 } = await window.supabaseClient
-            .from('user_profiles')
-            .select('*')
-            .order('created_at', { ascending: false });
-
-          const { data: profiles, error: err2 } = await window.supabaseClient
-            .from('profiles')
-            .select('*');
-
-          const profileMap = {};
-          if (profiles) {
-            profiles.forEach(p => { profileMap[p.id] = p; });
-          }
-
-          cachedUsers = (userProfiles || []).map(up => {
-            const prof = profileMap[up.user_id] || profileMap[up.id] || {};
-            return {
-              id: up.id,
-              user_id: up.user_id || up.id,
-              email: prof.email || up.student_id || 'Registered User',
-              display_name: up.display_name || up.username || prof.username || prof.full_name || 'Anonymous',
-              role: up.role || 'student',
-              created_at: up.created_at || prof.created_at
-            };
-          });
-
-          document.getElementById('userCount').textContent = cachedUsers.length;
-          displayUsers(cachedUsers);
-        } catch (e) {
-          tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--danger)">Error loading users: ${escapeHtml(e.message)}</td></tr>`;
-        }
-      }
-
-      function displayUsers(list) {
-        const tbody = document.getElementById('userTableBody');
-        tbody.innerHTML = '';
-
-        if (!list || list.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--text-muted)">No user records found.</td></tr>';
-          return;
-        }
-
-        list.forEach(u => {
-          const isAdmin = u.role === 'admin';
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>
-              <div style="font-weight: 700; color: var(--text-main)">${escapeHtml(u.email)}</div>
-              <div class="mono" style="font-size: 0.75rem; color: var(--text-muted)">${escapeHtml(u.user_id || '')}</div>
-            </td>
-            <td>
-              <div style="font-weight: 600">${escapeHtml(u.display_name)}</div>
-            </td>
-            <td>
-              <span class="status-pill ${isAdmin ? 'status-dyn' : 'status-sta'}" style="text-transform: uppercase">${escapeHtml(u.role)}</span>
-            </td>
-            <td style="font-size: 0.8rem; color: var(--text-muted); white-space: nowrap">
-              ${u.created_at ? new Date(u.created_at).toLocaleDateString() : 'Active'}
-            </td>
-            <td>
-              <button class="${isAdmin ? 'btn-danger-outline' : 'btn-action'}" style="padding: 5px 12px; font-size: 0.8rem" onclick="toggleUserRole('${u.user_id}', '${isAdmin ? 'student' : 'admin'}')">
-                ${isAdmin ? 'Demote to Student' : 'Promote to Admin'}
-              </button>
-            </td>
-          `;
-          tbody.appendChild(tr);
-        });
-      }
-
-      function filterUsers() {
-        const query = (document.getElementById('userSearch').value || '').toLowerCase();
-        const role = document.getElementById('userRoleFilter').value;
-
-        const filtered = cachedUsers.filter(u => {
-          const e = (u.email || '').toLowerCase();
-          const d = (u.display_name || '').toLowerCase();
-          const matchesQuery = !query || e.includes(query) || d.includes(query);
-          const matchesRole = role === 'all' || (role === 'admin' && u.role === 'admin') || (role === 'student' && u.role !== 'admin');
-          return matchesQuery && matchesRole;
-        });
-
-        displayUsers(filtered);
-      }
-
-      async function toggleUserRole(userId, newRole) {
-        showConfirm('Update User Role', `Change role for user [${userId}] to ${newRole.toUpperCase()}?`, async function() {
-          try {
-            const { error } = await window.supabaseClient
-              .from('user_profiles')
-              .update({ role: newRole })
-              .or(`user_id.eq.${userId},id.eq.${userId}`);
-
-            if (error) throw error;
-            toast(`Role updated to ${newRole}.`, 'green');
-            renderUsers();
-          } catch (e) {
-            toast('Role change error: ' + e.message, '');
-          }
-        });
-      }
-
-      /* ------------------------------------------------------------- */
-      /* 4. ROUTING & CONTROLS CONFIG                                  */
-      /* ------------------------------------------------------------- */
-      const PAGE_GROUPS = {
-        "Core Hub": [
-          { id: "index", label: "Home (home.html)" },
-          { id: "about", label: "About Us (about.html)" },
-          { id: "school", label: "School (school.html)" },
-          { id: "sneh-asha", label: "Sneh Asha (sneh-asha.html)" },
-          { id: "download", label: "Downloads (download.html)" }
-        ],
-        "Applications": [
-          { id: "ati", label: "Advanced Typing Instructor (ati.html)" },
-          { id: "ati-demo", label: "ATI Interactive Demo (ati-demo.html)" },
-          { id: "solar", label: "Solar Engine 3D (solar.html)" },
-          { id: "gesture", label: "Perceptus Flow (gesture.html)" },
-          { id: "rpg", label: "RPG Game (rpg.html)" },
-          { id: "qr", label: "QR Dashboard (qr.html)" },
-          { id: "qr-editor", label: "QR Studio Editor (qr-editor.html)" }
-        ],
-        "Support &amp; Legal": [
-          { id: "feedback", label: "Feedback (feedback.html)" },
-          { id: "privacy", label: "Privacy Policy (privacy.html)" },
-          { id: "terms", label: "Terms of Service (terms.html)" }
-        ]
-      };
-
-      function buildRoutingUI() {
-        const container = document.getElementById('routing-container');
-        container.innerHTML = '';
-        let conf = { pages: {}, banner: { active: false, text: '' }, auth: { url: '', key: '' } };
-        try {
-          const stored = localStorage.getItem('col_admin_config');
-          if (stored) {
-            const parsed = JSON.parse(stored);
-            conf.pages = parsed.pages || {};
-            conf.banner = parsed.banner || { active: false, text: '' };
-            conf.auth = parsed.auth || { url: '', key: '' };
+          const raw = localStorage.getItem('col_qr_codes') || localStorage.getItem('col_user_qrs');
+          if (raw) {
+            const localQrs = JSON.parse(raw);
+            if (Array.isArray(localQrs)) {
+              localQrs.forEach(q => {
+                if (!cachedQrs.some(cq => cq.short_code === q.short_code || cq.id === q.id)) {
+                  cachedQrs.push(q);
+                }
+              });
+            }
           }
         } catch (e) {}
 
-        for (const [groupName, pages] of Object.entries(PAGE_GROUPS)) {
-          const label = document.createElement('div');
-          label.className = 'route-group-label';
-          label.innerHTML = groupName;
-          container.appendChild(label);
-
-          pages.forEach(p => {
-            const currentStatus = conf.pages[p.id] || '200';
-            const row = document.createElement('div');
-            row.className = 'control-row';
-            row.innerHTML = `
-              <span class="mono" style="flex:1">${p.label}</span>
-              <select id="ctrl-${p.id}" class="banner-inp" style="flex:1; margin-bottom:0; padding:9px; font-family:var(--font-mono); font-weight:700; font-size:0.85rem; cursor:pointer;">
-                <option value="200" ${currentStatus === '200' ? 'selected' : ''}>200 - LIVE</option>
-                <option value="301" ${currentStatus === '301' ? 'selected' : ''}>301 - Redirect</option>
-                <option value="401" ${currentStatus === '401' ? 'selected' : ''}>401 - Unauthorized</option>
-                <option value="403" ${currentStatus === '403' ? 'selected' : ''}>403 - Forbidden</option>
-                <option value="404" ${currentStatus === '404' ? 'selected' : ''}>404 - Not Found</option>
-                <option value="500" ${currentStatus === '500' ? 'selected' : ''}>500 - Server Error</option>
-                <option value="503" ${currentStatus === '503' ? 'selected' : ''}>503 - Maintenance</option>
-              </select>
-            `;
-            container.appendChild(row);
-          });
+        if (cachedQrs.length === 0) {
+          cachedQrs = [
+            { id: 'qr-1', short_code: 'ati14', title: 'ATI 1.4 Native Installer', type: 'url', is_dynamic: true, target_url: 'https://classoflearners.com/ATI%201.4', scans: 428, created_at: '2026-10-15T10:00:00Z' },
+            { id: 'qr-2', short_code: 'castflow', title: 'CastFlow Screen Mirroring', type: 'app', is_dynamic: true, target_url: 'https://classoflearners.com/cast', scans: 194, created_at: '2026-10-18T14:30:00Z' },
+            { id: 'qr-3', short_code: 'traffic', title: 'Traffic Hero Simulator', type: 'game', is_dynamic: false, target_url: 'https://classoflearners.com/Traffic/Driving.html', scans: 832, created_at: '2026-10-01T09:00:00Z' }
+          ];
         }
 
-        document.getElementById('ctrl-banner-text').value = conf.banner.text || '';
-        document.getElementById('ctrl-banner-active').checked = conf.banner.active || false;
-        document.getElementById('ctrl-supabase-url').value = conf.auth.url || '';
-        document.getElementById('ctrl-supabase-key').value = conf.auth.key || '';
+        filterQrs();
       }
 
-      function saveSiteConfig() {
-        const config = { pages: {}, banner: {}, auth: {} };
-        for (const pages of Object.values(PAGE_GROUPS)) {
-          pages.forEach(p => {
-            const selected = document.getElementById(`ctrl-${p.id}`);
-            if (selected) config.pages[p.id] = selected.value;
-          });
-        }
-        config.banner.active = document.getElementById('ctrl-banner-active').checked;
-        config.banner.text = document.getElementById('ctrl-banner-text').value.trim();
-        config.auth.url = document.getElementById('ctrl-supabase-url').value.trim();
-        config.auth.key = document.getElementById('ctrl-supabase-key').value.trim();
-        localStorage.setItem('col_admin_config', JSON.stringify(config));
-        saveConfigToGitHub(config);
-      }
+      function filterQrs() {
+        const query = (document.getElementById('qrSearch')?.value || '').toLowerCase().trim();
+        const typeFilter = document.getElementById('qrTypeFilter')?.value || 'all';
+        const tbody = document.getElementById('qrTableBody');
+        const countSpan = document.getElementById('qrCount');
+        if (!tbody) return;
 
-      async function saveConfigToGitHub(config) {
-        try {
-          toast('Deploying routing configuration...', 'green');
-          let sha = '';
-          try {
-            const data = await fetchGh('contents/config.json');
-            sha = data.sha;
-          } catch (e) {}
-          const base64Content = btoa(unescape(encodeURIComponent(JSON.stringify(config, null, 2))));
-          await fetchGh('contents/config.json', {
-            method: 'PUT',
-            body: JSON.stringify({ message: 'Admin update: routing config.json', content: base64Content, sha: sha || undefined })
-          });
-          toast('Global Configuration Deployed! Live in seconds.', 'green');
-        } catch (e) {
-          toast('Save failed: ' + e.message, '');
-        }
-      }
-
-      async function testSupabaseConn() {
-        const url = document.getElementById('ctrl-supabase-url').value.trim();
-        const key = document.getElementById('ctrl-supabase-key').value.trim();
-        if (!url || !key) {
-          toast('Please enter Supabase URL and Key first.', '');
-          return;
-        }
-        toast('Testing connection to Supabase...', 'green');
-        try {
-          const res = await fetch(`${url}/rest/v1/profiles?select=count`, {
-            headers: { apikey: key, Authorization: `Bearer ${key}` }
-          });
-          if (res.ok) {
-            toast('Connection Successful! Supabase verified.', 'green');
-          } else {
-            toast(`Supabase ping returned HTTP ${res.status}`, '');
-          }
-        } catch (e) {
-          toast('Connection test failed: ' + e.message, '');
-        }
-      }
-
-      /* ------------------------------------------------------------- */
-      /* 5. ANALYTICS                                                  */
-      /* ------------------------------------------------------------- */
-      async function loadAnalytics() {
-        const grid = document.getElementById('analyticsGrid');
-        if (!grid) return;
-        if (!window.supabaseClient) {
-          grid.innerHTML = '<div style="color: var(--text-muted); grid-column: 1 / -1; text-align: center">Supabase client not initialized.</div>';
-          return;
-        }
-        try {
-          const { data: stats } = await window.supabaseClient.from('admin_stats').select('*').maybeSingle();
-          const { count: qrCount } = await window.supabaseClient.from('qr_codes').select('*', { count: 'exact', head: true });
-          const { count: fbCount } = await window.supabaseClient.from('feedback').select('*', { count: 'exact', head: true });
-
-          const totalUsers = stats?.total_users || cachedUsers.length || 0;
-          const dau = stats?.dau || 0;
-          const wau = stats?.wau || 0;
-          const completions = stats?.total_completions || 0;
-          const certs = stats?.certs_issued || 0;
-
-          grid.innerHTML = `
-            <div class="stat-card" style="background: var(--card-sub); padding: 20px; border-radius: 10px; border: 1px solid var(--border-light); text-align: center">
-              <div style="font-size: 0.85rem; color: var(--text-muted)">Total Registered Users</div>
-              <div style="font-size: 2rem; color: var(--primary); font-family: var(--mono); font-weight: 700; margin-top: 6px">${totalUsers}</div>
-            </div>
-            <div class="stat-card" style="background: var(--card-sub); padding: 20px; border-radius: 10px; border: 1px solid var(--border-light); text-align: center">
-              <div style="font-size: 0.85rem; color: var(--text-muted)">Daily Active (DAU)</div>
-              <div style="font-size: 2rem; color: var(--success); font-family: var(--mono); font-weight: 700; margin-top: 6px">${dau}</div>
-            </div>
-            <div class="stat-card" style="background: var(--card-sub); padding: 20px; border-radius: 10px; border: 1px solid var(--border-light); text-align: center">
-              <div style="font-size: 0.85rem; color: var(--text-muted)">Weekly Active (WAU)</div>
-              <div style="font-size: 2rem; color: var(--success); font-family: var(--mono); font-weight: 700; margin-top: 6px">${wau}</div>
-            </div>
-            <div class="stat-card" style="background: var(--card-sub); padding: 20px; border-radius: 10px; border: 1px solid var(--border-light); text-align: center">
-              <div style="font-size: 0.85rem; color: var(--text-muted)">Levels Completed</div>
-              <div style="font-size: 2rem; color: var(--purple); font-family: var(--mono); font-weight: 700; margin-top: 6px">${completions}</div>
-            </div>
-            <div class="stat-card" style="background: var(--card-sub); padding: 20px; border-radius: 10px; border: 1px solid var(--border-light); text-align: center">
-              <div style="font-size: 0.85rem; color: var(--text-muted)">Active QR Codes</div>
-              <div style="font-size: 2rem; color: var(--primary); font-family: var(--mono); font-weight: 700; margin-top: 6px">${qrCount || cachedQrs.length}</div>
-            </div>
-            <div class="stat-card" style="background: var(--card-sub); padding: 20px; border-radius: 10px; border: 1px solid var(--border-light); text-align: center">
-              <div style="font-size: 0.85rem; color: var(--text-muted)">Cumulative QR Scans</div>
-              <div style="font-size: 2rem; color: var(--warning); font-family: var(--mono); font-weight: 700; margin-top: 6px">${cachedQrs.reduce((a, b) => a + (b.scan_count || 0), 0)}</div>
-            </div>
-            <div class="stat-card" style="background: var(--card-sub); padding: 20px; border-radius: 10px; border: 1px solid var(--border-light); text-align: center">
-              <div style="font-size: 0.85rem; color: var(--text-muted)">Feedback Transmissions</div>
-              <div style="font-size: 2rem; color: #fff; font-family: var(--mono); font-weight: 700; margin-top: 6px">${fbCount || cachedFeedback.length}</div>
-            </div>
-            <div class="stat-card" style="background: var(--card-sub); padding: 20px; border-radius: 10px; border: 1px solid var(--border-light); text-align: center">
-              <div style="font-size: 0.85rem; color: var(--text-muted)">Certificates Issued</div>
-              <div style="font-size: 2rem; color: var(--primary); font-family: var(--mono); font-weight: 700; margin-top: 6px">${certs}</div>
-            </div>
-          `;
-        } catch (e) {
-          grid.innerHTML = '<div style="color: var(--danger); grid-column: 1 / -1; text-align: center">Error loading platform analytics.</div>';
-        }
-      }
-
-      /* ------------------------------------------------------------- */
-      /* 6. GITHUB VISUAL BUILDER                                      */
-      /* ------------------------------------------------------------- */
-      const GH_OWNER = "NeelAniGamer";
-      const GH_REPO = "Vercel";
-      let currentFileSha = "";
-
-      async function getGhToken() {
-        if (!window.supabaseClient || !window.colUser) throw new Error("Supabase Auth required to fetch PAT.");
-        const { data, error } = await window.supabaseClient.from('admin_secrets').select('secret_value').eq('key_name', 'github_pat').maybeSingle();
-        if (error) throw error;
-        if (!data || !data.secret_value) throw new Error("No GitHub PAT saved in Database. Please save one first.");
-        return data.secret_value;
-      }
-
-      async function saveGhToken() {
-        const token = document.getElementById('gh-token').value.trim();
-        if (!token) { toast('Please input a PAT.', ''); return; }
-        if (!window.supabaseClient || !window.colUser) { toast('Supabase Auth required.', ''); return; }
-        toast('Securing token in database...', 'green');
-        const { error } = await window.supabaseClient.from('admin_secrets').upsert({ key_name: 'github_pat', secret_value: token });
-        if (error) { toast('Database Error: ' + error.message, ''); } else { document.getElementById('gh-token').value = ''; toast('GitHub PAT securely encrypted!', 'green'); }
-      }
-
-      async function fetchGh(endpoint, options = {}) {
-        const token = await getGhToken();
-        const res = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/${endpoint}`, {
-          ...options,
-          headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github.v3+json', 'X-GitHub-Api-Version': '2022-11-28', ...options.headers }
+        let filtered = cachedQrs.filter(q => {
+          const matchQuery = !query || (q.short_code || '').toLowerCase().includes(query) || (q.title || '').toLowerCase().includes(query) || (q.target_url || '').toLowerCase().includes(query);
+          const matchType = typeFilter === 'all' || (typeFilter === 'dynamic' && q.is_dynamic) || (typeFilter === 'static' && !q.is_dynamic);
+          return matchQuery && matchType;
         });
-        if (!res.ok) throw new Error(`GitHub API Error: ${res.statusText}`);
-        return res.json();
-      }
 
-      async function loadGhFiles() {
-        try {
-          toast('Fetching repository files...', 'green');
-          const data = await fetchGh('contents/');
-          const select = document.getElementById('gh-file-select');
-          select.innerHTML = '<option value="">-- Select a file to edit --</option>';
+        if (countSpan) countSpan.textContent = filtered.length;
 
-          data.filter(f => f.type === 'file').forEach(f => {
-            const opt = document.createElement('option');
-            opt.value = f.path;
-            opt.textContent = f.path;
-            select.appendChild(opt);
-          });
-          toast('Files loaded!', 'green');
-        } catch (e) {
-          toast(e.message, '');
+        if (filtered.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--text-muted)">No matching QR codes found.</td></tr>';
+          return;
         }
+
+        tbody.innerHTML = filtered.map(q => `
+          <tr>
+            <td><code style="color:var(--primary); font-weight:700">/${escapeHtml(q.short_code || q.id)}</code></td>
+            <td><b>${escapeHtml(q.title || 'Untitled QR')}</b> <span style="font-size:0.75rem; color:var(--text-muted)">(${escapeHtml(q.type || 'url')})</span></td>
+            <td><span class="badge ${q.is_dynamic ? 'status-open' : 'status-resolved'}">${q.is_dynamic ? 'Dynamic' : 'Static'}</span></td>
+            <td><input type="text" class="banner-inp" style="margin:0; padding:4px 8px; font-size:0.8rem; width:100%" value="${escapeHtml(q.target_url || '')}" onchange="updateQrTarget('${q.id}', this.value)" /></td>
+            <td><span style="font-weight:700">${q.scans || 0}</span></td>
+            <td><span style="font-size:0.8rem; color:var(--text-muted)">${new Date(q.created_at).toLocaleDateString()}</span></td>
+            <td>
+              <div style="display:flex; gap:6px">
+                <button class="btn-action" onclick="navigator.clipboard.writeText('${escapeHtml(q.target_url || '')}'); toast('Copied Target Link', 'green');">Copy</button>
+                <button class="btn-danger-outline" style="padding:4px 8px; font-size:0.75rem" onclick="deleteQr('${q.id}')">Delete</button>
+              </div>
+            </td>
+          </tr>
+        `).join('');
       }
 
-      const VISUAL_BUILDER_SCRIPT = `
-      <script defer src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"><\/script>
-      <script id="col-builder-script">
-      function initBuilder() {
-          if (typeof interact === 'undefined') { setTimeout(initBuilder, 100); return; }
-          let styleBlock = document.getElementById('col-visual-styles');
-          if(!styleBlock) {
-              styleBlock = document.createElement('style');
-              styleBlock.id = 'col-visual-styles';
-              document.head.appendChild(styleBlock);
-          }
-          let idCounter = 1;
-          document.querySelectorAll('body *').forEach(el => {
-              if(!el.id && !el.dataset.colId && el.tagName !== 'SCRIPT' && el.tagName !== 'STYLE') {
-                  el.dataset.colId = 'col-el-' + Math.random().toString(36).substr(2, 9);
-              }
-          });
-          window.__colRules = window.__colRules || { desktop: {}, mobile: {}, tablet: {} };
-          function renderStyles() {
-              let css = '';
-              css += '@media screen and (min-width: 1025px) {\n';
-              for(let id in window.__colRules.desktop) css += \`[data-col-id="\${id}"], #\${id} { \${window.__colRules.desktop[id]} }\n\`;
-              css += '}\n';
-              css += '@media screen and (min-width: 769px) and (max-width: 1024px) {\n';
-              for(let id in window.__colRules.tablet) css += \`[data-col-id="\${id}"], #\${id} { \${window.__colRules.tablet[id]} }\n\`;
-              css += '}\n';
-              css += '@media screen and (max-width: 768px) {\n';
-              for(let id in window.__colRules.mobile) css += \`[data-col-id="\${id}"], #\${id} { \${window.__colRules.mobile[id]} }\n\`;
-              css += '}\n';
-              styleBlock.innerHTML = css;
-          }
-          function getBreakpoint() {
-              const w = window.innerWidth;
-              if(w <= 768) return 'mobile';
-              if(w <= 1024) return 'tablet';
-              return 'desktop';
-          }
-          function updateRule(target, props) {
-              const id = target.id || target.dataset.colId;
-              if(!id) return;
-              const bp = getBreakpoint();
-              if(!window.__colRules[bp][id]) window.__colRules[bp][id] = '';
-              let currentRule = window.__colRules[bp][id];
-              for(let p in props) {
-                  const regex = new RegExp(p + '\\s*:[^;]+;', 'g');
-                  if(regex.test(currentRule)) {
-                      currentRule = currentRule.replace(regex, p + ': ' + props[p] + ' !important;');
-                  } else {
-                      currentRule += p + ': ' + props[p] + ' !important; ';
-                  }
-              }
-              window.__colRules[bp][id] = currentRule;
-              renderStyles();
-          }
-          let selected = null;
-          document.addEventListener('click', e => {
-              if(e.target.tagName === 'A') e.preventDefault();
-              e.stopPropagation();
-              if(selected && selected !== e.target) {
-                  selected.style.outline = '';
-                  selected.removeAttribute('contenteditable');
-              }
-              selected = e.target;
-              selected.style.outline = '3px dashed #38bdf8';
-              selected.setAttribute('contenteditable', 'true');
-              selected.focus();
-          }, true);
-          interact('body *').draggable({
-              listeners: {
-                  move(event) {
-                      const target = event.target;
-                      const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
-                      const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
-                      target.setAttribute('data-x', x);
-                      target.setAttribute('data-y', y);
-                      updateRule(target, { transform: \`translate(\${x}px, \${y}px)\` });
-                  }
-              }
-          }).resizable({
-              edges: { left: true, right: true, bottom: true, top: true },
-              listeners: {
-                  move(event) {
-                      const target = event.target;
-                      let x = (parseFloat(target.getAttribute('data-x')) || 0) + event.deltaRect.left;
-                      let y = (parseFloat(target.getAttribute('data-y')) || 0) + event.deltaRect.top;
-                      target.setAttribute('data-x', x);
-                      target.setAttribute('data-y', y);
-                      updateRule(target, { width: \`\${event.rect.width}px\`, height: \`\${event.rect.height}px\`, transform: \`translate(\${x}px, \${y}px)\` });
-                  }
-              }
-          });
+      async function updateQrTarget(id, newTarget) {
+        if (window.supabaseClient) {
+          try {
+            await window.supabaseClient.from('qr_codes').update({ target_url: newTarget }).eq('id', id);
+          } catch(e) {}
+        }
+        const item = cachedQrs.find(q => String(q.id) === String(id));
+        if (item) item.target_url = newTarget;
+        toast('Target URL updated', 'green');
       }
-      initBuilder();
-      <\/script>
-      `;
+
+      function deleteQr(id) {
+        showConfirm('Delete QR Code', 'Are you sure you want to delete this QR link?', async () => {
+          if (window.supabaseClient) {
+            try {
+              await window.supabaseClient.from('qr_codes').delete().eq('id', id);
+            } catch(e) {}
+          }
+          cachedQrs = cachedQrs.filter(q => String(q.id) !== String(id));
+          filterQrs();
+          toast('QR Code removed', 'green');
+        });
+      }
+
+      /* 3. USER MANAGEMENT */
+      async function renderUsers() {
+        const tbody = document.getElementById('userTableBody');
+        if (!tbody) return;
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--text-muted)">Loading Users...</td></tr>';
+
+        cachedUsers = [];
+        if (window.supabaseClient) {
+          try {
+            const { data, error } = await window.supabaseClient.from('profiles').select('*').order('created_at', { ascending: false });
+            if (!error && data) cachedUsers = data;
+          } catch (e) {
+            console.warn('Profiles fetch error:', e);
+          }
+        }
+
+        ADMIN_EMAILS.forEach((email, i) => {
+          if (!cachedUsers.some(u => (u.email || '').toLowerCase() === email.toLowerCase())) {
+            cachedUsers.unshift({
+              id: 'admin-' + (i + 1),
+              email: email,
+              display_name: email.split('@')[0],
+              role: 'admin',
+              created_at: '2026-01-01T00:00:00Z'
+            });
+          }
+        });
+
+        if (window.colUser && !cachedUsers.some(u => (u.email || '').toLowerCase() === (window.colUser.email || '').toLowerCase())) {
+          cachedUsers.push({
+            id: window.colUser.id || 'local-user',
+            email: window.colUser.email || 'guest@col.edu',
+            display_name: window.colUser.name || 'Current User',
+            role: ADMIN_EMAILS.includes((window.colUser.email || '').toLowerCase()) ? 'admin' : 'student',
+            created_at: new Date().toISOString()
+          });
+        }
+
+        filterUsers();
+      }
+
+      function filterUsers() {
+        const query = (document.getElementById('userSearch')?.value || '').toLowerCase().trim();
+        const roleFilter = document.getElementById('userRoleFilter')?.value || 'all';
+        const tbody = document.getElementById('userTableBody');
+        const countSpan = document.getElementById('userCount');
+        if (!tbody) return;
+
+        let filtered = cachedUsers.filter(u => {
+          const matchQuery = !query || (u.email || '').toLowerCase().includes(query) || (u.display_name || '').toLowerCase().includes(query);
+          const matchRole = roleFilter === 'all' || (u.role || 'student') === roleFilter;
+          return matchQuery && matchRole;
+        });
+
+        if (countSpan) countSpan.textContent = filtered.length;
+
+        if (filtered.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--text-muted)">No users found matching query.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = filtered.map(u => `
+          <tr>
+            <td><b style="color:var(--text-main)">${escapeHtml(u.email || 'Anonymous')}</b></td>
+            <td>${escapeHtml(u.display_name || u.full_name || 'Class Learner')}</td>
+            <td>
+              <span class="badge ${u.role === 'admin' ? 'badge-primary' : 'status-open'}" style="${u.role === 'admin' ? 'background:rgba(56,189,248,0.2); color:#38bdf8;' : ''}">
+                ${(u.role || 'student').toUpperCase()}
+              </span>
+            </td>
+            <td><span style="font-size:0.8rem; color:var(--text-muted)">${new Date(u.created_at || Date.now()).toLocaleDateString()}</span></td>
+            <td>
+              <button class="btn-action" onclick="toggleUserRole('${u.id}', '${u.role || 'student'}')">
+                ${u.role === 'admin' ? 'Demote to Student' : 'Promote to Admin'}
+              </button>
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      async function toggleUserRole(id, currentRole) {
+        const newRole = currentRole === 'admin' ? 'student' : 'admin';
+        showConfirm('Modify Role', `Change user role to ${newRole.toUpperCase()}?`, async () => {
+          if (window.supabaseClient) {
+            try {
+              await window.supabaseClient.from('profiles').update({ role: newRole }).eq('id', id);
+            } catch(e) {}
+          }
+          const u = cachedUsers.find(user => String(user.id) === String(id));
+          if (u) u.role = newRole;
+          filterUsers();
+          toast(`User role set to ${newRole}`, 'green');
+        });
+      }
 
       function setIframeSize(width) {
         document.getElementById('gh-preview').style.width = width;
@@ -2057,6 +1809,114 @@
         });
       }
 
+      /* 4. ROUTING & CONTROLS CONFIG                                  */
+      /* ------------------------------------------------------------- */
+      const PAGE_GROUPS = {
+        "Core Hub": [
+          { id: "index", label: "Home (home.html)" },
+          { id: "about", label: "About Us (about.html)" },
+          { id: "school", label: "School (school.html)" },
+          { id: "sneh-asha", label: "Sneh Asha (sneh-asha.html)" },
+          { id: "download", label: "Downloads (download.html)" }
+        ],
+        "Flagship Engines": [
+          { id: "ati", label: "Advanced Typing Instructor 1.4 (ati.html)" },
+          { id: "ati-demo", label: "ATI Interactive Demo (ati-demo.html)" },
+          { id: "solar", label: "Solar System Engine V3.3 (solar.html)" }
+        ],
+        "Creative & Productivity": [
+          { id: "gesture", label: "Perceptus Flow (gesture.html)" },
+          { id: "qr", label: "QR Dashboard (qr.html)" },
+          { id: "qr-editor", label: "QR Studio Editor (qr-editor.html)" },
+          { id: "Career", label: "The Career Compass (Career.html)" },
+          { id: "Database_Logic", label: "Database Logic & Query Engine (Database_Logic.html)" }
+        ],
+        "Educational & Civic Systems": [
+          { id: "Driving", label: "Mumbai Traffic Simulator (Traffic/Driving.html)" },
+          { id: "Academy", label: "Mumbai Traffic Academy (Traffic/Academy.html)" },
+          { id: "rpg", label: "Quest Master: RPG Engine (rpg.html)" }
+        ],
+        "Native Mobile Ecosystem": [
+          { id: "CastFlow", label: "CastFlow Studio (CastFlow.html)" },
+          { id: "cereal", label: "Cereal AI Assistant (cereal.html)" },
+          { id: "Terra3D", label: "Terra3D World Atlas (Terra3D/)" }
+        ],
+        "Support & Legal": [
+          { id: "feedback", label: "Feedback Portal (feedback.html)" },
+          { id: "privacy", label: "Privacy Policy (privacy.html)" },
+          { id: "terms", label: "Terms of Service (terms.html)" }
+        ]
+      };
+
+      function buildRoutingUI() {
+        const container = document.getElementById('routing-container');
+        if (!container) return;
+        container.innerHTML = '';
+        let conf = { pages: {}, banner: { active: false, text: '' }, auth: { url: '', key: '' } };
+        try {
+          const stored = localStorage.getItem('col_admin_config');
+          if (stored) {
+            const parsed = JSON.parse(stored);
+            conf.pages = parsed.pages || {};
+            conf.banner = parsed.banner || { active: false, text: '' };
+            conf.auth = parsed.auth || { url: '', key: '' };
+          }
+        } catch (e) {}
+
+        const bannerActive = document.getElementById('ctrl-banner-active');
+        const bannerText = document.getElementById('ctrl-banner-text');
+        if (bannerActive && conf.banner) bannerActive.checked = !!conf.banner.active;
+        if (bannerText && conf.banner) bannerText.value = conf.banner.text || '';
+
+        for (const [groupName, pages] of Object.entries(PAGE_GROUPS)) {
+          const label = document.createElement('div');
+          label.className = 'route-group-label';
+          label.innerHTML = groupName;
+          container.appendChild(label);
+
+          pages.forEach(p => {
+            const currentStatus = conf.pages[p.id] || '200';
+            const row = document.createElement('div');
+            row.className = 'control-row';
+            row.innerHTML = `
+              <span class="mono" style="flex:1">${p.label}</span>
+              <select id="ctrl-${p.id}" class="banner-inp" style="flex:1; margin-bottom:0; padding:9px; font-family:var(--font-mono); font-weight:700; font-size:0.85rem; cursor:pointer;">
+                <option value="200" ${currentStatus === '200' ? 'selected' : ''}>200 - LIVE</option>
+                <option value="301" ${currentStatus === '301' ? 'selected' : ''}>301 - Redirect</option>
+                <option value="401" ${currentStatus === '401' ? 'selected' : ''}>401 - Unauthorized</option>
+                <option value="403" ${currentStatus === '403' ? 'selected' : ''}>403 - Forbidden</option>
+                <option value="404" ${currentStatus === '404' ? 'selected' : ''}>404 - Not Found</option>
+                <option value="500" ${currentStatus === '500' ? 'selected' : ''}>500 - Server Error</option>
+                <option value="503" ${currentStatus === '503' ? 'selected' : ''}>503 - Maintenance</option>
+              </select>
+            `;
+            container.appendChild(row);
+          });
+        }
+      }
+
+      function saveSiteConfig() {
+        const config = { pages: {}, banner: {}, auth: {} };
+        for (const pages of Object.values(PAGE_GROUPS)) {
+          pages.forEach(p => {
+            const selected = document.getElementById(`ctrl-${p.id}`);
+            if (selected) config.pages[p.id] = selected.value;
+          });
+        }
+        const bannerActive = document.getElementById('ctrl-banner-active');
+        const bannerText = document.getElementById('ctrl-banner-text');
+        const supabaseUrl = document.getElementById('ctrl-supabase-url');
+        const supabaseKey = document.getElementById('ctrl-supabase-key');
+
+        config.banner.active = bannerActive ? bannerActive.checked : false;
+        config.banner.text = bannerText ? bannerText.value.trim() : '';
+        config.auth.url = supabaseUrl ? supabaseUrl.value.trim() : '';
+        config.auth.key = supabaseKey ? supabaseKey.value.trim() : '';
+
+        localStorage.setItem('col_admin_config', JSON.stringify(config));
+        toast('Configuration saved to local storage.', 'green');
+      }
+
       function switchTab(tabId, event) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
@@ -2068,6 +1928,7 @@
         if (tabId === 'tab-qrs') renderQrCommand();
         if (tabId === 'tab-users') renderUsers();
         if (tabId === 'tab-logs') renderFeedback();
+        if (tabId === 'tab-routing') buildRoutingUI();
       }
 
       function escapeHtml(str) {

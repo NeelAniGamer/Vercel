@@ -1306,6 +1306,251 @@
       body.lm .hlede {
         color: #475569 !important;
       }
+
+      /* --- HERO ACTIONS --- */
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-top: 36px;
+        opacity: 0;
+        transform: translateY(18px);
+        animation: fu 0.8s var(--ease) 1.5s forwards;
+      }
+      .sneh-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 13px 26px;
+        border-radius: 12px;
+        font-family: var(--sans);
+        font-size: 0.95rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), background 0.3s, border-color 0.3s;
+        cursor: pointer;
+      }
+      .sneh-btn-primary {
+        background: linear-gradient(135deg, #f2b84b, #e09b1f);
+        color: #070a14 !important;
+        border: 1px solid rgba(242, 184, 75, 0.4);
+        box-shadow: 0 10px 28px -8px rgba(242, 184, 75, 0.45);
+      }
+      .sneh-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 16px 36px -8px rgba(242, 184, 75, 0.65);
+        background: linear-gradient(135deg, #ffc766, #f2b84b);
+      }
+      .sneh-btn-secondary {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--ink) !important;
+        border: 1px solid var(--lineb);
+        backdrop-filter: blur(12px);
+      }
+      .sneh-btn-secondary:hover {
+        transform: translateY(-2px);
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+
+      /* --- SNEH ASHA FOUNDATION SPOTLIGHT CARD --- */
+      .spotlight-section {
+        border-top: 1px solid var(--line);
+        background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(242, 184, 75, 0.04) 0%, transparent 100%);
+      }
+      .foundation-spotlight-card {
+        background: rgba(255, 255, 255, 0.028);
+        border: 1px solid var(--lineb);
+        border-radius: var(--r);
+        padding: 44px;
+        margin-top: 36px;
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 20px 50px -15px rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 36px;
+        flex-wrap: wrap;
+      }
+      .foundation-spotlight-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--signal), var(--plasma), var(--teal));
+      }
+      .fsc-info {
+        flex: 1;
+        min-width: 280px;
+        max-width: 720px;
+      }
+      .fsc-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 14px;
+        border-radius: 20px;
+        background: rgba(52, 211, 153, 0.1);
+        border: 1px solid rgba(52, 211, 153, 0.3);
+        color: var(--em);
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        font-weight: 700;
+        margin-bottom: 16px;
+      }
+      .fsc-badge::before {
+        content: '';
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--em);
+        box-shadow: 0 0 8px var(--em);
+      }
+      .fsc-title {
+        font-family: var(--serif);
+        font-size: clamp(1.8rem, 3.2vw, 2.4rem);
+        color: var(--ink);
+        margin-bottom: 12px;
+      }
+      .fsc-desc {
+        font-size: 0.98rem;
+        color: var(--dim);
+        line-height: 1.7;
+        margin-bottom: 20px;
+      }
+      .fsc-meta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: center;
+      }
+      .fsc-meta-tag {
+        font-family: var(--mono);
+        font-size: 0.75rem;
+        color: var(--ink);
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--line);
+        padding: 5px 12px;
+        border-radius: 8px;
+      }
+      .fsc-action-box {
+        flex-shrink: 0;
+      }
+
+      /* --- TOOLS FOR THE CAUSE --- */
+      .tools-section {
+        border-top: 1px solid var(--line);
+      }
+      .tools-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        margin-top: 48px;
+      }
+      .tool-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--line);
+        border-radius: var(--r);
+        padding: 36px 28px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: transform 0.4s var(--ease), border-color 0.4s, box-shadow 0.4s;
+      }
+      .tool-card:hover {
+        transform: translateY(-8px);
+        border-color: var(--lineb);
+        box-shadow: 0 20px 44px -14px rgba(0, 0, 0, 0.5);
+      }
+      .tool-icon {
+        font-size: 2.2rem;
+        margin-bottom: 18px;
+      }
+      .tool-title {
+        font-family: var(--serif);
+        font-size: 1.5rem;
+        font-weight: 400;
+        color: var(--ink);
+        margin-bottom: 10px;
+      }
+      .tool-desc {
+        font-size: 0.92rem;
+        color: var(--dim);
+        line-height: 1.68;
+        margin-bottom: 22px;
+      }
+      .tool-badge {
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--signal);
+        background: rgba(242, 184, 75, 0.08);
+        border: 1px solid rgba(242, 184, 75, 0.25);
+        padding: 4px 12px;
+        border-radius: 6px;
+        width: fit-content;
+      }
+
+      /* --- RESPONSIVE ADJUSTMENTS --- */
+      @media (max-width: 900px) {
+        .tools-grid {
+          grid-template-columns: 1fr;
+        }
+        .foundation-spotlight-card {
+          padding: 32px 24px;
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .fsc-action-box {
+          width: 100%;
+        }
+        .fsc-action-box .sneh-btn {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+
+      /* --- LIGHT MODE OVERRIDES --- */
+      body.lm .foundation-spotlight-card,
+      body.lm .tool-card {
+        background: #ffffff !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+      }
+      body.lm .foundation-spotlight-card:hover,
+      body.lm .tool-card:hover {
+        border-color: rgba(0, 0, 0, 0.16) !important;
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08) !important;
+      }
+      body.lm .fsc-title,
+      body.lm .tool-title {
+        color: #0f172a !important;
+      }
+      body.lm .fsc-desc,
+      body.lm .tool-desc {
+        color: #475569 !important;
+      }
+      body.lm .fsc-meta-tag {
+        background: #f1ede4 !important;
+        color: #1e293b !important;
+        border-color: rgba(0, 0, 0, 0.08) !important;
+      }
+      body.lm .sneh-btn-secondary {
+        background: #f1ede4 !important;
+        color: #0f172a !important;
+        border-color: rgba(0, 0, 0, 0.15) !important;
+      }
+      body.lm .sneh-btn-secondary:hover {
+        background: #e6e0d4 !important;
+      }
+
     </style>
 
     <script defer src="col-router.js"></script>
@@ -1445,13 +1690,6 @@
       </div>
     </nav>
 
-    <script>
-      ;(function () {
-        try {
-          if (localStorage.getItem('theme') === 'light') document.body.classList.add('lm')
-        } catch (e) {}
-      })()
-    </script>
     <div class="loader" id="loader">
       <div class="lid"><span>CoL</span> &middot; Sneh Asha</div>
       <div class="lbar"></div>
@@ -1460,16 +1698,36 @@
     <div class="cr" id="cRing"></div>
 
     <!-- HERO -->
-    <h1 class="sr-only">Sneh Asha | Technology For Good Initiative</h1>
     <section class="sneh-hero">
       <canvas id="snehBg"></canvas>
       <div class="hvig"></div>
       <div class="hvigb"></div>
       <div class="shc">
         <div class="hey">Social Impact &middot; Est.&nbsp;2024</div>
-        <img loading="lazy" src="sneh-logo.webp" alt="Sneh Asha" class="sneh-logo" width="2000" height="1016" />
+        <img loading="eager" fetchpriority="high" decoding="async" src="sneh-logo.webp" alt="Sneh Asha Logo" class="sneh-logo" width="2000" height="1016" />
         <div class="hero-badge">Social Impact Initiative</div>
-        <p class="hlede">Using technology and interactive learning to help students and bridge the digital divide &mdash; one tool at a time.</p>
+        <h1>Technology For Good &mdash; <em>Bridging The Divide.</em></h1>
+        <p class="hlede">
+          Using technology and interactive learning to empower students and bridge the digital divide &mdash; one tool at a time. Sneh Asha is our commitment to giving back to the community through the software tools we build.
+        </p>
+
+        <!-- Hero Actions -->
+        <div class="hero-actions">
+          <a href="https://snehasha.org" target="_blank" rel="noopener noreferrer" class="sneh-btn sneh-btn-primary" aria-label="Visit the official Sneh Asha website at snehasha.org">
+            <span>Visit snehasha.org</span>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+          </a>
+          <a href="#acknowledgement" class="sneh-btn sneh-btn-secondary">
+            <span>Special Acknowledgement ↓</span>
+          </a>
+          <a href="#purpose" class="sneh-btn sneh-btn-secondary">
+            <span>Our Purpose</span>
+          </a>
+        </div>
       </div>
       <div class="sci">
         <span>Scroll</span>
@@ -1477,8 +1735,8 @@
       </div>
     </section>
 
-    <!-- ACKNOWLEDGEMENT -->
-    <section class="section ack-section rv">
+    <!-- ACKNOWLEDGEMENT: THE HEART OF SNEH ASHA -->
+    <section class="section ack-section rv" id="acknowledgement">
       <div class="sey">Special Acknowledgement</div>
       <div class="ack-card">
         <div class="ack-av">S</div>
@@ -1486,32 +1744,114 @@
           <h2 class="ack-name">Siddhi Jaiswal</h2>
           <div class="ack-role">Guiding Light &amp; Supporter</div>
           <p class="ack-desc">
-            We extend our heartfelt gratitude to Siddhi Ma'am for her steady support and guidance. Her belief in our vision has been a source of inspiration for the Sneh Asha initiative.
+            We extend our heartfelt gratitude to Siddhi Ma'am for her steady support and guidance. Her belief in our vision has been a constant source of inspiration for the Sneh Asha initiative and the software we build at Class Of Learners.
           </p>
         </div>
       </div>
     </section>
 
-    <!-- MISSION -->
-    <section class="section mission-section rv">
+    <!-- MISSION & PURPOSE -->
+    <section class="section mission-section rv" id="purpose">
       <div class="sey">Our Purpose</div>
       <h2 class="st">Bridging The Digital Divide.</h2>
-      <p class="sdesc">Access to quality education and technology is a universal right. Sneh Asha is our commitment to giving back to the community through the software tools we build.</p>
+      <p class="sdesc">
+        Access to quality education and technology is a universal right. Sneh Asha is our commitment to giving back to the community through the software tools we build.
+      </p>
+
       <div class="init-grid">
         <div class="init-card rv">
           <div class="ic-icon">&#128187;</div>
           <h3 class="ic-title">Digital Literacy</h3>
-          <p class="ic-desc">Helping students master essential computer skills and programming logic safely.</p>
+          <p class="ic-desc">
+            Helping students master essential computer skills, keyboard fluency, and algorithmic logic safely &mdash; without financial barriers.
+          </p>
         </div>
         <div class="init-card rv">
           <div class="ic-icon">&#127757;</div>
           <h3 class="ic-title">Interactive Science</h3>
-          <p class="ic-desc">Using engines to bring physics and astronomy to life for young learners.</p>
+          <p class="ic-desc">
+            Using 3D real-time engines to bring physics, astronomy, and orbital mechanics to life for young learners without requiring internet data packs.
+          </p>
         </div>
         <div class="init-card rv">
           <div class="ic-icon">&#129309;</div>
           <h3 class="ic-title">Community Support</h3>
-          <p class="ic-desc">Turning our passion for software development into real-world educational support.</p>
+          <p class="ic-desc">
+            Turning our passion for software development into real-world educational empowerment &mdash; 100% free, private, and open access for all.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SNEH ASHA FOUNDATION SPOTLIGHT -->
+    <section class="section spotlight-section rv" id="foundation">
+      <div class="sey">Official Foundation &amp; Inspiration</div>
+      <div class="foundation-spotlight-card">
+        <div class="fsc-info">
+          <div class="fsc-badge">Inspiration &amp; Official Partner</div>
+          <h2 class="fsc-title">Sneh Asha Foundation</h2>
+          <p class="fsc-desc">
+            Sneh Asha Foundation is an independent non-profit organization dedicated to student welfare, higher education scholarships for municipal school toppers, career guidance, and community health camps. Class Of Learners is proud to honor their mission by engineering zero-cost, offline educational tools for underserved classrooms.
+          </p>
+          <div class="fsc-meta-row">
+            <span class="fsc-meta-tag">Registered Charitable NGO</span>
+            <span class="fsc-meta-tag">Mumbai, Maharashtra</span>
+            <span class="fsc-meta-tag">snehasha.org</span>
+          </div>
+        </div>
+        <div class="fsc-action-box">
+          <a href="https://snehasha.org" target="_blank" rel="noopener noreferrer" class="sneh-btn sneh-btn-primary" style="font-size: 1rem; padding: 15px 28px;">
+            <span>Visit snehasha.org</span>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- SOFTWARE TOOLS FOR THE CAUSE -->
+    <section class="section tools-section rv" id="tools">
+      <div class="sey">Tools For The Cause</div>
+      <h2 class="st">Software Engineered For Impact.</h2>
+      <p class="sdesc">
+        We build zero-cost, lightweight tools that run 100% offline, designed explicitly for low-spec school systems and family devices without home broadband.
+      </p>
+
+      <div class="tools-grid">
+        <div class="tool-card rv">
+          <div>
+            <div class="tool-icon">&#9000;</div>
+            <h3 class="tool-title">Typing Instructor</h3>
+            <p class="tool-desc">
+              Standalone touch-typing engine that builds keystroke muscle memory and computer fluency on low-spec desktop PCs without requiring logins or cloud accounts.
+            </p>
+          </div>
+          <span class="tool-badge">100% Offline &middot; Zero Lag</span>
+        </div>
+
+        <div class="tool-card rv">
+          <div>
+            <div class="tool-icon">&#9737;</div>
+            <h3 class="tool-title">Solar Engine</h3>
+            <p class="tool-desc">
+              Real-time 3D planetary physics and orbital mechanics laboratory, turning complex textbook concepts into tactile, interactive celestial exploration.
+            </p>
+          </div>
+          <span class="tool-badge">Interactive 3D Science</span>
+        </div>
+
+        <div class="tool-card rv">
+          <div>
+            <div class="tool-icon">&#128241;</div>
+            <h3 class="tool-title">COL Offline APK</h3>
+            <p class="tool-desc">
+              Complete Class Of Learners mobile suite bundled into a single lightweight Android APK, usable anywhere without consuming mobile cellular data.
+            </p>
+          </div>
+          <span class="tool-badge">Offline Mobile App</span>
         </div>
       </div>
     </section>

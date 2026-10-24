@@ -26,21 +26,15 @@
   }
 
   // 0. Ambient Visual System Auto-Injector (Aurora Mesh & Cyber Grid)
-  // Mobile: 2 orbs instead of 3 (cut GPU layer cost ~33%). Layers pause via
-  // .col-perf-pause when scrolled out of view or the tab is hidden.
+  // Full-fidelity 3-orb ambient mesh + cyber spotlight across all devices.
+  // Hardware-accelerated GPU layers run at full unthrottled refresh rates.
   function initAmbientVisuals() {
     if (document.querySelector('.col-ambient-bg')) {return;}
-    const isCoarse = window.matchMedia('(pointer: coarse)').matches;
-    // SKIP ambient orbs entirely on mobile — 3 constant CSS animations
-    // burn GPU for near-zero visual gain on small screens.
-    if (isCoarse) {return;}
-    const isLowEnd = navigator.hardwareConcurrency <= 4;
     const bg = document.createElement('div');
     bg.className = 'col-ambient-bg';
     bg.setAttribute('aria-hidden', 'true');
-    let orbs = '<div class="col-ambient-orb col-orb-1"></div><div class="col-ambient-orb col-orb-2"></div>';
-    if (!isLowEnd) {orbs += '<div class="col-ambient-orb col-orb-3"></div>';}
-    bg.innerHTML = orbs + (isCoarse ? '' : '<div class="col-ambient-spotlight"></div>');
+    const orbs = '<div class="col-ambient-orb col-orb-1"></div><div class="col-ambient-orb col-orb-2"></div><div class="col-ambient-orb col-orb-3"></div><div class="col-ambient-spotlight"></div>';
+    bg.innerHTML = orbs;
     if (document.body) {
       document.body.insertBefore(bg, document.body.firstChild);
       setupAmbientPause(bg);
@@ -51,24 +45,12 @@
       });
     }
   }
-  // Pause orb animations while the fixed background is fully covered by content
-  // or the tab is hidden — stops ~3 constant composited animations per page.
-  // Also pauses on low-end devices (<=4 cores) to save battery.
+  // Pause ambient animations ONLY when tab is explicitly hidden to release background cycles
   function setupAmbientPause(bg) {
-    const hasIO = 'IntersectionObserver' in window;
-    let onScreen = true;
-    const lowEnd = (navigator.hardwareConcurrency || 4) <= 4;
     function apply() {
-      bg.classList.toggle('col-perf-pause', !onScreen || document.hidden || lowEnd);
-    }
-    if (hasIO) {
-      new IntersectionObserver(function (entries) {
-        onScreen = entries[0].isIntersecting;
-        apply();
-      }, { threshold: 0 }).observe(bg);
+      bg.classList.toggle('col-perf-pause', document.hidden);
     }
     document.addEventListener('visibilitychange', apply);
-    if (lowEnd) {apply();}
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initAmbientVisuals);
@@ -91,20 +73,30 @@
     let isMoving = false,
       ringRaf = null
 
-    function updateRing() {
+    let lastRingTime = null
+    function updateRing(now) {
+      now = now || performance.now()
+      const dt = lastRingTime ? Math.min((now - lastRingTime) / 1000, 0.05) : 0.016
+      lastRingTime = now
       const dx = mx - rx
       const dy = my - ry
-      rx += dx * 0.16
-      ry += dy * 0.16
+      // Exponential decay spring: mathematically identical tracking whether at 60Hz, 90Hz, 120Hz, or 144Hz
+      const alpha = 1 - Math.exp(-24 * dt)
+      rx += dx * alpha
+      ry += dy * alpha
       if (ring) {
         ring.style.transform = 'translate3d(' + rx + 'px,' + ry + 'px,0) translate(-50%,-50%)'
       }
-      if (Math.abs(dx) > 0.2 || Math.abs(dy) > 0.2) {
+      if (Math.abs(dx) > 0.15 || Math.abs(dy) > 0.15) {
         ringRaf = requestAnimationFrame(updateRing)
       } else {
         rx = mx
         ry = my
+        if (ring) {
+          ring.style.transform = 'translate3d(' + mx + 'px,' + my + 'px,0) translate(-50%,-50%)'
+        }
         ringRaf = null
+        lastRingTime = null
       }
     }
 
@@ -126,8 +118,7 @@
               spot = document.querySelector('.col-ambient-spotlight')
             }
             if (spot) {
-              spot.style.background =
-                'radial-gradient(600px circle at ' + mx + 'px ' + my + 'px, rgba(94, 212, 245, 0.05), transparent 70%)'
+              spot.style.transform = 'translate3d(' + mx + 'px,' + my + 'px,0)'
             }
             isMoving = false
           })
@@ -544,18 +535,27 @@
   }
 })()
 
-// 3. Desktop Navbar Scroll State (.top-nav.s)
+// 3. Desktop Navbar Scroll State (.top-nav.s with Hysteresis & Initial Sync)
 ;(function () {
-  let navTicking = false
+  function syncNavScroll() {
+    var topNav = document.getElementById('topNav') || document.querySelector('.top-nav')
+    if (!topNav) return
+    var isPill = topNav.classList.contains('s')
+    // Hysteresis deadzone: 60px down to enter pill mode, 25px up to return to stuck
+    var threshold = isPill ? 25 : 60
+    var shouldBePill = window.scrollY > threshold
+    if (isPill !== shouldBePill) {
+      topNav.classList.toggle('s', shouldBePill)
+    }
+  }
+
+  var navTicking = false
   window.addEventListener(
     'scroll',
     function () {
       if (!navTicking) {
         requestAnimationFrame(function () {
-          const topNav = document.getElementById('topNav') || document.querySelector('.top-nav')
-          if (topNav) {
-            topNav.classList.toggle('s', window.scrollY > 50)
-          }
+          syncNavScroll()
           navTicking = false
         })
         navTicking = true
@@ -563,11 +563,30 @@
     },
     { passive: true }
   )
+
+  // Immediate sync on page load / DOM ready so back-navigation or pre-scrolled pages don't jump
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', syncNavScroll)
+  } else {
+    syncNavScroll()
+  }
+  window.addEventListener('load', syncNavScroll, { once: true })
 })()
 
 // Register Service Worker for PWA
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function () {
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      navigator.serviceWorker.getRegistrations().then(function (registrations) {
+        for (var r of registrations) { r.unregister(); }
+      });
+      if (typeof caches !== 'undefined') {
+        caches.keys().then(function (names) {
+          for (var name of names) { caches.delete(name); }
+        });
+      }
+      return;
+    }
     navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).then(
       function (registration) {
         console.log('SW registered: ', registration.scope)
