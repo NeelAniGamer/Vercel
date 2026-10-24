@@ -493,6 +493,11 @@
       return;
     }
 
+    const currentPage = getCurrentPageKey();
+    if (currentPage === 'setup') {
+      return;
+    }
+
     const data = getWelcomeBackData();
     if (data) {
       setTimeout(() => createWelcomeBackPopup(data), 800);
@@ -505,7 +510,6 @@
       setTimeout(() => createDailyBonusPopup(bonusInfo, bonusInfo.isNew), delay);
     }
 
-    const currentPage = getCurrentPageKey();
     if (currentPage !== 'unknown') {
       saveSessionState(currentPage);
     }
