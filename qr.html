@@ -2763,7 +2763,12 @@
         syncCloudQRs()
       })
 
+      var _lastQrSyncTime = 0
+      var _qrSyncBackoff = 0
+
       async function syncCloudQRs() {
+        if (Date.now() - _lastQrSyncTime < _qrSyncBackoff) return
+        _lastQrSyncTime = Date.now()
         await DYNAMIC_QR.getSb(); if (!window.supabaseClient) return;
         try {
           let user = (window.colAuth && window.colAuth.currentUser) || window.colUser;
@@ -2774,7 +2779,13 @@
             .select('*')
             .eq('user_id', user.id)
             .order('updated_at', { ascending: false });
-          if (!error && data && data.length > 0) {
+          if (error) {
+            _qrSyncBackoff = 60000
+            console.warn('[QR Sync] Cloud sync notice:', error.message || error.status || 'Offline')
+            return
+          }
+          _qrSyncBackoff = 5000
+          if (data && data.length > 0) {
             data.forEach(row => {
               if (row.qr_data && typeof row.qr_data === 'object') {
                 const existingIdx = saved.findIndex(x => (row.short_code && x.shortCode === row.short_code) || x.id === row.qr_data.id);
@@ -2793,7 +2804,9 @@
             Storage.set('qrs_min', JSON.stringify(saved));
             renderDB();
           }
-        } catch(e) { console.error('Cloud QR sync error:', e); }
+        } catch(e) {
+          _qrSyncBackoff = 60000
+        }
       }
 
       // Mobile drawer + theme switch owned by shared col-ui.js (#mmb/#navLinks, window.toggleTheme).

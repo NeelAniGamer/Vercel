@@ -1,5 +1,5 @@
-const CACHE_NAME = 'col-cache-v13'
-const SW_VERSION = '2026-10-23-v2'
+const CACHE_NAME = 'col-cache-v14'
+const SW_VERSION = '2026-10-24-v3'
 const OFFLINE_FALLBACK = '/home.html'
 const urlsToCache = [
   '/home.html',
@@ -98,7 +98,7 @@ self.addEventListener('fetch', (event) => {
       const cached = await cache.match(request)
 
       // Network-first for core scripts and navigation to ensure deployments are live immediately
-      const isCoreUpdate = request.mode === 'navigate' || request.url.includes('col-ui.js') || request.url.includes('col-ui.css') || request.url.includes('bmc-button.svg') || request.url.includes('qr-dynamic.js')
+      const isCoreUpdate = request.mode === 'navigate' || request.url.includes('col-ui.js') || request.url.includes('col-ui.css') || request.url.includes('col-auth.js') || request.url.includes('bmc-button.svg') || request.url.includes('qr-dynamic.js')
       if (isCoreUpdate) {
         try {
           const fresh = await fetch(request)

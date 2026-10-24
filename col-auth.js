@@ -483,60 +483,62 @@ window.closeMo = function () {
           uid: null // Default until profile is fetched
         }
 
-        try {
-          const { data: upProfile } = await supabaseClient
-            .from('user_profiles')
-            .select('*')
-            .eq('user_id', userId)
-            .maybeSingle()
-
-          if (upProfile) {
-            window.colUser.uid = upProfile.id || upProfile.user_id
-            window.colUser.profile = upProfile
-            if (upProfile.display_name) {window.colUser.name = upProfile.display_name}
-            if (upProfile.display_name || upProfile.username) {
-              try {
-                const safeTrafficUser = {
-                  id: userId,
-                  name: upProfile.display_name || displayName,
-                  username: upProfile.username || ('@' + (upProfile.display_name || displayName).toLowerCase().replace(/\s+/g, '')),
-                  vehicle: upProfile.preferred_vehicle || 'Car',
-                  age: upProfile.age || 18,
-                  language: upProfile.language || 'en',
-                  studentId: upProfile.student_id || null,
-                  picture: upProfile.avatar_url || photo || null,
-                  updatedAt: upProfile.updated_at || new Date().toISOString()
-                }
-                localStorage.setItem('traffic_local_user', JSON.stringify(safeTrafficUser))
-                localStorage.setItem('trafficSetupComplete', 'true')
-              } catch (e) {}
-            }
-            if (upProfile.avatar_url && !window.colUser.picture) {
-              window.colUser.picture = upProfile.avatar_url
-            }
-          } else {
-            const { data: profile, error } = await supabaseClient
-              .from('profiles')
-              .select('id, username, full_name, avatar_url')
-              .eq('id', userId)
+        if (!window._cloudProfilesDisabled) {
+          try {
+            const { data: upProfile, error: upError } = await supabaseClient
+              .from('user_profiles')
+              .select('*')
+              .eq('user_id', userId)
               .maybeSingle()
 
-            if (error && error.code !== 'PGRST116') {
-              console.warn('[col-auth] Cloud profile lookup notice:', error.message || error.code || error)
+            if (upError && (upError.code === '42501' || upError.status === 403 || upError.status === 401 || upError.code === 'PGRST301')) {
+              window._cloudProfilesDisabled = true
             }
 
-            if (profile) {
-              window.colUser.uid = profile.id
-              if (profile.username && !meta.full_name) {window.colUser.name = profile.username}
-              if (profile.avatar_url && !window.colUser.picture) {
-                window.colUser.picture = profile.avatar_url
+            if (!upError && upProfile) {
+              window.colUser.uid = upProfile.id || upProfile.user_id
+              window.colUser.profile = upProfile
+              if (upProfile.display_name) {window.colUser.name = upProfile.display_name}
+              if (upProfile.display_name || upProfile.username) {
+                try {
+                  const safeTrafficUser = {
+                    id: userId,
+                    name: upProfile.display_name || displayName,
+                    username: upProfile.username || ('@' + (upProfile.display_name || displayName).toLowerCase().replace(/\s+/g, '')),
+                    vehicle: upProfile.preferred_vehicle || 'Car',
+                    age: upProfile.age || 18,
+                    language: upProfile.language || 'en',
+                    studentId: upProfile.student_id || null,
+                    picture: upProfile.avatar_url || photo || null,
+                    updatedAt: upProfile.updated_at || new Date().toISOString()
+                  }
+                  localStorage.setItem('traffic_local_user', JSON.stringify(safeTrafficUser))
+                  localStorage.setItem('trafficSetupComplete', 'true')
+                } catch (e) {}
               }
-            } else {
-              promptForUsername()
+              if (upProfile.avatar_url && !window.colUser.picture) {
+                window.colUser.picture = upProfile.avatar_url
+              }
+            } else if (!window._cloudProfilesDisabled) {
+              const { data: profile, error } = await supabaseClient
+                .from('profiles')
+                .select('id, username, full_name, avatar_url')
+                .eq('id', userId)
+                .maybeSingle()
+
+              if (error && (error.code === '42501' || error.status === 403 || error.status === 400 || error.code === 'PGRST116')) {
+                window._cloudProfilesDisabled = true
+              } else if (profile) {
+                window.colUser.uid = profile.id
+                if (profile.username && !meta.full_name) {window.colUser.name = profile.username}
+                if (profile.avatar_url && !window.colUser.picture) {
+                  window.colUser.picture = profile.avatar_url
+                }
+              }
             }
+          } catch (e) {
+            window._cloudProfilesDisabled = true
           }
-        } catch (e) {
-          console.warn('[col-auth] Profile sync notice:', e && e.message ? e.message : e)
         }
 
         // Session data remains in memory only. Never persist Supabase
