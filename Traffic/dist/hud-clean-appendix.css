@@ -1,0 +1,167 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   APPENDIX — corrections after the live-DOM inspection
+   ═══════════════════════════════════════════════════════════════════════════════
+   The first pass targeted #task-tracker, but a live DOM probe showed
+   task-manager.js mounts a SECOND, richer objective drawer
+   (#sz-task-drawer.task-hud-drawer) INSIDE #top-right-hud-stack. Two objective
+   surfaces were stacked on top of each other; that was the actual overlap.
+
+   #task-tracker / #task-list have therefore been removed from the markup.
+   Game._renderTasks() still runs and still writes the task data used for level
+   completion -- it now early-returns, because `tracker` is null.
+
+   What follows restyles task-manager's drawer, which is the live surface, and
+   fixes three selectors that matched nothing.
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── A. The objective drawer, collapsed to the CURRENT objective ───────────── */
+
+#sz-task-drawer.task-hud-drawer {
+  width: 100% !important;
+  max-width: min(74vw, 320px) !important;
+  border-radius: 10px !important;
+  background: rgba(8, 13, 24, 0.74) !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45) !important;
+  overflow: hidden !important;
+}
+
+.task-drawer-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  padding: 6px 9px !important;
+  cursor: pointer !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+/* The current objective's name sits under the counter when collapsed, so the
+   closed state still answers "what do I do now?" without being opened. */
+.task-drawer-header .tdh-title {
+  font: 800 0.66rem/1 Inter, sans-serif !important;
+  letter-spacing: 0.06em !important;
+  color: #f59e0b !important;
+  white-space: nowrap !important;
+}
+
+.task-drawer-header .tdh-pct {
+  font: 800 0.62rem/1 Inter, sans-serif !important;
+  color: #22d3ee !important;
+}
+.task-drawer-header .tdh-chevron {
+  font-size: 0.58rem !important;
+  color: rgba(255, 255, 255, 0.55) !important;
+}
+
+/* Header grows to two lines so the current objective is legible when closed. */
+.task-hud-drawer .tdh-left {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 2px !important;
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+}
+.task-hud-drawer .tdh-icon { display: none !important; }
+.task-hud-drawer .tdh-current {
+  font: 600 0.72rem/1.25 Inter, sans-serif !important;
+  color: #ffffff !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+}
+
+.task-drawer-body {
+  padding: 0 9px 8px !important;
+}
+.task-drawer-body.closed { display: none !important; }
+.task-drawer-body.open { display: block !important; }
+
+.task-drawer-body .task-row {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 6px !important;
+  padding: 4px 0 !important;
+  font: 500 0.68rem/1.3 Inter, sans-serif !important;
+  color: rgba(255, 255, 255, 0.74) !important;
+}
+.task-drawer-body .task-row.task-current {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+.task-drawer-body .task-row.task-done { opacity: 0.55 !important; }
+.task-drawer-body .task-row.task-done .task-name { text-decoration: line-through !important; }
+/* XP and the long description are secondary to the objective itself. */
+.task-drawer-body .task-xp { display: none !important; }
+.task-drawer-body .task-desc {
+  font-size: 0.62rem !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+  margin-top: 1px !important;
+}
+.task-drawer-body .task-icon { font-size: 0.7rem !important; }
+
+/* ── B. Drive cluster: the real child selectors ────────────────────────────── */
+/* The first pass guessed .cdb-cruise / .cdb-limit. The actual children are
+   #speed-ctrl holding .sc-row > .sc-btn#sc-cruise / #sc-limit / #sc-minus /
+   #sc-eco / #sc-city / #sc-sport / #sc-plus, plus a separate #gp gear strip.
+   Everything except cruise and limiter is hidden. */
+
+#cockpit-drive-cluster #speed-ctrl { width: auto !important; }
+#cockpit-drive-cluster .sc-row {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 6px !important;
+}
+#cockpit-drive-cluster .sc-row:nth-of-type(2) { display: none !important; }
+#cockpit-drive-cluster .sc-btn:not(#sc-cruise):not(#sc-limit) { display: none !important; }
+
+#cockpit-drive-cluster .sc-btn {
+  padding: 7px 11px !important;
+  border-radius: 8px !important;
+  font: 700 0.6rem/1 Inter, sans-serif !important;
+  letter-spacing: 0.05em !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  color: #cbd5e1 !important;
+  min-height: 0 !important;
+}
+
+/* The gear strip is a separate control cluster; leave it where it was. */
+#cockpit-drive-cluster > #gp,
+#cockpit-drive-cluster > #tc,
+#cockpit-drive-cluster > #gread { display: none !important; }
+
+/* ── C. Civic controls: let the container shrink to its three buttons ──────── */
+/* The container had a fixed width from the original rules, so shrinking the
+   buttons to 40px left a 115px empty gap. Width:auto lets it hug its content. */
+
+body #gc.on ~ #civic-controls,
+#civic-controls {
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  flex-wrap: nowrap !important;
+}
+
+/* ── D. Player card: the header must not be squeezed to zero ──────────────── */
+/* With flex-direction:row and the stats block as an absolutely-positioned
+   drawer, the header needed an explicit flex-basis so the level pill and the
+   timer keep their width. */
+
+#player-hud-card .hud-dash-header { flex: 1 1 auto !important; }
+#player-hud-card .hud-lvl-pill { flex: 0 0 auto !important; }
+#player-hud-card .hud-timer-chip { flex: 0 0 auto !important; }
+#player-hud-card {
+  position: fixed !important;
+}
+
+/* ── E. Nothing should still paint over the driving view ──────────────────── */
+/* Belt-and-braces on the two panels that were measured at zero but whose
+   contents still occupy layout in some states. */
+#sz-task-drawer .task-drawer-body.closed { display: none !important; }

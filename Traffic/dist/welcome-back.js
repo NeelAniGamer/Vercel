@@ -463,6 +463,15 @@
   }
 
   function getUserName() {
+    // The live session first. `window.colUser` is the SIGNED-IN identity;
+    // the localStorage blob is the OFFLINE profile, and it may belong to a
+    // different person (or to nobody). Greeting a signed-in student with the
+    // offline profile's name is the identity split col-auth.js exists to
+    // prevent.
+    try {
+      if (window.colUser && window.colUser.name) {return window.colUser.name;}
+      if (window.colLocalUser && window.colLocalUser.name) {return window.colLocalUser.name;}
+    } catch {}
     try {
       const profile = localStorage.getItem(STORAGE_KEYS.USER_PROFILE);
       if (profile) {
@@ -484,6 +493,11 @@
       return;
     }
 
+    const currentPage = getCurrentPageKey();
+    if (currentPage === 'setup') {
+      return;
+    }
+
     const data = getWelcomeBackData();
     if (data) {
       setTimeout(() => createWelcomeBackPopup(data), 800);
@@ -496,7 +510,6 @@
       setTimeout(() => createDailyBonusPopup(bonusInfo, bonusInfo.isNew), delay);
     }
 
-    const currentPage = getCurrentPageKey();
     if (currentPage !== 'unknown') {
       saveSessionState(currentPage);
     }

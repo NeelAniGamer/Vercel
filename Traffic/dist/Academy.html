@@ -65,6 +65,13 @@
 
     
     <script>
+      (function () {
+        try {
+          if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.add('lm');
+          }
+        } catch (e) {}
+      })();
       const _oldFetch = window.fetch
       window.fetch = function () {
         if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].startsWith('config.json')) {
@@ -6161,7 +6168,7 @@
             </div>
             <div style="width: 2px; height: 50px; background: var(--border)"></div>
             <div style="display: flex; align-items: center; gap: 12px">
-              <img loading="lazy" id="cert-logo-4" src="sneh-logo.png" style="height: 60px; width: auto; object-fit: contain" alt="Sneh Asha" onerror="this.style.display = 'none'" />
+              <img loading="lazy" id="cert-logo-4" src="cert-assets/cert_logo_2.png" style="height: 60px; width: auto; object-fit: contain" alt="Sneh Asha" onerror="this.style.display = 'none'" />
               <div style="font-weight: 700; letter-spacing: 0.05em; color: var(--muted); text-align: left; line-height: 1.2">SNEH ASHA</div>
             </div>
           </div>
@@ -6170,11 +6177,11 @@
         
         <div class="partner-badges" style="display: flex; justify-content: center; gap: 16px; margin-bottom: 24px; flex-wrap: wrap">
           <div style="display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #1a237e 0%, #283593 100%); color: white; padding: 10px 20px; border-radius: 50px; font-weight: 600; font-size: 0.85rem; box-shadow: 0 4px 12px rgba(26, 35, 126, 0.3)">
-            <img src="mumbai-police-logo.png" style="height: 24px; width: auto" alt="Mumbai Police" onerror="this.style.display='none'" />
+            <img loading="lazy" decoding="async" src="mumbai-police-logo.png" style="height: 24px; width: auto" alt="Mumbai Police" onerror="this.style.display='none'" />
             <span>Partnered with Mumbai Police</span>
           </div>
           <div style="display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #c62828 0%, #d32f2f 100%); color: white; padding: 10px 20px; border-radius: 50px; font-weight: 600; font-size: 0.85rem; box-shadow: 0 4px 12px rgba(198, 40, 40, 0.3)">
-            <img src="sneh-logo.png" style="height: 24px; width: auto" alt="Sneh Asha" onerror="this.style.display='none'" />
+            <img loading="lazy" decoding="async" src="cert-assets/cert_logo_2.png" style="height: 24px; width: auto" alt="Sneh Asha" onerror="this.style.display='none'" />
             <span>Sneh Asha Foundation</span>
           </div>
         </div>
@@ -6253,12 +6260,12 @@
         <div class="partner-heading">Our Trusted Partners</div>
         <div class="partner-logos">
           <div class="partner-item">
-            <img src="mumbai-police-logo.png" alt="Mumbai Police" />
+            <img loading="lazy" decoding="async" src="mumbai-police-logo.png" alt="Mumbai Police" />
             <span>Mumbai<br/>Police</span>
           </div>
           <div class="partner-divider"></div>
           <div class="partner-item">
-            <img src="sneh-logo.png" alt="Sneh Asha Foundation" />
+            <img loading="lazy" decoding="async" src="cert-assets/cert_logo_2.png" alt="Sneh Asha Foundation" />
             <span>Sneh Asha<br/>Foundation</span>
           </div>
         </div>
@@ -6538,7 +6545,7 @@
                 <div style="font-size: 0.8rem; color: #7c7968; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase">Partnered With</div>
               </div>
               <img loading="lazy" id="cert-logo-5" src="mumbai-police-logo.png" style="height: 75px; object-fit: contain" alt="Logo 1" onerror="this.style.display = 'none'" />
-              <img loading="lazy" id="cert-logo-6" src="sneh-logo.png" style="height: 75px; object-fit: contain" alt="Logo 2" onerror="this.style.display = 'none'" />
+              <img loading="lazy" id="cert-logo-6" src="cert-assets/cert_logo_2.png" style="height: 75px; object-fit: contain" alt="Logo 2" onerror="this.style.display = 'none'" />
             </div>
           </div>
 
@@ -6808,7 +6815,6 @@
   <script defer src="levels/level_custom.js"></script>
   <script defer src="levels/level_freeram.js"></script>
   <script defer src="suburban_scenery.js"></script>
-  <script defer src="room-architect.js"></script>
 
     <script>
 
@@ -6821,7 +6827,6 @@
   <script defer src="ui.js?v=20260825_5"></script>
     <script defer src="npc-ai.js?v=20260825_5"></script>
     <script defer src="traffic-manager.js?v=20260825_5"></script>
-    <script defer src="rule-breaker-profiles.js?v=20260825_5"></script>
     <script defer src="scenario2d.js?v=20260825_5"></script>
     <script>
       
@@ -6939,8 +6944,13 @@
       function updateStartButton() {
         const btn = document.getElementById('enter-academy-btn');
         if (!btn) return;
-        const isLoggedIn = !!window.colUser || !!localStorage.getItem('traffic_local_user');
-        btn.textContent = isLoggedIn ? 'Start Academy' : 'Get Started';
+        // A live session OR a previously-completed offline setup both mean the
+        // learner can go straight in. Presence of a raw traffic_local_user blob
+        // is deliberately NOT a sign-in signal: window.colUser is the only
+        // authority for "signed in".
+        const hasSession = !!window.colUser;
+        const hasSetup = localStorage.getItem('trafficSetupComplete') === 'true';
+        btn.textContent = (hasSession || hasSetup) ? 'Start Academy' : 'Get Started';
       }
 
       window.addEventListener('col-auth-changed', updateStartButton);
@@ -6948,30 +6958,33 @@
       
 
       function showOnboardingFromStart() {
-        const isLoggedIn = !!window.colUser || !!localStorage.getItem('traffic_local_user');
-        if (isLoggedIn) {
+        const hasSession = !!window.colUser;
+        const localUser = (function() {
+          try {
+            return JSON.parse(localStorage.getItem('traffic_local_user') || 'null');
+          } catch(e) { return null; }
+        })();
+
+        if (hasSession || localUser) {
           const role = window.colUser?.user_metadata?.role;
           if (role === 'parent' || role === 'teacher' || role === 'parent_teacher') {
              window.location.href = '../dashboard.html';
              return;
           }
-          
+
           let userName = '';
-          try {
-            const localData = localStorage.getItem('traffic_local_user');
-            if (localData) {
-              const u = JSON.parse(localData);
-              if (u && u.name) userName = u.name;
-            }
-          } catch(e) {}
-          if (!userName && window.colUser) {
-            const uObj = window.colUser.user || window.colUser;
-            const meta = uObj.user_metadata || {};
+          if (hasSession) {
+            const meta = window.colUser.user_metadata || {};
             userName = meta.full_name || meta.name || '';
           }
-          
-          const msg = userName ? `Welcome back, ${userName}! Loading your progress...` : 'Welcome back! Loading your progress...';
-          if (typeof toast !== 'undefined') toast(msg, '#34d399');
+          if (!userName && localUser && localUser.name) { userName = localUser.name; }
+
+          if (localUser && !hasSession) {
+            if (typeof toast !== 'undefined') toast('Loading Your Offline Progress...', '#34d399');
+          } else {
+            const msg = userName ? `Welcome back, ${userName}! Loading your progress...` : 'Welcome back! Loading your progress...';
+            if (typeof toast !== 'undefined') toast(msg, '#34d399');
+          }
           if (typeof ui !== 'undefined' && ui.showLevels) ui.showLevels();
           else window.location.href = 'Academy.html?screen=levels';
           return;
@@ -6982,19 +6995,17 @@
 
 
       window.addEventListener('col-auth-changed', function(e) {
-        const user = e.detail && e.detail.user ? e.detail.user : window.colUser;
-        if (user && !localStorage.getItem('trafficSetupComplete')) {
-
-          const localUser = localStorage.getItem('traffic_local_user');
+        const detail = e.detail || {};
+        const user = detail.user || window.colUser;
+        const localUser = detail.localUser || window.colLocalUser;
+        if ((user || localUser) && !localStorage.getItem('trafficSetupComplete')) {
           if (localUser) {
-
-            if (typeof toast !== 'undefined') toast('Welcome back! Loading your progress...', '#34d399');
+            if (typeof toast !== 'undefined') toast('Loading Your Offline Progress...', '#34d399');
             setTimeout(function() {
               if (typeof ui !== 'undefined' && ui.showLevels) ui.showLevels();
               else window.location.href = 'Academy.html?screen=levels';
             }, 300);
           } else {
-
             showOnboardingFromStart();
           }
         }
@@ -7063,25 +7074,6 @@
         }
       }
 
-
-      let devClickCount = 0
-      function handleDevClick() {
-        devClickCount++
-        if (devClickCount >= 5) {
-          devClickCount = 0
-          const p = prompt('Developer Password:')
-          if (['Neel', 'Ansh', 'Sanjana'].includes(p)) {
-            if (typeof ui !== 'undefined' && ui && ui.adminUnlock) {
-              ui.adminUnlock()
-            } else {
-              toast('🔓 Developer Unlock Triggered!', '#00c851')
-              if (typeof ui !== 'undefined' && ui) ui.showLevels()
-            }
-          } else if (p) {
-            if (typeof toast !== 'undefined') toast('❌ Access Denied', '#ff3b30')
-          }
-        }
-      }
 
       function _onbUpdateAuthChips() {
         var authed = typeof ui !== 'undefined' && ui && ui._user
@@ -7820,20 +7812,23 @@ function _onbComplete() {
 
       
       function hzInit() {
-        var t = localStorage.getItem('theme');
-        if (t === 'light') { document.body.classList.add('lm'); }
-        else { document.body.classList.remove('lm'); }
+        var isLight = false;
+        try { isLight = localStorage.getItem('theme') === 'light'; } catch (e) {}
+        document.documentElement.classList.toggle('lm', isLight);
+        document.body.classList.toggle('lm', isLight);
         hzSync();
       }
       function hzSync() {
         var el = document.querySelector('.hz-toggle');
         if (!el) return;
-        if (document.body.classList.contains('lm')) { el.classList.remove('night'); }
+        if (document.documentElement.classList.contains('lm') || document.body.classList.contains('lm')) { el.classList.remove('night'); }
         else { el.classList.add('night'); }
       }
       function hzToggle() {
-        document.body.classList.toggle('lm');
-        localStorage.setItem('theme', document.body.classList.contains('lm') ? 'light' : 'dark');
+        var isLight = !document.documentElement.classList.contains('lm');
+        document.documentElement.classList.toggle('lm', isLight);
+        document.body.classList.toggle('lm', isLight);
+        try { localStorage.setItem('theme', isLight ? 'light' : 'dark'); } catch (e) {}
         hzSync();
       }
 
@@ -8095,7 +8090,7 @@ function _onbComplete() {
 
       
       <!-- Clickable Version Badge (Dev & Unlimited Health Cheat Code) -->
-      <div id="version-badge" style="position: fixed; bottom: 6px; right: 12px; font-size: 0.72rem; color: var(--muted2, #aaa); opacity: 0.45; cursor: pointer; z-index: 99999; font-weight: 700; user-select: none; transition: all 0.2s ease;" onclick="window.handleDevClick && window.handleDevClick()" onmouseover="this.style.opacity='1'; this.style.color='#ffd700';" onmouseout="this.style.opacity='0.45'; this.style.color='var(--muted2, #aaa)';" title="Click 3 times for Unlimited Health Cheat Code">v2.4.1 🛡️</div>
+      <div id="version-badge" style="position: fixed; bottom: 6px; right: 12px; font-size: 0.72rem; color: var(--muted2, #aaa); opacity: 0.45; cursor: default; z-index: 99999; font-weight: 700; user-select: none; transition: all 0.2s ease;" title="Class Of Learners Simulator v2.4.1">v2.4.1</div>
       
       
       <nav class="mobile-bottom-nav">
@@ -8518,7 +8513,7 @@ function _onbComplete() {
         <div class="tut-slide active" data-step="0">
           <div class="tut-visual-card">
             <div class="tut-annotated-wrap" style="position:relative; overflow:hidden; border-radius:12px; border:1px solid #26354a; background:#070a14; text-align:center;">
-              <img src="tut_1_hub.png" alt="Academy Hub Real Screen" style="width:100%; height:auto; max-height:380px; object-fit:contain; display:block; margin:0 auto; border-radius:10px;" />
+              <img loading="lazy" decoding="async" src="tut_1_hub.png" alt="Academy Hub Real Screen" style="width:100%; height:auto; max-height:380px; object-fit:contain; display:block; margin:0 auto; border-radius:10px;" />
               <div class="tut-pin" style="top:27%; left:67%;" title="Day/Night Theme Toggle">1</div>
               <div class="tut-pin" style="top:27%; left:62%;" title="Game Settings">2</div>
               <div class="tut-pin" style="top:27%; left:72%;" title="Account & Cloud Sync">3</div>
@@ -8569,7 +8564,7 @@ function _onbComplete() {
         <div class="tut-slide" data-step="1">
           <div class="tut-visual-card">
             <div class="tut-annotated-wrap" style="position:relative; overflow:hidden; border-radius:12px; border:1px solid #26354a; background:#070a14; text-align:center;">
-              <img src="tut_2_curriculum.png" alt="Curriculum 52+ Modules Real Screen" style="width:100%; height:auto; max-height:380px; object-fit:contain; display:block; margin:0 auto; border-radius:10px;" />
+              <img loading="lazy" decoding="async" src="tut_2_curriculum.png" alt="Curriculum 52+ Modules Real Screen" style="width:100%; height:auto; max-height:380px; object-fit:contain; display:block; margin:0 auto; border-radius:10px;" />
               <div class="tut-pin" style="top:3%; left:50%; transform:translateX(-50%);" title="Search Bar">1</div>
               <div class="tut-pin" style="top:11%; left:20%;" title="Standard & Grade Selector">2</div>
               <div class="tut-pin" style="top:45%; left:30%;" title="Module Cards & Difficulty">3</div>
@@ -8620,7 +8615,7 @@ function _onbComplete() {
         <div class="tut-slide" data-step="2">
           <div class="tut-visual-card">
             <div class="tut-annotated-wrap" style="position:relative; overflow:hidden; border-radius:12px; border:1px solid #26354a; background:#070a14; text-align:center;">
-              <img src="tut_3_briefing.png" alt="Lesson Briefing Real Screen" style="width:100%; height:auto; max-height:380px; object-fit:contain; display:block; margin:0 auto; border-radius:10px;" />
+              <img loading="lazy" decoding="async" src="tut_3_briefing.png" alt="Lesson Briefing Real Screen" style="width:100%; height:auto; max-height:380px; object-fit:contain; display:block; margin:0 auto; border-radius:10px;" />
               <div class="tut-pin" style="top:12%; left:22%;" title="Learn Mode Tab">1</div>
               <div class="tut-pin" style="top:12%; left:40%;" title="Practice Mode Tab">2</div>
               <div class="tut-pin" style="top:12%; left:58%;" title="Exam Mode Tab">3</div>
@@ -8671,7 +8666,7 @@ function _onbComplete() {
         <div class="tut-slide" data-step="3">
           <div class="tut-visual-card">
             <div class="tut-annotated-wrap" style="position:relative; overflow:hidden; border-radius:12px; border:1px solid #26354a; background:#070a14; text-align:center;">
-              <img src="tut_4_simulator.png" alt="3D Driving Simulator Real Cockpit HUD" style="width:100%; height:auto; max-height:380px; object-fit:contain; display:block; margin:0 auto; border-radius:10px;" />
+              <img loading="lazy" decoding="async" src="tut_4_simulator.png" alt="3D Driving Simulator Real Cockpit HUD" style="width:100%; height:auto; max-height:380px; object-fit:contain; display:block; margin:0 auto; border-radius:10px;" />
               <div class="tut-pin" style="top:5%; left:6%;" title="Player Dashboard & Health">1</div>
               <div class="tut-pin" style="top:5%; left:50%; transform:translateX(-50%);" title="Signal HUD Lamp & Countdown">2</div>
               <div class="tut-pin" style="top:5%; right:6%;" title="Objectives & Tasks Stack">3</div>
@@ -8746,7 +8741,7 @@ function _onbComplete() {
         <div class="tut-slide" data-step="4">
           <div class="tut-visual-card">
             <div class="tut-annotated-wrap" style="position:relative; overflow:hidden; border-radius:12px; border:1px solid #26354a; background:#070a14; text-align:center;">
-              <img src="tut_5_quiz.png" alt="Compliance Quiz Real Screen" style="width:100%; height:auto; max-height:380px; object-fit:contain; display:block; margin:0 auto; border-radius:10px;" />
+              <img loading="lazy" decoding="async" src="tut_5_quiz.png" alt="Compliance Quiz Real Screen" style="width:100%; height:auto; max-height:380px; object-fit:contain; display:block; margin:0 auto; border-radius:10px;" />
               <div class="tut-pin" style="top:18%; left:50%; transform:translateX(-50%);" title="Traffic Situation Question">1</div>
               <div class="tut-pin" style="top:48%; left:50%; transform:translateX(-50%);" title="Interactive Option Choices">2</div>
               <div class="tut-pin" style="top:78%; left:50%; transform:translateX(-50%);" title="MV Act Citations & Fines">3</div>
@@ -8781,7 +8776,7 @@ function _onbComplete() {
         <div class="tut-slide" data-step="5">
           <div class="tut-visual-card">
             <div class="tut-annotated-wrap" style="position:relative; overflow:hidden; border-radius:12px; border:1px solid #26354a; background:#070a14; text-align:center;">
-              <img src="tut_6_profile.png" alt="Driver Profile & Badges Real Screen" style="width:100%; height:auto; max-height:380px; object-fit:contain; display:block; margin:0 auto; border-radius:10px;" />
+              <img loading="lazy" decoding="async" src="tut_6_profile.png" alt="Driver Profile & Badges Real Screen" style="width:100%; height:auto; max-height:380px; object-fit:contain; display:block; margin:0 auto; border-radius:10px;" />
               <div class="tut-pin" style="top:22%; left:50%; transform:translateX(-50%);" title="Clean Distance & Fines Saved Stats">1</div>
               <div class="tut-pin" style="top:58%; left:50%; transform:translateX(-50%);" title="12 Unlockable Achievement Badges">2</div>
             </div>
@@ -8808,7 +8803,7 @@ function _onbComplete() {
         <div class="tut-slide" data-step="6">
           <div class="tut-visual-card">
             <div class="tut-annotated-wrap" style="position:relative; overflow:hidden; border-radius:12px; border:1px solid #26354a; background:#070a14; text-align:center;">
-              <img src="tut_7_certificate.png" alt="Official Police Certificate Real Screen" style="width:100%; height:auto; max-height:380px; object-fit:contain; display:block; margin:0 auto; border-radius:10px;" />
+              <img loading="lazy" decoding="async" src="tut_7_certificate.png" alt="Official Police Certificate Real Screen" style="width:100%; height:auto; max-height:380px; object-fit:contain; display:block; margin:0 auto; border-radius:10px;" />
               <div class="tut-pin" style="top:78%; right:14%;" title="Joint Commissioner of Police Seal">1</div>
               <div class="tut-pin" style="top:78%; left:14%;" title="Unique Verification Reference ID & QR">2</div>
               <div class="tut-pin" style="top:8%; right:10%;" title="Download Official PDF">3</div>
@@ -8829,7 +8824,7 @@ function _onbComplete() {
         <div class="tut-slide" data-step="7">
           <div class="tut-visual-card">
             <div class="tut-annotated-wrap" style="position:relative; overflow:hidden; border-radius:12px; border:1px solid #26354a; background:#070a14; text-align:center;">
-              <img src="tut_8_mobile.png" alt="Mobile & Pull to Refresh Real Screen" style="width:100%; height:auto; max-height:380px; object-fit:contain; display:block; margin:0 auto; border-radius:10px;" />
+              <img loading="lazy" decoding="async" src="tut_8_mobile.png" alt="Mobile & Pull to Refresh Real Screen" style="width:100%; height:auto; max-height:380px; object-fit:contain; display:block; margin:0 auto; border-radius:10px;" />
               <div class="tut-pin" style="top:6%; left:50%; transform:translateX(-50%);" title="Pull Down Gesture Indicator">1</div>
             </div>
           </div>

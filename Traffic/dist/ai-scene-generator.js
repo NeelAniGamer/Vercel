@@ -110,11 +110,12 @@
       this._activeTimers.forEach(t => clearInterval(t));
       this._activeTimers = [];
 
-      // Remove instanced meshes
+      // Remove instanced meshes. Geometry is intentionally not disposed: InstancedMesh
+      // built here may share a geometry with the template it was cloned from, and
+      // disposing it would invalidate every other user of that geometry.
       if (this.activeScene && this._instancedMeshes.length) {
         this._instancedMeshes.forEach(mesh => {
           if (mesh.parent) {mesh.parent.remove(mesh);}
-          if (mesh.geometry) {mesh.geometry.dispose();}
         });
       }
       this._instancedMeshes = [];
@@ -1011,6 +1012,7 @@
 
     resolveLevelSyllabus(cfg) {
       if (!cfg) {return;}
+      if (this.game && this.game._stageBuild) {return;}
       const theme = cfg.themeType || '';
 
       console.log(`[AISyllabusResolver] Resolving syllabus demands for Level ${cfg.id} ('${cfg.name}') — Theme: '${theme}'`);
@@ -1067,8 +1069,19 @@
     }
 
     _buildSignalPatienceScenario(cfg) {
+      // Never on a film map (geometry-only by contract) and never where no
+      // road exists: route[] (stage) used to resolve to targetZ=-75 mid-film,
+      // and short maps pushed targetZ past the last road, stranding a phantom
+      // signal in game.sigs that NPCs stopped for.
+      if (this.game && this.game._stageBuild) { return; }
       const playerStartZ = (cfg.route && cfg.route[0]) ? cfg.route[0].z : 0;
       const targetZ = playerStartZ - 75;
+      let onMap = false;
+      (cfg.roads || []).forEach(r => {
+        if (r.type === 'v' && Math.abs((r.x || 0) - 0) < 12 &&
+            targetZ >= Math.min(r.z1, r.z2) - 5 && targetZ <= Math.max(r.z1, r.z2) + 5) { onMap = true; }
+      });
+      if (!onMap) { return; }
 
       this.spatialEngine.placeZebraCrossing(0, targetZ, 22, 14, true);
       const sig = this.spatialEngine.placeTrafficSignal(11.5, targetZ + 3.0, Math.PI, 0, targetZ);
@@ -1136,8 +1149,8 @@
         });
 
         // School Crossing Guard NPC
-        if (typeof this.game._buildHuman === 'function') {
-          const guard = this.game._buildHuman(false, { shirt: 0xf97316, pants: 0x1e293b });
+        if (!this.game._stageBuild && typeof this.game._buildHuman === 'function') {
+          const guard = this.game._buildHuman(false, { procedural: true, shirt: 0xf97316, pants: 0x1e293b });
           guard.position.set(9.5, 0.08, -60);
           this.game.scene.add(guard);
         }
@@ -1341,12 +1354,12 @@
           isAISynthesized: true,
           syllabusDemands: ['signal_jump', 'zebra_yield', 'ambulance_priority'],
           roads: [
-            { type: 'v', x: 0, z1: -600, z2: 600, lanes: 4, width: 22, name: 'SV Grand Arterial' },
-            { type: 'v', x: 220, z1: -600, z2: 600, lanes: 4, width: 20, name: 'Link Expressway' },
-            { type: 'v', x: -220, z1: -600, z2: 600, lanes: 4, width: 20, name: 'Western Corridor' },
-            { type: 'h', z: 0, x1: -600, x2: 600, lanes: 4, width: 22, name: 'Central Boulevard' },
-            { type: 'h', z: -200, x1: -600, x2: 600, lanes: 4, width: 20, name: 'North Commercial Way' },
-            { type: 'h', z: 200, x1: -600, x2: 600, lanes: 4, width: 20, name: 'South Corporate Hub' }
+            { type: 'v', x: 0, z1: -600, z2: 600, lanes: 4, width: 26, name: 'SV Grand Arterial' },
+            { type: 'v', x: 220, z1: -600, z2: 600, lanes: 4, width: 26, name: 'Link Expressway' },
+            { type: 'v', x: -220, z1: -600, z2: 600, lanes: 4, width: 26, name: 'Western Corridor' },
+            { type: 'h', z: 0, x1: -600, x2: 600, lanes: 4, width: 26, name: 'Central Boulevard' },
+            { type: 'h', z: -200, x1: -600, x2: 600, lanes: 4, width: 26, name: 'North Commercial Way' },
+            { type: 'h', z: 200, x1: -600, x2: 600, lanes: 4, width: 26, name: 'South Corporate Hub' }
           ],
           route: [
             { x: 0, z: 0, desc: 'Downtown Start Terminal' },
@@ -1369,10 +1382,10 @@
           isAISynthesized: true,
           syllabusDemands: ['highway_merge', 'lane_discipline'],
           roads: [
-            { type: 'v', x: 0, z1: -800, z2: 800, lanes: 6, width: 26, name: 'Marine Drive Promenade' },
-            { type: 'v', x: 160, z1: -800, z2: 800, lanes: 4, width: 18, name: "Queen's Necklace East" },
-            { type: 'h', z: 0, x1: -400, x2: 400, lanes: 4, width: 20, name: 'Nariman Crossway' },
-            { type: 'h', z: -300, x1: -400, x2: 400, lanes: 4, width: 20, name: 'Churchgate Avenue' }
+            { type: 'v', x: 0, z1: -800, z2: 800, lanes: 6, width: 39, name: 'Marine Drive Promenade' },
+            { type: 'v', x: 160, z1: -800, z2: 800, lanes: 4, width: 26, name: "Queen's Necklace East" },
+            { type: 'h', z: 0, x1: -400, x2: 400, lanes: 4, width: 26, name: 'Nariman Crossway' },
+            { type: 'h', z: -300, x1: -400, x2: 400, lanes: 4, width: 26, name: 'Churchgate Avenue' }
           ],
           route: [
             { x: 0, z: 200, desc: 'Promenade South' },
@@ -1418,9 +1431,9 @@
           isAISynthesized: true,
           syllabusDemands: ['puddle_etiquette', 'wet_grip', 'headlights'],
           roads: [
-            { type: 'v', x: 0, z1: -600, z2: 600, lanes: 4, width: 20, name: 'Wet Highway Arterial' },
-            { type: 'h', z: 0, x1: -500, x2: 500, lanes: 4, width: 20, name: 'Monsoon Flyover Cross' },
-            { type: 'h', z: -250, x1: -500, x2: 500, lanes: 4, width: 20, name: 'Rainy Junction' }
+            { type: 'v', x: 0, z1: -600, z2: 600, lanes: 4, width: 26, name: 'Wet Highway Arterial' },
+            { type: 'h', z: 0, x1: -500, x2: 500, lanes: 4, width: 26, name: 'Monsoon Flyover Cross' },
+            { type: 'h', z: -250, x1: -500, x2: 500, lanes: 4, width: 26, name: 'Rainy Junction' }
           ],
           route: [
             { x: 0, z: 150, desc: 'Monsoon South Start' },
@@ -1441,9 +1454,9 @@
           isAISynthesized: true,
           syllabusDemands: ['animals', 'hospital_quiet'],
           roads: [
-            { type: 'v', x: 0, z1: -400, z2: 400, lanes: 2, width: 10, name: 'Crawford Market Gully' },
-            { type: 'h', z: 0, x1: -250, x2: 250, lanes: 2, width: 10, name: 'Bazaar Cross Street' },
-            { type: 'h', z: -140, x1: -250, x2: 250, lanes: 2, width: 10, name: 'Heritage Lane' }
+            { type: 'v', x: 0, z1: -400, z2: 400, lanes: 2, width: 13, name: 'Crawford Market Gully' },
+            { type: 'h', z: 0, x1: -250, x2: 250, lanes: 2, width: 13, name: 'Bazaar Cross Street' },
+            { type: 'h', z: -140, x1: -250, x2: 250, lanes: 2, width: 13, name: 'Heritage Lane' }
           ],
           route: [
             { x: 0, z: 100, desc: 'Market Entry Gate' },
@@ -1464,12 +1477,12 @@
           isAISynthesized: true,
           syllabusDemands: ['signal_jump', 'school_zone', 'puddle_etiquette', 'animals', 'construction'],
           roads: [
-            { type: 'v', x: 0, z1: -650, z2: 650, lanes: 4, width: 18, name: 'Infinite Radial A' },
-            { type: 'v', x: 200, z1: -650, z2: 650, lanes: 4, width: 16, name: 'Infinite Radial B' },
-            { type: 'v', x: -200, z1: -650, z2: 650, lanes: 4, width: 16, name: 'Infinite Radial C' },
-            { type: 'h', z: 0, x1: -500, x2: 500, lanes: 4, width: 18, name: 'Infinite Meridian 0' },
-            { type: 'h', z: -220, x1: -500, x2: 500, lanes: 4, width: 16, name: 'Infinite Meridian North' },
-            { type: 'h', z: 220, x1: -500, x2: 500, lanes: 4, width: 16, name: 'Infinite Meridian South' }
+            { type: 'v', x: 0, z1: -650, z2: 650, lanes: 4, width: 26, name: 'Infinite Radial A' },
+            { type: 'v', x: 200, z1: -650, z2: 650, lanes: 4, width: 26, name: 'Infinite Radial B' },
+            { type: 'v', x: -200, z1: -650, z2: 650, lanes: 4, width: 26, name: 'Infinite Radial C' },
+            { type: 'h', z: 0, x1: -500, x2: 500, lanes: 4, width: 26, name: 'Infinite Meridian 0' },
+            { type: 'h', z: -220, x1: -500, x2: 500, lanes: 4, width: 26, name: 'Infinite Meridian North' },
+            { type: 'h', z: 220, x1: -500, x2: 500, lanes: 4, width: 26, name: 'Infinite Meridian South' }
           ],
           route: [
             { x: 0, z: 100, desc: 'Seed Origin Start' },

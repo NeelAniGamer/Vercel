@@ -1,81 +1,50 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995"
-     crossorigin="anonymous"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995" crossorigin="anonymous"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
-    <meta name="description" content="Configure driver profile, vehicle parameters, and simulation environment for Traffic Academy." />
+    <meta name="description" content="Configure Driver Profile, Vehicle Parameters, And Simulation Environment For Traffic Academy." />
     <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
-    <title>Traffic Academy - Setup</title>
+    <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/Traffic/TrafficSetup" />
+    <title>Traffic Academy - Driver Setup</title>
     <link rel="icon" type="image/png" href="../Icon.png" />
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,600;1,400&family=Space+Mono&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,600;0,700;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 
-    <!-- Supabase bootstrap lives in ../col-auth.js (single owner; avoids double onAuthStateChange) -->
-    <script>
-    (async function() {
-      try {
-        if (window.supabaseClient || window._colAuthRunning) return;
-        var res = await fetch('/config.json?t=' + Date.now());
-        var cfg = await res.json();
-        var auth = (cfg.auth || cfg.supabase || {});
-        var url = auth.supabaseUrl || auth.url || '';
-        var key = auth.supabaseKey || auth.anonKey || auth.key || '';
-        if (url && key && window.supabase) {
-          window.supabaseClient = window.supabase.createClient(url, key, {
-            auth: { persistSession: true, detectSessionInUrl: true }
-          });
-
-          window.supabaseClient.auth.onAuthStateChange(function(event, session) {
-            if (session && session.user) {
-              window.colUser = session.user;
-              window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: session.user } }));
-            }
-          });
-          try {
-            var session = await Promise.race([
-              window.supabaseClient.auth.getSession(),
-              new Promise(function(_, reject) { setTimeout(function() { reject(new Error('timeout')); }, 10000); })
-            ]);
-            var user = session && session.data && session.data.session && session.data.session.user;
-            if (user) {
-              window.colUser = user;
-              window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: user } }));
-            }
-          } catch(sessionErr) {
-            if (sessionErr.message !== 'timeout') {
-              window.supabaseClient.auth.signOut().catch(function() {});
-            }
-          }
-        }
-      } catch(e) {}
-    })();
-  </script>
+    <!-- Local Libraries -->
+    <script defer src="libs/three-bundle.js"></script>
     <script defer src="libs/chart.umd.min.js"></script>
     <script defer src="traffic-charts.js"></script>
     <link rel="stylesheet" href="traffic-charts.css" />
     <link rel="stylesheet" href="welcome-back.css" />
 
+    <!-- Class of Learners Global Integration -->
     <script defer src="../col-router.js"></script>
     <link rel="stylesheet" href="../col-ui.css" />
     <link rel="stylesheet" href="traffic-mobile.css" />
     <script defer src="../col-ui.js"></script>
     <script defer src="../col-auth.js"></script>
 
-<style>
+    <style>
       :root {
-        
         --void: #070a14;
-        --ink: #e8e3d8;
+        --void-rgb: 7, 10, 20;
+        --panel-bg: rgba(13, 20, 36, 0.75);
+        --panel-border: rgba(255, 255, 255, 0.1);
+        --ink: #f0ede6;
+        --ink-dim: #94a3b8;
         --line: rgba(255, 255, 255, 0.08);
         --lineb: rgba(255, 255, 255, 0.16);
-        --signal: #f2b84b;    
-        --em: #34d399;        
-        --teal: #00f0cc;      
-        --ion: #5ed4f5;       
-        --plasma: #b89bff;    
-        --red: #ef4444;       
+        --signal: #f2b84b;
+        --signal-rgb: 242, 184, 75;
+        --em: #34d399;
+        --em-rgb: 52, 211, 153;
+        --teal: #00f0cc;
+        --ion: #5ed4f5;
+        --ion-rgb: 94, 212, 245;
+        --plasma: #b89bff;
+        --red: #ef4444;
         --r: 16px;
       }
 
@@ -86,7 +55,7 @@
       body {
         background: var(--void);
         color: var(--ink);
-        font-family: 'Inter', sans-serif;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
         margin: 0;
         padding-top: env(safe-area-inset-top, 0px);
         padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -99,51 +68,23 @@
         display: flex;
         align-items: center;
         justify-content: center;
-      }
-
-      
-      @keyframes fadeSlideUp {
-        from { opacity: 0; transform: translateY(24px); }
-        to { opacity: 1; transform: translateY(0); }
-      }
-      @keyframes fadeSlideRight {
-        from { opacity: 0; transform: translateX(-20px); }
-        to { opacity: 1; transform: translateX(0); }
-      }
-      @keyframes scaleIn {
-        from { opacity: 0; transform: scale(0.92); }
-        to { opacity: 1; transform: scale(1); }
-      }
-      @keyframes shimmerPulse {
-        0%, 100% { opacity: 0.6; }
-        50% { opacity: 1; }
-      }
-      .setup-container { animation: scaleIn 0.6s cubic-bezier(0.16,1,0.3,1) both; }
-      .setup-left-pane > * { animation: fadeSlideRight 0.5s cubic-bezier(0.16,1,0.3,1) both; }
-      .setup-left-pane > *:nth-child(1) { animation-delay: 0.15s; }
-      .setup-left-pane > *:nth-child(2) { animation-delay: 0.25s; }
-      .setup-left-pane > *:nth-child(3) { animation-delay: 0.35s; }
-      .wizard-step, #authArea { animation: fadeSlideUp 0.4s cubic-bezier(0.16,1,0.3,1) both; }
-
-      
-      .wizard-step {
-        transition: opacity 0.3s ease, transform 0.3s ease;
-      }
-      .wizard-step[style*="display: none"] {
-        opacity: 0;
-        transform: translateY(8px);
+        padding: 24px 16px;
       }
 
       body.lm {
-        --void: #f3f2eb;
-        --ink: #111827;
+        --void: #f4f6fa;
+        --void-rgb: 244, 246, 250;
+        --panel-bg: rgba(255, 255, 255, 0.85);
+        --panel-border: rgba(0, 0, 0, 0.1);
+        --ink: #0f172a;
+        --ink-dim: #475569;
         --line: rgba(0, 0, 0, 0.08);
-        --lineb: rgba(0, 0, 0, 0.16);
-        --signal: #b8720a;
-        --em: #1b9d66;
-        --teal: #0a8c7a;
-        --ion: #0e72a0;
-        --plasma: #6f4fe0;
+        --lineb: rgba(0, 0, 0, 0.14);
+        --signal: #d97706;
+        --em: #059669;
+        --teal: #0d9488;
+        --ion: #0284c7;
+        --plasma: #7c3aed;
         --red: #dc2626;
         background: var(--void);
         color: var(--ink);
@@ -159,137 +100,161 @@
         pointer-events: none;
       }
 
+      /* Container */
       .setup-container {
         position: relative;
         z-index: 10;
-        background: rgba(11, 16, 26, 0.65);
-        backdrop-filter: blur(30px);
-        -webkit-backdrop-filter: blur(30px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: var(--panel-bg);
+        backdrop-filter: blur(32px);
+        -webkit-backdrop-filter: blur(32px);
+        border: 1px solid var(--panel-border);
         border-radius: 24px;
-        width: 98%;
-        max-width: 1500px;
-        min-height: 600px;
+        width: 100%;
+        max-width: 1200px;
+        min-height: 640px;
         display: flex;
         overflow: hidden;
         box-shadow:
-          0 40px 80px rgba(0, 0, 0, 0.6),
-          0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+          0 30px 70px rgba(0, 0, 0, 0.55),
+          0 0 0 1px rgba(255, 255, 255, 0.06) inset;
         transition: all 0.4s ease;
         margin: auto;
       }
 
-      
+      body.lm .setup-container {
+        box-shadow:
+          0 25px 60px rgba(15, 23, 42, 0.08),
+          0 0 0 1px rgba(255, 255, 255, 0.8) inset;
+      }
 
+      /* Left Pane */
       .setup-left-pane {
-        width: 40%;
-        background: linear-gradient(135deg, rgba(7, 10, 20, 0.7) 0%, rgba(12, 18, 36, 0.7) 100%);
+        width: 38%;
+        background: linear-gradient(145deg, rgba(7, 10, 20, 0.85) 0%, rgba(15, 23, 42, 0.75) 100%);
         border-right: 1px solid var(--lineb);
-        padding: 40px;
+        padding: 40px 32px;
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: space-between;
         align-items: center;
         text-align: center;
       }
-      
+
       body.lm .setup-left-pane {
-        background: linear-gradient(135deg, rgba(240, 244, 255, 0.7) 0%, rgba(220, 230, 255, 0.7) 100%);
-        border-right: 1px solid rgba(0, 0, 0, 0.1);
+        background: linear-gradient(145deg, rgba(238, 242, 255, 0.85) 0%, rgba(224, 231, 255, 0.75) 100%);
+        border-right: 1px solid rgba(0, 0, 0, 0.08);
       }
-      
+
+      /* Right Pane */
       .setup-right-pane {
-        width: 60%;
-        padding: 40px 48px;
+        width: 62%;
+        padding: 36px 44px;
         position: relative;
-        overflow: hidden;
+        overflow-y: auto;
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: flex-start;
       }
 
-      .auth-slider-wrapper {
-        position: relative;
-        overflow: hidden;
-        width: 100%;
-      }
-
-      .auth-slider {
+      /* User Session Bar */
+      .user-session-bar {
         display: flex;
-        width: 200%;
-        transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-        align-self: flex-start;
-      }
-      
-      .auth-slide {
-        width: 50%;
-        flex-shrink: 0;
-        padding-right: 10px;
-        transition: opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1), transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-      }
-      .slide-login #login-panel { opacity: 1; transform: scale(1); pointer-events: auto; }
-      .slide-login #signup-panel { opacity: 0; transform: scale(0.95); pointer-events: none; }
-      .slide-signup #signup-panel { opacity: 1; transform: scale(1); pointer-events: auto; }
-      .slide-signup #login-panel { opacity: 0; transform: scale(0.95); pointer-events: none; }
-
-      .slide-login .auth-slider {
-        transform: translateX(0);
-      }
-      
-      .slide-signup .auth-slider {
-        transform: translateX(-50%);
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        padding: 10px 16px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--line);
+        border-radius: 14px;
       }
 
-      @media (max-width: 768px) {
-        .setup-container {
-          flex-direction: column;
-          max-width: 480px;
-          width: calc(100% - 24px);
-          overflow: hidden;
-        }
-        .setup-left-pane {
-          width: 100%;
-          border-right: none;
-          border-bottom: 1px solid var(--lineb);
-          padding: 24px 20px;
-        }
-        .setup-right-pane {
-          width: 100%;
-          padding: 24px 20px;
-          overflow: hidden;
-        }
-        .remote-auth-panel a,
-        .auth-slide a,
-        .remote-auth-panel label {
-          min-height: 44px;
-          display: inline-flex;
-          align-items: center;
-        }
+      body.lm .user-session-bar {
+        background: rgba(0, 0, 0, 0.03);
       }
 
-      body.lm .setup-container {
-        background: rgba(255, 255, 255, 0.7);
-        border-color: rgba(0, 0, 0, 0.1);
-        box-shadow:
-          0 25px 60px rgba(0, 0, 0, 0.1),
-          inset 0 1px 1px rgba(255, 255, 255, 0.8);
+      .user-session-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
       }
 
-      
+      .user-avatar-pill {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--signal), #eab308);
+        color: #000;
+        font-weight: 700;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .user-avatar-pill img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .user-meta-name {
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--ink);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .user-meta-sub {
+        font-size: 0.75rem;
+        color: var(--ink-dim);
+      }
+
+      .user-status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--em);
+        box-shadow: 0 0 8px var(--em);
+        display: inline-block;
+      }
+
+      .user-action-btn {
+        background: transparent;
+        border: 1px solid var(--line);
+        color: var(--ink-dim);
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 6px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .user-action-btn:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--ink);
+        border-color: var(--lineb);
+      }
+
+      /* Stepper */
       .wizard-stepper {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 32px;
+        margin-bottom: 28px;
         position: relative;
       }
 
       .wizard-stepper::before {
         content: '';
         position: absolute;
-        top: 20px;
-        left: 10%;
-        right: 10%;
+        top: 18px;
+        left: 12%;
+        right: 12%;
         height: 2px;
         background: var(--line);
         z-index: 0;
@@ -298,8 +263,8 @@
 
       .wizard-stepper .step-progress {
         position: absolute;
-        top: 20px;
-        left: 10%;
+        top: 18px;
+        left: 12%;
         height: 2px;
         background: linear-gradient(90deg, var(--signal), var(--em));
         border-radius: 2px;
@@ -311,15 +276,16 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
         flex: 1;
         position: relative;
         z-index: 2;
+        cursor: pointer;
       }
 
       .step-circle {
-        width: 40px;
-        height: 40px;
+        width: 36px;
+        height: 36px;
         border-radius: 50%;
         border: 2px solid var(--line);
         background: var(--void);
@@ -327,8 +293,8 @@
         align-items: center;
         justify-content: center;
         font-weight: 700;
-        font-size: 0.9rem;
-        color: var(--muted);
+        font-size: 0.85rem;
+        color: var(--ink-dim);
         transition: all 0.3s ease;
       }
 
@@ -336,7 +302,7 @@
         border-color: var(--signal);
         background: var(--signal);
         color: #000;
-        box-shadow: 0 0 0 4px rgba(242, 184, 75, 0.2);
+        box-shadow: 0 0 0 4px rgba(var(--signal-rgb), 0.2);
       }
 
       .step-item.completed .step-circle {
@@ -345,17 +311,10 @@
         color: #fff;
       }
 
-      .step-item.completed .step-circle::before {
-        content: '✓';
-        font-size: 1rem;
-      }
-
       .step-label {
-        font-size: 0.7rem;
+        font-size: 0.75rem;
         font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: var(--muted);
+        color: var(--ink-dim);
         text-align: center;
         white-space: nowrap;
       }
@@ -368,71 +327,43 @@
         color: var(--em);
       }
 
-      h1 {
+      /* Headings */
+      h1.setup-title {
         font-family: 'Lora', serif;
-        font-size: 2.4rem;
+        font-size: 1.85rem;
+        font-weight: 700;
         color: var(--ink);
-        margin-bottom: 10px;
-        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        margin: 0 0 6px 0;
+        letter-spacing: -0.01em;
       }
 
-      p.subtitle {
-        color: var(--dim);
-        margin-bottom: 30px;
-        font-size: 1rem;
+      p.setup-subtitle {
+        color: var(--ink-dim);
+        font-size: 0.95rem;
+        line-height: 1.45;
+        margin: 0 0 24px 0;
       }
 
-      
-      .setup-progress-ring {
+      /* Form inputs */
+      .input-group {
+        margin-bottom: 20px;
+        text-align: left;
+      }
+
+      label.input-label {
         display: flex;
         align-items: center;
-        justify-content: center;
-        gap: 16px;
-        margin: 24px 0;
-        padding: 16px;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid var(--line);
-        border-radius: 16px;
-      }
-
-      .setup-progress-ring canvas {
-        max-width: 80px;
-        max-height: 80px;
-      }
-
-      .progress-ring-info {
-        text-align: left;
-      }
-
-      .progress-ring-pct {
-        font-family: 'Space Mono', monospace;
-        font-size: 1.8rem;
-        font-weight: 700;
-        color: var(--signal);
-        line-height: 1;
-      }
-
-      .progress-ring-label {
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: var(--muted);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-top: 4px;
-      }
-
-      
-      .input-group {
-        margin-bottom: 24px;
-        text-align: left;
-      }
-
-      label {
-        display: block;
+        justify-content: space-between;
         margin-bottom: 8px;
         font-weight: 600;
-        font-size: 0.9rem;
+        font-size: 0.88rem;
         color: var(--ink);
+      }
+
+      .input-help {
+        font-size: 0.75rem;
+        color: var(--ink-dim);
+        font-weight: 400;
       }
 
       input[type='text'],
@@ -441,14 +372,14 @@
       input[type='number'],
       select {
         width: 100%;
-        padding: 14px 16px;
+        padding: 13px 16px;
         min-height: 48px;
-        background: rgba(0, 0, 0, 0.2);
+        background: rgba(0, 0, 0, 0.25);
         border: 1px solid var(--line);
         border-radius: 12px;
-        font-size: max(1rem, 16px);
-        font-family: 'Inter', sans-serif;
-        transition: 0.3s;
+        font-size: 1rem;
+        font-family: 'Inter', system-ui, sans-serif;
+        transition: all 0.25s ease;
         outline: none;
         color: var(--ink);
       }
@@ -458,56 +389,194 @@
       body.lm input[type='email'],
       body.lm input[type='number'],
       body.lm select {
-        background: rgba(255, 255, 255, 0.6);
-        border-color: rgba(0, 0, 0, 0.1);
+        background: rgba(255, 255, 255, 0.8);
+        border-color: rgba(0, 0, 0, 0.12);
       }
 
       input:focus,
       select:focus {
         background: rgba(0, 0, 0, 0.4);
         border-color: var(--signal);
-        box-shadow: 0 0 0 3px rgba(242, 184, 75, 0.15);
+        box-shadow: 0 0 0 3px rgba(var(--signal-rgb), 0.18);
       }
 
       body.lm input:focus,
       body.lm select:focus {
-        background: rgba(255, 255, 255, 0.9);
-        box-shadow: 0 0 0 3px rgba(14, 114, 160, 0.15);
+        background: #ffffff;
+        box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.18);
       }
 
-      
+      /* Quick-pick age chips */
+      .age-chips-row {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      .age-chip {
+        flex: 1;
+        padding: 8px 12px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        color: var(--ink-dim);
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-align: center;
+      }
+
+      .age-chip:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--ink);
+        border-color: var(--lineb);
+      }
+
+      .age-chip.active {
+        background: rgba(var(--signal-rgb), 0.15);
+        border-color: var(--signal);
+        color: var(--signal);
+      }
+
+      /* Interactive Vehicle Grid */
+      .veh-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+
+      .veh-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1.5px solid var(--line);
+        border-radius: 14px;
+        padding: 16px 14px;
+        cursor: pointer;
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        position: relative;
+        user-select: none;
+      }
+
+      body.lm .veh-card {
+        background: rgba(0, 0, 0, 0.02);
+        border-color: rgba(0, 0, 0, 0.08);
+      }
+
+      .veh-card:hover {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: var(--lineb);
+        transform: translateY(-2px);
+      }
+
+      body.lm .veh-card:hover {
+        background: rgba(0, 0, 0, 0.05);
+      }
+
+      .veh-card.selected {
+        background: linear-gradient(145deg, rgba(var(--signal-rgb), 0.12), rgba(var(--em-rgb), 0.06));
+        border-color: var(--signal);
+        box-shadow: 0 6px 20px rgba(var(--signal-rgb), 0.18);
+        transform: translateY(-2px);
+      }
+
+      body.lm .veh-card.selected {
+        background: linear-gradient(145deg, rgba(217, 119, 6, 0.1), rgba(5, 150, 105, 0.06));
+        border-color: var(--signal);
+      }
+
+      .veh-icon-wrapper {
+        font-size: 2.2rem;
+        margin-bottom: 8px;
+        line-height: 1;
+      }
+
+      .veh-title {
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: var(--ink);
+        margin-bottom: 4px;
+      }
+
+      .veh-tag {
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 2px 8px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--ink-dim);
+        margin-bottom: 8px;
+      }
+
+      .veh-card.selected .veh-tag {
+        background: rgba(var(--signal-rgb), 0.2);
+        color: var(--signal);
+      }
+
+      .veh-desc {
+        font-size: 0.74rem;
+        color: var(--ink-dim);
+        line-height: 1.35;
+      }
+
+      .veh-check-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: var(--signal);
+        color: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 700;
+        opacity: 0;
+        transform: scale(0.6);
+        transition: all 0.2s ease;
+      }
+
+      .veh-card.selected .veh-check-badge {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      /* Buttons */
       .btn-submit {
         background: var(--signal);
         color: #000;
         border: none;
-        padding: 16px;
+        padding: 15px 24px;
         width: 100%;
         border-radius: 12px;
-        font-size: 1.1rem;
+        font-size: 1.05rem;
         font-weight: 700;
         cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        margin-top: 10px;
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 10px;
-        box-shadow: 0 8px 25px rgba(242, 184, 75, 0.2);
-      }
-
-      body.lm .btn-submit {
-        color: #fff;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 6px 20px rgba(var(--signal-rgb), 0.25);
+        margin-top: 12px;
       }
 
       .btn-submit:hover {
         transform: translateY(-2px);
-        box-shadow: 0 12px 30px rgba(242, 184, 75, 0.4);
-        background: #fff;
+        box-shadow: 0 10px 28px rgba(var(--signal-rgb), 0.35);
+        filter: brightness(1.05);
       }
 
-      body.lm .btn-submit:hover {
-        background: var(--page-theme-light);
+      .btn-submit:active {
+        transform: translateY(0);
       }
 
       .btn-submit:disabled {
@@ -520,292 +589,223 @@
         background: transparent;
         color: var(--ink);
         border: 1px solid var(--line);
-        margin-bottom: 10px;
         box-shadow: none;
+        margin-top: 10px;
       }
 
       .btn-outline:hover {
         background: rgba(255, 255, 255, 0.05);
-        color: var(--ink);
-        box-shadow: none;
         border-color: var(--lineb);
+        box-shadow: none;
       }
 
-      body.lm .btn-outline {
-        color: var(--ink);
-        border-color: rgba(0, 0, 0, 0.1);
+      /* Welcome Back Card */
+      .welcome-profile-card {
+        background: linear-gradient(135deg, rgba(var(--signal-rgb), 0.08) 0%, rgba(var(--em-rgb), 0.06) 100%);
+        border: 1.5px solid rgba(var(--signal-rgb), 0.3);
+        border-radius: 18px;
+        padding: 24px;
+        margin-bottom: 24px;
+        text-align: left;
       }
 
-      body.lm .btn-outline:hover {
-        background: rgba(0, 0, 0, 0.05);
+      .welcome-profile-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 20px;
       }
 
-      
-      .tab-btn {
-        flex: 1;
-        padding: 12px;
+      .welcome-avatar-large {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, var(--signal), var(--em));
+        color: #000;
+        font-size: 1.4rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        flex-shrink: 0;
+      }
+
+      .welcome-avatar-large img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .welcome-stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .welcome-stat-item {
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--line);
         border-radius: 10px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: 0.3s;
-        border: 1px solid transparent;
-        background: transparent;
-        color: var(--dim);
-      }
-      .tab-btn.active {
-        background: rgba(242, 184, 75, 0.1);
-        border-color: var(--signal);
-        color: var(--signal);
-      }
-      body.lm .tab-btn.active {
-        background: rgba(14, 114, 160, 0.1);
-        color: var(--page-theme-light);
-        border-color: var(--page-theme-light);
+        padding: 10px 12px;
       }
 
-      
-      @media (max-width: 600px) {
-        .setup-container {
-          padding: 24px 16px;
-          border-radius: 16px;
-          margin: 12px;
-          max-width: calc(100vw - 24px);
-        }
-        h1 {
-          font-size: clamp(1.4rem, 5vw, 2rem) !important;
-          margin-bottom: 6px;
-        }
-        .subtitle {
-          font-size: clamp(0.8rem, 3vw, 0.95rem) !important;
-          margin-bottom: 20px;
-        }
-        .input-group {
-          margin-bottom: 18px;
-        }
-        label {
-          font-size: 0.85rem;
-          margin-bottom: 6px;
-        }
-        .btn-submit {
-          min-height: 48px;
-          font-size: 1rem;
-          padding: 14px;
-          border-radius: 10px;
-        }
-        .tab-btn {
-          min-height: 48px;
-          font-size: 0.95rem;
-          padding: 10px;
-        }
-        input[type='text'],
-        input[type='password'],
-        input[type='email'],
-        input[type='number'],
-        select {
-          font-size: max(1rem, 16px) !important;
-          min-height: 48px !important;
-          padding: 12px 14px !important;
-        }
-        
-        .wizard-stepper::before {
-          top: 18px;
-        }
-        .wizard-stepper .step-progress {
-          top: 18px;
-        }
-        .step-circle {
-          width: 32px;
-          height: 32px;
-          font-size: 0.8rem;
-        }
-        .step-label {
-          font-size: 0.6rem;
-        }
-        .setup-progress-ring canvas {
-          max-width: 60px;
-          max-height: 60px;
-        }
-        .progress-ring-pct {
-          font-size: 1.4rem;
-        }
-        
-        #authArea > div:nth-child(3) {
-          margin: 12px 0;
-        }
+      body.lm .welcome-stat-item {
+        background: rgba(255, 255, 255, 0.6);
       }
-    </style>
-      <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
-      <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/Traffic/TrafficSetup" />
-  <style>
-      .tab-btn:hover:not(.active) { color: var(--ink) !important; background: rgba(255,255,255,0.05) !important; }
-      .tab-btn.active { background: rgba(255,255,255,0.05) !important; color: var(--signal) !important; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-      .btn-submit { font-family: var(--sans, 'Inter'), sans-serif; }
-    </style>
-<style>
-      .remote-auth-panel { background: transparent; border: none; border-radius: 0; padding: 0; box-shadow: none; margin: 0 auto; width: 100%; max-width: 520px; display: flex; flex-direction: column; justify-content: center; min-height: 100%; }
-      .remote-auth-title { font-size: 1.8rem; color: var(--ink); font-weight: 700; margin-bottom: 8px; font-family: var(--sans, 'Inter'), sans-serif; text-align: center; }
-      .remote-auth-subtitle { font-size: 0.95rem; color: var(--dim); margin-bottom: 30px; text-align: center; }
-      .remote-auth-subtitle a { color: var(--ion); text-decoration: none; font-weight: 600; cursor: pointer; transition: color 0.2s; }
-      .remote-auth-subtitle a:hover { color: #fff; text-decoration: underline; }
-      .remote-input-group { margin-bottom: 16px; position: relative; }
-      .remote-input { width: 100%; box-sizing: border-box; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; color: var(--ink); font-size: 0.95rem; outline: none; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); font-family: var(--sans, 'Inter'), sans-serif; }
-      .remote-input:-webkit-autofill,
-      .remote-input:-webkit-autofill:hover,
-      .remote-input:-webkit-autofill:focus,
-      .remote-input:-webkit-autofill:active {
-        -webkit-box-shadow: 0 0 0 30px #1a2333 inset !important;
-        -webkit-text-fill-color: var(--ink) !important;
-        transition: background-color 5000s ease-in-out 0s;
-        border-radius: 12px;
+
+      .welcome-stat-label {
+        font-size: 0.72rem;
+        color: var(--ink-dim);
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: 2px;
       }
-      .remote-input:hover { background: rgba(255, 255, 255, 0.06); border-color: rgba(255,255,255,0.2); }
-      .remote-input:focus { background: rgba(255, 255, 255, 0.1); border-color: var(--ion); box-shadow: 0 0 0 3px rgba(94, 212, 245, 0.15); }
-      .remote-btn-primary { position: relative; overflow: hidden; width: 100%; background: var(--ion); color: var(--void); border: none; border-radius: 24px; padding: 14px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); margin-top: 10px; font-family: var(--sans, 'Inter'), sans-serif; }
-      .remote-btn-primary::after { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(to right, transparent, rgba(255,255,255,0.4), transparent); transform: skewX(-20deg); transition: all 0.6s ease; }
-      .remote-btn-primary:hover::after { left: 150%; }
-      .remote-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(94, 212, 245, 0.35); }
-      .remote-divider { display: flex; align-items: center; text-align: center; color: var(--dim); font-size: 0.8rem; margin: 25px 0; font-weight: 600; letter-spacing: 1px; }
-      .remote-divider::before, .remote-divider::after { content: ''; flex: 1; border-bottom: 1px solid var(--line); }
-      .remote-divider:not(:empty)::before { margin-right: 15px; }
-      .remote-divider:not(:empty)::after { margin-left: 15px; }
-      .remote-btn-google { width: 100%; background: transparent; color: var(--ink); border: 1px solid var(--line); border-radius: 24px; padding: 12px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; font-family: var(--sans, 'Inter'), sans-serif; }
-      .remote-btn-google:hover { background: var(--line); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-      .remote-role-group { display: flex; gap: 10px; margin-bottom: 20px; }
-      .remote-role-btn { flex: 1; background: var(--void); border: 1px solid var(--line); border-radius: 12px; padding: 12px; color: var(--dim); font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-      .remote-role-btn.active { background: rgba(94, 212, 245, 0.1); border-color: var(--ion); color: var(--ion); }
-      .remote-role-btn:hover:not(.active) { border-color: var(--lineb); color: var(--ink); }
-      body.lm .remote-role-btn { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.1); color: var(--dim); }
-      body.lm .remote-role-btn.active { background: rgba(14, 114, 160, 0.1); border-color: var(--ion); color: var(--ion); }
-      body.lm .remote-role-btn:hover:not(.active) { border-color: rgba(0,0,0,0.2); color: var(--ink); }
-      .remote-bottom-links { display: flex; flex-direction: row; gap: 12px; margin-top: 24px; align-items: center; justify-content: center; }
-      .remote-bottom-link {
-        background: rgba(255,255,255,0.04);
+
+      .welcome-stat-value {
+        font-size: 0.95rem;
+        color: var(--ink);
+        font-weight: 700;
+      }
+
+      /* Auth Slider / Panels */
+      .auth-toggle-row {
+        display: flex;
+        background: rgba(0, 0, 0, 0.2);
         border: 1px solid var(--line);
         border-radius: 12px;
-        color: var(--dim);
-        font-size: 0.85rem;
-        font-weight: 600;
-        cursor: pointer;
-        padding: 10px 20px;
-        transition: all 0.25s cubic-bezier(0.16,1,0.3,1);
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        flex: 1;
-        justify-content: center;
-        min-height: 44px;
-        font-family: var(--sans, 'Inter'), sans-serif;
-      }
-      .remote-bottom-link:hover {
-        background: rgba(255,255,255,0.08);
-        border-color: var(--lineb);
-        color: var(--ink);
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      }
-      .remote-bottom-link:active {
-        transform: translateY(0);
-        box-shadow: none;
-      }
-      .remote-bottom-link.primary {
-        border-color: var(--signal);
-        color: var(--signal);
-        background: rgba(242,184,75,0.08);
-      }
-      .remote-bottom-link.primary:hover {
-        background: rgba(242,184,75,0.15);
-        box-shadow: 0 4px 12px rgba(242,184,75,0.15);
-      }
-      body.lm .remote-bottom-link {
-        background: rgba(0,0,0,0.03);
-        border-color: rgba(0,0,0,0.1);
-      }
-      body.lm .remote-bottom-link:hover {
-        background: rgba(0,0,0,0.06);
+        padding: 4px;
+        margin-bottom: 24px;
       }
 
-      
+      body.lm .auth-toggle-row {
+        background: rgba(0, 0, 0, 0.04);
+      }
+
+      .auth-toggle-btn {
+        flex: 1;
+        padding: 10px 16px;
+        background: transparent;
+        border: none;
+        color: var(--ink-dim);
+        font-weight: 700;
+        font-size: 0.9rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .auth-toggle-btn.active {
+        background: var(--panel-bg);
+        color: var(--signal);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      body.lm .auth-toggle-btn.active {
+        background: #fff;
+        color: var(--signal);
+      }
+
+      .remote-btn-google {
+        width: 100%;
+        background: transparent;
+        color: var(--ink);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 13px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 14px;
+      }
+
+      .remote-btn-google:hover {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: var(--lineb);
+      }
+
+      .remote-divider {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        color: var(--ink-dim);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        margin: 20px 0;
+      }
+
+      .remote-divider::before,
+      .remote-divider::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .remote-divider:not(:empty)::before {
+        margin-right: 14px;
+      }
+
+      .remote-divider:not(:empty)::after {
+        margin-left: 14px;
+      }
+
+      /* Custom select */
       .custom-select-wrapper {
         position: relative;
         width: 100%;
-        z-index: 50;
+        z-index: 40;
       }
+
       .custom-select-trigger {
         display: flex;
         align-items: center;
         gap: 10px;
         width: 100%;
-        padding: 14px 16px;
+        padding: 13px 16px;
         min-height: 48px;
-        background: rgba(0, 0, 0, 0.2);
+        background: rgba(0, 0, 0, 0.25);
         border: 1px solid var(--line);
         border-radius: 12px;
-        font-size: max(1rem, 16px);
-        font-family: 'Inter', sans-serif;
+        font-size: 1rem;
         color: var(--ink);
         cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: all 0.25s ease;
         outline: none;
-        user-select: none;
       }
-      .custom-select-trigger:hover {
-        background: rgba(255, 255, 255, 0.06);
-        border-color: rgba(255,255,255,0.2);
-      }
-      .custom-select-wrapper.open .custom-select-trigger {
-        background: rgba(0, 0, 0, 0.4);
-        border-color: var(--signal);
-        box-shadow: 0 0 0 3px rgba(242, 184, 75, 0.15);
-      }
-      body.lm .custom-select-trigger {
-        background: rgba(255, 255, 255, 0.6);
-        border-color: rgba(0, 0, 0, 0.1);
-      }
-      body.lm .custom-select-wrapper.open .custom-select-trigger {
-        background: rgba(255, 255, 255, 0.9);
-        box-shadow: 0 0 0 3px rgba(14, 114, 160, 0.15);
-      }
-      .custom-select-icon { font-size: 1.2rem; flex-shrink: 0; }
-      .custom-select-text { flex: 1; font-weight: 500; }
-      .custom-select-arrow {
-        flex-shrink: 0;
-        color: var(--dim);
-        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        pointer-events: none;
-      }
-      .custom-select-wrapper.open .custom-select-arrow {
-        transform: rotate(180deg);
-      }
+
       .custom-select-dropdown {
         position: absolute;
         top: calc(100% + 6px);
         left: 0;
         right: 0;
         z-index: 100;
-        background: rgba(17, 24, 39, 0.97);
+        background: rgba(15, 23, 42, 0.97);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.12);
         border-radius: 14px;
         padding: 6px;
-        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
         opacity: 0;
-        transform: translateY(-8px) scale(0.97);
+        transform: translateY(-8px);
         pointer-events: none;
-        transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        max-height: 280px;
-        overflow-y: auto;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       }
+
       .custom-select-wrapper.open .custom-select-dropdown {
         opacity: 1;
-        transform: translateY(0) scale(1);
+        transform: translateY(0);
         pointer-events: auto;
       }
-      body.lm .custom-select-dropdown {
-        background: rgba(255, 255, 255, 0.97);
-        border-color: rgba(0, 0, 0, 0.08);
-        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
-      }
+
       .custom-select-option {
         display: flex;
         align-items: center;
@@ -813,40 +813,19 @@
         padding: 12px 14px;
         border-radius: 10px;
         cursor: pointer;
-        transition: all 0.18s ease;
-        min-height: 44px;
+        transition: all 0.15s ease;
       }
-      .custom-select-option:hover { background: rgba(255, 255, 255, 0.07); }
-      body.lm .custom-select-option:hover { background: rgba(0, 0, 0, 0.04); }
-      .custom-select-option:active { transform: scale(0.98); }
-      .custom-select-option.selected { background: rgba(242, 184, 75, 0.12); }
-      body.lm .custom-select-option.selected { background: rgba(14, 114, 160, 0.1); }
-      .option-icon { font-size: 1.3rem; flex-shrink: 0; width: 28px; text-align: center; }
-      .option-label { flex: 1; font-size: 0.95rem; font-weight: 500; color: var(--ink); }
-      body.lm .option-label { color: #1e293b; }
-      .option-check {
-        flex-shrink: 0;
-        opacity: 0;
-        transform: scale(0.5);
-        transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+      .custom-select-option:hover {
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .custom-select-option.selected {
+        background: rgba(var(--signal-rgb), 0.15);
         color: var(--signal);
       }
-      body.lm .option-check { color: var(--ion); }
-      .custom-select-option.selected .option-check {
-        opacity: 1;
-        transform: scale(1);
-      }
-    </style>
-    <style>
-      
-      @keyframes toastSlideIn {
-        from { opacity: 0; transform: translateY(-24px) scale(0.95); }
-        to { opacity: 1; transform: translateY(0) scale(1); }
-      }
-      @keyframes toastSlideOut {
-        from { opacity: 1; transform: translateY(0) scale(1); }
-        to { opacity: 0; transform: translateY(-24px) scale(0.95); }
-      }
+
+      /* Auth Toast */
       .auth-toast {
         position: fixed;
         top: 24px;
@@ -857,1443 +836,1335 @@
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
         color: #fff;
-        padding: 16px 32px;
+        padding: 14px 28px;
         border-radius: 16px;
         font-weight: 700;
-        font-size: 1.1rem;
-        box-shadow: 0 12px 40px rgba(5, 150, 105, 0.35), 0 0 0 1px rgba(255,255,255,0.08);
+        font-size: 1rem;
+        box-shadow: 0 12px 40px rgba(5, 150, 105, 0.4);
         display: flex;
         align-items: center;
-        gap: 12px;
-        animation: toastSlideIn 0.45s cubic-bezier(0.16,1,0.3,1) both;
-        pointer-events: none;
-        white-space: nowrap;
+        gap: 10px;
+        animation: toastIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
       }
-      .auth-toast.out {
-        animation: toastSlideOut 0.35s cubic-bezier(0.16,1,0.3,1) both;
+
+      @keyframes toastIn {
+        from { opacity: 0; transform: translate(-50%, -20px) scale(0.95); }
+        to { opacity: 1; transform: translate(-50%, 0) scale(1); }
       }
-      body.lm .auth-toast {
-        background: rgba(5, 150, 105, 0.92);
-        color: #fff;
+
+      /* Mobile 360px First Breakpoint */
+      @media (max-width: 820px) {
+        body {
+          padding: 8px 6px;
+        }
+        .setup-container {
+          flex-direction: column;
+          border-radius: 18px;
+          min-height: auto;
+        }
+        .setup-left-pane {
+          width: 100%;
+          border-right: none;
+          border-bottom: 1px solid var(--lineb);
+          padding: 14px 18px;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+          gap: 12px;
+        }
+        .setup-left-pane .hero-brand {
+          flex-direction: row !important;
+          gap: 10px !important;
+        }
+        .setup-left-pane .hero-brand img {
+          height: 38px !important;
+          width: 38px !important;
+          border-radius: 10px !important;
+        }
+        .setup-left-pane .hero-brand span {
+          font-size: 1.15rem !important;
+        }
+        .setup-left-pane .hero-tagline,
+        .setup-left-pane .hero-promo-card {
+          display: none !important;
+        }
+        .setup-left-pane .hero-progress-wrapper {
+          margin: 0 !important;
+          gap: 8px !important;
+        }
+        .setup-left-pane .hero-progress-wrapper canvas {
+          width: 44px !important;
+          height: 44px !important;
+        }
+        .setup-left-pane .hero-progress-wrapper #progress-pct {
+          font-size: 1.15rem !important;
+        }
+        .setup-left-pane .hero-progress-wrapper .hero-progress-label {
+          display: none !important;
+        }
+        .setup-right-pane {
+          width: 100%;
+          padding: 20px 16px;
+        }
+        .veh-grid {
+          grid-template-columns: 1fr 1fr;
+          gap: 8px;
+        }
+        .veh-grid .veh-card:last-child {
+          grid-column: span 2;
+        }
+      }
+
+      @media (max-width: 480px) {
+        body {
+          padding: 4px;
+        }
+        .setup-right-pane {
+          padding: 16px 12px;
+        }
+        .veh-grid {
+          grid-template-columns: 1fr;
+        }
+        .veh-grid .veh-card:last-child {
+          grid-column: span 1;
+        }
+        .wizard-stepper .step-label {
+          font-size: 0.65rem;
+        }
+        .step-circle {
+          width: 30px;
+          height: 30px;
+          font-size: 0.78rem;
+        }
+        h1.setup-title {
+          font-size: 1.45rem;
+        }
       }
     </style>
-  <link rel="stylesheet" href="traffic-mobile.css" />
-</head>
+  </head>
   <body>
-    <div id="auth-toast" class="auth-toast" style="display:none;">✅ You're signed in!</div>
+    <div id="auth-toast" class="auth-toast" style="display:none;">✅ Setup Ready</div>
     <canvas id="bg-canvas"></canvas>
 
     <div class="setup-container">
       
+      <!-- Left Hero Pane -->
       <div class="setup-left-pane">
-        <div style="display:flex; flex-direction:column; align-items:center; gap:16px; margin-bottom:24px; cursor:pointer;" onclick="window.location.href='Academy.html'">
-          <img src="../Icon.png" alt="Class Of Learners" style="height:72px; width:72px; border-radius:16px; object-fit:contain; box-shadow:0 8px 24px rgba(0,0,0,0.4);" onerror="this.src='/Icon.png'" />
-          <span style="font-family:'Lora',serif; font-weight:700; font-size:1.8rem; color:var(--ink); letter-spacing:-0.02em;">Traffic Academy</span>
+        <div class="hero-brand" style="display:flex; flex-direction:column; align-items:center; gap:14px; cursor:pointer;" onclick="window.location.href='Academy.html'">
+          <img src="../Icon.png" alt="Class Of Learners" style="height:68px; width:68px; border-radius:18px; object-fit:contain; box-shadow:0 8px 24px rgba(0,0,0,0.4);" onerror="this.src='/Icon.png'" />
+          <span style="font-family:'Lora',serif; font-weight:700; font-size:1.75rem; color:var(--ink); letter-spacing:-0.02em;">Traffic Academy</span>
         </div>
-        <p class="subtitle" style="font-size: 0.95rem; opacity: 0.85; line-height: 1.5; margin-bottom: 24px;">The ultimate driving simulator.<br>Master the roads, rules, and reality.</p>
         
-        
-        <div class="setup-progress-ring" style="border:none; background:transparent; padding:0; margin-top:16px;">
-          <canvas id="setup-progress-ring" width="80" height="80" data-chart="progress-ring" data-value="0"></canvas>
-          <div class="progress-ring-info">
-            <div class="progress-ring-pct" id="progress-pct">0%</div>
-            <div class="progress-ring-label">Setup Complete</div>
+        <p class="hero-tagline" style="font-size:0.9rem; color:var(--ink-dim); line-height:1.5; margin:16px 0 0 0;">
+          The Ultimate Driving Simulator.<br />Master The Roads, Rules, And Reality.
+        </p>
+
+        <!-- Progress Ring Component -->
+        <div class="hero-progress-wrapper" style="display:flex; align-items:center; justify-content:center; gap:16px; margin:24px 0;">
+          <canvas id="setup-progress-ring" width="76" height="76"></canvas>
+          <div style="text-align:left;">
+            <div id="progress-pct" style="font-family:'Space Mono',monospace; font-size:1.75rem; font-weight:700; color:var(--signal); line-height:1;">0%</div>
+            <div class="hero-progress-label" style="font-size:0.75rem; font-weight:600; color:var(--ink-dim); text-transform:uppercase; letter-spacing:0.05em; margin-top:4px;">Setup Progress</div>
           </div>
         </div>
 
-        <div style="margin-top:28px; width:100%; background:linear-gradient(135deg,rgba(16,185,129,0.15),rgba(59,130,246,0.12)); border:1.5px solid rgba(52,211,153,0.4); border-radius:14px; padding:16px; display:flex; flex-direction:column; gap:8px; box-shadow:0 8px 24px rgba(0,0,0,0.3); text-align:left;">
-          <div style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:0.95rem; color:#34d399;">
+        <!-- AI City Synthesizer Card -->
+        <div class="hero-promo-card" style="width:100%; background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(59,130,246,0.1)); border:1.5px solid rgba(52,211,153,0.35); border-radius:14px; padding:16px; text-align:left; box-shadow:0 6px 20px rgba(0,0,0,0.25);">
+          <div style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:0.9rem; color:#34d399; margin-bottom:4px;">
             <span>✨</span>
             <span>AI City Synthesizer</span>
           </div>
-          <div style="font-size:0.75rem; color:var(--ink); opacity:0.8; line-height:1.4;">
-            Autonomous 3D procedural environments with zero-collision spatial placement and live syllabus curriculum evaluation.
+          <div style="font-size:0.75rem; color:var(--ink-dim); line-height:1.4; margin-bottom:12px;">
+            Autonomous 3D Procedural Environments With Zero-Collision Spatial Placement And Real Syllabus Evaluation.
           </div>
-          <button type="button" onclick="window.location.href='Driving.html?synth=modal'" style="margin-top:8px; background:linear-gradient(135deg,#10b981,#059669); border:none; color:#fff; padding:8px 14px; border-radius:8px; font-weight:700; font-size:0.82rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 4px 12px rgba(16,185,129,0.35); transition:transform 0.15s ease;">
+          <button type="button" onclick="window.location.href='Driving.html?synth=modal'" style="width:100%; background:linear-gradient(135deg,#10b981,#059669); border:none; color:#fff; padding:9px 14px; border-radius:8px; font-weight:700; font-size:0.82rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 4px 12px rgba(16,185,129,0.3);">
             <span>🚀 Quick Launch AI City</span>
           </button>
         </div>
       </div>
 
-      
+      <!-- Right Interactive Pane -->
       <div class="setup-right-pane">
         
+        <!-- Live User Session Bar -->
+        <div class="user-session-bar" id="userSessionBar">
+          <div class="user-session-info">
+            <div class="user-avatar-pill" id="userSessionAvatar">🚗</div>
+            <div>
+              <div class="user-meta-name" id="userSessionName">
+                <span>Guest Driver</span>
+                <span class="user-status-dot" id="userStatusDot" style="background:#94a3b8; box-shadow:none;"></span>
+              </div>
+              <div class="user-meta-sub" id="userSessionSub">Offline Mode · Progress Saved Locally</div>
+            </div>
+          </div>
+          <button type="button" class="user-action-btn" id="userSessionBtn" onclick="handleUserSessionAction()">Sign In</button>
+        </div>
+
+        <!-- Wizard Stepper -->
         <div class="wizard-stepper" id="wizard-stepper">
           <div class="step-progress" id="step-progress" style="width: 0%"></div>
-          <div class="step-item" data-step="1">
-            <div class="step-circle">1</div>
-            <span class="step-label">Sign In</span>
+          <div class="step-item active" data-step="1" onclick="navigateToStep(1)">
+            <div class="step-circle" id="circle-1">1</div>
+            <span class="step-label">Account</span>
           </div>
-          <div class="step-item" data-step="2">
-            <div class="step-circle">2</div>
+          <div class="step-item" data-step="2" onclick="navigateToStep(2)">
+            <div class="step-circle" id="circle-2">2</div>
             <span class="step-label">Profile</span>
           </div>
-          <div class="step-item" data-step="3">
-            <div class="step-circle">3</div>
+          <div class="step-item" data-step="3" onclick="navigateToStep(3)">
+            <div class="step-circle" id="circle-3">3</div>
             <span class="step-label">Vehicle</span>
           </div>
         </div>
 
-        <h1 id="step-title-h1" style="font-size: 2rem;">Welcome</h1>
-        <p class="subtitle" id="subtitle-text">Let's setup your driver profile to get started.</p>
+        <!-- Dynamic Header -->
+        <h1 class="setup-title" id="step-title-h1">Welcome Driver</h1>
+        <p class="setup-subtitle" id="subtitle-text">Let's Configure Your Driver Profile To Get Started.</p>
 
-            
-      <div id="authArea" class="wizard-step" data-step="1">
-        <div class="remote-auth-panel auth-slider-wrapper slide-login" id="auth-slider-container" style="flex: 1; display: flex; align-items: center;">
-          <div class="auth-slider">
-            
-            <div id="login-panel" class="auth-slide">
-              <div id="col-auth-err" style="color: var(--red); font-size: 0.9rem; margin-bottom: 15px; font-weight: 600; text-align: left;"></div>
-              
-              <div class="remote-input-group">
-                <input type="text" id="auth-email" class="remote-input" placeholder="Email address or @username" autocomplete="username" />
+        <!-- Welcome Back / Profile Overview Card (Shown when profile is loaded) -->
+        <div id="welcomeBackArea" style="display:none;">
+          <div class="welcome-profile-card">
+            <div class="welcome-profile-header">
+              <div class="welcome-avatar-large" id="overviewAvatar">🚗</div>
+              <div>
+                <div style="font-size:0.8rem; font-weight:700; color:var(--signal); text-transform:uppercase; letter-spacing:0.06em;">Driver License Ready</div>
+                <div style="font-size:1.35rem; font-weight:700; color:var(--ink);" id="overviewName">Driver Name</div>
+                <div style="font-size:0.82rem; color:var(--ink-dim);" id="overviewSub">@handle · Student STU-000000</div>
               </div>
-              <div class="remote-input-group">
-                <input type="password" id="auth-pass" class="remote-input" placeholder="Password or Local PIN" autocomplete="current-password" />
-              </div>
-
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; font-size: 0.85rem; color: var(--dim);">
-                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                  <input type="checkbox" style="accent-color: var(--ion); cursor: pointer;" checked> Remember me
-                </label>
-                <a href="#" style="color: var(--ion); text-decoration: none;">Forgot password?</a>
-              </div>
-
-              <button class="remote-btn-primary" id="auth-submit-btn" onclick="handleEmailAuth()">Log In</button>
-              <button class="remote-btn-primary" id="auth-otp-btn" onclick="sendLoginOtp()" style="margin-top: 10px; background: transparent; border: 1px solid var(--ion); color: var(--ion);">Log In With Email Code</button>
-              
-              <div id="login-otp-section" style="display: none; margin-top: 15px;">
-                <p style="color: var(--dim); font-size: 0.9rem; margin-bottom: 10px;">Enter The 6-Digit Code Sent To Your Email:</p>
-                <input type="text" id="login-otp-input" class="remote-input" placeholder="123456" maxlength="6" style="text-align: center; font-size: 1.5rem; letter-spacing: 4px; font-family: 'Space Mono', monospace;" />
-                <button class="remote-btn-primary" onclick="verifyLoginOtp()" style="margin-top: 10px; background: var(--signal); color: var(--void);">Verify Code</button>
-                <button type="button" onclick="cancelLoginOtp()" style="margin-top: 10px; width: 100%; background: transparent; border: 1px solid var(--line); color: var(--dim); border-radius: 24px; padding: 12px; cursor: pointer;">Cancel</button>
-              </div>
-
-              <div class="remote-divider">OR</div>
-
-              <button class="remote-btn-google" onclick="handleGoogleAuth()">
-                <svg width="18" height="18" viewBox="0 0 48 48">
-                  <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-                  <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-                  <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-                  <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-                </svg>
-                Log In With Google
-              </button>
-
-              <button type="button" class="remote-btn-primary" onclick="openGlobalLoginModal()" style="margin-top: 10px; background: rgba(255,255,255,0.06); border: 1px solid var(--lineb); color: var(--ink);">
-                🔑 Sign In With Main Site Modal
-              </button>
-              
-              <p class="remote-auth-subtitle" style="margin-top: 24px;">Don't Have An Account Yet? <a onclick="switchTab('signup')" style="cursor:pointer; color:var(--signal);">Sign Up Now</a></p>
-              
-              <button class="remote-btn-primary" id="auth-dashboard-btn" style="display: none; margin-top: 15px; background: transparent; border: 1px solid var(--em); color: var(--em)" onclick="window.location.href = 'Academy.html'">Go To Academy Hub &rarr;</button>
             </div>
 
-            
-            <div id="signup-panel" class="auth-slide">
-              <div id="col-auth-err-signup" style="color: var(--red); font-size: 0.9rem; margin-bottom: 15px; font-weight: 600; text-align: left;"></div>
-
-              <div class="remote-role-group">
-                <button type="button" class="remote-role-btn active" id="btn-signup-student" onclick="selectRole('student', 'signup')">
-                  <span style="font-size: 1.1rem;">🎓</span> Student
-                </button>
-                <button type="button" class="remote-role-btn" id="btn-signup-parent" onclick="selectRole('parent_teacher', 'signup')">
-                  <span style="font-size: 1.1rem;">👨‍👩‍👧‍👦</span> Parent/Teacher
-                </button>
+            <div class="welcome-stat-grid">
+              <div class="welcome-stat-item">
+                <div class="welcome-stat-label">Selected Ride</div>
+                <div class="welcome-stat-value" id="overviewVeh">🚗 Standard Car</div>
               </div>
-              
-              <input type="hidden" id="signup-role" value="student" />
-
-              <div class="remote-input-group">
-                <input type="email" id="signup-email" class="remote-input" placeholder="Email address" autocomplete="email" />
+              <div class="welcome-stat-item">
+                <div class="welcome-stat-label">Age</div>
+                <div class="welcome-stat-value" id="overviewAge">18 Years</div>
               </div>
-              <div class="remote-input-group">
-                <input type="password" id="signup-pass" class="remote-input" placeholder="Password" autocomplete="new-password" />
+              <div class="welcome-stat-item">
+                <div class="welcome-stat-label">Language</div>
+                <div class="welcome-stat-value" id="overviewLang">English</div>
               </div>
-              <div class="remote-input-group">
-                <input type="password" id="signup-pass-confirm" class="remote-input" placeholder="Confirm Password" autocomplete="new-password" />
-              </div>
-
-              <button class="remote-btn-primary" id="signup-submit-btn" onclick="handleEmailAuth()">Create Account</button>
-              <div id="signup-otp-section" style="display: none; margin-top: 15px;">
-                <p style="color: var(--dim); font-size: 0.9rem; margin-bottom: 10px;">Enter The 6-Digit Code Sent To Your Email To Confirm:</p>
-                <input type="text" id="signup-otp-input" class="remote-input" placeholder="123456" maxlength="6" style="text-align: center; font-size: 1.5rem; letter-spacing: 4px; font-family: 'Space Mono', monospace;" />
-                <button class="remote-btn-primary" onclick="verifySignupOtp()" style="margin-top: 10px; background: var(--signal); color: var(--void);">Verify Code</button>
-              </div>
-
-              <div class="remote-divider">OR</div>
-
-              <button class="remote-btn-google" onclick="handleGoogleAuth()">
-                <svg width="18" height="18" viewBox="0 0 48 48">
-                  <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-                  <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-                  <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-                  <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-                </svg>
-                Log In With Google
-              </button>
-
-              <button type="button" class="remote-btn-primary" onclick="openGlobalLoginModal()" style="margin-top: 10px; background: rgba(255,255,255,0.06); border: 1px solid var(--lineb); color: var(--ink);">
-                🔑 Sign In With Main Site Modal
-              </button>
-              
-              <p class="remote-auth-subtitle" style="margin-top: 24px;">Already Have An Account? <a onclick="switchTab('login')" style="cursor:pointer; color:var(--signal);">Log In</a></p>
             </div>
-          </div>
 
-          <div class="remote-bottom-links" style="margin-top: 24px;">
-            <button type="button" class="remote-bottom-link primary" onclick="goToStep(2); updateWizardStep(2)">🎮 Skip & Play Locally</button>
-            <button type="button" class="remote-bottom-link" onclick="window.location.href = 'Academy.html'">← Back To Academy</button>
+            <button type="button" class="btn-submit" onclick="launchAcademyHub()" style="margin-top:0;">
+              🚀 Launch Academy Hub
+            </button>
+            <button type="button" class="btn-submit btn-outline" onclick="enableProfileEdit()">
+              ✏️ Modify Driver Details
+            </button>
           </div>
         </div>
-      </div>
 
-        
-      <div id="setupFormArea" class="wizard-step" data-step="2" style="display: none">
-        <div id="cloud-status" style="margin-bottom: 20px; font-weight: 600; color: var(--em); display: none">✅ Cloud Account Connected</div>
-        <form id="setupForm">
-          <div class="input-group">
-            <label for="prof-name">Full Name (For Certificate)</label>
-            <input type="text" id="prof-name" placeholder="E.g., John Doe" required autocomplete="name" />
+        <!-- STEP 1: AUTHENTICATION -->
+        <div id="authArea" class="wizard-step" data-step="1">
+          <div class="auth-toggle-row">
+            <button type="button" class="auth-toggle-btn active" id="tab-login-btn" onclick="switchAuthTab('login')">Log In</button>
+            <button type="button" class="auth-toggle-btn" id="tab-signup-btn" onclick="switchAuthTab('signup')">Create Account</button>
           </div>
 
-          <div class="input-group">
-            <label for="prof-username">Username (Public on Leaderboard)</label>
-            <input type="text" id="prof-username" placeholder="@your_username" required autocomplete="username" oninput="if(this.value && !this.value.startsWith('@')) this.value = '@' + this.value; checkUsernameAvailability(this.value);" style="padding-right: 40px;" />
-            <div id="username-status" style="font-size: 0.8rem; margin-top: 6px; min-height: 18px; font-weight: 600;"></div>
+          <!-- Error Alert Banner -->
+          <div id="col-auth-err" style="color:var(--red); font-size:0.88rem; margin-bottom:14px; font-weight:600; text-align:left; display:none;"></div>
+
+          <!-- Login Form Container -->
+          <div id="login-form-box">
+            <div class="input-group">
+              <label class="input-label" for="auth-email">Email Address Or @Username</label>
+              <input type="text" id="auth-email" placeholder="E.g., driver@classoflearners.com" autocomplete="username" />
+            </div>
+
+            <div class="input-group" id="login-pass-group">
+              <label class="input-label" for="auth-pass">Password Or Local PIN</label>
+              <input type="password" id="auth-pass" placeholder="••••••••" autocomplete="current-password" />
+            </div>
+
+            <button type="button" class="btn-submit" id="auth-submit-btn" onclick="handleEmailAuth()">Log In</button>
+            <button type="button" class="btn-submit btn-outline" id="auth-otp-btn" onclick="sendLoginOtp()">Log In With Email Code</button>
+
+            <!-- OTP Verification Section -->
+            <div id="login-otp-section" style="display:none; margin-top:16px; padding:16px; background:rgba(0,0,0,0.2); border:1px solid var(--line); border-radius:12px;">
+              <p style="color:var(--ink-dim); font-size:0.88rem; margin:0 0 10px 0;">Enter The 6-Digit Code Sent To Your Email:</p>
+              <input type="text" id="login-otp-input" placeholder="123456" maxlength="6" style="text-align:center; font-size:1.4rem; letter-spacing:6px; font-family:'Space Mono',monospace;" />
+              <button type="button" class="btn-submit" onclick="verifyLoginOtp()" style="margin-top:12px;">Verify Code</button>
+              <button type="button" class="btn-submit btn-outline" onclick="cancelLoginOtp()">Cancel</button>
+            </div>
           </div>
 
-          <div class="input-group">
-            <label for="prof-age">Your Age <span style="color:var(--dim);font-weight:400;font-size:0.8rem">(for best experience)</span></label>
-            <input type="number" id="prof-age" min="8" max="99" placeholder="E.g., 18" required autocomplete="off" />
+          <!-- Signup Form Container -->
+          <div id="signup-form-box" style="display:none;">
+            <div class="input-group">
+              <label class="input-label" for="signup-email">Email Address</label>
+              <input type="email" id="signup-email" placeholder="E.g., driver@classoflearners.com" autocomplete="email" />
+            </div>
+
+            <div class="input-group">
+              <label class="input-label" for="signup-pass">Choose Password</label>
+              <input type="password" id="signup-pass" placeholder="At Least 6 Characters" autocomplete="new-password" />
+            </div>
+
+            <div class="input-group">
+              <label class="input-label" for="signup-pass-confirm">Confirm Password</label>
+              <input type="password" id="signup-pass-confirm" placeholder="Re-Enter Password" autocomplete="new-password" />
+            </div>
+
+            <button type="button" class="btn-submit" id="signup-submit-btn" onclick="handleEmailAuth()">Create Driver Account</button>
+
+            <div id="signup-otp-section" style="display:none; margin-top:16px; padding:16px; background:rgba(0,0,0,0.2); border:1px solid var(--line); border-radius:12px;">
+              <p style="color:var(--ink-dim); font-size:0.88rem; margin:0 0 10px 0;">Enter The 6-Digit Confirmation Code:</p>
+              <input type="text" id="signup-otp-input" placeholder="123456" maxlength="6" style="text-align:center; font-size:1.4rem; letter-spacing:6px; font-family:'Space Mono',monospace;" />
+              <button type="button" class="btn-submit" onclick="verifySignupOtp()" style="margin-top:12px;">Verify & Continue</button>
+            </div>
           </div>
 
-          <div class="input-group">
-            <label for="prof-lang">Preferred Language</label>
-            <select id="prof-lang" autocomplete="off">
-              <option value="en">English</option>
-              <option value="hi">हिन्दी (Hindi)</option>
-            </select>
+          <div class="remote-divider">OR</div>
+
+          <button type="button" class="remote-btn-google" onclick="handleGoogleAuth()">
+            <svg width="18" height="18" viewBox="0 0 48 48">
+              <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+              <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+              <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+              <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+            </svg>
+            Continue With Google
+          </button>
+
+          <div style="display:flex; gap:10px; margin-top:16px;">
+            <button type="button" class="btn-submit btn-outline" onclick="skipToOfflineSetup()" style="flex:1; margin-top:0;">
+              🎮 Play Offline / Guest
+            </button>
+            <button type="button" class="btn-submit btn-outline" onclick="window.location.href='Academy.html'" style="flex:1; margin-top:0;">
+              ← Back To Academy
+            </button>
           </div>
+        </div>
 
-          <button type="button" class="btn-submit" onclick="goToStep(3); updateWizardStep(3)" style="margin-top: 10px">Next: Choose Vehicle &rarr;</button>
-          <button type="button" class="btn-submit btn-outline" onclick="goToStep(1); updateWizardStep(1)" style="margin-top: 15px">← Back</button>
-        </form>
-      </div>
+        <!-- STEP 2: PROFILE DETAILS -->
+        <div id="setupFormArea" class="wizard-step" data-step="2" style="display:none;">
+          <form id="setupProfileForm" onsubmit="event.preventDefault(); goToStep(3);">
+            <div class="input-group">
+              <label class="input-label" for="prof-name">
+                <span>Full Name (For Certificate)</span>
+                <span class="input-help">Printed On Official License</span>
+              </label>
+              <input type="text" id="prof-name" placeholder="E.g., John Doe" required autocomplete="name" />
+            </div>
 
-      
-      <div id="vehicleStep" class="wizard-step" data-step="3" style="display: none">
-        <form id="vehicleForm">
-          <div class="input-group">
-            <label for="prof-veh">Preferred Vehicle</label>
-            <div class="custom-select-wrapper" id="veh-select-wrapper">
-              <div class="custom-select-trigger" id="veh-select-trigger" role="combobox" aria-expanded="false" aria-haspopup="listbox" aria-label="Preferred Vehicle" tabindex="0" onclick="toggleCustomSelect('veh')" onkeydown="handleSelectKeydown(event, 'veh')">
-                <span class="custom-select-icon" aria-hidden="true">🚗</span>
-                <span class="custom-select-text" id="veh-select-text">Standard Car</span>
-                <svg class="custom-select-arrow" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-              </div>
-              <div class="custom-select-dropdown" id="veh-select-dropdown" role="listbox" aria-label="Vehicle options">
-                <div class="custom-select-option selected" data-value="Car" data-icon="🚗" role="option" aria-selected="true" tabindex="-1" onclick="selectCustomOption('veh', 'Car', '🚗', 'Standard Car')">
-                  <span class="option-icon" aria-hidden="true">🚗</span>
-                  <span class="option-label">Standard Car</span>
-                  <svg class="option-check" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                </div>
-                <div class="custom-select-option" data-value="Bike" data-icon="🏍️" role="option" aria-selected="false" tabindex="-1" onclick="selectCustomOption('veh', 'Bike', '🏍️', 'Motorcycle')">
-                  <span class="option-icon" aria-hidden="true">🏍️</span>
-                  <span class="option-label">Motorcycle</span>
-                  <svg class="option-check" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                </div>
-                <div class="custom-select-option" data-value="Bus" data-icon="🚌" role="option" aria-selected="false" tabindex="-1" onclick="selectCustomOption('veh', 'Bus', '🚌', 'Bus')">
-                  <span class="option-icon" aria-hidden="true">🚌</span>
-                  <span class="option-label">Bus</span>
-                  <svg class="option-check" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                </div>
-                <div class="custom-select-option" data-value="Truck" data-icon="🚛" role="option" aria-selected="false" tabindex="-1" onclick="selectCustomOption('veh', 'Truck', '🚛', 'Truck')">
-                  <span class="option-icon" aria-hidden="true">🚛</span>
-                  <span class="option-label">Truck</span>
-                  <svg class="option-check" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                </div>
-                <div class="custom-select-option" data-value="Auto" data-icon="🛺" role="option" aria-selected="false" tabindex="-1" onclick="selectCustomOption('veh', 'Auto', '🛺', 'Auto Rickshaw')">
-                  <span class="option-icon" aria-hidden="true">🛺</span>
-                  <span class="option-label">Auto Rickshaw</span>
-                  <svg class="option-check" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                </div>
+            <div class="input-group">
+              <label class="input-label" for="prof-username">
+                <span>Username (Public On Leaderboard)</span>
+                <span class="input-help">Starts With @</span>
+              </label>
+              <input type="text" id="prof-username" placeholder="@your_username" required autocomplete="username" oninput="handleUsernameInput(this)" />
+              <div id="username-status" style="font-size:0.8rem; margin-top:6px; min-height:18px; font-weight:600;"></div>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label" for="prof-age">
+                <span>Driver Age</span>
+                <span class="input-help">Ages 8–99</span>
+              </label>
+              <input type="number" id="prof-age" min="8" max="99" placeholder="E.g., 18" required autocomplete="off" oninput="highlightAgeChip(this.value)" />
+              <div class="age-chips-row">
+                <div class="age-chip" onclick="setQuickAge(16)">16 Yrs</div>
+                <div class="age-chip" onclick="setQuickAge(18)">18 Yrs</div>
+                <div class="age-chip" onclick="setQuickAge(21)">21 Yrs</div>
+                <div class="age-chip" onclick="setQuickAge(25)">25+ Yrs</div>
               </div>
             </div>
-            <input type="hidden" id="prof-veh" value="Car" />
-          </div>
 
-          <div class="input-group">
-            <label for="prof-pin">Local Login PIN (Optional)</label>
-            <input type="password" id="prof-pin" placeholder="4-digit PIN (e.g. 1234)" autocomplete="off" />
-          </div>
+            <div class="input-group">
+              <label class="input-label" for="prof-lang">Preferred Language</label>
+              <select id="prof-lang" autocomplete="off">
+                <option value="en">English (Official)</option>
+                <option value="hi">हिन्दी (Hindi)</option>
+              </select>
+            </div>
 
-          <button type="submit" class="btn-submit" form="vehicleForm">Complete Setup &rarr;</button>
-          <button type="button" class="btn-submit btn-outline" onclick="goToStep(2); updateWizardStep(2)" style="margin-top: 15px">← Back</button>
-          <button
-            type="button"
-            class="btn-submit btn-outline"
-            id="setup-dashboard-btn"
-            style="display: none; margin-top: 15px; border-color: var(--em); color: var(--em)"
-            onclick="window.location.href = 'Academy.html'"
-          >
-            Go to Academy Hub &rarr;
-          </button>
-        </form>
+            <button type="submit" class="btn-submit">Next: Choose Vehicle &rarr;</button>
+            <button type="button" class="btn-submit btn-outline" onclick="goToStep(1)">← Back To Account</button>
+          </form>
+        </div>
+
+        <!-- STEP 3: VEHICLE & CONFIRMATION -->
+        <div id="vehicleStep" class="wizard-step" data-step="3" style="display:none;">
+          <form id="vehicleForm" onsubmit="handleFinalSubmit(event)">
+            <label class="input-label" style="margin-bottom:12px;">Choose Your Preferred Simulator Ride</label>
+            
+            <!-- Interactive Vehicle Grid -->
+            <div class="veh-grid" id="veh-cards-container">
+              
+              <div class="veh-card selected" data-veh="Car" onclick="selectVehicle('Car')">
+                <div class="veh-check-badge">✓</div>
+                <div class="veh-icon-wrapper">🚗</div>
+                <div class="veh-title">Standard Car</div>
+                <div class="veh-tag">Balanced · RTO Standard</div>
+                <div class="veh-desc">Ideal For Everyday City Commutes & RTO License Tests.</div>
+              </div>
+
+              <div class="veh-card" data-veh="Bike" onclick="selectVehicle('Bike')">
+                <div class="veh-check-badge">✓</div>
+                <div class="veh-icon-wrapper">🏍️</div>
+                <div class="veh-title">Motorcycle</div>
+                <div class="veh-tag">Agile & Swift</div>
+                <div class="veh-desc">Nimble Lane Navigation Through Dense Mumbai Traffic.</div>
+              </div>
+
+              <div class="veh-card" data-veh="Bus" onclick="selectVehicle('Bus')">
+                <div class="veh-check-badge">✓</div>
+                <div class="veh-icon-wrapper">🚌</div>
+                <div class="veh-title">BEST Bus</div>
+                <div class="veh-tag">City Transit</div>
+                <div class="veh-desc">Master Wide Turning Radii & Bus Lane Priority.</div>
+              </div>
+
+              <div class="veh-card" data-veh="Truck" onclick="selectVehicle('Truck')">
+                <div class="veh-check-badge">✓</div>
+                <div class="veh-icon-wrapper">🚛</div>
+                <div class="veh-title">Heavy Truck</div>
+                <div class="veh-tag">Commercial Hauler</div>
+                <div class="veh-desc">High-Torque Power With Air Brake Dynamics.</div>
+              </div>
+
+              <div class="veh-card" data-veh="Auto" onclick="selectVehicle('Auto')">
+                <div class="veh-check-badge">✓</div>
+                <div class="veh-icon-wrapper">🛺</div>
+                <div class="veh-title">Auto Rickshaw</div>
+                <div class="veh-tag">Mumbai Classic</div>
+                <div class="veh-desc">Quintessential Three-Wheeler Mobility & Tight Turning.</div>
+              </div>
+
+            </div>
+
+            <!-- Fallback / Accessible Custom Select -->
+            <div class="input-group" style="display:none;">
+              <input type="hidden" id="prof-veh" value="Car" />
+            </div>
+
+            <div class="input-group">
+              <label class="input-label" for="prof-pin">
+                <span>Local Login PIN (Optional)</span>
+                <span class="input-help">Fast 4-Digit Local Lock</span>
+              </label>
+              <input type="password" id="prof-pin" maxlength="4" placeholder="4-Digit PIN (E.g. 1234)" autocomplete="off" />
+            </div>
+
+            <button type="submit" class="btn-submit" id="complete-btn">
+              <span>Complete Setup & Launch Academy &rarr;</span>
+            </button>
+            <button type="button" class="btn-submit btn-outline" onclick="goToStep(2)">← Back To Profile</button>
+          </form>
+        </div>
+
       </div>
-      </div> 
     </div>
 
     <script>
-
+      // Theme Application
       function applyTheme() {
-        const currentTheme = localStorage.getItem('theme') || 'dark'
+        const currentTheme = localStorage.getItem('theme') || 'dark';
         if (currentTheme === 'light') {
-          document.body.classList.add('lm')
+          document.body.classList.add('lm');
         } else {
-          document.body.classList.remove('lm')
+          document.body.classList.remove('lm');
         }
       }
-      applyTheme()
-      
-
+      applyTheme();
       window.addEventListener('storage', (e) => {
-        if (e.key === 'theme') applyTheme()
-      })
+        if (e.key === 'theme') applyTheme();
+      });
 
+      // Wizard State
+      let currentStep = 1;
+      const totalSteps = 3;
+      let setupProgressRing = null;
+      let activeAuthTab = 'login';
+      let _usernameCheckTimeout = null;
 
-      let currentStep = 1
-      const totalSteps = 3
-      let setupProgressRing = null
+      // 3D Background Engine
+      let scene, camera, renderer, particles;
+      function init3D() {
+        const canvas = document.getElementById('bg-canvas');
+        if (!canvas || typeof THREE === 'undefined') return;
 
-      function updateWizardStep(step) {
-        currentStep = Math.max(1, Math.min(step, totalSteps))
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
+        const isLowEnd = /iPhone|iPad|Android/i.test(navigator.userAgent) || window.innerWidth < 768;
+        renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: !isLowEnd });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(isLowEnd ? 1 : Math.min(window.devicePixelRatio, 2));
 
-        document.querySelectorAll('.step-item').forEach((item, i) => {
-          const stepNum = i + 1
-          item.classList.remove('active', 'completed')
-          if (stepNum < currentStep) item.classList.add('completed')
-          else if (stepNum === currentStep) item.classList.add('active')
-        })
+        const count = isLowEnd ? 600 : 2000;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(count * 3);
+        const colors = new Float32Array(count * 3);
 
-
-        const progress = ((currentStep - 1) / (totalSteps - 1)) * 100
-        document.querySelector('.wizard-stepper .step-progress').style.width = `${progress}%`
-
-
-        if (setupProgressRing && window.TrafficCharts) {
-          const pct = Math.round(((currentStep - 1) / (totalSteps - 1)) * 100)
-          setupProgressRing.update(pct)
-
-          const pctEl = document.getElementById('progress-pct')
-          if (pctEl) {
-            pctEl.textContent = pct + '%'
-          }
-        }
-
-
-        document.querySelectorAll('.wizard-step').forEach(el => {
-          el.style.display = parseInt(el.dataset.step) === currentStep ? 'block' : 'none'
-        })
-
-
-        const authArea = document.getElementById('authArea')
-        if (authArea) {
-          authArea.style.display = currentStep === 1 ? 'block' : 'none'
-        }
-
-
-        var titles = {
-          1: 'Welcome',
-          2: window.colUser ? 'Welcome, ' + (window.colUser.user_metadata?.full_name?.split(' ')[0] || 'Driver') + '!' : 'Your Profile',
-          3: 'Choose Your Vehicle'
-        }
-        var subtitles = {
-          1: "Let's setup your driver profile to get started.",
-          2: window.colUser ? 'Almost done — just fill in a few details to complete your setup.' : 'Tell us about yourself so we can personalize your experience.',
-          3: 'Pick your preferred vehicle and you\'ll be ready to hit the road.'
-        }
-        var titleEl = document.getElementById('step-title-h1')
-        var subEl = document.getElementById('subtitle-text')
-        if (titleEl) titleEl.textContent = titles[currentStep] || 'Welcome'
-        if (subEl) subEl.textContent = subtitles[currentStep] || ''
-      }
-
-      function goToStep(step) {
-
-        if (step > currentStep) {
-          if (currentStep === 1) {
-
-          } else if (currentStep === 2) {
-            const name = document.getElementById('prof-name').value.trim()
-            const age = parseInt(document.getElementById('prof-age').value) || 0
-            if (name.length < 2) {
-              alert('Please enter a valid name (at least 2 characters).')
-              return
-            }
-            if (age < 8 || age > 99) {
-              alert('Please enter a valid age (8-99).')
-              return
-            }
-          }
-        }
-        updateWizardStep(step)
-      }
-
-
-      function initProgressRing() {
-        const canvas = document.getElementById('setup-progress-ring')
-        if (canvas && window.TrafficCharts) {
-          setupProgressRing = window.TrafficCharts.createProgressRing(canvas, 0, { cutout: '70%' })
-
-
-          var _nativeUpdate = setupProgressRing.update.bind(setupProgressRing)
-          setupProgressRing.update = function(value) {
-            this.data.datasets[0].data = [value, 100 - value]
-            _nativeUpdate('none')
-          }
-
-          const pctEl = document.getElementById('progress-pct')
-          if (pctEl) pctEl.textContent = '0%'
-        }
-      }
-
-
-      let scene, camera, renderer, particles
-      const init3D = () => {
-        const canvas = document.getElementById('bg-canvas')
-        scene = new THREE.Scene()
-        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
-
-        const isLowEnd = /iPhone|iPad|Android/i.test(navigator.userAgent) || window.innerWidth < 768
-
-        renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: !isLowEnd })
-        renderer.setSize(window.innerWidth, window.innerHeight)
-        renderer.setPixelRatio(isLowEnd ? 1 : Math.min(window.devicePixelRatio, 2))
-
-        const isLight = document.body.classList.contains('lm')
-
-        const count = isLowEnd ? 800 : 3000
-        const geometry = new THREE.BufferGeometry()
-        const positions = new Float32Array(count * 3)
-        const colors = new Float32Array(count * 3)
-
-        const color1 = new THREE.Color(isLight ? 0x0e72a0 : 0xf2b84b)
-        const color2 = new THREE.Color(isLight ? 0x34d399 : 0x00f0cc)
+        const color1 = new THREE.Color(0xf2b84b);
+        const color2 = new THREE.Color(0x00f0cc);
 
         for (let i = 0; i < count; i++) {
-          const radius = 2 + Math.random() * 15
-          const theta = Math.random() * 2 * Math.PI
-          const y = (Math.random() - 0.5) * 4 * (1 - radius / 18)
+          const radius = 2 + Math.random() * 16;
+          const theta = Math.random() * 2 * Math.PI;
+          const y = (Math.random() - 0.5) * 4 * (1 - radius / 18);
 
-          positions[i * 3] = radius * Math.cos(theta)
-          positions[i * 3 + 1] = y
-          positions[i * 3 + 2] = radius * Math.sin(theta)
+          positions[i * 3] = radius * Math.cos(theta);
+          positions[i * 3 + 1] = y;
+          positions[i * 3 + 2] = radius * Math.sin(theta);
 
-          const mix = Math.random()
-          const mixedColor = color1.clone().lerp(color2, mix)
-          colors[i * 3] = mixedColor.r
-          colors[i * 3 + 1] = mixedColor.g
-          colors[i * 3 + 2] = mixedColor.b
+          const mixedColor = color1.clone().lerp(color2, Math.random());
+          colors[i * 3] = mixedColor.r;
+          colors[i * 3 + 1] = mixedColor.g;
+          colors[i * 3 + 2] = mixedColor.b;
         }
 
-        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
-        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3))
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
-        const texCanvas = document.createElement('canvas')
-        texCanvas.width = 32
-        texCanvas.height = 32
-        const context = texCanvas.getContext('2d')
-        const gradient = context.createRadialGradient(16, 16, 0, 16, 16, 16)
-        gradient.addColorStop(0, 'rgba(255,255,255,1)')
-        gradient.addColorStop(0.2, 'rgba(255,255,255,0.8)')
-        gradient.addColorStop(1, 'rgba(0,0,0,0)')
-        context.fillStyle = gradient
-        context.fillRect(0, 0, 32, 32)
-        const texture = new THREE.CanvasTexture(texCanvas)
+        const texCanvas = document.createElement('canvas');
+        texCanvas.width = 32;
+        texCanvas.height = 32;
+        const ctx = texCanvas.getContext('2d');
+        const grad = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+        grad.addColorStop(0, 'rgba(255,255,255,1)');
+        grad.addColorStop(0.3, 'rgba(255,255,255,0.7)');
+        grad.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 32, 32);
 
+        const texture = new THREE.CanvasTexture(texCanvas);
         const material = new THREE.PointsMaterial({
-          size: 0.15,
+          size: 0.16,
           vertexColors: true,
           map: texture,
           transparent: true,
-          opacity: 0.8,
+          opacity: 0.75,
           blending: THREE.AdditiveBlending,
           depthWrite: false
-        })
+        });
 
-        particles = new THREE.Points(geometry, material)
-        particles.rotation.x = 0.3
-        scene.add(particles)
+        particles = new THREE.Points(geometry, material);
+        particles.rotation.x = 0.25;
+        scene.add(particles);
 
-        const grid = new THREE.GridHelper(40, 40, isLight ? 0x0e72a0 : 0xf2b84b, isLight ? 0x0e72a0 : 0xf2b84b)
-        grid.position.y = -3
-        grid.material.opacity = 0.08
-        grid.material.transparent = true
-        grid.material.blending = THREE.AdditiveBlending
-        scene.add(grid)
+        const grid = new THREE.GridHelper(40, 40, 0xf2b84b, 0x00f0cc);
+        grid.position.y = -3;
+        grid.material.opacity = 0.07;
+        grid.material.transparent = true;
+        scene.add(grid);
 
-        camera.position.z = 8
-        camera.position.y = 1
+        camera.position.z = 8;
+        camera.position.y = 1;
 
-        let mouseX = 0
-        let mouseY = 0
-        document.addEventListener('mousemove', (event) => {
-          mouseX = (event.clientX / window.innerWidth) * 2 - 1
-          mouseY = -(event.clientY / window.innerHeight) * 2 - 1
-        })
+        let mouseX = 0, mouseY = 0;
+        document.addEventListener('mousemove', (e) => {
+          mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+          mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+        });
 
-        let time = 0
-        const animate = () => {
-          requestAnimationFrame(animate)
-          time += 0.005
+        let time = 0;
+        function animate() {
+          requestAnimationFrame(animate);
+          time += 0.004;
+          particles.rotation.y = time * 0.4;
+          grid.position.z = (time * 4) % 1;
 
-          particles.rotation.y = time * 0.5
+          camera.position.x += (mouseX * 1.5 - camera.position.x) * 0.04;
+          camera.position.y += (mouseY * 0.8 - camera.position.y + 1) * 0.04;
+          camera.lookAt(scene.position);
 
-          if (!isLowEnd) {
-            const positions = particles.geometry.attributes.position.array
-            for (let i = 0; i < count; i++) {
-              const i3 = i * 3
-              positions[i3 + 1] += Math.sin(time * 2 + positions[i3]) * 0.002
-            }
-            particles.geometry.attributes.position.needsUpdate = true
-          }
-
-          grid.position.z = (time * 5) % 1
-
-          camera.position.x += (mouseX * 2 - camera.position.x) * 0.05
-          camera.position.y += (-mouseY * 1 - camera.position.y + 1) * 0.05
-          camera.lookAt(scene.position)
-
-          renderer.render(scene, camera)
+          renderer.render(scene, camera);
         }
-
-        animate()
+        animate();
 
         window.addEventListener('resize', () => {
-          camera.aspect = window.innerWidth / window.innerHeight
-          camera.updateProjectionMatrix()
-          renderer.setSize(window.innerWidth, window.innerHeight)
-        })
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(window.innerWidth, window.innerHeight);
+        });
       }
 
-      window.addEventListener('load', () => {
-        if (typeof THREE !== 'undefined') {
-          init3D()
-        }
-
-        initProgressRing()
-        updateWizardStep(1)
-      })
-
-
-      let authMode = 'login'
-      let selectedRole = 'student'
-
-      function selectRole(role, mode) {
-        selectedRole = role
-        if (mode === 'signup') {
-          document.getElementById('signup-role').value = role
-
-          document.querySelectorAll('#signup-panel .remote-role-btn').forEach(btn => {
-            btn.classList.remove('active')
-            btn.style.borderColor = ''
-            btn.style.background = ''
-            btn.style.color = ''
-          })
-          const btnId = role === 'student' ? 'btn-signup-student' : 'btn-signup-parent'
-          const btn = document.getElementById(btnId)
-          if(btn) {
-            btn.classList.add('active')
-          }
-        } else {
-
-          document.querySelectorAll('#login-panel .remote-role-btn').forEach(btn => {
-            btn.classList.remove('active')
-            btn.style.borderColor = ''
-            btn.style.background = ''
-            btn.style.color = ''
-          })
-          const btnId = role === 'student' ? 'btn-login-student' : 'btn-login-parent'
-          const btn = document.getElementById(btnId)
-          if(btn) {
-            btn.classList.add('active')
-          }
-        }
-      }
-
-      function switchTab(mode) {
-        authMode = mode
-        const container = document.getElementById('auth-slider-container')
-        const stepTitle = document.getElementById('step-title-h1')
-        
-        if (mode === 'login') {
-          container.classList.remove('slide-signup')
-          container.classList.add('slide-login')
-          if (stepTitle) stepTitle.textContent = "Welcome back!"
-        } else {
-          container.classList.remove('slide-login')
-          container.classList.add('slide-signup')
-          if (stepTitle) stepTitle.textContent = "Create an account"
-        }
-      }
-
-
-
-      
-      function friendlyAuthError(err) {
-        var msg = (err.message || '').toLowerCase();
-        if (msg.includes('rate limit') || msg.includes('too many')) return 'Too many attempts. Please wait a few minutes and try again.';
-        if (msg.includes('network') || msg.includes('fetch') || msg.includes('failed to fetch') || msg.includes('networkerror')) return 'Network error — check your connection and try again.';
-        if (msg.includes('invalid login credentials') || msg.includes('invalid email') || msg.includes('invalid grant')) return 'No account found with this email. Please sign up first.';
-        if (msg.includes('email not confirmed')) return 'Please confirm your email address before logging in.';
-        if (msg.includes('signup disabled') || msg.includes('signups not allowed')) return 'New signups are currently disabled. Please contact support.';
-        if (msg.includes('token has expired') || msg.includes('invalid token') || msg.includes('invalid otp')) return 'Code is invalid or expired. Please request a new one.';
-        if (msg.includes('email rate limit exceeded')) return 'Too many emails sent. Please wait a few minutes.';
-        if (msg.includes('email address invalid')) return 'Please enter a valid email address.';
-        return err.message || 'Something went wrong. Please try again.';
-      }
-
-      async function sendLoginOtp() {
-        if (!window.supabaseClient) return alert('Cloud connection not ready. Please use Local Setup.')
-        const email = document.getElementById('auth-email').value.trim()
-        const errDiv = document.getElementById('col-auth-err')
-        if (!email) {
-          errDiv.textContent = 'Please enter an email address.'
-          return
-        }
-
-        document.getElementById('auth-otp-btn').textContent = 'Sending...'
-        document.getElementById('auth-otp-btn').disabled = true
-        errDiv.textContent = ''
-
-        try {
-          const res = await window.supabaseClient.auth.signInWithOtp({ email })
-          if (res.error) throw res.error
-          
-          document.getElementById('auth-pass').parentElement.style.display = 'none'
-          document.getElementById('auth-submit-btn').style.display = 'none'
-          document.getElementById('auth-otp-btn').style.display = 'none'
-          document.getElementById('login-otp-section').style.display = 'block'
-          errDiv.innerHTML = '<span style="color:var(--em)">✓ Code sent to ' + email + '</span>'
-        } catch (err) {
-          errDiv.textContent = friendlyAuthError(err)
-          document.getElementById('auth-otp-btn').textContent = 'Log in with Email Code'
-          document.getElementById('auth-otp-btn').disabled = false
-        }
-      }
-
-      function cancelLoginOtp() {
-        document.getElementById('auth-pass').parentElement.style.display = 'block'
-        document.getElementById('auth-submit-btn').style.display = 'block'
-        document.getElementById('auth-otp-btn').style.display = 'block'
-        document.getElementById('login-otp-section').style.display = 'none'
-        document.getElementById('auth-otp-btn').textContent = 'Log in with Email Code'
-        document.getElementById('auth-otp-btn').disabled = false
-      }
-
-      async function verifyLoginOtp() {
-        const email = document.getElementById('auth-email').value.trim()
-        const token = document.getElementById('login-otp-input').value.trim()
-        const errDiv = document.getElementById('col-auth-err')
-        const verifyBtn = document.querySelector('#login-otp-section .remote-btn-primary')
-
-        if (!token) {
-          errDiv.textContent = 'Please enter the 6-digit code.'
-          return
-        }
-        if (token.length < 6) {
-          errDiv.textContent = 'Code must be 6 digits.'
-          return
-        }
-
-        errDiv.textContent = ''
-        if (verifyBtn) { verifyBtn.textContent = 'Verifying...'; verifyBtn.disabled = true; }
-
-        try {
-          const res = await window.supabaseClient.auth.verifyOtp({ email, token, type: 'email' })
-          if (res.error) throw res.error
-
-          if (res.data.session) {
-            window.colUser = res.data.session.user
-            window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: window.colUser } }))
-            document.getElementById('cloud-status').style.display = 'block'
-            
-            const p = await window.supabaseClient.from('user_profiles').select('*').eq('user_id', window.colUser.id).maybeSingle()
-            if (p.data) {
-              window.colUser.uid = p.data.user_id;
-              document.getElementById('auth-dashboard-btn').style.display = 'block'
+      // Progress Ring Initialization
+      function initProgressRing() {
+        const canvas = document.getElementById('setup-progress-ring');
+        if (canvas && window.TrafficCharts) {
+          try {
+            if (window.Chart && typeof window.Chart.getChart === 'function') {
+              const existing = window.Chart.getChart(canvas);
+              if (existing) existing.destroy();
             }
-            goToStep(2); updateWizardStep(2);
-          } else {
-            errDiv.textContent = 'Verification succeeded but no session was created. Please try again.'
+            setupProgressRing = window.TrafficCharts.createProgressRing(canvas, 0, { cutout: '72%' });
+          } catch(e) {
+            console.warn('[Setup] Progress ring init warning:', e);
           }
-        } catch (err) {
-          errDiv.textContent = friendlyAuthError(err)
-        } finally {
-          if (verifyBtn) { verifyBtn.textContent = 'Verify Code'; verifyBtn.disabled = false; }
         }
       }
 
-      async function verifySignupOtp() {
-        const email = document.getElementById('signup-email').value.trim()
-        const token = document.getElementById('signup-otp-input').value.trim()
-        const errDiv = document.getElementById('col-auth-err-signup')
-        const verifyBtn = document.querySelector('#signup-otp-section .remote-btn-primary')
-
-        if (!token) {
-          errDiv.textContent = 'Please enter the 6-digit code.'
-          return
-        }
-        if (token.length < 6) {
-          errDiv.textContent = 'Code must be 6 digits.'
-          return
-        }
-
-        errDiv.textContent = ''
-        if (verifyBtn) { verifyBtn.textContent = 'Verifying...'; verifyBtn.disabled = true; }
-
+      function updateProgressRing(progress) {
         try {
-          const res = await window.supabaseClient.auth.verifyOtp({ email, token, type: 'signup' })
-          if (res.error) throw res.error
-
-          if (res.data.session) {
-            window.colUser = res.data.session.user
-            window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: window.colUser } }))
-            document.getElementById('cloud-status').style.display = 'block'
-            goToStep(2); updateWizardStep(2);
-          } else {
-            errDiv.textContent = 'Verification succeeded but no session was created. Please try again.'
+          if (setupProgressRing && setupProgressRing.data && setupProgressRing.data.datasets && setupProgressRing.data.datasets[0]) {
+            setupProgressRing.data.datasets[0].data = [progress, Math.max(0, 100 - progress)];
+            if (typeof setupProgressRing.update === 'function') {
+              setupProgressRing.update('none');
+            }
           }
+        } catch(e) {
+          console.warn('[Setup] Progress ring update warning:', e);
+        }
+        const pctEl = document.getElementById('progress-pct');
+        if (pctEl) pctEl.textContent = `${progress}%`;
+      }
+
+      // Update Step Flow
+      function updateWizardStep(step) {
+        currentStep = Math.max(1, Math.min(step, totalSteps));
+
+        document.querySelectorAll('.step-item').forEach((item, i) => {
+          const stepNum = i + 1;
+          item.classList.remove('active', 'completed');
+          if (stepNum < currentStep) item.classList.add('completed');
+          else if (stepNum === currentStep) item.classList.add('active');
+        });
+
+        const progress = Math.round(((currentStep - 1) / (totalSteps - 1)) * 100);
+        const progressEl = document.getElementById('step-progress');
+        if (progressEl) progressEl.style.width = `${progress}%`;
+
+        updateProgressRing(progress);
+
+        // Display current step panel
+        document.querySelectorAll('.wizard-step').forEach(el => {
+          el.style.display = parseInt(el.dataset.step) === currentStep ? 'block' : 'none';
+        });
+
+        // Hide overview if editing
+        const welcomeBackEl = document.getElementById('welcomeBackArea');
+        if (welcomeBackEl && welcomeBackEl.style.display !== 'none' && currentStep > 1) {
+          welcomeBackEl.style.display = 'none';
+        }
+
+        const titles = {
+          1: 'Welcome Driver',
+          2: 'Your Profile',
+          3: 'Choose Your Ride'
+        };
+        const subtitles = {
+          1: 'Sign In Or Play Locally To Sync Your Driving Progress.',
+          2: 'Tell Us Your Name And Handle For Official License Generation.',
+          3: 'Pick Your Preferred Vehicle And Hit The Mumbai Streets.'
+        };
+
+        const titleEl = document.getElementById('step-title-h1');
+        const subEl = document.getElementById('subtitle-text');
+        if (titleEl) titleEl.textContent = titles[currentStep] || 'Driver Setup';
+        if (subEl) subEl.textContent = subtitles[currentStep] || '';
+      }
+
+      // Step Navigation with Strict Validation
+      function goToStep(step) {
+        if (step > currentStep) {
+          if (currentStep === 2) {
+            const name = (document.getElementById('prof-name')?.value || '').trim();
+            const age = parseInt(document.getElementById('prof-age')?.value) || 0;
+            const username = (document.getElementById('prof-username')?.value || '').trim();
+
+            if (name.length < 2) {
+              showToast('⚠️ Please Enter A Valid Full Name (At Least 2 Characters)', '#ef4444');
+              document.getElementById('prof-name')?.focus();
+              return;
+            }
+            if (age < 8 || age > 99) {
+              showToast('⚠️ Please Enter A Valid Driver Age Between 8 And 99', '#ef4444');
+              document.getElementById('prof-age')?.focus();
+              return;
+            }
+            if (username && username.length < 3) {
+              showToast('⚠️ Username Must Be At Least 2 Characters Long', '#ef4444');
+              document.getElementById('prof-username')?.focus();
+              return;
+            }
+          }
+        }
+        updateWizardStep(step);
+      }
+
+      function navigateToStep(targetStep) {
+        if (targetStep <= currentStep) {
+          goToStep(targetStep);
+        } else {
+          goToStep(targetStep);
+        }
+      }
+
+      // Vehicle Card Selection
+      function selectVehicle(vehKey) {
+        document.getElementById('prof-veh').value = vehKey;
+        document.querySelectorAll('.veh-card').forEach(card => {
+          const isSelected = card.dataset.veh === vehKey;
+          card.classList.toggle('selected', isSelected);
+        });
+      }
+
+      // Quick Age Setting
+      function setQuickAge(val) {
+        document.getElementById('prof-age').value = val;
+        highlightAgeChip(val);
+      }
+
+      function highlightAgeChip(val) {
+        const num = parseInt(val) || 0;
+        document.querySelectorAll('.age-chip').forEach(chip => {
+          const chipVal = parseInt(chip.textContent) || 0;
+          chip.classList.toggle('active', chipVal === num || (chip.textContent.includes('+') && num >= 25));
+        });
+      }
+
+      // Username Input Formatting & Debounced Validation
+      function handleUsernameInput(el) {
+        if (el.value && !el.value.startsWith('@')) {
+          el.value = '@' + el.value;
+        }
+        checkUsernameAvailability(el.value);
+      }
+
+      async function checkUsernameAvailability(rawUsername) {
+        const statusEl = document.getElementById('username-status');
+        if (!statusEl) return;
+        const username = (rawUsername || '').trim();
+
+        if (!username || username.length < 3) {
+          statusEl.textContent = 'Username Must Be At Least 2 Characters After @';
+          statusEl.style.color = 'var(--ink-dim)';
+          return;
+        }
+
+        statusEl.textContent = 'Checking Availability...';
+        statusEl.style.color = 'var(--ink-dim)';
+        clearTimeout(_usernameCheckTimeout);
+
+        _usernameCheckTimeout = setTimeout(async () => {
+          try {
+            if (!window.supabaseClient) {
+              statusEl.textContent = '✓ Username Accepted';
+              statusEl.style.color = 'var(--em)';
+              return;
+            }
+
+            // Direct table check for availability
+            const { data: existingRows } = await window.supabaseClient
+              .from('user_profiles')
+              .select('user_id, username')
+              .ilike('username', username)
+              .limit(5);
+
+            const isCurrent = window.colUser && existingRows?.some(r => r.user_id === window.colUser.id);
+            const isTaken = existingRows?.some(r => !window.colUser || r.user_id !== window.colUser.id);
+
+            if (isCurrent) {
+              statusEl.textContent = '✓ Current Verified Username';
+              statusEl.style.color = 'var(--em)';
+            } else if (isTaken) {
+              statusEl.textContent = '✕ Username Taken — Please Choose Another';
+              statusEl.style.color = 'var(--red)';
+            } else {
+              statusEl.textContent = '✓ Username Available!';
+              statusEl.style.color = 'var(--em)';
+            }
+          } catch (e) {
+            statusEl.textContent = '✓ Username Accepted';
+            statusEl.style.color = 'var(--em)';
+          }
+        }, 400);
+      }
+
+      // Switch Auth Tab
+      function switchAuthTab(mode) {
+        activeAuthTab = mode;
+        const loginBtn = document.getElementById('tab-login-btn');
+        const signupBtn = document.getElementById('tab-signup-btn');
+        const loginBox = document.getElementById('login-form-box');
+        const signupBox = document.getElementById('signup-form-box');
+        const errDiv = document.getElementById('col-auth-err');
+        if (errDiv) errDiv.style.display = 'none';
+
+        if (mode === 'login') {
+          loginBtn.classList.add('active');
+          signupBtn.classList.remove('active');
+          loginBox.style.display = 'block';
+          signupBox.style.display = 'none';
+        } else {
+          loginBtn.classList.remove('active');
+          signupBtn.classList.add('active');
+          loginBox.style.display = 'none';
+          signupBox.style.display = 'block';
+        }
+      }
+
+      // Toast Messenger
+      function showToast(msg, bg = '#059669') {
+        const toast = document.getElementById('auth-toast');
+        if (!toast) return;
+        toast.textContent = msg;
+        toast.style.background = bg;
+        toast.style.display = 'flex';
+        clearTimeout(toast._timeout);
+        toast._timeout = setTimeout(() => {
+          toast.style.display = 'none';
+        }, 3200);
+      }
+
+      // SYNC USER PROFILE: Solves data wipe on logout/login
+      async function syncUserProfile(user, localUser) {
+        const sessionUser = user || window.colUser;
+        const offlineUser = localUser || window.colLocalUser || (function() {
+          try { return JSON.parse(localStorage.getItem('traffic_local_user')); } catch(e) { return null; }
+        })();
+
+        let profileData = null;
+
+        // 1. Fetch from Supabase Cloud if signed in
+        if (sessionUser && window.supabaseClient) {
+          try {
+            const { data, error } = await window.supabaseClient
+              .from('user_profiles')
+              .select('*')
+              .eq('user_id', sessionUser.id)
+              .maybeSingle();
+
+            if (!error && data) {
+              profileData = data;
+            }
+          } catch(e) {
+            console.warn('[Setup] Cloud profile fetch warning:', e);
+          }
+        }
+
+        // 2. Fallback to Local Offline Data
+        if (!profileData && offlineUser) {
+          profileData = {
+            display_name: offlineUser.name || offlineUser.display_name,
+            username: offlineUser.username,
+            preferred_vehicle: offlineUser.vehicle || offlineUser.preferred_vehicle,
+            age: offlineUser.age,
+            language: offlineUser.language || 'en',
+            student_id: offlineUser.studentId || offlineUser.student_id,
+            avatar_url: offlineUser.picture || offlineUser.avatar_url
+          };
+        }
+
+        // 3. Fallback to Session Metadata
+        const meta = sessionUser?.user_metadata || {};
+        const fallbackName = meta.full_name || meta.name || (sessionUser?.email ? sessionUser.email.split('@')[0] : '');
+
+        // Populate Form Fields
+        const resolvedName = profileData?.display_name || fallbackName || '';
+        const resolvedUsername = profileData?.username || (resolvedName ? '@' + resolvedName.toLowerCase().replace(/\s+/g, '') : '');
+        const resolvedAge = profileData?.age || 18;
+        const resolvedVeh = profileData?.preferred_vehicle || 'Car';
+        const resolvedLang = profileData?.language || 'en';
+        const resolvedStudentId = profileData?.student_id || ('STU-' + Math.floor(100000 + Math.random() * 900000));
+        const resolvedAvatar = profileData?.avatar_url || meta.avatar_url || meta.picture || null;
+
+        if (resolvedName) document.getElementById('prof-name').value = resolvedName;
+        if (resolvedUsername) document.getElementById('prof-username').value = resolvedUsername;
+        if (resolvedAge) {
+          document.getElementById('prof-age').value = resolvedAge;
+          highlightAgeChip(resolvedAge);
+        }
+        if (resolvedLang) document.getElementById('prof-lang').value = resolvedLang;
+        selectVehicle(resolvedVeh);
+
+        // Update Session Status Bar in Top Right
+        const sessionBar = document.getElementById('userSessionBar');
+        const sessionAvatar = document.getElementById('userSessionAvatar');
+        const sessionName = document.getElementById('userSessionName');
+        const sessionSub = document.getElementById('userSessionSub');
+        const sessionBtn = document.getElementById('userSessionBtn');
+        const statusDot = document.getElementById('userStatusDot');
+
+        if (sessionUser) {
+          if (sessionAvatar) {
+            if (resolvedAvatar) {
+              sessionAvatar.innerHTML = `<img src="${resolvedAvatar}" alt="User Avatar" />`;
+            } else {
+              sessionAvatar.textContent = (resolvedName || 'D').charAt(0).toUpperCase();
+            }
+          }
+          if (sessionName) sessionName.innerHTML = `<span>${resolvedName || 'Verified Driver'}</span> <span class="user-status-dot"></span>`;
+          if (sessionSub) sessionSub.textContent = `Cloud Synced · ${sessionUser.email || resolvedUsername}`;
+          if (sessionBtn) sessionBtn.textContent = 'Sign Out';
+          if (statusDot) { statusDot.style.background = 'var(--em)'; statusDot.style.boxShadow = '0 0 8px var(--em)'; }
+        } else if (offlineUser) {
+          if (sessionAvatar) sessionAvatar.textContent = (resolvedName || 'D').charAt(0).toUpperCase();
+          if (sessionName) sessionName.innerHTML = `<span>${resolvedName || 'Local Driver'}</span>`;
+          if (sessionSub) sessionSub.textContent = 'Local Guest Profile · Saved On This Device';
+          if (sessionBtn) sessionBtn.textContent = 'Sign In Online';
+        }
+
+        // Cache local continuity payload (without secrets)
+        const safeLocalUser = {
+          id: sessionUser?.id || offlineUser?.id || ('local_' + Date.now()),
+          name: resolvedName,
+          username: resolvedUsername,
+          vehicle: resolvedVeh,
+          age: resolvedAge,
+          language: resolvedLang,
+          studentId: resolvedStudentId,
+          picture: resolvedAvatar,
+          updatedAt: new Date().toISOString()
+        };
+        try {
+          localStorage.setItem('traffic_local_user', JSON.stringify(safeLocalUser));
+          localStorage.setItem('col_active_local_user', JSON.stringify(safeLocalUser));
+          if (profileData && profileData.display_name && profileData.username) {
+            localStorage.setItem('trafficSetupComplete', 'true');
+          }
+        } catch(e) {}
+
+        // Check if Profile is Fully Complete -> Show Overview Card
+        const hasCompleteData = Boolean(profileData && profileData.display_name && (profileData.username || profileData.preferred_vehicle));
+        if (hasCompleteData) {
+          const welcomeArea = document.getElementById('welcomeBackArea');
+          const overviewName = document.getElementById('overviewName');
+          const overviewSub = document.getElementById('overviewSub');
+          const overviewVeh = document.getElementById('overviewVeh');
+          const overviewAge = document.getElementById('overviewAge');
+          const overviewLang = document.getElementById('overviewLang');
+          const overviewAvatar = document.getElementById('overviewAvatar');
+
+          if (overviewName) overviewName.textContent = resolvedName;
+          if (overviewSub) overviewSub.textContent = `${resolvedUsername} · Student ${resolvedStudentId}`;
+          if (overviewVeh) {
+            const vehMap = { Car: '🚗 Standard Car', Bike: '🏍️ Motorcycle', Bus: '🚌 BEST Bus', Truck: '🚛 Heavy Truck', Auto: '🛺 Auto Rickshaw' };
+            overviewVeh.textContent = vehMap[resolvedVeh] || resolvedVeh;
+          }
+          if (overviewAge) overviewAge.textContent = `${resolvedAge} Years`;
+          if (overviewLang) overviewLang.textContent = resolvedLang === 'hi' ? 'हिन्दी (Hindi)' : 'English (Official)';
+          if (overviewAvatar) {
+            if (resolvedAvatar) overviewAvatar.innerHTML = `<img src="${resolvedAvatar}" alt="Avatar" />`;
+            else overviewAvatar.textContent = (resolvedName || 'D').charAt(0).toUpperCase();
+          }
+
+          if (welcomeArea) welcomeArea.style.display = 'block';
+          document.querySelectorAll('.wizard-step').forEach(el => el.style.display = 'none');
+          
+          const progressEl = document.getElementById('step-progress');
+          if (progressEl) progressEl.style.width = '100%';
+          updateProgressRing(100);
+          document.querySelectorAll('.step-item').forEach(item => item.classList.add('completed'));
+          showToast(`Welcome Back, ${resolvedName}! Profile Synced.`, '#059669');
+        } else if (sessionUser) {
+          // Guided to profile setup
+          goToStep(2);
+        }
+      }
+
+      function enableProfileEdit() {
+        document.getElementById('welcomeBackArea').style.display = 'none';
+        goToStep(2);
+      }
+
+      function launchAcademyHub() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const returnTo = urlParams.get('returnTo');
+        if (returnTo && /^[a-zA-Z0-9_\-]+\.html$/.test(returnTo)) {
+          window.location.href = returnTo;
+        } else {
+          window.location.href = 'Academy.html';
+        }
+      }
+
+      function handleUserSessionAction() {
+        if (window.colUser) {
+          if (confirm('Sign out of your driver account?')) {
+            if (typeof window.colDoLogout === 'function') window.colDoLogout();
+            else if (typeof window.doLogout === 'function') window.doLogout();
+            showToast('Signed Out Successfully', '#64748b');
+            setTimeout(() => window.location.reload(), 400);
+          }
+        } else {
+          goToStep(1);
+        }
+      }
+
+      function skipToOfflineSetup() {
+        showToast('Entering Guest Mode (Offline Play)', '#3b82f6');
+        goToStep(2);
+      }
+
+      // FINAL SUBMISSION HANDLER
+      async function handleFinalSubmit(e) {
+        e.preventDefault();
+
+        const name = (document.getElementById('prof-name')?.value || '').trim();
+        const username = (document.getElementById('prof-username')?.value || '').trim();
+        const age = parseInt(document.getElementById('prof-age')?.value) || 18;
+        const veh = document.getElementById('prof-veh')?.value || 'Car';
+        const lang = document.getElementById('prof-lang')?.value || 'en';
+        const pin = (document.getElementById('prof-pin')?.value || '').trim();
+
+        if (name.length < 2) {
+          showToast('⚠️ Please Enter A Valid Name', '#ef4444');
+          goToStep(2);
+          return;
+        }
+
+        const completeBtn = document.getElementById('complete-btn');
+        if (completeBtn) {
+          completeBtn.disabled = true;
+          completeBtn.innerHTML = '<span>Saving Driver Profile...</span>';
+        }
+
+        const studentId = 'STU-' + Math.floor(100000 + Math.random() * 900000);
+        const meta = window.colUser?.user_metadata || {};
+        const avatarUrl = meta.avatar_url || meta.picture || null;
+
+        // 1. Atomic Supabase Upsert
+        if (window.supabaseClient && window.colUser) {
+          try {
+            const profilePayload = {
+              user_id: window.colUser.id,
+              display_name: name,
+              username: username || ('@' + name.toLowerCase().replace(/\s+/g, '')),
+              preferred_vehicle: veh,
+              age: age,
+              language: lang,
+              student_id: studentId,
+              ...(avatarUrl ? { avatar_url: avatarUrl } : {}),
+              updated_at: new Date().toISOString()
+            };
+
+            const { error: upErr } = await window.supabaseClient
+              .from('user_profiles')
+              .upsert(profilePayload, { onConflict: 'user_id' });
+
+            if (upErr) {
+              console.warn('[Setup] user_profiles upsert note:', upErr);
+            }
+          } catch (cloudErr) {
+            console.warn('[Setup] Cloud sync warning:', cloudErr);
+          }
+        }
+
+        // 2. Local Account Continuity Object
+        const tUser = {
+          id: window.colUser?.id || ('local_' + (username.replace(/[^a-zA-Z0-9_]/g, '') || Date.now())),
+          name: name,
+          username: username || ('@' + name.toLowerCase().replace(/\s+/g, '')),
+          vehicle: veh,
+          role: 'student',
+          age: age,
+          language: lang,
+          studentId: studentId,
+          picture: avatarUrl,
+          updatedAt: new Date().toISOString()
+        };
+
+        if (pin && typeof window.colCreateLocalCredential === 'function') {
+          try {
+            const cred = await window.colCreateLocalCredential(pin);
+            tUser.authVerifier = cred.authVerifier;
+            tUser.authSalt = cred.authSalt;
+          } catch(e) {}
+        }
+
+        // Save safely into localStorage
+        localStorage.setItem('traffic_local_user', JSON.stringify(tUser));
+        localStorage.setItem('col_active_local_user', JSON.stringify(tUser));
+        localStorage.setItem('trafficSetupComplete', 'true');
+        window.colLocalUser = tUser;
+
+        // Update local accounts roster
+        try {
+          let list = [];
+          const raw = localStorage.getItem('col_local_accounts');
+          if (raw) list = JSON.parse(raw);
+          const normUname = (tUser.username || '').toLowerCase();
+          const normName = (tUser.name || '').toLowerCase();
+          const idx = list.findIndex(a => 
+            (normUname && (a.username || '').toLowerCase() === normUname) ||
+            (normName && (a.name || '').toLowerCase() === normName)
+          );
+          if (idx >= 0) list[idx] = { ...list[idx], ...tUser };
+          else list.push(tUser);
+          localStorage.setItem('col_local_accounts', JSON.stringify(list));
+        } catch(e) {}
+
+        // Save wallet and game progress stubs
+        try {
+          let L = {};
+          const r = localStorage.getItem('th-save');
+          if (r) L = JSON.parse(r);
+          L.name = name;
+          L.vehicle = veh;
+          delete L.localPin;
+          localStorage.setItem('th-save', JSON.stringify(L));
+
+          let S = {};
+          const sRaw = localStorage.getItem('mth4');
+          if (sRaw) S = JSON.parse(sRaw);
+          if (!S.wallet) S.wallet = 50000;
+          S.name = name;
+          S.vehicle = veh;
+          S.studentId = studentId;
+          localStorage.setItem('mth4', JSON.stringify(S));
+        } catch(e) {}
+
+        showToast('✅ Driver Setup Complete! Launching Academy...', '#059669');
+
+        setTimeout(() => {
+          launchAcademyHub();
+        }, 600);
+      }
+
+      // Authentication Handlers
+      async function handleGoogleAuth() {
+        if (typeof window.colDoGoogle === 'function') {
+          return window.colDoGoogle();
+        }
+        if (!window.supabaseClient) return alert('Cloud Connection Not Ready. Please Use Local Setup.');
+        try {
+          const redirectTo = new URL('TrafficSetup.html', window.location.href).href;
+          const res = await window.supabaseClient.auth.signInWithOAuth({
+            provider: 'google',
+            options: { redirectTo }
+          });
+          if (res.error) throw res.error;
         } catch (err) {
-          errDiv.textContent = friendlyAuthError(err)
-        } finally {
-          if (verifyBtn) { verifyBtn.textContent = 'Verify Code'; verifyBtn.disabled = false; }
+          showToast('Google Sign-In Notice: ' + err.message, '#ef4444');
         }
       }
 
       async function handleEmailAuth() {
-        if (!window.supabaseClient) return alert('Cloud connection not ready. Please use Local Setup.')
+        const errDiv = document.getElementById('col-auth-err');
+        if (errDiv) { errDiv.style.display = 'none'; errDiv.textContent = ''; }
 
-        if (authMode === 'signup') {
-          const email = document.getElementById('signup-email').value.trim()
-          const pass = document.getElementById('signup-pass').value
-          const passConfirm = document.getElementById('signup-pass-confirm').value
-          const role = document.getElementById('signup-role').value
-          const errDiv = document.getElementById('col-auth-err-signup')
+        if (activeAuthTab === 'signup') {
+          const email = (document.getElementById('signup-email')?.value || '').trim();
+          const pass = document.getElementById('signup-pass')?.value || '';
+          const passConfirm = document.getElementById('signup-pass-confirm')?.value || '';
 
           if (!email || !pass) {
-            errDiv.textContent = 'Please fill out all fields.'
-            return
+            showAuthError('Please Enter An Email And Password.');
+            return;
+          }
+          if (pass.length < 6) {
+            showAuthError('Password Must Be At Least 6 Characters Long.');
+            return;
           }
           if (pass !== passConfirm) {
-            errDiv.textContent = 'Passwords do not match.'
-            return
-          }
-          if (!role) {
-            errDiv.textContent = 'Please select a role.'
-            return
-          }
-
-          errDiv.textContent = 'Creating account...'
-          errDiv.style.color = 'var(--dim)'
-
-          try {
-            const res = await window.supabaseClient.auth.signUp({
-              email,
-              password: pass,
-              options: {
-                data: {
-                  full_name: email.split('@')[0],
-                  role: role
-                }
-              }
-            })
-
-            if (res.error) throw res.error
-
-            if (res.data.user && !res.data.session) {
-              errDiv.textContent = 'Please check your email to confirm registration!'
-              errDiv.style.color = 'var(--em)'
-            } else {
-              errDiv.textContent = 'Success!'
-              errDiv.style.color = 'var(--em)'
-              showLocalSetup()
-            }
-          } catch (err) {
-            errDiv.textContent = err.message || 'Authentication failed.'
-            errDiv.style.color = '#ef4444'
-          }
-        } else {
-          const email = document.getElementById('auth-email').value.trim()
-          const pass = document.getElementById('auth-pass').value.trim()
-          const errDiv = document.getElementById('col-auth-err')
-
-          if (!email || !pass) {
-            errDiv.textContent = 'Please fill out all fields.'
-            return
-          }
-
-          errDiv.textContent = 'Authenticating...'
-          errDiv.style.color = 'var(--dim)'
-
-          // 1. Check local accounts first (by email, @username, or username)
-          let localAccounts = []
-          try {
-            const raw = localStorage.getItem('col_local_accounts')
-            if (raw) localAccounts = JSON.parse(raw)
-            const rawT = localStorage.getItem('traffic_local_user')
-            if (rawT) {
-              const tu = JSON.parse(rawT)
-              if (tu && (tu.name || tu.username)) {
-                if (!localAccounts.some(a => (tu.username && a.username === tu.username) || (tu.name && a.name === tu.name))) {
-                  localAccounts.push(tu)
-                }
-              }
-            }
-          } catch(e) {}
-
-          const normInput = email.toLowerCase()
-          const normUname = normInput.startsWith('@') ? normInput : '@' + normInput
-
-          const matched = localAccounts.find(acc => {
-            const accEmail = (acc.email || '').toLowerCase()
-            const accUname = (acc.username || '').toLowerCase()
-            const accName = (acc.name || '').toLowerCase()
-            return accEmail === normInput || accUname === normInput || accUname === normUname || accName === normInput
-          })
-
-          if (matched) {
-            const expectedPin = (matched.pin || matched.password || '').toString().trim()
-            if (!expectedPin || expectedPin === pass) {
-              errDiv.textContent = 'Success! Welcome back, ' + (matched.name || 'Driver') + '!'
-              errDiv.style.color = 'var(--em)'
-              
-              matched.updatedAt = new Date().toISOString()
-              localStorage.setItem('traffic_local_user', JSON.stringify(matched))
-              localStorage.setItem('col_active_local_user', JSON.stringify(matched))
-              localStorage.setItem('trafficSetupComplete', 'true')
-              
-              let L = {}
-              try {
-                const r = localStorage.getItem('th-save')
-                if (r) L = JSON.parse(r)
-              } catch(e) {}
-              L.name = matched.name
-              L.vehicle = matched.vehicle || 'Car'
-              // The PIN is never read back from this blob, so it has no business being here.
-              delete L.localPin
-              localStorage.setItem('th-save', JSON.stringify(L))
-
-              window.colUser = {
-                id: matched.id || ('local_' + Date.now()),
-                name: matched.name,
-                email: matched.email || (matched.username ? (matched.username.replace('@','') + '@local.col') : 'local@col.io'),
-                username: matched.username,
-                isLocal: true,
-                user_metadata: {
-                  full_name: matched.name,
-                  name: matched.name,
-                  role: matched.role || 'student',
-                  preferred_vehicle: matched.vehicle || 'Car'
-                }
-              }
-              window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: window.colUser } }))
-              showLocalSetup()
-              return
-            } else {
-              errDiv.textContent = 'Incorrect PIN or password for local account ' + (matched.username || matched.name) + '.'
-              errDiv.style.color = '#ef4444'
-              return
-            }
-          }
-
-          if (window.supabaseClient) {
-            try {
-              const rpcAuth = await window.supabaseClient.rpc('authenticate_account', {
-                p_identifier: email,
-                p_pin: pass
-              })
-              if (rpcAuth && rpcAuth.data && rpcAuth.data.success) {
-                const acc = rpcAuth.data
-                errDiv.textContent = 'Success! Welcome back, ' + (acc.display_name || acc.username) + '!'
-                errDiv.style.color = 'var(--em)'
-                const matchedAcc = {
-                  id: acc.id,
-                  name: acc.display_name || acc.username,
-                  username: acc.username,
-                  email: acc.email || '',
-                  pin: pass,
-                  password: pass,
-                  role: acc.role || 'student',
-                  vehicle: acc.preferred_vehicle || 'Car',
-                  age: acc.age || 18,
-                  language: acc.language || 'en',
-                  total: acc.total_score || 0,
-                  studentId: acc.student_id || null,
-                  updatedAt: new Date().toISOString()
-                }
-                localStorage.setItem('traffic_local_user', JSON.stringify(matchedAcc))
-                localStorage.setItem('col_active_local_user', JSON.stringify(matchedAcc))
-                localStorage.setItem('trafficSetupComplete', 'true')
-                
-                try {
-                  let accounts = []
-                  const rawAccs = localStorage.getItem('col_local_accounts')
-                  if (rawAccs) accounts = JSON.parse(rawAccs)
-                  const uIdx = accounts.findIndex(a => a.id === acc.id || (a.username && a.username.toLowerCase() === acc.username.toLowerCase()))
-                  if (uIdx >= 0) accounts[uIdx] = { ...accounts[uIdx], ...matchedAcc }
-                  else accounts.push(matchedAcc)
-                  localStorage.setItem('col_local_accounts', JSON.stringify(accounts))
-                } catch(e) {}
-
-                let L = {}
-                try {
-                  const r = localStorage.getItem('th-save')
-                  if (r) L = JSON.parse(r)
-                } catch(e) {}
-                L.name = matchedAcc.name
-                L.vehicle = matchedAcc.vehicle
-                delete L.localPin
-                localStorage.setItem('th-save', JSON.stringify(L))
-
-                window.colUser = {
-                  id: acc.id,
-                  name: matchedAcc.name,
-                  email: matchedAcc.email || (acc.username ? (acc.username.replace('@','') + '@local.col') : 'local@col.io'),
-                  username: acc.username,
-                  isLocal: true,
-                  user_metadata: {
-                    full_name: matchedAcc.name,
-                    name: matchedAcc.name,
-                    role: matchedAcc.role,
-                    preferred_vehicle: matchedAcc.vehicle
-                  }
-                }
-                window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: window.colUser } }))
-                showLocalSetup()
-                return
-              }
-            } catch(rpcErr) {
-              console.warn('Account system authentication RPC bypassed:', rpcErr)
-            }
+            showAuthError('Passwords Do Not Match.');
+            return;
           }
 
           if (!window.supabaseClient) {
-            errDiv.textContent = 'No local account found with that username/email. Please sign up or click "Skip & Play Locally".'
-            errDiv.style.color = '#ef4444'
-            return
+            showAuthError('Cloud Connection Offline. Please Click "Play Offline / Guest".');
+            return;
           }
 
           try {
-            let res = await window.supabaseClient.auth.signInWithPassword({ email: email, password: pass })
+            showToast('Creating Driver Account...', '#3b82f6');
+            const res = await window.supabaseClient.auth.signUp({
+              email,
+              password: pass,
+              options: { data: { full_name: email.split('@')[0], role: 'student' } }
+            });
+            if (res.error) throw res.error;
 
-            if (res.error) throw res.error
-
-            errDiv.textContent = 'Success!'
-            errDiv.style.color = 'var(--em)'
-            showLocalSetup()
-          } catch (err) {
-            errDiv.textContent = friendlyAuthError(err)
-            errDiv.style.color = '#ef4444'
+            if (res.data.user && !res.data.session) {
+              showAuthError('Please Check Your Email To Confirm Registration.');
+              document.getElementById('signup-otp-section').style.display = 'block';
+            } else {
+              showToast('Account Created! Proceeding To Profile...', '#059669');
+              goToStep(2);
+            }
+          } catch(err) {
+            showAuthError(err.message || 'Signup Failed. Please Try Again.');
           }
-        }
-      }
-
-      async function handleGoogleAuth() {
-        if (typeof window.colDoGoogle === 'function') {
-          return window.colDoGoogle()
-        }
-        if (!window.supabaseClient) return alert('Cloud Connection Not Ready. Please Use Local Setup.')
-        try {
-          var redirectTo = new URL('TrafficSetup.html', window.location.href).href
-          
-          let res = await window.supabaseClient.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-              redirectTo: redirectTo,
-            },
-          })
-          if (res.error) throw res.error
-        } catch (err) {
-          alert('Google Sign-In Failed: ' + err.message)
-        }
-      }
-
-      function openGlobalLoginModal() {
-        if (typeof window.openGlobalLogin === 'function') {
-          window.openGlobalLogin()
-        } else if (typeof window.openLogin === 'function') {
-          window.openLogin()
-        }
-      }
-
-      function showLocalSetup() {
-        var toast = document.getElementById('auth-toast')
-        if (toast && toast.dataset.advancing === '1') return
-        if (toast) {
-          toast.dataset.advancing = '1'
-          toast.style.display = 'flex'
-          toast.classList.remove('out')
-          setTimeout(function() {
-            toast.classList.add('out')
-            setTimeout(function() {
-              toast.style.display = 'none'
-              toast.classList.remove('out')
-            }, 400)
-            goToStep(2)
-          }, 1800)
         } else {
-          goToStep(2)
-        }
-      }
+          const ident = (document.getElementById('auth-email')?.value || '').trim();
+          const pass = document.getElementById('auth-pass')?.value || '';
 
-      window.addEventListener('col-auth-changed', async (e) => {
-        const user = e.detail && e.detail.user ? e.detail.user : window.colUser
-        if (user) {
+          if (!ident || !pass) {
+            showAuthError('Please Enter Your Email/Username And Password.');
+            return;
+          }
 
-          const pendingRole = localStorage.getItem('pending_role');
-          if (pendingRole && (!user.user_metadata || !user.user_metadata.role)) {
-            try {
-              await window.supabaseClient.auth.updateUser({
-                data: { role: pendingRole }
-              });
-              user.user_metadata = user.user_metadata || {};
-              user.user_metadata.role = pendingRole;
-            } catch(err) {
-              console.error("Failed to update role:", err);
+          // Check local offline accounts first
+          let localAccounts = [];
+          if (typeof window.colGetLocalAccounts === 'function') {
+            try { localAccounts = window.colGetLocalAccounts() || []; } catch(e) {}
+          }
+          const normInput = ident.toLowerCase();
+          const normUname = normInput.startsWith('@') ? normInput : '@' + normInput;
+          const matched = localAccounts.find(acc => {
+            const accEmail = (acc.email || '').toLowerCase();
+            const accUname = (acc.username || '').toLowerCase();
+            const accName = (acc.name || '').toLowerCase();
+            return accEmail === normInput || accUname === normInput || accUname === normUname || accName === normInput;
+          });
+
+          if (matched) {
+            const verified = typeof window.colVerifyLocalCredential === 'function'
+              ? await window.colVerifyLocalCredential(matched, pass)
+              : false;
+
+            if (!verified) {
+              showAuthError('Incorrect PIN Or Password For Local Account ' + (matched.username || matched.name));
+              return;
             }
-            localStorage.removeItem('pending_role');
-          }
 
-          showLocalSetup()
-          document.getElementById('cloud-status').style.display = 'block'
-          if (user.user_metadata && (user.user_metadata.full_name || user.user_metadata.name)) {
-            document.getElementById('prof-name').value = user.user_metadata.full_name || user.user_metadata.name
-          }
-          if (window.supabaseClient) {
-            try {
-              const { data } = await window.supabaseClient.from('user_profiles').select('username').eq('user_id', user.id).maybeSingle()
-              if (data && data.username) {
-                document.getElementById('prof-username').value = data.username.startsWith('@') ? data.username : '@' + data.username
-              }
-            } catch (e) {}
-          }
-        }
-      })
-
-
-      if (window.colUser) {
-        showLocalSetup()
-        document.getElementById('cloud-status').style.display = 'block'
-        if (window.colUser.user_metadata && (window.colUser.user_metadata.full_name || window.colUser.user_metadata.name)) {
-          if (!document.getElementById('prof-name').value) {
-            document.getElementById('prof-name').value = window.colUser.user_metadata.full_name || window.colUser.user_metadata.name
-          }
-        }
-        if (window.supabaseClient) {
-          window.supabaseClient.from('user_profiles').select('username').eq('user_id', window.colUser.id).maybeSingle().then(function(res) {
-            if (res.data && res.data.username && !document.getElementById('prof-username').value) {
-              document.getElementById('prof-username').value = res.data.username.startsWith('@') ? res.data.username : '@' + res.data.username
+            if (typeof window.colSetActiveLocalUser === 'function') {
+              window.colSetActiveLocalUser(matched);
             }
-          }).catch(function() {})
-        }
-      }
+            showToast('Welcome Back, ' + (matched.name || 'Driver') + '!', '#059669');
+            syncUserProfile(null, matched);
+            return;
+          }
 
+          if (!window.supabaseClient) {
+            showAuthError('No Local Account Found. Please Create An Account Or Play Offline.');
+            return;
+          }
 
-      let _usernameCheckTimeout = null
-      async function checkUsernameAvailability(username) {
-        const statusEl = document.getElementById('username-status')
-        if (!statusEl) return
-        username = username.trim()
-        if (!username || username.length < 3) {
-          statusEl.textContent = ''
-          statusEl.style.color = ''
-          return
-        }
-        if (!username.startsWith('@')) username = '@' + username
-        if (username.length < 3) {
-          statusEl.textContent = 'Username must be at least 2 characters after @'
-          statusEl.style.color = 'var(--red)'
-          return
-        }
-        statusEl.textContent = 'Checking...'
-        statusEl.style.color = 'var(--dim)'
-        clearTimeout(_usernameCheckTimeout)
-        _usernameCheckTimeout = setTimeout(async () => {
           try {
-            if (!window.supabaseClient) {
-              statusEl.textContent = '✓ Username accepted (offline)'
-              statusEl.style.color = 'var(--em)'
-              return
-            }
+            showToast('Authenticating...', '#3b82f6');
+            const res = await window.supabaseClient.auth.signInWithPassword({
+              email: ident,
+              password: pass
+            });
+            if (res.error) throw res.error;
 
-            const uname = username.startsWith('@') ? username : '@' + username
-            const { data: takenRows } = await window.supabaseClient
-              .rpc('public_profile_directory', { p_search: uname, p_limit: 25 })
-            const upData = (takenRows || []).find(r => r.username && r.username.toLowerCase() === uname.toLowerCase())
-            if (upData) {
-
-              if (window.colUser && upData.user_id === window.colUser.id) {
-                statusEl.textContent = '✓ This is your current username'
-                statusEl.style.color = 'var(--em)'
-              } else {
-                statusEl.textContent = '✕ Username already taken'
-                statusEl.style.color = 'var(--red)'
-              }
-              return
-            }
-
-            statusEl.textContent = '✓ Username available!'
-            statusEl.style.color = 'var(--em)'
-          } catch (e) {
-            statusEl.textContent = '✓ Username accepted'
-            statusEl.style.color = 'var(--em)'
-          }
-        }, 500)
-      }
-
-      let S = {}
-      try {
-        const raw = localStorage.getItem('traffic_local_user')
-        if (raw) S = JSON.parse(raw)
-      } catch (e) {}
-
-      if (S.name) document.getElementById('prof-name').value = S.name
-      if (S.username) document.getElementById('prof-username').value = S.username
-      if (S.vehicle) document.getElementById('prof-veh').value = S.vehicle
-      if (S.age) document.getElementById('prof-age').value = S.age
-      if (S.language) document.getElementById('prof-lang').value = S.language
-
-
-      if (localStorage.getItem('trafficSetupComplete') === 'true' || S.name) {
-        const authDashBtn = document.getElementById('auth-dashboard-btn')
-        const setupDashBtn = document.getElementById('setup-dashboard-btn')
-        if (authDashBtn) authDashBtn.style.display = 'inline-flex'
-        if (setupDashBtn) setupDashBtn.style.display = 'inline-flex'
-
-        updateWizardStep(totalSteps)
-      }
-
-
-      function toggleCustomSelect(prefix) {
-        const wrapper = document.getElementById(prefix + '-select-wrapper')
-        const trigger = document.getElementById(prefix + '-select-trigger')
-        const isOpen = wrapper.classList.contains('open')
-
-        document.querySelectorAll('.custom-select-wrapper.open').forEach(el => {
-          el.classList.remove('open')
-          const t = el.querySelector('.custom-select-trigger')
-          if (t) t.setAttribute('aria-expanded', 'false')
-        })
-        if (!isOpen) {
-          wrapper.classList.add('open')
-          trigger.setAttribute('aria-expanded', 'true')
-
-          const selected = wrapper.querySelector('.custom-select-option.selected')
-          if (selected) selected.focus()
-        } else {
-          trigger.setAttribute('aria-expanded', 'false')
-        }
-      }
-
-      function selectCustomOption(prefix, value, icon, label) {
-        const wrapper = document.getElementById(prefix + '-select-wrapper')
-        const trigger = document.getElementById(prefix + '-select-trigger')
-        const hidden = document.getElementById('prof-' + prefix)
-        const textEl = document.getElementById(prefix + '-select-text')
-        const iconEl = trigger.querySelector('.custom-select-icon')
-
-
-        if (hidden) {
-          hidden.value = value
-          hidden.dispatchEvent(new Event('change', { bubbles: true }))
-        }
-
-        if (textEl) textEl.textContent = label
-        if (iconEl) iconEl.textContent = icon
-
-
-        trigger.setAttribute('aria-expanded', 'false')
-
-
-        wrapper.querySelectorAll('.custom-select-option').forEach(opt => {
-          const isSelected = opt.dataset.value === value
-          opt.classList.toggle('selected', isSelected)
-          opt.setAttribute('aria-selected', isSelected ? 'true' : 'false')
-        })
-
-
-        wrapper.classList.remove('open')
-        trigger.focus()
-      }
-
-
-      function handleSelectKeydown(e, prefix) {
-        const wrapper = document.getElementById(prefix + '-select-wrapper')
-        const options = Array.from(wrapper.querySelectorAll('.custom-select-option'))
-        const currentIdx = options.findIndex(opt => opt.classList.contains('selected'))
-
-        switch (e.key) {
-          case 'Enter':
-          case ' ':
-            e.preventDefault()
-            if (wrapper.classList.contains('open') && currentIdx >= 0) {
-              const opt = options[currentIdx]
-              selectCustomOption(prefix, opt.dataset.value, opt.dataset.icon, opt.querySelector('.option-label').textContent)
-            } else {
-              toggleCustomSelect(prefix)
-            }
-            break
-          case 'ArrowDown':
-            e.preventDefault()
-            if (!wrapper.classList.contains('open')) {
-              toggleCustomSelect(prefix)
-            } else {
-              const nextIdx = Math.min(currentIdx + 1, options.length - 1)
-              options[nextIdx].focus()
-            }
-            break
-          case 'ArrowUp':
-            e.preventDefault()
-            if (!wrapper.classList.contains('open')) {
-              toggleCustomSelect(prefix)
-            } else {
-              const prevIdx = Math.max(currentIdx - 1, 0)
-              options[prevIdx].focus()
-            }
-            break
-          case 'Escape':
-            wrapper.classList.remove('open')
-            break
-        }
-      }
-
-
-      document.querySelectorAll('.custom-select-option').forEach(opt => {
-        opt.addEventListener('keydown', function(e) {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault()
-            this.click()
-          } else if (e.key === 'Escape') {
-            const wrapper = this.closest('.custom-select-wrapper')
-            if (wrapper) {
-              wrapper.classList.remove('open')
-              wrapper.querySelector('.custom-select-trigger').focus()
-            }
-          } else if (e.key === 'ArrowDown') {
-            e.preventDefault()
-            const next = this.nextElementSibling
-            if (next && next.classList.contains('custom-select-option')) next.focus()
-          } else if (e.key === 'ArrowUp') {
-            e.preventDefault()
-            const prev = this.previousElementSibling
-            if (prev && prev.classList.contains('custom-select-option')) prev.focus()
-          }
-        })
-      })
-
-
-      document.addEventListener('click', function(e) {
-        if (!e.target.closest('.custom-select-wrapper')) {
-          document.querySelectorAll('.custom-select-wrapper.open').forEach(el => el.classList.remove('open'))
-        }
-      })
-
-      document.getElementById('vehicleForm').addEventListener('submit', async function (e) {
-        e.preventDefault()
-
-        const name = document.getElementById('prof-name').value.trim()
-        const veh = document.getElementById('prof-veh').value
-        const pin = document.getElementById('prof-pin').value.trim()
-        const age = parseInt(document.getElementById('prof-age').value) || 18
-        const language = document.getElementById('prof-lang').value
-        let username = document.getElementById('prof-username').value.trim()
-
-        if (name.length < 2) {
-          alert('Please enter a valid name.')
-          return
-        }
-
-        if (age < 8 || age > 99) {
-          alert('Please enter a valid age (8-99).')
-          return
-        }
-
-        if (username) {
-          if (!username.startsWith('@')) username = '@' + username
-          if (username.length < 3) {
-            alert('Username must be at least 2 characters long.')
-            return
-          }
-          if (window.supabaseClient && window.colUser) {
-            try {
-
-              const { data: takenRows2 } = await window.supabaseClient
-                .rpc('public_profile_directory', { p_search: username, p_limit: 25 })
-              const upExisting = (takenRows2 || []).find(
-                r => r.user_id !== (window.colUser && window.colUser.id) &&
-                     r.username && r.username.toLowerCase() === username.toLowerCase()
-              )
-              if (upExisting) {
-                alert('That username is already taken. Please choose another.')
-                return
-              }
-
-
-              const studentId = 'STU-' + Math.floor(100000 + Math.random() * 900000)
-              await window.supabaseClient
-                .from('user_profiles')
-                .upsert({
-                  user_id: window.colUser.id,
-                  display_name: name,
-                  username: username,
-                  student_id: studentId,
-                  preferred_vehicle: veh,
-                  age: age,
-                  language: language,
-                  role: document.getElementById('signup-role')?.value || 'student',
-                  updated_at: new Date().toISOString()
-                }, { onConflict: 'user_id' })
-            } catch (err) {
-              console.warn('Error saving profile to cloud', err)
-            }
+            showToast('Signed In Successfully!', '#059669');
+            syncUserProfile(res.data.user);
+          } catch(err) {
+            showAuthError(err.message || 'Authentication Failed. Check Details.');
           }
         }
+      }
 
-        const tUser = { 
-          id: 'local_' + (username.replace(/[^a-zA-Z0-9_]/g, '') || Date.now()),
-          name, 
-          username, 
-          vehicle: veh, 
-          pin, 
-          password: pin,
-          role: document.getElementById('signup-role')?.value || 'student',
-          age, 
-          language, 
-          createdAt: new Date().toISOString() 
+      function showAuthError(msg) {
+        const errDiv = document.getElementById('col-auth-err');
+        if (errDiv) {
+          errDiv.textContent = msg;
+          errDiv.style.display = 'block';
         }
-        localStorage.setItem('traffic_local_user', JSON.stringify(tUser))
-        localStorage.setItem('col_active_local_user', JSON.stringify(tUser))
+      }
 
+      async function sendLoginOtp() {
+        const email = (document.getElementById('auth-email')?.value || '').trim();
+        if (!email) {
+          showAuthError('Please Enter An Email Address.');
+          return;
+        }
+        if (!window.supabaseClient) {
+          showAuthError('Cloud Authentication Is Currently Offline.');
+          return;
+        }
         try {
-          let accounts = []
-          const existingRaw = localStorage.getItem('col_local_accounts')
-          if (existingRaw) accounts = JSON.parse(existingRaw)
-          const normUname = (username || '').toLowerCase()
-          const normName = (name || '').toLowerCase()
-          const idx = accounts.findIndex(a => 
-            (normUname && (a.username || '').toLowerCase() === normUname) ||
-            (normName && (a.name || '').toLowerCase() === normName)
-          )
-          if (idx >= 0) {
-            accounts[idx] = { ...accounts[idx], ...tUser }
-          } else {
-            accounts.push(tUser)
-          }
-          localStorage.setItem('col_local_accounts', JSON.stringify(accounts))
-        } catch(e) {}
-
-        window.colUser = {
-          id: tUser.id,
-          name: tUser.name,
-          email: tUser.username ? (tUser.username.replace('@','') + '@local.col') : 'local@col.io',
-          username: tUser.username,
-          isLocal: true,
-          user_metadata: {
-            full_name: tUser.name,
-            name: tUser.name,
-            role: tUser.role,
-            preferred_vehicle: tUser.vehicle
-          }
+          showToast('Sending Verification Code...', '#3b82f6');
+          const res = await window.supabaseClient.auth.signInWithOtp({ email });
+          if (res.error) throw res.error;
+          document.getElementById('login-pass-group').style.display = 'none';
+          document.getElementById('auth-submit-btn').style.display = 'none';
+          document.getElementById('auth-otp-btn').style.display = 'none';
+          document.getElementById('login-otp-section').style.display = 'block';
+          showToast('Code Sent To ' + email, '#059669');
+        } catch(err) {
+          showAuthError(err.message || 'Could Not Send Code.');
         }
-        window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: window.colUser } }))
+      }
 
-        let L = {}
+      function cancelLoginOtp() {
+        document.getElementById('login-pass-group').style.display = 'block';
+        document.getElementById('auth-submit-btn').style.display = 'block';
+        document.getElementById('auth-otp-btn').style.display = 'block';
+        document.getElementById('login-otp-section').style.display = 'none';
+      }
+
+      async function verifyLoginOtp() {
+        const email = (document.getElementById('auth-email')?.value || '').trim();
+        const token = (document.getElementById('login-otp-input')?.value || '').trim();
+        if (!token || token.length < 6) {
+          showAuthError('Please Enter The Complete 6-Digit Code.');
+          return;
+        }
         try {
-          const r = localStorage.getItem('th-save')
-          if (r) L = JSON.parse(r)
-        } catch (e) {}
-        L.name = name
-        L.vehicle = veh
-        delete L.localPin
-        localStorage.setItem('th-save', JSON.stringify(L))
-        localStorage.setItem('trafficSetupComplete', 'true')
+          const res = await window.supabaseClient.auth.verifyOtp({ email, token, type: 'email' });
+          if (res.error) throw res.error;
+          showToast('Code Verified! Loading Profile...', '#059669');
+          syncUserProfile(res.data.session.user);
+        } catch(err) {
+          showAuthError(err.message || 'Invalid Code. Please Try Again.');
+        }
+      }
 
-
-
-        const walletKey = 'mth4'
-        let saveData = {}
+      async function verifySignupOtp() {
+        const email = (document.getElementById('signup-email')?.value || '').trim();
+        const token = (document.getElementById('signup-otp-input')?.value || '').trim();
+        if (!token || token.length < 6) {
+          showAuthError('Please Enter The Complete 6-Digit Code.');
+          return;
+        }
         try {
-          const raw = localStorage.getItem(walletKey)
-          if (raw) saveData = JSON.parse(raw)
-        } catch(e) {}
-        if (!saveData.wallet) saveData.wallet = 50000
-        if (!saveData.name) saveData.name = name
-        if (!saveData.vehicle) saveData.vehicle = veh
-        if (!saveData.comp) saveData.comp = {}
-        if (!saveData.badges) saveData.badges = []
-        if (!saveData.studentId) saveData.studentId = 'STU-' + Math.floor(100000 + Math.random() * 900000)
-        localStorage.setItem(walletKey, JSON.stringify(saveData))
-
-
-        if (window.supabaseClient) {
-          try {
-            const regRes = await window.supabaseClient.rpc('register_account', {
-              p_username: username,
-              p_pin: pin || '1234',
-              p_display_name: name,
-              p_email: tUser.email,
-              p_role: tUser.role || 'student',
-              p_vehicle: veh,
-              p_age: parseInt(age, 10) || 18,
-              p_language: language || 'en',
-              p_student_id: saveData.studentId || null
-            })
-            if (regRes && regRes.data && regRes.data.success) {
-              tUser.id = regRes.data.id
-              if (window.colUser) window.colUser.id = regRes.data.id
-              localStorage.setItem('traffic_local_user', JSON.stringify(tUser))
-              localStorage.setItem('col_active_local_user', JSON.stringify(tUser))
-            }
-          } catch(err) { console.warn('Could not register account to cloud DB', err) }
+          const res = await window.supabaseClient.auth.verifyOtp({ email, token, type: 'signup' });
+          if (res.error) throw res.error;
+          showToast('Account Confirmed! Welcome.', '#059669');
+          syncUserProfile(res.data.session.user);
+        } catch(err) {
+          showAuthError(err.message || 'Verification Failed. Try Again.');
         }
+      }
 
-        if (window.supabaseClient && window.colUser) {
-          try {
-            const gMeta = window.colUser.user_metadata || {}
-            const gAvatar = gMeta.avatar_url || gMeta.picture || gMeta.avatar || null
-            await window.supabaseClient.from('user_profiles').upsert({
-              user_id: window.colUser.id,
-              display_name: name,
-              preferred_vehicle: veh,
-              ...(gAvatar ? { avatar_url: gAvatar } : {}),
-              updated_at: new Date().toISOString()
-            }, { onConflict: 'user_id' })
-          } catch(err) { console.warn('Could not sync wallet to cloud', err) }
+      // Event Listeners for Authentication
+      window.addEventListener('col-auth-changed', (e) => {
+        const user = e.detail?.user || window.colUser;
+        const localUser = e.detail?.localUser || window.colLocalUser || (function() {
+          try { return JSON.parse(localStorage.getItem('traffic_local_user')); } catch(e) { return null; }
+        })();
+        if (!user && !localUser) {
+          const welcomeArea = document.getElementById('welcomeBackArea');
+          if (welcomeArea) welcomeArea.style.display = 'none';
+          updateWizardStep(1);
+          const sessionAvatar = document.getElementById('userSessionAvatar');
+          const sessionName = document.getElementById('userSessionName');
+          const sessionSub = document.getElementById('userSessionSub');
+          const sessionBtn = document.getElementById('userSessionBtn');
+          const statusDot = document.getElementById('userStatusDot');
+          if (sessionAvatar) sessionAvatar.textContent = '🚗';
+          if (sessionName) sessionName.innerHTML = '<span>Guest Driver</span>';
+          if (sessionSub) sessionSub.textContent = 'Offline Mode · Progress Saved Locally';
+          if (sessionBtn) sessionBtn.textContent = 'Sign In Online';
+          if (statusDot) { statusDot.style.background = '#94a3b8'; statusDot.style.boxShadow = 'none'; }
+          return;
         }
+        syncUserProfile(user, localUser);
+      });
 
+      // Initialization Bootstrap
+      let _isInitialized = false;
+      function initializeSetup() {
+        if (_isInitialized) return;
+        _isInitialized = true;
+        initProgressRing();
+        updateWizardStep(currentStep);
+        syncUserProfile(window.colUser, window.colLocalUser);
+      }
 
-        updateWizardStep(totalSteps)
-        
-        setTimeout(() => {
-          const urlParams = new URLSearchParams(window.location.search);
-          const returnTo = urlParams.get('returnTo');
-          if (returnTo && /^[a-zA-Z0-9_-]+\.html$/.test(returnTo)) {
-            window.location.href = returnTo;
-          } else {
-            sessionStorage.setItem('just_signed_up', 'true');
-            window.location.href = 'Academy.html?signup=1';
-          }
-        }, 500)
-      })
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeSetup);
+      } else {
+        initializeSetup();
+      }
 
-
-
-
+      window.addEventListener('load', () => {
+        initializeSetup();
+        if (typeof THREE !== 'undefined') {
+          init3D();
+        }
+      });
     </script>
-  <script src="welcome-back.js"></script>
-</body>
+    <script src="welcome-back.js"></script>
+  </body>
 </html>

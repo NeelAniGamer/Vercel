@@ -112,6 +112,26 @@
 
     init(levelConfig) {
       this.levelConfig = levelConfig || {}
+      // Capture where the player actually IS, right now, as the anchor for the
+      // departure task.
+      //
+      // This is deliberately not read from a config field. The original test used
+      // `g._startX`, which does not exist on the game at all; the next candidate,
+      // `_suburbanSpawn.car`, is only populated on one of several level-start paths
+      // and is `null` on the playable map. A measurement anchored on a field that
+      // may be absent either awards the task on frame one (distance from 0 is large)
+      // or never awards it at all (the guard returns false). Both were observed.
+      //
+      // The player's own position at init is the one value that is definitionally
+      // correct: it is where "the start" is, by construction.
+      try {
+        const veh = this.game && (this.game.playerVehicle || this.game.player || this.game.car)
+        this.startAnchor = (veh && veh.position)
+          ? { x: veh.position.x, z: veh.position.z }
+          : null
+      } catch (e) {
+        this.startAnchor = null
+      }
       this.tasks = this._buildTasksForLevel(this.levelConfig)
       this.currentTaskIndex = 0
       this.flagsUnlocked = []
@@ -133,20 +153,58 @@
       const tasks = []
 
       // Task 1: Garage Departure & Pre-Drive Check
+      //
+      // READ THIS BEFORE "FIXING" THE MEASUREMENT BELOW.
+      //
+      // The original test measured distance from `g._startX / g._startZ`, both of
+      // which DO NOT EXIST on the game object. They fell back to 0, and L1's spawn
+      // is at (-69.5, -128) — 145 m from the origin. So `distFromStart > 8` was
+      // TRUE ON THE VERY FIRST FRAME, and the task completed itself before the
+      // player had touched a control. That is what fired the
+      // "TELEMETRY FLAG CAPTURED +25 XP" toast over the mission briefing.
+      //
+      // The second half had the same shape of bug: `typeof g.isOnRoad === 'function'
+      // ? g.isOnRoad() : true` — the real method is `_getRoadAndSidewalkStatus`, so
+      // the guard always fell to `true` and the road test never ran at all.
+      //
+      // So this now measures against the fields that actually exist, and a missing
+      // prerequisite returns FALSE rather than defaulting to "passed". A task that
+      // cannot measure must not award itself.
       tasks.push({
         id: 'departure',
-        title: 'Safe Workshop Departure',
-        desc: 'Exit the auto garage onto the road without colliding with side walls.',
+        title: 'Safe Garage Departure',
+        desc: 'Exit the garage onto Shanti Galli without colliding with side walls.',
         flag: `FLAG{DEPARTURE_L${lvId}_CLEAN}`,
         xp: 25,
         completed: false,
         verify: (g) => {
           const veh = g.playerVehicle || g.player || g.car
-          if (!veh) {return false}
+          if (!veh || !veh.position) { return false }
           const p = veh.position
-          // Left the garage spawn box and reached road surface
-          const distFromStart = Math.hypot(p.x - (g._startX || 0), p.z - (g._startZ || 0))
-          return distFromStart > 8 && (typeof g.isOnRoad === 'function' ? g.isOnRoad() : true)
+
+          // Anchor on the position captured in init(). See the note there: the
+          // config fields this used to read either do not exist or are null on the
+          // playable map, and both failure modes were shipped at some point.
+          const spawn = this.startAnchor
+          if (!spawn || typeof spawn.x !== 'number') { return false }
+
+          const distFromStart = Math.hypot(p.x - spawn.x, p.z - spawn.z)
+          if (distFromStart <= 8) { return false }
+
+          // Left the garage. Now actually leave the GARAGE ZONE — the game treats a
+          // 40 m radius around the garage as driveway, so "moved 8 m" is still
+          // standing in it. Requiring the player to be past that radius is what
+          // makes this a departure rather than a twitch of the steering wheel.
+          if (typeof g._garageX !== 'number' || typeof g._garageZ !== 'number') { return false }
+          const dGarage = Math.hypot(p.x - g._garageX, p.z - g._garageZ)
+          if (dGarage <= 40) { return false }
+
+          // The real road test. `_getRoadAndSidewalkStatus` is the method; the
+          // previous `isOnRoad` name does not exist on the game.
+          if (typeof g._getRoadAndSidewalkStatus !== 'function') { return false }
+          const status = g._getRoadAndSidewalkStatus(p.x, p.z)
+          if (!status || status.inGarageDriveway) { return false }
+          return status.onRoad === true
         }
       })
 
@@ -161,7 +219,11 @@
           completed: false,
           verify: (g) => {
             const spd = typeof g.speed === 'number' ? g.speed : (g.spd || 0)
-            const isNearSignal = g.nearIntersection || g._nearSignal || (g.distToSignal !== undefined && g.distToSignal < 30) || (g._approachingRedLight === true)
+            // The engine's own signal-proximity helper. The old check read
+            // g.nearIntersection / g._nearSignal / g.distToSignal /
+            // g._approachingRedLight - none of which exists anywhere - so the
+            // objective could never complete.
+            const isNearSignal = typeof g._nearRedSignal === 'function' && g._nearRedSignal(40);
             return isNearSignal && spd < 0.5 && !g.violationsLog?.includes('RED_LIGHT_VIOLATION')
           }
         })
@@ -174,9 +236,21 @@
           xp: 50,
           completed: false,
           verify: (g) => {
-            const veh = g.playerVehicle || g.player || g.car
-            const spdKmh = (typeof g.speed === 'number' ? g.speed * 3.6 : (g.curSpeed || (g.spd || 0) * 3.6))
-            return g.ambulanceYielded === true || (spdKmh < 15 && Math.abs(veh?.position?.x || 0) > 3.5)
+            const veh = g.playerVehicle || g.player
+            const spdKmh = (typeof g.speed === 'number' ? g.speed : 0) * 100
+            // An ambulance has to actually be there. The old fallback
+            // awarded the flag for "not on the centreline" at any speed
+            // (the speed test used the wrong unit, so it was always true),
+            // so the objective ticked with no ambulance in the level.
+            const amb = (g.npcs || []).find(n => n && n.userData && (n.userData.npcType === 'ambulance' || n.userData.missionRole === 'ambulance'))
+            if (!amb || !amb.position) {return false}
+            const px = veh && veh.position ? veh.position.x : 0
+            const pz = veh && veh.position ? veh.position.z : 0
+            const dx = amb.position.x - px
+            const dz = amb.position.z - pz
+            const dist = Math.hypot(dx, dz)
+            // Yield = give it room (lateral offset) and slow down.
+            return dist < 40 && Math.abs(dx) > 2.5 && spdKmh < 40
           }
         })
       } else if (theme.includes('silence') || theme.includes('hospital')) {
@@ -188,7 +262,14 @@
           xp: 50,
           completed: false,
           verify: (g) => {
-            return !g.violationsLog?.includes('NO_HONKING') && (g.progressDist || 0) > 30
+            if (g.violationsLog?.includes('NO_HONKING')) {return false}
+            // "Navigate the perimeter": the engine has no distance counter, but
+            // it does know where the level started. g.progressDist does not
+            // exist, so the objective could never complete.
+            const p = g.player && g.player.position
+            const s = g._spawnPos
+            if (!p || !s) {return false}
+            return Math.hypot(p.x - s.x, p.z - s.z) > 30
           }
         })
       } else if (theme.includes('parking')) {
@@ -200,9 +281,13 @@
           xp: 50,
           completed: false,
           verify: (g) => {
-            const veh = g.playerVehicle || g.player || g.car
+            const veh = g.playerVehicle || g.player
             const spd = typeof g.speed === 'number' ? g.speed : (g.spd || 0)
-            return g.parkedCorrectly === true || (spd < 0.2 && Math.abs(veh?.position?.x || 0) > 3.5)
+            // The engine's own parking flag - it is set when the player is off
+            // the carriageway and stopped. g.parkedCorrectly does not exist,
+            // and the old proxy ("more than 3.5m from the centreline")
+            // completed the objective anywhere on the map.
+            return g._reachedParking === true && spd < 0.2 && !!veh
           }
         })
       } else {
@@ -215,11 +300,26 @@
           completed: false,
           verify: (g) => {
             const spd = typeof g.speed === 'number' ? g.speed : (g.spd || 0)
-            if (spd > 2) {
-              this.laneComplianceFrames++
-              return this.laneComplianceFrames > 90
-            }
-            return false
+            // "Maintain continuous lane alignment for at least 3 seconds
+            // without swerving". The old test was `spd > 2`, and the engine's
+            // internal speed tops out around 1.1 (110 km/h) - so the counter
+            // never advanced and the objective never completed.
+            if (spd < 0.05) { this.laneComplianceFrames = 0; return false }
+            const p = g.player && g.player.position
+            if (!p) {return false}
+            const status = typeof g._getRoadAndSidewalkStatus === 'function'
+              ? g._getRoadAndSidewalkStatus(p.x, p.z) : null
+            if (!status || !status.onRoad) { this.laneComplianceFrames = 0; return false }
+            // Stable heading between frames - a swerve resets the count.
+            const rot = g.player.rotation ? g.player.rotation.y : 0
+            const last = (this._lastLaneRot === undefined) ? rot : this._lastLaneRot
+            this._lastLaneRot = rot
+            let d = rot - last
+            while (d > Math.PI) d -= Math.PI * 2
+            while (d < -Math.PI) d += Math.PI * 2
+            if (Math.abs(d) > 0.03) { this.laneComplianceFrames = 0; return false }
+            this.laneComplianceFrames++
+            return this.laneComplianceFrames > 90
           }
         })
       }
@@ -233,7 +333,11 @@
         xp: 35,
         completed: false,
         verify: (g) => {
-          const spdKmh = (typeof g.speed === 'number' ? g.speed * 3.6 : (g.spd || 0) * 3.6)
+          // The engine's internal speed is x100 = km/h (maxSpd 1.1 = 110 km/h).
+          // The old conversion used x3.6, so the window 5-55 km/h was
+          // unreachable - the maximum attainable value was 3.96 - and this
+          // objective never completed in any level.
+          const spdKmh = (typeof g.speed === 'number' ? g.speed : (g.spd || 0)) * 100
           if (spdKmh > 5 && spdKmh <= 55) {
             this.speedComplianceFrames++
             return this.speedComplianceFrames > 90
@@ -251,7 +355,11 @@
         xp: 75,
         completed: false,
         verify: (g) => {
-          const finished = g.reachedGoal === true || g.levelCompleted === true || (g.cps && g.cps.length > 0 && g.cps.every(c => c.done))
+          // Checkpoints are THREE.Groups; their completion flag lives in
+          // userData.hit, not in a `done` property.
+          const cps = g.cps || []
+          const finished = g.reachedGoal === true || g.levelCompleted === true ||
+            (cps.length > 0 && cps.every(c => c && c.userData && c.userData.hit))
           return finished && (g.vio === 0 || (!g.violationsLog || g.violationsLog.length === 0))
         }
       })
@@ -260,7 +368,12 @@
     }
 
     update(dt) {
-      if (!this._initialized || !this.game || !this.game.playing) {return}
+      if (!this._initialized || !this.game) {return}
+      // The level-completion flag is set BEFORE stopPlay() clears `playing`,
+      // so the "Zero Violation Capstone" objective could never be evaluated
+      // at the one moment it becomes true. Keep evaluating after the level
+      // has finished.
+      if (!this.game.playing && !this.game.levelCompleted) {return}
 
       for (let i = 0; i < this.tasks.length; i++) {
         const task = this.tasks[i]
@@ -430,11 +543,16 @@
         })
         .join('')
 
+      const curTask = this.tasks.find((t) => !t.completed)
+      const curLabel = curTask
+        ? String(curTask.title || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        : 'All Objectives Complete'
+
       this.containerEl.innerHTML = `
         <div class="task-drawer-header" onclick="window.game?.taskManager?.toggleDrawer()">
           <div class="tdh-left">
-            <span class="tdh-icon">📋</span>
-            <span class="tdh-title">OBJECTIVES (${completedCount}/${totalCount})</span>
+            <span class="tdh-current">${curLabel}</span>
+            <span class="tdh-title">Objectives (${completedCount}/${totalCount})</span>
           </div>
           <div class="tdh-right">
             <span class="tdh-pct">${pct}%</span>
@@ -548,7 +666,27 @@
           display: flex;
           align-items: center;
           gap: 14px;
-          z-index: 10002;
+          /* BELOW the mission briefing (10000), not above it.
+
+             NO BACKTICKS ANYWHERE IN THIS COMMENT. This block lives inside a
+             JavaScript template literal — it is CSS being injected as a string —
+             and a backtick closes that string early. The result is still valid
+             JavaScript, so a syntax check passes, and the file loads, and the
+             class name, and nothing: the leftover text evaluates as an expression
+             and throws "X is not defined" the moment the string is built.
+
+             That is not hypothetical, and it has happened twice in this file while
+             writing this very comment. Both times the stray backtick made
+             _injectStyles() throw, which meant init() never reached its final line,
+             which meant _initialized stayed false, which meant update() returned on
+             every frame forever, which meant NO TASK COULD EVER COMPLETE IN THE
+             ENTIRE GAME. The only visible symptom was one flag toast.
+
+             Both bugs were fixed: the toast used to outrank the briefing, and the
+             departure task used to award itself on frame one. Fixing only the
+             z-index would have hidden the symptom and left the self-awarding task. */
+          z-index: 9900;
+          pointer-events: none;
           box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 24px rgba(0, 240, 204, 0.35);
           animation: flagPopIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
           font-family: var(--sans, 'Inter'), sans-serif;

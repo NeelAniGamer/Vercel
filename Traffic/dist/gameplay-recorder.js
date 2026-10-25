@@ -1,5 +1,15 @@
 
 
+// One shared definition of "this counts as a mistake", used by both the
+// summary card and the review list, so the number in the header and the rows
+// under it can never disagree.
+function isMistakeEvent(ev) {
+  if (!ev) {return false;}
+  if (ev.severity !== 'info') {return true;}
+  const t = String(ev.type || '');
+  return t.includes('HIT') || t.includes('VIOLATION') || t.includes('OFF_ROAD') ||
+    t === 'COLLISION' || t === 'BARRICADE_HIT' || t === 'NEAR_MISS';
+}
 
 window.GameplayRecorder = {
   _events: [],
@@ -100,7 +110,7 @@ window.GameplayRecorder = {
       bySeverity[ev.severity] = (bySeverity[ev.severity] || 0) + 1;
 
 
-      if (ev.severity !== 'info' || ev.type.includes('HIT') || ev.type.includes('VIOLATION') || ev.type.includes('OFF_ROAD') || ev.type === 'COLLISION' || ev.type === 'BARRICADE_HIT' || ev.type === 'NEAR_MISS') {
+      if (isMistakeEvent(ev)) {
         mistakes.push(ev);
       }
     });
@@ -150,9 +160,12 @@ window.GameplayRecorder = {
   showReview(onContinue) {
     const summary = this.getSummary();
     const timeline = this.getTimeline();
-    const mistakes = this._events.filter(ev =>
-      ev.severity === 'critical' || ev.severity === 'danger' || ev.severity === 'warning'
-    );
+    // The same predicate the summary uses, so the "Mistakes (N)" header and
+    // the list of rows below it always agree. The summary counted any
+    // non-info severity PLUS any type containing HIT/VIOLATION/OFF_ROAD,
+    // while the list showed only critical/danger/warning - so an info-severity
+    // LITTER_HIT was counted in the header and never listed.
+    const mistakes = this._events.filter(ev => isMistakeEvent(ev));
 
 
     const gradeColors = { 'A+': '#22c55e', 'A': '#22c55e', 'B+': '#06b6d4', 'B': '#3b82f6', 'C+': '#f59e0b', 'C': '#f97316', 'D': '#ef4444' };
@@ -448,8 +461,16 @@ window.GameplayRecorder = {
     overlay.querySelector('.dr-backdrop').onclick = doClose;
     overlay.querySelector('.dr-close').onclick = doClose;
     overlay.querySelector('#dr-continue').onclick = () => doClose();
-    document.addEventListener('keydown', function onKey(e) {
-      if (e.key === 'Escape') { doClose(); document.removeEventListener('keydown', onKey); }
-    });
+    // The listener is removed on EVERY close path, not just Escape. The
+    // review is shown on every level completion and every retry, and the
+    // close button / backdrop / "Continue to Quiz" paths used to leave the
+    // listener attached for the rest of the page's life.
+    const onKey = (e) => {
+      if (e.key === 'Escape') { doClose(); }
+    };
+    const offKey = () => { document.removeEventListener('keydown', onKey); };
+    document.addEventListener('keydown', onKey);
+    const prevOnClose = overlay.remove;
+    overlay.remove = function () { offKey(); return prevOnClose.apply(this, arguments); };
   },
 };

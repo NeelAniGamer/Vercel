@@ -253,7 +253,8 @@ class CityChunk {
 
   _spawnAsset(key, x, z, ry, scale) {
     if (!window.PRELOADED_MODELS || !window.PRELOADED_MODELS[key]) {return null;}
-    const asset = window.PRELOADED_MODELS[key].clone();
+    const source = window.PRELOADED_MODELS[key];
+    const asset = source.clone();
     asset.position.set(x, 0, z);
     asset.rotation.y = ry;
     // Apply scale (default 1.0) multiplied by game's global scale factor 4.5
@@ -265,9 +266,31 @@ class CityChunk {
         c.receiveShadow = true;
         c.frustumCulled = true;
         if (c.material) {
-          c.material.metalness = 0.1;
-          c.material.roughness = 0.8;
-          c.material.needsUpdate = true;
+          // A clone SHARES its material with the cached PRELOADED_MODELS master,
+          // so writing PBR values here rewrote the master for every object
+          // using that model in the whole game. One LOCAL material per source
+          // material is cloned and cached on the source MODEL, so every chunk
+          // instance of that model shares one local copy - no per-chunk
+          // allocation, and the master is left alone.
+          //
+          // `needsUpdate` was also unnecessary: metalness and roughness are
+          // uniforms, not shader defines, so the program does not change.
+          const srcMat = c.material;
+          const cache = (source.userData && source.userData._localPBRMap) || null;
+          let local = cache ? cache.get(srcMat) : null;
+          if (!local) {
+            local = srcMat.clone();
+            local.userData = local.userData || {};
+            local.userData._localPBR = true;
+            local.metalness = 0.1;
+            local.roughness = 0.8;
+            if (!cache) {
+              source.userData = source.userData || {};
+              source.userData._localPBRMap = new Map();
+            }
+            source.userData._localPBRMap.set(srcMat, local);
+          }
+          c.material = local;
         }
       }
     });
@@ -287,15 +310,15 @@ class CityChunk {
     }
 
 
-    this.group.traverse(c => {
-      if (c.isMesh) {
-        if (c.geometry) {c.geometry.dispose();}
-        if (c.material) {
-          if (Array.isArray(c.material)) {c.material.forEach(m => m.dispose());}
-          else {c.material.dispose();}
-        }
-      }
-    });
+    // Detach from the scene but DO NOT dispose geometry or material.
+    //
+    // Every mesh here is a `.clone()` of a shared PRELOADED_MODELS entry, and in
+    // three.js Object3D.clone() shares geometry/material references with the
+    // master. Disposing them destroyed the master's GPU buffers, so the first
+    // chunk unload corrupted every other instance of that model for the rest of
+    // the session. Clones add no GPU memory of their own, so there is nothing to
+    // free; removing them from the scene and dropping the references is enough.
+    if (this.group && this.group.parent) {this.group.parent.remove(this.group);}
 
     this.objects = [];
     this.buildings = [];

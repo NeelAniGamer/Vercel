@@ -448,17 +448,18 @@
         </div>
       </div>
 
-      <!-- 2. Driving Simulator Frame -->
-      <iframe id="driving-frame" class="view-frame" src="Driving.html" allow="fullscreen; pointer-lock"></iframe>
+      <!-- 2. Driving Simulator Frame. data-src (not src) so the browser does not fetch
+           four heavy apps on first paint; switchView() attaches src on demand. -->
+      <iframe id="driving-frame" class="view-frame" data-src="Driving.html" allow="fullscreen; pointer-lock"></iframe>
 
       <!-- 3. Driver Dashboard Frame -->
-      <iframe id="dashboard-frame" class="view-frame" src="TrafficDashboard.html" allow="fullscreen; pointer-lock"></iframe>
+      <iframe id="dashboard-frame" class="view-frame" data-src="TrafficDashboard.html" allow="fullscreen; pointer-lock"></iframe>
 
       <!-- 4. Pedestrian Academy Frame -->
-      <iframe id="academy-frame" class="view-frame" src="Academy.html" allow="fullscreen; pointer-lock"></iframe>
+      <iframe id="academy-frame" class="view-frame" data-src="Academy.html" allow="fullscreen; pointer-lock"></iframe>
 
       <!-- 5. Vehicle Setup Frame -->
-      <iframe id="setup-frame" class="view-frame" src="TrafficSetup.html" allow="fullscreen; pointer-lock"></iframe>
+      <iframe id="setup-frame" class="view-frame" data-src="TrafficSetup.html" allow="fullscreen; pointer-lock"></iframe>
     </main>
   </div>
 
@@ -469,7 +470,13 @@
       currentActiveView = viewId;
       document.querySelectorAll('.view-frame, #home-hub').forEach(el => el.classList.remove('active'));
       const target = document.getElementById(viewId);
-      if (target) target.classList.add('active');
+      if (target) {
+        // Attach the deferred src the first time this view is shown.
+        if (target.dataset && target.dataset.src && !target.src) {
+          target.src = target.dataset.src;
+        }
+        target.classList.add('active');
+      }
 
       document.querySelectorAll('.nav-tab').forEach(tab => {
         if (tab.getAttribute('data-target') === viewId) {
@@ -491,7 +498,11 @@
     function reloadCurrentView() {
       if (currentActiveView !== 'home-hub') {
         const frame = document.getElementById(currentActiveView);
-        if (frame && frame.contentWindow) {
+        // A frame whose deferred src was never attached has no contentWindow;
+        // assigning src is what performs the "reload".
+        if (frame && frame.dataset && frame.dataset.src && !frame.src) {
+          frame.src = frame.dataset.src;
+        } else if (frame && frame.contentWindow) {
           frame.contentWindow.location.reload();
         }
       } else {

@@ -15,13 +15,6 @@ window.addEventListener('DOMContentLoaded', () => {
 })
 
 
-document.addEventListener('keydown', (e) => {
-  if (e.ctrlKey && e.shiftKey && e.key === 'D') {
-    e.preventDefault()
-    if (window.ui && typeof window.ui.adminUnlock === 'function') {window.ui.adminUnlock()}
-  }
-})
-
 window.PRELOADED_MODELS = {}
 
 
@@ -77,7 +70,6 @@ window.ASSET_MANIFEST = {}
   M.bmw_m4 = glb('Models/bmw_m4_widebody__www.vecarz.com.glb');
   M.nilu_27 = glb('Models/nilu_27_concept_2024__www.vecarz.com.glb');
   M.cyberpunk_bike = glb('Models/cyberpunk_bike.glb');
-  M.lowpoly_cars = fbx('Models/uploads_files_3354643_LowPoly_Cars_01_fbx.FBX');
 
   M.road_straight = glb(roadKit + 'road-straight.glb'); M.road_intersect = glb(roadKit + 'road-intersection.glb')
   M.road_cross = glb(roadKit + 'road-crossroad.glb'); M.road_cross_path = glb(roadKit + 'road-crossroad-path.glb')
@@ -87,7 +79,7 @@ window.ASSET_MANIFEST = {}
   M.road_avenue = { path: 'Models/road__avenue__street/scene.gltf', fmt: 'gltf' }
   M.city_map_sample = glb('Models/city_map_sample.glb'); // Sample: 3D Urban Terrain Map
   M.building_high_school = glb('Models/building_high_school.glb'); // High School Campus Architecture
-  M.high_school = glb('Models/high_school.glb');
+  M.high_school = M.building_high_school;
   M.house_lowpoly_isometric = glb('Models/house_lowpoly_isometric.glb'); // Low-poly Modern Suburban House
   M.house_mansion_lowpoly = glb('Models/house_mansion_lowpoly.glb'); // Low-poly Suburban Mansion / Villa
   M.mansion_house = glb('Models/house_mansion_lowpoly.glb');
@@ -264,8 +256,75 @@ window.ASSET_GROUPS = {
   construction:['barrier','cone','sign_highway'],
   animals: ['animal_cow','animal_dog'],
   street_props: ['streetlight_curved','streetlight_square','construction_light','sign_highway','sign_highway_detailed','bollard'],
-  lowpoly_city: ['lowpoly_billboard_2x1_03','lowpoly_billboard_2x1_05','lowpoly_billboard_4x1_03','lowpoly_billboard_4x1_04','lowpoly_bush_06','lowpoly_bush_07','lowpoly_bush_10','lowpoly_bus_stop_02','lowpoly_car_06','lowpoly_car_13','lowpoly_car_16','lowpoly_car_19','lowpoly_eco_building_grid','lowpoly_eco_building_slope','lowpoly_eco_building_terrace','lowpoly_fountain_03','lowpoly_futuristic_car_1','lowpoly_graffiti_03','lowpoly_palm_03','lowpoly_regular_building_twistedtower_large','lowpoly_road_001','lowpoly_road_003','lowpoly_road_009','lowpoly_road_013','lowpoly_road_019','lowpoly_road_020','lowpoly_road_022','lowpoly_set_b_tiles_01','lowpoly_set_b_tiles_04','lowpoly_set_b_tiles_05','lowpoly_set_b_tiles_06','lowpoly_set_b_tiles_09','lowpoly_signboard_01','lowpoly_spotlight_01','lowpoly_spotlight_02','lowpoly_traffic_light_001','lowpoly_traffic_light_002','lowpoly_traffic_light_003','lowpoly_trash_02','lowpoly_trash_03','lowpoly_trash_04','lowpoly_trash_05','lowpoly_trash_06','lowpoly_trash_can_04','lowpoly_trash_can_05','lowpoly_trash_can_06','lowpoly_trash_can_07','lowpoly_trash_can_08','lowpoly_van']
+  lowpoly_city: ['lowpoly_billboard_2x1_03','lowpoly_billboard_2x1_05','lowpoly_billboard_4x1_03','lowpoly_billboard_4x1_04','lowpoly_bush_06','lowpoly_bush_07','lowpoly_bush_10','lowpoly_bus_stop_02','lowpoly_car_06','lowpoly_car_13','lowpoly_car_16','lowpoly_car_19','lowpoly_eco_building_grid','lowpoly_eco_building_slope','lowpoly_eco_building_terrace','lowpoly_fountain_03','lowpoly_futuristic_car_1','lowpoly_graffiti_03','lowpoly_palm_03','lowpoly_regular_building_twistedtower_large','lowpoly_road_001','lowpoly_road_003','lowpoly_road_009','lowpoly_road_013','lowpoly_road_019','lowpoly_road_020','lowpoly_road_022','lowpoly_set_b_tiles_01','lowpoly_set_b_tiles_04','lowpoly_set_b_tiles_05','lowpoly_set_b_tiles_06','lowpoly_set_b_tiles_09','lowpoly_signboard_01','lowpoly_spotlight_01','lowpoly_spotlight_02','lowpoly_traffic_light_001','lowpoly_traffic_light_002','lowpoly_traffic_light_003','lowpoly_trash_02','lowpoly_trash_03','lowpoly_trash_04','lowpoly_trash_05','lowpoly_trash_06','lowpoly_trash_can_04','lowpoly_trash_can_05','lowpoly_trash_can_06','lowpoly_trash_can_07','lowpoly_trash_can_08','lowpoly_van'],
+
+  // ── "free city pack" props (models/props) ─────────────────────────────────
+  // A SECOND art direction for the same street furniture, staged rather than
+  // Kenney-derived. Grouped so a level can ask for one coherent set:
+  //   stage_signals  — mast signal + street lighting, for films that need a real
+  //                    junction rather than a procedurally built one
+  //   stage_crime    — cones and barriers for an investigation scene
+  //   city_street    — bins, bags, benches, trees, gardens: ordinary kerbside
+  //   parking_detail — hydrant + STOP plate, for the parking lessons
+  //
+  // Deliberately NOT in CORE_ASSETS. These are additions to levels that want
+  // them, and every one of them is optional: loadLevelAssets skips a key that
+  // fails, and the procedural builders in game_core/cinematics stand in.
+  stage_signals:  ['prop_traffic_light','prop_street_light'],
+  stage_crime:    ['prop_traffic_cone'],
+  city_street:     ['prop_bin','prop_trash_bag','prop_trash_bag_2','prop_bench','prop_tree_small','prop_tree_large','prop_garden'],
+  parking_detail: ['prop_fire_hydrant','prop_stop_sign'],
+  city_blocks:    ['prop_block','prop_building','prop_car_red'],
+  prop_roads:     ['prop_road_straight','prop_road_curved','prop_road_junction'],
+
+  // ── KayKit rigged actors ─────────────────────────────────────────────────
+  // Two files, ONE skeleton: `general` supplies Idle/Death/Hit/Interact clips and
+  // `movement` supplies Walking/Running/Jump. AnimationClip tracks are bone-name
+  // based, which is why clips from one file drive the mesh from the other.
+  //
+  // Split into two groups on purpose so a level that only needs pedestrians
+  // walking does not download the death animations with them — 2.3 MB of idle,
+  // hit, death and interaction is not a small thing to carry for a footpath.
+  char_kaykit:       ['char_rig_medium_movement','char_rig_medium_general'],
+  char_kaykit_walk:  ['char_rig_medium_movement'],
+  vehicle_trucks:    ['vehicles_truck_collection'],
 }
+
+// ── Register the staged props ───────────────────────────────────────────────
+// Registered from OUTSIDE the manifest IIFE, because `M` and the `glb()` helper
+// are both private to it. Assigning through `window.ASSET_MANIFEST` is the only
+// way in — and a first attempt that used the local `M` here looked correct and
+// silently registered nothing, because `M` resolves to the outer
+// window.ASSET_MANIFEST only by name collision, and a bare `M[k] = ...` here
+// throws in strict mode or writes to an undefined binding in sloppy mode.
+//
+// Names match what scripts/stage_assets.py writes, so the two cannot drift.
+;[
+  'prop_traffic_light', 'prop_street_light', 'prop_traffic_cone', 'prop_stop_sign',
+  'prop_fire_hydrant', 'prop_bench', 'prop_bin', 'prop_trash_bag', 'prop_trash_bag_2',
+  'prop_tree_small', 'prop_tree_large', 'prop_garden', 'prop_block', 'prop_building',
+  'prop_car_red', 'prop_road_straight', 'prop_road_curved', 'prop_road_junction'
+].forEach(function (k) {
+  window.ASSET_MANIFEST[k] = { path: 'Models/props/' + k + '.glb', fmt: 'glb' }
+})
+
+// ── Register the staged FBX ──────────────────────────────────────────────────
+// The character RIGS carry the animation clips, and they are the only assets in
+// the dump that do: L1's film cast is procedural geometry with no skeleton, so a
+// constable who gets shot has no death clip and a man on a footpath has no idle.
+// Registering them is cheap; whether the film USES them is a separate decision,
+// taken in cinematics.js, not here.
+//
+// Grouped so a lesson pays only for what it needs: `char_rig_movement` is the
+// locomotion set, `char_rig_general` the idle/hit/death set, and a cutscene that
+// only needs a walking pedestrian should not download the death animations with
+// them.
+;[
+  'char_rig_medium_movement', 'char_rig_medium_general', 'char_mannequin_medium',
+  'vehicles_truck_collection'
+].forEach(function (k) {
+  window.ASSET_MANIFEST[k] = { path: 'Models/fbx/' + k + '.fbx', fmt: 'fbx' }
+})
 
 
 window.CORE_ASSETS = [
@@ -287,7 +346,7 @@ window._expandAssets = function (assets) {  if (!assets || !assets.length) {retu
   // Auto-include street props and building kit for urban levels
   if (out.has('suburban') || out.has('industrial') || out.has('modular')) {
     if (window.ASSET_GROUPS.street_props) {window.ASSET_GROUPS.street_props.forEach(k => out.add(k));}
-    if (window.ASSET_GROUPS.bkit) {window.ASSET_GROUPS.bkit.forEach(k => out.add(k));}
+    if (out.has('modular') && window.ASSET_GROUPS.bkit) {window.ASSET_GROUPS.bkit.forEach(k => out.add(k));}
   }
   return [...out];
 };
@@ -342,10 +401,11 @@ window.loadLevelAssets = function (keys, callback) {
 
 
   function postProcess(root, key) {
+    const isDynamic = /car|vehicle|hero|char|ped|bus|truck|auto|motorcycle|bike/i.test(key);
     root.traverse((child) => {
       if (child.isMesh) {
-        child.castShadow = !key.includes('road')
-        child.receiveShadow = true
+        child.castShadow = isDynamic;
+        child.receiveShadow = true;
         if (child.material) {
           if (child.material.map) { child.material.map.magFilter = THREE.NearestFilter; child.material.map.minFilter = THREE.NearestFilter; child.material.map.needsUpdate = true }
           if ('roughness' in child.material) {child.material.roughness = 0.8}
@@ -448,35 +508,35 @@ window.loadLevelAssets = function (keys, callback) {
 function preloadModels(callback) {
   if (typeof THREE === 'undefined' || typeof THREE.GLTFLoader === 'undefined') { callback(); return }
 
+  // Register embedded models (auto, bus, lambo, env) into ASSET_MANIFEST so they are loadable on demand
+  if (window.MODELS) {
+    Object.keys(window.MODELS).forEach(function (key) {
+      if (!window.ASSET_MANIFEST[key]) {
+        window.ASSET_MANIFEST[key] = { path: window.MODELS[key], fmt: 'glb' };
+      }
+    });
+  }
 
-  const ld = document.getElementById('loading-screen')
-  const pctEl = document.getElementById('loading-pct')
-  const barEl = document.getElementById('loading-bar')
-  const statusEl = document.getElementById('loading-status')
+  const urlParams = new URLSearchParams(window.location.search);
+  const lvId = urlParams.get('level') || urlParams.get('lv') || localStorage.getItem('traffic_lv') || '1';
+  const veh = urlParams.get('veh') || localStorage.getItem('traffic_veh');
 
+  let curLv = null;
+  if (Array.isArray(window.LVS)) {
+    curLv = window.LVS.find(function (l) { return String(l.id) === String(lvId); });
+  } else if (window.LVS && typeof window.LVS === 'object') {
+    curLv = window.LVS[lvId] || window.LVS['level' + lvId];
+  }
 
-  window.loadLevelAssets(window.CORE_ASSETS, () => {
-
-    if (window.MODELS) {
-      const loader = window._attachDraco(new THREE.GLTFLoader())
-      Object.keys(window.MODELS).forEach((key) => {
-        if (window.MODELS[key] && !window.PRELOADED_MODELS[key]) {
-          try {
-            loader.load(window.MODELS[key], (gltf) => {
-              gltf.scene.traverse((child) => {
-                if (child.isMesh) { child.castShadow = true; child.receiveShadow = true; if (child.material) { child.material.roughness = 0.8; child.material.metalness = 0.1 } }
-              })
-              gltf.scene.scale.set(4.5, 4.5, 4.5)
-              window.PRELOADED_MODELS[key] = gltf.scene
-            }, undefined, (err) => console.warn('Failed to load base64 model:', key, err))
-          } catch(e) {
-            console.error('SYNC Error parsing base64 for', key, e);
-          }
-        }
-      })
+  // Only preload the assets required for the target level + active vehicle
+  const assetsToLoad = (curLv && Array.isArray(curLv.assets)) ? [...curLv.assets] : ['car'];
+  if (veh && (window.ASSET_MANIFEST[veh] || (window.MODELS && window.MODELS[veh]))) {
+    if (!assetsToLoad.includes(veh)) {
+      assetsToLoad.push(veh);
     }
-    callback()
-  })
+  }
+
+  window.loadLevelAssets(assetsToLoad, callback);
 }
 
 window.confetti = {
@@ -689,17 +749,27 @@ preloadModels(() => {
         function _redirectToAcademy() {
           if (_drivingRedirected) {return}
           _drivingRedirected = true
-          console.warn('[Driving] Canvas timeout or level launch issue')
+          console.warn('[Driving] Canvas timeout or level launch issue - returning to the Academy level list')
+          // The safety net this function implements: if the scene never came
+          // up (a failed asset load, a thrown level build, a lost WebGL
+          // context), the player was left on a blank canvas with no way out.
+          // The engine's own comment documents the intended behaviour:
+          // "start.js's generic 15-18s 'canvas never turned on' safety net
+          // eventually fired and redirected to Academy.html?screen=levels".
+          try { window.location.href = 'Academy.html?screen=levels' } catch {}
         }
 
         const _startTime = Date.now()
-        const _drivingTimeout = setTimeout(function _checkCanvasTimeout() {
+        // The watchdog re-arms itself, so the handle has to be reassigned on
+        // every re-arm - otherwise `clearTimeout(_drivingTimeout)` cancels
+        // the id of a timer that has already fired and the poll keeps running.
+        let _drivingTimeout = setTimeout(function _checkCanvasTimeout() {
           const gc = document.getElementById('gc')
           const ls = document.getElementById('loading-screen')
           const isLoading = ls && ls.style.display !== 'none' && !ls.classList.contains('fade-out')
           if (!gc || !gc.classList.contains('on')) {
             if (isLoading || Date.now() - _startTime < 30000) {
-              setTimeout(_checkCanvasTimeout, 500)
+              _drivingTimeout = setTimeout(_checkCanvasTimeout, 500)
             } else {
               _redirectToAcademy()
             }

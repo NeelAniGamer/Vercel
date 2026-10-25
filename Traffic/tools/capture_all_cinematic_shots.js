@@ -1,7 +1,7 @@
 const { chromium } = require('playwright');
 const path = require('path');
 
-const ARTIFACT_DIR = 'C:/Users/neelg/.gemini/antigravity/brain/cd2cfba3-bf2c-4d71-8445-5609e97df8de';
+const ARTIFACT_DIR = 'C:/Users/neelg/.gemini/antigravity/brain/2d431989-10a8-40c2-bbc8-1f3d48a2fa79';
 
 (async () => {
   console.log('Launching Chromium with SwiftShader...');
@@ -43,14 +43,17 @@ const ARTIFACT_DIR = 'C:/Users/neelg/.gemini/antigravity/brain/cd2cfba3-bf2c-4d7
     'shot5_standoff_vikram',
     'shot6_vip_passenger',
     'shot7_gunshot_escape',
-    'shot8_aftermath_crimescene'
+    'shot8_aftermath_crimescene',
+    'shot9_dawn_shanti_galli'
   ];
 
   for (let idx = 0; idx < shotNames.length; idx++) {
     console.log(`\n--- Seeking to Shot ${idx}: ${shotNames[idx]} ---`);
     
     await page.evaluate((targetIdx) => {
-      window.Cutscene.seek(targetIdx);
+      // Freeze frame at stable fraction (0.22, or 0.16 for gunshot shot 7)
+      const p = (targetIdx === 7) ? 0.16 : 0.22;
+      window.Cutscene.seek(targetIdx, p);
     }, idx);
 
     // Give the renderer 1200ms to settle positions, window animations, and lighting

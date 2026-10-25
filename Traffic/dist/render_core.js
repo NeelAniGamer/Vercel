@@ -45,12 +45,12 @@ const QUALITY_PRESETS = {
         bloomThreshold: 0.88,
         bloomStrength: 0.25,
         bloomRadius: 0.45,
-        fps: 60,
+        fps: 120,
         textureFilter: THREE.LinearMipmapLinearFilter,
-        maxAnisotropy: 4,
-        lodMultiplier: 1.0,
-        maxParticles: 3000,
-        description: 'High Quality'
+        maxAnisotropy: 8,
+        lodMultiplier: 1.25,
+        maxParticles: 5000,
+        description: 'High Quality (High Refresh)'
     },
     ULTRA: {
         resScale: 1.0,
@@ -62,12 +62,12 @@ const QUALITY_PRESETS = {
         bloomThreshold: 0.86,
         bloomStrength: 0.25,
         bloomRadius: 0.5,
-        fps: 60,
+        fps: 144,
         textureFilter: THREE.LinearMipmapLinearFilter,
-        maxAnisotropy: 8,
-        lodMultiplier: 1.25,
-        maxParticles: 5000,
-        description: 'Ultra Quality'
+        maxAnisotropy: 16,
+        lodMultiplier: 1.5,
+        maxParticles: 8000,
+        description: 'Ultra Quality (Uncapped Hardware)'
     }
 };
 
@@ -91,6 +91,10 @@ class RenderCore {
     
     init(canvas) {
         this.canvas = canvas;
+        // MSAA Is Prohibitively Expensive On Tile-Based Mobile GPUs; The
+        // Engine Already Caps Mobile DPR At 1.0 And Skips Post-Processing.
+        const isMobileGL = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+          || (window.innerWidth || 9999) <= 767;
         this.renderer = new THREE.WebGLRenderer({
             canvas: canvas,
             antialias: true,
@@ -175,14 +179,15 @@ class RenderCore {
         if (navigator.hardwareConcurrency) {
             console.log(`RenderCore: CPU Cores: ${navigator.hardwareConcurrency}`);
             if (navigator.hardwareConcurrency <= 2) {score -= 1;}
-            else if (navigator.hardwareConcurrency >= 8) {score += 1;}
+            else if (navigator.hardwareConcurrency >= 6) {score += 1;}
+            if (navigator.hardwareConcurrency >= 12) {score += 1;}
         }
 
 
         if (navigator.deviceMemory) {
             console.log(`RenderCore: Device Memory: ${navigator.deviceMemory}GB`);
             if (navigator.deviceMemory < 4) {score -= 1;}
-            else if (navigator.deviceMemory >= 16) {score += 1;}
+            else if (navigator.deviceMemory >= 8) {score += 1;}
         }
 
 
@@ -192,12 +197,11 @@ class RenderCore {
         else if (msPerFrame > 10) {score -= 1;}
 
 
-        let finalPreset = 'MED';
-        if (score <= 0) {finalPreset = 'LOW';}
-        else if (score === 1) {finalPreset = 'LOW';}
-        else if (score === 2) {finalPreset = 'MED';}
-        else if (score === 3) {finalPreset = 'HIGH';}
-        else if (score >= 4) {finalPreset = 'ULTRA';}
+        let finalPreset = 'HIGH';
+        if (score <= -1) {finalPreset = 'LOW';}
+        else if (score <= 1) {finalPreset = 'MED';}
+        else if (score <= 3) {finalPreset = 'HIGH';}
+        else {finalPreset = 'ULTRA';}
 
 
         if (msPerFrame > 33) {finalPreset = 'LOW';}
@@ -208,7 +212,7 @@ class RenderCore {
         const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || vw <= 767;
         if (isMobile) {
             // 720p budget phones (360w @3x): force LOW, 1080p mid: cap at MED, 2K tablets allow HIGH
-            if (vw <= 389 && dpr >= 2.8) {finalPreset = 'LOW';}
+            if (vw <= 389 && dpr >= 2.8) {finalPreset = 'HIGH';}
             else if (vw <= 479 && finalPreset === 'ULTRA') {finalPreset = 'HIGH';}
             else if (vw <= 599 && finalPreset === 'ULTRA') {finalPreset = 'HIGH';}
         }
@@ -223,7 +227,15 @@ class RenderCore {
         const dpr = window.devicePixelRatio || 1;
         const vw = window.innerWidth;
         const isMobile = vw <= 767 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-        if (!isMobile || dpr <= 1.5) {return;}
+        const effectiveDpr = (this.renderer && typeof this.renderer.getPixelRatio === 'function')
+            ? this.renderer.getPixelRatio()
+            : (isMobile ? 1.0 : dpr);
+        // If renderer is already capped to <= 1.0 DPR (game_core _initR caps mobile to 1.0),
+        // no extra DPR downscaling or offscreen WebGLRenderTarget pass is necessary.
+        if (!isMobile || effectiveDpr <= 1.0 || dpr <= 1.5) {
+            this._dprResScale = null;
+            return;
+        }
         const preset = QUALITY_PRESETS[this.currentPreset];
         if (!preset) {return;}
         // 720p@3x: multiply by 0.62 → ~0.52 effective; 1080p@2.6x: 0.71; 2K tablet@2x: 0.82
@@ -341,20 +353,23 @@ class RenderCore {
         const preset = this.getPreset();
         const scale = this._dprResScale != null ? this._dprResScale : preset.resScale;
 
-        if (scale === 1.0 && this._dprResScale == null) {
-
+        if (this.composer && this.bloomPass && this.bloomPass.enabled) {
+            this.composer.render();
+        } else if (scale === 1.0 && this._dprResScale == null) {
             this.renderer.render(scene, camera);
         } else {
-
             if (!this.renderTarget) {this._setupRenderBypass();}
 
             this.renderer.setRenderTarget(this.renderTarget);
             this.renderer.render(scene, camera);
 
+            // Disable toneMapping during the fullscreen quad blit so exposure isn't applied twice
+            const prevToneMapping = this.renderer.toneMapping;
+            this.renderer.toneMapping = THREE.NoToneMapping;
             this.renderer.setRenderTarget(null);
             this.renderer.render(this.blitScene, this.blitCamera);
+            this.renderer.toneMapping = prevToneMapping;
         }
-
 
         if (this._autoQualityEnabled) {this._checkFrameBudget();}
     }
@@ -410,15 +425,15 @@ class RenderCore {
     }
 
     
-    setupPostProcessing(width, height, isMobile) {
-        if (!THREE.EffectComposer || isMobile) {
+    setupPostProcessing(width, height, isMobile, scene, camera) {
+        if (!THREE.EffectComposer || isMobile || !scene || !camera) {
             this.composer = null;
             return;
         }
 
         try {
             this.composer = new THREE.EffectComposer(this.renderer);
-            this.composer.addPass(new THREE.RenderPass(this.scene, this.camera));
+            this.composer.addPass(new THREE.RenderPass(scene, camera));
 
             const preset = this.getPreset();
             this.bloomPass = new THREE.UnrealBloomPass(

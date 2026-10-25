@@ -31,12 +31,17 @@ window.sfx = Object.assign(window.sfx || {}, {
   vol: { sfx: 1, ui: 1, env: 1 },
   _cat: { horn: 'sfx', brake: 'sfx', ring: 'ui', challan: 'ui', ok: 'ui', error: 'ui', thunder: 'env' },
   init() {
+
     if (this._c) {return}
     try {
       this._c = new (window.AudioContext || window.webkitAudioContext)()
     } catch (e) {}
   },
   setVol(cat, v) { if (this.vol[cat] !== undefined) {this.vol[cat] = Math.max(0, Math.min(1, v));} },
+  setVolume(v) {
+    const val = Math.max(0, Math.min(1, v));
+    Object.keys(this.vol).forEach(k => { this.vol[k] = val; });
+  },
   play(t) {
     if (!this._c) {return}
     if (t === 'horn') {
@@ -232,12 +237,89 @@ var ui = window.ui = Object.assign(window.ui || {}, {
       }
     }
   },
+    _hudCloseAll: function () {
+      ['#hud-settings-sheet', '#hud-settings-scrim', '#task-tracker', '#player-hud-card']
+        .forEach(function (s) {
+          const e = document.querySelector(s)
+          if (e) e.classList.remove('hud-open')
+        })
+    },
+
+    _hudToggleSettings: function (force) {
+      const sheet = document.getElementById('hud-settings-sheet')
+      const scrim = document.getElementById('hud-settings-scrim')
+      if (!sheet || !scrim) {return}
+      const open = force === undefined ? !sheet.classList.contains('hud-open') : !!force
+      // Opening the sheet pauses the run. A settings panel you can adjust while
+      // being sideswiped is not a settings panel, and on a 390px-tall screen the
+      // sheet would otherwise sit over the gas and brake controls.
+      const g = window.game
+      if (open) {
+        this._hudCloseAll()
+        sheet.classList.add('hud-open')
+        scrim.classList.add('hud-open')
+        if (g && typeof g.togglePause === 'function' && !g.paused) {g.togglePause()}
+      } else {
+        sheet.classList.remove('hud-open')
+        scrim.classList.remove('hud-open')
+        if (g && typeof g.togglePause === 'function' && g.paused) {g.togglePause()}
+      }
+    },
+
+    _hudToggleTasks: function () {
+      const t = document.getElementById('task-tracker')
+      if (!t) {return}
+      const open = !t.classList.contains('hud-open')
+      this._hudCloseAll()
+      if (open) {t.classList.add('hud-open')}
+    },
+
+    _hudToggleStats: function () {
+      const c = document.getElementById('player-hud-card')
+      if (!c) {return}
+      const open = !c.classList.contains('hud-open')
+      this._hudCloseAll()
+      if (open) {c.classList.add('hud-open')}
+    },
+
+    // Scrim tap and Escape dismiss the open drawer without disturbing the pause
+    // menu. Registered in capture phase so it runs before the pause handler.
+    _hudInit: function () {
+      const scrim = document.getElementById('hud-settings-scrim')
+      if (scrim && !scrim.__bound) {
+        scrim.__bound = true
+        scrim.addEventListener('click', () => this._hudToggleSettings(false))
+      }
+      if (this.__hudKeysBound) {return}
+      this.__hudKeysBound = true
+      window.addEventListener('keydown', (e) => {
+        if (e.key !== 'Escape') {return}
+        const sheet = document.getElementById('hud-settings-sheet')
+        if (sheet && sheet.classList.contains('hud-open')) {
+          e.stopPropagation()
+          this._hudToggleSettings(false)
+        } else if (document.querySelector('#task-tracker.hud-open, #player-hud-card.hud-open')) {
+          e.stopPropagation()
+          this._hudCloseAll()
+        }
+      }, true)
+      this._hudCloseAll()
+    },
+
   init() {
 
 
 
 
 
+
+
+
+
+    // Bind the HUD drawers once. Everything else in init() is unrelated to
+    // layout; this only wires the settings sheet and the two tap-to-open
+    // drawers. See _hudCloseAll above and hud-clean.css.
+    if (this._hudInit) {this._hudInit()}
 
     if (typeof S === 'undefined') {
       let s = null
@@ -1061,7 +1143,7 @@ _applyAgeTier() {
     if (cIcon) {cIcon.style.display = 'none'}
 
     const completedLevels = Object.keys(S.comp || {}).length
-    const totalLevels = 52
+    const totalLevels = levelTotal()
 
     let totalScore = 0,
       count = 0
@@ -1510,7 +1592,12 @@ if (un) {
     }, 50)
   },
   showBriefing(lid) {
-    const lv = LVS.find((l) => l.id === lid)
+    const lv = (window.LVS || []).find((l) => l.id === lid)
+    // A deep link like ?lv=999 used to throw a TypeError on `lv.modes` here.
+    if (!lv) {
+      if (typeof toast === 'function') toast('Lesson Not Found', '#ff3b30')
+      return this.showLevels()
+    }
     this.cur = lv
     const availModes = lv.modes || ['car']
     const preferred = S.vehicle === 'Bike' && availModes.includes('bike') ? 'bike'
@@ -1518,7 +1605,13 @@ if (un) {
       : availModes[0]
     this.curMode = preferred
     if (history.replaceState) {
-      history.replaceState(null, '', `?screen=levels&lv=${lv.id}`)
+      // Preserve unrelated params (?signup, ?tutorial, ?mode=car, ?rain, …).
+      // Replacing the whole query string silently dropped them, so returning to
+      // the level grid lost the tutorial/signup context.
+      const _u = new URLSearchParams(window.location.search)
+      _u.set('screen', 'levels')
+      _u.set('lv', String(lv.id))
+      history.replaceState(null, '', `${window.location.pathname}?${_u.toString()}`)
     }
     document.getElementById('blt').textContent = 'Level ' + lv.id
     const bvhEl = document.getElementById('bvh')
@@ -1908,18 +2001,21 @@ if (un) {
       S.started[lv.id] = true
 
 
+      // Reading the syllabus records S.sylViewed only. It must NOT write S.comp.
+      //
+      // This used to grant `score: 100, finalQuiz: true, modes.learn` as soon as
+      // every topic was opened (or as soon as `practical`/`exam` was opened), so
+      // simply browsing a briefing completed the lesson at a perfect score. That
+      // fed Object.keys(S.comp).length, the dashboard's /N counters, the
+      // level_10/20/30/40 badges and eventually certificate eligibility.
+      //
+      // Completion is earned in exactly two places:
+      //   - ui._fq() / ui.showResults()  (quiz + driving result)
+      //   - game_core.completeLevel()     (3D run)
+      // Both write a real score. Syllabus browsing is not completion.
       const allViewed = items.every(it => S.sylViewed[lv.id].includes(it.id))
-      if (allViewed || id === 'practical' || id === 'exam') {
-        if (!S.comp) {S.comp = {}}
-        if (!S.comp[lv.id]) {
-          S.comp[lv.id] = { score: 100, time: Date.now(), finalQuiz: true, modes: { learn: true } }
-        } else {
-          S.comp[lv.id].score = Math.max(S.comp[lv.id].score || 0, 100)
-          S.comp[lv.id].finalQuiz = true
-          if (!S.comp[lv.id].modes) {S.comp[lv.id].modes = {}}
-          S.comp[lv.id].modes.learn = true
-        }
-      }
+      if (allViewed && !S.sylViewedAll) {S.sylViewedAll = {}}
+      if (allViewed) {S.sylViewedAll[lv.id] = true}
 
       if (typeof save === 'function') {save()}
 
@@ -3985,8 +4081,9 @@ if (un) {
         if (completedCount >= 20 && !S.badges.includes('level_20')) {S.badges.push('level_20')}
         if (completedCount >= 30 && !S.badges.includes('level_30')) {S.badges.push('level_30')}
         if (completedCount >= 40 && !S.badges.includes('level_40')) {S.badges.push('level_40')}
-        if (completedCount >= 52 && !S.badges.includes('level_52')) {S.badges.push('level_52')}
-        if (completedCount >= 52 && !S.badges.includes('traffic_hero')) {S.badges.push('traffic_hero')}
+        const _total = levelTotal();
+        if (completedCount >= _total && !S.badges.includes('level_52')) {S.badges.push('level_52')}
+        if (completedCount >= _total && !S.badges.includes('traffic_hero')) {S.badges.push('traffic_hero')}
 
         const vioCount = window.game?.fst?.vio || 0
         const civicGain = vioCount === 0 ? 25 : vioCount <= 2 ? 10 : vioCount <= 4 ? 3 : 0
@@ -4014,15 +4111,17 @@ if (un) {
       if (window.location.pathname.toLowerCase().includes('driving')) {
         this.showResults(window.game?.fs || 100, window.game?.fst || { vio: 0 });
       } else {
-        if (typeof SCENARIOS !== 'undefined') {
-          const sc = SCENARIOS.find(x => x.levelRef === lv?.id)
-          if (sc) {
-            this.show2D(sc.id)
-            return
-          } else {
-            this.show2D(1)
-            return
-          }
+        // On the Academy page the practice quiz is followed by the 2D
+        // reinforcement cinematic for the lesson's theme, and then by the
+        // results. The old branch read a bare `SCENARIOS` (a global that
+        // never existed) and called `.find()` on what is an OBJECT keyed by
+        // theme, so it never ran and the results screen was the only path.
+        const sc = (window.Scenario2DData || {})[lv && lv.themeType];
+        if (sc) {
+          this.show2D(lv.themeType, () => {
+            this.showResults(window.game?.fs || 100, window.game?.fst || { vio: 0 });
+          });
+          return;
         }
         this.showResults(window.game?.fs || 100, window.game?.fst || { vio: 0 });
       }
@@ -4066,9 +4165,10 @@ if (un) {
       }
     })
     save()
-    save()
     let be = null
-    if (lv.badge && !S.badges.includes(lv.badge.id)) {
+    // `lv` can be undefined when LVS failed to populate; lv.badge was read
+    // outside the `if (lv && lv.id)` guard above and threw a TypeError.
+    if (lv && lv.badge && !S.badges.includes(lv.badge.id)) {
       S.badges.push(lv.badge.id)
       be = lv.badge
     }
@@ -4081,8 +4181,9 @@ if (un) {
     if (completedCount >= 20 && !S.badges.includes('level_20')) {S.badges.push('level_20')}
     if (completedCount >= 30 && !S.badges.includes('level_30')) {S.badges.push('level_30')}
     if (completedCount >= 40 && !S.badges.includes('level_40')) {S.badges.push('level_40')}
-    if (completedCount >= 52 && !S.badges.includes('level_52')) {S.badges.push('level_52')}
-    if (completedCount >= 52 && !S.badges.includes('traffic_hero')) {S.badges.push('traffic_hero')}
+    const _total = levelTotal();
+        if (completedCount >= _total && !S.badges.includes('level_52')) {S.badges.push('level_52')}
+    if (completedCount >= _total && !S.badges.includes('traffic_hero')) {S.badges.push('traffic_hero')}
 
 
     const themeTypes = {
@@ -4116,7 +4217,7 @@ if (un) {
     window.LAST_CERTIFICATE = certData
     const rcard = document.getElementById('rcard')
     if (rcard) {
-      rcard.innerHTML = `<div class="rr"><span class="rl">Score</span><span class="rv">⭐ ${Math.round(score)}</span></div><div class="rr"><span class="rl">Quiz</span><span class="rv">✅ Passed</span></div>${stats.fin ? `<div class="rr"><span class="rl">Fines issued</span><span class="rv" style="color:var(--red)">${stats.fin}</span></div>` : ''}<div class="rr"><span class="rl">Violations</span><span class="rv" style="color:${stats.vio ? 'var(--red)' : 'var(--green)'}">${stats.vio || 'None ✅'}</span></div><div class="rr"><span class="rl">Level</span><span class="rv">${lv.id} / 52</span></div>
+      rcard.innerHTML = `<div class="rr"><span class="rl">Score</span><span class="rv">⭐ ${Math.round(score)}</span></div><div class="rr"><span class="rl">Quiz</span><span class="rv">✅ Passed</span></div>${stats.fin ? `<div class="rr"><span class="rl">Fines issued</span><span class="rv" style="color:var(--red)">${stats.fin}</span></div>` : ''}<div class="rr"><span class="rl">Violations</span><span class="rv" style="color:${stats.vio ? 'var(--red)' : 'var(--green)'}">${stats.vio || 'None ✅'}</span></div><div class="rr"><span class="rl">Level</span><span class="rv">${lv.id} / ${levelTotal()}</span></div>
 ${stats.reward ? `<div class="rr"><span class="rl" style="color:var(--green, #059669)">Level Reward</span><span class="rv" style="color:var(--green, #059669)">+₹${stats.reward.toLocaleString('en-IN')}</span></div>` : ''}
 ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines Deducted</span><span class="rv" style="color:#ff3b30">-₹${stats.fineAmt.toLocaleString('en-IN')}</span></div>` : ''}
 <div class="rr" style="margin-top:10px; border-top:1px solid var(--line, rgba(0,0,0,0.15)); padding-top:10px;"><span class="rl">Career Wallet</span><span class="rv" style="color:var(--accent, #b45309); font-weight:700;">₹${(S.wallet || 0).toLocaleString('en-IN')}</span></div>
@@ -4129,9 +4230,38 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
   </button>
 </div>`
     }
-    const ro = document.getElementById('ro')
-    if (ro) {ro.classList.add('on')}
+    // Show the results screen. The card above is rendered into #rico/#rtit/
+    // #rsub/#rcard, which are CHILDREN of #screen-results - and a `.screen`
+    // is display:none until it carries `.active`. The old code looked for an
+    // element with the id 'ro', which exists in neither page, so the score,
+    // the badges, the certificate buttons and the "Next Module" button were
+    // all rendered into a screen that was never shown: the student finished
+    // the exam and stayed on the last question with nothing to click.
+    this.show('screen-results', { direction: 'forward' });
+    // "Next Module" only means something when there IS a next lesson.
+    const rnxt = document.getElementById('rnxt');
+    if (rnxt) {
+      const list = window.LVS || [];
+      const idx = list.findIndex(l => l && lv && l.id === lv.id);
+      rnxt.style.display = (idx >= 0 && list[idx + 1]) ? 'inline-block' : 'none';
+    }
     if (window.sfx && typeof window.sfx.play === 'function') {sfx.play('win')}
+  },
+  // "Next Module →" on the results screen. The button is wired in both pages
+  // but this function did not exist anywhere, so clicking it threw
+  // "ui.goNext is not a function".
+  goNext() {
+    const list = window.LVS || [];
+    const lv = this.cur || list[0];
+    const idx = list.findIndex(l => l && lv && l.id === lv.id);
+    const next = (idx >= 0) ? list[idx + 1] : null;
+    if (!next) {
+      // Last lesson of the course: back to the level grid.
+      this.showLevels();
+      return;
+    }
+    this.cur = next;
+    this.dispatchStart(this.curMode);
   },
   challanHistory: [],
   issueChallan(off, sec, amt, loc, cb) {
@@ -4436,49 +4566,62 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
     `;
   },
 
-  show2D(scenarioId) {
-    const sc = (typeof SCENARIOS !== 'undefined') ? SCENARIOS[scenarioId] : null;
+  show2D(scenarioId, onDone) {
+    // The scenario table lives in scenario2d.js, which is an IIFE - it exports
+    // it as window.Scenario2DData and the renderer as window.Scenario2D. This
+    // used to read a bare `SCENARIOS` and call `initScenario2D`, neither of
+    // which exists anywhere, so the 2D screen never opened and the complete
+    // renderer behind it was orphaned.
+    const data = window.Scenario2DData || {};
+    const sc = data[scenarioId];
     if (!sc) {
       console.warn('[ui] Scenario not found:', scenarioId);
+      if (typeof onDone === 'function') {onDone();}
       return;
     }
     this._cur2D = { ...sc, id: scenarioId };
-    document.getElementById('s2d-title').textContent = (sc.icon || '🚦') + ' ' + (sc.headline || sc.name || scenarioId);
+    const titleEl = document.getElementById('s2d-title');
+    if (titleEl) { titleEl.textContent = (sc.icon || '🚦') + ' ' + (sc.headline || sc.name || scenarioId);}
     this.show('screen-2d');
+    const lvId = (this.cur && this.cur.id) || (this.qst && this.qst.lvId) || 1;
+    const finish = () => { if (typeof onDone === 'function') {onDone();} else {this.showLevels();} };
     setTimeout(() => {
-      if (typeof initScenario2D === 'function') {
-        initScenario2D('scenario2d-container', scenarioId);
+      if (window.Scenario2D) {
+        window.Scenario2D.play(lvId, finish, scenarioId);
+      } else {
+        finish();
       }
     }, 100);
   },
   exit2D() {
-    if (typeof destroyScenario2D === 'function') {destroyScenario2D()}
+    if (window.Scenario2D && typeof window.Scenario2D.destroy === 'function') {window.Scenario2D.destroy();}
     this._cur2D = null
     this.showLevels()
   },
   restart2D() {
     if (!this._cur2D) {return}
     const id = this._cur2D.id
-    if (typeof destroyScenario2D === 'function') {destroyScenario2D()}
+    if (window.Scenario2D && typeof window.Scenario2D.destroy === 'function') {window.Scenario2D.destroy();}
     setTimeout(() => {
-      if (typeof initScenario2D === 'function') {
-        initScenario2D('scenario2d-container', id)
+      if (window.Scenario2D) {
+        const lvId = (this.cur && this.cur.id) || (this.qst && this.qst.lvId) || 1;
+        window.Scenario2D.play(lvId, () => { this.showLevels(); }, id);
       }
     }, 100)
-  }
+  },
 });
 
 
 
 const _genTex = (type) => {
   if (type === 'asphalt') {
-    const tex = new THREE.TextureLoader().load('textures/road.png')
+    const tex = new THREE.TextureLoader().load('textures/road.webp')
     tex.wrapS = tex.wrapT = THREE.RepeatWrapping
     tex.repeat.set(4, 4)
     return tex
   }
   if (type === 'building') {
-    const tex = new THREE.TextureLoader().load('textures/building.png')
+    const tex = new THREE.TextureLoader().load('textures/building.webp')
     tex.wrapS = tex.wrapT = THREE.RepeatWrapping
     tex.repeat.set(2, 2)
     return tex
@@ -4586,7 +4729,13 @@ const initGTex = () => {
   }
 }
 
-const _buildVehicle = window._buildVehicle = (type, col) => {
+const _buildVehicle = window._buildVehicle = (type, col, opts) => {
+  // `opts.exact`  — deterministic model choice (see the Kenney pool below).
+  // `opts.tintAll` — force the paint colour onto every body-ish material, not
+  //                  just ones whose material is literally named body/paint.
+  //                  Kenney GLB meshes usually are not, which is why a film's
+  //                  black Fortuner kept rendering in its baked green.
+  opts = opts || {}
   let baseModel = null
   let s = 1.20
   const normalizedType = (type || 'car').toLowerCase()
@@ -4600,7 +4749,7 @@ const _buildVehicle = window._buildVehicle = (type, col) => {
         bikeModel.rotation.y = Math.PI
         g.add(bikeModel)
         g.type = normalizedType
-        g.userData = { halfW: 0.40, halfD: 0.95, isVehicle: true }
+        g.userData = Object.assign({}, bikeModel.userData, { halfW: bikeModel.userData?.halfW || 0.40, halfD: bikeModel.userData?.halfD || 0.95, isVehicle: true })
         return g
       }
     }
@@ -4615,7 +4764,7 @@ const _buildVehicle = window._buildVehicle = (type, col) => {
         autoModel.rotation.y = Math.PI
         g.add(autoModel)
         g.type = 'auto'
-        g.userData = { halfW: 0.70, halfD: 1.35, isVehicle: true }
+        g.userData = Object.assign({}, autoModel.userData, { halfW: autoModel.userData?.halfW || 0.70, halfD: autoModel.userData?.halfD || 1.35, isVehicle: true })
         const dpL = new THREE.Group(); dpL.position.set(0.70, 0.9, 0.3)
         const dpR = new THREE.Group(); dpR.position.set(-0.70, 0.9, 0.3)
         g.add(dpL, dpR)
@@ -4634,7 +4783,7 @@ const _buildVehicle = window._buildVehicle = (type, col) => {
         busModel.rotation.y = Math.PI
         g.add(busModel)
         g.type = 'bus'
-        g.userData = { halfW: 1.35, halfD: 4.80, isVehicle: true }
+        g.userData = Object.assign({}, busModel.userData, { halfW: busModel.userData?.halfW || 1.35, halfD: busModel.userData?.halfD || 5.50, isVehicle: true })
         const dpL = new THREE.Group(); dpL.position.set(1.35, 0.9, 0.3)
         const dpR = new THREE.Group(); dpR.position.set(-1.35, 0.9, 0.3)
         g.add(dpL, dpR)
@@ -4720,7 +4869,16 @@ const _buildVehicle = window._buildVehicle = (type, col) => {
     }
 
     const available = candidateKeys.filter(k => window.PRELOADED_MODELS[k])
-    const chosenKey = available.length ? available[Math.floor(Math.random() * available.length)] : (window.PRELOADED_MODELS['car'] ? 'car' : null)
+    // `opts.exact` picks the FIRST available candidate instead of a random one.
+    //
+    // Random selection is right for ambient traffic — variety is the point — and
+    // catastrophic for a film: a shot whose subtitle names a Fortuner must show
+    // a Fortuner, on every load, or the dialogue and the frame contradict each
+    // other. Callers in story/campaign.js pass `exact` and get a deterministic
+    // model; everyone else keeps the randomness.
+    const chosenKey = opts.exact
+      ? (available.length ? available[0] : (window.PRELOADED_MODELS['car'] ? 'car' : null))
+      : (available.length ? available[Math.floor(Math.random() * available.length)] : (window.PRELOADED_MODELS['car'] ? 'car' : null))
 
     if (chosenKey && window.PRELOADED_MODELS[chosenKey]) {
       const srcModel = window.PRELOADED_MODELS[chosenKey]
@@ -4737,15 +4895,35 @@ const _buildVehicle = window._buildVehicle = (type, col) => {
 
       const paintPool = [0x3b82f6, 0xef4444, 0x10b981, 0xf59e0b, 0x8b5cf6, 0xec4899, 0xffffff, 0x222222, 0x94a3b8]
       const paintColor = col || (chosenKey === 'taxi' ? 0xffd54a : (chosenKey === 'police' ? 0x1e3a8a : (chosenKey === 'ambulance' ? 0xffffff : paintPool[Math.floor(Math.random() * paintPool.length)])))
+      // Materials that must NEVER be repainted: glass, tyres, chrome, lights.
+      // Without this list `tintAll` would repaint the windscreen too and the
+      // vehicle would render as a solid coloured brick.
+      const KEEP = ['glass', 'window', 'windshield', 'windscreen', 'tyre', 'tire',
+        'wheel', 'rim', 'chrome', 'metal', 'light', 'lamp', 'head', 'tail',
+        'glassdark', 'black', 'trim', 'grille', 'plate', 'interior']
+      const castShad = !!opts.exact;
       baseModel.traverse((child) => {
         if (child.isMesh) {
-          child.castShadow = true
+          child.castShadow = castShad
           child.receiveShadow = true
           if (child.material) {
             const matName = (child.material.name || child.name || '').toLowerCase()
-            if (matName.includes('body') || matName.includes('paint') || matName.includes('chassis') || matName.includes('primary')) {
+            const isPaintable = matName.includes('body') || matName.includes('paint') ||
+              matName.includes('chassis') || matName.includes('primary')
+            if (isPaintable || opts.tintAll) {
+              // Repaint every material that is not glass/tyre/chrome/lamp. An
+              // unnamed material is treated as paint, which is the correct guess
+              // for a Kenney mesh: its body parts are the ones with blank names.
+              const protectedMat = KEEP.some(k => matName.includes(k))
+              if (opts.tintAll && protectedMat) { return; }
               child.material = child.material.clone()
               child.material.color.setHex(paintColor)
+              if (child.material.metalness !== undefined) {
+                child.material.metalness = Math.min(child.material.metalness, 0.25);
+              }
+              if (child.material.roughness !== undefined) {
+                child.material.roughness = Math.max(child.material.roughness, 0.45);
+              }
             }
           }
         }
@@ -4757,31 +4935,57 @@ const _buildVehicle = window._buildVehicle = (type, col) => {
   if (baseModel) {
     const g = new THREE.Group()
     
-    // Universal vehicle grounding & scale calibration
-    baseModel.updateMatrixWorld(true)
-    const vBoxRaw = new THREE.Box3().setFromObject(baseModel)
-    const vSizeRaw = new THREE.Vector3()
-    vBoxRaw.getSize(vSizeRaw)
+    // Universal vehicle grounding & scale calibration.
+    //
+    // Previously this measured the imported model TWICE
+    // (Box3.setFromObject before and after scaling) and then threw both
+    // measurements away, hardcoding `hw`/`hl` from a 3-way ternary. So every
+    // imported car collided as a guessed 1.05 x 2.25 half-extent box no matter
+    // what the model actually was, and the `s = 1.20` / `s = 4.4` magic numbers
+    // produced cars anywhere from 2.9 m to 5.3 m long.
+    //
+    // Now: VehicleDims.fitImportedModel() rescales the model UNIFORMLY so its
+    // length matches the canonical envelope for its class, re-grounds it, and
+    // returns the box. colliderFromBox() derives the collider from that
+    // measurement, clamped to the canonical envelope so a mis-authored asset
+    // cannot inject a nonsense hitbox into the traffic stream.
+    const VD = (typeof window !== 'undefined' && window.VehicleDims) ? window.VehicleDims : null;
+    const isHeavy = normalizedType.includes('truck') || normalizedType.includes('bus');
 
-    // If model is a unit-length GLB (like sample 1/2 with length ~1m), scale to 4.5m automotive length
-    if (vSizeRaw.z < 1.8 && vSizeRaw.x < 1.8 && vSizeRaw.z > 0.4) {
-      s = 4.4
+    let hw, hl, fitInfo = null;
+    if (VD && VD.fitImportedModel) {
+      fitInfo = VD.fitImportedModel(baseModel, THREE.Box3, THREE.Vector3, normalizedType, {});
+      baseModel.rotation.y = Math.PI;
+      g.add(baseModel);
+
+      const c = VD.colliderFromBox(fitInfo.box, normalizedType);
+      hw = c.halfW;
+      hl = c.halfD;
+      g.userData = {
+        halfW: hw, halfD: hl, isVehicle: true,
+        measuredW: c.measured.W, measuredL: c.measured.L,
+        importScale: fitInfo.scale
+      };
+    } else {
+      // Fallback: preserve the previous behaviour exactly.
+      baseModel.updateMatrixWorld(true);
+      const vBoxRaw = new THREE.Box3().setFromObject(baseModel)
+      const vSizeRaw = new THREE.Vector3()
+      vBoxRaw.getSize(vSizeRaw)
+      let s = 1.20
+      if (vSizeRaw.z < 1.8 && vSizeRaw.x < 1.8 && vSizeRaw.z > 0.4) { s = 4.4 }
+      baseModel.scale.set(s, s, s)
+      baseModel.updateMatrixWorld(true)
+      const vBoxScaled = new THREE.Box3().setFromObject(baseModel)
+      baseModel.position.y = -vBoxScaled.min.y
+      baseModel.rotation.y = Math.PI
+      g.add(baseModel)
+      hw = isHeavy ? 1.35 : 1.05
+      hl = isHeavy ? 4.80 : 2.25
+      g.userData = { halfW: hw, halfD: hl, isVehicle: true }
     }
 
-    baseModel.scale.set(s, s, s)
-    baseModel.updateMatrixWorld(true)
-    const vBoxScaled = new THREE.Box3().setFromObject(baseModel)
-    
-    // Lift so bottom of tires sits flush on ground at y = 0
-    baseModel.position.y = -vBoxScaled.min.y
-    baseModel.rotation.y = Math.PI
-    g.add(baseModel)
-
-    const isHeavy = normalizedType.includes('truck') || normalizedType.includes('bus')
-    const isLambo = normalizedType === 'lambo'
-    const hw = isHeavy ? 1.35 : (isLambo ? 1.35 : 1.05)
-    const hl = isHeavy ? 4.80 : (isLambo ? 2.95 : 2.25)
-    g.userData = { halfW: hw, halfD: hl, isVehicle: true }
+    if (VD && VD.key) g.userData.dimKey = VD.key(normalizedType);
 
     // Clean interactive door anchors for player entry
     const dpL = new THREE.Group()
@@ -4803,7 +5007,11 @@ const _buildVehicle = window._buildVehicle = (type, col) => {
       iv.rotation.y = Math.PI
       g.add(iv)
       g.type = type
-      g.userData = { halfW: 1.05, halfD: 2.25, isVehicle: true }
+      const VD = (typeof window !== 'undefined' && window.VehicleDims) ? window.VehicleDims : null;
+      const d = VD ? VD.halves(type) : { halfW: 1.05, halfD: 2.25 };
+      const hw = iv.userData?.halfW || d.halfW;
+      const hl = iv.userData?.halfD || d.halfD;
+      g.userData = Object.assign({}, iv.userData, { halfW: hw, halfD: hl, isVehicle: true });
       return g
     }
   }
@@ -5134,6 +5342,18 @@ const _buildVehicle = window._buildVehicle = (type, col) => {
  * Character Studio & High-Fidelity Human Model Implementation for UI.js
  */
 
+
+// The number of lessons the course actually contains. It was hard-coded to 52
+// in several places while the level registry holds every lesson file, so the
+// certificate and the badge thresholds fired five lessons early and the
+// result card told the student "Level 12 / 52" on a 57-lesson course.
+function levelTotal() {
+  try {
+    const n = (window.LVS && window.LVS.length) || 0;
+    return n > 0 ? n : 52;
+  } catch (e) { return 52; }
+}
+
 const SAMPLE_MODELS = [
   { id: 'player_hero', file: 'Models/character_hero_green.glb', name: 'Adventure Hero', tag: 'Hero', icon: '🏃', desc: 'Full 3D stylized adventure protagonist in green tunic' },
   { id: 'player_rpg', file: 'Models/character_rpg_hero.glb', name: 'RPG Warrior', tag: 'Warrior', icon: '🛡️', desc: 'Stylized 3D hero with shield and armor' },
@@ -5276,6 +5496,252 @@ const _buildSampleGLBPlayer = (isPlayer = true, app = {}) => {
 }
 window._buildSampleGLBPlayer = _buildSampleGLBPlayer
 
+/**
+ * Which KayKit clip plays for a given action.
+ *
+ * The lists are explicit rather than regex-matched because the clip names in these
+ * two files are not a consistent vocabulary: locomotion uses `Walking_C`, `Runni
+ * ng_A` and `Jump_Full_Long`, while the general set uses `Idle_A`, `Death_A`,
+ * `Hit_B` and `Use_Item`. A `/walk/i` test matches `Walking_A` but also nothing
+ * else in either file, and an `/idle/i` test matches `Idle_A` and `Idle_B` — so
+ * half of this would have been guesswork dressed up as a pattern.
+ *
+ * `T-Pose` is deliberately absent from every list. It exists in both files, it is
+ * a valid clip, and it is the single worst thing to hand an NPC standing on a
+ * pavement. An index-based fallback would eventually reach it.
+ */
+const _KAYKIT_CLIPS = {
+  idle:     { src: 'general',    names: ['Idle_A', 'Idle_B'] },
+  walk:     { src: 'movement',   names: ['Walking_A', 'Walking_B', 'Walking_C'] },
+  run:      { src: 'movement',   names: ['Running_A', 'Running_B'] },
+  hit:      { src: 'general',    names: ['Hit_A', 'Hit_B'] },
+  death:    { src: 'general',    names: ['Death_A', 'Death_B', 'Death_A_Pose', 'Death_B_Pose'] },
+  interact: { src: 'general',    names: ['Interact', 'Use_Item', 'PickUp', 'Throw'] },
+  jump:     { src: 'movement',   names: ['Jump_Start', 'Jump_Full_Short', 'Jump_Land'] },
+};
+
+/** Resolve an action name to an AnimationClip, or null. */
+function _kaykitClip(PM, action) {
+  const spec = _KAYKIT_CLIPS[action];
+  if (!spec) { return null; }
+  const scene = PM['char_rig_medium_' + spec.src];
+  if (!scene || !scene.animations || !scene.animations.length) { return null; }
+  for (let i = 0; i < spec.names.length; i++) {
+    const want = spec.names[i];
+    for (let j = 0; j < scene.animations.length; j++) {
+      if (scene.animations[j] && scene.animations[j].name === want) { return scene.animations[j]; }
+    }
+  }
+  return null;
+}
+
+/**
+ * Build an animated actor from the staged KayKit FBX rigs.
+ *
+ * Returns null whenever the rig is absent or unusable, and the caller falls
+ * through to the next character source. That is the whole contract: this is a
+ * fallback, and a fallback that can fail has to fail quietly.
+ *
+ * @param PM   window.PRELOADED_MODELS
+ * @param opts { variant, scale, rotY, action, tint }
+ */
+  function _cloneSkinned(source) {
+    if (typeof THREE !== 'undefined' && THREE.SkeletonUtils && typeof THREE.SkeletonUtils.clone === 'function') {
+      return THREE.SkeletonUtils.clone(source);
+    }
+    if (typeof window.SkeletonUtils !== 'undefined' && typeof window.SkeletonUtils.clone === 'function') {
+      return window.SkeletonUtils.clone(source);
+    }
+    return source.clone ? source.clone(true) : source;
+  }
+
+function _buildKayKitRig(PM, opts) {
+  opts = opts || {};
+  const rig = PM.char_rig_medium_movement;
+  if (!rig) { return null; }
+
+  const g = new THREE.Group();
+  const sk = opts.scale || 0.74;
+  let body;
+  try {
+    body = _cloneSkinned(rig);
+  } catch (e) {
+    return null;
+  }
+  if (!body) { return null; }
+
+  // Normalise height from the measured bounding box rather than a magic scale
+  // constant. The Kenney branch uses `sk * 0.0098`, which is right for Kenney's
+  // export and meaningless here: KayKit's FBX is authored in centimetres, and a
+  // guessed factor that happens to be a centimetre/metre mix-up produces a 40 m
+  // pedestrian or a 4 cm one, both of which look like a bug and neither of which
+  // is obvious to spot from a screenshot.
+  let heightM = 0;
+  try {
+    body.updateMatrixWorld(true);
+    const box = new THREE.Box3().setFromObject(body);
+    heightM = Math.max(0.01, box.max.y - box.min.y);
+  } catch (e) {
+    return null;
+  }
+  const factor = (sk * 1.55) / heightM;
+  body.scale.setScalar(factor);
+
+  // Recentre so the feet are at y = 0 and the actor stands on the pavement.
+  try {
+    body.updateMatrixWorld(true);
+    const box2 = new THREE.Box3().setFromObject(body);
+    const centre = new THREE.Vector3();
+    box2.getCenter(centre);
+    body.position.x -= centre.x;
+    body.position.y -= box2.min.y;
+    body.position.z -= centre.z;
+  } catch (e) { /* leave the origin where it was */ }
+
+  body.rotation.y = opts.rotY || 0;
+  g.add(body);
+
+  // Tint the torso when a variant asks for it. Materials are cloned per instance
+  // first: `clone(true)` on a node SHARES materials with the cached original, so
+  // setting a colour without this line would recolour every future KayKit actor
+  // in the session, including ones already on screen.
+  const tint = opts.tint || 0;
+  if (tint) {
+    body.traverse((c) => {
+      if (!c.isMesh || !c.material) { return; }
+      const n = (c.name || '').toLowerCase();
+      if (!n.includes('body') && !n.includes('torso')) { return; }
+      c.material = Array.isArray(c.material)
+        ? c.material.map(m => m.clone())
+        : c.material.clone();
+      if (c.material.color) { c.material.color.setHex(tint); }
+    });
+  }
+  body.traverse((c) => {
+    if (c.isMesh) { c.castShadow = true; c.receiveShadow = true; }
+  });
+
+  // Mixer is rooted at the CLONE, not the cached rig. Rooting it at the cached
+  // object would have every actor in the level drive one skeleton.
+  let mixer = null;
+  const idleClip = _kaykitClip(PM, 'idle');
+  const walkClip = _kaykitClip(PM, 'walk');
+  const runClip = _kaykitClip(PM, 'run');
+  let idleAction = null;
+  let walkAction = null;
+
+  try {
+    mixer = new THREE.AnimationMixer(body);
+    if (idleClip) { idleAction = mixer.clipAction(idleClip); idleAction.play(); }
+    if (walkClip) { walkAction = mixer.clipAction(walkClip); walkAction.play(); }
+    // Locomotion and idle are crossfaded rather than both left running at full
+    // weight: two clips playing additively on the same bones produces a figure
+    // that shimmers and slides, which reads as a broken model rather than as two
+    // animations.
+    if (idleAction && walkAction) {
+      idleAction.setEffectiveWeight(1);
+      walkAction.setEffectiveWeight(0);
+      idleAction.play();
+      walkAction.play();
+      mixer.update(0.016); // Pose bones immediately before first render
+    }
+  } catch (e) {
+    mixer = null;
+  }
+
+  // A one-shot the caller can fire for a specific beat — 'hit' when a constable
+  // is struck, 'death' for the body in the aftermath reveal, 'interact' when
+  // someone reaches for a radio. Played once and NOT looped.
+  function playAction(name, fade) {
+    if (!mixer) { return null; }
+    const clip = _kaykitClip(PM, name);
+    if (!clip) { return null; }
+    try {
+      if (idleAction) { idleAction.setEffectiveWeight(0); }
+      if (walkAction) { walkAction.setEffectiveWeight(0); }
+      const a = mixer.clipAction(clip);
+      a.reset();
+      a.setLoop(THREE.LoopOnce, 1);
+      a.clampWhenFinished = true;
+      const secs = (fade == null ? 0.25 : fade);
+      a.fadeIn(secs).play();
+      return a;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  const requested = opts.action && opts.action !== 'auto' ? opts.action : null;
+  if (requested) { playAction(requested, 0.05); }
+
+  const hb = new THREE.Mesh(
+    new THREE.BoxGeometry(0.6 * sk, 1.8 * sk, 0.6 * sk),
+    new THREE.MeshBasicMaterial({ visible: false })
+  );
+  hb.position.y = 0.9 * sk;
+  g.add(hb);
+
+  const shadowBlob = new THREE.Mesh(
+    new THREE.CircleGeometry(0.3 * sk, 12),
+    new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.25 })
+  );
+  shadowBlob.rotation.x = -Math.PI / 2;
+  shadowBlob.position.y = 0.01;
+  g.add(shadowBlob);
+
+  g.userData = {
+    isKayKit: true,
+    variant: opts.variant || 'normal',
+    isPlayer: false,
+    _sk: sk,
+    body: body,
+    shadowBlob: shadowBlob,
+    mixer: mixer,
+    idleAction: idleAction,
+    runAction: walkAction,
+    // `walkAction` is the name the GLB branch's sibling uses conceptually and the
+    // only one of the three that says what the clip IS. `runAction` is the Kenney
+    // branch's name and `_walkAction` the GLB branch's; all three are set so a
+    // caller reading any of them gets the locomotion clip rather than undefined.
+    walkAction: walkAction,
+    // The GLB branch exposes these two underscored names and callers in
+    // game_core read them, so an actor that reports `isGLB` elsewhere is read the
+    // same way. Both shapes are set rather than one, so a future rename in either
+    // branch does not silently stop animating this one.
+    _mixer: mixer,
+    _walkAction: walkAction,
+    _idleAction: idleAction,
+    playAction: playAction,
+    // How fast this actor should move, so callers that only know about
+    // `userData.spd` keep working.
+    spd: (opts.variant === 'elderly') ? 0.7 : 1.5,
+    dir: 1,
+    t: Math.random() * 10,
+    /** Crossfade between idle and locomotion by speed. */
+    setMoving: function (moving, fast) {
+      if (!mixer || !idleAction || !walkAction) { return; }
+      const secs = 0.22;
+      if (moving) {
+        walkAction.enabled = true;
+        idleAction.crossFadeTo(walkAction, secs, true);
+        if (fast) { walkAction.timeScale = 1.45; } else { walkAction.timeScale = 1; }
+      } else {
+        idleAction.enabled = true;
+        walkAction.crossFadeTo(idleAction, secs, true);
+      }
+    },
+    update: function (dt, speed) {
+      if (mixer) {
+        // Scale playback with movement so a running ped does not moonwalk. The
+        // same 0.8 floor as the GLB actor keeps a stationary figure breathing
+        // rather than frozen.
+        mixer.update(dt * (Math.abs(speed) > 0.05 ? Math.max(0.6, Math.abs(speed) * 1.5) : 0.8));
+      }
+    }
+  };
+  return g;
+}
+
 const _buildHuman = (isPlayer = false, appearance) => {
   const g = new THREE.Group()
   const app = (isPlayer && (() => { try { return JSON.parse(localStorage.getItem('traffic_appearance')) } catch(e){} return null })()) || appearance || {}
@@ -5293,15 +5759,68 @@ const _buildHuman = (isPlayer = false, appearance) => {
   }
 
   // ── NPC Pedestrians using 3D Hero/Citizen mesh ─────────────────────────
-  if (!isPlayer && Math.random() < 0.35) {
+// Random, and only for ANONYMOUS pedestrians.
+//
+// `app.deterministic` opts out, and named film actors set it. This branch rolls a
+// fresh random character on every single call, which is correct for a footpath —
+// nobody looks twice — and wrong for a film: `_buildCutsceneArjun` calls this to
+// build Inspector Kadam, and a 35% chance that the inspector who opens the case
+// is a different model on the next load is a different actor playing the same
+// part. A recurring character has to be the same character.
+  if (!isPlayer && !app.deterministic && Math.random() < 0.35) {
     const npcSample = _buildSampleGLBPlayer(false, { variant })
     if (npcSample) {return npcSample}
   }
 
   const PM = window.PRELOADED_MODELS || {}
 
+  // ── KayKit Rigged Actors ──────────────────────────────────────────────────
+  // Sits BEFORE the Kenney `anim_*` block below, so it wins whenever the rig is
+  // loaded. That ordering is the point for a named film actor: with `char_kaykit`
+  // requested, Inspector Kadam is always the same rig with the same clips, rather
+  // than sometimes a Kenney pack that was chosen for a footpath and sometimes not.
+  //
+  // For anonymous peds the same ordering is harmless, because `char_kaykit` is
+  // opt-in per level — a level that never requests the group never reaches here.
+  //
+  // Why KayKit earns the slot when it does fire: it carries real named clips in
+  // the same file as its mesh, verified by loading it through this game's own
+  // FBXLoader rather than by trusting the filename:
+  //
+  //   char_rig_medium_movement  138 bones  Walking_A/B/C  Running_A/B  Jump_*
+  //   char_rig_medium_general    138 bones  Idle_A/B  Death_A/B  Hit_A/B
+  //                              Interact  Throw  PickUp  Spawn_Ground
+  //
+  // Two files, one skeleton: both are the same 138-bone KayKit rig, so the Idle
+  // clips on `general` drive the mesh on `movement`. AnimationClip tracks are
+  // bone-NAME based, which is the whole reason this works across two files.
+  //
+  // Note this is NOT the Kenney clip convention. That block plays
+  // `fbxChar.animations[0]` and `runFBX.animations[0]`, which is correct when
+  // each animation file contains exactly one clip. KayKit files contain 11 and
+  // 15, and index 0 on `general` is `Use_Item` — so an NPC handed that path would
+  // stand on Linking Road indefinitely miming a door opening. Clips are matched
+  // by name instead, with the same explicit lists below as the fallback order.
+  if (!isPlayer && !app.procedural && !app.seated && !app.deterministic && PM.char_rig_medium_movement && typeof THREE.AnimationMixer !== 'undefined') {
+    const kk = _buildKayKitRig(PM, {
+      variant: variant,
+      scale: variant === 'child' ? 0.58 : 0.74,
+      rotY: Math.PI,
+      // What the caller wants this actor doing right now. The film asks for
+      // 'idle' and 'walk'; a constable shot in the aftermath asks for 'hit',
+      // and a body on the tarmac asks for 'death'.
+      action: (app && app.action) || 'auto',
+      tint: variant === 'guard' ? 0xff8c00
+        : variant === 'worker' ? 0xff8c00
+        : variant === 'volunteer' ? 0xaaff00
+        : variant === 'elderly' ? 0xf5f0e1
+        : 0,
+    });
+    if (kk) { return kk; }
+  }
+
   // ── FBX-First Animated Character Model (NPCs only) ────────────────────────
-  if (!isPlayer) {
+  if (!isPlayer && !app.procedural && !app.seated && !app.deterministic) {
     const fbxKey = app.animPack ? 'anim_' + app.animPack : 'anim_protagonists';
     const fbxChar = PM[fbxKey] || PM['anim_retro'] || PM['anim_survivors'];
     if (fbxChar && typeof THREE.AnimationMixer !== 'undefined' && variant === 'normal') {
@@ -5363,8 +5882,8 @@ const _buildHuman = (isPlayer = false, appearance) => {
     const charKeys = isFemale ? femaleKeys : maleKeys
     const preferredKey = charKeys[Math.floor(Math.random() * charKeys.length)]
     const charGLB = PM[preferredKey]
-
-    if (charGLB && charGLB.scene) {
+    const hasAnimations = charGLB && charGLB.animations && charGLB.animations.length > 0
+    if (!app.procedural && !app.seated && charGLB && charGLB.scene && hasAnimations) {
       const charScene = charGLB.scene.clone(true)
       charScene.scale.setScalar(sk * 0.90)
       charScene.rotation.y = Math.PI
@@ -5442,17 +5961,17 @@ const _buildHuman = (isPlayer = false, appearance) => {
   const npcPants = [0x555555, 0x2c3e50, 0x444444, 0x3d3d3d, 0x2d2d2d]
   const npcHairs = [0x1a1a1a, 0x3d2b1f, 0x654321, 0x8B4513, 0x2c1810, 0xb5651d]
 
-  const skinColor = isPlayer ? (app.skin || 0xd4a574) : npcSkins[Math.floor(Math.random() * npcSkins.length)]
+  const skinColor = (app.skin != null) ? app.skin : (isPlayer ? 0xd4a574 : npcSkins[Math.floor(Math.random() * npcSkins.length)])
   const skinColorDk = new THREE.Color(skinColor).multiplyScalar(0.88).getHex()
-  const hairColor = isPlayer ? (app.hair || 0x1a1a1a) : npcHairs[Math.floor(Math.random() * npcHairs.length)]
-  const hairHighlight = isPlayer ? (app.hairHighlight || 0x3498db) : hairColor
-  const shirtColor = isPlayer ? (app.shirt || 0xe74c3c) : npcShirts[Math.floor(Math.random() * npcShirts.length)]
-  const shirtAccent = isPlayer ? (app.shirtAccent || 0xffffff) : 0xffffff
+  const hairColor = (app.hair != null) ? app.hair : (isPlayer ? 0x1a1a1a : npcHairs[Math.floor(Math.random() * npcHairs.length)])
+  const hairHighlight = (app.hairHighlight != null) ? app.hairHighlight : (isPlayer ? 0x3498db : hairColor)
+  const shirtColor = (app.shirt != null) ? app.shirt : (isPlayer ? 0xe74c3c : npcShirts[Math.floor(Math.random() * npcShirts.length)])
+  const shirtAccent = (app.shirtAccent != null) ? app.shirtAccent : 0xffffff
   const shirtDk = new THREE.Color(shirtColor).multiplyScalar(0.75).getHex()
-  const pantsColor = isPlayer ? (app.pants || 0x2c3e50) : npcPants[Math.floor(Math.random() * npcPants.length)]
+  const pantsColor = (app.pants != null) ? app.pants : (isPlayer ? 0x2c3e50 : npcPants[Math.floor(Math.random() * npcPants.length)])
   const pantsDk = new THREE.Color(pantsColor).multiplyScalar(0.78).getHex()
-  const shoeColor = isPlayer ? (app.shoes || 0x1a1a1a) : 0x222222
-  const eyeColor = isPlayer ? (app.eyeColor || 0x4a90d9) : 0x3d2b1f
+  const shoeColor = (app.shoes != null) ? app.shoes : (isPlayer ? 0x1a1a1a : 0x222222)
+  const eyeColor = (app.eyeColor != null) ? app.eyeColor : (isPlayer ? 0x4a90d9 : 0x3d2b1f)
 
   const tGrad = window._toonGrad || null
   const SKIN = new THREE.MeshToonMaterial({ color: skinColor, gradientMap: tGrad })
@@ -5572,7 +6091,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
   headGroup.add(lip)
 
   // Facial Hair
-  const facialHair = isPlayer ? (app.facialHair || 'none') : 'none'
+  const facialHair = app.facialHair || (isPlayer ? (app.facialHair || 'none') : 'none')
   if (facialHair === 'stubble') {
     const stubble = new THREE.Mesh(new THREE.SphereGeometry(0.22 * sk, 14, 10), HAIR)
     stubble.position.set(0, -0.18 * sk, 0.10 * sk)
@@ -5591,7 +6110,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
   }
 
   // ─── 2. HAIRSTYLES (11 STYLES) ────────────────────────────────────
-  const hairStyle = isPlayer ? (app.hairStyle || 'quiff') : 'quiff'
+  const hairStyle = app.hairStyle || (isPlayer ? (app.hairStyle || 'quiff') : 'quiff')
   if (hairStyle !== 'bald') {
     if (hairStyle === 'buzz' || hairStyle === 'short') {
       const buzz = new THREE.Mesh(new THREE.SphereGeometry(0.29 * sk, 16, 12, 0, Math.PI * 2, 0, Math.PI * 0.55), HAIR)
@@ -5767,7 +6286,7 @@ const _buildHuman = (isPlayer = false, appearance) => {
   chest.position.y = tH * 0.15
   torsoGroup.add(chest)
 
-  const outfit = isPlayer ? (app.outfit || 'streetwear') : 'streetwear'
+  const outfit = app.outfit || (isPlayer ? (app.outfit || 'streetwear') : 'streetwear')
   if (outfit === 'kaali_peeli') {
     // Kaali-Peeli Taxi Hero Yellow Chest Stripe
     const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.36 * sk, 0.09 * sk, 0.28 * sk), new THREE.MeshToonMaterial({ color: 0xf5b81e, gradientMap: tGrad }))
@@ -7681,67 +8200,59 @@ function showConsequenceModal(violationType, severity = 'normal') {
   };
 
   // ═══════════════════════════════════════════════════════════════
-  // CHEAT CODE & INVULNERABILITY (GOD MODE) SYSTEM
+  // DEVELOPER DIAGNOSTICS (console-only, deliberately unreachable from UI)
   // ═══════════════════════════════════════════════════════════════
-  window.toggleGodModeCheat = function(forceState) {
-    var current = (typeof localStorage !== 'undefined' && localStorage.getItem('traffic_god_mode') === 'true');
-    var next = typeof forceState === 'boolean' ? forceState : !current;
-    window._trafficGodMode = next;
-    try {
-      localStorage.setItem('traffic_god_mode', next ? 'true' : 'false');
-    } catch(e) {}
-    
+  // There is intentionally NO click path, keybind, or persisted localStorage
+  // flag that turns these on. A previous build shipped a 3-tap version-badge
+  // cheat plus a hardcoded name list that granted all levels, all badges and
+  // invulnerability; that is gone. State lives only in window._trafficGodMode
+  // and dies on reload, so a student cannot inherit it from a shared machine.
+  //
+  // To use during development, from the browser console:
+  //     colDev.godMode(true)     collisions cannot kill you
+  //     colDev.telemetry(true)   fps / p95 ms / draw calls / NPC count
+  //     colDev.unlockAll()       every level + every badge (local only)
+  window._trafficGodMode = false;
+
+  function colDevGodBadge(on) {
     var badge = document.getElementById('god-mode-hud-badge');
-    if (!badge) {
-      badge = document.createElement('div');
-      badge.id = 'god-mode-hud-badge';
-      badge.style.cssText = 'position:fixed; top:14px; left:14px; z-index:999999; background:linear-gradient(135deg, rgba(255,215,0,0.25), rgba(255,140,0,0.35)); border:1.5px solid #ffd700; color:#ffd700; font-weight:800; font-size:0.75rem; padding:6px 12px; border-radius:20px; box-shadow:0 0 16px rgba(255,215,0,0.6); backdrop-filter:blur(8px); display:none; pointer-events:auto; cursor:pointer; letter-spacing:0.5px; transition:all 0.3s ease;';
-      badge.title = 'Click to disable Invulnerability Mode';
-      badge.onclick = function() { window.toggleGodModeCheat(false); };
-      document.body.appendChild(badge);
-    }
-    badge.innerHTML = '🛡️ GOD MODE: INVULNERABLE';
-    badge.style.display = next ? 'block' : 'none';
-
-    if (typeof toast === 'function') {
-      if (next) {
-        toast('⚡ CHEAT ACTIVATED: INVULNERABILITY MODE 🛡️', '#ffd700', 4000);
-      } else {
-        toast('🛡️ God Mode (Invulnerability) Disabled', '#aaa', 3000);
-      }
-    }
-    return next;
-  };
-
-  if (typeof localStorage !== 'undefined' && localStorage.getItem('traffic_god_mode') === 'true') {
-    window._trafficGodMode = true;
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', function() { window.toggleGodModeCheat(true); });
-    } else {
-      setTimeout(function() { window.toggleGodModeCheat(true); }, 300);
-    }
+    if (!on) { if (badge) { badge.remove(); } return; }
+    if (badge) { return; }
+    badge = document.createElement('div');
+    badge.id = 'god-mode-hud-badge';
+    badge.style.cssText = 'position:fixed; top:14px; left:14px; z-index:999999; background:rgba(255,215,0,0.15); border:1.5px solid #ffd700; color:#ffd700; font-weight:800; font-size:0.75rem; padding:6px 12px; border-radius:20px; pointer-events:none; letter-spacing:0.5px;';
+    badge.textContent = 'DEV: Invulnerable';
+    document.body.appendChild(badge);
   }
 
-  var _devClicks = 0;
-  window.handleDevClick = function() {
-    _devClicks++;
-    if (_devClicks >= 3) {
-      _devClicks = 0;
-      var p = prompt('⚡ CHEAT CODE & DEVELOPER ACCESS:\nType "god" or press OK to toggle Invulnerability Mode on all levels:');
-      if (p !== null) {
-        var code = (p || '').trim().toLowerCase();
-        if (['neel', 'ansh', 'sanjana'].includes(p.trim())) {
-          if (typeof ui !== 'undefined' && ui && ui.adminUnlock) {ui.adminUnlock();}
-          window.toggleGodModeCheat(true);
-        } else {
-          window.toggleGodModeCheat();
-        }
-      }
-    } else {
-      var rem = 3 - _devClicks;
+  window.colDev = {
+    godMode: function(on) {
+      var next = typeof on === 'boolean' ? on : !window._trafficGodMode;
+      window._trafficGodMode = next;
+      colDevGodBadge(next);
       if (typeof toast === 'function') {
-        toast('🛡️ Cheat Menu: Tap ' + rem + ' more time' + (rem > 1 ? 's' : '') + ' to toggle Invulnerability Mode!', '#ffd700', 1200);
+        toast(next ? 'Developer Mode: Invulnerability On' : 'Developer Mode: Invulnerability Off', '#ffd700', 2000);
       }
+      return next;
+    },
+    telemetry: function(on) {
+      var next = typeof on === 'boolean' ? on : !window._trafficTelemetry;
+      window._trafficTelemetry = next;
+      if (!next) {
+        var el = document.getElementById('telemetry-overlay');
+        if (el) { el.remove(); }
+      }
+      return next;
+    },
+    unlockAll: function() {
+      if (ui.adminUnlock) { ui.adminUnlock(); }
+      return true;
     }
+  };
+
+  // ui.toggleGodMode() stays as a thin alias for existing console users, but it
+  // is no longer wired to any button, badge or keybind.
+  window.toggleGodModeCheat = function(forceState) {
+    return window.colDev.godMode(forceState);
   };
 

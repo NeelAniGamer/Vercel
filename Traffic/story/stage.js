@@ -279,11 +279,11 @@
       // playback, while a light vignette over a 3am rain scene throws away the
       // only thing keeping the eye in the middle of the frame.
       night: {
-        sky: 0x1e2e46,
-        ambient: 0.36,
-        hemiSky: 0x6486b4,
-        hemiGround: 0x323e4e,
-        sun: 0.46,
+        sky: 0x141e2e,
+        ambient: 0.22,
+        hemiSky: 0x4a6585,
+        hemiGround: 0x222a35,
+        sun: 0.25,
         sunPos: [25, 60, 20],
         fogNear: 150,
         fogFar: 900,
@@ -292,11 +292,8 @@
         vig: 0.18,
         scan: 0.02,
         lensRain: 0.35,
-        // Re-grade for ACES at 0.60 exposure, which crushes this act to black
-        // on real displays (gameplay has its own per-frame exposure ramp; the
-        // film owns the frame so that ramp never runs). Lights stay dark —
-        // only the grade lifts. Restored by clearStage.
-        exposure: 0.95
+        // Balanced exposure for night: deep noir contrast without clipping highlights
+        exposure: 0.65
       },
       day: {
         sky: 0x9dc4e0,

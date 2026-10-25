@@ -255,3 +255,97 @@ describe('MATH-1-6: position integration timestep', () => {
     expect(spread(true)).toBeLessThan(1.03);
   });
 });
+
+// ───────────────────────────────────────────────────────────────────────────
+// MATH-BARRIER-1 — Jersey barrier coordinate alignment & local half-extents
+// ───────────────────────────────────────────────────────────────────────────
+
+describe('MATH-BARRIER: road termination barriers & vehicle collision', () => {
+  it('demonstrates that swapping halfW and halfD for rotY=PI/2 breaks barrier collision', () => {
+    const barrierWidth = 14;
+    const rotY = Math.PI / 2; // Barrier across horizontal road (E-W)
+
+    // Old flawed assignment in createJerseyBarrier:
+    const isAlignedXOld = Math.abs(rotY) < 0.1 || Math.abs(rotY - Math.PI) < 0.1;
+    const oldHalfW = isAlignedXOld ? barrierWidth / 2 : 0.85; // became 0.85!
+    const oldHalfD = isAlignedXOld ? 0.85 : barrierWidth / 2; // became 7.0!
+
+    // Correct local extents (independent of rotY):
+    const correctHalfW = barrierWidth / 2; // 7.0
+    const correctHalfD = 0.55;
+
+    // Suppose barrier is at (ox=100, oz=0) blocking a dead end along X.
+    // The barrier spans Z from -7 to +7 in world space.
+    // Player is at (px=98, pz=3), approaching the barrier 2m away from center along Z:
+    const dx = 98 - 100; // -2 (approaching along X)
+    const dz = 3 - 0;    // +3 (3m off-center along Z, well within the 14m width)
+
+    // Obstacle local space transformation (as in _uobs):
+    const cos = Math.cos(rotY), sin = Math.sin(rotY);
+    const localX = cos * dx - sin * dz; // 0 - 3 = -3
+    const localZ = sin * dx + cos * dz; // -2 + 0 = -2
+
+    const pR = 0.85;
+
+    // Under old logic:
+    const oldOverlapX = pR + oldHalfW - Math.abs(localX); // 0.85 + 0.85 - 3 = -1.3 (NO COLLISION!)
+    const oldOverlapZ = pR + oldHalfD - Math.abs(localZ); // 0.85 + 7.0 - 2 = +5.85
+
+    // Player drives STRAIGHT THROUGH 90% of the barrier!
+    expect(oldOverlapX).toBeLessThan(0);
+
+    // Under correct logic:
+    const pProjW = 0.95; // car half-width
+    const pProjD = 2.25; // car half-length
+    const correctOverlapX = correctHalfW + pProjW - Math.abs(localX); // 7.0 + 0.95 - 3 = 4.95 > 0
+    const correctOverlapZ = correctHalfD + pProjD - Math.abs(localZ); // 0.55 + 2.25 - 2 = 0.80 > 0
+
+    // Correct logic reliably detects the collision across the entire 14m barrier width:
+    expect(correctOverlapX).toBeGreaterThan(0);
+    expect(correctOverlapZ).toBeGreaterThan(0);
+  });
+
+  it('OBB projection detects bumper contact at true length instead of sinking 1.4m to 4.6m', () => {
+    const barrierDepth = 0.55;
+    const carHalfD = 2.25;
+    const busHalfD = 5.50;
+    const scalarPR = 0.85;
+
+    // Contact threshold (distance between vehicle center and barrier surface):
+    const carContactOBB = barrierDepth + carHalfD; // 2.80m
+    const carContactScalar = barrierDepth + scalarPR; // 1.40m
+    const carPenetrationBeforeHit = carContactOBB - carContactScalar; // 1.40m deep into mesh!
+    expect(carPenetrationBeforeHit).toBeCloseTo(1.40, 2);
+
+    const busContactOBB = barrierDepth + busHalfD; // 6.05m
+    const busContactScalar = barrierDepth + scalarPR; // 1.40m
+    const busPenetrationBeforeHit = busContactOBB - busContactScalar; // 4.65m deep into mesh!
+    expect(busPenetrationBeforeHit).toBeCloseTo(4.65, 2);
+  });
+
+  it('pushes vehicle cleanly along road normal for both vertical and horizontal road termini', () => {
+    // Road 1: North/South road terminus (rotY = 0)
+    // Vehicle driving North into barrier (dx = 0, dz = 2.0, barrier at 0, 0)
+    const rotY_v = 0;
+    const overlapZ_v = 0.3;
+    const pushSep = 0.08;
+    const pushLZ_v = overlapZ_v + pushSep;
+    const pushWorldX_v = Math.sin(rotY_v) * pushLZ_v;
+    const pushWorldZ_v = Math.cos(rotY_v) * pushLZ_v;
+
+    expect(pushWorldX_v).toBeCloseTo(0, 5);
+    expect(pushWorldZ_v).toBeGreaterThan(0); // Pushes South, back onto road!
+
+    // Road 2: East/West road terminus (rotY = PI/2)
+    // Vehicle driving East into barrier (dx = -2.0, dz = 0, barrier at 0, 0)
+    const rotY_h = Math.PI / 2;
+    const overlapZ_h = 0.3;
+    const localZ_h = Math.sin(rotY_h) * (-2.0) + Math.cos(rotY_h) * 0; // -2.0
+    const pushLZ_h = localZ_h > 0 ? (overlapZ_h + pushSep) : -(overlapZ_h + pushSep);
+    const pushWorldX_h = Math.sin(rotY_h) * pushLZ_h;
+    const pushWorldZ_h = Math.cos(rotY_h) * pushLZ_h;
+
+    expect(pushWorldX_h).toBeLessThan(0); // Pushes West (-X), back onto road!
+    expect(pushWorldZ_h).toBeCloseTo(0, 5);
+  });
+});

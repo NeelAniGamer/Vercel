@@ -17,7 +17,12 @@
     "privacy": "200",
     "terms": "200",
     "making": "200",
-    "how-it-was-made": "200"
+    "how-it-was-made": "200",
+    "cereal": "200",
+    "civiclogic": "200",
+    "CastFlow": "200",
+    "Career": "200",
+    "Database_Logic": "200"
   },
   "banner": {
     "active": false,
@@ -27,5 +32,5 @@
     "url": "https://hvukxajztizsuhfubjws.supabase.co",
     "key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2dWt4YWp6dGl6c3VoZnViandzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4Mzc1MTAsImV4cCI6MjA5NjQxMzUxMH0.KqQRkmhuB_rFlzQ2N3NhSQrftmVZgGE3NUuVHYh3aYE"
   },
-  "apkCertFingerprint": "2A:BA:B1:D1:B9:1E:75:E0:69:98:8A:B5:13:16:C2:9A:4A:EC:FC:A1"
+  "apkCertFingerprint": "21:EC:60:66:9E:DF:6F:23:90:6C:9E:1A:57:96:46:E4:6B:BE:55:FA"
 }

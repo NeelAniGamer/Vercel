@@ -257,6 +257,18 @@
       this.updateInspectorCoT();
     }
 
+    // Mark an objective on the ENGINE's task list. `ui.markTask` does not
+    // exist anywhere in the app, so the director's compliance events were
+    // announced and then dropped.
+    _markTask(taskId) {
+      const list = this.game && this.game.tasks;
+      if (!list || !Array.isArray(list)) {return false;}
+      const task = list.find(t => t && (t.id === taskId || (t.text && String(t.text).toLowerCase().includes(String(taskId).toLowerCase().replace(/_/g, ' ')))));
+      if (!task || task.done) {return false;}
+      task.done = true;
+      return true;
+    }
+
     /**
      * Spawns Crossing Guard Mr. Shinde, School Children Swarm, and Roadside Hazards
      */
@@ -480,7 +492,11 @@
       this.timeSinceStart += dt;
 
       const playerPos = this.game.player.position;
-      const playerSpeedKmh = Math.round(Math.abs(this.game.speed || 0));
+      // The engine's internal speed is x100 = km/h, so Math.round() of the raw
+      // value gave 0 or 1 for every legal speed. That made the "stopped
+      // safely" check always true (the driver was congratulated at 60 km/h)
+      // and the encroachment branch unreachable.
+      const playerSpeedKmh = Math.round(Math.abs(this.game.speed || 0) * 100);
 
       // ── A. Monitor Approach to School Dismissal Zone (Z = 2320) ─────────────
       const distanceToZebra = this.guardZ - playerPos.z;
@@ -517,8 +533,12 @@
           if (playerSpeedKmh <= 2) {
             if (!this.playerYieldReported) {
               this.playerYieldReported = true;
-              this.logCoT(`COMPLIANCE PASS: Driver stopped safely behind stop line (Speed: 0 km/h). MV Act Sec 194B satisfied.`);
-              if (_win.ui && _win.ui.markTask) {_win.ui.markTask('yield_kids');}
+              this.logCoT(`COMPLIANCE PASS: Driver stopped safely behind stop line (Speed: ${playerSpeedKmh} km/h). MV Act Sec 194B satisfied.`);
+              // ui.markTask does not exist anywhere in the app, so the
+              // objective was never actually recorded - the player was
+              // congratulated for a check that did not stick. Mark the
+              // engine's own task list instead.
+              this._markTask('yield_kids');
             }
           } else if (distanceToZebra < 12 && playerSpeedKmh > 15) {
             this.logCoT(`VIOLATION: Driver encroaching crosswalk at ${playerSpeedKmh} km/h while guard STOP is raised!`);
@@ -766,6 +786,30 @@
     }
 
     cleanup() {
+      // Remove the entities this director added to the 3D scene as well as
+      // its DOM. The scene entities (the guard, the ten school children and
+      // the cow) were left standing in the world on every level transition,
+      // with their geometry leaked.
+      const _dispose = (obj) => {
+        if (!obj) {return;}
+        try {
+          if (obj.parent) {obj.parent.remove(obj);}
+          obj.traverse(o => {
+            if (o.geometry) {o.geometry.dispose();}
+            if (o.material) {
+              const mats = Array.isArray(o.material) ? o.material : [o.material];
+              mats.forEach(m => { if (m && m.dispose) {m.dispose();} });
+            }
+          });
+        } catch {}
+      };
+      try { if (this.guard && this.guard.group) {_dispose(this.guard.group);} } catch {}
+      try { (this.children || []).forEach(c => { if (c && c.group) {_dispose(c.group);} }); } catch {}
+      try { if (this.cow && this.cow.group) {_dispose(this.cow.group);} } catch {}
+      this.guard = null;
+      this.children = [];
+      this.cow = null;
+
       if (typeof document === 'undefined') {return;}
       const panel = document.getElementById('ai-map-inspector-panel');
       if (panel) {panel.remove();}

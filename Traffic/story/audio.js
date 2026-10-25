@@ -646,6 +646,42 @@
       return;
     }
 
+    if (kind === 'whistle') {
+      // Authentic Mumbai Traffic Police pea-whistle sharp trill (2620Hz / 2890Hz with 18Hz flutter)
+      var wOsc1 = c.createOscillator();
+      var wOsc2 = c.createOscillator();
+      var lfo = c.createOscillator();
+      var lfoGain = c.createGain();
+
+      wOsc1.type = 'triangle';
+      wOsc2.type = 'sine';
+      wOsc1.frequency.setValueAtTime(2620, t);
+      wOsc2.frequency.setValueAtTime(2890, t);
+
+      lfo.type = 'sine';
+      lfo.frequency.setValueAtTime(18, t);
+      lfoGain.gain.setValueAtTime(95, t);
+      lfo.connect(wOsc1.frequency);
+      lfo.connect(wOsc2.frequency);
+
+      var wGain = c.createGain();
+      wGain.gain.setValueAtTime(0.0001, t);
+      wGain.gain.linearRampToValueAtTime(0.26 * g, t + 0.035);
+      wGain.gain.setValueAtTime(0.26 * g, t + 0.30);
+      wGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.45);
+
+      wOsc1.connect(wGain);
+      wOsc2.connect(wGain);
+      wGain.connect(world);
+
+      try {
+        lfo.start(t); lfo.stop(t + 0.46);
+        wOsc1.start(t); wOsc1.stop(t + 0.46);
+        wOsc2.start(t); wOsc2.stop(t + 0.46);
+      } catch (eWh) {}
+      return;
+    }
+
     if (kind === 'car_unlock') {
       // Remote keyfob double-chirp + central locking solenoid thud
       [0, 0.08].forEach(function (off) {

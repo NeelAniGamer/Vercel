@@ -257,7 +257,7 @@ class RoadGraph {
     const slotGridSize = 25;
     const roads = cfg.roads || [];
     const plots = cfg.plots || [];
-    const hitsRoadOrPlot = (p, pad = 10) => {
+    const hitsRoadOrPlot = (p, pad = 3.5) => {
       for (let i = 0; i < roads.length; i++) {
         const r = roads[i];
         const rw = (r.width || 12) / 2 + pad;
@@ -335,7 +335,7 @@ class RoadGraph {
           const depth1 = isRes ? 14.0 : 20.0;
           const slot1 = new BuildingSlot(seg, side, t, depth1, zone);
           const pos1 = slot1.getWorldPosition();
-          if (!isSlotTooClose(pos1, isRes ? 16.0 : 18.0) && !hitsRoadOrPlot(pos1, 10)) {
+          if (!isSlotTooClose(pos1, isRes ? 14.0 : 16.0) && !hitsRoadOrPlot(pos1, 3.5)) {
             registerSlot(slot1, pos1);
           }
 
@@ -344,7 +344,7 @@ class RoadGraph {
             const depth2 = depth1 + 24.0;
             const slot2 = new BuildingSlot(seg, side, t, depth2, zone);
             const pos2 = slot2.getWorldPosition();
-            if (!isSlotTooClose(pos2, 18.0) && !hitsRoadOrPlot(pos2, 10)) {
+            if (!isSlotTooClose(pos2, 16.0) && !hitsRoadOrPlot(pos2, 3.5)) {
               registerSlot(slot2, pos2);
             }
           }

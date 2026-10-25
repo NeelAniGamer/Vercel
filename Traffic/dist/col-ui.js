@@ -26,21 +26,15 @@
   }
 
   // 0. Ambient Visual System Auto-Injector (Aurora Mesh & Cyber Grid)
-  // Mobile: 2 orbs instead of 3 (cut GPU layer cost ~33%). Layers pause via
-  // .col-perf-pause when scrolled out of view or the tab is hidden.
+  // Full-fidelity 3-orb ambient mesh + cyber spotlight across all devices.
+  // Hardware-accelerated GPU layers run at full unthrottled refresh rates.
   function initAmbientVisuals() {
     if (document.querySelector('.col-ambient-bg')) {return;}
-    const isCoarse = window.matchMedia('(pointer: coarse)').matches;
-    // SKIP ambient orbs entirely on mobile — 3 constant CSS animations
-    // burn GPU for near-zero visual gain on small screens.
-    if (isCoarse) {return;}
-    const isLowEnd = navigator.hardwareConcurrency <= 4;
     const bg = document.createElement('div');
     bg.className = 'col-ambient-bg';
     bg.setAttribute('aria-hidden', 'true');
-    let orbs = '<div class="col-ambient-orb col-orb-1"></div><div class="col-ambient-orb col-orb-2"></div>';
-    if (!isLowEnd) {orbs += '<div class="col-ambient-orb col-orb-3"></div>';}
-    bg.innerHTML = orbs + (isCoarse ? '' : '<div class="col-ambient-spotlight"></div>');
+    const orbs = '<div class="col-ambient-orb col-orb-1"></div><div class="col-ambient-orb col-orb-2"></div><div class="col-ambient-orb col-orb-3"></div><div class="col-ambient-spotlight"></div>';
+    bg.innerHTML = orbs;
     if (document.body) {
       document.body.insertBefore(bg, document.body.firstChild);
       setupAmbientPause(bg);
@@ -51,24 +45,12 @@
       });
     }
   }
-  // Pause orb animations while the fixed background is fully covered by content
-  // or the tab is hidden — stops ~3 constant composited animations per page.
-  // Also pauses on low-end devices (<=4 cores) to save battery.
+  // Pause ambient animations ONLY when tab is explicitly hidden to release background cycles
   function setupAmbientPause(bg) {
-    const hasIO = 'IntersectionObserver' in window;
-    let onScreen = true;
-    const lowEnd = (navigator.hardwareConcurrency || 4) <= 4;
     function apply() {
-      bg.classList.toggle('col-perf-pause', !onScreen || document.hidden || lowEnd);
-    }
-    if (hasIO) {
-      new IntersectionObserver(function (entries) {
-        onScreen = entries[0].isIntersecting;
-        apply();
-      }, { threshold: 0 }).observe(bg);
+      bg.classList.toggle('col-perf-pause', document.hidden);
     }
     document.addEventListener('visibilitychange', apply);
-    if (lowEnd) {apply();}
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initAmbientVisuals);
@@ -83,60 +65,80 @@
   if (!isTouch && !isGamePage) {
     const dot = document.getElementById('cDot'),
       ring = document.getElementById('cRing')
-    const spot = document.querySelector('.col-ambient-spotlight')
+    let spot = null
     let mx = window.innerWidth / 2,
       my = window.innerHeight / 3,
       rx = mx,
       ry = my
-    let rafPending = false
+    let isMoving = false,
+      ringRaf = null
+
+    let lastRingTime = null
+    function updateRing(now) {
+      now = now || performance.now()
+      const dt = lastRingTime ? Math.min((now - lastRingTime) / 1000, 0.05) : 0.016
+      lastRingTime = now
+      const dx = mx - rx
+      const dy = my - ry
+      // Exponential decay spring: mathematically identical tracking whether at 60Hz, 90Hz, 120Hz, or 144Hz
+      const alpha = 1 - Math.exp(-24 * dt)
+      rx += dx * alpha
+      ry += dy * alpha
+      if (ring) {
+        ring.style.transform = 'translate3d(' + rx + 'px,' + ry + 'px,0) translate(-50%,-50%)'
+      }
+      if (Math.abs(dx) > 0.15 || Math.abs(dy) > 0.15) {
+        ringRaf = requestAnimationFrame(updateRing)
+      } else {
+        rx = mx
+        ry = my
+        if (ring) {
+          ring.style.transform = 'translate3d(' + mx + 'px,' + my + 'px,0) translate(-50%,-50%)'
+        }
+        ringRaf = null
+        lastRingTime = null
+      }
+    }
 
     document.addEventListener(
       'mousemove',
       function (e) {
         mx = e.clientX
         my = e.clientY
-        if (dot) {dot.style.transform = 'translate(' + mx + 'px,' + my + 'px) translate(-50%,-50%)'}
-        if (!rafPending) {
-          rafPending = true
+        if (dot) {
+          dot.style.transform = 'translate3d(' + mx + 'px,' + my + 'px,0) translate(-50%,-50%)'
+        }
+        if (!ringRaf && ring) {
+          ringRaf = requestAnimationFrame(updateRing)
+        }
+        if (!isMoving) {
+          isMoving = true
           requestAnimationFrame(function () {
-            // Direct style mutation on spotlight element avoids full DOM tree style recalculation
-            if (spot) {
-              spot.style.background =
-                'radial-gradient(600px circle at ' + mx + 'px ' + my + 'px, rgba(94, 212, 245, 0.05), transparent 70%)'
+            if (!spot) {
+              spot = document.querySelector('.col-ambient-spotlight')
             }
-            rafPending = false
+            if (spot) {
+              spot.style.transform = 'translate3d(' + mx + 'px,' + my + 'px,0)'
+            }
+            isMoving = false
           })
         }
       },
       { passive: true }
     )
 
-    if (dot && ring) {
-      let _cursorFrame = 0
-      ;(function draw() {
-        if (document.hidden) {
-          requestAnimationFrame(draw)
-          return
-        }
-        _cursorFrame++
-        if (_cursorFrame % 2 === 0) {
-          requestAnimationFrame(draw)
-          return
-        }
-        rx += (mx - rx) * 0.13
-        ry += (my - ry) * 0.13
-        ring.style.transform = 'translate(' + rx + 'px,' + ry + 'px) translate(-50%,-50%)'
-        requestAnimationFrame(draw)
-      })()
-      document.querySelectorAll('a,button,select,input,.typing-area').forEach(function (el) {
-        el.addEventListener('mouseenter', function () {
-          document.body.classList.add('ch')
-        })
-        el.addEventListener('mouseleave', function () {
-          document.body.classList.remove('ch')
-        })
-      })
-    }
+    // Event delegation for cursor hover state on interactive targets
+    document.addEventListener('mouseover', function (e) {
+      if (e.target && e.target.closest('a, button, select, input, .typing-area, [role="button"], .hz-toggle, .pc')) {
+        document.body.classList.add('ch')
+      }
+    }, { passive: true })
+
+    document.addEventListener('mouseout', function (e) {
+      if (e.target && e.target.closest('a, button, select, input, .typing-area, [role="button"], .hz-toggle, .pc')) {
+        document.body.classList.remove('ch')
+      }
+    }, { passive: true })
   }
 
   // 2. Mobile Menu & In-App Updater — Engineered for 720p→2K
@@ -150,8 +152,10 @@
     if (nl) {
       // — Helper: lock body scroll without layout shift —
       let _lockY = 0
+      let _navLocked = false
       function lockNav() {
         _lockY = window.scrollY
+        _navLocked = true
         const sb = window.innerWidth - document.documentElement.clientWidth
         if (sb > 0) {document.documentElement.style.setProperty('--scrollbar-comp', sb + 'px')}
         document.body.classList.add('nav-lock')
@@ -167,12 +171,19 @@
         document.body.style.top = ''
         document.body.style.width = ''
         document.documentElement.style.removeProperty('--scrollbar-comp')
-        window.scrollTo(0, _lockY)
+        // Only restore the scroll position if the nav was actually locked.
+        // Without this guard, unlockNav() ran window.scrollTo(0, 0) on every
+        // desktop resize (createOrUpdateBar calls closeMobileDrawer), which
+        // yanked the reader back to the top of the page.
+        if (_navLocked) {
+          window.scrollTo(0, _lockY)
+          _navLocked = false
+        }
         mmb.setAttribute('aria-expanded', 'false')
         nl.setAttribute('aria-hidden', 'true')
       }
       function isNavOpen() {
-        return nl.classList.contains('active')
+        return Boolean(_drawer && _drawer.classList.contains('active'))
       }
 
       // Dedicated, Isolated Centered Mobile Drawer
@@ -250,6 +261,11 @@
                   '<a href="/rpg" class="cmd-acc-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span>RPG Game</span></a>' +
                   '<a href="/qr" class="cmd-acc-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="8" height="8" rx="1"/><rect x="14" y="2" width="8" height="8" rx="1"/><rect x="2" y="14" width="8" height="8" rx="1"/><rect x="14" y="14" width="4" height="4"/><rect x="20" y="14" width="2" height="2"/><rect x="14" y="20" width="2" height="2"/><rect x="20" y="20" width="2" height="2"/></svg><span>QR Studio Matrix</span></a>' +
                   '<a href="/Terra3D/" class="cmd-acc-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg><span>Terra3D Atlas</span></a>' +
+                  '<a href="/Career" class="cmd-acc-item"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg><span>Career Compass</span></a>' +
+                  '<a href="/Database_Logic" class="cmd-acc-item"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="9" y1="7" x2="16" y2="7"/><line x1="9" y1="11" x2="14" y2="11"/></svg><span>Database Logic DB</span></a>' +
+                  '<a href="/CastFlow" class="cmd-acc-item"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg><span>CastFlow Studio</span></a>' +
+                  '<a href="/cereal" class="cmd-acc-item"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg><span>Cereal AI App</span></a>' +
+                  '<a href="/Traffic/Driving" class="cmd-acc-item"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg><span>Traffic Academy</span></a>' +
                 '</div>' +
               '</div>' +
             '</div>' +
@@ -265,6 +281,19 @@
               '<div class="hz-toggle cmd-hz-toggle" id="cmdHzToggle">' +
                 '<div class="hz-clouds"></div><div class="hz-stars"></div><div class="hz-orb"></div>' +
               '</div>' +
+            '</div>' +
+
+            '<div class="cmd-setting-card cmd-liquid-card">' +
+              '<div class="cmd-setting-info">' +
+                '<div class="cmd-setting-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg></div>' +
+                '<div>' +
+                  '<div class="cmd-setting-title">Liquid Glass UI</div>' +
+                  '<div class="cmd-setting-desc" id="cmdLiquidDesc">' + (document.documentElement.classList.contains('is-iphone') ? 'Apple VisionOS &amp; iOS' : 'Standard Material') + '</div>' +
+                '</div>' +
+              '</div>' +
+              '<button type="button" class="cmd-toggle-pill' + (document.documentElement.classList.contains('is-iphone') ? ' active' : '') + '" id="cmdLiquidToggle" aria-label="Toggle Apple Liquid Glass">' +
+                '<span class="cmd-toggle-thumb"></span>' +
+              '</button>' +
             '</div>' +
 
             '<div class="cmd-quick-deck">' +
@@ -340,6 +369,19 @@
           })
         }
 
+        // Apple Liquid Glass toggle
+        const cmdLiquid = d.querySelector('#cmdLiquidToggle')
+        if (cmdLiquid) {
+          cmdLiquid.addEventListener('click', function () {
+            const enabled = typeof window.toggleAppleLiquidGlass === 'function' ? window.toggleAppleLiquidGlass() : false
+            cmdLiquid.classList.toggle('active', enabled)
+            const desc = document.getElementById('cmdLiquidDesc')
+            if (desc) {
+              desc.textContent = enabled ? 'Apple VisionOS & iOS' : 'Standard Material'
+            }
+          })
+        }
+
         // Login button
         const loginBtn = d.querySelector('#cmdLoginBtn')
         if (loginBtn) {
@@ -354,6 +396,28 @@
         d.querySelectorAll('a').forEach(function (link) {
           link.addEventListener('click', closeDrawer)
         })
+
+        // Swipe to dismiss mobile drawer (horizontal swipe > 80px)
+        let _sx = 0, _sy = 0
+        d.addEventListener(
+          'touchstart',
+          function (e) {
+            _sx = e.touches[0].clientX
+            _sy = e.touches[0].clientY
+          },
+          { passive: true }
+        )
+        d.addEventListener(
+          'touchend',
+          function (e) {
+            const dx = e.changedTouches[0].clientX - _sx
+            const dy = e.changedTouches[0].clientY - _sy
+            if (dx > 80 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+              closeDrawer()
+            }
+          },
+          { passive: true }
+        )
 
         return _drawer
       }
@@ -396,33 +460,9 @@
       // Close on Escape
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && isNavOpen()) {
-          nl.classList.remove('active')
-          mmb.classList.remove('active')
-          unlockNav()
+          closeDrawer()
         }
       })
-
-      // Swipe to close (left swipe)
-      let _sx = 0
-      nl.addEventListener(
-        'touchstart',
-        function (e) {
-          _sx = e.touches[0].clientX
-        },
-        { passive: true }
-      )
-      nl.addEventListener(
-        'touchend',
-        function (e) {
-          const dx = e.changedTouches[0].clientX - _sx
-          if (dx > 80 && isNavOpen()) {
-            nl.classList.remove('active')
-            mmb.classList.remove('active')
-            unlockNav()
-          }
-        },
-        { passive: true }
-      )
 
       // Mobile dropdown toggle (accordion, no propagation to drawer close)
       const dropdowns = nl.querySelectorAll('.dropdown')
@@ -458,16 +498,14 @@
             .then((r) => r.json())
             .then((data) => {
               const currentV = localStorage.getItem('col_apk_version') || '0'
-              if (parseInt(data.versionCode) > parseInt(currentV)) {
-                const nl = document.querySelector('.nav-links')
-                if (nl && !document.getElementById('apkUpdateBtn')) {
+              if (parseInt(data.versionCode, 10) > parseInt(currentV, 10)) {
+                if (!document.getElementById('apkUpdateBtn')) {
                   const updBtn = document.createElement('a')
                   updBtn.id = 'apkUpdateBtn'
                   updBtn.href = data.apkUrl || '/COL.apk'
-                  updBtn.className = 'nav-dl-btn mobile-dl'
-                  updBtn.innerHTML = 'Update App'
-                  updBtn.style.display = 'block'
-                  updBtn.style.marginTop = '10px'
+                  updBtn.className = 'cmd-btn-primary mobile-dl'
+                  updBtn.innerHTML = 'Update App (v' + (data.versionName || data.versionCode) + ')'
+                  updBtn.style.display = 'flex'
                   updBtn.style.backgroundColor = 'var(--signal, #F2B84B)'
                   updBtn.style.color = '#000'
                   updBtn.style.textAlign = 'center'
@@ -479,62 +517,76 @@
                     }, 1000)
                     alert('Downloading update... Please open your notifications or file manager to install the new version.')
                   }
-                  nl.appendChild(updBtn)
+                  const drawer = getOrCreateMobileDrawer()
+                  const deck = drawer ? drawer.querySelector('.cmd-actions-deck') : null
+                  if (deck) {
+                    deck.prepend(updBtn)
+                  } else {
+                    const nlElem = document.querySelector('.nav-links')
+                    if (nlElem) {nlElem.appendChild(updBtn)}
+                  }
                 }
               }
             })
-            .catch((e) => console.warn('Could not fetch version for update check.'))
+            .catch((_e) => console.warn('Could not fetch version for update check.'))
         }
-      } catch (e) {}
+      } catch (_e) {}
+    }
+  }
+})()
+
+// 3. Desktop Navbar Scroll State (.top-nav.s with Hysteresis & Initial Sync)
+;(function () {
+  function syncNavScroll() {
+    var topNav = document.getElementById('topNav') || document.querySelector('.top-nav')
+    if (!topNav) return
+    var isPill = topNav.classList.contains('s')
+    // Hysteresis deadzone: 60px down to enter pill mode, 25px up to return to stuck
+    var threshold = isPill ? 25 : 60
+    var shouldBePill = window.scrollY > threshold
+    if (isPill !== shouldBePill) {
+      topNav.classList.toggle('s', shouldBePill)
     }
   }
 
-  // 3. Setup initial theme based on Storage if Storage exists (from col-auth.js or inline)
-  // Actually, col-router.js or home.html defines Storage, but if it doesn't, we fallback to localStorage directly.
-  try {
-    const savedTheme = localStorage.getItem('theme')
-    const tl = document.getElementById('tLabel')
-    const tsck = document.getElementById('tsck')
+  var navTicking = false
+  window.addEventListener(
+    'scroll',
+    function () {
+      if (!navTicking) {
+        requestAnimationFrame(function () {
+          syncNavScroll()
+          navTicking = false
+        })
+        navTicking = true
+      }
+    },
+    { passive: true }
+  )
 
-    if (savedTheme === 'light') {
-      document.body.classList.add('lm')
-      if (tsck) {tsck.checked = true}
-      if (tl) {tl.textContent = 'Light Mode'}
-    } else {
-      // Explicitly enforce Dark Mode
-      document.body.classList.remove('lm')
-      if (tsck) {tsck.checked = false}
-      if (tl) {tl.textContent = 'Dark Mode'}
-      localStorage.setItem('theme', 'dark')
-    }
-  } catch (e) {}
+  // Immediate sync on page load / DOM ready so back-navigation or pre-scrolled pages don't jump
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', syncNavScroll)
+  } else {
+    syncNavScroll()
+  }
+  window.addEventListener('load', syncNavScroll, { once: true })
 })()
-
-window.toggleTheme = function (el) {
-  // rAF-deferred so the checkbox click event completes instantly (fixes INP)
-  const isChecked = el && el.checked;
-  try { if (navigator.vibrate) {navigator.vibrate(10);} } catch (e) {}
-  requestAnimationFrame(function () {
-    const tl = document.getElementById('tLabel')
-    if (isChecked) {
-      document.body.classList.add('lm')
-      try {
-        localStorage.setItem('theme', 'light')
-      } catch (e) {}
-      if (tl) {tl.textContent = 'Light Mode'}
-    } else {
-      document.body.classList.remove('lm')
-      try {
-        localStorage.setItem('theme', 'dark')
-      } catch (e) {}
-      if (tl) {tl.textContent = 'Dark Mode'}
-    }
-  })
-}
 
 // Register Service Worker for PWA
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function () {
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      navigator.serviceWorker.getRegistrations().then(function (registrations) {
+        for (var r of registrations) { r.unregister(); }
+      });
+      if (typeof caches !== 'undefined') {
+        caches.keys().then(function (names) {
+          for (var name of names) { caches.delete(name); }
+        });
+      }
+      return;
+    }
     navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).then(
       function (registration) {
         console.log('SW registered: ', registration.scope)
@@ -620,7 +672,10 @@ function initBottomBar() {
   if (isGame) {return}
 
   function createOrUpdateBar() {
-    if (window.innerWidth > 900) {
+    // 1100px matches the CSS breakpoint that hides the desktop .nav-links and
+    // shows the thumb bar. Using 900px left a 901–1100px dead zone where the
+    // desktop nav was hidden AND the bottom bar was removed.
+    if (window.innerWidth > 1100) {
       const existing = document.querySelector('.col-bottom-bar')
       if (existing) {existing.remove()}
       document.body.classList.remove('nav-lock')
@@ -705,22 +760,6 @@ function initBottomBar() {
       })
     })
 
-    // Sync menu button active state with drawer state
-    const menuBtn = bar.querySelector('.bbar-menu')
-    var checkDrawerInterval = setInterval(function () {
-      const d = document.getElementById('colMobileDrawer')
-      if (d && menuBtn) {
-        clearInterval(checkDrawerInterval)
-        if ('MutationObserver' in window) {
-          const obs = new MutationObserver(function () {
-            const isOpen = d.classList.contains('active')
-            menuBtn.classList.toggle('act', isOpen)
-          })
-          obs.observe(d, { attributes: true, attributeFilter: ['class'] })
-        }
-      }
-    }, 200)
-
   }
 
   if (document.readyState === 'loading') {
@@ -734,104 +773,140 @@ initBottomBar()
 
 // 7. Buy Me A Coffee Global Floating Action Badge
 function initBmcBadge() {
-  if (document.getElementById('bmc-floating-badge')) {return}
+  // Respect a previous dismissal so the badge stops getting in the way.
+  try { if (localStorage.getItem('bmc-dismissed') === '1') {return} } catch (e) {}
 
-  function injectStyles() {
-    if (document.getElementById('bmc-floating-styles')) {return}
-    const style = document.createElement('style')
-    style.id = 'bmc-floating-styles'
-    style.textContent = [
-      '.bmc-floating-badge {',
-      '  position: fixed;',
-      '  bottom: 24px;',
-      '  right: 24px;',
-      '  z-index: 99999;',
-      '  display: flex;',
-      '  align-items: center;',
-      '  justify-content: center;',
-      '  border-radius: 12px;',
-      '  filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.35));',
-      '  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease;',
-      '  line-height: 0;',
-      '  text-decoration: none;',
-      '}',
-      '.bmc-floating-badge:hover {',
-      '  transform: translateY(-2px) scale(1.02);',
-      '  filter: drop-shadow(0 8px 20px rgba(95, 127, 255, 0.45));',
-      '}',
-      '.bmc-floating-badge:active {',
-      '  transform: translateY(0) scale(0.98);',
-      '}',
-      'body.nav-lock .bmc-floating-badge {',
-      '  opacity: 0 !important;',
-      '  pointer-events: none !important;',
-      '  transform: translateY(20px) !important;',
-      '}',
-      '.bmc-floating-badge a {',
-      '  display: inline-block;',
-      '  line-height: 0;',
-      '  border-radius: 10px;',
-      '}',
-      '.bmc-floating-badge img {',
-      '  height: 42px;',
-      '  width: auto;',
-      '  border-radius: 8px;',
-      '  display: block;',
-      '}',
-      '@media (max-width: 900px) {',
-      '  .bmc-floating-badge {',
-      '    bottom: calc(76px + env(safe-area-inset-bottom, 0px));',
-      '    right: 14px;',
-      '    filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.4));',
-      '  }',
-      '  .bmc-floating-badge img {',
-      '    height: 36px;',
-      '  }',
-      '}',
-      '@media (max-width: 480px) {',
-      '  .bmc-floating-badge {',
-      '    bottom: calc(72px + env(safe-area-inset-bottom, 0px));',
-      '    right: 10px;',
-      '  }',
-      '  .bmc-floating-badge img {',
-      '    height: 32px;',
-      '  }',
-      '}',
-      '@media (prefers-reduced-motion: reduce) {',
-      '  .bmc-floating-badge,',
-      '  .bmc-floating-badge:hover,',
-      '  .bmc-floating-badge:active {',
-      '    transition: none;',
-      '    transform: none;',
-      '  }',
-      '}',
-      '@media print {',
-      '  .bmc-floating-badge {',
-      '    display: none !important;',
-      '  }',
-      '}'
-    ].join('\n')
-    if (document.head) {
-      document.head.appendChild(style)
-    } else {
-      document.addEventListener('DOMContentLoaded', function () {
-        if (document.head) {document.head.appendChild(style)}
-      })
-    }
-  }
+  if (document.getElementById('bmc-floating-badge')) {return}
 
   function createBadge() {
     if (document.getElementById('bmc-floating-badge')) {return}
     if (!document.body) {return}
-    injectStyles()
 
     const badge = document.createElement('aside')
     badge.id = 'bmc-floating-badge'
     badge.className = 'bmc-floating-badge'
     badge.setAttribute('aria-label', 'Support Creator')
-    badge.innerHTML = '<a href="https://www.buymeacoffee.com/NeelAniGamer" target="_blank" rel="noopener noreferrer" title="Buy Me A Coffee" aria-label="Buy Me A Coffee"><img src="/bmc-button.svg" onerror="if(this.src.indexOf(\'img.buymeacoffee.com\')===-1)this.src=\'https://img.buymeacoffee.com/button-api/?text=Buy%20me%20a%20coffee&emoji=&slug=NeelAniGamer&button_colour=5F7FFF&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00\'" alt="Buy Me A Coffee" width="180" height="40" loading="lazy" /></a>'
+    badge.innerHTML = '<button type="button" class="bmc-dismiss" aria-label="Dismiss support badge" title="Dismiss">&times;</button><a href="https://www.buymeacoffee.com/NeelAniGamer" target="_blank" rel="noopener noreferrer" title="Buy Me A Coffee" aria-label="Buy Me A Coffee"><img src="/bmc-button.svg" draggable="false" onerror="if(this.src.indexOf(\'img.buymeacoffee.com\')===-1)this.src=\'https://img.buymeacoffee.com/button-api/?text=Buy%20me%20a%20coffee&emoji=&slug=NeelAniGamer&button_colour=5F7FFF&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00\'" alt="Buy Me A Coffee" width="180" height="40" loading="lazy" /></a>'
 
     document.body.appendChild(badge)
+
+    const dismiss = badge.querySelector('.bmc-dismiss')
+    if (dismiss) {
+      dismiss.addEventListener('click', function (e) {
+        e.preventDefault()
+        e.stopPropagation()
+        try { localStorage.setItem('bmc-dismissed', '1') } catch (err) {}
+        badge.remove()
+      })
+    }
+
+    // 7. Draggable badge: let users move it out of the way.
+    makeBmcDraggable(badge)
+  }
+
+  function makeBmcDraggable(badge) {
+    // Restore saved position.
+    try {
+      const saved = JSON.parse(localStorage.getItem('bmc-pos') || 'null')
+      if (saved && typeof saved.x === 'number' && typeof saved.y === 'number') {
+        badge.style.left = saved.x + 'px'
+        badge.style.top = saved.y + 'px'
+        badge.style.right = 'auto'
+        badge.style.bottom = 'auto'
+      }
+    } catch (e) {}
+
+    // The badge surface is entirely covered by the <a> (and the dismiss
+    // button), so the old `closest('.bmc-dismiss, a')` guard made every
+    // pointer-down bail out and dragging could never start. Instead we
+    // allow a drag to begin anywhere except the dismiss button, and only
+    // treat it as a drag once the pointer has travelled more than 6px.
+    let pointerDown = false
+    let didDrag = false
+    let suppressNextClick = false
+    let startX = 0, startY = 0, origX = 0, origY = 0
+
+    function onDown(e) {
+      if (e.target && e.target.closest && e.target.closest('.bmc-dismiss')) {return}
+      if (e.type === 'mousedown' && e.button !== 0) {return}
+      pointerDown = true
+      didDrag = false
+      suppressNextClick = false
+      const pt = e.touches ? e.touches[0] : e
+      startX = pt.clientX
+      startY = pt.clientY
+      const rect = badge.getBoundingClientRect()
+      origX = rect.left
+      origY = rect.top
+      // Suppress the browser's native image drag. Without this the <img>
+      // starts a native drag on the first few pixels of movement, which
+      // swallows the remaining mousemove/mouseup events and the badge
+      // never tracks the pointer.
+      if (e.cancelable) {e.preventDefault()}
+    }
+
+    function onMove(e) {
+      if (!pointerDown) {return}
+      const pt = e.touches ? e.touches[0] : e
+      const dx = pt.clientX - startX
+      const dy = pt.clientY - startY
+      if (!didDrag && Math.hypot(dx, dy) > 6) {
+        didDrag = true
+        badge.style.cursor = 'grabbing'
+      }
+      if (!didDrag) {return}
+      if (e.cancelable) {e.preventDefault()}
+      // Clamp to viewport.
+      const w = badge.offsetWidth, h = badge.offsetHeight
+      const x = Math.max(8, Math.min(window.innerWidth - w - 8, origX + dx))
+      const y = Math.max(8, Math.min(window.innerHeight - h - 8, origY + dy))
+      badge.style.left = x + 'px'
+      badge.style.top = y + 'px'
+      badge.style.right = 'auto'
+      badge.style.bottom = 'auto'
+    }
+
+    function onUp() {
+      if (!pointerDown) {return}
+      pointerDown = false
+      badge.style.cursor = 'grab'
+      if (didDrag) {
+        // The click that follows a drag must not open the badge link.
+        // Use a dedicated flag rather than reusing `didDrag`, because the
+        // dismiss button's own click handler lives inside the badge and
+        // would be swallowed by a capture-phase stopPropagation().
+        suppressNextClick = true
+        try {
+          const rect = badge.getBoundingClientRect()
+          localStorage.setItem('bmc-pos', JSON.stringify({ x: rect.left, y: rect.top }))
+        } catch (e) {}
+      }
+    }
+
+    // Swallow the click that ends a drag so the badge link does not open.
+    // The dismiss button is exempt so it stays usable after a drag.
+    badge.addEventListener(
+      'click',
+      function (e) {
+        if (!suppressNextClick) {return}
+        if (e.target && e.target.closest && e.target.closest('.bmc-dismiss')) {
+          suppressNextClick = false
+          return
+        }
+        e.preventDefault()
+        e.stopPropagation()
+        suppressNextClick = false
+      },
+      true
+    )
+
+    badge.addEventListener('mousedown', onDown)
+    badge.addEventListener('touchstart', onDown, { passive: true })
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('touchmove', onMove, { passive: false })
+    window.addEventListener('mouseup', onUp)
+    window.addEventListener('touchend', onUp)
+    badge.style.cursor = 'grab'
   }
 
   if (document.readyState === 'loading') {
@@ -842,7 +917,7 @@ function initBmcBadge() {
 }
 initBmcBadge()
 
-// Global theme helpers for all pages
+// Global canonical theme helpers for all pages
 window.safeThemeGet = function () {
   try {
     return localStorage.getItem('theme')
@@ -858,7 +933,7 @@ window.safeThemeSet = function (val) {
 }
 
 window.hzSync = function () {
-  const isLight = document.body.classList.contains('lm')
+  const isLight = document.body ? document.body.classList.contains('lm') : document.documentElement.classList.contains('lm')
   const toggles = document.querySelectorAll('.hz-toggle')
   toggles.forEach(function (el) {
     if (isLight) {el.classList.remove('night')}
@@ -866,16 +941,48 @@ window.hzSync = function () {
   })
   const desc = document.getElementById('cmdThemeDesc')
   if (desc) {desc.textContent = isLight ? 'Light Mica' : 'Dark VisionOS'}
+  const tl = document.getElementById('tLabel')
+  if (tl) {tl.textContent = isLight ? 'Light Mode' : 'Dark Mode'}
+  const tsck = document.getElementById('tsck')
+  if (tsck) {tsck.checked = isLight}
+  const meta = document.getElementById('themeMeta') || document.querySelector('meta[name="theme-color"]')
+  if (meta) {meta.setAttribute('content', isLight ? '#f3f2eb' : '#070a14')}
 }
 
 window.hzToggle = function () {
   if (navigator.vibrate) {
-    try { navigator.vibrate(8) } catch (e) {}
+    try { navigator.vibrate(8) } catch (_e) {}
   }
-  document.body.classList.toggle('lm')
-  const isLight = document.body.classList.contains('lm')
-  window.safeThemeSet(isLight ? 'light' : 'dark')
+  const willBeLight = !document.documentElement.classList.contains('lm')
+  if (willBeLight) {
+    document.documentElement.classList.add('lm')
+    if (document.body) {document.body.classList.add('lm')}
+    window.safeThemeSet('light')
+  } else {
+    document.documentElement.classList.remove('lm')
+    if (document.body) {document.body.classList.remove('lm')}
+    window.safeThemeSet('dark')
+  }
   window.hzSync()
+}
+
+// Canonical alias for legacy pages calling window.toggleTheme
+window.toggleTheme = function (el) {
+  if (el && typeof el.checked === 'boolean') {
+    const wantLight = el.checked
+    if (wantLight) {
+      document.documentElement.classList.add('lm')
+      if (document.body) {document.body.classList.add('lm')}
+      window.safeThemeSet('light')
+    } else {
+      document.documentElement.classList.remove('lm')
+      if (document.body) {document.body.classList.remove('lm')}
+      window.safeThemeSet('dark')
+    }
+    window.hzSync()
+  } else {
+    window.hzToggle()
+  }
 }
 
 // Immediately restore theme on script load

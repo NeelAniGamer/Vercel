@@ -103,7 +103,7 @@
     // into the act change and is never addressed or tagged.
     cast: [
       { id: 'vikram', kind: 'vehicle', type: 'bike', color: 0xf8fafc, x: 3.6, y: 0, z: -12.5, rotY: 0, withRider: true },
-      { id: 'fortuner', kind: 'vehicle', type: 'suv', color: 0x111317, x: 6.4, y: 0, z: -12.5, rotY: 0, withDriver: true },
+      { id: 'fortuner', kind: 'vehicle', type: 'suv', color: 0x111317, x: 6.4, y: 0, z: -68, rotY: 0, withDriver: true },
 
       // ── The two people who are actually IN this film ──────────────────────
       //
@@ -177,10 +177,10 @@
     // an optional one-shot, and — because a shot with a subtitle speaks by
     // default — an actual synthesised voice.
     prologue: [
-      // 1 — ESTABLISH. Elevated crane tracking shot overlooking the junction.
-      //     Looking north as the menacing Fortuner and SI Vikram Sawant approach
-      //     through the rain, headlamps sweeping the wet asphalt, and decelerate to a halt
-      //     at the solid white stop line.
+      // 1 — ESTABLISH. Elevated crane tracking shot overlooking the rain-swept junction.
+      //     SI Vikram Sawant is STATIONARY beside his police motorcycle holding the white line checkpoint,
+      //     headlamp and blue beacon sweeping the wet asphalt. In the distance, a speeding black Fortuner
+      //     rushes toward the red light, and Vikram immediately raises his hand to signal them to halt.
       {
         dur: 12,
         hold: 3,
@@ -193,12 +193,15 @@
         act: 'night',
         prior: true,
         motion: [
-          { id: 'fortuner', from: [5.2, 0, -48], to: [6.4, 0, -12.5] },
-          { id: 'vikram', from: [3.6, 0, -36], to: [3.6, 0, -12.5] }
+          { id: 'fortuner', from: [6.4, 0, -68], to: [6.4, 0, -12.2] }
         ],
         motionEase: 'outQuad',
-        title: 'Linking Road Signal · 3:14 AM',
-        audio: { beds: { rain: 0.04, engine: 0.05 } }
+        title: 'Linking Road Signal Checkpoint · 03:14 AM',
+        sub: {
+          speaker: 'SI Vikram Sawant',
+          line: '"Bandra Control, SI Sawant on solo night vigil. Stationary at Linking Road signal... Unknown vehicle approaching at high speed."'
+        },
+        audio: { beds: { rain: 0.04, engine: 0.06 }, sting: 'radio_call', stingGain: 0.65, radio: true }
       },
 
       // 2 — THE LINE. Low-angle medium hero shot of Vikram holding the white line.
@@ -215,9 +218,9 @@
         prior: true,
         sub: {
           speaker: 'SI Vikram Sawant',
-          line: '"Control Room, SI Sawant. Linking Road junction check. 03:14 hours. Monsoon visibility low. Holding the white line."'
+          line: '"Gaadi white line ke peeche rokiye! Engine band kijiye aur licence dikhaiye."'
         },
-        audio: { beds: { rain: 0.04, engine: 0.05 }, sting: 'radio_call', stingGain: 0.7, radio: true }
+        audio: { beds: { rain: 0.04, engine: 0.05 }, sting: 'whistle', stingGain: 0.8 }
       },
 
       // 2b — THE SIGNAL & CCTV. Low-angle upward hero view of the overhead traffic signal
@@ -255,7 +258,11 @@
           gps: 'CAM 04 · LINKING RD / SIGNAL JUNCTION',
           unit: 'IR LOW-LUX · 24FPS · AUDIO MUTED'
         },
-        audio: { beds: { rain: 0.04, room: 0.01 }, sting: 'click', stingGain: 0.2 }
+        sub: {
+          speaker: 'Mumbai Police Wireless',
+          line: '"Control to Unit 12. Run registration on that black SUV. Intercept at the signal."'
+        },
+        audio: { beds: { rain: 0.04, room: 0.01 }, sting: 'click', stingGain: 0.2, radio: true }
       },
 
       // 4 — COMPLICATION. Intense confrontation through the lowered driver window.
@@ -265,22 +272,22 @@
         dur: 8,
         ease: 'linear',
         transition: 'cut',
-        from: [4.45, 1.32, -12.10], to: [4.65, 1.30, -12.10],
-        look: [5.70, 1.25, -12.15],
-        lookTo: [5.70, 1.25, -12.15],
+        from: [4.20, 1.28, -11.85], to: [4.45, 1.26, -11.85],
+        look: [5.70, 1.25, -11.85],
+        lookTo: [5.70, 1.25, -11.85],
         fov: 34,
         act: 'night',
         prior: true,
         sub: {
           speaker: 'Fortuner Escort Driver',
-          line: '"Aye Hawaldar. VIP movement hai. Side hatt, signal todne de."'
+          line: '"Aye Hawaldar! VIP movement hai, aage se hat. Signal todne de... varna kal subah wardi utarwa dunga."'
         },
         audio: { beds: { rain: 0.04, engine: 0.05 }, sting: 'click', stingGain: 0.2 }
       },
 
       // 5 — FRICTION. Hero medium close-up on SI Vikram Sawant holding the line.
       //     Framed looking back at Vikram from the front three-quarter driver perspective,
-      //     revealing his steadfast gaze, human face, official white helmet, and authoritative traffic command gesture.
+      //     revealing his steadfast gaze, sculpted human face, official white helmet, and authoritative traffic command gesture.
       {
         dur: 14,
         hold: 3,
@@ -294,12 +301,12 @@
         prior: true,
         sub: {
           speaker: 'SI Vikram Sawant',
-          line: '"Sir, CM ka kaafila bhi ho toh red light red hoti hai. Gaadi white line ke peeche lijiye."'
+          line: '"Chahe Mantriji ki gaadi ho ya aam aadmi ki... red light sabke liye red hoti hai. Gaadi white line ke peeche lijiye."'
         },
         sayThen: {
-          at: 0.42,
+          at: 0.44,
           speaker: 'Fortuner Escort Driver',
-          line: '"Tujhe nahi pata andar kaun baitha hai. Yeh aakhri warning hai."'
+          line: '"Tujhe andaza nahi hai pichhe kaun baitha hai. Yeh teri aakhri warning hai, police wale."'
         },
         audio: {
           beds: { rain: 0.04, engine: 0.05 },
@@ -309,7 +316,7 @@
 
       // 6 — THE VIP EXECUTION ORDER.
       //     Intimate close-up directly through the Fortuner\'s lowering rear passenger window.
-      //     In the dark cabin, the peaked cap of the Commissioner emerges into the reading light, gun in hand:
+      //     In the dark cabin, an anonymous silhouette sits back in deep pitch-black shadows, gun barrel resting on the sill:
       //     "Isko hatao yahan se."
       {
         dur: 5,
@@ -332,25 +339,31 @@
         }
       },
 
-      // 7 — THE FLASH. One frame of white, then the Fortuner accelerates away.
-      //     Dynamic tracking camera keeping the fleeing Fortuner in frame as its red tail lamps blaze
-      //     and it speeds across the white line into the dark rainy avenue.
+      // 7 — THE FLASH & THE HIT.
+      //     Stationary perspective from the junction sidewalk framing both Vikram holding the white line
+      //     and the black Fortuner idling across from him. A suppressed muzzle flash erupts from the rear window,
+      //     Vikram collapses across the white line as his motorcycle crashes to the asphalt, and the Fortuner
+      //     accelerates furiously away into the rain.
       {
         dur: 8,
         ease: 'outQuint',
         transition: 'cut',
-        from: [2.6, 1.35, -15.5], to: [3.8, 1.50, -8.0],
-        look: [6.4, 1.15, -10.0],
-        lookTo: [6.4, 1.30, 40.0],
-        fov: 44,
+        from: [0.8, 1.6, -17.5], to: [0.4, 1.8, -19.0],
+        look: [4.6, 1.0, -12.4],
+        lookTo: [6.2, 1.3, -4.0],
+        fov: 42,
         act: 'night',
         prior: true,
         flashAt: 0.08,
-        flashGain: 0.9,
+        flashGain: 1.0,
         motion: [
-          { id: 'fortuner', from: [6.4, 0, -12.5], to: [6.4, 0, 85] }
+          { id: 'fortuner', from: [6.4, 0, -12.2], to: [6.4, 0, 95] }
         ],
         motionEase: 'inCubic',
+        sub: {
+          speaker: 'SI Vikram Sawant',
+          line: '"Bandra Control... officer down... Linking Road..."'
+        },
         audio: {
           beds: { rain: 0.04, engine: 0.08 },
           stingAt: [
@@ -380,7 +393,7 @@
         title: 'Vikram Sawant · 22 Years, Traffic Division',
         sub: {
           speaker: 'Mumbai Police Radio',
-          line: '"All units, 10-33 on Linking Road! Officer down! Black Fortuner fled south towards Shanti Galli!"'
+          line: '"Code 99! Officer down at Linking Road signal! SI Vikram Sawant is hit! Black Fortuner fled south towards Shanti Galli! Dispatch emergency medical!"'
         },
         sampleLoop: 'sfx_police_siren',
         sampleGain: 0.38,
@@ -415,7 +428,7 @@
         sampleStop: ['sfx_police_siren'],
         sub: {
           speaker: 'Insp. Arjun Kadam',
-          line: '"Three hours later... Vikram\'s notebook. Entry one: Mrs. Iyer. She sees everything. I have to reach her at Bazaar Road."'
+          line: '"Vikram Sir gave his life protecting that white line... They think power puts them above the law. His pocket notebook has one lead: Mrs. Iyer at Bazaar Road saw the getaway car. I will find them."'
         },
         audio: {
           beds: { room: 0.04, engine: 0.02, birds: 0.05 },

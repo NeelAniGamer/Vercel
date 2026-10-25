@@ -15,15 +15,38 @@
 (function () {
   'use strict';
 
+  // Mark a clone of a PRELOADED_MODELS entry as sharing its geometry and
+  // materials with the cached master, so the group teardown does not dispose
+  // the master's GPU buffers out from under every other instance of that
+  // model in the game.
+  function markSharedAsset(obj) {
+    try {
+      obj.traverse(c => {
+        if (c.isMesh) {
+          c.userData = c.userData || {};
+          c.userData._sharedAsset = true;
+        }
+      });
+    } catch {}
+    return obj;
+  }
+
   function createSuburbanNeighborhood(game, cfg) {
     const scene = game.scene;
     if (!scene) {return;}
 
-    // Remove any existing suburban scenery group
+    // Remove any existing suburban scenery group.
+    //
+    // The disposal has to skip the props cloned from window.PRELOADED_MODELS:
+    // a clone SHARES its geometry and materials with the cached master, so
+    // disposing them tears down the master's GPU buffers and corrupts every
+    // other instance of that model in the game. This is the same failure
+    // world-streamer.js documents and avoids.
     const existing = scene.getObjectByName('SuburbanNeighborhoodScenery');
     if (existing) {
       scene.remove(existing);
       existing.traverse(ch => {
+        if (ch.userData && ch.userData._sharedAsset) {return;}
         if (ch.geometry) {ch.geometry.dispose();}
         if (ch.material) {
           if (Array.isArray(ch.material)) {ch.material.forEach(m => m.dispose());}
@@ -323,7 +346,7 @@
           const P = window.PRELOADED_MODELS || {};
           const lightKey = (i % 4 === 0 && P['streetlight_curved']) ? 'streetlight_curved' : (P['streetlight_square'] ? 'streetlight_square' : null);
           if (lightKey && P[lightKey]) {
-            const lightObj = P[lightKey].clone();
+            const lightObj = markSharedAsset(P[lightKey].clone());
             lightObj.scale.set(2.2, 2.2, 2.2);
             lightObj.position.set(xSign * (halfRoad + 0.5), 0.16, lotZ + 6);
             lightObj.rotation.y = xSign > 0 ? Math.PI / 2 : -Math.PI / 2;
@@ -942,7 +965,7 @@
       const key = glbKeys[lotIndex % glbKeys.length];
       const model = P[key];
       if (model) {
-        const clone = model.clone();
+        const clone = markSharedAsset(model.clone());
         clone.rotation.y = xSign > 0 ? -Math.PI / 2 : Math.PI / 2;
 
         if (key === 'house_lowpoly_isometric') {
@@ -1003,7 +1026,7 @@
   function placeSuburbanTree(x, z, materials) {
     const P = window.PRELOADED_MODELS || {};
     if (P['tree_large'] && Math.random() > 0.4) {
-      const tree = P['tree_large'].clone();
+      const tree = markSharedAsset(P['tree_large'].clone());
       tree.scale.set(2.0, 2.0, 2.0);
       tree.position.set(x, 0.14, z);
       tree.rotation.y = Math.random() * Math.PI * 2;
@@ -1016,7 +1039,7 @@
       });
       return tree;
     } else if (P['tree_small'] && Math.random() > 0.4) {
-      const tree = P['tree_small'].clone();
+      const tree = markSharedAsset(P['tree_small'].clone());
       tree.scale.set(2.0, 2.0, 2.0);
       tree.position.set(x, 0.14, z);
       tree.rotation.y = Math.random() * Math.PI * 2;
@@ -1174,19 +1197,20 @@
     const spawnDialogue = story.dialogue.find(d => d.triggerZ <= -2350);
     if (spawnDialogue) {
       setTimeout(() => {
-        triggeredSet.add(spawnDialogue.triggerZ);
+        triggeredSet.add(story.dialogue.indexOf(spawnDialogue));
         showDialogue(spawnDialogue);
       }, 1200);
     }
 
-    // Polling hook based on player Z position
+    // Polling hook based on player Z position. Keyed by dialogue INDEX, not
+    // triggerZ: shared trigger values used to kill every repeat line.
     if (game._storyTimer) {clearInterval(game._storyTimer);}
     game._storyTimer = setInterval(() => {
       if (!game.playing || !game.player) {return;}
       const pZ = game.player.position ? game.player.position.z : (game.vehicle ? game.vehicle.position.z : 0);
-      story.dialogue.forEach(d => {
-        if (!triggeredSet.has(d.triggerZ) && pZ >= d.triggerZ - 20 && pZ <= d.triggerZ + 80) {
-          triggeredSet.add(d.triggerZ);
+      story.dialogue.forEach((d, di) => {
+        if (!triggeredSet.has(di) && pZ >= d.triggerZ - 20 && pZ <= d.triggerZ + 80) {
+          triggeredSet.add(di);
           showDialogue(d);
         }
       });
@@ -1231,13 +1255,13 @@
     // ── 2. Real 3D School Building Model (building_high_school.glb) ───────────
     const P = window.PRELOADED_MODELS || {};
     if (P['building_high_school']) {
-      const highSchoolModel = P['building_high_school'];
+      const highSchoolModel = P['building_high_school'].clone(true);
       highSchoolModel.scale.set(1.1, 1.1, 1.1);
       highSchoolModel.position.set(halfRoad + sidewalkWidth + 30, 0.15, schoolZ);
       highSchoolModel.rotation.y = -Math.PI / 2;
       highSchoolModel.userData = { noLod: true };
       highSchoolModel.traverse(c => {
-        c.frustumCulled = false;
+        c.frustumCulled = true;
         if (c.isMesh) {
           c.castShadow = false;
           c.receiveShadow = true;
@@ -2064,9 +2088,9 @@
     shantiGate.rotation.y = 0;
     addScenery(shantiGate, 13, -250);
 
-    // Shanti Niketan Wing A (4 stories) at Z = -220
+    // Shanti Niketan Wing A (5 stories) at Z = -220
     const shantiWingA = buildMumbaiApartmentBuilding({
-      stories: 4, width: 24, depth: 16, storyH: 3.4,
+      stories: 5, width: 24, depth: 16, storyH: 3.4,
       mWall: mMumbaiCream, mGlass: mats.mWindowGlass, mMetal: mats.mTrashMetal,
       mWood: mChawlWood, mSintex: mSintexBlack, mFlower: mGulmoharFlower
     });
@@ -2074,15 +2098,75 @@
     shantiWingA.rotation.y = -Math.PI / 2;
     addScenery(shantiWingA, 28, -220);
 
-    // Shanti Niketan Wing B (4 stories) at Z = -180
+    // Shanti Niketan Wing B (6 stories) at Z = -180
     const shantiWingB = buildMumbaiApartmentBuilding({
-      stories: 4, width: 24, depth: 16, storyH: 3.4,
+      stories: 6, width: 24, depth: 16, storyH: 3.4,
       mWall: mMumbaiCream, mGlass: mats.mWindowGlass, mMetal: mats.mTrashMetal,
       mWood: mChawlWood, mSintex: mSintexBlack, mFlower: mGulmoharFlower
     });
     shantiWingB.position.set(28, 0, -180);
     shantiWingB.rotation.y = -Math.PI / 2;
     addScenery(shantiWingB, 28, -180);
+
+    // Shanti Niketan Wing C (7 stories - urban sightline occluder) at Z = -220, X = 62
+    const shantiWingC = buildMumbaiApartmentBuilding({
+      stories: 7, width: 28, depth: 16, storyH: 3.4,
+      mWall: mMumbaiChsPlaster, mGlass: mats.mWindowGlass, mMetal: mats.mTrashMetal,
+      mWood: mChawlWood, mSintex: mSintexBlack, mFlower: mGulmoharFlower
+    });
+    shantiWingC.position.set(62, 0, -220);
+    shantiWingC.rotation.y = -Math.PI / 2;
+    addScenery(shantiWingC, 62, -220);
+
+    // Shanti Niketan Wing D (8 stories) at Z = -180, X = 62
+    const shantiWingD = buildMumbaiApartmentBuilding({
+      stories: 8, width: 28, depth: 16, storyH: 3.4,
+      mWall: mMumbaiCream, mGlass: mats.mWindowGlass, mMetal: mats.mTrashMetal,
+      mWood: mChawlWood, mSintex: mSintexBlack, mFlower: mGulmoharFlower
+    });
+    shantiWingD.position.set(62, 0, -180);
+    shantiWingD.rotation.y = -Math.PI / 2;
+    addScenery(shantiWingD, 62, -180);
+
+    // Shanti Heights Skyline Tower (12 stories - blocks distant horizon and saves GPU resources) at X = 100, Z = -200
+    const shantiTowerSky = buildDistantSkylineBlock(12, 32, 24, { mWall: mMumbaiCream, mGlass: mats.mWindowGlass });
+    shantiTowerSky.position.set(100, 0, -200);
+    addScenery(shantiTowerSky, 100, -200, true);
+
+    // Secondary Chawl Cluster in Sector 1 East infill
+    const chawlEastInf1 = buildChawlBuilding({
+      stories: 4, width: 26, depth: 14,
+      mWall: mChawlWall, mWood: mChawlWood, mTin: mTinRoof, mGlass: mats.mWindowGlass
+    });
+    chawlEastInf1.position.set(62, 0, -265);
+    chawlEastInf1.rotation.y = -Math.PI / 2;
+    addScenery(chawlEastInf1, 62, -265);
+
+    // Society Garden between Shanti Niketan wings
+    const shantiGarden = buildSocietyGarden(30, 24, { mGrass: mats.mGrass, mWall: mMumbaiCream, mFence: mats.mTrashMetal, mBestRed: mBestRed });
+    shantiGarden.position.set(45, 0, -200);
+    addScenery(shantiGarden, 45, -200);
+
+    // Roadside Street Vendors & Stalls along East Sidewalk (authentic Mumbai street life)
+    const chaiTapriEast = buildChaiTapri({
+      mBlueTarp: mBlueTarp, mWood: mChawlWood, mMetal: mats.mTrashMetal, mGold: mGoldEmissive
+    });
+    chaiTapriEast.position.set(11.5, 0.16, -242);
+    chaiTapriEast.rotation.y = -Math.PI / 2;
+    chaiTapriEast.userData = { isVendorStall: true };
+    addScenery(chaiTapriEast, 11.5, -242);
+
+    const fruitVendorEast = buildStreetFoodCart(mBlueTarp, mats.mTrashMetal, mChawlWood);
+    fruitVendorEast.position.set(11.5, 0.16, -205);
+    fruitVendorEast.rotation.y = -Math.PI / 2;
+    fruitVendorEast.userData = { isVendorStall: true };
+    addScenery(fruitVendorEast, 11.5, -205);
+
+    const vadaPavEast = buildStreetFoodCart(mYellowTarp, mats.mTrashMetal, mChawlWood);
+    vadaPavEast.position.set(11.5, 0.16, -165);
+    vadaPavEast.rotation.y = -Math.PI / 2;
+    vadaPavEast.userData = { isVendorStall: true };
+    addScenery(vadaPavEast, 11.5, -165);
 
     // Row Cottages at Z = -145
     const cottageEast = buildTimberTwoStoryHouse(mats.mTimberWall, mats.mTimberRoof, mats.mBrickChimney, mats.mWoodBrown, mats.mWindowGlass, mats.mWindowFrame, mats.mRedDoor);
@@ -2105,9 +2189,9 @@
     navGate.rotation.y = Math.PI;
     addScenery(navGate, -13, -330);
 
-    // Nav Prabhat 5-Story Apartment Building at Z = -290
+    // Nav Prabhat 6-Story Apartment Building at Z = -290
     const navBuilding = buildMumbaiApartmentBuilding({
-      stories: 5, width: 26, depth: 16, storyH: 3.4,
+      stories: 6, width: 26, depth: 16, storyH: 3.4,
       mWall: mMumbaiChsPlaster, mGlass: mats.mWindowGlass, mMetal: mats.mTrashMetal,
       mWood: mChawlWood, mSintex: mSintexBlack, mFlower: mGulmoharFlower
     });
@@ -2115,14 +2199,51 @@
     navBuilding.rotation.y = Math.PI / 2;
     addScenery(navBuilding, -28, -290);
 
-    // 3-Story Residential Chawl at Z = -255
+    // Nav Prabhat Wing B (7 stories - occluding west horizon) at X = -62, Z = -290
+    const navWingB = buildMumbaiApartmentBuilding({
+      stories: 7, width: 28, depth: 16, storyH: 3.4,
+      mWall: mMumbaiCream, mGlass: mats.mWindowGlass, mMetal: mats.mTrashMetal,
+      mWood: mChawlWood, mSintex: mSintexBlack, mFlower: mGulmoharFlower
+    });
+    navWingB.position.set(-62, 0, -290);
+    navWingB.rotation.y = Math.PI / 2;
+    addScenery(navWingB, -62, -290);
+
+    // 4-Story Residential Chawl at Z = -255
     const chawlWest1 = buildChawlBuilding({
-      stories: 3, width: 22, depth: 14,
+      stories: 4, width: 24, depth: 14,
       mWall: mChawlWall, mWood: mChawlWood, mTin: mTinRoof, mGlass: mats.mWindowGlass
     });
     chawlWest1.position.set(-28, 0, -255);
     chawlWest1.rotation.y = Math.PI / 2;
     addScenery(chawlWest1, -28, -255);
+
+    // Secondary Chawl behind West1 at X = -62, Z = -255
+    const chawlWestInf2 = buildChawlBuilding({
+      stories: 4, width: 24, depth: 14,
+      mWall: mChawlWall, mWood: mChawlWood, mTin: mTinRoof, mGlass: mats.mWindowGlass
+    });
+    chawlWestInf2.position.set(-62, 0, -255);
+    chawlWestInf2.rotation.y = Math.PI / 2;
+    addScenery(chawlWestInf2, -62, -255);
+
+    // West Horizon Skyline Tower (14 stories) at X = -98, Z = -260
+    const westSkylineTower = buildDistantSkylineBlock(14, 30, 24, { mWall: mMumbaiChsPlaster, mGlass: mats.mWindowGlass });
+    westSkylineTower.position.set(-98, 0, -260);
+    addScenery(westSkylineTower, -98, -260, true);
+
+    // Roadside Stalls along West Sidewalk
+    const vegCartWest = buildStreetFoodCart(mBlueTarp, mats.mTrashMetal, mChawlWood);
+    vegCartWest.position.set(-11.5, 0.16, -265);
+    vegCartWest.rotation.y = Math.PI / 2;
+    vegCartWest.userData = { isVendorStall: true };
+    addScenery(vegCartWest, -11.5, -265);
+
+    const bhuttaCartWest = buildStreetFoodCart(mYellowTarp, mats.mTrashMetal, mChawlWood);
+    bhuttaCartWest.position.set(-11.5, 0.16, -215);
+    bhuttaCartWest.rotation.y = Math.PI / 2;
+    bhuttaCartWest.userData = { isVendorStall: true };
+    addScenery(bhuttaCartWest, -11.5, -215);
 
     // Residential House at Z = -220
     const cottageWest2 = buildRedCabinHouse(mats.mRedCabin, mats.mRedRoof, mats.mWoodBrown, mats.mWindowGlass, mats.mWindowFrame, mats.mDarkDoor);
@@ -2130,9 +2251,9 @@
     cottageWest2.rotation.y = Math.PI / 2;
     addScenery(cottageWest2, -26, -220);
 
-    // 3-Story Residential Chawl at Z = -185
+    // 4-Story Residential Chawl at Z = -185
     const chawlWest2 = buildChawlBuilding({
-      stories: 3, width: 22, depth: 14,
+      stories: 4, width: 22, depth: 14,
       mWall: mChawlWall, mWood: mChawlWood, mTin: mTinRoof, mGlass: mats.mWindowGlass
     });
     chawlWest2.position.set(-28, 0, -185);
@@ -3138,20 +3259,21 @@
     };
 
     // ── 9. Setup Distance Blur, LOD Quality Scaling, and Culling Loop ────────
-    // Dynamically tie culling radius to active render distance (default 150m + 25m buffer, clamped 80-180m)
-    // Eliminates massive scene overload lag while ensuring no visual popping at view horizon!
+    // Dynamically tie culling radius to active render distance (default 380m - 700m)
+    // Ensures seamless visual horizons without premature asset pop-in or deloading!
     function getDynamicCullRadius() {
-      const rd = (game && game.renderDistance) ? game.renderDistance : 150;
-      return Math.min(Math.max(80, rd + 25), 180);
+      const isMobile = game && game._isMobile;
+      const rd = (game && game.renderDistance) ? game.renderDistance : (isMobile ? 260 : 520);
+      return Math.max(isMobile ? 280 : 440, rd + 80);
     }
-    const NEAR_LOD_RADIUS_SQ = 95 * 95;
+    const NEAR_LOD_RADIUS_SQ = 135 * 135; // Full high detail, micro-props and small details up to 135m
 
     function updateCulling(px, pz, isHighAltitude = false) {
       const cullRad = getDynamicCullRadius();
       const cullRadSq = cullRad * cullRad;
 
       chunkMap.forEach(chunk => {
-        if (chunk.userData && (chunk.userData.isSkyline || isHighAltitude)) {
+        if (chunk.userData && (chunk.userData.isSkyline || chunk.userData.isPerimeter || isHighAltitude)) {
           chunk.visible = true;
           return;
         }
@@ -3164,8 +3286,7 @@
         }
 
         // Dynamic Level of Detail (LOD) Quality Scaling:
-        // When objects are far (> 95m), hide fine micro-props (AC compressor units, rooftop fan grilles, small props)
-        // to significantly lower geometric complexity and preserve smooth 60 FPS gameplay!
+        // Far objects (> 135m) hide micro-props to preserve high framerates while keeping all buildings visible
         if (isNear) {
           const isFullDetail = dSq <= NEAR_LOD_RADIUS_SQ;
           if (chunk.userData.isFullDetail !== isFullDetail) {
@@ -4678,18 +4799,13 @@ function buildStXavierCampusBoundaryRailings(length, opts) {
       g.add(rail);
     });
 
-    // Vertical railing bars (every 0.4m)
-    const numBars = Math.floor(spanLen / 0.4);
+    // Vertical railing bars (spaced 1.2m)
+    const numBars = Math.floor(spanLen / 1.2);
     for (let b = 0; b < numBars; b++) {
-      const bz = pz1 + 0.2 + b * 0.4;
-      const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, railH, 6), mIron);
-      bar.position.set(0, 0.65 + railH / 2, bz);
+      const bz = pz1 + 0.6 + b * 1.2;
+      const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, railH + 0.15, 6), mIron);
+      bar.position.set(0, 0.65 + (railH + 0.15) / 2, bz);
       g.add(bar);
-
-      // Spearhead pointed tip
-      const tip = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.15, 6), mIron);
-      tip.position.set(0, 0.65 + railH + 0.075, bz);
-      g.add(tip);
     }
   }
 
@@ -5332,17 +5448,14 @@ function buildSocietyBoundaryWall(length, opts) {
   coping.position.set(0, 1.46, length / 2);
   g.add(coping);
 
-  // Ornamental Black Steel Spearhead Vertical Railings (1.1m high on top)
+  // Ornamental Black Steel Spearhead Vertical Railings (1.1m high on top, spaced 1.5m)
   const railH = 1.1;
-  const numPales = Math.floor(length / 0.5);
+  const numPales = Math.floor(length / 1.5);
   for (let i = 0; i < numPales; i++) {
-    const pz = i * 0.5 + 0.25;
-    const pale = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, railH, 4), mMetal);
-    pale.position.set(0, 1.52 + railH / 2, pz);
+    const pz = i * 1.5 + 0.75;
+    const pale = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, railH + 0.12, 4), mMetal);
+    pale.position.set(0, 1.52 + (railH + 0.12) / 2, pz);
     g.add(pale);
-    const spear = new THREE.Mesh(new THREE.ConeGeometry(0.045, 0.14, 4), mMetal);
-    spear.position.set(0, 1.52 + railH + 0.07, pz);
-    g.add(spear);
   }
 
   // Horizontal Support Bars for Railings

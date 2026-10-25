@@ -67,28 +67,67 @@
 
   
   <script>
-    let S = {}
+    (function () {
+      try {
+        if (localStorage.getItem('theme') === 'light') {
+          document.documentElement.classList.add('lm');
+        }
+      } catch (e) {}
+    })();
+    // `S` must be a real window property, not a bare `let`. A top-level `let`
+    // in a classic script creates a script-scoped lexical binding that is
+    // invisible to `window.S`, so every other module that reads `window.S`
+    // (game_core's Supabase sync, mission-manager, wallet-history) saw
+    // `undefined` and uploaded civic_score 0 / wallet 50000 on every session.
+    window.S = {}
     try {
       const _raw = localStorage.getItem('mth4')
-      if (_raw) S = JSON.parse(_raw)
+      if (_raw) window.S = JSON.parse(_raw)
     } catch(e) {}
-    if (!S) S = { comp: {}, badges: [], total: 0, name: 'Traffic Hero', wallet: 50000 }
-    if (!S.comp) S.comp = {}
-    if (!S.badges) S.badges = []
-    window.save = function() { try { localStorage.setItem('mth4', JSON.stringify(S)) } catch(e) {} }
+    if (!window.S) window.S = { comp: {}, badges: [], total: 0, name: 'Traffic Hero', wallet: 50000 }
+    if (!window.S.comp) window.S.comp = {}
+    if (!window.S.badges) window.S.badges = []
+    // Match the shape ui.init() builds on Academy.html. Driving.html defines S
+    // before ui.js loads, so ui.init()'s bootstrap is skipped here and these
+    // fields would otherwise be undefined for the whole session.
+    if (typeof window.S.total !== 'number') window.S.total = 0
+    if (typeof window.S.wallet !== 'number') window.S.wallet = 50000
+    if (typeof window.S.civicScore !== 'number') window.S.civicScore = 0
+    if (!window.S.studentId) window.S.studentId = 'STU-' + Math.floor(100000 + Math.random() * 900000)
+    if (!window.S.sylViewed) window.S.sylViewed = {}
+    if (!window.S.violationHistory) window.S.violationHistory = {}
+    // `let S` is still needed for the classic scripts that reference the bare
+    // identifier, but it must alias the same object, never a copy.
+    var S = window.S
+    window.save = function() {
+      try {
+        window.S = S
+        localStorage.setItem('mth4', JSON.stringify(window.S))
+      } catch(e) {}
+    }
 
+    // config.json is fetched as '/config.json' by the shared col-* modules, so
+    // this relative-path rewrite is redundant. Kept only for older callers.
     const _oldFetch = window.fetch
     window.fetch = function () {
-      if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].startsWith('config.json')) {
-        arguments[0] = '../' + arguments[0]
-      }
-      return _oldFetch.apply(this, arguments)
+      const url = arguments[0];
+      return _oldFetch.apply(this, arguments).catch(function (err) {
+        if (typeof url === 'string' && (url.includes('config.json'))) {
+          const fallback = url.startsWith('/') ? url.replace(/^\//, '') : ('/' + url.replace(/^\.\.\//, ''));
+          return _oldFetch(fallback);
+        }
+        throw err;
+      });
     }
 
     const _oldWarn = console.warn
     console.warn = function (...args) {
-      if (args[0] && typeof args[0] === 'string' && (args[0].includes('Custom UV sets in "KHR_texture_transform"') || args[0].includes('Custom UV set') || args[0].includes('not yet supported')))
-        return
+      if (args[0] && typeof args[0] === 'string' && (
+        args[0].includes('Custom UV sets in "KHR_texture_transform"') ||
+        args[0].includes('Custom UV set') ||
+        args[0].includes('not yet supported') ||
+        args[0].includes('THREE.Clock: This module has been deprecated')
+      )) return;
       _oldWarn.apply(console, args)
     }
   </script>
@@ -98,6 +137,7 @@
   <script defer src="../col-ui.js"></script>
   <script defer src="../col-auth.js"></script>
   <script src="libs/three-bundle.js"></script>
+  <script src="optimization.js"></script>
   <script defer src="libs/jszip.min.js"></script>
   <script defer src="libs/chart.umd.min.js"></script>
   <script defer src="traffic-charts.js"></script>
@@ -642,7 +682,7 @@
       font-family: 'Inter', sans-serif;
     }
 
-    #3c {
+    [id="3c"], #\33 c {
       display: block;
       position: absolute;
       top: 0;
@@ -1809,10 +1849,6 @@
       left: -22px;
       top: 0;
     }
-      border-radius: 16px;
-      padding: 20px;
-      text-align: center;
-    }
 
     .stat-val {
       font-size: 2rem;
@@ -2936,7 +2972,40 @@
     .gta-actions {
       display: flex;
       justify-content: flex-end;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
     }
+    /* Story Mode: secondary action, deliberately quieter than START MISSION so
+       the primary CTA keeps the eye. */
+    .gta-btn-replay {
+      background: rgba(255, 255, 255, 0.06);
+      color: rgba(255, 255, 255, 0.86);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 12px;
+      padding: 11px 18px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: none;
+      transition: background 0.15s, border-color 0.15s, transform 0.15s;
+    }
+    .gta-btn-replay:hover {
+      background: rgba(255, 255, 255, 0.13);
+      border-color: rgba(255, 255, 255, 0.4);
+      transform: scale(1.03);
+    }
+    .gta-btn-replay:active { transform: scale(0.98); }
+    .gta-btn-replay:disabled {
+      opacity: 0.45;
+      cursor: default;
+      transform: none;
+    }
+    .gta-btn-replay span { font-size: 0.75rem; line-height: 1; }
     .gta-btn-start {
       background: linear-gradient(135deg, #00f0cc, #00a8ff);
       color: #070a14;
@@ -3550,7 +3619,7 @@
     #dn-clock {
       position: fixed;
       top: 3vw;
-      /*right:*/ 3vw;
+      right: 3vw;
       z-index: 25;
       display: none;
       align-items: center;
@@ -5380,7 +5449,7 @@
       #dn-clock {
         top: 4px;
         left: 8px;
-        /*right:*/ auto;
+        right: auto;
         padding: 2px 8px;
         font-size: clamp(0.55rem, 1vw, 0.7rem);
       }
@@ -6614,6 +6683,11 @@
       document.body.appendChild(errDiv)
     })
   </script>
+  <link rel="stylesheet" href="hud-clean.css">
+  <link rel="stylesheet" href="hud-clean-appendix.css">
+  <link rel="stylesheet" href="hud-clean-appendix2.css">
+  <link rel="stylesheet" href="hud-clean-appendix3.css">
+  <script defer src="vehicle-dims.js"></script>
   <script defer src="vehicles.js"></script>
   <script defer src="robot-npcs.js"></script>
 <style>
@@ -7516,7 +7590,9 @@
   <!-- ═══════════════════════════════════════════════════════════════ -->
   <!-- UNIFIED REDESIGNED TOP-LEFT PLAYER DASHBOARD CARD -->
   <!-- ═══════════════════════════════════════════════════════════════ -->
-    <div id="player-hud-card" class="hud-dashboard-card">
+    <!-- Level and timer stay visible; wallet / tokens / checkpoints / score
+         collapse into a tap-to-open drawer. See hud-clean.css section 2. -->
+    <div id="player-hud-card" class="hud-dashboard-card" onclick="window.ui && window.ui._hudToggleStats()">
     <div class="hud-dash-header">
       <div class="hud-lvl-pill">
         <span class="hud-lvl-prefix">LVL</span>
@@ -7570,10 +7646,6 @@
 
   <!-- Top-Right Unified Auto-Flowing HUD Stack (Zero Overlaps) -->
   <div id="top-right-hud-stack">
-    <div id="task-tracker">
-      <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--yellow, #f59e0b); font-weight: 800; margin-bottom: 8px">📋 Tasks</div>
-      <div id="task-list" style="display: flex; flex-direction: column; gap: 6px"></div>
-    </div>
     <div id="objective-overlay">
       <div id="objective-title">Current Objective</div>
       <div id="objective-desc">Loading...</div>
@@ -7721,16 +7793,20 @@
   </div>
 
 
+<!-- Driving actions only. Phone / Gyro / Kid Mode are input and accessibility
+     settings, so they moved to #hud-settings-sheet below -- they were taking
+     three of six slots in the thumb zone without being driving controls.
+     See hud-clean.css sections 4 and 7. -->
   <div id="civic-controls">
     <div id="btn-seatbelt" class="civic-btn" onclick="window.game && window.game.toggleSeatbelt(this)">
       <div id="sb-icon-wrap" class="sb-icon-wrap">
-        <svg id="sb-icon" class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 2a4 4 0 0 0-4 4v2"/>
-          <path d="M16 6a4 4 0 0 0-4-4"/>
-          <circle cx="12" cy="16" r="5"/>
-          <path d="M12 11v3"/>
-          <path d="M10 14h4"/>
-        </svg>
+      <svg id="sb-icon" class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 2a4 4 0 0 0-4 4v2"/>
+      <path d="M16 6a4 4 0 0 0-4-4"/>
+      <circle cx="12" cy="16" r="5"/>
+      <path d="M12 11v3"/>
+      <path d="M10 14h4"/>
+      </svg>
       </div>
       <span id="sb-label" class="civic-label">Belt OFF</span>
     </div>
@@ -7740,26 +7816,37 @@
     <div id="btn-ind-right" class="civic-btn civic-ind" onclick="window.game && window.game.toggleTurnSignal(1)">
       <svg class="ind-arrow" viewBox="0 0 24 24" fill="currentColor"><path d="M9 4l8 8-8 8V4z"/></svg>
     </div>
-    <div id="btn-mobile" class="civic-btn" onclick="window.game && window.game.toggleMobile(this)">
-      <svg class="civic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
-        <line x1="12" y1="18" x2="12.01" y2="18"/>
-      </svg>
-      <span class="civic-label">Phone</span>
+  </div>
+
+  <!-- Settings sheet: input mode and accessibility, behind one gear button -->
+  <button id="hud-settings-scrim" aria-label="Close Settings"></button>
+  <div id="hud-settings-sheet" role="dialog" aria-label="Drive Settings">
+    <div class="hss-head">
+      <span>Drive Settings</span>
+      <button class="hss-close" onclick="window.ui &amp;&amp; window.ui._hudToggleSettings(false)" aria-label="Close">&#10005;</button>
     </div>
-    <div id="btn-gyro" class="civic-btn" onclick="window.game && window.game.toggleGyro(this)">
-      <svg class="civic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/>
-        <path d="M12 2v20M2 12h20"/>
-      </svg>
-      <span class="civic-label">Gyro</span>
-    </div>
-    <div id="btn-kid" class="civic-btn" onclick="window.game && window.game.toggleKidMode(this)">
-      <svg class="civic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/>
-        <path d="M12 2a10 10 0 0 0 -10 10c0 3 2 6 5 8v2h10v-2c3-2 5-5 5-8a10 10 0 0 0 -10 -10z"/>
-      </svg>
-      <span class="civic-label">Kid Mode</span>
+    <div class="hss-row">
+      <div id="btn-mobile" class="civic-btn" onclick="window.game &amp;&amp; window.game.toggleMobile(this)">
+        <svg class="civic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+          <line x1="12" y1="18" x2="12.01" y2="18"/>
+        </svg>
+        <span class="civic-label">Phone</span>
+      </div>
+      <div id="btn-gyro" class="civic-btn" onclick="window.game &amp;&amp; window.game.toggleGyro(this)">
+        <svg class="civic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 2v20M2 12h20"/>
+        </svg>
+        <span class="civic-label">Gyro</span>
+      </div>
+      <div id="btn-kid" class="civic-btn" onclick="window.game &amp;&amp; window.game.toggleKidMode(this)">
+        <svg class="civic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/>
+          <path d="M12 2a10 10 0 0 0 -10 10c0 3 2 6 5 8v2h10v-2c3-2 5-5 5-8a10 10 0 0 0 -10 -10z"/>
+        </svg>
+        <span class="civic-label">Kid Mode</span>
+      </div>
     </div>
   </div>
   <div id="sig-ind" style="
@@ -8015,6 +8102,14 @@
       </div>
 
       <div class="gta-actions">
+        <!-- Story Mode: replays the intro cinematic. Shown by cutscene.js only
+             when the level actually has a prologue, so non-story lessons are
+             completely unaffected. -->
+        <button class="gta-btn-replay" id="gta-btn-replay" type="button"
+                onclick="window.replayStoryIntro && window.replayStoryIntro()"
+                style="display:none;">
+          <span>&#9654;</span> Replay Intro
+        </button>
         <button class="gta-btn-start" id="gta-btn-start" onclick="window.dismissGtaMissionIntro()">
           <span>START MISSION</span>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -8054,6 +8149,13 @@
   </div>
 
   <div id="challan-stack"></div>
+  <button id="hud-settings-btn" aria-label="Drive Settings" onclick="window.ui && window.ui._hudToggleSettings()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+    </svg>
+  </button>
+
   <div id="toast">
     <div id="ti"></div>
   </div>
@@ -8289,7 +8391,7 @@
         <div style="display: flex; justify-content: center; gap: 16px; align-items: center">
           <img loading="lazy" id="cert-logo-1" src="mumbai-police-logo.png" style="height: 24px; opacity: 0.7" />
           <div style="width: 1px; height: 16px; background: #ccc"></div>
-          <img loading="lazy" id="cert-logo-2" src="sneh-logo.png" style="height: 24px; opacity: 0.7" />
+          <img loading="lazy" id="cert-logo-2" src="cert-assets/cert_logo_2.png" style="height: 24px; opacity: 0.7" />
         </div>
       </div>
     </div>
@@ -8428,7 +8530,7 @@
           </div>
           <div style="width: 2px; height: 50px; background: var(--border)"></div>
           <div style="display: flex; align-items: center; gap: 12px">
-            <img loading="lazy" id="cert-logo-4" src="sneh-logo.png"
+            <img loading="lazy" id="cert-logo-4" src="cert-assets/cert_logo_2.png"
               style="height: 60px; width: auto; object-fit: contain" alt="Sneh Asha"
               onerror="this.style.display = 'none'" />
             <div
@@ -8453,17 +8555,6 @@
             Academy</button>
           <button class="btn btn-g" onclick="ui.hardReset()" style="font-size: 1.1rem; padding: 12px 32px">Reset
             Progress</button>
-          <button class="btn btn-s"
-            style="background: var(--red); font-size: 1.1rem; padding: 12px 32px; color: var(--ink)" onclick="
-                const p = prompt('Developer Password:')
-                if (['Neel', 'Ansh', 'Sanjana'].includes(p)) {
-                  ui.adminUnlock()
-                } else if (p) {
-                  toast('❌ Access Denied', '#ff3b30')
-                }
-              ">
-            🔓 Dev Unlock
-          </button>
           <button class="btn btn-g mobile-dl"
             style="border-color: var(--signal); color: var(--signal); font-size: 1.1rem; padding: 12px 32px"
             onclick="window.location.href = '../COL.apk'">
@@ -8628,7 +8719,7 @@
             </div>
             <img loading="lazy" id="cert-logo-5" src="mumbai-police-logo.png" style="height: 75px; object-fit: contain"
               alt="Logo 1" onerror="this.style.display = 'none'" />
-            <img loading="lazy" id="cert-logo-6" src="sneh-logo.png" style="height: 75px; object-fit: contain"
+            <img loading="lazy" id="cert-logo-6" src="cert-assets/cert_logo_2.png" style="height: 75px; object-fit: contain"
               alt="Logo 2" onerror="this.style.display = 'none'" />
           </div>
         </div>
@@ -8678,7 +8769,7 @@
   <script>
     window.LVS = []
   </script>
-  <script defer src="levels/level1.js"></script>
+  <script defer src="levels/level1.js?v=20261023_v4"></script>
   <script defer src="levels/level2.js"></script>
   <script defer src="levels/level3.js"></script>
   <script defer src="levels/level4.js"></script>
@@ -8765,33 +8856,52 @@
       }, 500);
     })();
   </script>
-  <script defer src="pools.js?v=20260831_v9"></script>
+  <script defer src="pools.optimized.js?v=20260831_v9"></script>
   <script defer src="road-graph.js?v=20260831_v9"></script>
-  <script defer src="render_core.js?v=20260831_v9"></script>
+  <script defer src="render_core.optimized.js?v=20260831_v9"></script>
   <script defer src="safezone-ui.js?v=20260831_v9"></script>
-  <script defer src="world-streamer.js?v=20260831_v9"></script>
+  <script defer src="world-streamer.optimized.js?v=20260831_v9"></script>
   <script defer src="mission-manager.js?v=20260831_v9"></script>
-  <script defer src="scenery-kit.js?v=20260831_v9"></script>
-  <script defer src="collectible-system.js?v=20260831_v9"></script>
-  <script defer src="checkpoint-system.js?v=20260831_v9"></script>
   <script defer src="gameplay-recorder.js?v=20260831_v9"></script>
   <script defer src="task-manager.js?v=20260831_v9"></script>
   <script defer src="scenario2d.js?v=20260831_v9"></script>
   <script defer src="course.js?v=20260831_v9"></script>
-  <script defer src="traffic-audio.js?v=20260917_v10"></script>
+  <script defer src="traffic-audio.js?v=20261008_v1"></script>
   <script defer src="unhandled-task-targets.js?v=20260925_v1"></script>
   <script defer src="task-evaluators.js?v=20260925_v1"></script>
-  <script defer src="game_core.js?v=20260925_v2"></script>
+  <script defer src="game_core.js?v=20261024_v2"></script>
+  <script defer src="game-optimization-integration.js?v=20261025_v1"></script>
   <script defer src="npc-ai.js?v=20260831_v9"></script>
-  <script defer src="traffic-manager.js?v=20260831_v9"></script>
-  <script defer src="rule-breaker-profiles.js?v=20260831_v9"></script>
+  <script defer src="traffic-manager.optimized.js?v=20260831_v9"></script>
   <script defer src="minecraft_character.js"></script>
   <script defer src="ai-scene-generator.js"></script>
-  <script defer src="room-architect.js"></script>
   <script defer src="traffic-ai-copilot.js"></script>
   <script defer src="ai-map-llm.js"></script>
-  <script defer src="ui.js?v=20260917_v10"></script>
-  <script defer src="start.js?v=20260831_v9"></script>
+  <script defer src="ui.js?v=20261024_v1"></script>
+  <!-- Story Mode. Load order is a real dependency chain, not alphabetical:
+         stage.js   — the cinematic map configs (no deps; pure data)
+         campaign.js— words + shot lists (no deps; pure data)
+         shots.js   — camera maths, depends on nothing at load time
+         cinematics.js — set builder + stage dressing. Reads window.STORY for
+                        camera keep-out discs at build time, so campaign.js must
+                        already be present.
+         cutscene.js — the player state machine. Calls window.Shots.prepare(),
+                        window.Shots.applyCamera() and window.Cinematics.dressStage()
+                        at RUNTIME, so those two must be defined before a level
+                        loads rather than before this script executes.
+       All must load before start.js boots the Game, and after ui.js (which
+       provides _buildHuman/_makeNametag). -->
+  <script defer src="story/stage.js?v=20261024_v2"></script>
+  <script defer src="story/campaign.js?v=20261024_v2"></script>
+  <script defer src="story/shots.js?v=20261024_v2"></script>
+  <!-- Recorded-audio bank. MUST load before audio.js: audio.js reads
+       window.SampleBank while applying a shot, and a film cue that fires before
+       the bank exists is silently lost rather than deferred. -->
+  <script defer src="story/samples.js?v=20261024_v2"></script>
+  <script defer src="story/audio.js?v=20261024_v2"></script>
+  <script defer src="cinematics.js?v=20261024_v2"></script>
+  <script defer src="cutscene.js?v=20261024_v2"></script>
+  <script defer src="start.js?v=20261024_v2"></script>
 
   
   <div id="kid-steer"></div>
@@ -9517,20 +9627,23 @@
 
     
     function hzInit() {
-      var t = localStorage.getItem('theme');
-      if (t === 'light') { document.body.classList.add('lm'); }
-      else { document.body.classList.remove('lm'); }
+      var isLight = false;
+      try { isLight = localStorage.getItem('theme') === 'light'; } catch (e) {}
+      document.documentElement.classList.toggle('lm', isLight);
+      document.body.classList.toggle('lm', isLight);
       hzSync();
     }
     function hzSync() {
       var el = document.querySelector('.hz-toggle');
       if (!el) return;
-      if (document.body.classList.contains('lm')) { el.classList.remove('night'); }
+      if (document.documentElement.classList.contains('lm') || document.body.classList.contains('lm')) { el.classList.remove('night'); }
       else { el.classList.add('night'); }
     }
     function hzToggle() {
-      document.body.classList.toggle('lm');
-      localStorage.setItem('theme', document.body.classList.contains('lm') ? 'light' : 'dark');
+      var isLight = !document.documentElement.classList.contains('lm');
+      document.documentElement.classList.toggle('lm', isLight);
+      document.body.classList.toggle('lm', isLight);
+      try { localStorage.setItem('theme', isLight ? 'light' : 'dark'); } catch (e) {}
       hzSync();
     }
 
@@ -9620,7 +9733,11 @@
           window.TrafficAudio.setMasterVolume(normalised);
         }
         if (window.sfx) {
-          if (typeof window.sfx.setVolume === 'function') { window.sfx.setVolume(normalised); }
+          if (typeof window.sfx.setVolume === 'function') {
+            window.sfx.setVolume(normalised);
+          } else if (typeof window.sfx.setVol === 'function') {
+            ['engine', 'sfx', 'ui', 'env', 'ambient'].forEach(c => window.sfx.setVol(c, normalised));
+          }
           const gain = window.sfx._masterGain || window.sfx._g;
           if (gain && gain.gain) gain.gain.value = normalised;
 
@@ -10087,7 +10204,6 @@
       </div>
     </div>
   </div>
-  </div>
 
 <script defer src="welcome-back.js"></script>
 
@@ -10199,12 +10315,17 @@
 
         const m = info?.mission;
         const c = info?.campaign;
+        // Prefer the level's own story (levels/level*.js) over the legacy
+        // course.js mission: the card used to show the wrong place, people and
+        // time vs the film. Falls back silently for older levels.
+        const lv = (typeof window !== 'undefined' && window.LVS && typeof window.LVS.find === 'function') ? window.LVS.find(l => l.id === levelId) : null;
+        const story = lv && lv.story ? lv.story : null;
 
         const modEl = document.getElementById('gta-intro-module');
         if (modEl) modEl.textContent = (c?.name || 'MUMBAI PATROL').toUpperCase();
 
         const titleEl = document.getElementById('gta-intro-title');
-        if (titleEl) titleEl.textContent = m?.title ? m.title.toUpperCase() : `MISSION ${levelId}`;
+        if (titleEl) titleEl.textContent = story && story.title ? story.title.toUpperCase() : (m?.title ? m.title.toUpperCase() : `MISSION ${levelId}`);
 
         const rewardEl = document.getElementById('gta-intro-reward');
         if (rewardEl) {
@@ -10216,7 +10337,12 @@
         const speakerEl = document.getElementById('gta-speaker-name');
         const lineEl = document.getElementById('gta-speaker-line');
 
-        if (m?.characterDialogue && m.characterDialogue.length > 0) {
+        if (story) {
+          if (modEl) modEl.textContent = 'MUMBAI 4000';
+          if (speakerEl) speakerEl.textContent = 'Insp. Arjun Kadam';
+          if (lineEl) lineEl.textContent = story.briefing || '"Drive safely and follow Mumbai traffic regulations."';
+          if (avatarEl) avatarEl.textContent = '👮';
+        } else if (m?.characterDialogue && m.characterDialogue.length > 0) {
           const d0 = m.characterDialogue[0];
           if (speakerEl) speakerEl.textContent = d0.speaker;
           if (lineEl) lineEl.textContent = d0.line;
@@ -10228,7 +10354,7 @@
         }
 
         const pObjEl = document.getElementById('gta-obj-primary');
-        if (pObjEl) pObjEl.textContent = m?.objectives?.primary || m?.briefing || 'Complete all checkpoints.';
+        if (pObjEl) pObjEl.textContent = (lv && lv.pract) || m?.objectives?.primary || m?.briefing || 'Complete all checkpoints.';
 
         const sObjEl = document.getElementById('gta-obj-secondary');
         if (sObjEl) {
@@ -10241,6 +10367,7 @@
 
         overlay.style.display = 'flex';
         overlay.classList.remove('gta-fade-out');
+        try { if (window.__syncReplayBtn) { window.__syncReplayBtn(); } } catch (e) {}
       } catch (err) {
         console.warn('[GTA Mission Intro] Error showing intro:', err);
       }
@@ -10253,7 +10380,70 @@
       setTimeout(() => {
         overlay.style.display = 'none';
       }, 350);
+
+      // Audio sting on mission handover: keyfob unlock chirp + tactile key jingle
+      try {
+        if (window.StoryAudio && typeof window.StoryAudio.sting === 'function') {
+          window.StoryAudio.sting('car_unlock', 0.85);
+        }
+        if (window.SampleBank && typeof window.SampleBank.play === 'function') {
+          window.SampleBank.play('sfx_keys', { gain: 0.65 });
+        }
+      } catch (eAud) {}
+
+      // Camera lerp & clear starting objective toast
+      try {
+        if (window.game) {
+          window.game._camTransition = 2.2;
+          window.game._camSnapped = true;
+          if (window.game.isPedestrian && typeof toast === 'function') {
+            toast('🎯 MISSION 1 // Head to your vehicle in the garage and press [F] to enter', '#ffd54a', 4500);
+          }
+        }
+      } catch (eG) {}
     };
+
+    /**
+     * Story Mode: replay the intro cinematic for the level already on screen.
+     *
+     * Called from the briefing card, which is the one moment replaying is
+     * non-destructive: the mission has not started, the set is already built,
+     * and Cutscene.restart() re-runs the shots then re-raises this same card.
+     */
+    window.replayStoryIntro = function() {
+      try {
+        if (!window.Cutscene || typeof window.Cutscene.restart !== 'function') {
+          console.warn('[Story] Cutscene.restart unavailable — reloading instead.');
+          if (window.Cutscene && typeof window.Cutscene.clearSeen === 'function') {
+            try { window.Cutscene.clearSeen(window.ui && window.ui.cur ? window.ui.cur.id : undefined); } catch (e) {}
+          }
+          return;
+        }
+        const overlay = document.getElementById('gta-mission-intro');
+        if (overlay) { overlay.style.display = 'none'; overlay.classList.remove('gta-fade-out'); }
+        const btn = document.getElementById('gta-btn-replay');
+        if (btn) { btn.disabled = true; }
+        if (!window.Cutscene.restart()) {
+          // No prologue to play — restore the card rather than leaving the
+          // player on a hidden overlay with the button stuck disabled.
+          if (overlay) { overlay.style.display = 'flex'; }
+          if (btn) { btn.disabled = false; }
+        }
+      } catch (err) {
+        console.warn('[Story] Replay Intro failed:', err);
+      }
+    };
+
+    // Show Replay Intro only for levels that actually have a prologue.
+    const _syncReplayBtn = function() {
+      const btn = document.getElementById('gta-btn-replay');
+      if (!btn) return;
+      let has = false;
+      try { has = !!(window.Cutscene && typeof window.Cutscene.hasPrologue === 'function' && window.Cutscene.hasPrologue()); } catch (e) { has = false; }
+      btn.style.display = has ? 'flex' : 'none';
+      btn.disabled = false;
+    };
+    window.__syncReplayBtn = _syncReplayBtn;
 
     function startSignalMonitoring() {
         if (signalCheckInterval) clearInterval(signalCheckInterval);
@@ -10626,7 +10816,7 @@
   </script>
 
   <!-- Clickable Version Badge (Dev Access) -->
-  <div id="version-badge" style="position: fixed; bottom: 6px; right: 12px; font-size: 0.72rem; color: var(--muted2, #aaa); opacity: 0.45; cursor: pointer; z-index: 99999; font-weight: 700; user-select: none; transition: all 0.2s ease;" onclick="window.handleDevClick && window.handleDevClick()" onmouseover="this.style.opacity='1'; this.style.color='#ffd700';" onmouseout="this.style.opacity='0.45'; this.style.color='var(--muted2, #aaa)';" title="Class Of Learners Simulator v2.4.1">v2.4.1</div>
+  <div id="version-badge" style="position: fixed; bottom: 6px; right: 12px; font-size: 0.72rem; color: var(--muted2, #aaa); opacity: 0.45; cursor: default; z-index: 99999; font-weight: 700; user-select: none; transition: all 0.2s ease;" title="Class Of Learners Simulator v2.4.1">v2.4.1</div>
 
 </body>
 </html>

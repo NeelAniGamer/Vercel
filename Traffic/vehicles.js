@@ -180,18 +180,51 @@ window.IndianVehicles = {
 
 
     this.textures.plate = this.createCanvasTex(64, 32, (ctx) => {
+      // Authentic Indian HSRP (High Security Registration Plate - Private)
       ctx.fillStyle = '#ffffff'
       ctx.fillRect(0, 0, 64, 32)
-      ctx.strokeStyle = '#000000'
-      ctx.lineWidth = 2
+      ctx.strokeStyle = '#0f172a'
+      ctx.lineWidth = 1.5
       ctx.strokeRect(1, 1, 62, 30)
-      ctx.fillStyle = '#000000'
-      ctx.font = 'bold 14px Arial'
+      // Blue IND strip on left
+      ctx.fillStyle = '#1e40af'
+      ctx.fillRect(1, 1, 9, 30)
+      ctx.fillStyle = '#60a5fa'
+      ctx.fillRect(3, 4, 5, 4) // Hologram
+      ctx.fillStyle = '#ffffff'
+      ctx.font = 'bold 5px sans-serif'
       ctx.textAlign = 'center'
-      ctx.textBaseline = 'middle'
-      ctx.fillText('MH 01', 32, 10)
-      ctx.font = 'bold 10px Arial'
-      ctx.fillText('AB 1234', 32, 22)
+      ctx.fillText('IND', 5, 20)
+      // Embossed registration code
+      ctx.fillStyle = '#0f172a'
+      ctx.font = 'bold 9px "Space Mono", monospace, sans-serif'
+      ctx.fillText('MH 02', 37, 12)
+      ctx.font = 'bold 8px "Space Mono", monospace, sans-serif'
+      ctx.fillText('BG 4092', 37, 23)
+    })
+
+    this.textures.plateCommercial = this.createCanvasTex(64, 32, (ctx) => {
+      // Authentic Indian Commercial HSRP (Yellow plate for Taxis, Autos, Buses)
+      ctx.fillStyle = '#facc15'
+      ctx.fillRect(0, 0, 64, 32)
+      ctx.strokeStyle = '#0f172a'
+      ctx.lineWidth = 1.5
+      ctx.strokeRect(1, 1, 62, 30)
+      // Blue IND strip on left
+      ctx.fillStyle = '#1e40af'
+      ctx.fillRect(1, 1, 9, 30)
+      ctx.fillStyle = '#60a5fa'
+      ctx.fillRect(3, 4, 5, 4)
+      ctx.fillStyle = '#ffffff'
+      ctx.font = 'bold 5px sans-serif'
+      ctx.textAlign = 'center'
+      ctx.fillText('IND', 5, 20)
+      // Commercial registration code
+      ctx.fillStyle = '#0f172a'
+      ctx.font = 'bold 9px "Space Mono", monospace, sans-serif'
+      ctx.fillText('MH 01', 37, 12)
+      ctx.font = 'bold 8px "Space Mono", monospace, sans-serif'
+      ctx.fillText('TA 8821', 37, 23)
     })
 
 
@@ -315,11 +348,12 @@ window.IndianVehicles = {
   },
 
   /** Number plate, sized to the Indian 520 x 110 mm aspect. */
-  addPlate: function (g, y, z, front) {
+  addPlate: function (g, y, z, front, commercial) {
     if (!this.textures.plate) this.init()
+    const tex = (commercial && this.textures.plateCommercial) ? this.textures.plateCommercial : this.textures.plate
     const m = new THREE.Mesh(
       new THREE.PlaneGeometry(0.44, 0.105),
-      new THREE.MeshBasicMaterial({ map: this.textures.plate })
+      new THREE.MeshBasicMaterial({ map: tex })
     )
     m.position.set(0, y, z)
     if (front) m.rotation.y = Math.PI
@@ -1033,49 +1067,52 @@ window.IndianVehicles = {
 
       this.addFourWheels(g, 1.7, 4.4, 1.05)
     } else if (type === 'cab' || type === 'taxi') {
+      // Authentic Mumbai Kaali-Peeli taxi: obsidian black body + vibrant chrome-yellow roof & roof carrier
+      const blackBodyMat = new THREE.MeshStandardMaterial({ color: 0x14161a, roughness: 0.32, metalness: 0.15 })
+      const yellowRoofMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.28, metalness: 0.12 })
 
-      const wMat = new THREE.MeshToonMaterial({ color: 0xffffff })
-      body = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.7, 3.8), wMat)
+      body = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.7, 3.8), blackBodyMat)
       body.position.y = 0.6
       g.add(body)
 
-      roof = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.7, 1.8), gMat)
-      roof.position.set(0, 1.3, 0)
+      // Taxi roof with iconic Mumbai yellow livery
+      roof = new THREE.Mesh(new THREE.BoxGeometry(1.56, 0.68, 1.8), yellowRoofMat)
+      roof.position.set(0, 1.28, 0)
       g.add(roof)
 
-      const sign = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.2, 0.4), new THREE.MeshToonMaterial({ color: 0xffd700 }))
-      sign.position.set(0, 1.75, 0)
-      g.add(sign)
+      // Chrome roof luggage carrier rack (ubiquitous on Mumbai Kaali-Peelis)
+      const carrier = new THREE.Mesh(new THREE.BoxGeometry(1.35, 0.10, 1.25), this.chromeMat())
+      carrier.position.set(0, 1.66, 0)
+      g.add(carrier)
 
-
-      const hood = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.12, 1.0), wMat)
-      hood.position.set(0, 0.9, -1.7)
-      g.add(hood)
-
-
-      const signBase = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.08, 0.3), new THREE.MeshPhongMaterial({ color: 0x222222 }))
-      signBase.position.set(0, 1.65, 0)
+      // Illuminated "TAXI" roof lightbox
+      const signBase = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.06, 0.22), new THREE.MeshPhongMaterial({ color: 0x222222 }))
+      signBase.position.set(0, 1.74, 0)
       g.add(signBase)
-      const signLight = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.15, 0.25), new THREE.MeshBasicMaterial({ color: 0xffd700 }))
-      signLight.position.set(0, 1.75, 0)
+      const signLight = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.14, 0.18), new THREE.MeshBasicMaterial({ color: 0xffd54a }))
+      signLight.position.set(0, 1.82, 0)
       g.add(signLight)
 
+      const hood = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.12, 1.0), blackBodyMat)
+      hood.position.set(0, 0.9, -1.7)
+      g.add(hood)
 
       this.addBumper(g, 1.5, 0.15, 0.3, -2.05)
       this.addBumper(g, 1.5, 0.15, 0.3, 2.05)
 
+      // Authentic commercial yellow HSRP plates
+      this.addPlate(g, 0.38, -2.07, true, true)
+      this.addPlate(g, 0.38, 2.07, false, true)
 
       ;[-0.55, 0.55].forEach(x => {
         const hl = this.buildHeadlight(x, 0.55, -2.0)
         g.add(hl)
       })
 
-
       ;[-0.55, 0.55].forEach(x => {
         const tl = this.buildTaillight(x, 0.55, 2.0)
         g.add(tl)
       })
-
 
       this.addMirror(g, -0.85, 1.0, -0.4)
       this.addMirror(g, 0.85, 1.0, -0.4)

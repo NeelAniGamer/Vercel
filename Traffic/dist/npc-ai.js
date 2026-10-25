@@ -1,3 +1,9 @@
+// Module-level reusable scratch vectors to prevent per-frame allocations
+const _SCRATCH_FWD = (typeof THREE !== 'undefined' && THREE.Vector3) ? new THREE.Vector3() : null;
+const _SCRATCH_RIGHT = (typeof THREE !== 'undefined' && THREE.Vector3) ? new THREE.Vector3() : null;
+const _SCRATCH_DIFF = (typeof THREE !== 'undefined' && THREE.Vector3) ? new THREE.Vector3() : null;
+const _SCRATCH_UP = (typeof THREE !== 'undefined' && THREE.Vector3) ? new THREE.Vector3(0, 1, 0) : null;
+
 const NPC_STATE = {
   IDLE: 'IDLE',
   FOLLOW_LANE: 'FOLLOW_LANE',
@@ -937,6 +943,15 @@ class NPCAI {
     if (this.targetNode) {
       this.vehicle.currentNode = this.targetNode;
     }
+    // Keep the vehicle's edge in step with the AI's. The traffic manager
+    // indexes vehicles per edge for the MOBIL grouping and the lane-clear
+    // checks, and it read `vehicle.currentEdge` - which was written ONCE at
+    // spawn and never updated, so every vehicle stayed filed under the edge
+    // it was born on and the lead/follower relationships were computed
+    // against cars that were elsewhere.
+    if (this.vehicle && this.currentEdge) {
+      this.vehicle.currentEdge = this.currentEdge;
+    }
     this._pickNextTarget();
   }
 
@@ -1155,9 +1170,37 @@ class NPCAI {
     // ── High-Reliability Anti-Deadlock & Stuck Detection ──
     // Never allow an NPC to remain permanently frozen at intersections or signals
     const isExempt = (this.state === NPC_STATE.PARK || this.state === NPC_STATE.CRASH || this.state === NPC_STATE.COMPLETE);
-    const isWaitingValidSignal = (this.state === NPC_STATE.WAIT_SIGNAL && this.waitTimer < 5.0);
-
+    // A full signal cycle is ~17 s; the watchdog in _updateWaitSignal gives up at 22 s,
+    // so the shove below must not fire before that or every queued car runs the red.
+    const isWaitingValidSignal = (this.state === NPC_STATE.WAIT_SIGNAL && this.waitTimer < 22.0);
+    // Waiting for a reason (queue / player / red head ahead) is not being stuck.
+    let hasReasonToWait = false;
     if (!isExempt && !isWaitingValidSignal && this.vehicle && this.vehicle.position) {
+      try {
+        const leadV = (typeof this._getVehicleAhead === 'function') ? this._getVehicleAhead() : null;
+        if (leadV && leadV.position && this.vehicle.position.distanceTo(leadV.position) < 14.0) { hasReasonToWait = true; }
+        const pp = this.trafficManager?.game?.player?.position;
+        if (!hasReasonToWait && pp) {
+          const fx = Math.sin(this.vehicle.rotation ? this.vehicle.rotation.y : 0);
+          const fz = Math.cos(this.vehicle.rotation ? this.vehicle.rotation.y : 0);
+          const dxp = pp.x - this.vehicle.position.x, dzp = pp.z - this.vehicle.position.z;
+          const along = dxp * fx + dzp * fz;
+          const lateral = Math.abs(dxp * fz - dzp * fx);
+          if (along > 0 && along < 10.0 && lateral < 3.0) { hasReasonToWait = true; }
+        }
+        if (!hasReasonToWait && typeof this._getSignalAhead === 'function') {
+          const sigAhead = this._getSignalAhead(signals);
+          if (sigAhead) {
+            const st = sigAhead.state || sigAhead.userData?.st || 'green';
+            if (st !== 'green' && this._distanceToSignal(sigAhead) < 40.0) { hasReasonToWait = true; }
+          }
+        }
+      } catch (eWait) { hasReasonToWait = false; }
+    }
+
+    if (hasReasonToWait || isWaitingValidSignal) { this._stuckTimer = 0; this._stuckCheckTimer = 0; }
+
+    if (!isExempt && !isWaitingValidSignal && !hasReasonToWait && this.vehicle && this.vehicle.position) {
       this._stuckCheckTimer += dt;
       if (this._stuckCheckTimer >= 1.0) {
         this._stuckCheckTimer = 0;
@@ -1408,7 +1451,9 @@ class NPCAI {
     const sigState = signal ? (signal.state || signal.userData?.st || 'green') : 'green';
     const isGreen = sigState === 'green';
     const noSignal = !signal;
-    const timeout = this.waitTimer > 4.5;
+    // Watchdog only for a genuine deadlock: one full cycle is ~17 s (red 7.5 s),
+    // so anything under that makes ordinary cars run the red (it used to be 4.5 s).
+    const timeout = this.waitTimer > 22.0;
 
     if (isGreen || noSignal || timeout) {
       this.state = NPC_STATE.FOLLOW_LANE;
@@ -2050,7 +2095,13 @@ class NPCAI {
     const myPos = this.vehicle.position;
     for (const v of this.trafficManager.vehicles) {
       if (v === this.vehicle) {continue;}
-      if (v.userData && v.userData.isAmb && v.position.distanceTo(myPos) < 80) {
+      // The vehicle record has no userData of its own - the type lives on the
+      // mesh. The old `v.userData.isAmb` was therefore undefined for every
+      // vehicle, so the pull-over for an ambulance never happened and the
+      // "yield to the ambulance" behaviour was dead code.
+      const vType = (v.type) || (v.mesh && v.mesh.userData && v.mesh.userData.npcType);
+      const isAmb = vType === 'ambulance' || (v.mesh && v.mesh.userData && v.mesh.userData.isAmb);
+      if (isAmb && v.position.distanceTo(myPos) < 80) {
 
         const forward = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
         const toAmb = new THREE.Vector3().subVectors(v.position, myPos);
@@ -2078,18 +2129,20 @@ class NPCAI {
   _checkEmergencyAvoidance(playerVehicle) {
     if (this.state === NPC_STATE.CRASH || this.state === NPC_STATE.EMERGENCY_BRAKE) {return;}
     if (this.currentSpeed < 0.8) {return;}
-    const forward = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
     const myPos = this.vehicle.position;
     if (!myPos) {return;}
-    const checkRadius = 16;
+    const rotY = this.vehicle.rotation.y;
+    const fx = Math.sin(rotY), fz = Math.cos(rotY);
+    const checkRadiusSq = 16 * 16;
+
     const p = playerVehicle || (this.trafficManager?.game?.playerVehicle || this.trafficManager?.game?.player);
     if (p && p.position) {
-      const toPlayer = new THREE.Vector3().subVectors(p.position, myPos);
-      const dist = toPlayer.length();
-      if (dist < checkRadius) {
-        const proj = toPlayer.dot(forward);
-        const lateralOffset = Math.abs(toPlayer.x * forward.z - toPlayer.z * forward.x);
-        if (proj > 0 && proj < 9.0 && dist < 7.5 && lateralOffset < 1.4) {
+      const dx = p.position.x - myPos.x, dz = p.position.z - myPos.z;
+      const distSq = dx * dx + dz * dz;
+      if (distSq < checkRadiusSq) {
+        const proj = dx * fx + dz * fz;
+        const lateralOffset = Math.abs(dx * fz - dz * fx);
+        if (proj > 0 && proj < 9.0 && distSq < 56.25 && lateralOffset < 1.4) {
           this.state = NPC_STATE.EMERGENCY_BRAKE;
           this.emergencyBrakeTimer = 0;
           this.currentAcceleration = -Math.max(6.0, this.idmParams.bMax || 8.0);
@@ -2098,39 +2151,36 @@ class NPCAI {
       }
     }
 
-    if (this.trafficManager && this.trafficManager.vehicles) {
-      for (let i = 0; i < this.trafficManager.vehicles.length; i++) {
-        const v = this.trafficManager.vehicles[i];
-        if (!v || v === this.vehicle || !v.position || !v.active) {continue;}
-        const toV = new THREE.Vector3().subVectors(v.position, myPos);
-        const dist = toV.length();
-        if (dist > checkRadius) {continue;}
-        const proj = toV.dot(forward);
-        const lateralOffset = Math.abs(toV.x * forward.z - toV.z * forward.x);
+    const vehicles = this.trafficManager && this.trafficManager.vehicles;
+    if (!vehicles) {return;}
+    for (let i = 0; i < vehicles.length; i++) {
+      const v = vehicles[i];
+      if (!v || v === this.vehicle || !v.position || !v.active) {continue;}
+      const dx = v.position.x - myPos.x, dz = v.position.z - myPos.z;
+      const distSq = dx * dx + dz * dz;
+      if (distSq > checkRadiusSq) {continue;}
 
-        const vSpeed = Math.abs(v.speed !== undefined ? v.speed : (v.npcAI?.currentSpeed || 0));
-        const vState = v.npcAI?.state;
+      const proj = dx * fx + dz * fz;
+      if (proj <= 0 || proj >= 9.0 || distSq >= 56.25) {continue;}
 
-        // Never trigger emergency brake against stationary side-road traffic unless directly in our path
-        if ((vSpeed < 0.5 || vState === 'WAIT_SIGNAL' || vState === 'PARK') && (lateralOffset > 1.05 || dist > 4.5)) {
-          continue;
-        }
+      const lateralOffset = Math.abs(dx * fz - dz * fx);
+      if (lateralOffset >= 1.8) {continue;}
 
-        // Heading alignment check: perpendicular cars at side-road stop lines should not trigger emergency braking
-        const vRot = v.rotation ? (typeof v.rotation.y === 'number' ? v.rotation.y : v.rotation) : (v.mesh ? v.mesh.rotation.y : 0);
-        const headingDot = forward.x * Math.sin(vRot) + forward.z * Math.cos(vRot);
-        if (headingDot < 0.30 && lateralOffset > 1.15) {
-          continue;
-        }
-
-        if (proj > 0 && proj < 9.0 && dist < 7.5 && lateralOffset < 1.8) {
-          this.state = NPC_STATE.EMERGENCY_BRAKE;
-          this.emergencyBrakeTimer = 0;
-          this.currentAcceleration = -Math.max(6.0, this.idmParams.bMax || 8.0);
-          this._honk();
-          return;
-        }
+      const vSpeed = Math.abs(v.speed !== undefined ? v.speed : (v.npcAI?.currentSpeed || 0));
+      const vState = v.npcAI?.state;
+      if ((vSpeed < 0.5 || vState === 'WAIT_SIGNAL' || vState === 'PARK') && (lateralOffset > 1.05 || distSq > 20.25)) {
+        continue;
       }
+
+      const vRot = v.rotation ? (typeof v.rotation.y === 'number' ? v.rotation.y : v.rotation) : (v.mesh ? v.mesh.rotation.y : 0);
+      const headingDot = fx * Math.sin(vRot) + fz * Math.cos(vRot);
+      if (headingDot < 0.30 && lateralOffset > 1.15) {continue;}
+
+      this.state = NPC_STATE.EMERGENCY_BRAKE;
+      this.emergencyBrakeTimer = 0;
+      this.currentAcceleration = -Math.max(6.0, this.idmParams.bMax || 8.0);
+      this._honk();
+      return;
     }
   }
 
@@ -2459,7 +2509,12 @@ class PedestrianAI {
           const npc = npcs[i];
           const nPos = npc.position || npc.mesh?.position;
           if (!nPos) {continue;}
-          const isBus = npc.type === 'bus' || npc.userData?.npcType === 'bus' || npc.userData?.type === 'bus';
+          // The type lives on the mesh for traffic-manager vehicles, and on
+          // userData for the scene NPC meshes. The old check only looked at
+          // `npc.userData.npcType`, so a bus was never detected and the
+          // pedestrian never queued for it.
+          const npcType = npc.type || npc.userData?.npcType || npc.userData?.type || npc.mesh?.userData?.npcType;
+          const isBus = npcType === 'bus';
           const distToBus = Math.hypot(nPos.x - stopX, nPos.z - stopZ);
           if (isBus && distToBus < 15.0) {
             this.state = PED_STATE.QUEUING;
@@ -2611,7 +2666,7 @@ class PedestrianAI {
 
     // Introduce natural randomness: each pedestrian has an individual lateral offset across sidewalk width
     if (ud.lateralOffset === undefined) {
-      ud.lateralOffset = (Math.random() - 0.5) * 2.2; // -1.1m to +1.1m across sidewalk width
+      ud.lateralOffset = (Math.random() - 0.5) * 1.0; // -0.5m to +0.5m: stays on the footpath strip
     }
     if (ud.speedFactor === undefined) {
       ud.speedFactor = 0.85 + Math.random() * 0.45; // 0.85x to 1.30x speed diversity
@@ -2641,22 +2696,84 @@ class PedestrianAI {
     this.ped.rotation.y = this.facing;
     ud.distTraveled = (ud.distTraveled || 0) + moveAmt;
 
-    // Destination or crossing trigger
-    if (ud.distTraveled >= (ud.destDist || 25)) {
-      ud.distTraveled = 0;
-      ud.destDist = 18 + Math.random() * 30;
-      
-      // 35% chance to cross road (only if safe)
-      if (Math.random() < 0.35) {
+    // Crossing: only ever AT a crosswalk. A pedestrian that has decided to cross
+    // (ud.seekCrossAt set) keeps walking its footpath until it reaches that mark.
+    if (typeof ud.seekCrossAt === 'number') {
+      const along = isV ? this.ped.position.z : this.ped.position.x;
+      const reached = (dir > 0) ? (along >= ud.seekCrossAt) : (along <= ud.seekCrossAt);
+      if (reached) {
+        ud.seekCrossAt = undefined;
         this.state = PED_STATE.WAITING;
         this.waitTimer = 0;
         this._waitThreshold = 1.0 + Math.random() * 2.0;
         this._syncMeshState();
         return;
+      }
+    }
+
+    // Destination trigger
+    if (ud.distTraveled >= (ud.destDist || 25)) {
+      ud.distTraveled = 0;
+      ud.destDist = 18 + Math.random() * 30;
+
+      // ~35% chance to want the other side — but only via a real crossing.
+      if (Math.random() < 0.35 && typeof ud.seekCrossAt !== 'number') {
+        const here = isV ? this.ped.position.z : this.ped.position.x;
+        const marks = this._crossingMarks();
+        let best = null;
+        for (let i = 0; i < marks.length; i++) {
+          const d = (marks[i] - here) * dir; // positive = ahead of us
+          if (d > 1.0 && d < 70 && (best === null || d < best.d)) { best = { d: d, at: marks[i] }; }
+        }
+        if (best) {
+          ud.seekCrossAt = best.at;
+        } else {
+          ud.dir = -dir; // nowhere to cross ahead: head back, never jaywalk
+        }
       } else {
         ud.dir = -dir;
       }
     }
+  }
+
+  /**
+   * Along-road coordinates where this pedestrian's road may be crossed: just
+   * beside every junction with a perpendicular road, plus authored zebras.
+   * Cached per (road, map) because it is queried only on a crossing decision.
+   */
+  _crossingMarks() {
+    const ud = this.ped.userData || {};
+    const isV = ud.isV !== false;
+    const roadC = ud.roadC || 0;
+    const g = (this.tm && this.tm.game) || (typeof window !== 'undefined' ? window.game : null);
+    const cfg = g && g.mapCfg;
+    if (!cfg) { return []; }
+    const key = (isV ? 'v' : 'h') + ':' + roadC;
+    this._markCache = this._markCache || {};
+    if (this._markCache.cfg === cfg && this._markCache[key]) { return this._markCache[key]; }
+    if (this._markCache.cfg !== cfg) { this._markCache = { cfg: cfg }; }
+    const out = [];
+    const roads = cfg.roads || [];
+    for (let i = 0; i < roads.length; i++) {
+      const r = roads[i];
+      if ((r.type === 'v') === isV) { continue; } // only perpendicular roads form junctions
+      const w = (r.width || 12) / 2;
+      const rc = (r.type === 'h') ? r.z : r.x;
+      // The perpendicular road must actually span our road's coordinate.
+      const lo = (r.type === 'h') ? Math.min(r.x1, r.x2) : Math.min(r.z1, r.z2);
+      const hi = (r.type === 'h') ? Math.max(r.x1, r.x2) : Math.max(r.z1, r.z2);
+      if (roadC < lo - 1 || roadC > hi + 1) { continue; }
+      out.push(rc - w - 2.0, rc + w + 2.0);
+    }
+    const probs = cfg.roadProblems || [];
+    for (let i = 0; i < probs.length; i++) {
+      const p = probs[i];
+      if (p.kind !== 'zebra') { continue; }
+      if (isV && Math.abs(p.x - roadC) < 12) { out.push(p.z); }
+      else if (!isV && Math.abs(p.z - roadC) < 12) { out.push(p.x); }
+    }
+    this._markCache[key] = out;
+    return out;
   }
 
   _updateWaiting(dt, allVehicles) {
@@ -2737,7 +2854,19 @@ class PedestrianAI {
     if (this.state === PED_STATE.FLEEING || this.state === PED_STATE.FROZEN) {return;}
     const myPos = this.ped.position;
 
-    if (playerVehicle && playerVehicle.position) {
+    // Pavement safety: someone walking on the footpath is not endangered by
+    // traffic that is staying on the carriageway. Without this every passing car
+    // inside 4 m made the pedestrian sprint 12 m — straight into the road.
+    const pud = this.ped.userData || {};
+    const pRoadHalf = (typeof pud.targetDist === 'number' && pud.targetDist > 2) ? (pud.targetDist - 1.8) : 6;
+    const pIsV = pud.isV !== false;
+    const pRoadC = pud.roadC || 0;
+    const walkingOnPavement = (this.state === PED_STATE.WALKING || this.state === PED_STATE.WALKING_SIDEWALK || this.state === PED_STATE.WAITING) &&
+      Math.abs((pIsV ? myPos.x : myPos.z) - pRoadC) >= pRoadHalf + 0.2;
+    const vehicleOnRoadway = (vp) => walkingOnPavement && vp &&
+      Math.abs((pIsV ? vp.x : vp.z) - pRoadC) < pRoadHalf + 0.3;
+
+    if (playerVehicle && playerVehicle.position && !vehicleOnRoadway(playerVehicle.position)) {
       const dist = myPos.distanceTo(playerVehicle.position);
       if (dist < 15.0) {
         let pSpeed = Math.abs(playerVehicle.speed || 0);
@@ -2774,6 +2903,7 @@ class PedestrianAI {
         if (!npc) {continue;}
         const nPos = npc.position || npc.mesh?.position;
         if (!nPos) {continue;}
+        if (vehicleOnRoadway(nPos)) {continue;}
         const dist = myPos.distanceTo(nPos);
         if (dist < 15.0) {
           let nSpeed = Math.abs(npc.speed !== undefined ? npc.speed : (npc.userData?.spd ? npc.userData.spd * 20 : 0));

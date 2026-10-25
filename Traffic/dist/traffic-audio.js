@@ -19,6 +19,10 @@ class TrafficAudioEngine {
     this._gearRpm = 0.2;
     this._lastShiftTime = 0;
     this._lastPopTime = 0;
+    // Daytime outdoor ambience (synthesised birds). Timer-driven, idempotent,
+    // silent until the first user gesture unlocks the AudioContext.
+    this._birdsOn = false;
+    this._birdTimer = 0;
 
     // Distortion curve for warm, smooth acoustic engine growl
     this._distortionCurve = this._makeDistortionCurve(4);
@@ -142,6 +146,68 @@ class TrafficAudioEngine {
     if (this.ctx && this.ctx.state === 'suspended') {
       this.ctx.resume().catch(() => {});
     }
+  }
+
+  // ── DAYTIME OUTDOOR AMBIENCE (birds) ──
+  // Idempotent: call every frame with the desired state; the scheduler only
+  // runs while on === true, so pause menus, night/rain maps, cutscenes and
+  // level exits all silence it with no teardown hooks. Chirps are short
+  // scheduled blips on the world bus (ducked under dialogue like everything
+  // else), capped quiet — air, not a soundtrack.
+  setDayAmbience(on) {
+    on = !!on;
+    if (on === this._birdsOn) {return;}
+    this._birdsOn = on;
+    if (on) {
+      this._ensureUnlocked();
+      this._scheduleBird();
+    } else if (this._birdTimer) {
+      try {clearTimeout(this._birdTimer);} catch (e) {}
+      this._birdTimer = 0;
+    }
+  }
+
+  _scheduleBird() {
+    if (!this._birdsOn) {return;}
+    if (this._birdTimer) {try {clearTimeout(this._birdTimer);} catch (e) {}}
+    this._birdTimer = setTimeout(() => {
+      try {
+        if (this._birdsOn && this.ctx && this.ctx.state === 'running' && this.worldGain && Math.random() < 0.7) {
+          this._birdChirp(this.ctx.currentTime + 0.05, 2200 + Math.random() * 1400, 2 + Math.floor(Math.random() * 3));
+        }
+      } catch (e) {}
+      this._scheduleBird();
+    }, 500 + Math.random() * 1700);
+  }
+
+  _birdChirp(t0, baseFreq, nSyl) {
+    if (!this.ctx || !this.worldGain) {return;}
+    try {
+      let out = this.worldGain;
+      try {
+        if (typeof this.ctx.createStereoPanner === 'function') {
+          const pan = this.ctx.createStereoPanner();
+          pan.pan.value = Math.max(-0.8, Math.min(0.8, Math.random() * 2 - 1));
+          pan.connect(this.worldGain);
+          out = pan;
+        }
+      } catch (eP) {}
+      for (let i = 0; i < nSyl; i++) {
+        const o = this.ctx.createOscillator();
+        o.type = 'sine';
+        const g = this.ctx.createGain();
+        const st = t0 + i * 0.14;
+        const f = baseFreq * (0.9 + Math.random() * 0.35);
+        o.frequency.setValueAtTime(Math.max(400, f * 0.9), st);
+        o.frequency.exponentialRampToValueAtTime(f * 1.35, st + 0.05);
+        o.frequency.exponentialRampToValueAtTime(Math.max(400, f * 0.85), st + 0.11);
+        g.gain.setValueAtTime(0.0001, st);
+        g.gain.exponentialRampToValueAtTime(0.035, st + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, st + 0.12);
+        o.connect(g); g.connect(out);
+        try {o.start(st); o.stop(st + 0.15);} catch (eS) {}
+      }
+    } catch (e) {}
   }
 
   // ── 1. SUPERCAR V8 / V10 ACOUSTIC ENGINE SYNTHESIZER ──
@@ -586,6 +652,12 @@ class TrafficAudioEngine {
       body.start(now + 0.015);
       body.stop(now + 0.26);
     } catch (e) {}
+
+    // Recorded latch under the synth body thump. The synthesised version is a
+    // 1600 Hz click into a 110 Hz triangle, which is a decent door and is the
+    // same door every time — including the enter/exit cinematic, where it plays
+    // four times in eight seconds.
+    this._sample('sfx_door_close', { gain: 0.4 });
   }
 
   playDoorOpen() {
@@ -859,6 +931,46 @@ class TrafficAudioEngine {
       noise.start(now);
       noise.stop(now + 0.42);
     } catch (e) {}
+
+    // Recorded layer (story/samples.js). The synthesised crash above is a
+    // sub-bass thump and a filtered noise burst, which is the right SHAPE but has
+    // no car in it — there is no distinction between hitting a wall and hitting
+    // another car, because both are the same two oscillators. The recorded take
+    // supplies the difference, underneath rather than instead.
+    this._sample('sfx_crash_car', { gain: 0.85 * (intensity || 1) });
+    this._sample('sfx_windscreen', { gain: 0.45 * (intensity || 1) });
+  }
+
+  /**
+   * Fire a recorded sample if the bank is available, and never throw.
+   *
+   * Every gameplay sound goes through here rather than reaching into SampleBank
+   * directly, so that a missing manifest, a blocked autoplay policy or a decode
+   * failure costs one silent sound and not a crash screen.
+   */
+  _sample(key, opts) {
+    try {
+      const SB = window.SampleBank;
+      if (SB && typeof SB.play === 'function') { return SB.play(key, opts || {}); }
+    } catch (e) {}
+    return null;
+  }
+
+  /** Looping sample, for continuous things like a siren. */
+  _sampleLoop(key, opts) {
+    try {
+      const SB = window.SampleBank;
+      if (SB && typeof SB.loop === 'function') { return SB.loop(key, opts || {}); }
+    } catch (e) {}
+    return null;
+  }
+
+  _sampleStop(key, fadeMs) {
+    try {
+      const SB = window.SampleBank;
+      if (SB && typeof SB.stop === 'function') { return SB.stop(key, fadeMs); }
+    } catch (e) {}
+    return false;
   }
 
   // ── 10. TACTILE UI CLICK ──

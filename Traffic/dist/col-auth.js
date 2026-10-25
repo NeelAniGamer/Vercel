@@ -49,6 +49,20 @@ window.closeMo = function () {
   if (window._colAuthRunning) {return}
   window._colAuthRunning = true
 
+  // Single entry point for dismissing the auth modal. closeGlobalAuth()
+  // also restores aria-hidden="true" and the inert attribute; the raw
+  // `mo.classList.remove('open')` calls that used to be scattered through
+  // the sign-in / OTP / logout handlers left the modal exposed to
+  // assistive tech and to background focus.
+  function closeAuthModal() {
+    if (typeof window.closeGlobalAuth === 'function') {
+      window.closeGlobalAuth()
+      return
+    }
+    const mo = document.getElementById('colAuthModal')
+    if (mo) {mo.classList.remove('open')}
+  }
+
   // --- Local Account Storage Utilities ---
   // Local profiles are intentionally non-sensitive. Passwords are never
   // persisted in localStorage; offline credentials are represented only by a
@@ -322,6 +336,17 @@ window.closeMo = function () {
   window.colGetActiveLocalUser = getActiveLocalUser
   window.colSetActiveLocalUser = setActiveLocalUser
   window.colClearActiveLocalUser = clearActiveLocalUser
+  // Credential primitives. Sub-apps that store offline PINs must hash and
+  // verify through these rather than persisting the secret itself — the earlier
+  // TrafficSetup.html path wrote `pin`/`password` in cleartext and accepted any
+  // value when no PIN was present.
+  window.colCreateLocalCredential = createLocalCredential
+  window.colVerifyLocalCredential = verifyLocalCredential
+  // Escaping helpers. Sub-app pages should build DOM with these or with
+  // createElement/textContent rather than interpolating display names into
+  // innerHTML or inline event-handler attributes.
+  window.colEscapeHtml = escapeColHtml
+  window.colGetSafeImageUrl = getSafeImageUrl
 
   // Inject modal styles and UI immediately if DOM is ready
   function ensureAuthUI() {
@@ -337,14 +362,18 @@ window.closeMo = function () {
   }
 
   // 1. Fetch Global Configuration to get Supabase Keys (root-absolute so /Traffic/* pages resolve)
+  // The request is shared with col-router.js via window.__colConfigPromise so
+  // the site does not fetch /config.json twice on every page load.
   let authConfig = null
   try {
-    const res = await fetch('/config.json?t=' + new Date().getTime())
-    if (res.ok) {
-      const config = await res.json()
-      if (config.auth && config.auth.url && config.auth.key) {
-        authConfig = config.auth
-      }
+    window.__colConfigPromise =
+      window.__colConfigPromise ||
+      fetch('/config.json?t=' + new Date().getTime())
+        .then((r) => (r.ok ? r.json() : null))
+        .catch(() => null)
+    const config = await window.__colConfigPromise
+    if (config && config.auth && config.auth.url && config.auth.key) {
+      authConfig = config.auth
     }
   } catch (e) {
     console.warn('[col-auth] Could not load config.json — authentication disabled.')
@@ -402,7 +431,7 @@ window.closeMo = function () {
     if (window.colUser) {return}
     // Don't show One Tap on Driving.html levels screen or briefing screen
     const path = window.location.pathname.toLowerCase()
-    if (path.includes('driving') && (new URLSearchParams(window.location.search).get('screen') === 'levels' || new URLSearchParams(window.location.search).get('lv'))) {
+    if (path.includes('setup') || (path.includes('driving') && (new URLSearchParams(window.location.search).get('screen') === 'levels' || new URLSearchParams(window.location.search).get('lv')))) {
       return
     }
     google.accounts.id.initialize({
@@ -454,40 +483,62 @@ window.closeMo = function () {
           uid: null // Default until profile is fetched
         }
 
-        try {
-          const { data: upProfile } = await supabaseClient
-            .from('user_profiles')
-            .select('*')
-            .eq('user_id', userId)
-            .maybeSingle()
-
-          if (upProfile) {
-            window.colUser.uid = upProfile.id || upProfile.user_id
-            if (upProfile.display_name) {window.colUser.name = upProfile.display_name}
-            if (upProfile.avatar_url && !window.colUser.picture) {
-              window.colUser.picture = upProfile.avatar_url
-            }
-          } else {
-            const { data: profile, error } = await supabaseClient
-              .from('profiles')
-              .select('id, username, full_name, avatar_url')
-              .eq('id', userId)
+        if (!window._cloudProfilesDisabled) {
+          try {
+            const { data: upProfile, error: upError } = await supabaseClient
+              .from('user_profiles')
+              .select('*')
+              .eq('user_id', userId)
               .maybeSingle()
 
-            if (error && error.code !== 'PGRST116') {throw error}
-
-            if (profile) {
-              window.colUser.uid = profile.id
-              if (profile.username && !meta.full_name) {window.colUser.name = profile.username}
-              if (profile.avatar_url && !window.colUser.picture) {
-                window.colUser.picture = profile.avatar_url
-              }
-            } else {
-              promptForUsername()
+            if (upError && (upError.code === '42501' || upError.status === 403 || upError.status === 401 || upError.code === 'PGRST301')) {
+              window._cloudProfilesDisabled = true
             }
+
+            if (!upError && upProfile) {
+              window.colUser.uid = upProfile.id || upProfile.user_id
+              window.colUser.profile = upProfile
+              if (upProfile.display_name) {window.colUser.name = upProfile.display_name}
+              if (upProfile.display_name || upProfile.username) {
+                try {
+                  const safeTrafficUser = {
+                    id: userId,
+                    name: upProfile.display_name || displayName,
+                    username: upProfile.username || ('@' + (upProfile.display_name || displayName).toLowerCase().replace(/\s+/g, '')),
+                    vehicle: upProfile.preferred_vehicle || 'Car',
+                    age: upProfile.age || 18,
+                    language: upProfile.language || 'en',
+                    studentId: upProfile.student_id || null,
+                    picture: upProfile.avatar_url || photo || null,
+                    updatedAt: upProfile.updated_at || new Date().toISOString()
+                  }
+                  localStorage.setItem('traffic_local_user', JSON.stringify(safeTrafficUser))
+                  localStorage.setItem('trafficSetupComplete', 'true')
+                } catch (e) {}
+              }
+              if (upProfile.avatar_url && !window.colUser.picture) {
+                window.colUser.picture = upProfile.avatar_url
+              }
+            } else if (!window._cloudProfilesDisabled) {
+              const { data: profile, error } = await supabaseClient
+                .from('profiles')
+                .select('id, username, full_name, avatar_url')
+                .eq('id', userId)
+                .maybeSingle()
+
+              if (error && (error.code === '42501' || error.status === 403 || error.status === 400 || error.code === 'PGRST116')) {
+                window._cloudProfilesDisabled = true
+              } else if (profile) {
+                window.colUser.uid = profile.id
+                if (profile.username && !meta.full_name) {window.colUser.name = profile.username}
+                if (profile.avatar_url && !window.colUser.picture) {
+                  window.colUser.picture = profile.avatar_url
+                }
+              }
+            }
+          } catch (e) {
+            window._cloudProfilesDisabled = true
           }
-        } catch (e) {
-          console.error('[col-auth] Profile sync error:', e)
         }
 
         // Session data remains in memory only. Never persist Supabase
@@ -1191,11 +1242,20 @@ window.closeMo = function () {
     const body = document.getElementById('colAuthBody')
     if (!body) {return}
 
+    // promptForUsername() hides .col-auth-hd so the "Choose a username"
+    // screen reads as a welcome card. It never restores the header, so
+    // every later modal opened would have no title and no close button.
+    // Restore it whenever we render a normal panel.
+    const hd = document.querySelector('.col-auth-hd')
+    if (hd) {hd.style.display = ''}
+
     const hdTitle = document.getElementById('colAuthTitle')
     const hdSub = document.getElementById('colAuthSub') || document.querySelector('.col-auth-hd p')
 
     if (window.colUser) {
-      const isLocal = !!window.colUser.isLocal
+      // window.colUser only ever holds a verified Supabase session. Offline
+      // profiles live on window.colLocalUser and are rendered by the panel's
+      // own else-branch further down.
       const currentVeh = window.colUser.vehicle || (window.colUser.user_metadata && window.colUser.user_metadata.preferred_vehicle) || 'Car'
 
       if (tab === 'settings') {
@@ -1313,7 +1373,7 @@ window.closeMo = function () {
             <h3 style="margin-bottom: 4px; font-size: 1.25rem; color: var(--ink, #E8E3D8); font-weight: 700;">${escapeColHtml(window.colUser.name || 'User')}</h3>
             <p class="col-auth-email" style="color: var(--dim, #8891AA); font-size: 0.9rem; margin-bottom: 8px; text-transform: none !important;">${escapeColHtml(window.colUser.email ? window.colUser.email.toLowerCase() : (window.colUser.username || 'Local Profile'))}</p>
             <div style="display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin-top:8px;">
-                ${isLocal ? `<span style="padding:4px 10px; background:rgba(94,212,245,0.15); color:var(--ion,#5ED4F5); border-radius:20px; font-size:0.75rem; font-weight:700; border:1px solid rgba(94,212,245,0.3);">💾 Local Account</span>` : `<span style="padding:4px 10px; background:rgba(242,184,75,0.15); color:var(--signal,#F2B84B); border-radius:20px; font-size:0.75rem; font-weight:700; border:1px solid rgba(242,184,75,0.3);">⚡ Cloud Account</span>`}
+                <span style="padding:4px 10px; background:rgba(242,184,75,0.15); color:var(--signal,#F2B84B); border-radius:20px; font-size:0.75rem; font-weight:700; border:1px solid rgba(242,184,75,0.3);">⚡ Cloud Account</span>
                 ${currentVeh ? `<span style="padding:4px 10px; background:rgba(255,255,255,0.06); color:var(--ink,#E8E3D8); border-radius:20px; font-size:0.75rem; font-weight:600; border:1px solid rgba(255,255,255,0.1);">🚗 ${escapeColHtml(currentVeh)}</span>` : ''}
             </div>
         </div>
@@ -1805,8 +1865,7 @@ window.closeMo = function () {
       if (error) {throw error}
 
       colOtpState = { step: 'send', email: '' }
-      const mo = document.getElementById('colAuthModal')
-      if (mo) {mo.classList.remove('open')}
+      closeAuthModal()
       const loginMo = document.getElementById('loginMo')
       if (loginMo) {loginMo.classList.remove('open')}
       dispatchAuthEvent()
@@ -1881,8 +1940,7 @@ window.closeMo = function () {
               : 'This legacy local account must be recreated with a secure password.')
           }
           setActiveLocalUser(matched)
-          const mo = document.getElementById('colAuthModal')
-          if (mo) {mo.classList.remove('open')}
+          closeAuthModal()
           const loginMo = document.getElementById('loginMo')
           if (loginMo) {loginMo.classList.remove('open')}
           dispatchAuthEvent()
@@ -1913,8 +1971,7 @@ window.closeMo = function () {
                 badges: acc.badges || [],
                 updatedAt: new Date().toISOString()
               })
-              const mo = document.getElementById('colAuthModal')
-              if (mo) {mo.classList.remove('open')}
+              closeAuthModal()
               const loginMo = document.getElementById('loginMo')
               if (loginMo) {loginMo.classList.remove('open')}
               dispatchAuthEvent()
@@ -1938,8 +1995,7 @@ window.closeMo = function () {
         })
 
         if (res.error) {throw res.error}
-        const mo = document.getElementById('colAuthModal')
-        if (mo) {mo.classList.remove('open')}
+        closeAuthModal()
         const loginMo = document.getElementById('loginMo')
         if (loginMo) {loginMo.classList.remove('open')}
       } else {
@@ -1959,8 +2015,7 @@ window.closeMo = function () {
               errDiv.style.color = '#10b981'
               errDiv.style.display = 'block'
             } else {
-              const mo = document.getElementById('colAuthModal')
-              if (mo) {mo.classList.remove('open')}
+              closeAuthModal()
             }
           } catch (cloudErr) {
             console.warn('[col-auth] Cloud signup failed, saving to account system:', cloudErr)
@@ -1994,8 +2049,7 @@ window.closeMo = function () {
               console.warn('[col-auth] Account system cloud registration failed:', regErr)
             }
             setActiveLocalUser(newAcc)
-            const mo = document.getElementById('colAuthModal')
-            if (mo) {mo.classList.remove('open')}
+            closeAuthModal()
             dispatchAuthEvent()
             updateAuthUI()
             return
@@ -2016,8 +2070,7 @@ window.closeMo = function () {
             authSalt: credential.authSalt
           }
           setActiveLocalUser(newAcc)
-          const mo = document.getElementById('colAuthModal')
-          if (mo) {mo.classList.remove('open')}
+          closeAuthModal()
           dispatchAuthEvent()
           updateAuthUI()
         }
@@ -2034,8 +2087,7 @@ window.closeMo = function () {
   window.colDoLogout = async () => {
     if (window.colLocalUser?.isLocal) {
       clearActiveLocalUser()
-      const modal = document.getElementById('colAuthModal')
-      if (modal) {modal.classList.remove('open')}
+      closeAuthModal()
       const loginMo = document.getElementById('loginMo')
       if (loginMo) {loginMo.classList.remove('open')}
       dispatchAuthEvent()
@@ -2048,8 +2100,7 @@ window.closeMo = function () {
       } catch (e) {}
     }
     clearActiveLocalUser()
-    const modal = document.getElementById('colAuthModal')
-    if (modal) {modal.classList.remove('open')}
+    closeAuthModal()
     const loginMo = document.getElementById('loginMo')
     if (loginMo) {loginMo.classList.remove('open')}
     dispatchAuthEvent()
@@ -2075,7 +2126,7 @@ window.closeMo = function () {
   // --- Secure Profile Linking (Verification Code Flow) ---
   window.colAuthGenerateCode = async () => {
     if (!window.supabaseClient || !window.colUser) {
-      toast('Please log in to generate a linking code', '#ef4444');
+      if (typeof toast === 'function') {toast('Please log in to generate a linking code', '#ef4444')}
       return null;
     }
     try {
@@ -2130,14 +2181,16 @@ window.closeMo = function () {
         return
       }
       window.colApkFingerprint = fp
-      // Fetch expected fingerprint from config
+      // Fetch expected fingerprint from config (shared request, see window.__colConfigPromise)
       let expected = null
       try {
-        const res = await fetch('/config.json?t=' + Date.now())
-        if (res.ok) {
-          const cfg = await res.json()
-          expected = cfg.apkCertFingerprint || null
-        }
+        window.__colConfigPromise =
+          window.__colConfigPromise ||
+          fetch('/config.json?t=' + Date.now())
+            .then((r) => (r.ok ? r.json() : null))
+            .catch(() => null)
+        const cfg = await window.__colConfigPromise
+        if (cfg) {expected = cfg.apkCertFingerprint || null}
       } catch (e) {}
       if (expected && fp.toUpperCase() === expected.toUpperCase()) {
         window.colApkVerified = true

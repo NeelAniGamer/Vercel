@@ -40,6 +40,11 @@ class RoadEdge {
     this.type = options.type || 'arterial';
     this.segments = [];
     this._laneOffsets = null;
+    // Lazily built perpendicular used by getLaneCenter(). Computed once per edge
+    // instead of per call — getLaneCenter is one of the hottest functions in the
+    // AI loop (2-4 calls per NPC per frame, up to 110 NPCs) and was allocating
+    // two throwaway Vector3s each time. Never handed out, so caching is safe.
+    this._right = null;
 
     nodeA.addEdge(this);
     nodeB.addEdge(this);
@@ -60,11 +65,11 @@ class RoadEdge {
   getLaneOffsets() {
     if (!this._laneOffsets) {
       const halfWidth = this.width / 2;
-      const laneWidth = this.width / (this.lanes * 2);
+      const lanesPerSide = Math.max(1, this.lanes);
+      const laneWidth = halfWidth / lanesPerSide;
       this._laneOffsets = [];
-      for (let i = 0; i < this.lanes * 2; i++) {
-        const offset = (i - this.lanes + 0.5) * laneWidth;
-        this._laneOffsets.push(offset);
+      for (let i = 0; i < lanesPerSide; i++) {
+        this._laneOffsets.push((i + 0.5) * laneWidth);
       }
     }
     return this._laneOffsets;
@@ -78,10 +83,14 @@ class RoadEdge {
 
   getLaneCenter(laneIndex, t, side = 0) {
     const p = this.getPointAt(t);
-    const right = new THREE.Vector3().crossVectors(this.direction, new THREE.Vector3(0, 1, 0));
+    if (!this._right) {
+      this._right = new THREE.Vector3().crossVectors(this.direction, new THREE.Vector3(0, 1, 0));
+    }
     const offsets = this.getLaneOffsets();
     const offset = offsets[laneIndex] || 0;
-    return p.add(right.multiplyScalar(offset * (side === 0 ? 1 : -1)));
+    // `p` is freshly allocated by getPointAt, so mutating it here is safe and
+    // avoids a third allocation. `_right` is read-only and never returned.
+    return p.addScaledVector(this._right, offset * (side === 0 ? 1 : -1));
   }
 
   subdivide(segmentLength = 40) {
@@ -246,6 +255,28 @@ class RoadGraph {
   buildBuildingSlots(cfg) {
     const slotGrid = new Map();
     const slotGridSize = 25;
+    const roads = cfg.roads || [];
+    const plots = cfg.plots || [];
+    const hitsRoadOrPlot = (p, pad = 3.5) => {
+      for (let i = 0; i < roads.length; i++) {
+        const r = roads[i];
+        const rw = (r.width || 12) / 2 + pad;
+        if (r.type === 'v') {
+          const z1 = Math.min(r.z1, r.z2) - rw, z2 = Math.max(r.z1, r.z2) + rw;
+          if (p.z >= z1 && p.z <= z2 && Math.abs(p.x - r.x) < rw) { return true; }
+        } else {
+          const x1 = Math.min(r.x1, r.x2) - rw, x2 = Math.max(r.x1, r.x2) + rw;
+          if (p.x >= x1 && p.x <= x2 && Math.abs(p.z - r.z) < rw) { return true; }
+        }
+      }
+      for (let i = 0; i < plots.length; i++) {
+        const pl = plots[i];
+        if (!pl || typeof pl.x !== 'number') { continue; }
+        const hw = (pl.w || 14) / 2 + pad, hd = (pl.d || 14) / 2 + pad;
+        if (Math.abs(p.x - pl.x) < hw && Math.abs(p.z - pl.z) < hd) { return true; }
+      }
+      return false;
+    };
     const isSlotTooClose = (p, minD) => {
       const gx = Math.floor(p.x / slotGridSize);
       const gz = Math.floor(p.z / slotGridSize);
@@ -304,7 +335,7 @@ class RoadGraph {
           const depth1 = isRes ? 14.0 : 20.0;
           const slot1 = new BuildingSlot(seg, side, t, depth1, zone);
           const pos1 = slot1.getWorldPosition();
-          if (!isSlotTooClose(pos1, isRes ? 16.0 : 18.0)) {
+          if (!isSlotTooClose(pos1, isRes ? 14.0 : 16.0) && !hitsRoadOrPlot(pos1, 3.5)) {
             registerSlot(slot1, pos1);
           }
 
@@ -313,7 +344,7 @@ class RoadGraph {
             const depth2 = depth1 + 24.0;
             const slot2 = new BuildingSlot(seg, side, t, depth2, zone);
             const pos2 = slot2.getWorldPosition();
-            if (!isSlotTooClose(pos2, 18.0)) {
+            if (!isSlotTooClose(pos2, 16.0) && !hitsRoadOrPlot(pos2, 3.5)) {
               registerSlot(slot2, pos2);
             }
           }
@@ -362,17 +393,24 @@ class RoadGraph {
     const gx = Math.floor(x / this._gridSize);
     const gz = Math.floor(z / this._gridSize);
     let best = null, bestDist = Infinity;
-    for (let dx = -1; dx <= 1; dx++) {
-      for (let dz = -1; dz <= 1; dz++) {
+    const pt = new THREE.Vector3(x, 0, z);
+    for (let dx = -2; dx <= 2; dx++) {
+      for (let dz = -2; dz <= 2; dz++) {
         const key = `${gx + dx},${gz + dz}`;
         const cells = this._nodeGrid.get(key);
         if (cells) {
           cells.forEach(node => {
-            const d = node.position.distanceTo(new THREE.Vector3(x, 0, z));
+            const d = node.position.distanceTo(pt);
             if (d < bestDist) { bestDist = d; best = node; }
           });
         }
       }
+    }
+    if (!best) {
+      this.nodes.forEach(node => {
+        const d = node.position.distanceTo(pt);
+        if (d < bestDist) { bestDist = d; best = node; }
+      });
     }
     return best;
   }
@@ -380,8 +418,12 @@ class RoadGraph {
   getNearestEdge(x, z, maxDist = 50) {
     let best = null, bestDist = Infinity;
     this.edges.forEach(edge => {
-      const p = edge.getPointAt(0.5);
-      const d = Math.hypot(p.x - x, p.z - z);
+      const a = edge.nodes[0].position, b = edge.nodes[1].position;
+      const abx = b.x - a.x, abz = b.z - a.z;
+      const lenSq = abx * abx + abz * abz;
+      const t = lenSq > 0 ? Math.max(0, Math.min(1, ((x - a.x) * abx + (z - a.z) * abz) / lenSq)) : 0;
+      const px = a.x + t * abx, pz = a.z + t * abz;
+      const d = Math.hypot(px - x, pz - z);
       if (d < bestDist && d < maxDist) { bestDist = d; best = edge; }
     });
     return best;
