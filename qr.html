@@ -1405,7 +1405,7 @@
           <span class="sb-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
           Account &amp; Sync
         </a>
-      </div>
+
 
       <div class="sb-foot">
           <button class="sign-btn" id="sbSignBtn" onclick="openLogin()">
@@ -1611,7 +1611,7 @@
           if (uniqueTypes.indexOf(q.type) === -1) uniqueTypes.push(q.type)
         })
         document.getElementById('stTypes').textContent = uniqueTypes.length
-        document.getElementById('stLast').textContent = saved.length > 0 ? saved[0].date : '&mdash;'
+        document.getElementById('stLast').textContent = saved.length > 0 ? saved[0].date : '—'
 
         const dbs = document.getElementById('dbSub')
         if (curUser && dbs) dbs.textContent = `Dashboard synced. ${saved.length} assets ready.`
