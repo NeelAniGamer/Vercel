@@ -6,6 +6,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Class Of Learners" />
     <script>
@@ -1369,6 +1370,205 @@
       body.lm .gallery-title {
         color: #0f172a;
       }
+    
+      /* ──── ATI TELEMETRY STATS BAR ──── */
+      .ati-stats-bar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 32px;
+        flex-wrap: wrap;
+        width: 90%;
+        max-width: 1040px;
+        margin: 35px auto 0;
+        padding: 16px 28px;
+        background: rgba(15, 23, 42, 0.7);
+        border: 1px solid rgba(56, 189, 248, 0.22);
+        border-radius: 16px;
+        backdrop-filter: blur(12px);
+        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      }
+      .asb-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+      .asb-num {
+        font-family: 'Space Mono', monospace;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--primary);
+        letter-spacing: -0.5px;
+      }
+      .asb-lbl {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-top: 2px;
+      }
+      .asb-divider {
+        width: 1px;
+        height: 28px;
+        background: rgba(255, 255, 255, 0.12);
+      }
+      body.lm .ati-stats-bar {
+        background: #ffffff;
+        border-color: rgba(2, 132, 199, 0.25);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      }
+      body.lm .asb-divider {
+        background: rgba(0, 0, 0, 0.1);
+      }
+
+      /* ──── PLATFORM ECOSYSTEM SECTION ──── */
+      .platforms-section {
+        width: 90%;
+        max-width: 1200px;
+        margin: 40px auto 80px;
+      }
+      .section-heading-wrap {
+        text-align: center;
+        margin-bottom: 36px;
+      }
+      .section-eyebrow {
+        font-family: 'Space Mono', monospace;
+        font-size: 0.75rem;
+        letter-spacing: 2px;
+        color: var(--primary);
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        display: inline-block;
+      }
+      .section-title {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: var(--text-main);
+        letter-spacing: -0.5px;
+      }
+      .platforms-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 20px;
+      }
+      .platform-card {
+        background: rgba(15, 23, 42, 0.75);
+        border: 1px solid rgba(56, 189, 248, 0.18);
+        border-radius: 14px;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        backdrop-filter: blur(10px);
+      }
+      .platform-card:hover {
+        border-color: var(--primary);
+        transform: translateY(-5px);
+        box-shadow: 0 16px 36px rgba(56, 189, 248, 0.15);
+      }
+      .plat-icon {
+        font-size: 1.8rem;
+        margin-bottom: 12px;
+        color: var(--primary);
+        display: inline-block;
+      }
+      .plat-name {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 6px;
+      }
+      .plat-desc {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+        margin-bottom: 18px;
+        flex-grow: 1;
+      }
+      .plat-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: 0.2s;
+        background: rgba(56, 189, 248, 0.12);
+        color: var(--primary);
+        border: 1px solid rgba(56, 189, 248, 0.3);
+      }
+      .plat-btn:hover {
+        background: var(--primary);
+        color: #000;
+      }
+      body.lm .platform-card {
+        background: #ffffff;
+        border-color: rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+      }
+      body.lm .plat-btn {
+        background: rgba(2, 132, 199, 0.08);
+        border-color: rgba(2, 132, 199, 0.3);
+      }
+      body.lm .plat-btn:hover {
+        background: var(--primary);
+        color: #ffffff;
+      }
+
+      /* ──── SHOWCASE CAPTION & ARROWS ──── */
+      .showcase-caption-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: 12px 18px;
+        background: rgba(11, 18, 33, 0.9);
+        border: 1px solid rgba(56, 189, 248, 0.2);
+        border-radius: 10px;
+        margin-top: 10px;
+      }
+      .scb-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--text-main);
+      }
+      .scb-count {
+        font-family: 'Space Mono', monospace;
+        font-size: 0.8rem;
+        color: var(--primary);
+        padding: 2px 8px;
+        background: rgba(56, 189, 248, 0.1);
+        border-radius: 6px;
+      }
+      .showcase-nav-btn {
+        background: rgba(56, 189, 248, 0.1);
+        border: 1px solid rgba(56, 189, 248, 0.3);
+        color: var(--primary);
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: 0.2s;
+        font-size: 1.2rem;
+      }
+      .showcase-nav-btn:hover {
+        background: var(--primary);
+        color: #000;
+      }
+      body.lm .showcase-caption-bar {
+        background: #ffffff;
+        border-color: rgba(0, 0, 0, 0.1);
+      }
+
     </style>
     <script defer src="col-router.js"></script>
     <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
@@ -1522,13 +1722,41 @@
     </script>
 
     <header class="game-hero" style="position: relative;">
-      <div class="hero-badge anim-target">ATI v3.2.0 &bull; Cyber-Mechanical Edition</div>
-      <h1><span id="typewriter-text">&gt; ADVANCED TYPING INSTRUCTOR_ /</span><span class="cursor-blink">_</span></h1>
-      <div class="hero-reveal" id="heroReveal">
-        <p>Deploying high-fidelity syntax mastery module. Train your muscle memory for complex coding languages.</p>
+      <div class="hero-badge anim-target">ATI v1.4 &bull; Flagship Cyber-Mechanical Edition</div>
+      <h1><span id="typewriter-text">&gt; ADVANCED TYPING INSTRUCTOR 1.4</span><span class="cursor-blink">_</span></h1>
+      <div class="hero-reveal visible" id="heroReveal">
+        <p>Master touch-typing, speed sprints, and real programming language syntax (Python, C++, JavaScript) with adaptive muscle memory heatmaps and mechanical switch sound synthesis.</p>
         <div class="hero-cta">
-          <a href="download" class="btn-download">Initialize Download</a>
-          <a href="ati-demo" class="btn-demo"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:6px"><polygon points="5 3 19 12 5 21 5 3"/></svg>Play Web Demo</a>
+          <a href="download" class="btn-download"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download Desktop &amp; APK</a>
+          <a href="ati-demo" class="btn-demo"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><polygon points="5 3 19 12 5 21 5 3"/></svg> Launch Web Velocity Demo</a>
+        </div>
+      </div>
+
+      <!-- Telemetry Stats Bar -->
+      <div class="ati-stats-bar anim-target">
+        <div class="asb-item">
+          <span class="asb-num">200+</span>
+          <span class="asb-lbl">Curriculum Levels</span>
+        </div>
+        <div class="asb-divider"></div>
+        <div class="asb-item">
+          <span class="asb-num">5</span>
+          <span class="asb-lbl">Engine Modes</span>
+        </div>
+        <div class="asb-divider"></div>
+        <div class="asb-item">
+          <span class="asb-num">8</span>
+          <span class="asb-lbl">Keyboard Layouts</span>
+        </div>
+        <div class="asb-divider"></div>
+        <div class="asb-item">
+          <span class="asb-num">&lt; 1ms</span>
+          <span class="asb-lbl">Input Latency</span>
+        </div>
+        <div class="asb-divider"></div>
+        <div class="asb-item">
+          <span class="asb-num">Cross-Platform</span>
+          <span class="asb-lbl">Win &bull; Linux &bull; Android</span>
         </div>
       </div>
     </header>
@@ -1538,7 +1766,7 @@
         <div class="feature-content">
           <div class="icon-wrapper">{ }</div>
           <h3>Syntax Mastery</h3>
-          <p>Use adaptive touch typing practice to build speed and accuracy with real code syntax, correct formatting, and live WPM analytics.</p>
+          <p>Build muscle memory for real developer code with live syntax formatting, brackets, indentation, and punctuation across major languages.</p>
           <div class="tech-tags">
             <span class="tech-tag tag-py">Python</span>
             <span class="tech-tag tag-cpp">C++</span>
@@ -1546,21 +1774,105 @@
           </div>
         </div>
       </div>
-      <div class="feature-card anim-target" style="transition-delay: 0.15s">
+      <div class="feature-card anim-target" style="transition-delay: 0.1s">
         <div class="feature-content">
-          <div class="icon-wrapper">++</div>
-          <h3>XP Progression</h3>
-          <p>Earn experience points, level up your profile, and unlock advanced difficulty tiers.</p>
+          <div class="icon-wrapper">200+</div>
+          <h3>200 Levels &amp; 5 Chapters</h3>
+          <p>Structured curriculum from foundational Home Row anchors through symbols and sprint challenges up to Developer Grandmaster rank.</p>
+          <div class="tech-tags">
+            <span class="tech-tag tag-cpp">Curriculum</span>
+            <span class="tech-tag tag-py">Adaptive Difficulty</span>
+          </div>
+        </div>
+      </div>
+      <div class="feature-card anim-target" style="transition-delay: 0.2s">
+        <div class="feature-content">
+          <div class="icon-wrapper"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"/></svg></div>
+          <h3>Mech Switch Synthesis</h3>
+          <p>Real-time WebAudio synthesized switch acoustic feedback simulating Blue (clicky), Brown (tactile thock), and Red (smooth linear) switches.</p>
+          <div class="tech-tags">
+            <span class="tech-tag tag-js">WebAudio</span>
+            <span class="tech-tag tag-py">Mechanical Sound</span>
+          </div>
+        </div>
+      </div>
+      <div class="feature-card anim-target" style="transition-delay: 0.1s">
+        <div class="feature-content">
+          <div class="icon-wrapper"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+          <h3>Multiplayer Race Arena</h3>
+          <p>Compete head-to-head with friends over local LAN or cloud rooms. Synchronized live race progress with strict text sanitization integrity.</p>
+          <div class="tech-tags">
+            <span class="tech-tag tag-cpp">LAN &bull; Cloud</span>
+            <span class="tech-tag tag-js">Multiplayer</span>
+          </div>
+        </div>
+      </div>
+      <div class="feature-card anim-target" style="transition-delay: 0.2s">
+        <div class="feature-content">
+          <div class="icon-wrapper"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+          <h3>Biometric Heatmap Telemetry</h3>
+          <p>Detailed performance analytics tracking keystroke consistency, finger hesitation pauses, error clusters, and raw CPM velocity.</p>
+          <div class="tech-tags">
+            <span class="tech-tag tag-py">Finger Radar</span>
+            <span class="tech-tag tag-cpp">Analytics</span>
+          </div>
         </div>
       </div>
       <div class="feature-card anim-target" style="transition-delay: 0.3s">
         <div class="feature-content">
-          <div class="icon-wrapper"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"/></svg></div>
-          <h3>Mech Simulator</h3>
-          <p>Virtual mechanical keyboard interface with custom switch sounds and visual heatmaps.</p>
+          <div class="icon-wrapper">&#9881;</div>
+          <h3>8 Physical Layouts</h3>
+          <p>Full support for QWERTY, Dvorak, Colemak, Workman, and international keyboard configurations with native soft keyboard on mobile.</p>
+          <div class="tech-tags">
+            <span class="tech-tag tag-js">QWERTY</span>
+            <span class="tech-tag tag-py">Dvorak</span>
+            <span class="tech-tag tag-cpp">Colemak</span>
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- Platform Ecosystem & Download Hub Section -->
+    <section class="platforms-section anim-target">
+      <div class="section-heading-wrap">
+        <span class="section-eyebrow">Production Matrix</span>
+        <h2 class="section-title">Supported Platforms &amp; Native Apps</h2>
+      </div>
+      <div class="platforms-grid">
+        <div class="platform-card">
+          <div>
+            <div class="plat-icon">&#128421;&#65039;</div>
+            <div class="plat-name">Windows 10 / 11</div>
+            <div class="plat-desc">Native 64-bit desktop build with standalone executable, offline SQLite persistence, and ultra-low input latency.</div>
+          </div>
+          <a href="download" class="plat-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Windows Setup (.exe)</a>
+        </div>
+        <div class="platform-card">
+          <div>
+            <div class="plat-icon">&#128039;</div>
+            <div class="plat-name">Linux &amp; Debian</div>
+            <div class="plat-desc">Native Debian package (.deb) and portable tarball (.tar.gz) featuring XDG desktop integration and high-res icon set.</div>
+          </div>
+          <a href="download" class="plat-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Linux Debian (.deb)</a>
+        </div>
+        <div class="platform-card">
+          <div>
+            <div class="plat-icon">&#128241;</div>
+            <div class="plat-name">Android Native APK</div>
+            <div class="plat-desc">100% feature-complete mobile package with Android IME soft keyboard integration, tablet layouts, and switch audio.</div>
+          </div>
+          <a href="download" class="plat-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Android APK (.apk)</a>
+        </div>
+        <div class="platform-card" style="border-color: rgba(56, 189, 248, 0.4);">
+          <div>
+            <div class="plat-icon">&#127760;</div>
+            <div class="plat-name">Browser Velocity Studio</div>
+            <div class="plat-desc">Zero installation required. Launch our real-time typing evaluation engine directly inside any modern browser.</div>
+          </div>
+          <a href="ati-demo" class="plat-btn" style="background: var(--primary); color: #000;"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg> Launch Interactive Demo</a>
+        </div>
+      </div>
+    </section>
 
     <div class="gallery-title anim-target">System Interfaces</div>
     <div class="cyber-showcase-container anim-target">
@@ -1572,6 +1884,19 @@
         <img id="mainShowcaseImg" src="ATI 1.png" alt="ATI Main Interface View" width="1280" height="800" loading="lazy" decoding="async" />
         <div class="scanline"></div>
       </div>
+
+      <!-- Slide Caption & Quick Nav Bar -->
+      <div class="showcase-caption-bar">
+        <button class="showcase-nav-btn" onclick="prevSlide()" aria-label="Previous Screenshot">&#8249;</button>
+        <div style="text-align: center;">
+          <div class="scb-title" id="showcaseCaption">01 &mdash; Organic Innovation Touch Typing Dashboard</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span class="scb-count" id="showcaseCounter">1 / 13</span>
+          <button class="showcase-nav-btn" onclick="nextSlide()" aria-label="Next Screenshot">&#8250;</button>
+        </div>
+      </div>
+
       <div class="thumbnail-track">
         <div class="thumb-card active" onclick="updateShowcase(this, 'ATI 1.png')">
           <img src="ATI 1.png" alt="ATI Interface 1" loading="lazy" decoding="async" />
@@ -1643,37 +1968,85 @@
         })
       }
 
-      // Typewriter
-      const textToType = '> ADVANCED TYPING INSTRUCTOR_ /'
-      const typeTarget = document.getElementById('typewriter-text')
-      const revealTarget = document.getElementById('heroReveal')
-      let typeIndex = 0
+      // Captions definition for the 13 screenshots
+      const SLIDE_CAPTIONS = [
+        "01 — Organic Innovation Touch Typing Dashboard & Progression",
+        "02 — Stage Selection & 200 Levels Learning Map",
+        "03 — Adaptive Practice Canvas & Finger Anchor Guidance",
+        "04 — Real-Time Developer Code Syntax Highlighting",
+        "05 — Interactive Heatmap & Weak Key Telemetry",
+        "06 — Mechanical Switch Synthesizer & Audio Forge",
+        "07 — Deep WPM Velocity & Consistency Analytics",
+        "08 — Multiplayer Race Arena & Room Code Lobby",
+        "09 — Live Head-to-Head Multiplayer Race Speedway",
+        "10 — Daily Speed Sprint & Global Velocity Leaderboard",
+        "11 — Developer Special Characters & Punctuation Drill",
+        "12 — Custom Code Snippet & Literature Import Studio",
+        "13 — Grandmaster Achievement Badges & Vault"
+      ];
+      let currentSlideIndex = 0;
+
+      function updateSlideUI(index) {
+        currentSlideIndex = (index + SLIDE_CAPTIONS.length) % SLIDE_CAPTIONS.length;
+        const imgSrc = 'ATI ' + (currentSlideIndex + 1) + '.png';
+        
+        const mainImg = document.getElementById('mainShowcaseImg');
+        const caption = document.getElementById('showcaseCaption');
+        const counter = document.getElementById('showcaseCounter');
+        
+        if (caption) caption.textContent = SLIDE_CAPTIONS[currentSlideIndex];
+        if (counter) counter.textContent = (currentSlideIndex + 1) + ' / ' + SLIDE_CAPTIONS.length;
+        
+        const thumbs = document.querySelectorAll('.thumb-card');
+        thumbs.forEach((t, i) => {
+          t.classList.toggle('active', i === currentSlideIndex);
+        });
+        
+        if (mainImg) {
+          mainImg.style.opacity = 0;
+          setTimeout(() => {
+            mainImg.src = imgSrc;
+            mainImg.style.opacity = 1;
+          }, 150);
+        }
+      }
+
+      function nextSlide() { updateSlideUI(currentSlideIndex + 1); }
+      function prevSlide() { updateSlideUI(currentSlideIndex - 1); }
+
+      function updateShowcase(element, imgSrc) {
+        const match = imgSrc.match(/ATI\s*(\d+)\.png/);
+        if (match) {
+          updateSlideUI(parseInt(match[1], 10) - 1);
+        }
+      }
+
+      // Smooth cyber prompt
+      const textToType = '> ADVANCED TYPING INSTRUCTOR 1.4';
+      const typeTarget = document.getElementById('typewriter-text');
+      const revealTarget = document.getElementById('heroReveal');
+      let typeIndex = 0;
       function typeWriter() {
         if (typeIndex < textToType.length) {
-          typeTarget.innerHTML += textToType.charAt(typeIndex)
-          typeIndex++
-          setTimeout(typeWriter, 40)
-        } else {
-          setTimeout(() => {
-            revealTarget.classList.add('visible')
-          }, 200)
+          typeTarget.textContent += textToType.charAt(typeIndex);
+          typeIndex++;
+          setTimeout(typeWriter, 35);
         }
       }
 
       function triggerAnimations() {
-        document.querySelectorAll('.anim-target').forEach((t) => t.classList.add('animate-in'))
+        document.querySelectorAll('.anim-target').forEach((t) => t.classList.add('animate-in'));
       }
 
-      function updateShowcase(element, imgSrc) {
-        document.querySelectorAll('.thumb-card').forEach((t) => t.classList.remove('active'))
-        element.classList.add('active')
-        const mainImg = document.getElementById('mainShowcaseImg')
-        mainImg.style.opacity = 0
-        setTimeout(() => {
-          mainImg.src = imgSrc
-          mainImg.style.opacity = 1
-        }, 200)
-      }
+      // Global theme toggle function
+      window.hzToggle = function () {
+        var isLight = !document.documentElement.classList.contains('lm');
+        document.documentElement.classList.toggle('lm', isLight);
+        document.body.classList.toggle('lm', isLight);
+        try {
+          localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        } catch (_e) {}
+      };
 
       // Accessible Dropdown Interaction & Close on Outside Click
       var projDD = document.getElementById('projDD')
@@ -1706,7 +2079,7 @@
         }
 
         setTimeout(() => {
-          typeTarget.innerHTML = '' // clear the static fallback text before typing
+          typeTarget.textContent = '';
           typeWriter()
         }, 250)
         setTimeout(triggerAnimations, 100)

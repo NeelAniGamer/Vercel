@@ -5,8 +5,10 @@
      crossorigin="anonymous"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Advanced Typing Instructor (ATI) Web Demo v3.0 — Master touch typing with automated AI simulation, code syntax highlights, mechanical keyboard audio, and live telemetry." />
-    <title>ATI Typing Studio v3.0 · Class Of Learners</title>
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="description" content="Advanced Typing Instructor (ATI 1.4) Web Velocity Studio — Master touch typing, Python, C++, and JavaScript code syntax with AI typist simulation, WebAudio mechanical switch sound synthesis, live WPM telemetry, and keyboard radar." />
+    <title>ATI Velocity Studio · Advanced Typing Instructor 1.4 · Class Of Learners</title>
     <link rel="icon" type="image/png" href="Icon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -765,6 +767,109 @@
         .key.enter::after { content: "\23CE"; font-size: 0.85rem; }
         .key.shift::after { content: "\21E7"; font-size: 0.85rem; }
       }
+    
+      /* Breadcrumbs & Navigation Header */
+      .ati-nav-breadcrumb {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+      }
+      .ati-back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--ion);
+        text-decoration: none;
+        font-family: var(--mono);
+        font-size: 0.85rem;
+        font-weight: 700;
+        padding: 6px 14px;
+        background: rgba(94, 212, 245, 0.08);
+        border: 1px solid rgba(94, 212, 245, 0.25);
+        border-radius: 8px;
+        transition: all 0.2s;
+      }
+      .ati-back-link:hover {
+        background: var(--ion);
+        color: #000;
+        transform: translateX(-3px);
+      }
+      .ati-desktop-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--teal);
+        text-decoration: none;
+        font-family: var(--mono);
+        font-size: 0.82rem;
+        font-weight: 700;
+        padding: 6px 14px;
+        background: rgba(163, 230, 53, 0.08);
+        border: 1px solid rgba(163, 230, 53, 0.25);
+        border-radius: 8px;
+        transition: all 0.2s;
+      }
+      .ati-desktop-link:hover {
+        background: var(--teal);
+        color: #070a14;
+        transform: translateY(-2px);
+      }
+      body.lm .ati-back-link {
+        background: rgba(2, 132, 199, 0.08);
+        border-color: rgba(2, 132, 199, 0.25);
+      }
+      body.lm .ati-desktop-link {
+        background: rgba(77, 124, 15, 0.08);
+        border-color: rgba(77, 124, 15, 0.25);
+      }
+
+      /* Results Overlay CTAs */
+      .results-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 10px;
+      }
+      .btn-overlay-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 14px 22px;
+        border-radius: 12px;
+        font-family: var(--mono);
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.2s;
+      }
+      .btn-overlay-cta.primary {
+        background: var(--teal);
+        color: #070a14;
+        box-shadow: 0 4px 15px rgba(163, 230, 53, 0.3);
+      }
+      .btn-overlay-cta.primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 22px rgba(163, 230, 53, 0.5);
+      }
+      .btn-overlay-cta.secondary {
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--ink);
+        border: 1px solid var(--lineb);
+      }
+      .btn-overlay-cta.secondary:hover {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: var(--ink);
+        transform: translateY(-2px);
+      }
+      body.lm .btn-overlay-cta.secondary {
+        background: #f1f5f9;
+        border-color: rgba(0, 0, 0, 0.12);
+      }
+
     </style>
   </head>
   <body>
@@ -897,11 +1002,23 @@
 
     <!-- Main Container -->
     <div class="page-wrap">
+      <!-- Breadcrumb Header -->
+      <div class="ati-nav-breadcrumb">
+        <a href="ati" class="ati-back-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          <span>Back to ATI 1.4 Overview</span>
+        </a>
+        <a href="download" class="ati-desktop-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>Download Native App (Win &bull; Linux &bull; APK)</span>
+        </a>
+      </div>
+
       <!-- Hero -->
       <div class="ati-hero">
         <div class="ati-eyebrow">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
-          ATI v3.2.0 &bull; Interactive Velocity Studio
+          ATI v1.4 &bull; Interactive Velocity Studio
         </div>
         <h1>Syntax &amp; <em>Velocity Studio</em></h1>
         <p>Dynamic touch-typing evaluation engine with AI typing simulation, real-time keyboard finger guides, code syntax highlighting, and live telemetry.</p>
@@ -1034,10 +1151,20 @@
                 <div class="res-detail-lbl">Consistency</div>
               </div>
             </div>
-            <button class="btn-restart" onclick="resetGame()" style="display: inline-flex; align-items: center; gap: 8px;">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
-              <span>Restart Test Engine</span>
-            </button>
+            <div class="results-actions">
+              <button class="btn-restart" onclick="resetGame()" style="display: inline-flex; align-items: center; gap: 8px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                <span>Restart Test (Esc)</span>
+              </button>
+              <a href="download" class="btn-overlay-cta primary">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span>Download ATI 1.4 Suite</span>
+              </a>
+              <a href="ati" class="btn-overlay-cta secondary">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                <span>Explore Features</span>
+              </a>
+            </div>
           </div>
         </div>
 
@@ -1157,44 +1284,59 @@
         if (audioProfileIndex === 3) return; // Muted
         if (audioCtx.state === 'suspended') audioCtx.resume();
 
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
         const now = audioCtx.currentTime;
 
         if (isError) {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
           osc.type = 'sawtooth';
-          osc.frequency.setValueAtTime(140, now);
-          gain.gain.setValueAtTime(0.25, now);
-          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+          osc.frequency.setValueAtTime(130, now);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.005, now + 0.1);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
           osc.start(now);
-          osc.stop(now + 0.12);
+          osc.stop(now + 0.1);
           return;
         }
 
-        if (audioProfileIndex === 0) { // Blue clicky
+        if (audioProfileIndex === 0) { // Blue clicky (crisp tactile ping + key clack)
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
           osc.type = 'triangle';
-          osc.frequency.setValueAtTime(1200 + Math.random() * 300, now);
+          osc.frequency.setValueAtTime(1400 + Math.random() * 250, now);
           gain.gain.setValueAtTime(0.12, now);
-          gain.gain.exponentialRampToValueAtTime(0.005, now + 0.04);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.035);
+        } else if (audioProfileIndex === 1) { // Brown thocky (warm resonant lower clack)
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          const filter = audioCtx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(600, now);
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(420 + Math.random() * 60, now);
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.exponentialRampToValueAtTime(0.005, now + 0.055);
+          osc.connect(filter);
+          filter.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.055);
+        } else { // Red linear (soft dampened glide)
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(280 + Math.random() * 40, now);
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.002, now + 0.04);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
           osc.start(now);
           osc.stop(now + 0.04);
-        } else if (audioProfileIndex === 1) { // Brown thocky
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(450 + Math.random() * 80, now);
-          gain.gain.setValueAtTime(0.2, now);
-          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.06);
-          osc.start(now);
-          osc.stop(now + 0.06);
-        } else { // Red linear
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(320 + Math.random() * 50, now);
-          gain.gain.setValueAtTime(0.1, now);
-          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
-          osc.start(now);
-          osc.stop(now + 0.05);
         }
       }
 
@@ -1235,7 +1377,7 @@
               e.preventDefault();
               focusTypingInput();
               if (k === 'Backspace') {
-                // Backspace if desired or skip
+                handleBackspace();
               } else if (k === 'Enter') {
                 handleTypingCharacter('\n');
               } else if (k === 'Space') {
@@ -1420,6 +1562,44 @@
         if (charIndex >= targetText.length) {
           endTest();
         }
+      }
+
+      function handleBackspace() {
+        if (charIndex <= 0 || isSimulating) return;
+
+        charIndex--;
+        const spans = document.getElementById('textDisplay').querySelectorAll('span');
+        const prevSpan = spans[charIndex];
+
+        if (prevSpan.classList.contains('correct')) {
+          correctKeys = Math.max(0, correctKeys - 1);
+          streak = Math.max(0, streak - 1);
+        }
+
+        // Revert span class
+        prevSpan.className = (targetText[charIndex] === '\n') ? 'char newline' : 'char';
+
+        // Recalculate live stats
+        const elapsed = duration - timeLeft || 1;
+        const currentWPM = Math.round((correctKeys / 5) / (elapsed / 60));
+        const currentCPM = Math.round(correctKeys / (elapsed / 60));
+        const acc = totalKeys > 0 ? Math.round((correctKeys / totalKeys) * 100) : 100;
+
+        document.getElementById('statWPM').textContent = currentWPM;
+        document.getElementById('statCPM').textContent = currentCPM;
+        document.getElementById('statAcc').textContent = acc + '%';
+        document.getElementById('statStreak').textContent = streak;
+
+        // Terminal streaks glow
+        const term = document.getElementById('terminal');
+        if (streak >= 40) term.className = 'terminal glow-3';
+        else if (streak >= 25) term.className = 'terminal glow-2';
+        else if (streak >= 12) term.className = 'terminal glow-1';
+        else term.className = 'terminal';
+
+        updateCursor();
+        highlightNextKey();
+        playKeySound(false);
       }
 
       function startTimer() {
@@ -1615,6 +1795,20 @@
         }
 
         if (!isSimulating && !document.getElementById('customTextModal').classList.contains('show')) {
+          if (e.key === 'Backspace') {
+            e.preventDefault();
+            handleBackspace();
+            return;
+          }
+          if (e.key === 'Tab') {
+            e.preventDefault();
+            if (charIndex < targetText.length && targetText[charIndex] === '\t') {
+              handleTypingCharacter('\t');
+            } else {
+              handleTypingCharacter(' ');
+            }
+            return;
+          }
           if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
             handleTypingCharacter(e.key);
           } else if (e.key === 'Enter') {
@@ -1622,6 +1816,22 @@
           }
         }
       });
+
+      // Soft Mobile Keyboard & Input Sync
+      const hiddenInputEl = document.getElementById('hiddenInput');
+      if (hiddenInputEl) {
+        hiddenInputEl.addEventListener('input', (e) => {
+          if (isSimulating) return;
+          if (e.inputType === 'deleteContentBackward') {
+            handleBackspace();
+          } else if (e.data) {
+            for (let i = 0; i < e.data.length; i++) {
+              handleTypingCharacter(e.data[i]);
+            }
+          }
+          hiddenInputEl.value = '';
+        });
+      }
 
       // Init immediately
       buildVirtualKeyboard();
