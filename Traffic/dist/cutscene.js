@@ -1245,6 +1245,7 @@
         ov.title.style.transform = 'translateY(' + ((1 - Math.max(0, Math.min(1, tp))) * 10) + 'px)';
       } else {
         ov.title.style.opacity = '0';
+        ov.title.textContent = '';
       }
     }
 
@@ -2116,8 +2117,12 @@
       var shot = ACTIVE.script[ACTIVE.idx];
       if (!shot) { finish(true); return false; }
       var durMs = Math.max(50, (shot.dur || 3) * 1000);
+      if (ACTIVE.paused) {
+        var frozenP = (ACTIVE.pausedP != null) ? ACTIVE.pausedP : 0.2;
+        ACTIVE.shotStartedAt = now - (frozenP * durMs);
+      }
       var elapsed = now - ACTIVE.shotStartedAt;
-      var p = elapsed / durMs;
+      var p = Math.max(0, Math.min(1, elapsed / durMs));
 
       // Lens rain advances on wall-clock dt. Gated on the act so a dry daylight
       // beat pays nothing for a rain canvas it never shows.
@@ -2157,6 +2162,20 @@
           vB.position.x = 3.6 - fallP * 1.4;
           vB.position.y = fallP * 0.22;
           vB.position.z = -12.5 - fallP * 0.2;
+
+          if (fallP >= 0.75) {
+            if (vB.userData && vB.userData.rider) {
+              vB.userData.rider.visible = false;
+            }
+            if (!ACTIVE._fallenOfficerMesh && typeof window._buildFallenOfficer === 'function') {
+              var fo = window._buildFallenOfficer();
+              if (fo) {
+                fo.position.set(4.0, 0, -12.3);
+                ACTIVE.game.scene.add(fo);
+                ACTIVE._fallenOfficerMesh = fo;
+              }
+            }
+          }
         }
       }
 
@@ -2239,6 +2258,7 @@
 
       // Advance one shot at a time, carrying the overshoot forward so a long
       // stall cannot desynchronise the timeline.
+      if (ACTIVE.paused) { return true; }
       var guard = 0;
       while (elapsed >= durMs && guard < 64) {
         if (shot && shot.motion && ACTIVE.cast && ACTIVE.cast.actors) {
@@ -2549,12 +2569,30 @@
     return started;
   }
 
-  /** Jump to the start of shot `idx` without ending the film. */
-  function seek(idx) {
+  function pause(atP) {
+    if (!ACTIVE) { return; }
+    ACTIVE.paused = true;
+    ACTIVE.pausedP = (atP != null) ? Math.max(0, Math.min(1, atP)) : 0.2;
+  }
+
+  function resume() {
+    if (!ACTIVE) { return; }
+    ACTIVE.paused = false;
+    ACTIVE.shotStartedAt = (window.performance && performance.now) ? performance.now() : Date.now();
+  }
+
+  /** Jump to the start of shot `idx` without ending the film. Optionally freeze at progress fraction `pauseP`. */
+  function seek(idx, pauseP) {
     if (!ACTIVE) { return false; }
     var i = Math.max(0, Math.min(ACTIVE.script.length - 1, idx | 0));
     ACTIVE.idx = i;
     ACTIVE.shotStartedAt = (window.performance && performance.now) ? performance.now() : Date.now();
+    if (pauseP != null) {
+      ACTIVE.paused = true;
+      ACTIVE.pausedP = Math.max(0, Math.min(1, pauseP));
+    } else {
+      ACTIVE.paused = false;
+    }
     try {
       // Settle all prior motions up to shot i so actors are positioned on their expected marks
       if (ACTIVE.script && ACTIVE.cast && ACTIVE.cast.actors) {
@@ -2647,6 +2685,8 @@
     replay: replay,
     restart: restart,
     seek: seek,
+    pause: pause,
+    resume: resume,
     hasPrologue: hasPrologue,
     hasStage: hasStage,
     hasFor: hasFor,

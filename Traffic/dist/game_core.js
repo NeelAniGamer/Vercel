@@ -12677,7 +12677,7 @@ class Game {
         }
         // Gamepad polling (Fix 5)
         this._pollGamepad(dt);
-        this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._updateVehicleBeacon(dt); this._ugps(); this._checkBrakeZones(dt); this._uobs(dt); this._umode(dt); this._updateLights(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(); this._ummap(); this._utransit(); this._computeTaskFlags(); this._checkTasks(); if (this.taskManager) {this.taskManager.update(dt);} this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain); this._updateDynamicLOD(lodMult); this._updateBreadcrumbPath(dt); if (this.sceneryKit && this.player && this.player.position) {this.sceneryKit.updateVisibility(this.player.position, this.renderDistance);}
+        this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._updateVehicleBeacon(dt); this._ugps(); this._checkBrakeZones(dt); this._uobs(dt); this._umode(dt); this._updateLights(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(dt); this._ummap(dt); this._utransit(); this._computeTaskFlags(); this._checkTasks(); if (this.taskManager) {this.taskManager.update(dt);} this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain); this._updateDynamicLOD(lodMult); this._updateBreadcrumbPath(dt); if (this.sceneryKit && this.player && this.player.position) {this.sceneryKit.updateVisibility(this.player.position, this.renderDistance);}
         if (this._blobShadow && this.player && this.player.position) {
           this._blobShadow.position.x = this.player.position.x;
           this._blobShadow.position.z = this.player.position.z;
@@ -13747,7 +13747,7 @@ class Game {
           this.scene.children.forEach(c => {
             if (c.userData?.isGround || c.userData?.noLod || c === this.player) {return;}
             // Container groups placed at (0,0): ensure container stays visible, and test children individually by their own coordinates!
-            if (c.name && (c.name === 'road-problems' || c.name === 'plot-buildings' || c.name === 'block-fill')) {
+            if (c.name && (c.name === 'road-problems' || c.name === 'plot-buildings' || c.name === 'block-fill' || c.name === 'SuburbanNeighborhoodScenery')) {
               if (!c.visible) {c.visible = true;}
               c.children.forEach(sub => {
                 if (sub && sub.position && !sub.userData?.noLod && !sub.userData?.isGround) {
@@ -13780,12 +13780,24 @@ class Game {
           
           if (dSq > visDistSq) {
             if (child.visible) {child.visible = false;}
+            child._currentLODTier = 0;
             continue;
           }
           if (!child.visible) {child.visible = true;}
 
+          let targetTier = 4;
+          if (dSq < nearDistSq) targetTier = 1;
+          else if (dSq < midDistSq) targetTier = 2;
+          else if (dSq < farDistSq) targetTier = 3;
+
+          // Performance: Skip recursive sub-tree traversal if tier has not changed!
+          if (child._currentLODTier === targetTier && !force) {
+            continue;
+          }
+          child._currentLODTier = targetTier;
+
           // Tier 1: Near Distance (< 65m) -> Full High Quality, Realtime Shadows & Fine Props
-          if (dSq < nearDistSq) {
+          if (targetTier === 1) {
             if (child.castShadow !== undefined) {child.castShadow = true;}
             if (child.traverse) {
               child.traverse(node => {
@@ -13797,7 +13809,7 @@ class Game {
             }
           }
           // Tier 2: Mid Distance (65m - 160m) -> Medium Quality, Keep Vendors, Cars & Furniture Visible
-          else if (dSq < midDistSq) {
+          else if (targetTier === 2) {
             if (child.castShadow !== undefined && !child.userData?.isHero) {child.castShadow = false;}
             if (child.traverse) {
               child.traverse(node => {
@@ -13811,7 +13823,7 @@ class Game {
             }
           }
           // Tier 3: Far Distance (160m - 380m) -> Low Poly Silhouette & Atmospheric Fog Blending
-          else if (dSq < farDistSq) {
+          else if (targetTier === 3) {
             if (child.castShadow !== undefined) {child.castShadow = false;}
             if (child.traverse) {
               child.traverse(node => {
@@ -14005,6 +14017,7 @@ class Game {
               const vx = v.position.x, vz = v.position.z;
               const dx = px - vx, dz = pz - vz;
               const distSq = dx * dx + dz * dz;
+              if (distSq > 64) {return;} // Fast bounding circle reject (max vehicle footprint is ~4.5m)
 
               // Measured-from-mesh wins; the shared table is the fallback. This inverts
               // the previous order's intent: the inline ternary was the LAST
@@ -14904,11 +14917,14 @@ class Game {
           }
         }
         
-        // Count nearby pedestrians for task tracking
+        // Count nearby pedestrians for task tracking (squared distance check avoids sqrt)
         this._nearbyPedCount = 0;
+        const plX = this.player.position.x, plZ = this.player.position.z;
         this.peds.forEach(p => {
           if (!p || !p.position) {return;}
-          if (this.player.position.distanceTo(p.position) < 8) {this._nearbyPedCount++;}
+          const pdx = plX - p.position.x;
+          const pdz = plZ - p.position.z;
+          if (pdx * pdx + pdz * pdz < 64) {this._nearbyPedCount++;} // 8m squared
         });
         // Real-yield latch for let_cross: peds close while the player holds
         // still/slow inside a vehicle near a crossing. Set-only (reset per
@@ -14920,6 +14936,7 @@ class Game {
         // Despawn far pedestrians (Phase 7: hide instead of destroy, reuse later)
         if (!this._pedFree) {this._pedFree = [];}
         const isFest = this.mapCfg && (this.mapCfg.crowdFestival || this.mapCfg.themeType === 'festival');
+        const despawnDistSq = isFest ? 40000 : 10000; // 200m / 100m squared
         for (let i = this.peds.length - 1; i >= 0; i--) {
           const p = this.peds[i];
           if (!p || !p.position) {
@@ -14927,8 +14944,9 @@ class Game {
             continue;
           }
           if (p.userData?.isChild || p.userData?.isGuard || p.userData?.noDespawn) {continue;}
-          const despawnDist = isFest ? 200 : 100;
-          if (p.position.distanceTo(this.player.position) > despawnDist) {
+          const pdx = p.position.x - plX;
+          const pdz = p.position.z - plZ;
+          if (pdx * pdx + pdz * pdz > despawnDistSq) {
             this.scene.remove(p);
             this.peds[i] = this.peds[this.peds.length - 1]; this.peds.pop();
             p.visible = false;
@@ -15146,22 +15164,35 @@ class Game {
           
           let ox = obj.position.x, oz = obj.position.z;
           let rotY = obj.rotation ? obj.rotation.y : 0;
+          const ud = obj.userData || o.userData || {};
+
           if (obj.parent && obj.parent !== this.scene) {
-            if (!this._tempObsWorldPos) { this._tempObsWorldPos = new THREE.Vector3(); }
-            obj.getWorldPosition(this._tempObsWorldPos);
-            ox = this._tempObsWorldPos.x;
-            oz = this._tempObsWorldPos.z;
-            if (!this._tempObsWorldQuat) { this._tempObsWorldQuat = new THREE.Quaternion(); this._tempObsWorldEuler = new THREE.Euler(0, 0, 0, 'YXZ'); }
-            obj.getWorldQuaternion(this._tempObsWorldQuat);
-            this._tempObsWorldEuler.setFromQuaternion(this._tempObsWorldQuat, 'YXZ');
-            rotY = this._tempObsWorldEuler.y;
+            // High-performance static obstacle world coordinate caching
+            if (!ud.isDynamic && ud._cachedWorldX !== undefined) {
+              ox = ud._cachedWorldX;
+              oz = ud._cachedWorldZ;
+              rotY = ud._cachedRotY;
+            } else {
+              if (!this._tempObsWorldPos) { this._tempObsWorldPos = new THREE.Vector3(); }
+              obj.getWorldPosition(this._tempObsWorldPos);
+              ox = this._tempObsWorldPos.x;
+              oz = this._tempObsWorldPos.z;
+              if (!this._tempObsWorldQuat) { this._tempObsWorldQuat = new THREE.Quaternion(); this._tempObsWorldEuler = new THREE.Euler(0, 0, 0, 'YXZ'); }
+              obj.getWorldQuaternion(this._tempObsWorldQuat);
+              this._tempObsWorldEuler.setFromQuaternion(this._tempObsWorldQuat, 'YXZ');
+              rotY = this._tempObsWorldEuler.y;
+              if (!ud.isDynamic) {
+                ud._cachedWorldX = ox;
+                ud._cachedWorldZ = oz;
+                ud._cachedRotY = rotY;
+              }
+            }
           }
 
           // Live read (not the frame-start px/pz): earlier obstacles in this
           // same loop may already have pushed the player out.
           let dx = this.player.position.x - ox, dz = this.player.position.z - oz;
           if (dx * dx + dz * dz > 400) {return;}
-          const ud = obj.userData || o.userData || {};
           let hw = ud.halfW;
           let hd = ud.halfD;
           if (hw === undefined || hd === undefined) {
@@ -16181,12 +16212,24 @@ class Game {
           const sy = Math.sin(sunAngle) * 60 + 10;
           this._sun.position.set(p.x + sx, Math.max(5, sy), p.z + 20);
         } else {
-          if (this._sunLastPos && Math.abs(p.x - this._sunLastPos.x) + Math.abs(p.z - this._sunLastPos.z) < 8) {return;}
+          if (this._sunLastPos && Math.abs(p.x - this._sunLastPos.x) + Math.abs(p.z - this._sunLastPos.z) < 8) {
+            // Still periodically refresh at 30Hz for moving NPC shadows
+            this._shadowTick = (this._shadowTick || 0) + 1;
+            if (this._shadowTick % 2 === 0) {
+              if (this.renderCore?.renderer?.shadowMap) {
+                this.renderCore.renderer.shadowMap.needsUpdate = true;
+              }
+            }
+            return;
+          }
           if (!this._sunLastPos) {this._sunLastPos = new THREE.Vector3();}
           this._sunLastPos.copy(p);
           this._sun.position.set(p.x + 30, 60, p.z + 20);
         }
         this._sun.shadow.needsUpdate = true;
+        if (this.renderCore?.renderer?.shadowMap) {
+          this.renderCore.renderer.shadowMap.needsUpdate = true;
+        }
       }
       _updateDayNight(dt) {
         if (!this.player || !this.player.position) {return;}
@@ -16375,7 +16418,10 @@ class Game {
         }
       }
 
-      _uhud() {
+      _uhud(dt) {
+        this._hudAccum = (this._hudAccum || 0) + (dt || 0.016);
+        if (this._hudAccum < 0.033) {return;} // 30Hz HUD DOM throttling
+        this._hudAccum = 0;
         this._updateObjectiveHUD();
         if (!this.player) {return;}
         const k = Math.round(Math.abs(this.speed) * 100);
@@ -16824,9 +16870,13 @@ class Game {
         ctx.fillText('E', W - 14, H / 2 + 4);
       }
 
-      _ummap() {
+      _ummap(dt) {
         if (!this.player || !this.player.position) {return;}
         const mc = this.dom['mmc']; if (!mc || !this.playing) {return;} mc.classList.add('on');
+        // Heavy Optimization: Throttle 2D radar canvas redraw to 20Hz (~50ms) to conserve CPU
+        this._mmapAccum = (this._mmapAccum || 0) + (dt || 0.016);
+        if (this._mmapAccum < 0.048) {return;}
+        this._mmapAccum = 0;
         const W = mc.width || 180, H = mc.height || 180, cx = W / 2, cy = H / 2;
         const ctx = mc.getContext('2d');
         if (!ctx) {return;}

@@ -1501,11 +1501,6 @@
 
       ud.torsoGroup.add(uniformGroup);
     }
-      cord.rotation.z = -0.12;
-      uniformGroup.add(cord);
-
-      ud.torsoGroup.add(uniformGroup);
-    }
 
     // 3. AUTHENTIC TAILORED KHAKI UNIFORM LIMBS & TACTICAL RIDING GEAR
     // Hide raw procedural mannequin meshes so wooden doll parts never appear
