@@ -3070,20 +3070,25 @@
 
     var timer = null;
     var phase = 0;
-    var on = false;
     var tickFn = function (dt) {
-      // Alternating double-flash, the pattern every Indian patrol vehicle uses.
-      // A single steady flash reads as a hazard light; the double-pulse reads as
-      // an actual siren.
+      // Alternating double-flash: authentic Mumbai Police emergency beacon pattern
       phase += (dt || 0.016);
-      var t = phase % 1.6;
-      var lit = (t < 0.10) || (t > 0.22 && t < 0.32);
-      if (lit === on) { return; }
-      on = lit;
-      redMat.color.setHex(lit ? 0xff5555 : 0x3a1010);
-      blueMat.color.setHex(lit ? 0x1a2036 : 0x4a86ff);
-      throwLight.intensity = lit ? 2.6 : 0;
-      throwLight.color.setHex(on ? 0xff5555 : 0x5588ff);
+      var t = phase % 1.4;
+      var redActive = (t < 0.12) || (t > 0.22 && t < 0.34);
+      var blueActive = (t > 0.50 && t < 0.62) || (t > 0.72 && t < 0.84);
+
+      redMat.color.setHex(redActive ? 0xff2222 : 0x2a0505);
+      blueMat.color.setHex(blueActive ? 0x38bdf8 : 0x06142e);
+
+      if (redActive) {
+        throwLight.intensity = 2.8;
+        throwLight.color.setHex(0xff3333);
+      } else if (blueActive) {
+        throwLight.intensity = 2.8;
+        throwLight.color.setHex(0x38bdf8);
+      } else {
+        throwLight.intensity = 0.15;
+      }
     };
 
     if (typeof window !== 'undefined' && window.setInterval) {

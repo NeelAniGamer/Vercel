@@ -45,12 +45,12 @@ const QUALITY_PRESETS = {
         bloomThreshold: 0.88,
         bloomStrength: 0.25,
         bloomRadius: 0.45,
-        fps: 60,
+        fps: 120,
         textureFilter: THREE.LinearMipmapLinearFilter,
-        maxAnisotropy: 4,
-        lodMultiplier: 1.0,
-        maxParticles: 3000,
-        description: 'High Quality'
+        maxAnisotropy: 8,
+        lodMultiplier: 1.25,
+        maxParticles: 5000,
+        description: 'High Quality (High Refresh)'
     },
     ULTRA: {
         resScale: 1.0,
@@ -62,12 +62,12 @@ const QUALITY_PRESETS = {
         bloomThreshold: 0.86,
         bloomStrength: 0.25,
         bloomRadius: 0.5,
-        fps: 60,
+        fps: 144,
         textureFilter: THREE.LinearMipmapLinearFilter,
-        maxAnisotropy: 8,
-        lodMultiplier: 1.25,
-        maxParticles: 5000,
-        description: 'Ultra Quality'
+        maxAnisotropy: 16,
+        lodMultiplier: 1.5,
+        maxParticles: 8000,
+        description: 'Ultra Quality (Uncapped Hardware)'
     }
 };
 
@@ -179,14 +179,15 @@ class RenderCore {
         if (navigator.hardwareConcurrency) {
             console.log(`RenderCore: CPU Cores: ${navigator.hardwareConcurrency}`);
             if (navigator.hardwareConcurrency <= 2) {score -= 1;}
-            else if (navigator.hardwareConcurrency >= 8) {score += 1;}
+            else if (navigator.hardwareConcurrency >= 6) {score += 1;}
+            if (navigator.hardwareConcurrency >= 12) {score += 1;}
         }
 
 
         if (navigator.deviceMemory) {
             console.log(`RenderCore: Device Memory: ${navigator.deviceMemory}GB`);
             if (navigator.deviceMemory < 4) {score -= 1;}
-            else if (navigator.deviceMemory >= 16) {score += 1;}
+            else if (navigator.deviceMemory >= 8) {score += 1;}
         }
 
 

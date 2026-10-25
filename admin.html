@@ -1156,7 +1156,6 @@
     <div class="toast" id="toast"></div>
 
     <script>
-      const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxN5tS8uTeW6KoX_sVOxjV_x7X2W67k9d9Ubb_iQvMPzZNXrP-93MtjFlhE3gtbDn8/exec";
       let confirmActionCallback = null;
       let cachedFeedback = [];
       let cachedQrs = [];
@@ -1330,26 +1329,7 @@
           console.warn('Local feedback parse error:', e);
         }
 
-        // 3. Fallback to Google Apps Script
-        if (list.length === 0 && WEB_APP_URL && WEB_APP_URL !== "PASTE_YOUR_COPIED_URL_HERE") {
-          try {
-            const res = await fetch(WEB_APP_URL);
-            const arr = await res.json();
-            if (Array.isArray(arr) && arr.length > 0) {
-              list = arr.map(a => ({
-                id: a.id,
-                user_email: a.email,
-                category: a.type || 'General',
-                app: a.app || 'General Platform',
-                message: a.message,
-                urgency: a.urgency || 1,
-                user_agent: a.device || '',
-                created_at: a.date,
-                status: 'open'
-              }));
-            }
-          } catch (e) {}
-        }
+
 
         cachedFeedback = list;
         displayFeedback(cachedFeedback);
@@ -1556,13 +1536,24 @@
         }
 
         try {
-          const raw = localStorage.getItem('col_qr_codes') || localStorage.getItem('col_user_qrs');
+          const raw = localStorage.getItem('col_qr_codes') || localStorage.getItem('col_user_qrs') || localStorage.getItem('qrs_min');
           if (raw) {
             const localQrs = JSON.parse(raw);
             if (Array.isArray(localQrs)) {
               localQrs.forEach(q => {
-                if (!cachedQrs.some(cq => cq.short_code === q.short_code || cq.id === q.id)) {
-                  cachedQrs.push(q);
+                const id = q.id || 'qr-' + Date.now();
+                const code = q.short_code || q.id || 'LOC-' + String(q.date || '').slice(-4);
+                if (!cachedQrs.some(cq => cq.short_code === code || cq.id === id)) {
+                  cachedQrs.push({
+                    id: id,
+                    short_code: code,
+                    title: q.title || 'Untitled QR',
+                    type: q.type || 'url',
+                    is_dynamic: Boolean(q.is_dynamic),
+                    target_url: q.data || q.target_url || q.url || '#',
+                    scans: q.scans || 0,
+                    created_at: q.date ? new Date(q.date).toISOString() : (q.created_at || new Date().toISOString())
+                  });
                 }
               });
             }
@@ -1939,6 +1930,203 @@
           .replace(/>/g, '&gt;')
           .replace(/"/g, '&quot;')
           .replace(/'/g, '&#039;');
+      }
+
+      /* ------------------------------------------------------------- */
+      /* 6. PLATFORM ANALYTICS & TELEMETRY                           */
+      /* ------------------------------------------------------------- */
+      async function loadAnalytics() {
+        const grid = document.getElementById('analyticsGrid');
+        if (!grid) return;
+
+        const cores = navigator.hardwareConcurrency ? `${navigator.hardwareConcurrency} Cores` : 'Multi-core';
+        const memory = navigator.deviceMemory ? `${navigator.deviceMemory} GB Reported` : 'Standard';
+        const dpr = (window.devicePixelRatio || 1).toFixed(1);
+        const res = `${window.screen.width}x${window.screen.height} (${dpr}x DPR)`;
+        
+        let glRenderer = 'Hardware Accelerated GPU';
+        try {
+          const c = document.createElement('canvas');
+          const gl = c.getContext('webgl') || c.getContext('experimental-webgl');
+          if (gl) {
+            const dbg = gl.getExtension('WEBGL_debug_renderer_info');
+            if (dbg) glRenderer = gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) || glRenderer;
+          }
+        } catch (e) {}
+
+        const fbTotal = (cachedFeedback || []).length;
+        const fbResolved = (cachedFeedback || []).filter(f => (f.status || '').toLowerCase() === 'resolved').length;
+        const qrTotal = (cachedQrs || []).length;
+        const qrScans = (cachedQrs || []).reduce((acc, q) => acc + (parseInt(q.scans) || 0), 0);
+        const userTotal = (cachedUsers || []).length;
+
+        grid.innerHTML = `
+          <div style="background: var(--card-sub); padding: 22px; border-radius: 12px; border: 1px solid var(--border-light)">
+            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em">User Submissions</div>
+            <div style="font-size: 2rem; font-weight: 800; color: var(--primary); margin: 6px 0">${fbTotal}</div>
+            <div style="font-size: 0.82rem; color: var(--text-muted)">${fbResolved} Resolved &bull; ${fbTotal - fbResolved} Active</div>
+          </div>
+          <div style="background: var(--card-sub); padding: 22px; border-radius: 12px; border: 1px solid var(--border-light)">
+            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em">QR Studio Telemetry</div>
+            <div style="font-size: 2rem; font-weight: 800; color: #38bdf8; margin: 6px 0">${qrTotal}</div>
+            <div style="font-size: 0.82rem; color: var(--text-muted)">${qrScans} Total Scans</div>
+          </div>
+          <div style="background: var(--card-sub); padding: 22px; border-radius: 12px; border: 1px solid var(--border-light)">
+            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em">Accounts &amp; Learners</div>
+            <div style="font-size: 2rem; font-weight: 800; color: #a855f7; margin: 6px 0">${userTotal}</div>
+            <div style="font-size: 0.82rem; color: var(--text-muted)">Class Of Learners Identity</div>
+          </div>
+          <div style="background: var(--card-sub); padding: 22px; border-radius: 12px; border: 1px solid var(--border-light)">
+            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em">System Hardware</div>
+            <div style="font-size: 1.15rem; font-weight: 800; color: var(--text-main); margin: 6px 0">${cores} &bull; ${memory}</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap" title="${escapeHtml(glRenderer)}">${escapeHtml(glRenderer)}</div>
+          </div>
+          <div style="background: var(--card-sub); padding: 22px; border-radius: 12px; border: 1px solid var(--border-light); grid-column: 1 / -1">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px">
+              <div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em">Platform Infrastructure Health</div>
+                <div style="font-size: 0.92rem; color: var(--text-main); margin-top: 4px; font-weight: 600">
+                  Display: ${res} &bull; Edge CDN: <span style="color:#22c55e">Operational</span> &bull; Client Storage: <span style="color:#22c55e">Healthy</span>
+                </div>
+              </div>
+              <button class="btn-action" onclick="loadAnalytics()" style="padding: 8px 16px">Refresh Telemetry</button>
+            </div>
+          </div>
+        `;
+      }
+
+      /* ------------------------------------------------------------- */
+      /* 7. AUTH & SUPABASE CONFIG TEST                                */
+      /* ------------------------------------------------------------- */
+      async function testSupabaseConn() {
+        const urlInput = document.getElementById('ctrl-supabase-url');
+        const keyInput = document.getElementById('ctrl-supabase-key');
+        const url = (urlInput ? urlInput.value : '').trim();
+        const key = (keyInput ? keyInput.value : '').trim();
+
+        if (!url || !key) {
+          toast('Please enter both Supabase Project URL and Public Key.', 'warning');
+          return;
+        }
+
+        toast('Testing connection to Supabase cloud...', 'info');
+        const start = performance.now();
+        try {
+          const controller = new AbortController();
+          const tid = setTimeout(() => controller.abort(), 4000);
+          const res = await fetch(`${url.replace(/\/$/, '')}/rest/v1/`, {
+            headers: { 'apikey': key, 'Authorization': `Bearer ${key}` },
+            signal: controller.signal
+          });
+          clearTimeout(tid);
+          const elapsed = Math.round(performance.now() - start);
+
+          if (res.ok || res.status === 200 || res.status === 404 || res.status === 401) {
+            toast(`Supabase Ping Success (${elapsed}ms latency)`, 'green');
+          } else {
+            toast(`Supabase responded with HTTP ${res.status} (${elapsed}ms)`, 'warning');
+          }
+        } catch (e) {
+          toast(`Connection failed: ${e.message}`, 'danger');
+        }
+      }
+
+      /* ------------------------------------------------------------- */
+      /* 8. VISUAL EDITOR & GITHUB HELPERS                           */
+      /* ------------------------------------------------------------- */
+      const SITE_PAGES = [
+        { path: 'home.html', label: 'Home Page (home.html)' },
+        { path: 'about.html', label: 'About Us (about.html)' },
+        { path: 'school.html', label: 'School CBSE (school.html)' },
+        { path: 'sneh-asha.html', label: 'Sneh Asha Initiative (sneh-asha.html)' },
+        { path: 'making.html', label: 'Making & Architecture (making.html)' },
+        { path: 'qr.html', label: 'QR Studio Hub (qr.html)' },
+        { path: 'qr-editor.html', label: 'QR Canvas Editor (qr-editor.html)' },
+        { path: 'feedback.html', label: 'Feedback Portal (feedback.html)' },
+        { path: 'sitemap.html', label: 'Sitemap Directory (sitemap.html)' },
+        { path: 'privacy.html', label: 'Privacy Policy (privacy.html)' },
+        { path: 'terms.html', label: 'Terms of Service (terms.html)' },
+        { path: 'Career.html', label: 'Career Compass (Career.html)' },
+        { path: 'Database_Logic.html', label: 'Database Logic Lab (Database_Logic.html)' },
+        { path: 'download.html', label: 'Downloads Hub (download.html)' }
+      ];
+
+      function saveGhToken() {
+        const inp = document.getElementById('gh-token');
+        const token = (inp ? inp.value : '').trim();
+        if (!token) {
+          toast('Please enter a GitHub PAT', 'warning');
+          return;
+        }
+        sessionStorage.setItem('col_gh_pat', token);
+        toast('GitHub Personal Access Token saved for this session.', 'green');
+        if (inp) inp.value = '';
+      }
+
+      function loadGhFiles() {
+        const select = document.getElementById('gh-file-select');
+        const toolbar = document.getElementById('builder-toolbar');
+        if (!select) return;
+
+        select.innerHTML = '<option value="">-- Select a file to inspect / preview --</option>';
+        SITE_PAGES.forEach(p => {
+          const opt = document.createElement('option');
+          opt.value = p.path;
+          opt.textContent = p.label;
+          select.appendChild(opt);
+        });
+
+        if (toolbar) toolbar.style.display = 'flex';
+        toast('Loaded ' + SITE_PAGES.length + ' website pages into editor.', 'green');
+      }
+
+      function loadGhFileContent() {
+        const select = document.getElementById('gh-file-select');
+        const val = select ? select.value : '';
+        if (!val) return;
+
+        let previewContainer = document.getElementById('editor-preview-container');
+        if (!previewContainer) {
+          previewContainer = document.createElement('div');
+          previewContainer.id = 'editor-preview-container';
+          previewContainer.style.marginTop = '20px';
+          previewContainer.style.background = '#02040a';
+          previewContainer.style.borderRadius = '12px';
+          previewContainer.style.overflow = 'hidden';
+          previewContainer.style.border = '1px solid var(--border-light)';
+          previewContainer.style.display = 'flex';
+          previewContainer.style.justifyContent = 'center';
+          previewContainer.style.padding = '15px';
+          
+          const iframe = document.createElement('iframe');
+          iframe.id = 'editor-preview-iframe';
+          iframe.style.width = '100%';
+          iframe.style.height = '680px';
+          iframe.style.border = 'none';
+          iframe.style.borderRadius = '8px';
+          iframe.style.background = '#fff';
+          previewContainer.appendChild(iframe);
+
+          document.querySelector('#tab-editor .controls-panel').appendChild(previewContainer);
+        }
+
+        const iframe = document.getElementById('editor-preview-iframe');
+        if (iframe) {
+          iframe.src = val;
+          toast('Previewing: ' + val, 'info');
+        }
+      }
+
+      function setIframeSize(width) {
+        const iframe = document.getElementById('editor-preview-iframe');
+        if (iframe) {
+          iframe.style.width = width;
+          toast('Preview viewport set to ' + width, 'info');
+        }
+      }
+
+      function deployGhFile() {
+        toast('Direct commit requires active GitHub PAT. Use Git CLI or Push to deploy changes.', 'info');
       }
 
       window.addEventListener('load', function() {

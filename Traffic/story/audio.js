@@ -492,6 +492,188 @@
       try { sp.start(t); sp.stop(t + 0.55); } catch (e5) {}
       return;
     }
+
+    // ── Next-Gen Cinematic Noir Sound Design ─────────────────────────────────
+    if (kind === 'tension') {
+      // Ominous sub-bass drone with resonant filter sweep (inspired by Sacred Games / Sicario)
+      var tOsc1 = c.createOscillator();
+      var tOsc2 = c.createOscillator();
+      tOsc1.type = 'sine';
+      tOsc2.type = 'triangle';
+      tOsc1.frequency.setValueAtTime(46, t);
+      tOsc2.frequency.setValueAtTime(49.5, t); // slight beating/pulse
+      tOsc1.frequency.exponentialRampToValueAtTime(62, t + 2.8);
+      tOsc2.frequency.exponentialRampToValueAtTime(65, t + 2.8);
+
+      var tFilter = c.createBiquadFilter();
+      tFilter.type = 'lowpass';
+      tFilter.Q.value = 2.5;
+      tFilter.frequency.setValueAtTime(80, t);
+      tFilter.frequency.exponentialRampToValueAtTime(260, t + 2.5);
+
+      var tGain = c.createGain();
+      tGain.gain.setValueAtTime(0.0001, t);
+      tGain.gain.exponentialRampToValueAtTime(0.55 * g, t + 1.2);
+      tGain.gain.exponentialRampToValueAtTime(0.0001, t + 3.2);
+
+      tOsc1.connect(tFilter);
+      tOsc2.connect(tFilter);
+      tFilter.connect(tGain);
+      tGain.connect(world);
+      try {
+        tOsc1.start(t); tOsc1.stop(t + 3.3);
+        tOsc2.start(t); tOsc2.stop(t + 3.3);
+      } catch (eTens) {}
+      return;
+    }
+
+    if (kind === 'cock_gun') {
+      // Mechanical slide rack / hammer cock: double metallic snap with acoustic body
+      [0, 0.075].forEach(function (off, idx) {
+        var ct = t + off;
+        var cn = c.createBufferSource();
+        cn.buffer = noise();
+        var chp = c.createBiquadFilter();
+        chp.type = 'bandpass';
+        chp.frequency.value = idx === 0 ? 3200 : 4200;
+        chp.Q.value = 4.0;
+        var cg = c.createGain();
+        cg.gain.setValueAtTime(0.0001, ct);
+        cg.gain.exponentialRampToValueAtTime((idx === 0 ? 0.35 : 0.55) * g, ct + 0.012);
+        cg.gain.exponentialRampToValueAtTime(0.0001, ct + 0.065);
+        cn.connect(chp); chp.connect(cg); cg.connect(world);
+
+        var cMetal = c.createOscillator();
+        cMetal.type = 'triangle';
+        cMetal.frequency.setValueAtTime(idx === 0 ? 1850 : 2600, ct);
+        var cmg = c.createGain();
+        cmg.gain.setValueAtTime(0.0001, ct);
+        cmg.gain.exponentialRampToValueAtTime(0.20 * g, ct + 0.008);
+        cmg.gain.exponentialRampToValueAtTime(0.0001, ct + 0.07);
+        cMetal.connect(cmg); cmg.connect(world);
+
+        try {
+          cn.start(ct); cn.stop(ct + 0.08);
+          cMetal.start(ct); cMetal.stop(ct + 0.08);
+        } catch (eCg) {}
+      });
+      return;
+    }
+
+    if (kind === 'radio_call') {
+      // Authentic Mumbai Police wireless beep + channel squelch burst
+      var rBeep = c.createOscillator();
+      rBeep.type = 'sine';
+      rBeep.frequency.setValueAtTime(1180, t);
+      rBeep.frequency.setValueAtTime(1750, t + 0.035);
+      var rbg = c.createGain();
+      rbg.gain.setValueAtTime(0.0001, t);
+      rbg.gain.exponentialRampToValueAtTime(0.09 * g, t + 0.008);
+      rbg.gain.exponentialRampToValueAtTime(0.0001, t + 0.07);
+      rBeep.connect(rbg); rbg.connect(world);
+
+      var rNoise = c.createBufferSource();
+      rNoise.buffer = noise();
+      var rbp = c.createBiquadFilter();
+      rbp.type = 'bandpass'; rbp.frequency.value = 1800; rbp.Q.value = 2.0;
+      var rng = c.createGain();
+      rng.gain.setValueAtTime(0.0001, t + 0.03);
+      rng.gain.exponentialRampToValueAtTime(0.12 * g, t + 0.05);
+      rng.gain.exponentialRampToValueAtTime(0.0001, t + 0.16);
+      rNoise.connect(rbp); rbp.connect(rng); rng.connect(world);
+
+      try {
+        rBeep.start(t); rBeep.stop(t + 0.08);
+        rNoise.start(t + 0.03); rNoise.stop(t + 0.18);
+      } catch (eRad) {}
+      return;
+    }
+
+    if (kind === 'engine_roar') {
+      // Powerful throaty V8 acceleration surge with low exhaust bark
+      var rOsc = c.createOscillator();
+      rOsc.type = 'sawtooth';
+      rOsc.frequency.setValueAtTime(52, t);
+      rOsc.frequency.exponentialRampToValueAtTime(140, t + 0.8);
+      rOsc.frequency.exponentialRampToValueAtTime(85, t + 1.8);
+
+      var rlp = c.createBiquadFilter();
+      rlp.type = 'lowpass';
+      rlp.frequency.setValueAtTime(220, t);
+      rlp.frequency.exponentialRampToValueAtTime(950, t + 0.7);
+      rlp.frequency.exponentialRampToValueAtTime(320, t + 1.8);
+
+      var rg = c.createGain();
+      rg.gain.setValueAtTime(0.001, t);
+      rg.gain.exponentialRampToValueAtTime(0.65 * g, t + 0.25);
+      rg.gain.exponentialRampToValueAtTime(0.001, t + 1.9);
+
+      rOsc.connect(rlp); rlp.connect(rg); rg.connect(world);
+      try { rOsc.start(t); rOsc.stop(t + 2.0); } catch (eRoar) {}
+      return;
+    }
+
+    if (kind === 'transition_whoosh') {
+      // Atmospheric time-jump chord swell (dawn transition into Shanti Galli)
+      var freqs = [174.61, 220.00, 261.63, 349.23]; // F-major cinematic triad
+      freqs.forEach(function (fr, idx) {
+        var o = c.createOscillator();
+        o.type = 'sine';
+        o.frequency.setValueAtTime(fr, t);
+        var og = c.createGain();
+        og.gain.setValueAtTime(0.0001, t);
+        og.gain.exponentialRampToValueAtTime((0.18 / (idx + 1)) * g, t + 0.5);
+        og.gain.exponentialRampToValueAtTime(0.0001, t + 2.4);
+        o.connect(og); og.connect(world);
+        try { o.start(t); o.stop(t + 2.5); } catch (eWhoo) {}
+      });
+
+      // Air rush sweep
+      var wn = c.createBufferSource();
+      wn.buffer = noise();
+      var wbp = c.createBiquadFilter();
+      wbp.type = 'bandpass';
+      wbp.frequency.setValueAtTime(220, t);
+      wbp.frequency.exponentialRampToValueAtTime(1200, t + 0.6);
+      wbp.frequency.exponentialRampToValueAtTime(300, t + 1.8);
+      wbp.Q.value = 1.6;
+      var wg = c.createGain();
+      wg.gain.setValueAtTime(0.0001, t);
+      wg.gain.exponentialRampToValueAtTime(0.22 * g, t + 0.4);
+      wg.gain.exponentialRampToValueAtTime(0.0001, t + 1.9);
+      wn.connect(wbp); wbp.connect(wg); wg.connect(world);
+      try { wn.start(t); wn.stop(t + 2.0); } catch (eWn) {}
+      return;
+    }
+
+    if (kind === 'car_unlock') {
+      // Remote keyfob double-chirp + central locking solenoid thud
+      [0, 0.08].forEach(function (off) {
+        var chirp = c.createOscillator();
+        chirp.type = 'sine';
+        chirp.frequency.setValueAtTime(2350, t + off);
+        chirp.frequency.exponentialRampToValueAtTime(2650, t + off + 0.025);
+        var cg = c.createGain();
+        cg.gain.setValueAtTime(0.0001, t + off);
+        cg.gain.exponentialRampToValueAtTime(0.14 * g, t + off + 0.005);
+        cg.gain.exponentialRampToValueAtTime(0.0001, t + off + 0.035);
+        chirp.connect(cg); cg.connect(world);
+        try { chirp.start(t + off); chirp.stop(t + off + 0.04); } catch (eCh) {}
+      });
+
+      // Mechanical latch solenoid
+      var sol = c.createOscillator();
+      sol.type = 'triangle';
+      sol.frequency.setValueAtTime(140, t + 0.05);
+      sol.frequency.exponentialRampToValueAtTime(45, t + 0.12);
+      var sg = c.createGain();
+      sg.gain.setValueAtTime(0.0001, t + 0.05);
+      sg.gain.exponentialRampToValueAtTime(0.35 * g, t + 0.065);
+      sg.gain.exponentialRampToValueAtTime(0.0001, t + 0.15);
+      sol.connect(sg); sg.connect(world);
+      try { sol.start(t + 0.05); sol.stop(t + 0.16); } catch (eSol) {}
+      return;
+    }
   }
 
   // ── Voice ──────────────────────────────────────────────────────────────────
@@ -1041,10 +1223,14 @@
     // checking the clock after it would swallow every cue whose time had
     // not been reached yet.
     if (a.stingAt) {
-      var key = 'sting:' + (a.stingAt.name || a.stingAt.kind || 'x');
-      if (p >= (a.stingAt.at || 0) && once(key)) {
-        sting(a.stingAt.kind || 'click', a.stingAt.gain);
-      }
+      var stings = Array.isArray(a.stingAt) ? a.stingAt : [a.stingAt];
+      stings.forEach(function (st) {
+        if (!st) { return; }
+        var key = 'sting:' + (st.name || st.kind || 'x');
+        if (p >= (st.at || 0) && once(key)) {
+          sting(st.kind || 'click', st.gain);
+        }
+      });
     }
 
     // Recorded one-shot, cued at a fraction of the shot like stingAt.
@@ -1052,10 +1238,14 @@
       try {
         var SBa = window.SampleBank;
         if (SBa) {
-          var skey2 = 'sample:' + (a.sampleAt.name || a.sampleAt.key || 'x');
-          if (p >= (a.sampleAt.at || 0) && once(skey2)) {
-            SBa.play(a.sampleAt.name || a.sampleAt.key, { gain: a.sampleAt.gain });
-          }
+          var samples = Array.isArray(a.sampleAt) ? a.sampleAt : [a.sampleAt];
+          samples.forEach(function (sm) {
+            if (!sm) { return; }
+            var skey2 = 'sample:' + (sm.name || sm.key || 'x');
+            if (p >= (sm.at || 0) && once(skey2)) {
+              SBa.play(sm.name || sm.key, { gain: sm.gain });
+            }
+          });
         }
       } catch (eS) {}
     }

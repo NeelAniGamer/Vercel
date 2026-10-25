@@ -217,7 +217,7 @@
           speaker: 'SI Vikram Sawant',
           line: '"Control Room, SI Sawant. Linking Road junction check. 03:14 hours. Monsoon visibility low. Holding the white line."'
         },
-        audio: { beds: { rain: 0.04, engine: 0.05 } }
+        audio: { beds: { rain: 0.04, engine: 0.05 }, sting: 'radio_call', stingGain: 0.7, radio: true }
       },
 
       // 2b — THE SIGNAL & CCTV. Low-angle upward hero view of the overhead traffic signal
@@ -301,7 +301,10 @@
           speaker: 'Fortuner Escort Driver',
           line: '"Tujhe nahi pata andar kaun baitha hai. Yeh aakhri warning hai."'
         },
-        audio: { beds: { rain: 0.04, engine: 0.05 } }
+        audio: {
+          beds: { rain: 0.04, engine: 0.05 },
+          stingAt: [{ name: 'tension', kind: 'tension', at: 0.35, gain: 0.8 }]
+        }
       },
 
       // 6 — THE VIP EXECUTION ORDER.
@@ -323,7 +326,10 @@
           speaker: 'Shadowed VIP Passenger',
           line: '"Isko hatao yahan se."'
         },
-        audio: { beds: { rain: 0.02, room: 0.01, engine: 0.04 } }
+        audio: {
+          beds: { rain: 0.02, room: 0.01, engine: 0.04 },
+          stingAt: [{ name: 'cock', kind: 'cock_gun', at: 0.38, gain: 0.85 }]
+        }
       },
 
       // 7 — THE FLASH. One frame of white, then the Fortuner accelerates away.
@@ -346,9 +352,15 @@
         ],
         motionEase: 'inCubic',
         audio: {
-          beds: { rain: 0.04, engine: 0.06 },
-          stingAt: { name: 'gun', kind: 'shot', at: 0.08, gain: 0.9 },
-          sampleAt: { name: 'sfx_windscreen', at: 0.09, gain: 0.5 }
+          beds: { rain: 0.04, engine: 0.08 },
+          stingAt: [
+            { name: 'gun', kind: 'shot', at: 0.08, gain: 1.0 },
+            { name: 'roar', kind: 'engine_roar', at: 0.14, gain: 0.85 }
+          ],
+          sampleAt: [
+            { name: 'sfx_windscreen', at: 0.09, gain: 0.5 },
+            { name: 'sfx_skid_long', at: 0.12, gain: 0.65 }
+          ]
         }
       },
 
@@ -370,24 +382,15 @@
           speaker: 'Mumbai Police Radio',
           line: '"All units, 10-33 on Linking Road! Officer down! Black Fortuner fled south towards Shanti Galli!"'
         },
-        // The film's only real beat of silence, and it sits after the radio call
-        // rather than before it. 5s on a crime scene with a light bar strobing
-        // and nobody speaking is the closest thing here to the 7s median the
-        // reference transcripts run — and it earns its length because the radio
-        // has just named Shanti Galli, which is the address the second half of the
-        // campaign turns on.
-        //
-        // The RECORDED two-tone wail starts here. Everything before this shot was
-        // synthesised: filtered noise for rain, a swept sine for the radio. A
-        // siren built that way is a sine wave, and a sine wave has no distance in
-        // it — it sits exactly as close as the volume says. The recorded take
-        // arrives from off-screen and stays off-screen, which is the entire point
-        // of a crime scene at 3am.
         sampleLoop: 'sfx_police_siren',
-        sampleGain: 0.34,
+        sampleGain: 0.38,
         audio: {
           beds: { rain: 0.04, room: 0.01 },
-          stingAt: { name: 'body', kind: 'thud', at: 0.30, gain: 0.8 }
+          radio: true,
+          stingAt: [
+            { name: 'radio', kind: 'radio_call', at: 0.02, gain: 0.85 },
+            { name: 'body', kind: 'thud', at: 0.30, gain: 0.8 }
+          ]
         }
       },
 
@@ -414,7 +417,10 @@
           speaker: 'Insp. Arjun Kadam',
           line: '"Three hours later... Vikram\'s notebook. Entry one: Mrs. Iyer. She sees everything. I have to reach her at Bazaar Road."'
         },
-        audio: { beds: { room: 0.10, engine: 0.02, birds: 0.04 } }
+        audio: {
+          beds: { room: 0.04, engine: 0.02, birds: 0.05 },
+          stingAt: [{ name: 'whoosh', kind: 'transition_whoosh', at: 0.02, gain: 0.8 }]
+        }
       }
     ],
 
