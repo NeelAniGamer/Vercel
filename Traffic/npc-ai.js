@@ -959,29 +959,33 @@ class NPCAI {
     if (!this.trafficManager || !this.vehicle) {return null;}
     const myPos = this.vehicle.position;
     if (!myPos) {return null;}
-    const myForward = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
-    const right = new THREE.Vector3(Math.cos(this.vehicle.rotation.y), 0, -Math.sin(this.vehicle.rotation.y));
+    const rotY = this.vehicle.rotation ? (typeof this.vehicle.rotation.y === 'number' ? this.vehicle.rotation.y : this.vehicle.rotation) : 0;
+    const sinY = Math.sin(rotY);
+    const cosY = Math.cos(rotY);
     let closestVeh = null;
     let closestDist = Infinity;
     const maxCheckDist = 45;
+    const maxCheckDistSq = maxCheckDist * maxCheckDist;
 
     // Check other NPC vehicles
     const vehicles = this.trafficManager.vehicles || [];
-    for (let i = 0; i < vehicles.length; i++) {
+    const vLen = vehicles.length;
+    for (let i = 0; i < vLen; i++) {
       const v = vehicles[i];
       if (!v || v === this.vehicle || !v.position || !v.active) {continue;}
       const dx = v.position.x - myPos.x;
       const dz = v.position.z - myPos.z;
-      const dist = Math.sqrt(dx * dx + dz * dz);
-      if (dist > maxCheckDist || dist >= closestDist) {continue;}
+      const dSq = dx * dx + dz * dz;
+      if (dSq > maxCheckDistSq || dSq >= closestDist * closestDist) {continue;}
 
-      const forwardDot = (dx * myForward.x + dz * myForward.z) / (dist || 1);
-      const lateral = Math.abs(dx * right.x + dz * right.z);
+      const dist = Math.sqrt(dSq);
+      const forwardDot = (dx * sinY + dz * cosY) / (dist || 1);
+      const lateral = Math.abs(dx * cosY - dz * sinY);
 
       // Heading alignment check
       const vRot = v.rotation ? (typeof v.rotation.y === 'number' ? v.rotation.y : v.rotation) : (v.mesh ? v.mesh.rotation.y : 0);
       const vForwardX = Math.sin(vRot), vForwardZ = Math.cos(vRot);
-      const headingDot = myForward.x * vForwardX + myForward.z * vForwardZ;
+      const headingDot = sinY * vForwardX + cosY * vForwardZ;
 
       // 1. Same-direction / same-lane trailing vehicle or curve leader
       if (forwardDot > 0.30 && headingDot > 0.35 && lateral < 1.9) {
@@ -1003,10 +1007,11 @@ class NPCAI {
     if (p && p.position && p !== this.vehicle) {
       const dx = p.position.x - myPos.x;
       const dz = p.position.z - myPos.z;
-      const dist = Math.sqrt(dx * dx + dz * dz);
-      if (dist <= maxCheckDist && dist < closestDist) {
-        const forwardDot = (dx * myForward.x + dz * myForward.z) / (dist || 1);
-        const lateral = Math.abs(dx * right.x + dz * right.z);
+      const dSq = dx * dx + dz * dz;
+      if (dSq <= maxCheckDistSq && dSq < closestDist * closestDist) {
+        const dist = Math.sqrt(dSq);
+        const forwardDot = (dx * sinY + dz * cosY) / (dist || 1);
+        const lateral = Math.abs(dx * cosY - dz * sinY);
         // Only track if player is ahead in our direct lane corridor (not on the sidewalk or garage bay)
         if (forwardDot > 0.35 && lateral < 1.65) {
           closestDist = dist;
@@ -1026,18 +1031,20 @@ class NPCAI {
       if (signals.includes(this._activeSignal)) {
         const jx = (this._activeSignal.userData?.junctionX !== undefined) ? this._activeSignal.userData.junctionX : this._activeSignal.position.x;
         const jz = (this._activeSignal.userData?.junctionZ !== undefined) ? this._activeSignal.userData.junctionZ : this._activeSignal.position.z;
-        const distToJunction = Math.hypot(jx - this.vehicle.position.x, jz - this.vehicle.position.z);
-        if (distToJunction < 35.0) {
+        const distToJunctionSq = (jx - this.vehicle.position.x) * (jx - this.vehicle.position.x) + (jz - this.vehicle.position.z) * (jz - this.vehicle.position.z);
+        if (distToJunctionSq < 1225.0) { // 35.0m squared
           return this._activeSignal;
         }
       }
     }
 
     const myPos = this.vehicle.position;
-    const myForward = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
-    const myRight = new THREE.Vector3(Math.cos(this.vehicle.rotation.y), 0, -Math.sin(this.vehicle.rotation.y));
+    const rotY = this.vehicle.rotation ? (typeof this.vehicle.rotation.y === 'number' ? this.vehicle.rotation.y : this.vehicle.rotation) : 0;
+    const sinY = Math.sin(rotY);
+    const cosY = Math.cos(rotY);
     let nearestSignal = null;
     let nearestDist = Infinity;
+    const maxSigDistSq = 45 * 45;
 
     for (let i = 0; i < signals.length; i++) {
       const sig = signals[i];
@@ -1049,18 +1056,19 @@ class NPCAI {
 
       const dx = jx - myPos.x;
       const dz = jz - myPos.z;
-      const dist = Math.sqrt(dx * dx + dz * dz);
-      if (dist > 45 || dist >= nearestDist) {continue;}
+      const dSq = dx * dx + dz * dz;
+      if (dSq > maxSigDistSq || dSq >= nearestDist * nearestDist) {continue;}
 
-      const forwardDot = (dx * myForward.x + dz * myForward.z) / (dist || 1);
+      const dist = Math.sqrt(dSq);
+      const forwardDot = (dx * sinY + dz * cosY) / (dist || 1);
       // Junction center must be ahead of us along road direction
       if (forwardDot > 0.25) {
-        const lateral = Math.abs(dx * myRight.x + dz * myRight.z);
+        const lateral = Math.abs(dx * cosY - dz * sinY);
         const roadW = sig.userData?.roadWidth || 12;
         if (lateral > (roadW / 2 + 6.0)) {continue;}
 
         // Axis Matching: Match vehicle heading axis ('v' vs 'h') with signal control axis
-        const isVehicleVertical = Math.abs(myForward.z) > Math.abs(myForward.x);
+        const isVehicleVertical = Math.abs(cosY) > Math.abs(sinY);
         if (sig.userData && sig.userData.axis) {
           if (isVehicleVertical && sig.userData.axis !== 'v') {continue;}
           if (!isVehicleVertical && sig.userData.axis !== 'h') {continue;}
@@ -2598,16 +2606,6 @@ class PedestrianAI {
     if (!this.ped || !this.ped.position) {return;}
     this.lookTimer += dt;
 
-    const allVehicles = [];
-    if (playerVehicle && playerVehicle.position) {
-      allVehicles.push(playerVehicle);
-    }
-    if (npcs && Array.isArray(npcs)) {
-      for (let i = 0; i < npcs.length; i++) {
-        if (npcs[i]) {allVehicles.push(npcs[i]);}
-      }
-    }
-
     if (this.state !== PED_STATE.FLEEING && this.state !== PED_STATE.IN_TRANSIT && this.state !== PED_STATE.FROZEN) {
       this._checkVehicleProximity(playerVehicle, npcs);
     }
@@ -2615,10 +2613,24 @@ class PedestrianAI {
     if (this.currentBusStop && (this.state === PED_STATE.WAITING_FOR_BUS || this.state === PED_STATE.QUEUING || this.state === PED_STATE.BOARDING || this.state === PED_STATE.ALIGHTING)) {
       this.handleBusStopLifecycle(this.currentBusStop, dt);
     } else {
+      // Lazy vehicle array creation: only allocated if state actually requires vehicle-gap evaluation
+      let allVehicles = null;
+      if (this.state === PED_STATE.WAITING || this.state === PED_STATE.CROSSING || this.state === PED_STATE.JAYWALKING) {
+        if (!PedestrianAI._scratchVehicles) { PedestrianAI._scratchVehicles = []; }
+        allVehicles = PedestrianAI._scratchVehicles;
+        allVehicles.length = 0;
+        if (playerVehicle && playerVehicle.position) { allVehicles.push(playerVehicle); }
+        if (npcs && Array.isArray(npcs)) {
+          for (let i = 0; i < npcs.length; i++) {
+            if (npcs[i]) { allVehicles.push(npcs[i]); }
+          }
+        }
+      }
+
       switch (this.state) {
         case PED_STATE.WALKING:
         case PED_STATE.WALKING_SIDEWALK:
-          this._updateWalking(dt, allVehicles);
+          this._updateWalking(dt);
           break;
         case PED_STATE.WAITING:
           this._updateWaiting(dt, allVehicles);
@@ -2635,7 +2647,7 @@ class PedestrianAI {
         case PED_STATE.FROZEN:
           break;
         default:
-          this._updateWalking(dt, allVehicles);
+          this._updateWalking(dt);
           break;
       }
     }
@@ -2867,8 +2879,11 @@ class PedestrianAI {
       Math.abs((pIsV ? vp.x : vp.z) - pRoadC) < pRoadHalf + 0.3;
 
     if (playerVehicle && playerVehicle.position && !vehicleOnRoadway(playerVehicle.position)) {
-      const dist = myPos.distanceTo(playerVehicle.position);
-      if (dist < 15.0) {
+      const pdx = myPos.x - playerVehicle.position.x;
+      const pdz = myPos.z - playerVehicle.position.z;
+      const pDistSq = pdx * pdx + pdz * pdz;
+      if (pDistSq < 225.0) { // 15.0m squared
+        const dist = Math.sqrt(pDistSq);
         let pSpeed = Math.abs(playerVehicle.speed || 0);
         let pHeading = playerVehicle.rotation?.y || 0;
         if (playerVehicle.velocity) {
@@ -2898,39 +2913,42 @@ class PedestrianAI {
     }
 
     if (npcs && Array.isArray(npcs)) {
-      for (let i = 0; i < npcs.length; i++) {
+      const nLen = npcs.length;
+      for (let i = 0; i < nLen; i++) {
         const npc = npcs[i];
         if (!npc) {continue;}
         const nPos = npc.position || npc.mesh?.position;
         if (!nPos) {continue;}
         if (vehicleOnRoadway(nPos)) {continue;}
-        const dist = myPos.distanceTo(nPos);
-        if (dist < 15.0) {
-          let nSpeed = Math.abs(npc.speed !== undefined ? npc.speed : (npc.userData?.spd ? npc.userData.spd * 20 : 0));
-          let nHeading = npc.rotation ? (typeof npc.rotation.y === 'number' ? npc.rotation.y : npc.rotation) : (npc.mesh?.rotation?.y || 0);
-          if (npc.velocity) {
-            nSpeed = Math.hypot(npc.velocity.x || 0, npc.velocity.z || 0);
-            nHeading = Math.atan2(npc.velocity.x || 0, npc.velocity.z || 0);
-          }
-          const ttcRes = calcPedestrianTTC({
-            pedX: myPos.x,
-            pedZ: myPos.z,
-            vehX: nPos.x,
-            vehZ: nPos.z,
-            vehHeading: nHeading,
-            vehSpeed: nSpeed,
-            laneWidth: 3.5
-          });
-          const fleeCheck = evaluatePedestrianFleeing({
-            minTTC: ttcRes.ttc,
-            dLong: ttcRes.dLong,
-            currentSpeed: this.profile.speed,
-            walkSpeed: this.profile.speed
-          });
-          if (fleeCheck.shouldFlee || (dist < 6.0 && ttcRes.oncoming && ttcRes.ttc < 2.0) || dist < 4.0) {
-            this.triggerFlee(nPos);
-            return;
-          }
+        const ndx = myPos.x - nPos.x;
+        const ndz = myPos.z - nPos.z;
+        const nDistSq = ndx * ndx + ndz * ndz;
+        if (nDistSq >= 225.0) {continue;} // 15.0m squared
+        const dist = Math.sqrt(nDistSq);
+        let nSpeed = Math.abs(npc.speed !== undefined ? npc.speed : (npc.userData?.spd ? npc.userData.spd * 20 : 0));
+        let nHeading = npc.rotation ? (typeof npc.rotation.y === 'number' ? npc.rotation.y : npc.rotation) : (npc.mesh?.rotation?.y || 0);
+        if (npc.velocity) {
+          nSpeed = Math.hypot(npc.velocity.x || 0, npc.velocity.z || 0);
+          nHeading = Math.atan2(npc.velocity.x || 0, npc.velocity.z || 0);
+        }
+        const ttcRes = calcPedestrianTTC({
+          pedX: myPos.x,
+          pedZ: myPos.z,
+          vehX: nPos.x,
+          vehZ: nPos.z,
+          vehHeading: nHeading,
+          vehSpeed: nSpeed,
+          laneWidth: 3.5
+        });
+        const fleeCheck = evaluatePedestrianFleeing({
+          minTTC: ttcRes.ttc,
+          dLong: ttcRes.dLong,
+          currentSpeed: this.profile.speed,
+          walkSpeed: this.profile.speed
+        });
+        if (fleeCheck.shouldFlee || (dist < 6.0 && ttcRes.oncoming && ttcRes.ttc < 2.0) || dist < 4.0) {
+          this.triggerFlee(nPos);
+          return;
         }
       }
     }

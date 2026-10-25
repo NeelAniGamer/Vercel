@@ -183,11 +183,8 @@ class TrafficManager {
       vehicle._simAccum = 0;
       vehicle.npcAI.update(_simDt, playerVehicle, signals);
 
-      // Brake lights and indicators. IndianVehicles.setBraking() and
-      // setIndicator() exist, but nothing ever called them: every NPC car's
-      // brake lights stayed dark and no indicator ever blinked, so the
-      // player could not see the traffic ahead reacting.
-      if (window.IndianVehicles && vehicle.mesh) {
+      // Brake lights and indicators. Skip if vehicle mesh is culled/invisible.
+      if (window.IndianVehicles && vehicle.mesh && vehicle.mesh.visible) {
         const acc = (vehicle.npcAI && vehicle.npcAI.currentAcceleration) || 0;
         window.IndianVehicles.setBraking(vehicle.mesh, acc < -0.15);
         let side = null;
@@ -258,13 +255,17 @@ class TrafficManager {
 
   _manageVehicleLifecycle(playerVehicle, dt = 0.016) {
     const despawnDist = 320;
-    const playerPos = playerVehicle?.position || new THREE.Vector3();
+    const despawnDistSq = despawnDist * despawnDist;
+    const px = playerVehicle?.position ? playerVehicle.position.x : 0;
+    const pz = playerVehicle?.position ? playerVehicle.position.z : 0;
     
     this.vehicles.forEach((vehicle, index) => {
-      if (!vehicle.active) {return;}
+      if (!vehicle.active || !vehicle.position) {return;}
       
-      const dist = vehicle.position.distanceTo(playerPos);
-      if (dist > despawnDist) {
+      const dx = vehicle.position.x - px;
+      const dz = vehicle.position.z - pz;
+      const distSq = dx * dx + dz * dz;
+      if (distSq > despawnDistSq) {
         this._despawnVehicle(vehicle);
         return;
       }
@@ -279,13 +280,18 @@ class TrafficManager {
           // roughly 3x too aggressively.
           vehicle._stoppedSeconds = (vehicle._stoppedSeconds || 0) + dt;
           // If far away from player (>90m) and stuck for >12s, quietly recycle
-          if (dist > 90 && vehicle._stoppedSeconds > 12.0) {
+          if (distSq > 8100 && vehicle._stoppedSeconds > 12.0) { // 90m squared
             vehicle._stoppedSeconds = 0;
             this._despawnVehicle(vehicle);
           } else if (vehicle._stoppedSeconds > 3.0) {
             // Check if blocked immediately ahead before nudging speed
             const ahead = vehicle.npcAI._getVehicleAhead ? vehicle.npcAI._getVehicleAhead() : null;
-            const isBlocked = ahead && ahead.position && vehicle.position.distanceTo(ahead.position) < 4.2;
+            let isBlocked = false;
+            if (ahead && ahead.position) {
+              const adx = vehicle.position.x - ahead.position.x;
+              const adz = vehicle.position.z - ahead.position.z;
+              isBlocked = (adx * adx + adz * adz) < 17.64; // 4.2m squared
+            }
             if (!isBlocked) {
               vehicle.npcAI.state = 'FOLLOW_LANE';
               vehicle.npcAI.waitTimer = 0;
@@ -1146,6 +1152,11 @@ class TrafficManager {
 
   _checkDeadlocks(dt, playerVehicle) {
     if (!this.vehicles || this.vehicles.length === 0) {return;}
+    // Throttle deadlock evaluations to 4Hz (every 0.25s) to conserve frame time
+    this._deadlockAccum = (this._deadlockAccum || 0) + dt;
+    if (this._deadlockAccum < 0.25) {return;}
+    const stepDt = this._deadlockAccum;
+    this._deadlockAccum = 0;
 
     for (let i = 0; i < this.vehicles.length; i++) {
       const v = this.vehicles[i];
@@ -1156,7 +1167,7 @@ class TrafficManager {
       const spd = v.npcAI.currentSpeed || v.speed || 0;
       if (spd < 0.20 && (st !== 'WAIT_SIGNAL' || v.npcAI.waitTimer > 6.0)) {
         if (!v._stallStartTime) {v._stallStartTime = Date.now();}
-        v._stuckTimer = (v._stuckTimer || 0) + dt;
+        v._stuckTimer = (v._stuckTimer || 0) + stepDt;
         if (v._stuckTimer >= 0.8) {
           this.handleDeadlockResolution(v);
         }

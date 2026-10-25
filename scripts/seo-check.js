@@ -11,6 +11,7 @@ const nonIndexableRoutes = new Set([
   '/admin',
   '/Database_Logic',
   '/ati-demo',
+  '/ati-lite',
   '/dashboard',
   '/engine',
   '/feedback',

@@ -97,7 +97,7 @@ class RenderCore {
           || (window.innerWidth || 9999) <= 767;
         this.renderer = new THREE.WebGLRenderer({
             canvas: canvas,
-            antialias: true,
+            antialias: !isMobileGL,
             powerPreference: 'high-performance',
             alpha: false,
             depth: true,
@@ -113,7 +113,7 @@ class RenderCore {
 
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        this.renderer.shadowMap.autoUpdate = true;
+        this.renderer.shadowMap.autoUpdate = false;
         this.renderer.shadowMap.needsUpdate = true;
 
 
