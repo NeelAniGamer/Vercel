@@ -260,30 +260,50 @@
    */
   function triggerFlash(state, strength) {
     var ov = state && state.overlay;
-    if (!ov || !ov.flash) { return; }
     var g = Math.max(0.2, Math.min(1, strength == null ? 0.85 : strength));
-    var f = ov.flash;
-    // Restart the CSS transition: setting opacity alone while a previous
-    // transition is mid-flight does nothing, and the flash silently vanishes on
-    // a replay because the element is already at opacity 0.
-    f.style.transition = 'none';
-    f.style.opacity = '0';
-    void f.offsetWidth;
-    f.style.transition = 'opacity 60ms ease-out';
-    f.style.opacity = String(g);
-    if (state._flashTimer) { clearTimeout(state._flashTimer); }
-    state._flashTimer = setTimeout(function () {
-      f.style.transition = 'opacity 260ms ease-out';
+    if (ov && ov.flash) {
+      var f = ov.flash;
+      // Restart the CSS transition: setting opacity alone while a previous
+      // transition is mid-flight does nothing, and the flash silently vanishes on
+      // a replay because the element is already at opacity 0.
+      f.style.transition = 'none';
       f.style.opacity = '0';
-      state._flashTimer = 0;
-    }, 70);
+      void f.offsetWidth;
+      f.style.transition = 'opacity 60ms ease-out';
+      f.style.opacity = String(g);
+      if (state._flashTimer) { clearTimeout(state._flashTimer); }
+      state._flashTimer = setTimeout(function () {
+        f.style.transition = 'opacity 260ms ease-out';
+        f.style.opacity = '0';
+        state._flashTimer = 0;
+      }, 70);
+    }
+
+    // 3D Scene muzzle flash illumination: illuminates Vikram, bike, and wet road for ~85ms
+    try {
+      if (state && state.game && state.game.scene) {
+        var sc = state.game.scene;
+        var flashLight = new THREE.PointLight(0xffeedd, 16.0 * g, 24, 1.8);
+        flashLight.position.set(4.6, 1.35, -12.5);
+        sc.add(flashLight);
+        setTimeout(function () {
+          try { sc.remove(flashLight); if (flashLight.dispose) { flashLight.dispose(); } } catch (eFRem) {}
+        }, 85);
+      }
+    } catch (eFlash3d) {}
+
+    // Camera micro-shake recoil punch (inspired by Max Payne / Sacred Games)
+    try {
+      if (state && state.game) {
+        state.game._camShakeAmt = Math.max(state.game._camShakeAmt || 0, 0.38);
+      }
+    } catch (eShake) {}
   }
 
   function buildOverlay() {
     ensureStyle();
     var root = document.createElement('div');
     root.id = 'cutscene-root';
-    root.setAttribute('aria-hidden', 'true');
     root.innerHTML =
       '<div class="cs-bar top"></div>' +
       '<div class="cs-bar bot"></div>' +
@@ -372,6 +392,11 @@
 
   function teardownOverlay(ov) {
     if (!ov || !ov.root) { return; }
+    try {
+      if (document.activeElement && ov.root.contains(document.activeElement)) {
+        document.activeElement.blur();
+      }
+    } catch (eFoc) {}
     try { if (ov.root.parentNode) { ov.root.parentNode.removeChild(ov.root); } } catch (e) {}
     RAIN_DROPS = [];
     LAST_SPEAKER = '';
@@ -587,7 +612,7 @@
                 new THREE.MeshStandardMaterial({
                   color: 0xfffbeb,
                   emissive: 0xfef08a,
-                  emissiveIntensity: 0.65,
+                  emissiveIntensity: 0.35,
                   roughness: 0.1,
                   metalness: 0.1
                 })
@@ -595,7 +620,7 @@
               headLens.position.set(0, 0.72, 0.826);
               mesh.add(headLens);
 
-              var bSpot = new THREE.SpotLight(0xfff7ed, 1.4, 24, Math.PI / 6, 0.40, 1.3);
+              var bSpot = new THREE.SpotLight(0xfff7ed, 0.85, 20, Math.PI / 6, 0.45, 1.8);
               bSpot.position.set(0, 0.72, 0.85);
               bSpot.target.position.set(0, 0, 16);
               mesh.add(bSpot);
@@ -732,7 +757,7 @@
 
               // The beam is safe unconditionally: a SpotLight has no geometry, so
               // it cannot be misplaced in a way the audience reads as an object.
-              var fBeam = new THREE.SpotLight(0xfff7ed, 1.8, 30, Math.PI / 7, 0.45, 1.3);
+              var fBeam = new THREE.SpotLight(0xfff7ed, 0.95, 24, Math.PI / 7, 0.45, 1.6);
               fBeam.position.set(0, 0.8, plausible ? lSz.z * 0.5 : 2.2);
               fBeam.target.position.set(0, -0.4, 22);
               mesh.add(fBeam);
@@ -749,7 +774,12 @@
                 var bz = lc.z - lSz.z * 0.48;     // Rear tailboard face
                 var ly = lc.y - lSz.y * 0.06;     // Bumper/fender height (NOT roofline!)
 
-                var headMat = new THREE.MeshBasicMaterial({ color: 0xfff3d6 });
+                var headMat = new THREE.MeshStandardMaterial({
+                  color: 0xfff3d6,
+                  emissive: 0xfef08a,
+                  emissiveIntensity: 0.35,
+                  roughness: 0.2
+                });
                 var fHead = new THREE.Mesh(new THREE.BoxGeometry(lSz.x * 0.16, lSz.y * 0.07, 0.06), headMat);
                 fHead.position.set(lc.x + hx, ly, fz);
                 mesh.add(fHead);
@@ -1215,6 +1245,7 @@
         ov.title.style.transform = 'translateY(' + ((1 - Math.max(0, Math.min(1, tp))) * 10) + 'px)';
       } else {
         ov.title.style.opacity = '0';
+        ov.title.textContent = '';
       }
     }
 
@@ -1320,10 +1351,10 @@
       );
       var lights = [];
       if (isNight) {
-        var ambNight = new THREE.AmbientLight(0x384a62, 0.35);
-        var moonKey = new THREE.DirectionalLight(0x70a5ea, 0.45);
+        var ambNight = new THREE.AmbientLight(0x28384a, 0.18);
+        var moonKey = new THREE.DirectionalLight(0x5a88c2, 0.26);
         moonKey.position.set(20, 45, 15);
-        var sodiumBounce = new THREE.DirectionalLight(0xffbe65, 0.42);
+        var sodiumBounce = new THREE.DirectionalLight(0xd99b45, 0.20);
         sodiumBounce.position.set(-20, 25, -20);
         game.scene.add(ambNight);
         game.scene.add(moonKey);
@@ -2086,8 +2117,12 @@
       var shot = ACTIVE.script[ACTIVE.idx];
       if (!shot) { finish(true); return false; }
       var durMs = Math.max(50, (shot.dur || 3) * 1000);
+      if (ACTIVE.paused) {
+        var frozenP = (ACTIVE.pausedP != null) ? ACTIVE.pausedP : 0.2;
+        ACTIVE.shotStartedAt = now - (frozenP * durMs);
+      }
       var elapsed = now - ACTIVE.shotStartedAt;
-      var p = elapsed / durMs;
+      var p = Math.max(0, Math.min(1, elapsed / durMs));
 
       // Lens rain advances on wall-clock dt. Gated on the act so a dry daylight
       // beat pays nothing for a rain canvas it never shows.
@@ -2118,6 +2153,30 @@
       if (ACTIVE._flashAt != null && !ACTIVE._flashFired && p >= ACTIVE._flashAt) {
         ACTIVE._flashFired = true;
         triggerFlash(ACTIVE, shot.flashGain);
+      }
+      if (ACTIVE._flashAt != null && p >= ACTIVE._flashAt) {
+        if (ACTIVE.cast && ACTIVE.cast.actors && ACTIVE.cast.actors.vikram) {
+          var vB = ACTIVE.cast.actors.vikram;
+          var fallP = Math.min(1.0, (p - ACTIVE._flashAt) * 2.8);
+          vB.rotation.z = fallP * (Math.PI / 2.3);
+          vB.position.x = 3.6 - fallP * 1.4;
+          vB.position.y = fallP * 0.22;
+          vB.position.z = -12.5 - fallP * 0.2;
+
+          if (fallP >= 0.75) {
+            if (vB.userData && vB.userData.rider) {
+              vB.userData.rider.visible = false;
+            }
+            if (!ACTIVE._fallenOfficerMesh && typeof window._buildFallenOfficer === 'function') {
+              var fo = window._buildFallenOfficer();
+              if (fo) {
+                fo.position.set(4.0, 0, -12.3);
+                ACTIVE.game.scene.add(fo);
+                ACTIVE._fallenOfficerMesh = fo;
+              }
+            }
+          }
+        }
       }
 
       // Transition clock runs from the start of each shot. Default is a short
@@ -2199,6 +2258,7 @@
 
       // Advance one shot at a time, carrying the overshoot forward so a long
       // stall cannot desynchronise the timeline.
+      if (ACTIVE.paused) { return true; }
       var guard = 0;
       while (elapsed >= durMs && guard < 64) {
         if (shot && shot.motion && ACTIVE.cast && ACTIVE.cast.actors) {
@@ -2245,6 +2305,11 @@
   function skip() {
     if (!ACTIVE) { return; }
     try {
+      if (document.activeElement && typeof document.activeElement.blur === 'function') {
+        document.activeElement.blur();
+      }
+    } catch (eFoc) {}
+    try {
       // Jump straight to the end: hold the last frame's framing, then release.
       var last = ACTIVE.script[ACTIVE.script.length - 1];
       if (last) {
@@ -2257,6 +2322,11 @@
 
   function finish(markPlayed, skipped) {
     if (!ACTIVE) { return; }
+    try {
+      if (document.activeElement && typeof document.activeElement.blur === 'function') {
+        document.activeElement.blur();
+      }
+    } catch (eFoc) {}
     var state = ACTIVE;
     ACTIVE = null;
     try {
@@ -2337,6 +2407,11 @@
       }
       showPlayerMeshes(g, state.hiddenPlayer);
       g.playing = true;
+      // Initialize buttery smooth cinematic-to-gameplay camera transition lerp
+      if (state.kind !== 'beat') {
+        g._camSnapped = true;
+        g._camTransition = 2.4;
+      }
       // A beat interrupts a running lesson: restoring the player's own pause
       // state matters, but a prologue always resumes unpaused.
       g.pause = (state.kind === 'beat') ? !!state.prevPause : false;
@@ -2494,12 +2569,30 @@
     return started;
   }
 
-  /** Jump to the start of shot `idx` without ending the film. */
-  function seek(idx) {
+  function pause(atP) {
+    if (!ACTIVE) { return; }
+    ACTIVE.paused = true;
+    ACTIVE.pausedP = (atP != null) ? Math.max(0, Math.min(1, atP)) : 0.2;
+  }
+
+  function resume() {
+    if (!ACTIVE) { return; }
+    ACTIVE.paused = false;
+    ACTIVE.shotStartedAt = (window.performance && performance.now) ? performance.now() : Date.now();
+  }
+
+  /** Jump to the start of shot `idx` without ending the film. Optionally freeze at progress fraction `pauseP`. */
+  function seek(idx, pauseP) {
     if (!ACTIVE) { return false; }
     var i = Math.max(0, Math.min(ACTIVE.script.length - 1, idx | 0));
     ACTIVE.idx = i;
     ACTIVE.shotStartedAt = (window.performance && performance.now) ? performance.now() : Date.now();
+    if (pauseP != null) {
+      ACTIVE.paused = true;
+      ACTIVE.pausedP = Math.max(0, Math.min(1, pauseP));
+    } else {
+      ACTIVE.paused = false;
+    }
     try {
       // Settle all prior motions up to shot i so actors are positioned on their expected marks
       if (ACTIVE.script && ACTIVE.cast && ACTIVE.cast.actors) {
@@ -2513,6 +2606,15 @@
               }
             });
           }
+        }
+        // Initialize current shot's actors at m.from so they begin at start mark
+        if (ACTIVE.script[i] && ACTIVE.script[i].motion) {
+          ACTIVE.script[i].motion.forEach(function (m) {
+            if (m && m.id && m.from && ACTIVE.cast.actors[m.id]) {
+              var a = ACTIVE.cast.actors[m.id];
+              a.position.set(m.from[0], m.from[1], m.from[2]);
+            }
+          });
         }
       }
       applyShot(0);
@@ -2583,6 +2685,8 @@
     replay: replay,
     restart: restart,
     seek: seek,
+    pause: pause,
+    resume: resume,
     hasPrologue: hasPrologue,
     hasStage: hasStage,
     hasFor: hasFor,

@@ -61,6 +61,7 @@ const excludedFilePatterns = [
 // source/editor formats rather than loadable game assets. Keeping them out of
 // the deployable tree saves hundreds of megabytes without changing gameplay.
 const excludedPaths = new Set([
+  'story',
   // The raw asset dump. 1.3 GB, ~4350 files, almost all of it in formats the
   // browser never loads (Godot .tscn/.gd, .blend, .fbx, .obj) or as source-DCC
   // WAV. scripts/stage_assets.py extracts the usable slice into
@@ -147,11 +148,17 @@ function copyDirSync(src, dest) {
 
   for (const entry of entries) {
     const srcPath = path.join(src, entry.name);
-    if (shouldExclude(entry.name, entry.isDirectory(), path.relative(__dirname, srcPath))) {continue;}
+    let isDir = entry.isDirectory();
+    if (!isDir && entry.isSymbolicLink()) {
+      try {
+        isDir = fs.statSync(srcPath).isDirectory();
+      } catch (e) {}
+    }
+    if (shouldExclude(entry.name, isDir, path.relative(__dirname, srcPath))) {continue;}
 
     const destPath = path.join(dest, entry.name);
 
-    if (entry.isDirectory()) {
+    if (isDir) {
       copyDirSync(srcPath, destPath);
     } else {
       fs.copyFileSync(srcPath, destPath);

@@ -136,8 +136,11 @@
 
     // heavy
     bus: 'bus', best_bus: 'bus', school_bus: 'bus', double_decker: 'bus',
-    green_bus: 'bus', msrtc: 'bus',
+    green_bus: 'bus', bus_green: 'bus', bus_city: 'bus', bus_green_city: 'bus',
+    bus_red: 'bus', red_bus: 'bus', city_bus: 'bus', msrtc: 'bus',
     truck: 'truck', eicher: 'truck', lorry: 'truck', container: 'truck',
+    fire_truck: 'truck', truck_heavy: 'truck',
+    ambulance: 'suv', police: 'suv',
 
     // pedestrians
     ped: 'ped', pedestrian: 'ped', ped_walk: 'ped', npc_ped: 'ped',
@@ -154,14 +157,26 @@
     return String(type == null ? 'car' : type).toLowerCase().trim();
   }
 
-  function resolve(type) {
-    const k = norm(type);
-    return D[ALIAS[k] || 'car'] || D.car;
-  }
-
   function key(type) {
     const k = norm(type);
-    return ALIAS[k] || 'car';
+    if (ALIAS[k]) return ALIAS[k];
+    if (k.includes('bus')) return 'bus';
+    if (k.includes('truck') || k.includes('lorry') || k.includes('eicher') || k.includes('container') || k.includes('trailer')) return 'truck';
+    if (k.includes('ambulance') || k.includes('police') || k.includes('suv') || k.includes('creta') || k.includes('innova') || k.includes('fortuner')) return 'suv';
+    if (k.includes('bike') || k.includes('splendor') || k.includes('activa') || k.includes('scooter') || k.includes('twowheeler') || k.includes('motorcycle')) return 'bike';
+    if (k.includes('cycle') || k.includes('bicycle')) return 'bicycle';
+    if (k.includes('auto') || k.includes('rickshaw') || k.includes('bajaj')) return 'auto';
+    if (k.includes('taxi') || k.includes('cab') || k.includes('padmini')) return 'taxi';
+    if (k.includes('supercar') || k.includes('lambo')) return 'supercar';
+    if (k.includes('sports')) return 'sports';
+    if (k.includes('child') || k.includes('kid')) return 'pedChild';
+    if (k.includes('ped')) return 'ped';
+    return 'car';
+  }
+
+  function resolve(type) {
+    const k = key(type);
+    return D[k] || D.car;
   }
 
   /** Lateral / longitudinal half-extents for a type, from the shared table. */

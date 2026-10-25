@@ -1482,11 +1482,15 @@
         grid-column: span 2;
       }
       @media (min-width: 1025px) {
-        /* Section 2 (Educational) and Section 3 (Android) have 2 cards each:
-           giving each card span 3 fills the 6-column grid completely. */
+        /* Flagship (2 cards), Educational (2 cards), and Android (2 cards)
+           have 2 cards each: giving each card span 3 fills the 6-column grid completely. */
+        #projects .pgrid > .pc,
         #educational .pgrid > .pc,
         #mobile .pgrid > .pc {
           grid-column: span 3;
+        }
+        #productivity .pgrid > .pc {
+          grid-column: span 2;
         }
       }
       .pc {
@@ -3831,7 +3835,8 @@
 
       /* 9. 1024px Grid Orphan Span Fix */
       @media (max-width: 1024px) and (min-width: 769px) {
-        #projects .pgrid > .pc:last-child:nth-child(odd) {
+        #projects .pgrid > .pc:last-child:nth-child(odd),
+        #productivity .pgrid > .pc:last-child:nth-child(odd) {
           grid-column: 1 / -1 !important;
         }
       }
@@ -4206,14 +4211,14 @@
       </div>
     </section>
 
-    <section class="ps" id="projects" style="content-visibility:auto; contain-intrinsic-size: auto 1200px">
+    <section class="ps" id="projects" style="content-visibility:auto; contain-intrinsic-size: auto 650px">
       <div class="sh">
         <div>
-          <div class="sey">Portfolio</div>
-          <h2 class="st">Five Engines.<br />One Studio.</h2>
+          <div class="sey">Flagship Architectures</div>
+          <h2 class="st">Flagship Models.<br />Pinnacle Engineering.</h2>
         </div>
         <p class="ssb">
-          Each project is a standalone engine &mdash; a focused exploration of computer science, real-time astrophysics, machine vision, dynamic matrices, and career psychometrics engineered from scratch.
+          Our premier standalone suites &mdash; the founding touch-typing curriculum and multiplayer competition engine alongside our 64-bit Keplerian orbital astrophysics simulator.
         </p>
       </div>
       <div class="pgrid">
@@ -4250,7 +4255,21 @@
               Open Engine <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
             </div></div
         ></a>
-        <a href="gesture" class="pc ct" data-delay="160"
+      </div>
+    </section>
+
+    <section class="ps" id="productivity" style="content-visibility:auto; contain-intrinsic-size: auto 650px; padding-top: 40px">
+      <div class="sh">
+        <div>
+          <div class="sey">Applied Intelligence &amp; Spatial Suites</div>
+          <h2 class="st">Spatial Vision.<br />Dynamic Matrices &amp; Guidance.</h2>
+        </div>
+        <p class="ssb">
+          Real-time touchless spatial machine vision, dynamic cloud-synchronized QR matrices with live scan telemetry, and 8-dimensional psychometric career trajectory mapping.
+        </p>
+      </div>
+      <div class="pgrid">
+        <a href="gesture" class="pc ct" data-delay="0"
           ><div class="badge bp" style="background: rgba(0, 240, 255, 0.16); border-color: rgba(0, 240, 255, 0.45); color: #00f0ff; box-shadow: 0 0 14px rgba(0, 240, 255, 0.25);">Spatial Vision AI</div>
           <div class="pv" style="background: #03080e">
             <div class="vg">
@@ -4333,7 +4352,7 @@
               Launch Co-Pilot <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
             </div></div
         ></a>
-        <a href="qr" class="pc ce" data-delay="240"
+        <a href="qr" class="pc ce" data-delay="80"
           ><div class="badge bp" style="background: rgba(16, 185, 129, 0.16); border-color: rgba(16, 185, 129, 0.45); color: #10b981; box-shadow: 0 0 14px rgba(16, 185, 129, 0.25);">Dynamic Matrix</div>
           <div class="pv" style="background: #020804">
             <div class="vq">
@@ -4376,7 +4395,7 @@
               Launch Studio <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
             </div></div
         ></a>
-        <a href="Career" class="pc cp" data-delay="320">
+        <a href="Career" class="pc cp" data-delay="160">
           <div class="badge bp" style="background: rgba(129, 140, 248, 0.16); border-color: rgba(129, 140, 248, 0.45); color: #818cf8; box-shadow: 0 0 14px rgba(129, 140, 248, 0.25);">Career Architecture</div>
           <div class="pv" style="background: #050614">
             <div class="c-bg">

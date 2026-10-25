@@ -641,11 +641,15 @@ function _getThemeRoads(themeType) {
       ]
     },
     signal_jump: {
-      name: 'Signal Junction', sky: 0x87b6d8, fog: 550, ground: 0x33691e, amb: 0.8, veh: 'car',
+      name: 'Signal Junction', sky: 0x87b6d8, fog: 500, ground: 0x33691e, amb: 0.85, veh: 'car', timeOfDay: 'morning',
       npcTypes: ['car','car','bike','auto','bus','truck','car','bike','taxi','car','auto','car','car','bike','bus','car'],
       roads: [
-        { type:'v', x:0,    z1:-600, z2:600 }, { type:'v', x:-240, z1:-480, z2:480 }, { type:'v', x:240, z1:-480, z2:480 },
-        { type:'h', z:0,    x1:-600, x2:600 }, { type:'h', z:-240, x1:-480, x2:480 }, { type:'h', z:240, x1:-480, x2:480 }
+        { type:'v', x:0,    z1:-600, z2:600, width: 20, lanes: 4 },
+        { type:'v', x:-240, z1:-480, z2:480, width: 14, lanes: 2 },
+        { type:'v', x:240,  z1:-480, z2:480, width: 14, lanes: 2 },
+        { type:'h', z:0,    x1:-600, x2:600, width: 18, lanes: 4 },
+        { type:'h', z:-240, x1:-480, x2:480, width: 14, lanes: 2 },
+        { type:'h', z:240,  x1:-480, x2:480, width: 14, lanes: 2 }
       ],
       route: [{ x:0,z:-480 },{ x:0,z:-240 },{ x:0,z:0 },{ x:0,z:240 },{ x:0,z:480 },
               { x:240,z:480 },{ x:240,z:240 },{ x:240,z:0 },{ x:240,z:-240 },{ x:240,z:-480 },
@@ -1223,10 +1227,27 @@ class LODChunk {
   }
 }
 
+class GameTimer {
+  constructor() {
+    this._lastTime = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+    this._startTime = this._lastTime;
+  }
+  getDelta() {
+    const now = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+    const dt = Math.max(0, (now - this._lastTime) / 1000);
+    this._lastTime = now;
+    return dt;
+  }
+  getElapsedTime() {
+    const now = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+    return Math.max(0, (now - this._startTime) / 1000);
+  }
+}
+
 class Game {
       constructor() {
         this.renderCore = null; this.scene = null; this.camera = null; this.player = null;
-        this.clock = new THREE.Clock(); this.keys = {}; this.speed = 0; this.maxSpd = 1.1; this.accel = .045; this.fric = .95; this.turn = .065; this.gear = 'N'; this.gcap = 0;
+        this.clock = new GameTimer(); this.keys = {}; this.speed = 0; this.maxSpd = 1.1; this.accel = .045; this.fric = .95; this.turn = .065; this.gear = 'N'; this.gcap = 0;
         this.boostFuel = 100; this.maxBoostFuel = 100; this.boosting = false; this._wasDepleted = false;
         this._camTarget = new THREE.Vector3(); this._grip = 0.62; this._camShakeAmt = 0; this._camTilt = 0; this._camFovTarget = 60;
         this.missionManager = new MissionManager(this);
@@ -1307,20 +1328,34 @@ class Game {
           rebaseThreshold: 5000
         };
         
+        this._lastPointerLockExit = 0;
         this._initR(); this._initIn(); this._initG(); this._initVirtualJoystick(); this._loop();
         window.addEventListener('resize', () => this._rsz());
         document.addEventListener('fullscreenchange', () => {
           this._rsz();
           if (document.fullscreenElement && this.playing && !this.pause) {
             const canvas = this.renderCore?.renderer?.domElement || document.querySelector('canvas');
-            if (canvas && typeof canvas.requestPointerLock === 'function') {
-              try { canvas.requestPointerLock(); } catch(err) {}
-            }
+            this._safeRequestPointerLock(canvas);
           }
         });
         document.addEventListener('pointerlockchange', () => {
           this.isPointerLocked = !!document.pointerLockElement;
+          if (!this.isPointerLocked) {
+            this._lastPointerLockExit = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+          }
         });
+      }
+
+      _safeRequestPointerLock(canvas) {
+        if (!canvas || typeof canvas.requestPointerLock !== 'function') return;
+        const now = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+        if (now - (this._lastPointerLockExit || 0) < 1300) return;
+        try {
+          const res = canvas.requestPointerLock();
+          if (res && typeof res.catch === 'function') {
+            res.catch(() => {});
+          }
+        } catch (err) {}
       }
 
       _initViolationsLog() {
@@ -1765,11 +1800,15 @@ class Game {
           this.camera.updateProjectionMatrix();
         }
         if (this.scene) {
+          const rd = this.renderDistance || 500;
+          const lowPerf = this._isMobile || this._isLowGPU;
+          const fNear = lowPerf ? Math.max(45, rd * 0.18) : Math.max(65, rd * 0.22);
+          const fFar  = lowPerf ? Math.max(260, rd * 0.90) : Math.max(400, rd * 1.15);
           if (!this.scene.fog) {
-            this.scene.fog = new THREE.Fog(0x0a101d, this.renderDistance * 0.75, this.renderDistance * 1.6);
+            this.scene.fog = new THREE.Fog(0x95c0d4, fNear, fFar);
           } else {
-            this.scene.fog.near = this.renderDistance * 0.75;
-            this.scene.fog.far = this.renderDistance * 1.6;
+            this.scene.fog.near = fNear;
+            this.scene.fog.far = fFar;
           }
         }
         if (this.sceneryKit && this.player && this.player.position) {
@@ -1870,12 +1909,12 @@ class Game {
             cvs._pointerLockBound = true;
             cvs.addEventListener('click', () => {
               if (!document.pointerLockElement && this.playing && !this.pause) {
-                try { cvs.requestPointerLock(); } catch(err) {}
+                this._safeRequestPointerLock(cvs);
               }
             });
             cvs.addEventListener('mousedown', (e) => {
               if (!document.pointerLockElement && this.playing && !this.pause) {
-                try { cvs.requestPointerLock(); } catch(err) {}
+                this._safeRequestPointerLock(cvs);
               }
               if (e.button === 0 && (!e.pointerType || e.pointerType === 'mouse')) {
                 this._isDraggingLeft = true;
@@ -5923,6 +5962,15 @@ class Game {
 
           const _bv0 = (typeof window !== 'undefined' && typeof window._buildVehicle === 'function') ? window._buildVehicle : (typeof _buildVehicle === 'function' ? _buildVehicle : null);
           this.playerVehicle = _bv0 ? _bv0(vt, playerColor) : null;
+          if (this.playerVehicle) {
+            const _VD = (typeof window !== 'undefined' && window.VehicleDims) ? window.VehicleDims : null;
+            const _fall = _VD ? _VD.halves(vt) : { halfW: 0.95, halfD: 2.25 };
+            this.playerVehicle.userData = this.playerVehicle.userData || {};
+            if (!this.playerVehicle.userData.halfW || !this.playerVehicle.userData.halfD) {
+              this.playerVehicle.userData.halfW = _fall.halfW;
+              this.playerVehicle.userData.halfD = _fall.halfD;
+            }
+          }
           this._spawnPos = { x: vStartX, z: vStartZ };
           this.playerVehicle.position.set(vStartX, 0, vStartZ);
           this.playerVehicle.rotation.y = vRotY;
@@ -5979,6 +6027,8 @@ class Game {
           const coneMat = new THREE.MeshBasicMaterial({ color: 0xffffcc, transparent: true, opacity: isNight ? 0.10 : 0.0, side: THREE.DoubleSide, depthWrite: false });
           const coneL = new THREE.Mesh(coneGeo, coneMat); coneL.position.set(0.65, 0.5, 14.5); coneL.rotation.x = Math.PI / 2;
           const coneR = new THREE.Mesh(coneGeo.clone(), coneMat.clone()); coneR.position.set(-0.65, 0.5, 14.5); coneR.rotation.x = Math.PI / 2;
+          coneL.raycast = () => {}; coneR.raycast = () => {};
+          coneL.ignoreInBounds = true; coneR.ignoreInBounds = true;
           this.playerVehicle.add(coneL); this.playerVehicle.add(coneR);
           this._headlightCones = [coneL, coneR];
           const profileStr = localStorage.getItem('traffic_profile');
@@ -6170,6 +6220,177 @@ class Game {
           }
         } catch (e) {}
       }
+      // ── High-Fidelity Organic Street Tree Generator ────────────────────────
+      // Replaces primitive single-sphere trees with sculpted botanical trees:
+      // Stone sidewalk planter curb, dark soil basin, flared buttress roots,
+      // multi-segment tapered trunk, 4 sculpted arching limbs, multi-lobed
+      // umbrella canopy in 3 rich botanical foliage tones, and flowering Gulmohar
+      // blossoms / fresh seasonal shoot highlights.
+      _createHighDetailStreetTree(opts = {}) {
+        const tg = new THREE.Group();
+        tg.name = 'HighDetailStreetTree';
+        const scale = opts.scale || (0.95 + Math.random() * 0.25);
+        const isFlower = !!opts.flower;
+
+        // 1. Sidewalk Stone Planter Curb & Dark Soil Basin (prevents bare trunk clipping through pavement)
+        const curbMat = new THREE.MeshLambertMaterial({ color: 0x94a3b8 });
+        const soilMat = new THREE.MeshLambertMaterial({ color: 0x2d1f14 });
+        const curb = new THREE.Mesh(new THREE.CylinderGeometry(0.95, 1.05, 0.18, 8), curbMat);
+        curb.position.y = 0.09;
+        curb.receiveShadow = true;
+        tg.add(curb);
+        const soil = new THREE.Mesh(new THREE.CylinderGeometry(0.82, 0.82, 0.19, 8), soilMat);
+        soil.position.y = 0.10;
+        soil.receiveShadow = true;
+        tg.add(soil);
+
+        // 2. Flared Buttress Roots
+        const trunkMat = new THREE.MeshLambertMaterial({ color: 0x4a3425 });
+        for (let r = 0; r < 4; r++) {
+          const ang = (r * Math.PI / 2) + 0.3;
+          const root = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.5, 0.6), trunkMat);
+          root.position.set(Math.cos(ang) * 0.45, 0.25, Math.sin(ang) * 0.45);
+          root.rotation.y = -ang;
+          root.rotation.x = 0.35;
+          root.castShadow = true;
+          tg.add(root);
+        }
+
+        // 3. Multi-Segment Sculpted Trunk (Lower & Upper with gentle natural sway)
+        const lowerTrunk = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.46, 2.2, 8), trunkMat);
+        lowerTrunk.position.y = 1.1;
+        lowerTrunk.castShadow = true;
+        tg.add(lowerTrunk);
+
+        const upperTrunk = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.32, 2.2, 8), trunkMat);
+        upperTrunk.position.set(0.08, 2.8, 0.05);
+        upperTrunk.rotation.z = -0.06;
+        upperTrunk.castShadow = true;
+        tg.add(upperTrunk);
+
+        // 4. Outward Arching Limbs (Structural Armature for Umbrella Canopy)
+        const branchConfigs = [
+          { len: 2.4, r1: 0.12, r2: 0.20, px: 0.7, py: 3.7, pz: 0.5, rx: 0.35, rz: -0.45 },
+          { len: 2.6, r1: 0.12, r2: 0.20, px: -0.8, py: 3.8, pz: -0.4, rx: -0.3, rz: 0.5 },
+          { len: 2.2, r1: 0.11, r2: 0.18, px: 0.3, py: 3.9, pz: -0.8, rx: -0.45, rz: -0.25 },
+          { len: 2.4, r1: 0.11, r2: 0.18, px: -0.4, py: 3.8, pz: 0.8, rx: 0.4, rz: 0.3 }
+        ];
+        branchConfigs.forEach(bc => {
+          const br = new THREE.Mesh(new THREE.CylinderGeometry(bc.r1, bc.r2, bc.len, 6), trunkMat);
+          br.position.set(bc.px, bc.py, bc.pz);
+          br.rotation.x = bc.rx;
+          br.rotation.z = bc.rz;
+          br.castShadow = true;
+          tg.add(br);
+        });
+
+        // 5. Multi-Lobe Organic Canopy (Tiered Umbrella Profile)
+        const foliageMats = [
+          new THREE.MeshLambertMaterial({ color: 0x1b4d2e }), // Deep forest green
+          new THREE.MeshLambertMaterial({ color: 0x2d7a3c }), // Vibrant emerald green
+          new THREE.MeshLambertMaterial({ color: 0x43a047 })  // Sunlit golden green
+        ];
+
+        // Central broad crown dome
+        const crown = new THREE.Mesh(new THREE.SphereGeometry(2.3, 10, 8), foliageMats[1]);
+        crown.scale.set(1.4, 0.7, 1.4);
+        crown.position.set(0, 4.9, 0);
+        crown.castShadow = true;
+        tg.add(crown);
+
+        // 7 Overlapping Secondary Foliage Lobes
+        const lobes = [
+          { x: 1.5, y: 4.6, z: 0.6, sx: 1.3, sy: 0.7, sz: 1.2, mat: foliageMats[0] },
+          { x: -1.6, y: 4.7, z: -0.5, sx: 1.35, sy: 0.75, sz: 1.3, mat: foliageMats[1] },
+          { x: 0.5, y: 4.8, z: -1.5, sx: 1.25, sy: 0.7, sz: 1.4, mat: foliageMats[0] },
+          { x: -0.6, y: 4.5, z: 1.5, sx: 1.3, sy: 0.7, sz: 1.25, mat: foliageMats[2] },
+          { x: 1.3, y: 4.9, z: -1.1, sx: 1.2, sy: 0.65, sz: 1.2, mat: foliageMats[2] },
+          { x: -1.2, y: 4.8, z: 1.1, sx: 1.2, sy: 0.65, sz: 1.2, mat: foliageMats[1] },
+          { x: 0, y: 5.5, z: 0, sx: 1.1, sy: 0.6, sz: 1.1, mat: foliageMats[2] }
+        ];
+        lobes.forEach(l => {
+          const lobe = new THREE.Mesh(new THREE.SphereGeometry(1.3, 8, 7), l.mat);
+          lobe.scale.set(l.sx, l.sy, l.sz);
+          lobe.position.set(l.x, l.y, l.z);
+          lobe.castShadow = true;
+          tg.add(lobe);
+        });
+
+        // 6. Blossoms / Seasonal Highlights
+        if (isFlower) {
+          // Fiery Scarlet / Orange Gulmohar Flower Clouds
+          const flowerMat = new THREE.MeshLambertMaterial({ color: 0xe11d48 });
+          const flowerAltMat = new THREE.MeshLambertMaterial({ color: 0xf97316 });
+          const blossoms = [
+            { x: 0.2, y: 5.7, z: 0.1, r: 0.95, mat: flowerMat },
+            { x: 1.4, y: 5.2, z: 0.7, r: 0.85, mat: flowerAltMat },
+            { x: -1.4, y: 5.3, z: -0.6, r: 0.85, mat: flowerMat },
+            { x: 0.6, y: 5.4, z: -1.4, r: 0.8, mat: flowerMat },
+            { x: -0.7, y: 5.1, z: 1.4, r: 0.8, mat: flowerAltMat },
+            { x: 1.8, y: 4.8, z: -0.2, r: 0.75, mat: flowerAltMat }
+          ];
+          blossoms.forEach(b => {
+            const fl = new THREE.Mesh(new THREE.SphereGeometry(b.r, 7, 6), b.mat);
+            fl.scale.set(1.2, 0.5, 1.2);
+            fl.position.set(b.x, b.y, b.z);
+            fl.castShadow = true;
+            tg.add(fl);
+          });
+        } else {
+          // Lush young leaf shoots
+          const shootMat = new THREE.MeshLambertMaterial({ color: 0x86efac });
+          const shoots = [
+            { x: 0, y: 5.8, z: 0, r: 0.75 },
+            { x: 1.2, y: 5.3, z: 0.6, r: 0.65 },
+            { x: -1.2, y: 5.4, z: -0.5, r: 0.65 }
+          ];
+          shoots.forEach(sh => {
+            const bud = new THREE.Mesh(new THREE.SphereGeometry(sh.r, 6, 5), shootMat);
+            bud.scale.set(1.1, 0.5, 1.1);
+            bud.position.set(sh.x, sh.y, sh.z);
+            tg.add(bud);
+          });
+        }
+
+        tg.scale.set(scale, scale, scale);
+        return tg;
+      }
+
+      // ── Road Clearance & Sidewalk Snapping Guard ────────────────────────────
+      // Tests any prop (cart, tree, stall, scooter) against all roads in cfg.roads.
+      // If placed on asphalt or curb boundary, gently pushes it out onto the sidewalk.
+      _snapOutOfRoadways(x, z, rPad = 2.0, roads = null) {
+        const roadList = roads || (this.mapCfg && this.mapCfg.roads ? this.mapCfg.roads : []);
+        if (!roadList || !roadList.length) return { x, z };
+        let nx = x, nz = z;
+        for (const r of roadList) {
+          const isV = r.type === 'v';
+          const halfW = ((r.width || 14) / 2) + rPad;
+          if (isV) {
+            const zMin = Math.min(r.z1, r.z2) - rPad;
+            const zMax = Math.max(r.z1, r.z2) + rPad;
+            if (nz >= zMin && nz <= zMax) {
+              const dx = nx - r.x;
+              if (Math.abs(dx) < halfW) {
+                const dir = dx >= 0 ? 1 : -1;
+                nx = r.x + dir * (halfW + 0.6);
+              }
+            }
+          } else {
+            const xMin = Math.min(r.x1, r.x2) - rPad;
+            const xMax = Math.max(r.x1, r.x2) + rPad;
+            if (nx >= xMin && nx <= xMax) {
+              const dz = nz - r.z;
+              if (Math.abs(dz) < halfW) {
+                const dir = dz >= 0 ? 1 : -1;
+                nz = r.z + dir * (halfW + 0.6);
+              }
+            }
+          }
+        }
+        return { x: nx, z: nz };
+      }
+
       _buildRoadProblems(cfg) {
         if (this._roadProblemGroup) { this.scene.remove(this._roadProblemGroup); this._roadProblemGroup = null; }
         this._roadProblems = [];
@@ -6178,6 +6399,12 @@ class Game {
         const grp = new THREE.Group();
         grp.name = 'road-problems';
         list.forEach((p) => {
+          // Automatic sidewalk snapping for pedestrian/curbside props
+          let itemX = p.x, itemZ = p.z;
+          if (['streetlight', 'scooter', 'dustbins', 'tree', 'thela', 'bus_shelter', 'fire_hydrant', 'utility_pole', 'pan_shop', 'auto_stand', 'temple_shrine', 'water_atm', 'corner_planter'].includes(p.kind)) {
+            const snapped = this._snapOutOfRoadways(p.x, p.z, 2.2, cfg.roads);
+            itemX = snapped.x; itemZ = snapped.z;
+          }
           if (!p || typeof p.x !== 'number' || typeof p.z !== 'number') {return;}
           if (p.kind === 'potholes') {
             const n = Math.max(1, Math.min(12, p.count || 5));
@@ -6326,9 +6553,287 @@ class Game {
             );
             halo.position.copy(head.position);
             lg.add(halo);
-            lg.position.set(p.x, 0, p.z);
+            lg.position.set(itemX, 0, itemZ);
             lg.rotation.y = p.rotY || 0;
             grp.add(lg);
+          } else if (p.kind === 'scooter') {
+            const sc = (typeof window.buildMumbaiParkedScooter === 'function')
+              ? window.buildMumbaiParkedScooter()
+              : (typeof _buildVehicle === 'function' ? _buildVehicle('bike', p.color || 0x2563eb) : null);
+            if (sc) {
+              sc.position.set(itemX, 0, itemZ);
+              sc.rotation.y = p.rotY || 0;
+              grp.add(sc);
+            }
+          } else if (p.kind === 'dustbins') {
+            const db = (typeof window.buildBmcTwinDustbins === 'function') ? window.buildBmcTwinDustbins() : null;
+            if (db) {
+              db.position.set(itemX, 0, itemZ);
+              db.rotation.y = p.rotY || 0;
+              grp.add(db);
+            }
+          } else if (p.kind === 'tree') {
+            const tg = this._createHighDetailStreetTree(p);
+            tg.position.set(itemX, 0, itemZ);
+            grp.add(tg);
+          } else if (p.kind === 'bus_shelter') {
+            const bg = new THREE.Group();
+            const frameMat = new THREE.MeshLambertMaterial({ color: 0x334155 });
+            const roofMat = new THREE.MeshLambertMaterial({ color: 0xdc2626 }); // BEST Mumbai red
+            const benchMat = new THREE.MeshLambertMaterial({ color: 0x94a3b8 });
+            const glassMat = new THREE.MeshBasicMaterial({ color: 0xdbeafe, transparent: true, opacity: 0.65 });
+            const base = new THREE.Mesh(new THREE.BoxGeometry(4.2, 0.16, 2.0), new THREE.MeshLambertMaterial({ color: 0x64748b }));
+            base.position.y = 0.08; bg.add(base);
+            [-1.8, 1.8].forEach(cx => {
+              const col = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 2.7, 8), frameMat);
+              col.position.set(cx, 1.35, -0.8); bg.add(col);
+            });
+            const canopy = new THREE.Mesh(new THREE.BoxGeometry(4.4, 0.08, 2.2), roofMat);
+            canopy.position.set(0, 2.7, 0.1); canopy.rotation.x = -0.06; bg.add(canopy);
+            const bench = new THREE.Mesh(new THREE.BoxGeometry(3.0, 0.45, 0.45), benchMat);
+            bench.position.set(0, 0.35, -0.6); bg.add(bench);
+            const mapPanel = new THREE.Mesh(new THREE.BoxGeometry(2.4, 1.4, 0.04), glassMat);
+            mapPanel.position.set(0, 1.5, -0.78); bg.add(mapPanel);
+            const mapCanvas = document.createElement('canvas'); mapCanvas.width = 256; mapCanvas.height = 128;
+            const mc = mapCanvas.getContext('2d');
+            mc.fillStyle = '#1e3a8a'; mc.fillRect(0, 0, 256, 128);
+            mc.fillStyle = '#ffffff'; mc.font = 'bold 20px sans-serif'; mc.textAlign = 'center';
+            mc.fillText('BEST ROUTE 332', 128, 35);
+            mc.font = '14px sans-serif'; mc.fillStyle = '#fde047';
+            mc.fillText('Andheri - BKC - Colaba', 128, 65);
+            mc.font = '12px sans-serif'; mc.fillStyle = '#93c5fd';
+            mc.fillText('Freq: Every 6 Mins', 128, 95);
+            const mapTex = new THREE.CanvasTexture(mapCanvas);
+            const mapMesh = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 0.8), new THREE.MeshBasicMaterial({ map: mapTex }));
+            mapMesh.position.set(0, 1.5, -0.75); bg.add(mapMesh);
+            const stopPole = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 2.9, 8), frameMat);
+            stopPole.position.set(2.4, 1.45, 0.5); bg.add(stopPole);
+            const stopSign = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.05, 16), new THREE.MeshLambertMaterial({ color: 0xdc2626 }));
+            stopSign.rotation.x = Math.PI / 2; stopSign.position.set(2.4, 2.8, 0.5); bg.add(stopSign);
+            bg.position.set(itemX, 0, itemZ); bg.rotation.y = p.rotY || 0;
+            bg.userData = { halfW: 2.2, halfD: 1.1, isObstacle: true };
+            this.obstacles.push(bg); grp.add(bg);
+          } else if (p.kind === 'fire_hydrant') {
+            const fh = new THREE.Group();
+            const redMat = new THREE.MeshLambertMaterial({ color: 0xdc2626 });
+            const brassMat = new THREE.MeshLambertMaterial({ color: 0xf59e0b });
+            const ironMat = new THREE.MeshLambertMaterial({ color: 0x1e293b });
+            const baseFlange = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.28, 0.12, 12), ironMat);
+            baseFlange.position.y = 0.06; fh.add(baseFlange);
+            const body = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.18, 0.75, 12), redMat);
+            body.position.y = 0.44; fh.add(body);
+            const bonnet = new THREE.Mesh(new THREE.SphereGeometry(0.17, 12, 12), redMat);
+            bonnet.position.y = 0.80; fh.add(bonnet);
+            const nut = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.08, 5), brassMat);
+            nut.position.y = 0.94; fh.add(nut);
+            [-0.2, 0.2].forEach(nx => {
+              const nozzle = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.14, 8), brassMat);
+              nozzle.rotation.z = Math.PI / 2; nozzle.position.set(nx, 0.55, 0); fh.add(nozzle);
+            });
+            fh.position.set(itemX, 0, itemZ);
+            fh.userData = { isSmallProp: true };
+            grp.add(fh);
+          } else if (p.kind === 'utility_pole') {
+            const up = new THREE.Group();
+            const poleMat = new THREE.MeshLambertMaterial({ color: 0x57534e });
+            const metalMat = new THREE.MeshLambertMaterial({ color: 0x475569 });
+            const insMat = new THREE.MeshBasicMaterial({ color: 0xf8fafc });
+            const mainPole = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.18, 8.5, 8), poleMat);
+            mainPole.position.y = 4.25; up.add(mainPole);
+            [7.4, 8.0].forEach((cy, idx) => {
+              const armW = 2.4 - idx * 0.4;
+              const arm = new THREE.Mesh(new THREE.BoxGeometry(armW, 0.12, 0.12), metalMat);
+              arm.position.y = cy; up.add(arm);
+              [-0.9, -0.3, 0.3, 0.9].forEach(ix => {
+                if (Math.abs(ix) <= (armW / 2)) {
+                  const ins = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.05, 0.18, 6), insMat);
+                  ins.position.set(ix, cy + 0.14, 0); up.add(ins);
+                }
+              });
+            });
+            const trans = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.85, 12), metalMat);
+            trans.position.set(0.45, 5.2, 0); up.add(trans);
+            up.position.set(itemX, 0, itemZ); up.rotation.y = p.rotY || 0;
+            up.userData = { halfW: 0.3, halfD: 0.3, isObstacle: true };
+            this.obstacles.push(up); grp.add(up);
+          } else if (p.kind === 'pan_shop') {
+            const ps = new THREE.Group();
+            const kioskMat = new THREE.MeshLambertMaterial({ color: 0x047857 });
+            const roofMat = new THREE.MeshLambertMaterial({ color: 0xf59e0b });
+            const woodMat = new THREE.MeshLambertMaterial({ color: 0x78350f });
+            const brassMat = new THREE.MeshLambertMaterial({ color: 0xd97706 });
+            const body = new THREE.Mesh(new THREE.BoxGeometry(2.2, 2.2, 1.6), kioskMat);
+            body.position.y = 1.1; ps.add(body);
+            const awning = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.12, 2.0), roofMat);
+            awning.position.set(0, 2.26, 0.2); awning.rotation.x = -0.15; ps.add(awning);
+            const counter = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.9, 0.5), woodMat);
+            counter.position.set(0, 0.55, 0.7); ps.add(counter);
+            const tray = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.05, 0.4), brassMat);
+            tray.position.set(-0.35, 1.02, 0.7); ps.add(tray);
+            const sachetMat = new THREE.MeshLambertMaterial({ color: 0xef4444 });
+            const strip = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.35, 0.02), sachetMat);
+            strip.position.set(0, 1.8, 0.85); ps.add(strip);
+            const sCanvas = document.createElement('canvas'); sCanvas.width = 256; sCanvas.height = 64;
+            const sc = sCanvas.getContext('2d');
+            sc.fillStyle = '#b91c1c'; sc.fillRect(0, 0, 256, 64);
+            sc.fillStyle = '#fde047'; sc.font = 'bold 22px sans-serif'; sc.textAlign = 'center';
+            sc.fillText('GANESH PAAN SHOP', 128, 40);
+            const sTex = new THREE.CanvasTexture(sCanvas);
+            const sign = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 0.45), new THREE.MeshBasicMaterial({ map: sTex }));
+            sign.position.set(0, 2.15, 0.82); ps.add(sign);
+            ps.position.set(itemX, 0, itemZ); ps.rotation.y = p.rotY || 0;
+            ps.userData = { halfW: 1.2, halfD: 0.9, isObstacle: true };
+            this.obstacles.push(ps); grp.add(ps);
+          } else if (p.kind === 'auto_stand') {
+            const as = new THREE.Group();
+            const poleMat = new THREE.MeshLambertMaterial({ color: 0x1e293b });
+            const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 3.2, 8), poleMat);
+            pole.position.y = 1.6; as.add(pole);
+            const sCanvas = document.createElement('canvas'); sCanvas.width = 256; sCanvas.height = 128;
+            const sc = sCanvas.getContext('2d');
+            sc.fillStyle = '#facc15'; sc.fillRect(0, 0, 256, 128);
+            sc.strokeStyle = '#000000'; sc.lineWidth = 8; sc.strokeRect(4, 4, 248, 120);
+            sc.fillStyle = '#000000'; sc.font = 'bold 24px sans-serif'; sc.textAlign = 'center';
+            sc.fillText('AUTO STAND', 128, 45);
+            sc.font = '16px sans-serif';
+            sc.fillText('METER / SHARE', 128, 80);
+            sc.font = '12px sans-serif'; sc.fillStyle = '#16a34a';
+            sc.fillText('CNG GREEN FLEET', 128, 105);
+            const sTex = new THREE.CanvasTexture(sCanvas);
+            const board = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.7, 0.06), new THREE.MeshLambertMaterial({ map: sTex }));
+            board.position.set(0, 2.8, 0); as.add(board);
+            const _bveh = (typeof _buildVehicle === 'function') ? _buildVehicle('auto', 0xffcc00) : null;
+            if (_bveh) {
+              _bveh.position.set(0, 0, 2.6); _bveh.rotation.y = Math.PI / 2; as.add(_bveh);
+            }
+            as.position.set(itemX, 0, itemZ); as.rotation.y = p.rotY || 0;
+            as.userData = { halfW: 1.5, halfD: 2.2, isObstacle: true };
+            this.obstacles.push(as); grp.add(as);
+          } else if (p.kind === 'temple_shrine') {
+            const ts = new THREE.Group();
+            const marbleMat = new THREE.MeshLambertMaterial({ color: 0xf1f5f9 });
+            const saffronMat = new THREE.MeshLambertMaterial({ color: 0xea580c });
+            const brassMat = new THREE.MeshLambertMaterial({ color: 0xfacc15 });
+            const garlandMat = new THREE.MeshLambertMaterial({ color: 0xf97316 });
+            const plinth = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.4, 1.8), marbleMat);
+            plinth.position.y = 0.2; ts.add(plinth);
+            const sanctum = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.5, 1.4), saffronMat);
+            sanctum.position.set(0, 1.15, -0.1); ts.add(sanctum);
+            const dome = new THREE.Mesh(new THREE.ConeGeometry(1.2, 1.4, 4), saffronMat);
+            dome.position.set(0, 2.6, -0.1); dome.rotation.y = Math.PI / 4; ts.add(dome);
+            const spire = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.12, 0.5, 8), brassMat);
+            spire.position.set(0, 3.5, -0.1); ts.add(spire);
+            const bell = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.18, 8), brassMat);
+            bell.position.set(0, 1.6, 0.5); ts.add(bell);
+            const garland = new THREE.Mesh(new THREE.TorusGeometry(0.45, 0.06, 6, 16), garlandMat);
+            garland.position.set(0, 1.3, 0.62); ts.add(garland);
+            ts.position.set(itemX, 0, itemZ); ts.rotation.y = p.rotY || 0;
+            ts.userData = { halfW: 1.1, halfD: 1.0, isObstacle: true };
+            this.obstacles.push(ts); grp.add(ts);
+          } else if (p.kind === 'water_atm') {
+            const wa = new THREE.Group();
+            const bodyMat = new THREE.MeshLambertMaterial({ color: 0x0284c7 });
+            const steelMat = new THREE.MeshLambertMaterial({ color: 0xe2e8f0 });
+            const body = new THREE.Mesh(new THREE.BoxGeometry(1.2, 2.1, 0.9), bodyMat);
+            body.position.y = 1.05; wa.add(body);
+            const recess = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.7, 0.3), steelMat);
+            recess.position.set(0, 0.9, 0.35); wa.add(recess);
+            const wCanvas = document.createElement('canvas'); wCanvas.width = 128; wCanvas.height = 64;
+            const wc = wCanvas.getContext('2d');
+            wc.fillStyle = '#0369a1'; wc.fillRect(0, 0, 128, 64);
+            wc.fillStyle = '#ffffff'; wc.font = 'bold 16px sans-serif'; wc.textAlign = 'center';
+            wc.fillText('WATER ATM', 64, 28);
+            wc.font = '12px sans-serif'; wc.fillStyle = '#38bdf8';
+            wc.fillText('1 Rs / Liter', 64, 48);
+            const wTex = new THREE.CanvasTexture(wCanvas);
+            const sign = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.45), new THREE.MeshBasicMaterial({ map: wTex }));
+            sign.position.set(0, 1.7, 0.46); wa.add(sign);
+            wa.position.set(itemX, 0, itemZ); wa.rotation.y = p.rotY || 0;
+            wa.userData = { halfW: 0.7, halfD: 0.5, isObstacle: true };
+            this.obstacles.push(wa); grp.add(wa);
+          } else if (p.kind === 'corner_planter') {
+            const cp = new THREE.Group();
+            const stoneMat = new THREE.MeshLambertMaterial({ color: 0x94a3b8 });
+            const soilMat = new THREE.MeshLambertMaterial({ color: 0x271c19 });
+            const leafMat = new THREE.MeshLambertMaterial({ color: 0x15803d });
+            const flowerMat = new THREE.MeshBasicMaterial({ color: 0xf43f5e });
+            const box = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.65, 1.8), stoneMat);
+            box.position.y = 0.325; cp.add(box);
+            const soil = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.1, 1.6), soilMat);
+            soil.position.y = 0.62; cp.add(soil);
+            [-0.4, 0.4].forEach(fx => {
+              [-0.4, 0.4].forEach(fz => {
+                const shrub = new THREE.Mesh(new THREE.DodecahedronGeometry(0.35, 1), leafMat);
+                shrub.position.set(fx, 0.85, fz); cp.add(shrub);
+                const fl = new THREE.Mesh(new THREE.SphereGeometry(0.12, 8, 8), flowerMat);
+                fl.position.set(fx, 1.15, fz); cp.add(fl);
+              });
+            });
+            cp.position.set(itemX, 0, itemZ); grp.add(cp);
+          } else if (p.kind === 'stop_line') {
+            const sl = new THREE.Mesh(
+              new THREE.PlaneGeometry(p.w || 9, 0.5),
+              new THREE.MeshBasicMaterial({ color: 0xf8fafc })
+            );
+            sl.rotation.x = -Math.PI / 2;
+            sl.position.set(p.x, 0.025, p.z);
+            if (p.rotY) {sl.rotation.z = -p.rotY;}
+            grp.add(sl);
+          } else if (p.kind === 'lane_arrow') {
+            const ag = new THREE.Group();
+            const whiteMat = new THREE.MeshBasicMaterial({ color: 0xf8fafc });
+            const shaft = new THREE.Mesh(new THREE.PlaneGeometry(0.35, 2.4), whiteMat);
+            shaft.rotation.x = -Math.PI / 2; shaft.position.y = 0.025; ag.add(shaft);
+            const head = new THREE.Mesh(new THREE.ConeGeometry(0.55, 0.9, 3), whiteMat);
+            head.rotation.x = -Math.PI / 2; head.position.set(0, 0.025, 1.4); ag.add(head);
+            if (p.arrowType && p.arrowType.includes('left')) {
+              const turnShaft = new THREE.Mesh(new THREE.PlaneGeometry(0.3, 1.2), whiteMat);
+              turnShaft.rotation.x = -Math.PI / 2; turnShaft.rotation.z = Math.PI / 3;
+              turnShaft.position.set(-0.6, 0.025, 0.4); ag.add(turnShaft);
+            }
+            if (p.arrowType && p.arrowType.includes('right')) {
+              const turnShaft = new THREE.Mesh(new THREE.PlaneGeometry(0.3, 1.2), whiteMat);
+              turnShaft.rotation.x = -Math.PI / 2; turnShaft.rotation.z = -Math.PI / 3;
+              turnShaft.position.set(0.6, 0.025, 0.4); ag.add(turnShaft);
+            }
+            ag.position.set(p.x, 0, p.z); ag.rotation.y = p.rotY || 0;
+            grp.add(ag);
+          } else if (p.kind === 'pedestrian_island') {
+            const pig = new THREE.Group();
+            const curbMat = new THREE.MeshLambertMaterial({ color: 0x94a3b8 });
+            const yellowMat = new THREE.MeshBasicMaterial({ color: 0xfacc15 });
+            const island = new THREE.Mesh(new THREE.BoxGeometry(p.w || 2.0, 0.18, p.d || 4.0), curbMat);
+            island.position.y = 0.09; pig.add(island);
+            const tactile = new THREE.Mesh(new THREE.PlaneGeometry((p.w || 2.0) - 0.2, (p.d || 4.0) - 0.4), yellowMat);
+            tactile.rotation.x = -Math.PI / 2; tactile.position.y = 0.185; pig.add(tactile);
+            [-((p.d || 4.0) / 2 - 0.4), ((p.d || 4.0) / 2 - 0.4)].forEach(bz => {
+              const bollard = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.9, 8), yellowMat);
+              bollard.position.set(0, 0.5, bz); pig.add(bollard);
+            });
+            pig.position.set(p.x, 0, p.z);
+            pig.userData = { halfW: (p.w || 2.0) / 2, halfD: (p.d || 4.0) / 2, isObstacle: true };
+            this.obstacles.push(pig); grp.add(pig);
+          } else if (p.kind === 'tactile_paving') {
+            const tp = new THREE.Mesh(
+              new THREE.PlaneGeometry(p.w || 2.0, p.d || 2.0),
+              new THREE.MeshBasicMaterial({ color: 0xfacc15 })
+            );
+            tp.rotation.x = -Math.PI / 2; tp.position.set(p.x, 0.026, p.z);
+            grp.add(tp);
+          } else if (p.kind === 'storm_drain') {
+            const sd = new THREE.Mesh(
+              new THREE.PlaneGeometry(1.2, 0.6),
+              new THREE.MeshLambertMaterial({ color: 0x1e293b })
+            );
+            sd.rotation.x = -Math.PI / 2; sd.position.set(p.x, 0.024, p.z);
+            grp.add(sd);
+          } else if (p.kind === 'manhole') {
+            const mh = new THREE.Mesh(
+              new THREE.CircleGeometry(0.55, 16),
+              new THREE.MeshLambertMaterial({ color: 0x334155 })
+            );
+            mh.rotation.x = -Math.PI / 2; mh.position.set(p.x, 0.024, p.z);
+            grp.add(mh);
           }
         });
         this.scene.add(grp);
@@ -6419,14 +6924,22 @@ class Game {
             const h = p.h || 5;
             const body = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), wallMat);
             body.position.y = h / 2;
+            body.castShadow = true;
+            body.receiveShadow = true;
             g.add(body);
+
+            // Front ground display glass
             const glass = new THREE.Mesh(new THREE.PlaneGeometry(w * 0.7, 2.2), glassMat);
             glass.position.set(0, 1.6, d / 2 + 0.05);
             g.add(glass);
+
+            // Awning
             const awn = new THREE.Mesh(new THREE.BoxGeometry(w * 0.9, 0.25, 2.4), new THREE.MeshLambertMaterial({ color: p.awning || 0x166534 }));
             awn.position.set(0, 3.4, d / 2 + 1.1);
             awn.rotation.x = 0.25;
             g.add(awn);
+
+            // Signboard
             if (p.text) {
               const board = new THREE.Mesh(
                 new THREE.BoxGeometry(Math.min(w * 0.85, 9), 1.8, 0.25),
@@ -6435,6 +6948,195 @@ class Game {
               board.position.set(0, h + 0.4, d / 2 + 0.2);
               g.add(board);
             }
+
+            // ── 360° Architectural Relief Windows & Side Detailing ──
+            // Eliminates plain featureless slabs on side and rear walls
+            const floors = Math.max(1, Math.floor(h / 3.2));
+            const sideCols = Math.max(1, Math.floor(d / 3.4));
+            const frontCols = Math.max(1, Math.floor(w / 3.4));
+            
+            // Side Windows (Left & Right)
+            for (let f = (h > 4 ? 1 : 0); f < floors; f++) {
+              const wy = 2.4 + f * 3.0;
+              [-w / 2 - 0.05, w / 2 + 0.05].forEach((sideX, sIdx) => {
+                for (let sc = 0; sc < sideCols; sc++) {
+                  const sz = -d / 2 + 1.8 + sc * 3.2;
+                  const sWin = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 1.4), (f + sc) % 2 === 0 ? glassLit : glassMat);
+                  sWin.position.set(sideX, wy, sz);
+                  sWin.rotation.y = sIdx === 0 ? -Math.PI / 2 : Math.PI / 2;
+                  g.add(sWin);
+                }
+              });
+            }
+
+            // Rear Windows & Service Door
+            const rearDoor = new THREE.Mesh(new THREE.BoxGeometry(1.2, 2.2, 0.2), doorMat);
+            rearDoor.position.set(0, 1.1, -d / 2 - 0.05);
+            g.add(rearDoor);
+            for (let f = 1; f < floors; f++) {
+              const wy = 2.4 + f * 3.0;
+              for (let fc = 0; fc < frontCols; fc++) {
+                const fx = -w / 2 + 1.8 + fc * 3.2;
+                const rWin = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 1.4), (f + fc) % 2 === 0 ? glassLit : glassMat);
+                rWin.position.set(fx, wy, -d / 2 - 0.05);
+                rWin.rotation.y = Math.PI;
+                g.add(rWin);
+              }
+            }
+
+            // Roof Parapet Slab & Rooftop Water Tank
+            const roofSlab = new THREE.Mesh(new THREE.BoxGeometry(w + 0.4, 0.35, d + 0.4), new THREE.MeshLambertMaterial({ color: 0x475569 }));
+            roofSlab.position.y = h + 0.18;
+            g.add(roofSlab);
+            const tk = new THREE.Mesh(new THREE.CylinderGeometry(0.65, 0.65, 1.1, 10), new THREE.MeshLambertMaterial({ color: 0x1f4f8a }));
+            tk.position.set(-w * 0.25, h + 0.8, -d * 0.2);
+            g.add(tk);
+            const acUnit = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.45, 0.35), new THREE.MeshLambertMaterial({ color: 0x94a3b8 }));
+            acUnit.position.set(w / 2 + 0.2, 2.8, -d * 0.15);
+            g.add(acUnit);
+          } else if (p.kind === 'chai_tapri') {
+            const tableMat = new THREE.MeshLambertMaterial({ color: 0x78350f });
+            const benchMat = new THREE.MeshLambertMaterial({ color: 0x92400e });
+            const tarpMat = new THREE.MeshLambertMaterial({ color: p.tarpColor || 0x1d4ed8 });
+            const metalMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.8, roughness: 0.3 });
+            const kettleMat = new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.7, roughness: 0.3 });
+
+            // Table Counter
+            const counter = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.9, 1.2), tableMat);
+            counter.position.set(0, 0.45, 0);
+            g.add(counter);
+
+            // Bamboo corner poles & blue tarp roof
+            [-1.1, 1.1].forEach(px => {
+              [-0.6, 0.6].forEach(pz => {
+                const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 2.5, 6), new THREE.MeshLambertMaterial({ color: 0xd4a373 }));
+                pole.position.set(px, 1.25, pz);
+                g.add(pole);
+              });
+            });
+            const tarp = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.08, 1.8), tarpMat);
+            tarp.position.set(0, 2.5, 0);
+            tarp.rotation.x = 0.12;
+            g.add(tarp);
+
+            // Brass Chai Kettle on counter
+            const kettle = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.22, 0.45, 10), kettleMat);
+            kettle.position.set(-0.6, 1.12, 0);
+            g.add(kettle);
+
+            // Cutting chai glasses rack
+            const rack = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.2, 0.5), metalMat);
+            rack.position.set(0.4, 1.0, 0);
+            g.add(rack);
+
+            // Wooden tea bench for customers
+            const bench = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.45, 0.4), benchMat);
+            bench.position.set(0, 0.22, 1.1);
+            g.add(bench);
+
+            // Signboard
+            if (p.text) {
+              const tapriBoard = new THREE.Mesh(
+                new THREE.BoxGeometry(1.8, 0.55, 0.08),
+                new THREE.MeshLambertMaterial({ map: signTex(p.text, p.sub || 'Cutting Chai • Bun Maska') })
+              );
+              tapriBoard.position.set(0, 2.2, 0.9);
+              g.add(tapriBoard);
+            }
+          } else if (p.kind === 'thela' || p.kind === 'fruit_cart') {
+            const woodMat = new THREE.MeshLambertMaterial({ color: 0x78350f });
+            const crateMat = new THREE.MeshLambertMaterial({ color: 0x9a5a22 });
+            const wheelMat = new THREE.MeshLambertMaterial({ color: 0x1e293b });
+            const umbrellaMat = new THREE.MeshLambertMaterial({ color: p.umbrellaColor || 0xdc2626 });
+            const brassMat = new THREE.MeshLambertMaterial({ color: 0xf59e0b });
+            
+            // Wooden Cart Bed & Chassis
+            const cartBed = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.12, 1.2), woodMat);
+            cartBed.position.set(0, 0.72, 0);
+            cartBed.castShadow = true;
+            g.add(cartBed);
+
+            // Side railings
+            [-0.58, 0.58].forEach(rz => {
+              const rail = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.16, 0.04), woodMat);
+              rail.position.set(0, 0.82, rz);
+              g.add(rail);
+            });
+
+            // Push Handles at rear (-X)
+            const handleL = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.6, 6), woodMat);
+            handleL.rotation.z = Math.PI / 4;
+            handleL.position.set(-1.18, 0.88, -0.45);
+            g.add(handleL);
+            const handleR = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.6, 6), woodMat);
+            handleR.rotation.z = Math.PI / 4;
+            handleR.position.set(-1.18, 0.88, 0.45);
+            g.add(handleR);
+
+            // 4 Spoked Iron Wheels
+            [-0.72, 0.72].forEach(wx => {
+              [-0.62, 0.62].forEach(wz => {
+                const wh = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.34, 0.08, 12), wheelMat);
+                wh.rotation.z = Math.PI / 2;
+                wh.position.set(wx, 0.34, wz);
+                wh.castShadow = true;
+                g.add(wh);
+              });
+            });
+
+            // 4 Angled Fruit Display Crates with diverse colorful mounds
+            const fruitMats = [
+              new THREE.MeshLambertMaterial({ color: 0xfacc15 }), // Alphonso mangoes / bananas
+              new THREE.MeshLambertMaterial({ color: 0xef4444 }), // Kashmiri apples / tomatoes
+              new THREE.MeshLambertMaterial({ color: 0x22c55e }), // Mosambi / green guavas
+              new THREE.MeshLambertMaterial({ color: 0xf97316 })  // Nagpur oranges
+            ];
+
+            const crateSlots = [
+              { x: -0.52, z: -0.28, mat: fruitMats[0] },
+              { x: -0.52, z: 0.28, mat: fruitMats[1] },
+              { x: 0.42, z: -0.28, mat: fruitMats[2] },
+              { x: 0.42, z: 0.28, mat: fruitMats[3] }
+            ];
+
+            crateSlots.forEach(cs => {
+              // Wooden slanted crate
+              const crate = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.16, 0.48), crateMat);
+              crate.position.set(cs.x, 0.82, cs.z);
+              crate.rotation.x = 0.08;
+              g.add(crate);
+
+              // Organic multi-sphere fruit pyramid heap
+              const heap = new THREE.Mesh(new THREE.SphereGeometry(0.20, 8, 7), cs.mat);
+              heap.scale.set(1.4, 0.8, 1.1);
+              heap.position.set(cs.x, 0.94, cs.z);
+              heap.castShadow = true;
+              g.add(heap);
+            });
+
+            // Central Pole & Authentic Two-Tone Umbrella Canopy
+            const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 2.4, 8), new THREE.MeshLambertMaterial({ color: 0x94a3b8 }));
+            pole.position.set(0, 1.7, 0);
+            pole.castShadow = true;
+            g.add(pole);
+
+            // Hanging traditional brass weighing scale (Tarazu)
+            const scaleBeam = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.45, 6), brassMat);
+            scaleBeam.rotation.z = Math.PI / 2;
+            scaleBeam.position.set(0.18, 1.85, 0.22);
+            g.add(scaleBeam);
+            const scalePan = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.02, 0.04, 8), brassMat);
+            scalePan.position.set(0.18, 1.62, 0.22);
+            g.add(scalePan);
+
+            // Conical Umbrella with scalloped overhang
+            const umbrella = new THREE.Mesh(new THREE.ConeGeometry(1.3, 0.52, 12), umbrellaMat);
+            umbrella.position.set(0, 2.8, 0);
+            umbrella.castShadow = true;
+            g.add(umbrella);
+          } else if (p.kind === 'tree') {
+            const tree = this._createHighDetailStreetTree(p);
+            g.add(tree);
           } else if (p.kind === 'apartment') {            const h = p.h || 18;
             const body = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), wallMat);
             body.position.y = h / 2;
@@ -6461,12 +7163,33 @@ class Game {
                   else {win.position.set(row.fixed, 2.6 + f * 3.2, off);}
                   win.rotation.y = row.rotY;
                   g.add(win);
+
+                  // Cantilevered balcony & AC unit on odd floors for street-facing units
+                  if (f > 0 && (f % 2 === 1) && row.alongX && (k % 2 === 0)) {
+                    const bSlab = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.14, 0.75), new THREE.MeshLambertMaterial({ color: 0x475569 }));
+                    bSlab.position.set(off, 2.6 + f * 3.2 - 0.7, row.fixed + (row.rotY === 0 ? 0.38 : -0.38));
+                    g.add(bSlab);
+                    const bRail = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.65, 0.04), new THREE.MeshLambertMaterial({ color: 0x1e293b }));
+                    bRail.position.set(off, 2.6 + f * 3.2 - 0.35, row.fixed + (row.rotY === 0 ? 0.74 : -0.74));
+                    g.add(bRail);
+                    const acUnit = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.42, 0.32), new THREE.MeshLambertMaterial({ color: 0x94a3b8 }));
+                    acUnit.position.set(off + 0.65, 2.6 + f * 3.2 - 0.42, row.fixed + (row.rotY === 0 ? 0.35 : -0.35));
+                    g.add(acUnit);
+                  }
                 }
               }
             });
             const roof = new THREE.Mesh(new THREE.BoxGeometry(w + 0.6, 0.5, d + 0.6), new THREE.MeshLambertMaterial({ color: 0x475569 }));
             roof.position.y = h + 0.25;
             g.add(roof);
+
+            // Rooftop water tank & stairwell penthouse
+            const tk = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.75, 1.3, 12), new THREE.MeshLambertMaterial({ color: 0x1f4f8a }));
+            tk.position.set(-w * 0.25, h + 0.9, d * 0.2);
+            g.add(tk);
+            const ph = new THREE.Mesh(new THREE.BoxGeometry(Math.min(w * 0.35, 4), 2.0, Math.min(d * 0.35, 4)), wallMat);
+            ph.position.set(w * 0.2, h + 1.25, -d * 0.2);
+            g.add(ph);
           } else if (p.kind === 'garage') {
             // Open-front home garage (front = +x local): floor, 3 walls, roof,
             // rolled shutter drum, tool board, tire stack, hanging bulb.
@@ -6559,7 +7282,12 @@ class Game {
           } else {
             return;
           }
-          g.position.set(p.x, 0, p.z);
+          let px = p.x, pz = p.z;
+          if (['thela', 'fruit_cart', 'chai_tapri', 'tree'].includes(p.kind)) {
+            const snapped = this._snapOutOfRoadways(p.x, p.z, 2.2, cfg.roads);
+            px = snapped.x; pz = snapped.z;
+          }
+          g.position.set(px, 0, pz);
           g.rotation.y = p.rotY || 0;
           grp.add(g);
           if (p.kind !== 'garage' && p.kind !== 'court' && p.kind !== 'parking') {
@@ -7254,39 +7982,49 @@ class Game {
 
         const sk = cfg.sky;
         this.scene.background = new THREE.Color(sk);
-        // Fog pushed far out so the green ground plane is visible across the full map.
-        // Previous values (fogNear=30-70, fogFar=120-250) blended the ground into sky blue.
+        const isMorning = cfg.timeOfDay === 'morning' || cfg.themeType === 'signal_jump' || cfg.id === 1;
+        // Realistic atmospheric depth fog: soft haze begins around 65m and gently blends
+        // distant silhouettes into the sky horizon, eliminating jarring pop-in and giving genuine depth.
         const lowPerf = this._isMobile || this._isLowGPU;
-        const baseFogNear = lowPerf ? 300 : 500;
-        const baseFogFar  = lowPerf ? 900 : 1500;
+        const rd = this.renderDistance || (lowPerf ? 240 : 500);
+        const baseFogNear = isMorning ? Math.max(55, rd * 0.16) : (lowPerf ? Math.max(45, rd * 0.20) : Math.max(65, rd * 0.22));
+        const baseFogFar  = isMorning ? Math.max(380, rd * 0.95) : (lowPerf ? Math.max(260, rd * 0.90) : Math.max(400, rd * 1.15));
+        const fogColor = isMorning ? 0xcbe0ed : sk;
         if (cfg.mode === 'rain' || cfg.hasRain) {
-          // Rain: deliberately shorter visibility
-          this.scene.fog = new THREE.Fog(sk, lowPerf ? 60 : 90, lowPerf ? 280 : 420);
+          // Rain: monsoon mist and shorter visibility
+          this.scene.fog = new THREE.Fog(sk, lowPerf ? 45 : 70, lowPerf ? 220 : 360);
         } else if (cfg.isNight) {
-          this.scene.fog = new THREE.Fog(sk, lowPerf ? 80 : 120, lowPerf ? 350 : 550);
+          this.scene.fog = new THREE.Fog(sk, lowPerf ? 55 : 85, lowPerf ? 280 : 440);
         } else {
-          this.scene.fog = new THREE.Fog(sk, baseFogNear, baseFogFar);
+          this.scene.fog = new THREE.Fog(fogColor, baseFogNear, baseFogFar);
         }
         // Enhanced true color lighting with balanced contrast and shadows
-        this._ambient = new THREE.AmbientLight(0xffffff, cfg.isNight ? 0.15 : 0.30);
+        this._ambient = new THREE.AmbientLight(0xffffff, cfg.isNight ? 0.15 : (isMorning ? 0.35 : 0.30));
         this.scene.add(this._ambient);
         this._hemi = new THREE.HemisphereLight(
-          0x90b8d8, // sky tint (blue)
-          0x4a6a3a, // ground tint — warm green, prevents blue bleed onto ground plane
-          cfg.isNight ? 0.10 : 0.25
+          isMorning ? 0xb0d4f1 : 0x90b8d8, // sky tint
+          isMorning ? 0x5a6a42 : 0x4a6a3a, // ground tint — warm green, prevents blue bleed onto ground plane
+          cfg.isNight ? 0.10 : (isMorning ? 0.30 : 0.25)
         );
         this._hemi.position.set(0, 1000, 0);
         this.scene.add(this._hemi);
 
-        this._sun = new THREE.DirectionalLight(0xffffff, cfg.isNight ? 0.4 : 0.85);
-        this._sun.position.set(30, 60, 20);
+        // Morning Peak Directional Sunlight (7-9 AM) with Long Shadows
+        const sunColor = isMorning ? 0xffecd2 : 0xffffff;
+        const sunIntensity = cfg.isNight ? 0.4 : (isMorning ? 1.15 : 0.85);
+        this._sun = new THREE.DirectionalLight(sunColor, sunIntensity);
+        if (isMorning) {
+          this._sun.position.set(115, 68, -75); // Angled morning sun for realistic long shadows
+        } else {
+          this._sun.position.set(30, 60, 20);
+        }
         this._sun.castShadow = true;
         this._sun.shadow.camera.near = 0.5;
-        this._sun.shadow.camera.far = 200;
-        this._sun.shadow.camera.left = -60;
-        this._sun.shadow.camera.right = 60;
-        this._sun.shadow.camera.top = 60;
-        this._sun.shadow.camera.bottom = -60;
+        this._sun.shadow.camera.far = 280;
+        this._sun.shadow.camera.left = -90;
+        this._sun.shadow.camera.right = 90;
+        this._sun.shadow.camera.top = 90;
+        this._sun.shadow.camera.bottom = -90;
         this._sun.shadow.bias = -0.0005;
         const initShadowRes = (this._isMobile || this._isLowGPU) ? 512 : 1024;
         this._sun.shadow.mapSize.width = initShadowRes;
@@ -7604,7 +8342,7 @@ class Game {
               const yellowLineMat = new THREE.MeshBasicMaterial({ color: 0xffb703, transparent: true, opacity: 0.92 });
 
               // Center divider (Dashed white for 2-lane, double yellow for 4+ lanes)
-              const lanes = r.lanes || (RW >= 18 ? 4 : 2);
+              const lanes = r.lanes || (actualRW >= 18 ? 4 : 2);
               if (lanes >= 4) {
                 // Double solid yellow lines
                 [-0.25, 0.25].forEach(yOff => {
@@ -7615,6 +8353,19 @@ class Game {
                   dLine.rotation.x = -Math.PI / 2;
                   dLine.position.set(isV ? cx + yOff : cx, 0.088, isV ? cz : cz + yOff);
                   this.scene.add(dLine);
+                });
+                // Dashed white lane dividing lines between Lane 1 & 2 (Northbound) and Lane 3 & 4 (Southbound)
+                [-actualRW / 4, actualRW / 4].forEach(laneOff => {
+                  for (let d = 0; d < numDashes; d++) {
+                    const dashCenter = markStart + d * stride + dashLen / 2;
+                    const laneDash = new THREE.Mesh(
+                      isV ? new THREE.PlaneGeometry(0.18, dashLen) : new THREE.PlaneGeometry(dashLen, 0.18),
+                      whiteLineMat
+                    );
+                    laneDash.rotation.x = -Math.PI / 2;
+                    laneDash.position.set(isV ? cx + laneOff : dashCenter, 0.088, isV ? dashCenter : cz + laneOff);
+                    this.scene.add(laneDash);
+                  }
                 });
               } else {
                 // Dashed white center line
@@ -7630,10 +8381,10 @@ class Game {
                 }
               }
 
-              // Solid white edge lines (both sides)
+              // Solid white edge lines (both sides) — hugging actual road boundary
               [-1, 1].forEach(edgeSide => {
-                const edgeX = isV ? cx + edgeSide * (RW / 2 - 0.4) : cx;
-                const edgeZ = isV ? cz : cz + edgeSide * (RW / 2 - 0.4);
+                const edgeX = isV ? cx + edgeSide * (actualRW / 2 - 0.4) : cx;
+                const edgeZ = isV ? cz : cz + edgeSide * (actualRW / 2 - 0.4);
                 const edgeLine = new THREE.Mesh(
                   isV ? new THREE.PlaneGeometry(0.18, len) : new THREE.PlaneGeometry(len, 0.18),
                   whiteLineMat
@@ -7641,6 +8392,20 @@ class Game {
                 edgeLine.rotation.x = -Math.PI / 2;
                 edgeLine.position.set(edgeX, 0.088, edgeZ);
                 this.scene.add(edgeLine);
+
+                // 3D Concrete Curb Stone along edge of carriageway
+                const curbMat = new THREE.MeshLambertMaterial({ color: 0x94a3b8 });
+                const curbStone = new THREE.Mesh(
+                  isV ? new THREE.BoxGeometry(0.28, 0.18, len) : new THREE.BoxGeometry(len, 0.18, 0.28),
+                  curbMat
+                );
+                curbStone.position.set(
+                  isV ? cx + edgeSide * (actualRW / 2 + 0.14) : cx,
+                  0.09,
+                  isV ? cz : cz + edgeSide * (actualRW / 2 + 0.14)
+                );
+                curbStone.receiveShadow = true;
+                this.scene.add(curbStone);
               });
 
               // Streetlights along the road (sparse for performance)
@@ -7905,42 +8670,17 @@ class Game {
             if (!this._landmarks) {this._landmarks = [];}
             this._landmarks.push({ name: 'Sneh Asha', x: -45, z: 35, discovered: false });
             
-            new THREE.TextureLoader().load('sneh-logo.png', tex => {
-                const logoMesh = new THREE.Mesh(new THREE.PlaneGeometry(8, 8), new THREE.MeshBasicMaterial({ map: tex, transparent: true }));
-                logoMesh.position.set(-39.9, 30, 35);
-                logoMesh.rotation.y = Math.PI / 2;
-                this.scene.add(logoMesh);
-            });
-            
-            // Gateway of India (Detailed representation for Mumbai Waterfront Promenade)
-            const gwGroup = new THREE.Group();
-            const stoneMat = new THREE.MeshToonMaterial({ color: 0xdfd3c3 }); // Basalt color
-            
-            // Main Pillars
-            const p1 = new THREE.Mesh(new THREE.BoxGeometry(6, 18, 8), stoneMat); p1.position.set(-10, 9, 0); gwGroup.add(p1);
-            const p2 = new THREE.Mesh(new THREE.BoxGeometry(6, 18, 8), stoneMat); p2.position.set(10, 9, 0); gwGroup.add(p2);
-            
-            // Center Arch Block (top of the arch)
-            const archTop = new THREE.Mesh(new THREE.BoxGeometry(14, 6, 8), stoneMat); archTop.position.set(0, 15, 0); gwGroup.add(archTop);
-            
-            // Side sections (smaller arches placeholder)
-            const sp1 = new THREE.Mesh(new THREE.BoxGeometry(8, 12, 6), stoneMat); sp1.position.set(-17, 6, 0); gwGroup.add(sp1);
-            const sp2 = new THREE.Mesh(new THREE.BoxGeometry(8, 12, 6), stoneMat); sp2.position.set(17, 6, 0); gwGroup.add(sp2);
-            
-            // Top Dome / Turrets
-            const t1 = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.5, 4, 8), stoneMat); t1.position.set(-10, 20, 0); gwGroup.add(t1);
-            const t2 = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.5, 4, 8), stoneMat); t2.position.set(10, 20, 0); gwGroup.add(t2);
-            const t3 = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 3, 8), stoneMat); t3.position.set(-17, 13.5, 0); gwGroup.add(t3);
-            const t4 = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 3, 8), stoneMat); t4.position.set(17, 13.5, 0); gwGroup.add(t4);
-            
-            gwGroup.position.set(-55, 0, -80);
-            this.scene.add(gwGroup);
-            const gwObs = new THREE.Object3D();
-            gwObs.position.set(-55, 0, -80);
-            gwObs.userData = { halfW: 22, halfD: 6 };
-            this.obstacles.push(gwObs);
-            if (!this._landmarks) {this._landmarks = [];}
-            this._landmarks.push({ name: 'Gateway of India', x: -55, z: -80, discovered: false });
+            new THREE.TextureLoader().load(
+                'sneh-logo.png',
+                tex => {
+                    const logoMesh = new THREE.Mesh(new THREE.PlaneGeometry(8, 8), new THREE.MeshBasicMaterial({ map: tex, transparent: true }));
+                    logoMesh.position.set(-39.9, 30, 35);
+                    logoMesh.rotation.y = Math.PI / 2;
+                    this.scene.add(logoMesh);
+                },
+                undefined,
+                () => {}
+            );
         }
         
         // Gully / Narrow Road Elements
@@ -8902,7 +9642,7 @@ class Game {
         const isPedestrian = cfg?.isPedestrian;
 
         if (!roadModel) {
-          console.warn('[RoadGraph] No road model available; drawing the connected road graph procedurally');
+          console.info('[RoadGraph] Drawing connected road graph procedurally');
         }
 
         // Road material (visible) — use real asphalt texture if available
@@ -10641,11 +11381,11 @@ class Game {
           bg.position.set(x, 0, z);
           bg.rotation.y = rotY;
 
-          // Set accurate physical collision bounding box
-          const isAlignedX = Math.abs(rotY) < 0.1 || Math.abs(rotY - Math.PI) < 0.1;
+          // Set accurate physical collision bounding box in local coordinate space.
+          // In local space, width spans X and thickness spans Z, matching _uobs localX/localZ transform.
           bg.userData = {
-            halfW: isAlignedX ? width / 2 : 0.85,
-            halfD: isAlignedX ? 0.85 : width / 2,
+            halfW: width / 2,
+            halfD: 0.55,
             isBarrier: true,
             isObstacle: true
           };
@@ -11547,17 +12287,30 @@ class Game {
           // refused to clear, blocking the box for the next green.
           const jw = rw || roadWidth;
 
-          // Signal 1: Mast arm extending over incoming vertical lane (Phase 0: North-South)
+          // 4-Way Traffic Signal Junction System (All 4 approaches synchronized)
+          // Signal 1: NE corner - Mast arm over vertical southbound lane (Phase 0: North-South)
           const sig1 = this._sig(ix + rwHalf + 1.2, iz + rwHalf + 1.2);
           sig1.rotation.y = -Math.PI / 2;
           sig1.userData = { axis: 'v', phaseOffset: 0, st: 'green', t: 0, rd: 7.5, gd: 6.0, yd: 1.5, junctionX: ix, junctionZ: iz, roadWidth: jw };
           sig1.state = 'green';
 
-          // Signal 2: Mast arm extending over opposing horizontal lane (Phase 1: East-West, shifted by 7.5s)
+          // Signal 2: SW corner - Mast arm over vertical northbound lane (Phase 0: North-South)
           const sig2 = this._sig(ix - rwHalf - 1.2, iz - rwHalf - 1.2);
           sig2.rotation.y = Math.PI / 2;
-          sig2.userData = { axis: 'h', phaseOffset: 7.5, st: 'red', t: 0, rd: 7.5, gd: 6.0, yd: 1.5, junctionX: ix, junctionZ: iz, roadWidth: jw };
-          sig2.state = 'red';
+          sig2.userData = { axis: 'v', phaseOffset: 0, st: 'green', t: 0, rd: 7.5, gd: 6.0, yd: 1.5, junctionX: ix, junctionZ: iz, roadWidth: jw };
+          sig2.state = 'green';
+
+          // Signal 3: NW corner - Mast arm over horizontal eastbound lane (Phase 1: East-West, shifted 7.5s)
+          const sig3 = this._sig(ix - rwHalf - 1.2, iz + rwHalf + 1.2);
+          sig3.rotation.y = 0;
+          sig3.userData = { axis: 'h', phaseOffset: 7.5, st: 'red', t: 0, rd: 7.5, gd: 6.0, yd: 1.5, junctionX: ix, junctionZ: iz, roadWidth: jw };
+          sig3.state = 'red';
+
+          // Signal 4: SE corner - Mast arm over horizontal westbound lane (Phase 1: East-West, shifted 7.5s)
+          const sig4 = this._sig(ix + rwHalf + 1.2, iz - rwHalf - 1.2);
+          sig4.rotation.y = Math.PI;
+          sig4.userData = { axis: 'h', phaseOffset: 7.5, st: 'red', t: 0, rd: 7.5, gd: 6.0, yd: 1.5, junctionX: ix, junctionZ: iz, roadWidth: jw };
+          sig4.state = 'red';
         };
 
         // Lessons about ONE junction (L1: the Linking Road signal) set
@@ -11689,6 +12442,27 @@ class Game {
           mk(2.8, 5.40, 0.30, 'yellow'),
           mk(2.8, 4.65, 0.30, 'green')
         );
+
+        // Secondary eye-level 3-light head mounted on pole (visible directly at driver eye level)
+        const secBox = new THREE.Mesh(new THREE.BoxGeometry(0.55, 1.45, 0.35), new THREE.MeshLambertMaterial({ color: 0x141619 }));
+        secBox.position.set(0, 2.4, 0.1);
+        g.add(secBox);
+        g.add(
+          mkHood(0, 2.85, 0.32),
+          mkHood(0, 2.40, 0.32),
+          mkHood(0, 1.95, 0.32),
+          mk(0, 2.85, 0.28, 'sec_red'),
+          mk(0, 2.40, 0.28, 'sec_yellow'),
+          mk(0, 1.95, 0.28, 'sec_green')
+        );
+
+        // Pedestrian push button unit (yellow box with chrome button mounted on pole at y = 1.1)
+        const btnBox = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.28, 0.14), new THREE.MeshLambertMaterial({ color: 0xfacc15 }));
+        btnBox.position.set(-0.16, 1.1, 0);
+        const btn = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.05, 8), new THREE.MeshLambertMaterial({ color: 0xe2e8f0 }));
+        btn.rotation.z = Math.PI / 2;
+        btn.position.set(-0.25, 1.1, 0);
+        g.add(btnBox, btn);
 
         // Pedestrian signal pole & box (mounted at eye-level on sidewalk side)
         const ps_pole = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 2.2, 8), new THREE.MeshLambertMaterial({ color: 0x50565e }));
@@ -12881,6 +13655,19 @@ class Game {
             g.material.color.setHex(d.st === 'green' ? 0x00e676 : 0x051a08);
             if (g.material.emissive) {g.material.emissive.setHex(d.st === 'green' ? 0x00c851 : 0x000000);}
           }
+          const r2 = sg.getObjectByName('sec_red'), y2 = sg.getObjectByName('sec_yellow'), g2 = sg.getObjectByName('sec_green');
+          if (r2) {
+            r2.material.color.setHex(d.st === 'red' ? 0xff3b30 : 0x1a0505);
+            if (r2.material.emissive) {r2.material.emissive.setHex(d.st === 'red' ? 0xff2222 : 0x000000);}
+          }
+          if (y2) {
+            y2.material.color.setHex(d.st === 'yellow' ? 0xffd54a : 0x1a1605);
+            if (y2.material.emissive) {y2.material.emissive.setHex(d.st === 'yellow' ? 0xffaa00 : 0x000000);}
+          }
+          if (g2) {
+            g2.material.color.setHex(d.st === 'green' ? 0x00e676 : 0x051a08);
+            if (g2.material.emissive) {g2.material.emissive.setHex(d.st === 'green' ? 0x00c851 : 0x000000);}
+          }
           const pr = sg.getObjectByName('p_red'), pg = sg.getObjectByName('p_green');
           if (pr) {pr.material.color.setHex(d.st === 'red' ? 0x1a0505 : 0xff3b30);}
           if (pg) {pg.material.color.setHex(d.st === 'red' ? 0x00e676 : 0x051a08);}
@@ -12949,31 +13736,45 @@ class Game {
         this._lodFrame = (this._lodFrame || 0) + 1;
         if (!force && this._lodFrame % 10 !== 0) {return;} // ~6x/sec for smooth responsive LOD updates
         const px = this.player.position.x, pz = this.player.position.z;
+        const STATIC_GROUPS = {
+          'block-fill': 1, 'plot-buildings': 1, 'story-sets': 1, 'story-stage': 1,
+          'breadcrumb-flow': 1, 'SuburbanNeighborhoodScenery': 1, 'mumbai-district': 1,
+          'road-network': 1, 'sidewalk-network': 1, 'road-problems': 1
+        };
+
         if (!this._lodChildren || force || this._lodFrame % 120 === 0) {
           this._lodChildren = [];
           this.scene.children.forEach(c => {
             if (c.userData?.isGround || c.userData?.noLod || c === this.player) {return;}
+            // Container groups placed at (0,0): ensure container stays visible, and test children individually by their own coordinates!
+            if (c.name && (c.name === 'road-problems' || c.name === 'plot-buildings' || c.name === 'block-fill')) {
+              if (!c.visible) {c.visible = true;}
+              c.children.forEach(sub => {
+                if (sub && sub.position && !sub.userData?.noLod && !sub.userData?.isGround) {
+                  this._lodChildren.push(sub);
+                }
+              });
+              return;
+            }
             if (c.isMesh || c.isInstancedMesh || c.isGroup) {
               this._lodChildren.push(c);
             }
           });
         }
-        const effectiveDist = (this.renderDistance || (this._isMobile ? 240 : 500)) * lodMult;
+        const effectiveDist = Math.max(350, (this.renderDistance || (this._isMobile ? 260 : 520)) * lodMult);
         const visDistSq = effectiveDist * effectiveDist;
-        const nearDistSq = 35 * 35;
-        const midDistSq = 85 * 85;
-        // Static city shells always stay visible to the render distance so the
-        // skyline never pops in: these groups sit at the world origin, so a
-        // distance test against their position is meaningless anyway (it hides
-        // the whole city when the player drives 180m from 0,0). Quality tiers
-        // below still apply to everything else.
-        const STATIC_GROUPS = { 'block-fill': 1, 'plot-buildings': 1, 'story-sets': 1, 'story-stage': 1, 'breadcrumb-flow': 1 };
+        const nearDistSq = 65 * 65;   // Tier 1: Full detail, shadows on fine props up to 65m
+        const midDistSq = 160 * 160;  // Tier 2: Mid detail, minor shadows off, all street vendors, cars, props visible up to 160m
+        const farDistSq = 380 * 380;  // Tier 3: Far silhouettes, main hulls visible up to 380m
         
         const len = this._lodChildren.length;
         for (let i = 0; i < len; i++) {
           const child = this._lodChildren[i];
           if (!child || !child.position) {continue;}
-          if (child.name && STATIC_GROUPS[child.name]) { if (!child.visible) {child.visible = true;} continue; }
+          if (child.name && (STATIC_GROUPS[child.name] || child.name.startsWith('mumbai_chunk_'))) {
+            if (!child.visible) {child.visible = true;}
+            continue;
+          }
           const dx = child.position.x - px, dz = child.position.z - pz;
           const dSq = dx * dx + dz * dz;
           
@@ -12983,31 +13784,45 @@ class Game {
           }
           if (!child.visible) {child.visible = true;}
 
-          // Tier 1: Near Distance (< 35m) -> Full High Quality, Realtime Shadows & Fine Props
+          // Tier 1: Near Distance (< 65m) -> Full High Quality, Realtime Shadows & Fine Props
           if (dSq < nearDistSq) {
             if (child.castShadow !== undefined) {child.castShadow = true;}
             if (child.traverse) {
               child.traverse(node => {
                 if (node.isMesh) {
-                  if (node.userData?.isSmallProp) {node.visible = true;}
+                  if (node.userData?.isSmallProp || node.userData?.isParkedCar) {node.visible = true;}
                   node.castShadow = true;
                 }
               });
             }
           }
-          // Tier 2: Mid Distance (35m - 85m) -> Medium Quality, Disable Shadow Passes on Small Props
+          // Tier 2: Mid Distance (65m - 160m) -> Medium Quality, Keep Vendors, Cars & Furniture Visible
           else if (dSq < midDistSq) {
             if (child.castShadow !== undefined && !child.userData?.isHero) {child.castShadow = false;}
             if (child.traverse) {
               child.traverse(node => {
                 if (node.isMesh) {
-                  if (node.userData?.isSmallProp) {node.visible = false;} // Cull micro-props (flowers, benches)
+                  // Keep street furniture, parked cars, and vendor stalls visible!
+                  if (node.userData?.isParkedCar || node.userData?.isVendorStall) {node.visible = true;}
+                  if (node.userData?.isMicroClutter) {node.visible = false;} // only tiny litter/paper
                   if (!node.userData?.isMainHull) {node.castShadow = false;}
                 }
               });
             }
           }
-          // Tier 3: Far Distance (85m+) -> Simplified Low Poly Silhouette & Atmospheric Fog Blending
+          // Tier 3: Far Distance (160m - 380m) -> Low Poly Silhouette & Atmospheric Fog Blending
+          else if (dSq < farDistSq) {
+            if (child.castShadow !== undefined) {child.castShadow = false;}
+            if (child.traverse) {
+              child.traverse(node => {
+                if (node.isMesh) {
+                  if (node.userData?.isSmallProp) {node.visible = false;}
+                  node.castShadow = false;
+                }
+              });
+            }
+          }
+          // Tier 4: Horizon (380m+) -> Major building envelopes only
           else {
             if (child.castShadow !== undefined) {child.castShadow = false;}
             if (child.traverse) {
@@ -14281,7 +15096,13 @@ class Game {
       _uobs(dt) {
         if (!this.player) {return;}
         const px = this.player.position.x, pz = this.player.position.z;
-        const pR = this.isPedestrian ? 0.35 : (this.vehMode === 'bike' ? 0.40 : 0.85); // player collision radius
+        const isPed = !!this.isPedestrian;
+        const _VDp = (typeof window !== 'undefined' && window.VehicleDims) ? window.VehicleDims : null;
+        const _pedH = _VDp ? _VDp.pedHalves(this.isChild) : { halfW: 0.29, halfD: 0.19 };
+        const _vehH = _VDp ? _VDp.halves(this.vehMode || (this.playerVehicle && this.playerVehicle.type)) : { halfW: 0.95, halfD: 2.25 };
+        const pHalfW = this.playerVehicle?.userData?.halfW || (isPed ? _pedH.halfW : (this.vehMode === 'bike' ? 0.40 : _vehH.halfW));
+        const pHalfD = this.playerVehicle?.userData?.halfD || (isPed ? _pedH.halfD : (this.vehMode === 'bike' ? 0.95 : _vehH.halfD));
+        const pRot = this.player.rotation ? this.player.rotation.y : 0;
 
         // Animal obstacle: stop nearby → wait → it wanders off; honking at it while present
         // is a real, logged violation instead of a no-op "Beep Beep!" toast.
@@ -14353,11 +15174,9 @@ class Game {
             }
           }
 
-          // Swept (CCD-lite) test: strictly for thin barriers and cones (hw, hd <= 1.0)
+          // Swept (CCD-lite) test: active when at least one axis is thin (e.g. barriers or cones)
           // so fast cars do not tunnel through thin props between frames.
-          // For buildings and large obstacles, discrete oriented box testing is exact
-          // and avoids premature snapping that causes false collisions metres away.
-          const isThinObstacle = hw <= 1.0 && hd <= 1.0;
+          const isThinObstacle = Math.min(hw, hd) <= 1.0;
           const spx = this._prevPX, spz = this._prevPZ;
           if (isThinObstacle && spx !== undefined && spz !== undefined) {
             const curX = this.player.position.x, curZ = this.player.position.z;
@@ -14374,7 +15193,11 @@ class Game {
                 const rz = sinQ * qlx + cosQ * qlz;
                 qlx = rx; qlz = rz;
               }
-              if (Math.abs(qlx) <= (pR + hw) && Math.abs(qlz) <= (pR + hd)) {
+              const angleQ = Math.abs(rotY) > 0.01 ? (pRot - rotY) : pRot;
+              const cosDiffQ = Math.abs(Math.cos(angleQ)), sinDiffQ = Math.abs(Math.sin(angleQ));
+              const pProjWQ = pHalfW * cosDiffQ + pHalfD * sinDiffQ;
+              const pProjDQ = pHalfW * sinDiffQ + pHalfD * cosDiffQ;
+              if (Math.abs(qlx) <= (pProjWQ + hw) && Math.abs(qlz) <= (pProjDQ + hd)) {
                 this.player.position.x = qx;
                 this.player.position.z = qz;
                 dx = qx - ox; dz = qz - oz;
@@ -14384,17 +15207,26 @@ class Game {
 
           let overlapX = 0, overlapZ = 0;
           let localX = dx, localZ = dz;
+          let pProjW = pHalfW, pProjD = pHalfD;
+
           if (Math.abs(rotY) > 0.01) {
             const cos = Math.cos(rotY);
             const sin = Math.sin(rotY);
             localX = cos * dx - sin * dz;
             localZ = sin * dx + cos * dz;
-            overlapX = pR + hw - Math.abs(localX);
-            overlapZ = pR + hd - Math.abs(localZ);
+
+            const angleDiff = pRot - rotY;
+            const cosDiff = Math.abs(Math.cos(angleDiff)), sinDiff = Math.abs(Math.sin(angleDiff));
+            pProjW = pHalfW * cosDiff + pHalfD * sinDiff;
+            pProjD = pHalfW * sinDiff + pHalfD * cosDiff;
           } else {
-            overlapX = pR + hw - Math.abs(dx);
-            overlapZ = pR + hd - Math.abs(dz);
+            const cosDiff = Math.abs(Math.cos(pRot)), sinDiff = Math.abs(Math.sin(pRot));
+            pProjW = pHalfW * cosDiff + pHalfD * sinDiff;
+            pProjD = pHalfW * sinDiff + pHalfD * cosDiff;
           }
+
+          overlapX = (hw + pProjW) - Math.abs(localX);
+          overlapZ = (hd + pProjD) - Math.abs(localZ);
 
           if (overlapX > 0 && overlapZ > 0) {
               this._collidedThisFrame = true;
@@ -14810,7 +15642,12 @@ class Game {
             if (t - this._lastStepTime > 0.3) { this._lastStepTime = t; sfx.play('step'); }
             const camAngle = angle + Math.PI + Math.sin(p * Math.PI) * 0.15;
             _camOrbit(char.position, 3.5, 2.5 + Math.sin(p * Math.PI) * 0.2, camAngle, 1.0);
-            if (p >= 1) { this._enterState = 'OPENING_DOOR'; this._enterTimer = 0; sfx.play('door'); }
+            if (p >= 1) {
+              this._enterState = 'OPENING_DOOR';
+              this._enterTimer = 0;
+              sfx.play('door');
+              try { if (window.SampleBank) { window.SampleBank.play('sfx_door_open', { gain: 0.75 }); } } catch (eDO) {}
+            }
           } else if (s === 'OPENING_DOOR') {
             const dur = 0.4;
             const p = Math.min(t / dur, 1);
@@ -14867,8 +15704,17 @@ class Game {
               }
               this.player = veh;
               this._camSnapped = true;
+              this._camTransition = 1.2;
               this._camOverride = false;
               this._enterState = 'IDLE';
+              try {
+                if (window.SampleBank) {
+                  window.SampleBank.play('sfx_door_close', { gain: 0.85 });
+                  setTimeout(function () {
+                    try { if (window.SampleBank) { window.SampleBank.play('sfx_engine_start', { gain: 0.9 }); } } catch (eSt) {}
+                  }, 120);
+                }
+              } catch (eEnterSfx) {}
               this._spawnInvulnerable = 6.0; // 6s Departure grace period
               if (this.player.userData) {
                 this.player.userData.wwCooldown = 5.0;

@@ -110,16 +110,24 @@
     // this relative-path rewrite is redundant. Kept only for older callers.
     const _oldFetch = window.fetch
     window.fetch = function () {
-      if (arguments[0] && typeof arguments[0] === 'string' && arguments[0].startsWith('config.json')) {
-        arguments[0] = '../' + arguments[0]
-      }
-      return _oldFetch.apply(this, arguments)
+      const url = arguments[0];
+      return _oldFetch.apply(this, arguments).catch(function (err) {
+        if (typeof url === 'string' && (url.includes('config.json'))) {
+          const fallback = url.startsWith('/') ? url.replace(/^\//, '') : ('/' + url.replace(/^\.\.\//, ''));
+          return _oldFetch(fallback);
+        }
+        throw err;
+      });
     }
 
     const _oldWarn = console.warn
     console.warn = function (...args) {
-      if (args[0] && typeof args[0] === 'string' && (args[0].includes('Custom UV sets in "KHR_texture_transform"') || args[0].includes('Custom UV set') || args[0].includes('not yet supported')))
-        return
+      if (args[0] && typeof args[0] === 'string' && (
+        args[0].includes('Custom UV sets in "KHR_texture_transform"') ||
+        args[0].includes('Custom UV set') ||
+        args[0].includes('not yet supported') ||
+        args[0].includes('THREE.Clock: This module has been deprecated')
+      )) return;
       _oldWarn.apply(console, args)
     }
   </script>
@@ -129,6 +137,7 @@
   <script defer src="../col-ui.js"></script>
   <script defer src="../col-auth.js"></script>
   <script src="libs/three-bundle.js"></script>
+  
   <script defer src="libs/jszip.min.js"></script>
   <script defer src="libs/chart.umd.min.js"></script>
   <script defer src="traffic-charts.js"></script>
@@ -10370,6 +10379,27 @@
       setTimeout(() => {
         overlay.style.display = 'none';
       }, 350);
+
+      // Audio sting on mission handover: keyfob unlock chirp + tactile key jingle
+      try {
+        if (window.StoryAudio && typeof window.StoryAudio.sting === 'function') {
+          window.StoryAudio.sting('car_unlock', 0.85);
+        }
+        if (window.SampleBank && typeof window.SampleBank.play === 'function') {
+          window.SampleBank.play('sfx_keys', { gain: 0.65 });
+        }
+      } catch (eAud) {}
+
+      // Camera lerp & clear starting objective toast
+      try {
+        if (window.game) {
+          window.game._camTransition = 2.2;
+          window.game._camSnapped = true;
+          if (window.game.isPedestrian && typeof toast === 'function') {
+            toast('🎯 MISSION 1 // Head to your vehicle in the garage and press [F] to enter', '#ffd54a', 4500);
+          }
+        }
+      } catch (eG) {}
     };
 
     /**

@@ -92,80 +92,276 @@ window.LVS.push({
   ],
 
   plots: [
-    // Sharma Niwas — home. Moved west from x=-83 to open a 7.5m front yard:
-    // at -83 the house's east face (x=-75.5) left only a 2.5m slot against the
-    // garage back wall (x=-73.0) — narrower than the 3m a 1.5m-radius player
-    // needs, so no valid spawn existed anywhere in that gap.
+    // Sharma Niwas — home safehouse (verandah + balcony story set)
     { kind: 'house', id: 'home', x: -88, z: -128, rotY: Math.PI / 2, w: 14, d: 12, color: 0xf5e6d3,
-      // Detailed story set: verandah + first-floor balcony (so "Mummy (Balcony)"
-      // is an actual place), compound wall + gate, front garden, and a furnished
-      // interior. Built by cinematics.js — see Cinematics.buildHouse().
       houseSet: { verandah: true, balcony: true, compound: true, garden: true, interior: true } },
     // Home garage — you spawn on foot at the porch, car parked inside
     { kind: 'garage', x: -69.5, z: -128, rotY: 0, w: 6.5, d: 8, color: 0xe2e8f0 },
-    // Bazaar market row (north side, facing the road)
-    { kind: 'shop', x: -20, z: 112, rotY: Math.PI, w: 12, d: 9, color: 0xe8b4a0, awning: 0x166534, text: 'Veg Market', sub: 'Fresh Daily' },
-    { kind: 'shop', x: 0, z: 112, rotY: Math.PI, w: 12, d: 9, color: 0xf0d878, awning: 0x9a3412, text: 'Ganesh Bakery', sub: 'Since 1987' },
-    { kind: 'shop', x: 20, z: 112, rotY: Math.PI, w: 12, d: 9, color: 0xb8c8d8, awning: 0x1e40af, text: 'Sai Medical', sub: 'Open 24 Hours' },
-    // Sharma General Stores — the dabba destination. Faces Bazaar Road from the
-    // north row like the rest of the market (was ON the road at z=100).
-    { kind: 'shop', x: 64, z: 114, rotY: Math.PI, w: 14, d: 10, color: 0xf5e6d3, awning: 0x166534, text: 'Sharma General Stores', sub: 'Dabba Delivery Point' },
-    // Linking Road Junction Corner Plots & Blocks (synchronized with prologue stage)
-    // North-west corner: apartment tower
+
+    // ── INNER WEST DISTRICT: Shanti Galli to Linking Road (Z = -160 to -100) ──
+    { kind: 'chai_tapri', x: -47, z: -128, rotY: -Math.PI / 2, w: 3.5, d: 2.5, text: 'Raju Chai Tapri', sub: 'Cutting Chai • Bun Maska' },
+    { kind: 'thela', x: -47, z: -116, rotY: -Math.PI / 2, w: 2.5, d: 2.0, umbrellaColor: 0xef4444 },
+    { kind: 'shop', x: -47, z: -144, rotY: -Math.PI / 2, w: 5, d: 3.5, h: 3, color: 0x78350f, text: 'City News Stand', sub: 'Daily Papers • Magazines' },
+    { kind: 'shop', x: -22, z: -142, rotY: 0, w: 12, d: 10, h: 6, color: 0xbfdbfe, text: 'Metro Dental Clinic', sub: 'Teeth Care & Implants' },
+    { kind: 'shop', x: -22, z: -124, rotY: 0, w: 12, d: 10, h: 6, color: 0xfef08a, text: 'Mahalaxmi Sweets', sub: 'Pure Ghee Mithai • Farsan' },
+    { kind: 'apartment', x: -34, z: -142, rotY: 0, w: 18, d: 14, h: 18, color: 0xdbeafe },
+    { kind: 'apartment', x: -34, z: -118, rotY: 0, w: 18, d: 14, h: 22, color: 0xf1f5f9 },
+    { kind: 'apartment', x: -34, z: -104, rotY: 0, w: 18, d: 12, h: 18, color: 0x94a3b8 },
+
+    // ── MID-WEST INNER BLOCK: Shanti Galli to Linking Road (Z = -100 to 0) ──
+    { kind: 'shop', x: -34, z: -86, rotY: 0, w: 16, d: 10, h: 10, color: 0xe8b4a0, text: 'Navrang Chawl', sub: 'Tailors • Grocery • Xerox' },
+    { kind: 'shop', x: -34, z: -68, rotY: 0, w: 18, d: 12, h: 6, color: 0xf5e6d3, text: 'Sharma Stores', sub: 'General Merchant' },
+    { kind: 'shop', x: -22, z: -84, rotY: 0, w: 14, d: 10, h: 12, color: 0x1e3a8a, text: 'HDFC Bank', sub: 'Branch & 24hr ATM' },
+    { kind: 'shop', x: -22, z: -66, rotY: 0, w: 14, d: 10, h: 8, color: 0xef4444, text: 'Reliance Digital', sub: 'Mobiles & Laptops' },
+    { kind: 'apartment', x: -34, z: -46, rotY: 0, w: 16, d: 12, h: 21, color: 0xd4b896 },
     { kind: 'apartment', x: -34, z: -24, rotY: 0, w: 20, d: 16, h: 26, color: 0x8f9aa8 },
-    // North-east: mirrored apartment tower
+    { kind: 'apartment', x: -32, z: -6, rotY: 0, w: 20, d: 14, h: 24, color: 0x334155 }, // Junction NW corner landmark
+    { kind: 'chai_tapri', x: -47, z: -76, rotY: -Math.PI / 2, w: 3.5, d: 2.5, text: 'Suresh Vada Pav', sub: 'Garam Garam Vada Pav' },
+    { kind: 'thela', x: -47, z: -58, rotY: -Math.PI / 2, w: 2.5, d: 2.0, umbrellaColor: 0xf59e0b },
+
+    // ── INNER EAST DISTRICT: Linking Road to Market Galli (Z = -160 to -100) ──
+    { kind: 'apartment', x: 34, z: -142, rotY: 0, w: 20, d: 16, h: 22, color: 0x94a3b8 },
+    { kind: 'shop', x: 34, z: -118, rotY: 0, w: 18, d: 14, h: 16, color: 0xb8c8d8, text: 'Bank of Maharashtra', sub: 'Parel Branch • ATM' },
+    { kind: 'shop', x: 22, z: -142, rotY: 0, w: 12, d: 10, h: 7, color: 0xdc2626, text: 'Bata Shoes', sub: 'Original Leather Footwear' },
+    { kind: 'shop', x: 22, z: -124, rotY: 0, w: 14, d: 10, h: 7, color: 0xfef08a, text: 'Krishna Bhavan', sub: 'Pure South Indian Veg' },
+    { kind: 'apartment', x: 36, z: -104, rotY: 0, w: 18, d: 14, h: 20, color: 0x94a3b8 },
+    { kind: 'thela', x: 14.5, z: -135, rotY: Math.PI / 2, w: 2.5, d: 2.0, umbrellaColor: 0x22c55e },
+    { kind: 'chai_tapri', x: 14.5, z: -116, rotY: Math.PI / 2, w: 3.5, d: 2.5, text: 'Linking Road Chai', sub: 'Special Irani Chai' },
+
+    // ── MID-EAST INNER BLOCK: Linking Road to Market Galli (Z = -100 to 0) ──
+    { kind: 'shop', x: 34, z: -86, rotY: 0, w: 18, d: 12, h: 14, color: 0xe0f2fe, text: 'Apex Pathology', sub: 'Blood Test • X-Ray' },
+    { kind: 'shop', x: 34, z: -68, rotY: 0, w: 18, d: 12, h: 7, color: 0xe0f2fe, text: 'City Clinic', sub: 'Emergency Care' },
+    { kind: 'shop', x: 34, z: -46, rotY: 0, w: 16, d: 10, h: 5.5, color: 0xbfdbfe, text: 'LifeCare Medical', sub: '24 Hour Chemist' },
     { kind: 'apartment', x: 34, z: -24, rotY: 0, w: 20, d: 16, h: 28, color: 0x7d8896 },
-    // South-east city block: complete Basketball Sports Complex
-    { kind: 'court', x: 42, z: 36, rotY: 0, w: 20, d: 18 },
-    // South-west city block: organized Parking Lot with stalls & parked cars
+    { kind: 'apartment', x: 32, z: -6, rotY: 0, w: 20, d: 14, h: 26, color: 0x1e293b }, // Junction NE corner landmark
+    { kind: 'thela', x: 14.5, z: -55, rotY: Math.PI / 2, w: 2.5, d: 2.0, umbrellaColor: 0xeab308 },
+
+    // ── LINKING ROAD JUNCTION SOUTH-WEST BLOCK (Z = 0 to 100) ──
+    { kind: 'apartment', x: -26, z: 18, rotY: 0, w: 18, d: 14, h: 22, color: 0x475569 },
     { kind: 'parking', x: -42, z: 36, rotY: 0, w: 20, d: 18 },
-    // Mid-block shops facing avenues
-    { kind: 'shop', x: -34, z: -72, rotY: 0, w: 18, d: 12, h: 6, color: 0xf5e6d3, text: 'Sharma Stores', sub: 'General Merchant' },
-    { kind: 'shop', x: 34, z: -72, rotY: 0, w: 18, d: 12, h: 7, color: 0xe0f2fe, text: 'City Clinic', sub: 'Emergency Care' },
-    // Bazaar corridor infill: the z=40..100 frontage was empty grass. Shops face
-    // Linking Road; clear of the court (x 21..47, z 27..45) and parking plots.
-    { kind: 'shop', x: 30, z: 64, rotY: -Math.PI / 2, w: 12, d: 9, color: 0xfde68a, awning: 0x9a3412, text: 'Gupta Sweets', sub: 'Pure Ghee' },
+    { kind: 'shop', x: -22, z: 38, rotY: 0, w: 12, d: 10, h: 6, color: 0x0284c7, text: 'FastTrack Optical', sub: 'Eyewear & Watches' },
+    { kind: 'chai_tapri', x: -16, z: -24, rotY: Math.PI / 2, w: 3.5, d: 2.5, text: 'Junction Tea Stall', sub: 'Hot Chai • Samosa' },
     { kind: 'shop', x: -30, z: 64, rotY: Math.PI / 2, w: 12, d: 9, color: 0xbbf7d0, awning: 0x166534, text: 'Fresh Vegetable Mart', sub: 'Farm Daily' },
-    // Colony houses along Shanti Galli + Market Galli (infill fills the gaps)
+    { kind: 'apartment', x: -38, z: 78, rotY: 0, w: 18, d: 14, h: 20, color: 0xe2e8f0 },
+    { kind: 'shop', x: -22, z: 82, rotY: 0, w: 14, d: 10, h: 8, color: 0x15803d, text: 'Apollo Pharmacy', sub: '24hr Emergency Medicine' },
+
+    // ── LINKING ROAD JUNCTION SOUTH-EAST BLOCK (Z = 0 to 100) ──
+    { kind: 'apartment', x: 26, z: 18, rotY: 0, w: 18, d: 14, h: 24, color: 0x334155 },
+    { kind: 'court', x: 42, z: 36, rotY: 0, w: 20, d: 18 },
+    { kind: 'shop', x: 22, z: 38, rotY: 0, w: 12, d: 10, h: 6, color: 0xf59e0b, text: 'Bombay Stationery', sub: 'Colour Xerox • Print • Lamination' },
+    { kind: 'shop', x: 30, z: 64, rotY: -Math.PI / 2, w: 12, d: 9, color: 0xfde68a, awning: 0x9a3412, text: 'Gupta Sweets', sub: 'Pure Ghee' },
+    { kind: 'thela', x: 14.5, z: 75, rotY: Math.PI / 2, w: 2.5, d: 2.0, umbrellaColor: 0xd97706 },
+    { kind: 'apartment', x: 38, z: 78, rotY: 0, w: 18, d: 14, h: 22, color: 0x94a3b8 },
+    { kind: 'shop', x: 22, z: 82, rotY: 0, w: 12, d: 10, h: 7, color: 0x1e3a8a, text: 'Titan World', sub: 'Premium Timepieces' },
+
+    // ── BAZAAR CORRIDOR & SHARMA GENERAL STORES DESTINATION (Z = 100 to 160) ──
+    { kind: 'shop', x: -22, z: 114, rotY: Math.PI, w: 12, d: 9, color: 0xe8b4a0, awning: 0x166534, text: 'Veg Market', sub: 'Fresh Daily' },
+    { kind: 'shop', x: -38, z: 114, rotY: Math.PI, w: 12, d: 9, color: 0xf0d878, awning: 0x9a3412, text: 'Ganesh Bakery', sub: 'Since 1987' },
+    { kind: 'shop', x: 22, z: 114, rotY: Math.PI, w: 12, d: 9, color: 0xb8c8d8, awning: 0x1e40af, text: 'Sai Medical', sub: 'Open 24 Hours' },
+    { kind: 'shop', x: 64, z: 114, rotY: Math.PI, w: 14, d: 10, color: 0xf5e6d3, awning: 0x166534, text: 'Sharma General Stores', sub: 'Dabba Delivery Point' },
+    // South of Bazaar Road occluder towers
+    { kind: 'apartment', x: -24, z: 140, rotY: 0, w: 20, d: 14, h: 28, color: 0x64748b },
+    { kind: 'apartment', x: -44, z: 140, rotY: 0, w: 18, d: 14, h: 26, color: 0x475569 },
+    { kind: 'apartment', x: 24, z: 140, rotY: 0, w: 20, d: 14, h: 28, color: 0x64748b },
+    { kind: 'apartment', x: 46, z: 140, rotY: 0, w: 20, d: 14, h: 30, color: 0x475569 },
+
+    // ── COLONY HOMES ALONG SHANTI GALLI & MARKET GALLI ──
     { kind: 'house', x: -78, z: -60, rotY: Math.PI / 2, w: 12, d: 10, color: 0xe8d5b7 },
+    { kind: 'house', x: -78, z: -20, rotY: Math.PI / 2, w: 12, d: 10, color: 0xf5e6d3 },
     { kind: 'house', x: -78, z: 20, rotY: Math.PI / 2, w: 12, d: 10, color: 0xd4b896 },
-    { kind: 'house', x: 78, z: -40, rotY: -Math.PI / 2, w: 12, d: 10, color: 0xf0d878 },
-    { kind: 'house', x: 78, z: 40, rotY: -Math.PI / 2, w: 12, d: 10, color: 0xa8c8a8 },
     { kind: 'house', x: -78, z: 64, rotY: Math.PI / 2, w: 12, d: 10, color: 0xf5e6d3 },
+    { kind: 'house', x: 78, z: -40, rotY: -Math.PI / 2, w: 12, d: 10, color: 0xf0d878 },
+    { kind: 'house', x: 78, z: 0, rotY: -Math.PI / 2, w: 12, d: 10, color: 0xe8d5b7 },
+    { kind: 'house', x: 78, z: 40, rotY: -Math.PI / 2, w: 12, d: 10, color: 0xa8c8a8 },
     { kind: 'house', x: 78, z: 72, rotY: -Math.PI / 2, w: 12, d: 10, color: 0xe0f2fe },
-    // Chai tapri on the NW corner: life at the junction, clear of the kerb, the zebra and the apartment block.
-    { kind: 'shop', x: -18, z: -14, rotY: Math.PI / 2, w: 7, d: 5, h: 3.4, color: 0xf4d58d, awning: 0xb91c1c, text: 'Raju Chai Tapri', sub: 'Cutting Chai • Vada Pav' }
+
+    // ── TALL PERIMETER URBAN SKYLINE TOWERS (SIGHTLINE OCCLUSION TO PREVENT HORIZON POPPING) ──
+    // Continuous West Perimeter Skyline (Behind Shanti Galli)
+    { kind: 'apartment', x: -104, z: -150, rotY: 0, w: 22, d: 16, h: 32, color: 0x475569 },
+    { kind: 'apartment', x: -104, z: -120, rotY: 0, w: 22, d: 16, h: 36, color: 0x64748b },
+    { kind: 'apartment', x: -104, z: -90,  rotY: 0, w: 22, d: 16, h: 34, color: 0x475569 },
+    { kind: 'apartment', x: -104, z: -60,  rotY: 0, w: 22, d: 16, h: 30, color: 0x64748b },
+    { kind: 'apartment', x: -104, z: -30,  rotY: 0, w: 22, d: 16, h: 32, color: 0x475569 },
+    { kind: 'apartment', x: -104, z: 0,    rotY: 0, w: 22, d: 16, h: 36, color: 0x334155 },
+    { kind: 'apartment', x: -104, z: 30,   rotY: 0, w: 22, d: 16, h: 30, color: 0x64748b },
+    { kind: 'apartment', x: -104, z: 60,   rotY: 0, w: 22, d: 16, h: 32, color: 0x475569 },
+    { kind: 'apartment', x: -104, z: 90,   rotY: 0, w: 22, d: 16, h: 34, color: 0x64748b },
+    { kind: 'apartment', x: -104, z: 120,  rotY: 0, w: 22, d: 16, h: 32, color: 0x475569 },
+    { kind: 'apartment', x: -104, z: 150,  rotY: 0, w: 22, d: 16, h: 30, color: 0x64748b },
+
+    // Continuous East Perimeter Skyline (Behind Market Galli)
+    { kind: 'apartment', x: 104, z: -150, rotY: 0, w: 22, d: 16, h: 32, color: 0x64748b },
+    { kind: 'apartment', x: 104, z: -120, rotY: 0, w: 22, d: 16, h: 34, color: 0x475569 },
+    { kind: 'apartment', x: 104, z: -90,  rotY: 0, w: 22, d: 16, h: 36, color: 0x334155 },
+    { kind: 'apartment', x: 104, z: -60,  rotY: 0, w: 22, d: 16, h: 30, color: 0x64748b },
+    { kind: 'apartment', x: 104, z: -30,  rotY: 0, w: 22, d: 16, h: 32, color: 0x475569 },
+    { kind: 'apartment', x: 104, z: 0,    rotY: 0, w: 22, d: 16, h: 36, color: 0x334155 },
+    { kind: 'apartment', x: 104, z: 30,   rotY: 0, w: 22, d: 16, h: 30, color: 0x64748b },
+    { kind: 'apartment', x: 104, z: 60,   rotY: 0, w: 22, d: 16, h: 32, color: 0x475569 },
+    { kind: 'apartment', x: 104, z: 90,   rotY: 0, w: 22, d: 16, h: 34, color: 0x64748b },
+    { kind: 'apartment', x: 104, z: 120,  rotY: 0, w: 22, d: 16, h: 32, color: 0x475569 },
+    { kind: 'apartment', x: 104, z: 150,  rotY: 0, w: 22, d: 16, h: 30, color: 0x64748b },
+
+    // North Horizon Occluder Skyline
+    { kind: 'apartment', x: -80, z: -165, rotY: 0, w: 24, d: 14, h: 32, color: 0x475569 },
+    { kind: 'apartment', x: -40, z: -165, rotY: 0, w: 24, d: 14, h: 34, color: 0x64748b },
+    { kind: 'apartment', x: 0,   z: -165, rotY: 0, w: 24, d: 14, h: 36, color: 0x334155 },
+    { kind: 'apartment', x: 40,  z: -165, rotY: 0, w: 24, d: 14, h: 34, color: 0x64748b },
+    { kind: 'apartment', x: 80,  z: -165, rotY: 0, w: 24, d: 14, h: 32, color: 0x475569 },
+
+    // South Horizon Occluder Skyline
+    { kind: 'apartment', x: -80, z: 165, rotY: 0, w: 24, d: 14, h: 32, color: 0x475569 },
+    { kind: 'apartment', x: -40, z: 165, rotY: 0, w: 24, d: 14, h: 34, color: 0x64748b },
+    { kind: 'apartment', x: 0,   z: 165, rotY: 0, w: 24, d: 14, h: 36, color: 0x334155 },
+    { kind: 'apartment', x: 40,  z: 165, rotY: 0, w: 24, d: 14, h: 34, color: 0x64748b },
+    { kind: 'apartment', x: 80,  z: 165, rotY: 0, w: 24, d: 14, h: 32, color: 0x475569 }
   ],
   roadProblems: [
     { kind: 'potholes', x: -4, z: 62, count: 7, spread: 10 },
     { kind: 'barricade', x: -32, z: -100, rotY: 0 },
     { kind: 'parked_truck', x: 6, z: 58, rotY: 0 },
     { kind: 'puddle', x: -58, z: -112, r: 4 },
-    // Map dressing: junction zebra, home + shop boards, lamp posts
-    // Junction zebra spans the full 20 m arterial it crosses (was 14 m).
-    { kind: 'zebra', x: 0, z: -8, w: 20, rotY: 0 },
-    // Shanti Galli board. Moved north to z=-102: at z=-118 it sat directly on
-    // the sight-line of the prologue's house-front shot and covered the lower
-    // third of frame with the back of its own canvas.
+
+    // ── 4-WAY SIGNAL JUNCTION: ALL 4 APPROACH CROSSINGS & STOP LINES ──
+    // Linking Road North Approach (Southbound player route)
+    { kind: 'zebra', x: 0, z: -10, w: 20, rotY: 0 },
+    { kind: 'stop_line', x: 5, z: -13.5, w: 10, rotY: 0 },
+    { kind: 'pedestrian_island', x: 0, z: -10, w: 1.8, d: 3.5 },
+
+    // Linking Road South Approach (Northbound)
+    { kind: 'zebra', x: 0, z: 10, w: 20, rotY: 0 },
+    { kind: 'stop_line', x: -5, z: 13.5, w: 10, rotY: 0 },
+    { kind: 'pedestrian_island', x: 0, z: 10, w: 1.8, d: 3.5 },
+
+    // Signal Junction Road East Approach (Westbound)
+    { kind: 'zebra', x: 11, z: 0, w: 18, rotY: Math.PI / 2 },
+    { kind: 'stop_line', x: 14.5, z: 4.5, w: 9, rotY: Math.PI / 2 },
+
+    // Signal Junction Road West Approach (Eastbound)
+    { kind: 'zebra', x: -11, z: 0, w: 18, rotY: Math.PI / 2 },
+    { kind: 'stop_line', x: -14.5, z: -4.5, w: 9, rotY: Math.PI / 2 },
+
+    // Painted Lane Directional Arrows
+    { kind: 'lane_arrow', x: 2.5, z: -22, arrowType: 'straight_left', rotY: 0 },
+    { kind: 'lane_arrow', x: 7.5, z: -22, arrowType: 'straight_right', rotY: 0 },
+    { kind: 'lane_arrow', x: 2.5, z: -48, arrowType: 'straight', rotY: 0 },
+    { kind: 'lane_arrow', x: 7.5, z: -48, arrowType: 'straight', rotY: 0 },
+    { kind: 'lane_arrow', x: -2.5, z: 22, arrowType: 'straight_left', rotY: Math.PI },
+    { kind: 'lane_arrow', x: -7.5, z: 22, arrowType: 'straight_right', rotY: Math.PI },
+    { kind: 'lane_arrow', x: -2.5, z: 48, arrowType: 'straight', rotY: Math.PI },
+    { kind: 'lane_arrow', x: -7.5, z: 48, arrowType: 'straight', rotY: Math.PI },
+
+    // Tactile Warning Paving at 4 Junction Corner Curb Ramps
+    { kind: 'tactile_paving', x: -11.5, z: -11.5, w: 2.2, d: 2.2 },
+    { kind: 'tactile_paving', x: 11.5, z: -11.5, w: 2.2, d: 2.2 },
+    { kind: 'tactile_paving', x: -11.5, z: 11.5, w: 2.2, d: 2.2 },
+    { kind: 'tactile_paving', x: 11.5, z: 11.5, w: 2.2, d: 2.2 },
+
+    // Corner Stone Planter Boxes with Flowers
+    { kind: 'corner_planter', x: -12.5, z: -12.5 },
+    { kind: 'corner_planter', x: 12.5, z: -12.5 },
+    { kind: 'corner_planter', x: -12.5, z: 12.5 },
+    { kind: 'corner_planter', x: 12.5, z: 12.5 },
+
+    // BEST Mumbai Transit Bus Shelters
+    { kind: 'bus_shelter', x: 14.5, z: -60, rotY: Math.PI / 2 },
+    { kind: 'bus_shelter', x: -14.5, z: 45, rotY: -Math.PI / 2 },
+
+    // Roadside Temple Shrine (Ganpati/Hanuman Mandir)
+    { kind: 'temple_shrine', x: 14.5, z: -32, rotY: Math.PI / 2 },
+
+    // Authentic Mumbai Pan Shops
+    { kind: 'pan_shop', x: -14.5, z: -20, rotY: -Math.PI / 2 },
+    { kind: 'pan_shop', x: 14.5, z: 48, rotY: Math.PI / 2 },
+
+    // Official Auto Rickshaw Stands with Queued Autos
+    { kind: 'auto_stand', x: 14.5, z: 16, rotY: Math.PI / 2 },
+    { kind: 'auto_stand', x: -47, z: -94, rotY: -Math.PI / 2 },
+
+    // Municipal Clean Drinking Water ATMs
+    { kind: 'water_atm', x: -14.5, z: -136, rotY: -Math.PI / 2 },
+    { kind: 'water_atm', x: 14.5, z: 88, rotY: Math.PI / 2 },
+
+    // Mumbai Fire Brigade Red Hydrants
+    { kind: 'fire_hydrant', x: -14.5, z: -78 },
+    { kind: 'fire_hydrant', x: 14.5, z: -18 },
+    { kind: 'fire_hydrant', x: 14.5, z: 70 },
+    { kind: 'fire_hydrant', x: -47, z: -50 },
+
+    // Utility Electricity Poles with Insulators & Transformer Drums
+    { kind: 'utility_pole', x: -47, z: -140 },
+    { kind: 'utility_pole', x: -47, z: -100 },
+    { kind: 'utility_pole', x: -47, z: -60 },
+    { kind: 'utility_pole', x: -47, z: -20 },
+    { kind: 'utility_pole', x: -47, z: 20 },
+    { kind: 'utility_pole', x: 14.5, z: -140 },
+    { kind: 'utility_pole', x: 14.5, z: -95 },
+    { kind: 'utility_pole', x: 14.5, z: -50 },
+    { kind: 'utility_pole', x: 14.5, z: 35 },
+    { kind: 'utility_pole', x: 14.5, z: 85 },
+
+    // Storm Drains & Sewer Manhole Covers
+    { kind: 'storm_drain', x: 10.4, z: -13 },
+    { kind: 'storm_drain', x: -10.4, z: -13 },
+    { kind: 'storm_drain', x: 10.4, z: 13 },
+    { kind: 'storm_drain', x: -10.4, z: 13 },
+    { kind: 'manhole', x: 4.0, z: -35 },
+    { kind: 'manhole', x: -4.0, z: 35 },
+    { kind: 'manhole', x: -52.0, z: -110 },
+
+    // Authentic Signboards
     { kind: 'signboard', x: -72, z: -102, rotY: Math.PI / 2, text: 'Shanti Galli', sub: 'Sharma Niwas • Lane 2' },
-    // Off the carriageway (was ON Bazaar Road at z=100).
     { kind: 'signboard', x: 52, z: 110, rotY: 0, text: 'Sharma General Stores', sub: 'Dabba Delivery Point' },
     { kind: 'signboard', x: 12, z: 32, rotY: 0, text: 'Linking Road', sub: 'Andheri West' },
-    { kind: 'streetlight', x: -8, z: -40, rotY: 0 },
-    { kind: 'streetlight', x: 8, z: 20, rotY: Math.PI },
-    { kind: 'streetlight', x: -8, z: 80, rotY: 0 },
-    // Corridor lighting: the bazaar stretch was dark between z=40..100.
-    { kind: 'streetlight', x: 12, z: 40, rotY: 0 },
-    { kind: 'streetlight', x: -12, z: 70, rotY: Math.PI },
-    { kind: 'streetlight', x: 12, z: 96, rotY: 0 },
-    // Story set-dressing. The memorial stands on the east kerb beside the stop line, so the player reads it while
-    // waiting at the red. Last night's rain survives as puddles at the kerb, and Shanti Galli gets lamps so the walk
-    // from home to the junction is lit.
     { kind: 'signboard', x: 13, z: -11, rotY: -Math.PI / 2, text: 'SI Vikram Sawant', sub: 'He held the line • 3:14 AM' },
     { kind: 'signboard', x: 12, z: -36, rotY: -Math.PI / 2, text: 'Mumbai Traffic Police', sub: 'Signal Ahead • Stop At The White Line' },
     { kind: 'puddle', x: 11.5, z: -26, r: 2 },
-    { kind: 'streetlight', x: -52, z: -122, rotY: Math.PI },
-    { kind: 'streetlight', x: -52, z: -84, rotY: Math.PI }
+
+    // Street Lamps along Shanti Galli & Linking Road & Colony Cross Lane
+    { kind: 'streetlight', x: -47, z: -136, rotY: Math.PI },
+    { kind: 'streetlight', x: -47, z: -118, rotY: Math.PI },
+    { kind: 'streetlight', x: -47, z: -84, rotY: Math.PI },
+    { kind: 'streetlight', x: -47, z: -40, rotY: Math.PI },
+    { kind: 'streetlight', x: -47, z: 10, rotY: Math.PI },
+    { kind: 'streetlight', x: -14.5, z: -40, rotY: 0 },
+    { kind: 'streetlight', x: 14.5, z: 20, rotY: Math.PI },
+    { kind: 'streetlight', x: -14.5, z: 80, rotY: 0 },
+    { kind: 'streetlight', x: 14.5, z: -128, rotY: 0 },
+    { kind: 'streetlight', x: 14.5, z: -70, rotY: 0 },
+    { kind: 'streetlight', x: 14.5, z: 40, rotY: 0 },
+    { kind: 'streetlight', x: -14.5, z: 70, rotY: Math.PI },
+    { kind: 'streetlight', x: 14.5, z: 96, rotY: 0 },
+
+    // Parked Scooters along curbs (authentic Mumbai two-wheeler queues)
+    { kind: 'scooter', x: -47, z: -124, rotY: Math.PI / 2, color: 0x2563eb },
+    { kind: 'scooter', x: -47, z: -122, rotY: Math.PI / 2, color: 0xdc2626 },
+    { kind: 'scooter', x: -47, z: -74, rotY: Math.PI / 2, color: 0x475569 },
+    { kind: 'scooter', x: 14, z: -105, rotY: -Math.PI / 2, color: 0x059669 },
+    { kind: 'scooter', x: 14, z: -50, rotY: -Math.PI / 2, color: 0xf59e0b },
+    { kind: 'scooter', x: 14, z: 68, rotY: -Math.PI / 2, color: 0x2563eb },
+
+    // BMC Municipal Twin Dustbins outside stalls & shops
+    { kind: 'dustbins', x: -47.5, z: -125, rotY: -Math.PI / 2 },
+    { kind: 'dustbins', x: -47.5, z: -75, rotY: -Math.PI / 2 },
+    { kind: 'dustbins', x: 14.5, z: -107, rotY: Math.PI / 2 },
+    { kind: 'dustbins', x: 14.5, z: 66, rotY: Math.PI / 2 },
+
+    // Sculpted Flowering Gulmohar & Avenue Trees along sidewalks
+    { kind: 'tree', x: -47, z: -134, flower: true },
+    { kind: 'tree', x: -47, z: -118, flower: false },
+    { kind: 'tree', x: -47, z: -70, flower: true },
+    { kind: 'tree', x: -47, z: -46, flower: true },
+    { kind: 'tree', x: -47, z: 0, flower: false },
+    { kind: 'tree', x: -47, z: 40, flower: true },
+    { kind: 'tree', x: 14.5, z: -130, flower: false },
+    { kind: 'tree', x: 14.5, z: -122, flower: true },
+    { kind: 'tree', x: 14.5, z: -80, flower: false },
+    { kind: 'tree', x: 14.5, z: -40, flower: true },
+    { kind: 'tree', x: -14.5, z: -35, flower: false },
+    { kind: 'tree', x: 15, z: 28, flower: false },
+    { kind: 'tree', x: -15, z: 28, flower: true },
+    { kind: 'tree', x: 14.5, z: 60, flower: true },
+    { kind: 'tree', x: -14.5, z: 60, flower: false }
   ],
   story: {
     title: 'The White Line',

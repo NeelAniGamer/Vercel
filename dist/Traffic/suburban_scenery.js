@@ -2088,9 +2088,9 @@
     shantiGate.rotation.y = 0;
     addScenery(shantiGate, 13, -250);
 
-    // Shanti Niketan Wing A (4 stories) at Z = -220
+    // Shanti Niketan Wing A (5 stories) at Z = -220
     const shantiWingA = buildMumbaiApartmentBuilding({
-      stories: 4, width: 24, depth: 16, storyH: 3.4,
+      stories: 5, width: 24, depth: 16, storyH: 3.4,
       mWall: mMumbaiCream, mGlass: mats.mWindowGlass, mMetal: mats.mTrashMetal,
       mWood: mChawlWood, mSintex: mSintexBlack, mFlower: mGulmoharFlower
     });
@@ -2098,15 +2098,75 @@
     shantiWingA.rotation.y = -Math.PI / 2;
     addScenery(shantiWingA, 28, -220);
 
-    // Shanti Niketan Wing B (4 stories) at Z = -180
+    // Shanti Niketan Wing B (6 stories) at Z = -180
     const shantiWingB = buildMumbaiApartmentBuilding({
-      stories: 4, width: 24, depth: 16, storyH: 3.4,
+      stories: 6, width: 24, depth: 16, storyH: 3.4,
       mWall: mMumbaiCream, mGlass: mats.mWindowGlass, mMetal: mats.mTrashMetal,
       mWood: mChawlWood, mSintex: mSintexBlack, mFlower: mGulmoharFlower
     });
     shantiWingB.position.set(28, 0, -180);
     shantiWingB.rotation.y = -Math.PI / 2;
     addScenery(shantiWingB, 28, -180);
+
+    // Shanti Niketan Wing C (7 stories - urban sightline occluder) at Z = -220, X = 62
+    const shantiWingC = buildMumbaiApartmentBuilding({
+      stories: 7, width: 28, depth: 16, storyH: 3.4,
+      mWall: mMumbaiChsPlaster, mGlass: mats.mWindowGlass, mMetal: mats.mTrashMetal,
+      mWood: mChawlWood, mSintex: mSintexBlack, mFlower: mGulmoharFlower
+    });
+    shantiWingC.position.set(62, 0, -220);
+    shantiWingC.rotation.y = -Math.PI / 2;
+    addScenery(shantiWingC, 62, -220);
+
+    // Shanti Niketan Wing D (8 stories) at Z = -180, X = 62
+    const shantiWingD = buildMumbaiApartmentBuilding({
+      stories: 8, width: 28, depth: 16, storyH: 3.4,
+      mWall: mMumbaiCream, mGlass: mats.mWindowGlass, mMetal: mats.mTrashMetal,
+      mWood: mChawlWood, mSintex: mSintexBlack, mFlower: mGulmoharFlower
+    });
+    shantiWingD.position.set(62, 0, -180);
+    shantiWingD.rotation.y = -Math.PI / 2;
+    addScenery(shantiWingD, 62, -180);
+
+    // Shanti Heights Skyline Tower (12 stories - blocks distant horizon and saves GPU resources) at X = 100, Z = -200
+    const shantiTowerSky = buildDistantSkylineBlock(12, 32, 24, { mWall: mMumbaiCream, mGlass: mats.mWindowGlass });
+    shantiTowerSky.position.set(100, 0, -200);
+    addScenery(shantiTowerSky, 100, -200, true);
+
+    // Secondary Chawl Cluster in Sector 1 East infill
+    const chawlEastInf1 = buildChawlBuilding({
+      stories: 4, width: 26, depth: 14,
+      mWall: mChawlWall, mWood: mChawlWood, mTin: mTinRoof, mGlass: mats.mWindowGlass
+    });
+    chawlEastInf1.position.set(62, 0, -265);
+    chawlEastInf1.rotation.y = -Math.PI / 2;
+    addScenery(chawlEastInf1, 62, -265);
+
+    // Society Garden between Shanti Niketan wings
+    const shantiGarden = buildSocietyGarden(30, 24, { mGrass: mats.mGrass, mWall: mMumbaiCream, mFence: mats.mTrashMetal, mBestRed: mBestRed });
+    shantiGarden.position.set(45, 0, -200);
+    addScenery(shantiGarden, 45, -200);
+
+    // Roadside Street Vendors & Stalls along East Sidewalk (authentic Mumbai street life)
+    const chaiTapriEast = buildChaiTapri({
+      mBlueTarp: mBlueTarp, mWood: mChawlWood, mMetal: mats.mTrashMetal, mGold: mGoldEmissive
+    });
+    chaiTapriEast.position.set(11.5, 0.16, -242);
+    chaiTapriEast.rotation.y = -Math.PI / 2;
+    chaiTapriEast.userData = { isVendorStall: true };
+    addScenery(chaiTapriEast, 11.5, -242);
+
+    const fruitVendorEast = buildStreetFoodCart(mBlueTarp, mats.mTrashMetal, mChawlWood);
+    fruitVendorEast.position.set(11.5, 0.16, -205);
+    fruitVendorEast.rotation.y = -Math.PI / 2;
+    fruitVendorEast.userData = { isVendorStall: true };
+    addScenery(fruitVendorEast, 11.5, -205);
+
+    const vadaPavEast = buildStreetFoodCart(mYellowTarp, mats.mTrashMetal, mChawlWood);
+    vadaPavEast.position.set(11.5, 0.16, -165);
+    vadaPavEast.rotation.y = -Math.PI / 2;
+    vadaPavEast.userData = { isVendorStall: true };
+    addScenery(vadaPavEast, 11.5, -165);
 
     // Row Cottages at Z = -145
     const cottageEast = buildTimberTwoStoryHouse(mats.mTimberWall, mats.mTimberRoof, mats.mBrickChimney, mats.mWoodBrown, mats.mWindowGlass, mats.mWindowFrame, mats.mRedDoor);
@@ -2129,9 +2189,9 @@
     navGate.rotation.y = Math.PI;
     addScenery(navGate, -13, -330);
 
-    // Nav Prabhat 5-Story Apartment Building at Z = -290
+    // Nav Prabhat 6-Story Apartment Building at Z = -290
     const navBuilding = buildMumbaiApartmentBuilding({
-      stories: 5, width: 26, depth: 16, storyH: 3.4,
+      stories: 6, width: 26, depth: 16, storyH: 3.4,
       mWall: mMumbaiChsPlaster, mGlass: mats.mWindowGlass, mMetal: mats.mTrashMetal,
       mWood: mChawlWood, mSintex: mSintexBlack, mFlower: mGulmoharFlower
     });
@@ -2139,14 +2199,51 @@
     navBuilding.rotation.y = Math.PI / 2;
     addScenery(navBuilding, -28, -290);
 
-    // 3-Story Residential Chawl at Z = -255
+    // Nav Prabhat Wing B (7 stories - occluding west horizon) at X = -62, Z = -290
+    const navWingB = buildMumbaiApartmentBuilding({
+      stories: 7, width: 28, depth: 16, storyH: 3.4,
+      mWall: mMumbaiCream, mGlass: mats.mWindowGlass, mMetal: mats.mTrashMetal,
+      mWood: mChawlWood, mSintex: mSintexBlack, mFlower: mGulmoharFlower
+    });
+    navWingB.position.set(-62, 0, -290);
+    navWingB.rotation.y = Math.PI / 2;
+    addScenery(navWingB, -62, -290);
+
+    // 4-Story Residential Chawl at Z = -255
     const chawlWest1 = buildChawlBuilding({
-      stories: 3, width: 22, depth: 14,
+      stories: 4, width: 24, depth: 14,
       mWall: mChawlWall, mWood: mChawlWood, mTin: mTinRoof, mGlass: mats.mWindowGlass
     });
     chawlWest1.position.set(-28, 0, -255);
     chawlWest1.rotation.y = Math.PI / 2;
     addScenery(chawlWest1, -28, -255);
+
+    // Secondary Chawl behind West1 at X = -62, Z = -255
+    const chawlWestInf2 = buildChawlBuilding({
+      stories: 4, width: 24, depth: 14,
+      mWall: mChawlWall, mWood: mChawlWood, mTin: mTinRoof, mGlass: mats.mWindowGlass
+    });
+    chawlWestInf2.position.set(-62, 0, -255);
+    chawlWestInf2.rotation.y = Math.PI / 2;
+    addScenery(chawlWestInf2, -62, -255);
+
+    // West Horizon Skyline Tower (14 stories) at X = -98, Z = -260
+    const westSkylineTower = buildDistantSkylineBlock(14, 30, 24, { mWall: mMumbaiChsPlaster, mGlass: mats.mWindowGlass });
+    westSkylineTower.position.set(-98, 0, -260);
+    addScenery(westSkylineTower, -98, -260, true);
+
+    // Roadside Stalls along West Sidewalk
+    const vegCartWest = buildStreetFoodCart(mBlueTarp, mats.mTrashMetal, mChawlWood);
+    vegCartWest.position.set(-11.5, 0.16, -265);
+    vegCartWest.rotation.y = Math.PI / 2;
+    vegCartWest.userData = { isVendorStall: true };
+    addScenery(vegCartWest, -11.5, -265);
+
+    const bhuttaCartWest = buildStreetFoodCart(mYellowTarp, mats.mTrashMetal, mChawlWood);
+    bhuttaCartWest.position.set(-11.5, 0.16, -215);
+    bhuttaCartWest.rotation.y = Math.PI / 2;
+    bhuttaCartWest.userData = { isVendorStall: true };
+    addScenery(bhuttaCartWest, -11.5, -215);
 
     // Residential House at Z = -220
     const cottageWest2 = buildRedCabinHouse(mats.mRedCabin, mats.mRedRoof, mats.mWoodBrown, mats.mWindowGlass, mats.mWindowFrame, mats.mDarkDoor);
@@ -2154,9 +2251,9 @@
     cottageWest2.rotation.y = Math.PI / 2;
     addScenery(cottageWest2, -26, -220);
 
-    // 3-Story Residential Chawl at Z = -185
+    // 4-Story Residential Chawl at Z = -185
     const chawlWest2 = buildChawlBuilding({
-      stories: 3, width: 22, depth: 14,
+      stories: 4, width: 22, depth: 14,
       mWall: mChawlWall, mWood: mChawlWood, mTin: mTinRoof, mGlass: mats.mWindowGlass
     });
     chawlWest2.position.set(-28, 0, -185);
@@ -3162,20 +3259,21 @@
     };
 
     // ── 9. Setup Distance Blur, LOD Quality Scaling, and Culling Loop ────────
-    // Dynamically tie culling radius to active render distance (default 150m + 25m buffer, clamped 80-180m)
-    // Eliminates massive scene overload lag while ensuring no visual popping at view horizon!
+    // Dynamically tie culling radius to active render distance (default 380m - 700m)
+    // Ensures seamless visual horizons without premature asset pop-in or deloading!
     function getDynamicCullRadius() {
-      const rd = (game && game.renderDistance) ? game.renderDistance : 150;
-      return Math.min(Math.max(80, rd + 25), 180);
+      const isMobile = game && game._isMobile;
+      const rd = (game && game.renderDistance) ? game.renderDistance : (isMobile ? 260 : 520);
+      return Math.max(isMobile ? 280 : 440, rd + 80);
     }
-    const NEAR_LOD_RADIUS_SQ = 95 * 95;
+    const NEAR_LOD_RADIUS_SQ = 135 * 135; // Full high detail, micro-props and small details up to 135m
 
     function updateCulling(px, pz, isHighAltitude = false) {
       const cullRad = getDynamicCullRadius();
       const cullRadSq = cullRad * cullRad;
 
       chunkMap.forEach(chunk => {
-        if (chunk.userData && (chunk.userData.isSkyline || isHighAltitude)) {
+        if (chunk.userData && (chunk.userData.isSkyline || chunk.userData.isPerimeter || isHighAltitude)) {
           chunk.visible = true;
           return;
         }
@@ -3188,8 +3286,7 @@
         }
 
         // Dynamic Level of Detail (LOD) Quality Scaling:
-        // When objects are far (> 95m), hide fine micro-props (AC compressor units, rooftop fan grilles, small props)
-        // to significantly lower geometric complexity and preserve smooth 60 FPS gameplay!
+        // Far objects (> 135m) hide micro-props to preserve high framerates while keeping all buildings visible
         if (isNear) {
           const isFullDetail = dSq <= NEAR_LOD_RADIUS_SQ;
           if (chunk.userData.isFullDetail !== isFullDetail) {

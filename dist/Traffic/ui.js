@@ -4749,7 +4749,7 @@ const _buildVehicle = window._buildVehicle = (type, col, opts) => {
         bikeModel.rotation.y = Math.PI
         g.add(bikeModel)
         g.type = normalizedType
-        g.userData = { halfW: 0.40, halfD: 0.95, isVehicle: true }
+        g.userData = Object.assign({}, bikeModel.userData, { halfW: bikeModel.userData?.halfW || 0.40, halfD: bikeModel.userData?.halfD || 0.95, isVehicle: true })
         return g
       }
     }
@@ -4764,7 +4764,7 @@ const _buildVehicle = window._buildVehicle = (type, col, opts) => {
         autoModel.rotation.y = Math.PI
         g.add(autoModel)
         g.type = 'auto'
-        g.userData = { halfW: 0.70, halfD: 1.35, isVehicle: true }
+        g.userData = Object.assign({}, autoModel.userData, { halfW: autoModel.userData?.halfW || 0.70, halfD: autoModel.userData?.halfD || 1.35, isVehicle: true })
         const dpL = new THREE.Group(); dpL.position.set(0.70, 0.9, 0.3)
         const dpR = new THREE.Group(); dpR.position.set(-0.70, 0.9, 0.3)
         g.add(dpL, dpR)
@@ -4783,7 +4783,7 @@ const _buildVehicle = window._buildVehicle = (type, col, opts) => {
         busModel.rotation.y = Math.PI
         g.add(busModel)
         g.type = 'bus'
-        g.userData = { halfW: 1.35, halfD: 4.80, isVehicle: true }
+        g.userData = Object.assign({}, busModel.userData, { halfW: busModel.userData?.halfW || 1.35, halfD: busModel.userData?.halfD || 5.50, isVehicle: true })
         const dpL = new THREE.Group(); dpL.position.set(1.35, 0.9, 0.3)
         const dpR = new THREE.Group(); dpR.position.set(-1.35, 0.9, 0.3)
         g.add(dpL, dpR)
@@ -5007,7 +5007,11 @@ const _buildVehicle = window._buildVehicle = (type, col, opts) => {
       iv.rotation.y = Math.PI
       g.add(iv)
       g.type = type
-      g.userData = { halfW: 1.05, halfD: 2.25, isVehicle: true }
+      const VD = (typeof window !== 'undefined' && window.VehicleDims) ? window.VehicleDims : null;
+      const d = VD ? VD.halves(type) : { halfW: 1.05, halfD: 2.25 };
+      const hw = iv.userData?.halfW || d.halfW;
+      const hl = iv.userData?.halfD || d.halfD;
+      g.userData = Object.assign({}, iv.userData, { halfW: hw, halfD: hl, isVehicle: true });
       return g
     }
   }
