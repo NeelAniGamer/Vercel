@@ -1,85 +1,784 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#070A14" id="themeMeta" />
-  <meta name="robots" content="noindex, follow" />
-  <meta name="description" content="The requested Class Of Learners page could not be found." />
-  <title>Page Not Found | Class Of Learners</title>
-  <link rel="icon" type="image/png" href="/Icon.png" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; }
-    :root {
-      color-scheme: dark;
-      --bg: #070a14;
-      --panel: #111827;
-      --line: rgba(255,255,255,.12);
-      --text: #f4efe4;
-      --muted: #a6aec4;
-      --accent: #f2b84b;
-    }
-    body {
-      min-height: 100vh;
-      margin: 0;
-      display: grid;
-      place-items: center;
-      padding: 24px;
-      background: radial-gradient(circle at 50% 20%, #17213a 0%, var(--bg) 52%);
-      color: var(--text);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-    main {
-      width: min(100%, 560px);
-      padding: clamp(28px, 7vw, 56px);
-      border: 1px solid var(--line);
-      border-radius: 28px;
-      background: rgba(17,24,39,.78);
-      box-shadow: 0 28px 80px rgba(0,0,0,.38);
-      text-align: center;
-    }
-    img { width: 88px; height: 88px; margin: 0 auto 24px; }
-    .code {
-      margin: 0;
-      color: var(--accent);
-      font: 800 0.78rem/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
-      letter-spacing: .2em;
-      text-transform: uppercase;
-    }
-    h1 { margin: 12px 0 14px; font-size: clamp(2rem, 9vw, 3.6rem); line-height: 1; }
-    p { margin: 0 auto 28px; max-width: 42ch; color: var(--muted); line-height: 1.7; }
-    .actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
-    a {
-      min-height: 44px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 20px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      color: var(--text);
-      font-weight: 800;
-      text-decoration: none;
-    }
-    a.primary { border-color: var(--accent); background: var(--accent); color: #0a0800; }
-    @media (max-width: 420px) {
-      main { border-radius: 22px; }
-      .actions { flex-direction: column; }
-      a { width: 100%; }
-    }
-  </style>
-</head>
-<body>
-  <main>
-    <img src="/Class.png" alt="Class Of Learners" width="88" height="88" />
-    <p class="code">Error 404</p>
-    <h1>Page Not Found</h1>
-    <p>The page may have moved, been renamed, or never existed. Return to the studio hub to keep exploring.</p>
-    <div class="actions">
-      <a class="primary" href="/">Return Home</a>
-      <a href="/sitemap">View Sitemap</a>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#070a14" id="themeMeta" />
+    <meta name="robots" content="noindex, follow" />
+    <meta name="description" content="The requested Class Of Learners page could not be found. Explore our creative technologies, typing tools, 3D simulations, and apps." />
+    <title>Page Not Found (404) · Class Of Learners</title>
+    <link rel="icon" type="image/png" href="Icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+
+    <script>
+      (function () {
+        var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        if (isIOS) document.documentElement.classList.add('is-iphone');
+        try {
+          if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.add('lm');
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <script defer src="col-router.js"></script>
+    <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
+    <link rel="stylesheet" href="col-mobile.css" />
+    <link rel="stylesheet" href="liquid-glass.css" />
+    <link rel="stylesheet" href="mobile-perf.css" />
+    <script defer src="pull-refresh.js"></script>
+    <script defer src="col-ui.js"></script>
+    <script defer src="col-auth.js"></script>
+
+    <style>
+      :root {
+        --void: #070a14;
+        --void2: #0c1224;
+        --panel: #0e1526;
+        --panel-glass: rgba(14, 21, 38, 0.78);
+        --line: rgba(255, 255, 255, 0.08);
+        --lineb: rgba(56, 189, 248, 0.24);
+        --ink: #f1f5f9;
+        --dim: #8492a6;
+        --signal: #f2b84b;
+        --ion: #38bdf8;
+        --teal: #a3e635;
+        --plasma: #fb923c;
+        --em: #34d399;
+        --rose: #f43f5e;
+        --nav: rgba(7, 10, 20, 0.72);
+        --serif: 'Instrument Serif', Georgia, serif;
+        --sans: 'Inter', system-ui, sans-serif;
+        --mono: 'Space Mono', monospace;
+        --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+        --r: 20px;
+      }
+
+      html.lm,
+      body.lm {
+        --void: #f8fafc;
+        --void2: #f1f5f9;
+        --panel: #ffffff;
+        --panel-glass: rgba(255, 255, 255, 0.92);
+        --line: rgba(0, 0, 0, 0.08);
+        --lineb: rgba(2, 132, 199, 0.25);
+        --ink: #0f172a;
+        --dim: #475569;
+        --signal: #d97706;
+        --ion: #0284c7;
+        --teal: #4d7c0f;
+        --plasma: #ea580c;
+        --em: #059669;
+        --rose: #e11d48;
+        --nav: rgba(248, 250, 252, 0.92);
+      }
+
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html { scroll-behavior: smooth; }
+      body {
+        background: var(--void);
+        color: var(--ink);
+        font-family: var(--sans);
+        line-height: 1.6;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        transition: background 0.3s var(--ease), color 0.3s var(--ease);
+      }
+
+      .page-wrap {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 50px 20px 90px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+      }
+
+      /* 404 Main Glass Card */
+      .card-404 {
+        width: 100%;
+        max-width: 780px;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: var(--r);
+        padding: clamp(32px, 6vw, 56px);
+        box-shadow: 0 25px 70px rgba(0, 0, 0, 0.45);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 30px;
+        backdrop-filter: blur(20px);
+      }
+      body.lm .card-404 {
+        box-shadow: 0 15px 45px rgba(0, 0, 0, 0.08);
+      }
+
+      /* Glowing background ambient gradient */
+      .card-404::before {
+        content: "";
+        position: absolute;
+        top: -120px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 380px;
+        height: 240px;
+        background: radial-gradient(circle, rgba(242, 184, 75, 0.15) 0%, rgba(56, 189, 248, 0.08) 50%, transparent 70%);
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .badge-404 {
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        letter-spacing: 0.28em;
+        color: var(--signal);
+        text-transform: uppercase;
+        margin-bottom: 16px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(242, 184, 75, 0.1);
+        padding: 6px 16px;
+        border-radius: 20px;
+        border: 1px solid rgba(242, 184, 75, 0.25);
+        position: relative;
+        z-index: 1;
+      }
+
+      .logo-box-404 {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 20px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--lineb);
+        border-radius: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        position: relative;
+        z-index: 1;
+      }
+      body.lm .logo-box-404 {
+        background: #f8fafc;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+      }
+      .logo-box-404 img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .title-404 {
+        font-family: var(--serif);
+        font-size: clamp(2.4rem, 6vw, 4rem);
+        font-weight: 400;
+        line-height: 1.1;
+        margin-bottom: 12px;
+        position: relative;
+        z-index: 1;
+      }
+      .title-404 em {
+        font-style: italic;
+        color: var(--signal);
+      }
+
+      .desc-404 {
+        font-size: 1.05rem;
+        color: var(--dim);
+        max-width: 52ch;
+        margin: 0 auto 24px;
+        line-height: 1.6;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Smart Route Recommendation */
+      .path-indicator {
+        font-family: var(--mono);
+        font-size: 0.8rem;
+        background: var(--void);
+        border: 1px solid var(--line);
+        padding: 8px 16px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--rose);
+        margin-bottom: 24px;
+        max-width: 100%;
+        overflow-x: auto;
+        position: relative;
+        z-index: 1;
+      }
+      .suggested-box {
+        background: rgba(163, 230, 53, 0.08);
+        border: 1px solid rgba(163, 230, 53, 0.25);
+        border-radius: 12px;
+        padding: 12px 18px;
+        margin: 0 auto 26px;
+        max-width: 500px;
+        font-family: var(--mono);
+        font-size: 0.82rem;
+        display: none;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        position: relative;
+        z-index: 1;
+      }
+      .suggested-box.show {
+        display: flex;
+      }
+      .suggested-btn {
+        background: var(--teal);
+        color: #070a14;
+        font-family: var(--mono);
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-decoration: none;
+        padding: 6px 14px;
+        border-radius: 8px;
+        white-space: nowrap;
+        transition: transform 0.2s;
+      }
+      .suggested-btn:hover {
+        transform: translateY(-2px);
+      }
+
+      /* Actions Row */
+      .actions-404 {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        position: relative;
+        z-index: 1;
+      }
+      .btn-404 {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 24px;
+        border-radius: 12px;
+        font-family: var(--mono);
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.2s var(--ease);
+      }
+      .btn-404.primary {
+        background: var(--signal);
+        color: #070a14;
+        box-shadow: 0 4px 15px rgba(242, 184, 75, 0.35);
+      }
+      .btn-404.primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 22px rgba(242, 184, 75, 0.5);
+      }
+      .btn-404.secondary {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--ink);
+        border: 1px solid var(--line);
+      }
+      .btn-404.secondary:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: var(--lineb);
+        transform: translateY(-2px);
+      }
+      body.lm .btn-404.secondary {
+        background: #f1f5f9;
+        border-color: rgba(0, 0, 0, 0.1);
+      }
+
+      /* Destination Quick Launch Hub */
+      .hub-section {
+        width: 100%;
+        max-width: 880px;
+        margin-top: 10px;
+      }
+      .hub-heading {
+        font-family: var(--mono);
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--dim);
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .hub-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px;
+      }
+      .hub-card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 16px;
+        text-decoration: none;
+        color: var(--ink);
+        transition: all 0.25s var(--ease);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .hub-card:hover {
+        transform: translateY(-3px);
+        border-color: var(--lineb);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+      }
+      body.lm .hub-card:hover {
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+      }
+      .hub-card-title {
+        font-weight: 700;
+        font-size: 0.95rem;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--ink);
+      }
+      .hub-card-title svg {
+        color: var(--ion);
+        flex-shrink: 0;
+      }
+      .hub-card-desc {
+        font-size: 0.8rem;
+        color: var(--dim);
+        line-height: 1.5;
+      }
+
+      /* Search Box */
+      .search-container {
+        width: 100%;
+        max-width: 480px;
+        margin: 24px auto 0;
+        position: relative;
+      }
+      .search-input {
+        width: 100%;
+        padding: 12px 42px 12px 16px;
+        border-radius: 12px;
+        border: 1px solid var(--lineb);
+        background: var(--void);
+        color: var(--ink);
+        font-family: var(--sans);
+        font-size: 0.9rem;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      .search-input:focus {
+        border-color: var(--signal);
+      }
+      .search-icon {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--dim);
+        pointer-events: none;
+      }
+
+      @media (max-width: 640px) {
+        .page-wrap {
+          padding: 85px 16px 90px;
+        }
+        .actions-404 {
+          flex-direction: column;
+        }
+        .btn-404 {
+          width: 100%;
+          justify-content: center;
+        }
+        .hub-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Top Navigation Bar -->
+    <nav class="top-nav" id="topNav">
+      <a href="/" class="nav-brand">
+        <img src="Class.png" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" />
+        <span class="brand-name">Class Of Learners</span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="/" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
+          </svg>Home
+        </a>
+        <a href="about" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 16v-4" />
+            <path d="M12 8h.01" />
+          </svg>About
+        </a>
+        <a href="school" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" />
+            <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />
+          </svg>School
+        </a>
+        <a href="sneh-asha" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+          </svg>Sneh Asha
+        </a>
+        <a href="making" class="nav-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+          </svg>Making
+        </a>
+        <div class="dropdown" id="projDD">
+          <button class="dropdown-btn" aria-haspopup="true" aria-expanded="false">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+              <line x1="8" y1="21" x2="16" y2="21" />
+              <line x1="12" y1="17" x2="12" y2="21" />
+            </svg>Projects <span class="darr">&#9660;</span>
+          </button>
+          <div class="dropdown-content">
+            <div class="dropdown-content-inner">
+              <a href="ati">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="4 7 4 4 20 4 20 7" />
+                  <line x1="9" y1="20" x2="15" y2="20" />
+                  <line x1="12" y1="4" x2="12" y2="20" />
+                </svg>Typing Instructor
+              </a>
+              <a href="solar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="5" />
+                  <line x1="12" y1="1" x2="12" y2="3" />
+                  <line x1="12" y1="21" x2="12" y2="23" />
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                  <line x1="1" y1="12" x2="3" y2="12" />
+                  <line x1="21" y1="12" x2="23" y2="12" />
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                </svg>Solar Engine
+              </a>
+              <a href="gesture">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 8h1a4 4 0 010 8h-1" />
+                  <path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z" />
+                  <line x1="6" y1="1" x2="6" y2="4" />
+                  <line x1="10" y1="1" x2="10" y2="4" />
+                  <line x1="14" y1="1" x2="14" y2="4" />
+                </svg>Perceptus Flow
+              </a>
+              <a href="rpg">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                </svg>RPG Game
+              </a>
+              <a href="qr">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="2" width="8" height="8" rx="1" />
+                  <rect x="14" y="2" width="8" height="8" rx="1" />
+                  <rect x="2" y="14" width="8" height="8" rx="1" />
+                  <rect x="14" y="14" width="4" height="4" />
+                  <rect x="20" y="14" width="2" height="2" />
+                  <rect x="14" y="20" width="2" height="2" />
+                  <rect x="20" y="20" width="2" height="2" />
+                </svg>QR Studio Matrix
+              </a>
+              <a href="Terra3D/">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="2" y1="12" x2="22" y2="12" />
+                  <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+                </svg>Terra3D Atlas
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="nav-actions">
+        <div class="hz-toggle" onclick="hzToggle()">
+          <div class="hz-clouds"></div>
+          <div class="hz-stars"></div>
+          <div class="hz-orb"></div>
+        </div>
+        <button class="nav-login-btn" id="navLoginBtn" onclick="if (window.openGlobalLogin) window.openGlobalLogin(); else if (window.openLogin) window.openLogin();">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>Sign In
+        </button>
+        <div class="nav-user-profile" id="navUserProfile" onclick="if (window.openGlobalLogin) window.openGlobalLogin(); else if (window.openLogin) window.openLogin();">
+          <div class="nav-user-avatar" id="navUserAv">?</div>
+          <span class="nun" id="navUserName">User</span>
+        </div>
+        <a href="download" class="nav-dl-btn desktop-dl">Downloads Hub</a>
+        <button class="mmb" id="mmb" aria-label="Toggle menu">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M3 6H21M3 12H21M3 18H21" stroke-width="1.5" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="page-wrap">
+      <div class="card-404">
+        <div class="badge-404">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Error 404 &bull; Route Missing
+        </div>
+
+        <div class="logo-box-404">
+          <img src="Class.png" alt="Class Of Learners Logo" width="60" height="60" />
+        </div>
+
+        <h1 class="title-404">Page Not <em>Found</em></h1>
+        <p class="desc-404">The destination you requested does not exist, was relocated, or mistyped. Explore our studio projects below or search for what you need.</p>
+
+        <div class="path-indicator" id="pathDisplay">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+          <span id="requestedPath">/unknown-route</span>
+        </div>
+
+        <!-- Smart "Did you mean" box -->
+        <div class="suggested-box" id="suggestedBox">
+          <span id="suggestedText">Looking for ATI Velocity Studio?</span>
+          <a href="ati-demo" class="suggested-btn" id="suggestedLink">Go There &rarr;</a>
+        </div>
+
+        <div class="actions-404">
+          <a href="/" class="btn-404 primary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Return Home</span>
+          </a>
+          <a href="download" class="btn-404 secondary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Downloads Hub</span>
+          </a>
+          <a href="sitemap" class="btn-404 secondary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            <span>View Sitemap</span>
+          </a>
+        </div>
+
+        <!-- Quick Search -->
+        <div class="search-container">
+          <input type="text" class="search-input" id="searchBox" placeholder="Quick jump: typing, solar, games, downloads..." autocomplete="off" />
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+      </div>
+
+      <!-- Quick Launch Hub -->
+      <div class="hub-section">
+        <div class="hub-heading">Explore Studio Destinations</div>
+        <div class="hub-grid">
+          <a href="ati-demo" class="hub-card">
+            <div class="hub-card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+              ATI Velocity Studio
+            </div>
+            <div class="hub-card-desc">Interactive touch-typing studio with live telemetry and mechanical switches.</div>
+          </a>
+
+          <a href="ati-lite" class="hub-card">
+            <div class="hub-card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              ATI 3.2 Lite Arcade
+            </div>
+            <div class="hub-card-desc">Cyber Racer speedway, Zen Flow, and missile defense typing game modes.</div>
+          </a>
+
+          <a href="solar" class="hub-card">
+            <div class="hub-card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/></svg>
+              Solar Engine
+            </div>
+            <div class="hub-card-desc">Real-time gravitational n-body physics simulator and orbital lab.</div>
+          </a>
+
+          <a href="gesture" class="hub-card">
+            <div class="hub-card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/></svg>
+              Perceptus Flow
+            </div>
+            <div class="hub-card-desc">Zero-hardware camera gesture controller with spatial cursor mapping.</div>
+          </a>
+
+          <a href="rpg" class="hub-card">
+            <div class="hub-card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              RPG Cyberpunk
+            </div>
+            <div class="hub-card-desc">Immersive browser RPG world with procedural dungeons and combat.</div>
+          </a>
+
+          <a href="qr" class="hub-card">
+            <div class="hub-card-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="8" height="8" rx="1"/><rect x="14" y="2" width="8" height="8" rx="1"/><rect x="2" y="14" width="8" height="8" rx="1"/></svg>
+              QR Studio Matrix
+            </div>
+            <div class="hub-card-desc">Encrypted QR design studio with custom themes and logo embedding.</div>
+          </a>
+        </div>
+      </div>
     </div>
-  </main>
-  <script defer src="col-ui.js"></script>
-</body>
+
+    <!-- Smart Path Matcher Script -->
+    <script>
+      (function () {
+        var path = window.location.pathname || '';
+        var displayEl = document.getElementById('requestedPath');
+        if (displayEl && path) {
+          displayEl.textContent = path;
+        }
+
+        // Fuzzy path recommender
+        var p = path.toLowerCase();
+        var suggestion = null;
+
+        if (p.includes('demo') || p.includes('ati') || p.includes('type') || p.includes('speed') || p.includes('velocity')) {
+          suggestion = { title: 'Looking for ATI Velocity Studio?', link: 'ati-demo' };
+        } else if (p.includes('solar') || p.includes('orbit') || p.includes('planet') || p.includes('space') || p.includes('engine')) {
+          suggestion = { title: 'Looking for Solar Physics Engine?', link: 'solar' };
+        } else if (p.includes('gesture') || p.includes('perceptus') || p.includes('hand') || p.includes('flow')) {
+          suggestion = { title: 'Looking for Perceptus Flow?', link: 'gesture' };
+        } else if (p.includes('game') || p.includes('rpg') || p.includes('cyber')) {
+          suggestion = { title: 'Looking for RPG Cyberpunk Adventure?', link: 'rpg' };
+        } else if (p.includes('qr') || p.includes('code') || p.includes('barcode')) {
+          suggestion = { title: 'Looking for QR Studio Matrix?', link: 'qr' };
+        } else if (p.includes('download') || p.includes('install') || p.includes('setup') || p.includes('apk') || p.includes('exe')) {
+          suggestion = { title: 'Looking for Desktop & Mobile Downloads?', link: 'download' };
+        }
+
+        if (suggestion) {
+          var box = document.getElementById('suggestedBox');
+          var txt = document.getElementById('suggestedText');
+          var btn = document.getElementById('suggestedLink');
+          if (box && txt && btn) {
+            txt.textContent = suggestion.title;
+            btn.href = suggestion.link;
+            box.classList.add('show');
+          }
+        }
+
+        // Quick Search Enter Listener
+        var sInput = document.getElementById('searchBox');
+        if (sInput) {
+          sInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+              var q = sInput.value.trim().toLowerCase();
+              if (q.includes('type') || q.includes('ati') || q.includes('demo')) window.location.href = 'ati-demo';
+              else if (q.includes('solar') || q.includes('orbit')) window.location.href = 'solar';
+              else if (q.includes('gesture') || q.includes('hand')) window.location.href = 'gesture';
+              else if (q.includes('download') || q.includes('apk')) window.location.href = 'download';
+              else if (q.includes('qr')) window.location.href = 'qr';
+              else if (q.includes('rpg') || q.includes('game')) window.location.href = 'rpg';
+              else window.location.href = '/sitemap';
+            }
+          });
+        }
+      })();
+    </script>
+
+    <!-- Footer -->
+    <footer class="sf">
+      <div class="fi">
+        <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
+        <div class="fl">
+          <a href="making">Making</a>
+          <a href="privacy">Privacy</a>
+          <a href="terms">Terms</a>
+          <a href="feedback">Feedback</a>
+          <a href="download">Downloads</a>
+        </div>
+        <div class="fc">&copy; 2026 Neel, Ansh, &amp; Aarush (Co‑Founders).</div>
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        var pdd = document.getElementById('projDD');
+        if (pdd) {
+          var btn = pdd.querySelector('.dropdown-btn');
+          if (btn) {
+            btn.addEventListener('click', function (e) {
+              e.stopPropagation();
+              var isOpen = pdd.classList.toggle('active');
+              btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            });
+          }
+        }
+        document.addEventListener('click', function (e) {
+          var d = document.getElementById('projDD');
+          if (d && !d.contains(e.target)) {
+            d.classList.remove('active');
+            var b = d.querySelector('.dropdown-btn');
+            if (b) b.setAttribute('aria-expanded', 'false');
+          }
+        });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') {
+            var d = document.getElementById('projDD');
+            if (d && d.classList.contains('active')) {
+              d.classList.remove('active');
+              var b = d.querySelector('.dropdown-btn');
+              if (b) b.setAttribute('aria-expanded', 'false');
+            }
+          }
+        });
+
+        var topNav = document.getElementById('topNav');
+        if (topNav) {
+          var ticking = false;
+          window.addEventListener('scroll', function () {
+            if (!ticking) {
+              requestAnimationFrame(function () {
+                topNav.classList.toggle('s', window.scrollY > 40);
+                ticking = false;
+              });
+              ticking = true;
+            }
+          }, { passive: true });
+        }
+      })();
+
+      function applyTheme(isLight) {
+        document.documentElement.classList.toggle('lm', isLight);
+        document.body.classList.toggle('lm', isLight);
+        try {
+          localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        } catch (_e) {}
+        var tsck = document.getElementById('tsck');
+        if (tsck) tsck.checked = !isLight;
+        var lbl = document.getElementById('tLabel');
+        if (lbl) lbl.textContent = isLight ? 'Light Mode' : 'Dark Mode';
+      }
+      window.applyTheme = applyTheme;
+      window.hzToggle = function () {
+        var isLight = !document.documentElement.classList.contains('lm');
+        applyTheme(isLight);
+      };
+      window.toggleTheme = function (elem) {
+        var isLight = elem ? !elem.checked : !document.documentElement.classList.contains('lm');
+        applyTheme(isLight);
+      };
+    </script>
+  </body>
 </html>
