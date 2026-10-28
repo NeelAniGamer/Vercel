@@ -100,28 +100,28 @@
       }
     }
 
+    let cursorRaf = null
     document.addEventListener(
       'mousemove',
       function (e) {
         mx = e.clientX
         my = e.clientY
-        if (dot) {
-          dot.style.transform = 'translate3d(' + mx + 'px,' + my + 'px,0) translate(-50%,-50%)'
-        }
-        if (!ringRaf && ring) {
-          ringRaf = requestAnimationFrame(updateRing)
-        }
-        if (!isMoving) {
-          isMoving = true
-          requestAnimationFrame(function () {
+        if (!cursorRaf) {
+          cursorRaf = requestAnimationFrame(function () {
+            cursorRaf = null
+            if (dot) {
+              dot.style.transform = 'translate3d(' + mx + 'px,' + my + 'px,0) translate(-50%,-50%)'
+            }
             if (!spot) {
               spot = document.querySelector('.col-ambient-spotlight')
             }
             if (spot) {
               spot.style.transform = 'translate3d(' + mx + 'px,' + my + 'px,0)'
             }
-            isMoving = false
           })
+        }
+        if (!ringRaf && ring) {
+          ringRaf = requestAnimationFrame(updateRing)
         }
       },
       { passive: true }

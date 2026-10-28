@@ -57,7 +57,7 @@
 
     const group = new THREE.Group();
     group.name = 'SuburbanNeighborhoodScenery';
-    group.userData = { noLod: true, isGround: true };
+    group.userData = { isSuburbanRoot: true };
 
     // ── Vibrant Low-Poly Materials Palette (Matching Screenshot) ──────────────
     const mRoad = new THREE.MeshStandardMaterial({ color: 0x3d4449, roughness: 0.85 });
@@ -149,6 +149,7 @@
     roadMesh.rotation.x = -Math.PI / 2;
     roadMesh.position.set(0, 0.01, 0);
     roadMesh.receiveShadow = true;
+    roadMesh.userData = { isGround: true, noLod: true };
     group.add(roadMesh);
     if (game.world) {game.world.push(roadMesh);}
 
@@ -164,6 +165,7 @@
       const dash = new THREE.Mesh(new THREE.PlaneGeometry(0.26, dashLength), mCenterLine);
       dash.rotation.x = -Math.PI / 2;
       dash.position.set(0, 0.02, z);
+      dash.userData = { isGround: true, noLod: true };
       group.add(dash);
     }
 
@@ -198,6 +200,7 @@
       );
       swMesh.position.set(swCenterX, sidewalkHeight / 2, 0);
       swMesh.receiveShadow = true;
+      swMesh.userData = { isGround: true, noLod: true };
       group.add(swMesh);
       if (game.world) {game.world.push(swMesh);}
 
@@ -207,6 +210,7 @@
         mCurbLip
       );
       curbLip.position.set(xSign * (halfRoad + 0.125), sidewalkHeight / 2, 0);
+      curbLip.userData = { isGround: true, noLod: true };
       group.add(curbLip);
 
       // ── 5. Storm Drain Sewer Grates along Curb ─────────────────────────────
@@ -242,6 +246,7 @@
         );
         curbRamp.position.set(xSign * (halfRoad + 0.7), sidewalkHeight / 2 - 0.04, lotZ - 5.0);
         curbRamp.rotation.z = xSign * 0.12;
+        curbRamp.userData = { isGround: true, noLod: true };
         group.add(curbRamp);
 
         // Grass Front & Back Yard
@@ -251,6 +256,7 @@
         );
         yardMesh.position.set(yardCenterX, 0.07, lotZ);
         yardMesh.receiveShadow = true;
+        yardMesh.userData = { isGround: true, noLod: true };
         group.add(yardMesh);
 
         // Driveway Geometry
@@ -265,6 +271,7 @@
         );
         drivewayMesh.position.set(drivewayX, 0.075, drivewayZ);
         drivewayMesh.receiveShadow = true;
+        drivewayMesh.userData = { isGround: true, noLod: true };
         group.add(drivewayMesh);
 
         // Flagstone Pavers on the Driveway (high density on player lot, optimized on others)
@@ -5064,8 +5071,11 @@ function buildSocietyGarden(w, d, opts) {
 // ═════════════════════════════════════════════════════════════════════════════
 // PROCEDURAL CANVAS TEXTURE GENERATORS (Zero-GC, Instant WebGL Upload)
 // ═════════════════════════════════════════════════════════════════════════════
+const _suburbanTextureCache = new Map();
+
 function createAsphaltCanvasTexture() {
   if (typeof document === 'undefined') {return null;}
+  if (_suburbanTextureCache.has('asphalt')) {return _suburbanTextureCache.get('asphalt');}
   const canvas = document.createElement('canvas');
   canvas.width = 512;
   canvas.height = 512;
@@ -5111,11 +5121,13 @@ function createAsphaltCanvasTexture() {
   tex.wrapS = THREE.RepeatWrapping;
   tex.wrapT = THREE.RepeatWrapping;
   tex.repeat.set(2, 8);
+  _suburbanTextureCache.set('asphalt', tex);
   return tex;
 }
 
 function createSidewalkPaverTexture() {
   if (typeof document === 'undefined') {return null;}
+  if (_suburbanTextureCache.has('sidewalk')) {return _suburbanTextureCache.get('sidewalk');}
   const canvas = document.createElement('canvas');
   canvas.width = 256;
   canvas.height = 256;
@@ -5148,11 +5160,14 @@ function createSidewalkPaverTexture() {
   tex.wrapS = THREE.RepeatWrapping;
   tex.wrapT = THREE.RepeatWrapping;
   tex.repeat.set(2, 12);
+  _suburbanTextureCache.set('sidewalk', tex);
   return tex;
 }
 
 function createBuildingFacadeTexture(baseColorHex, isHighrise) {
   if (typeof document === 'undefined') {return null;}
+  const cacheKey = `facade_${baseColorHex || '#e8dfd1'}_${!!isHighrise}`;
+  if (_suburbanTextureCache.has(cacheKey)) {return _suburbanTextureCache.get(cacheKey);}
   const canvas = document.createElement('canvas');
   canvas.width = 512;
   canvas.height = 512;
@@ -5222,11 +5237,13 @@ function createBuildingFacadeTexture(baseColorHex, isHighrise) {
   const tex = new THREE.CanvasTexture(canvas);
   tex.wrapS = THREE.RepeatWrapping;
   tex.wrapT = THREE.RepeatWrapping;
+  _suburbanTextureCache.set(cacheKey, tex);
   return tex;
 }
 
 function createBasaltStoneTexture() {
   if (typeof document === 'undefined') {return null;}
+  if (_suburbanTextureCache.has('basalt')) {return _suburbanTextureCache.get('basalt');}
   const canvas = document.createElement('canvas');
   canvas.width = 256;
   canvas.height = 256;
@@ -5262,12 +5279,14 @@ function createBasaltStoneTexture() {
   tex.wrapS = THREE.RepeatWrapping;
   tex.wrapT = THREE.RepeatWrapping;
   tex.repeat.set(1, 4);
+  _suburbanTextureCache.set('basalt', tex);
   return tex;
 }
 
 // ── Procedural High-Resolution Organic Grass Texture ────────────────────────
 function createGrassCanvasTexture() {
   if (typeof document === 'undefined') {return null;}
+  if (_suburbanTextureCache.has('grass')) {return _suburbanTextureCache.get('grass');}
   const canvas = document.createElement('canvas');
   canvas.width = 512;
   canvas.height = 512;
@@ -5314,6 +5333,7 @@ function createGrassCanvasTexture() {
   tex.wrapS = THREE.RepeatWrapping;
   tex.wrapT = THREE.RepeatWrapping;
   tex.repeat.set(45, 45);
+  _suburbanTextureCache.set('grass', tex);
   return tex;
 }
 window.createGrassCanvasTexture = createGrassCanvasTexture;
@@ -5321,6 +5341,8 @@ window.createGrassCanvasTexture = createGrassCanvasTexture;
 // ── Crisp High-Resolution Society Signboard Texture ─────────────────────────
 function createSocietySignCanvasTexture(mainText, subText) {
   if (typeof document === 'undefined') {return null;}
+  const cacheKey = `sign_${mainText || ''}_${subText || ''}`;
+  if (_suburbanTextureCache.has(cacheKey)) {return _suburbanTextureCache.get(cacheKey);}
   const canvas = document.createElement('canvas');
   canvas.width = 1024;
   canvas.height = 128;
@@ -5356,6 +5378,7 @@ function createSocietySignCanvasTexture(mainText, subText) {
   }
 
   const tex = new THREE.CanvasTexture(canvas);
+  _suburbanTextureCache.set(cacheKey, tex);
   return tex;
 }
 

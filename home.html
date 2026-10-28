@@ -1514,14 +1514,15 @@
           border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
           box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
       }
+      /* Keep reveal transition snappy and separate from hover tilt */
       .pc.rev {
         opacity: 1;
-        transform: translateY(0);
+        transform: translate3d(0, 0, 0);
         transition:
-          opacity 0.7s var(--ease),
-          transform 0.7s var(--ease),
-          border-color 0.4s,
-          box-shadow 0.4s;
+          opacity 0.5s var(--ease),
+          transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+          border-color 0.3s ease,
+          box-shadow 0.3s ease;
       }
       .pc::before {
         content: '';
@@ -1543,7 +1544,7 @@
       }
       .pc:hover::before {
         opacity: 1;
-        filter: drop-shadow(0 0 12px var(--pc-accent, var(--ion)));
+        filter: none !important; /* Avoids per-frame drop-shadow rasterization during tilt */
       }
       .pc.ci { --pc-accent: var(--ion); }
       .pc.cs { --pc-accent: var(--signal); }
@@ -1559,8 +1560,34 @@
         border-color: var(--lineb);
         transform: translateY(-11px);
       }
+      /* Remove permanent will-change on all cards; only promote when hovered */
+      .pc {
+        will-change: auto;
+      }
+      .pc:hover,
+      .pc.is-tilting {
+        will-change: transform;
+      }
+
+      /* 1. Pause ALL internal card animations when the card is off-screen */
+      .pc:not(.in-view) *,
+      .pc:not(.in-view) *::before,
+      .pc:not(.in-view) *::after {
+        animation-play-state: paused !important;
+      }
+
+      /* 4. Remove expensive double drop-shadow filter on levitating RPG blade & card ::before */
+      .rpg-blade-svg,
+      .pc:hover .rpg-blade-svg,
+      .pf-hand-svg,
+      .pc:hover .pf-hand-svg,
+      .c-needle-svg,
+      .pc:hover .c-needle-svg {
+        filter: none !important;
+      }
+
       /* Continuous GPU hardware accelerated card animations */
-      .pc, .pv, .ati-visual-stage, .sol-visual-stage, .perc-visual-stage,
+      .pv, .ati-visual-stage, .sol-visual-stage, .perc-visual-stage,
       .qr-visual-stage, .car-visual-stage, .db-visual-stage, .tr-visual-stage,
       .cf-visual-stage, .ce-visual-stage, .t3-visual-stage, .rpg-visual-stage {
         transform: translateZ(0);
@@ -1702,19 +1729,20 @@
         left: 0;
         right: 0;
         height: 2px;
-        top: 0;
+        top: 0 !important;
         background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.4) 15%, #00f0ff 50%, rgba(0, 240, 255, 0.4) 85%, transparent);
         box-shadow: 0 0 10px #00f0ff, 0 0 24px rgba(0, 240, 255, 0.6);
-        animation: pfLaserSweep 3.2s ease-in-out infinite alternate;
+        will-change: transform, opacity;
+        animation: pfLaserSweep 3.2s ease-in-out infinite alternate !important;
         z-index: 4;
         opacity: 0.85;
         pointer-events: none;
       }
       @keyframes pfLaserSweep {
-        0% { top: 12px; opacity: 0.3; }
+        0% { transform: translate3d(0, 12px, 0); opacity: 0.3; }
         15% { opacity: 0.9; }
         85% { opacity: 0.9; }
-        100% { top: calc(100% - 14px); opacity: 0.3; }
+        100% { transform: translate3d(0, 210px, 0); opacity: 0.3; }
       }
       .pf-pulse-ring {
         animation: pfPulseWave 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
@@ -1858,19 +1886,20 @@
         left: 0;
         right: 0;
         height: 2px;
-        top: 0;
+        top: 0 !important;
         background: linear-gradient(90deg, transparent, rgba(52, 211, 153, 0.4) 15%, #34d399 50%, rgba(52, 211, 153, 0.4) 85%, transparent);
         box-shadow: 0 0 10px #34d399, 0 0 20px rgba(52, 211, 153, 0.5);
-        animation: qrScanBeam 2.5s ease-in-out infinite alternate;
+        will-change: transform, opacity;
+        animation: qrScanBeam 2.5s ease-in-out infinite alternate !important;
         z-index: 4;
         opacity: 0.9;
         pointer-events: none;
       }
       @keyframes qrScanBeam {
-        0% { top: 4px; opacity: 0.3; }
+        0% { transform: translate3d(0, 6px, 0); opacity: 0.3; }
         15% { opacity: 0.95; }
         85% { opacity: 0.95; }
-        100% { top: calc(100% - 6px); opacity: 0.3; }
+        100% { transform: translate3d(0, 134px, 0); opacity: 0.3; }
       }
       .qr-hud-chip {
         position: absolute;
@@ -2957,17 +2986,17 @@
       .tr-sig-yel { animation: trSigYel 6s infinite; }
       .tr-sig-grn { animation: trSigGrn 6s infinite; }
       @keyframes trSigRed {
-        0%, 35% { fill: #ef4444; filter: drop-shadow(0 0 6px #ef4444); }
-        36%, 100% { fill: #27272a; filter: none; }
+        0%, 35% { fill: #ef4444; opacity: 1; }
+        36%, 100% { fill: #27272a; opacity: 0.45; }
       }
       @keyframes trSigYel {
-        0%, 35% { fill: #27272a; filter: none; }
-        36%, 55% { fill: #f59e0b; filter: drop-shadow(0 0 6px #f59e0b); }
-        56%, 100% { fill: #27272a; filter: none; }
+        0%, 35% { fill: #27272a; opacity: 0.45; }
+        36%, 55% { fill: #f59e0b; opacity: 1; }
+        56%, 100% { fill: #27272a; opacity: 0.45; }
       }
       @keyframes trSigGrn {
-        0%, 55% { fill: #27272a; filter: none; }
-        56%, 100% { fill: #10b981; filter: drop-shadow(0 0 6px #10b981); }
+        0%, 55% { fill: #27272a; opacity: 0.45; }
+        56%, 100% { fill: #10b981; opacity: 1; }
       }
       .pc:hover .tr-aerial-svg {
         filter: drop-shadow(0 0 16px rgba(245, 158, 11, 0.45));
@@ -3597,9 +3626,13 @@
         }
         .hero:has(.node-inspector.active) .hero-orbital-stage,
         .hero.inspector-active .hero-orbital-stage {
-          opacity: 0.2;
-          filter: blur(4px);
+          opacity: 0.15;
+          filter: none;
           pointer-events: none;
+        }
+        .hero:has(.node-inspector.active) .hos-ring,
+        .hero.inspector-active .hos-ring {
+          animation-play-state: paused !important;
         }
         .hos-ring {
           position: absolute;
@@ -4185,7 +4218,7 @@
       </div>
     </section>
 
-    <section class="vp-section" style="content-visibility:auto; contain-intrinsic-size: auto 500px">
+    <section class="vp-section">
       <div class="vp-grid">
         <div class="vp-card rv">
           <div class="vp-icon">
@@ -4211,7 +4244,7 @@
       </div>
     </section>
 
-    <section class="ps" id="projects" style="content-visibility:auto; contain-intrinsic-size: auto 650px">
+    <section class="ps" id="projects">
       <div class="sh">
         <div>
           <div class="sey">Flagship Architectures</div>
@@ -4258,7 +4291,7 @@
       </div>
     </section>
 
-    <section class="ps" id="productivity" style="content-visibility:auto; contain-intrinsic-size: auto 650px; padding-top: 40px">
+    <section class="ps" id="productivity" style="padding-top: 40px">
       <div class="sh">
         <div>
           <div class="sey">Applied Intelligence &amp; Spatial Suites</div>
@@ -4458,7 +4491,7 @@
       </div>
     </section>
 
-    <section class="ps" id="educational" style="content-visibility:auto; contain-intrinsic-size: auto 600px; padding-top: 40px">
+    <section class="ps" id="educational" style="padding-top: 40px">
       <div class="sh">
         <div>
           <div class="sey">Educational Deep Dives</div>
@@ -4608,7 +4641,7 @@
       </div>
     </section>
 
-    <section class="ps" id="mobile" style="content-visibility:auto; contain-intrinsic-size: auto 600px; padding-top: 40px">
+    <section class="ps" id="mobile" style="padding-top: 40px">
       <div class="sh">
         <div>
           <div class="sey">Android Ecosystem</div>
@@ -4746,7 +4779,7 @@
       </div>
     </section>
 
-    <section class="ps" id="atlas" style="content-visibility:auto; contain-intrinsic-size: auto 600px; padding-top: 40px">
+    <section class="ps" id="atlas" style="padding-top: 40px">
       <div class="sh">
         <div>
           <div class="sey">Planetary &amp; Lab Showcase</div>
@@ -4877,7 +4910,7 @@
     </section>
     </main>
 
-<footer class="sf" style="content-visibility:auto; contain-intrinsic-size: auto 200px">
+<footer class="sf">
       <div class="fi">
         <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
         <div class="fl"><a href="making">Making</a><a href="privacy">Privacy</a><a href="terms">Terms</a><a href="feedback">Feedback</a><a href="download">Downloads</a></div>
@@ -5006,10 +5039,14 @@
                   card.style.setProperty('--card-mx', relX.toFixed(0) + 'px')
                   card.style.setProperty('--card-my', relY.toFixed(0) + 'px')
                 } else {
-                  var x = relX / rect.width - 0.5
-                  var y = relY / rect.height - 0.5
+                  var x = (relX / rect.width) - 0.5
+                  var y = (relY / rect.height) - 0.5
                   card.style.transform =
-                    'translate3d(0, -8px, 0) perspective(900px) rotateX(' + (-y * 4.5).toFixed(2) + 'deg) rotateY(' + (x * 4.5).toFixed(2) + 'deg)'
+                    'translate3d(0, -8px, 0) perspective(900px) rotateX(' +
+                    (-y * 4).toFixed(2) +
+                    'deg) rotateY(' +
+                    (x * 4).toFixed(2) +
+                    'deg)'
                 }
               })
             }, { passive: true })
@@ -5024,11 +5061,12 @@
                 card.style.removeProperty('--card-mx')
                 card.style.removeProperty('--card-my')
               } else {
+                // Remove .is-tilting first so the 0.28s CSS transition smoothly eases back to 0
                 card.classList.remove('is-tilting')
                 document.body.classList.remove('ch')
                 card.style.transform = ''
               }
-            })
+            }, { passive: true })
           })
 
           // Desktop Keyboard Shortcuts: Ctrl+K / Cmd+K Quick Cycle & Liquid Glass Toggle

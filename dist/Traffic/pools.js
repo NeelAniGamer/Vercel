@@ -81,7 +81,6 @@ const resetVehicle = (vehicle) => {
   vehicle.traverse(c => {
     if (c.isMesh) {
       c.visible = false;
-      c.material = null;
     }
   });
 };
@@ -146,10 +145,10 @@ class ThreePools {
 
 
     this.audioSource = new Pool(() => {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const src = ctx.createBufferSource();
-      return src;
-    }, src => { src.disconnect(); }, 20);
+      const AudioCtxClass = typeof window !== 'undefined' ? (window.AudioContext || window.webkitAudioContext) : null;
+      const ctx = (typeof window !== 'undefined' && window.Howler?.ctx) || ThreePools._audioCtx || (AudioCtxClass ? (ThreePools._audioCtx = new AudioCtxClass()) : null);
+      return ctx ? ctx.createBufferSource() : null;
+    }, src => { if (src) { try { src.disconnect(); } catch (e) {} } }, 20);
 
 
     this.vec3.prewarm(100);

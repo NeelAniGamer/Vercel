@@ -69,7 +69,7 @@
     // ─── Renderer ───
     var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true, powerPreference: 'high-performance', stencil: false, depth: true })
     renderer.setSize(window.innerWidth, window.innerHeight)
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2.5))
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.25 : 1.5))
     renderer.setClearColor(0x000000, 0)
     if (!isMobile) {canvas.style.willChange = 'transform'}
 
@@ -143,7 +143,9 @@
     var focusTargetNode = null
 
     // Mouse Drag & Movement
+    var pointerDirty = false
     document.addEventListener('mousemove', function (e) {
+      pointerDirty = true
       _pmx = (e.clientX / window.innerWidth) * 2 - 1
       _pmy = -(e.clientY / window.innerHeight) * 2 + 1
       mouseVec.set(_pmx, _pmy)
@@ -216,6 +218,7 @@
 
     canvas.addEventListener('touchmove', function (e) {
       if (e.touches.length === 1 && isTouching) {
+        pointerDirty = true
         var cx = e.touches[0].clientX
         var cy = e.touches[0].clientY
         var dx = cx - dragStartX
@@ -1120,7 +1123,10 @@
           root.rotation.x = cameraCurrent.rotX
 
           // 8. Raycast hover sampling
-          if (Math.floor(t * 30) % 3 === 0) {updateHover()}
+          if (pointerDirty) {
+            pointerDirty = false
+            updateHover()
+          }
         }
       },
 
@@ -1244,7 +1250,10 @@
           root.rotation.y = cameraCurrent.rotY
           root.rotation.x = cameraCurrent.rotX
 
-          if (Math.floor(t * 30) % 3 === 0) {updateHover()}
+          if (pointerDirty) {
+            pointerDirty = false
+            updateHover()
+          }
         }
       },
 

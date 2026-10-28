@@ -13747,7 +13747,7 @@ class Game {
           this.scene.children.forEach(c => {
             if (c.userData?.isGround || c.userData?.noLod || c === this.player) {return;}
             // Container groups placed at (0,0): ensure container stays visible, and test children individually by their own coordinates!
-            if (c.name && (c.name === 'road-problems' || c.name === 'plot-buildings' || c.name === 'block-fill')) {
+            if (c.name && (c.name === 'road-problems' || c.name === 'plot-buildings' || c.name === 'block-fill' || c.name === 'SuburbanNeighborhoodScenery')) {
               if (!c.visible) {c.visible = true;}
               c.children.forEach(sub => {
                 if (sub && sub.position && !sub.userData?.noLod && !sub.userData?.isGround) {
