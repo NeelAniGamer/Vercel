@@ -41,7 +41,7 @@
     "howler": "^2.2.4",
     "sarvamai": "^1.1.12",
     "three": "^0.186.1",
-    "zustand": "^5.0.15"
+    "zustand": "^5.0.16"
   },
   "build": {
     "appId": "com.classoflearners.traffic",
