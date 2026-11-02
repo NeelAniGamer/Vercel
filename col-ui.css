@@ -1896,3 +1896,20 @@ body.modal-lock .bmc-floating-badge {
     box-shadow: inset 0 1px 1px #ffffff !important;
   }
 }
+
+/* Skeleton Loading Screen Placeholders (Point 1: Skeleton Loading Screens) */
+.col-skeleton {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.04) 25%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.04) 75%);
+  background-size: 200% 100%;
+  animation: colSkeletonShimmer 1.5s infinite;
+  border-radius: 6px;
+  display: block;
+}
+body.lm .col-skeleton {
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.04) 25%, rgba(0, 0, 0, 0.09) 50%, rgba(0, 0, 0, 0.04) 75%);
+  background-size: 200% 100%;
+}
+@keyframes colSkeletonShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

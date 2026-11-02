@@ -10,7 +10,7 @@
     // request instead of issuing a second one for the same file.
     window.__colConfigPromise =
       window.__colConfigPromise ||
-      fetch('/config.json', { cache: 'no-store' })
+      fetch('/config.json', { signal: AbortSignal.timeout(8000) })
         .then((r) => (r.ok ? r.json() : null))
         .catch(() => null)
     const config = await window.__colConfigPromise

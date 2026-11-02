@@ -25,6 +25,15 @@
     } catch (e) {}
   }
 
+  // Generic UI Input Debounce Helper (Point 4: Debounce search and autocomplete inputs)
+  window.colDebounce = function (func, waitMs = 300) {
+    let timeout = null;
+    return function (...args) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(this, args), waitMs);
+    };
+  };
+
   // 0. Ambient Visual System Auto-Injector (Aurora Mesh & Cyber Grid)
   // Full-fidelity 3-orb ambient mesh + cyber spotlight across all devices.
   // Hardware-accelerated GPU layers run at full unthrottled refresh rates.
@@ -494,7 +503,7 @@
       try {
         const isWebView = /wv/i.test(navigator.userAgent) || /Build\//i.test(navigator.userAgent)
         if (isWebView) {
-          fetch('/version.json?t=' + Date.now())
+          fetch('/version.json', { signal: AbortSignal.timeout(5000) })
             .then((r) => r.json())
             .then((data) => {
               const currentV = localStorage.getItem('col_apk_version') || '0'

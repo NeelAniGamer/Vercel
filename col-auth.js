@@ -368,7 +368,7 @@ window.closeMo = function () {
   try {
     window.__colConfigPromise =
       window.__colConfigPromise ||
-      fetch('/config.json?t=' + new Date().getTime())
+      fetch('/config.json', { signal: AbortSignal.timeout(8000) })
         .then((r) => (r.ok ? r.json() : null))
         .catch(() => null)
     const config = await window.__colConfigPromise
@@ -2186,7 +2186,7 @@ window.closeMo = function () {
       try {
         window.__colConfigPromise =
           window.__colConfigPromise ||
-          fetch('/config.json?t=' + Date.now())
+          fetch('/config.json', { signal: AbortSignal.timeout(8000) })
             .then((r) => (r.ok ? r.json() : null))
             .catch(() => null)
         const cfg = await window.__colConfigPromise
