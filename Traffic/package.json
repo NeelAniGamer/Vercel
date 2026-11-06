@@ -28,7 +28,7 @@
   "devDependencies": {
     "@types/howler": "^2.2.11",
     "@types/node": "^26.6.5",
-    "@types/three": "^0.186.0",
+    "@types/three": "^0.187.0",
     "electron": "^44.7.1",
     "electron-builder": "^26.15.3",
     "electron-updater": "^6.8.9",
@@ -40,8 +40,8 @@
     "@dimforge/rapier3d-compat": "^0.21.0",
     "howler": "^2.2.4",
     "sarvamai": "^1.1.12",
-    "three": "^0.186.1",
-    "zustand": "^5.0.15"
+    "three": "^0.187.0",
+    "zustand": "^5.0.16"
   },
   "build": {
     "appId": "com.classoflearners.traffic",
