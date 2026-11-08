@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Mini Mumbai Messenger — Traffic Hero Express</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #070b19;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      color: #f8fafc;
+    }
+    #canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    /* Top Navigation & Status Bar */
+    .top-bar {
+      position: fixed;
+      top: 18px;
+      left: 24px;
+      right: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 30;
+      pointer-events: none;
+    }
+    .brand-pill {
+      pointer-events: auto;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      padding: 10px 18px;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+    }
+    .brand-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 0.3px;
+      background: linear-gradient(135deg, #facc15, #38bdf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .brand-badge {
+      background: rgba(245, 158, 11, 0.2);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: #facc15;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+    }
+
+    .stats-group {
+      pointer-events: auto;
+      display: flex;
+      gap: 10px;
+    }
+    .stat-pill {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 14px;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Active Mission HUD Card */
+    .mission-hud-card {
+      position: fixed;
+      top: 80px;
+      left: 24px;
+      width: 320px;
+      background: rgba(15, 23, 42, 0.82);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 18px;
+      padding: 16px 18px;
+      z-index: 30;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .mission-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .mission-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #38bdf8;
+    }
+    .mission-distance {
+      font-size: 12px;
+      font-weight: 700;
+      color: #facc15;
+      background: rgba(250, 204, 21, 0.15);
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+    .mission-body {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .mission-icon {
+      font-size: 32px;
+      background: rgba(255, 255, 255, 0.08);
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .mission-info h3 {
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .mission-info p {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 3px;
+    }
+    .btn-deliver {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: transform 0.15s, filter 0.15s;
+    }
+    .btn-deliver:hover {
+      filter: brightness(1.15);
+      transform: translateY(-1px);
+    }
+
+    /* Vehicle Selector Dock (Bottom Center) */
+    .vehicle-dock {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.82);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      padding: 6px 10px;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 30;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.45);
+    }
+    .dock-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: #94a3b8;
+      padding: 8px 16px;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .dock-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .dock-btn.active {
+      color: #0f172a;
+      background: #facc15;
+      border-color: #facc15;
+      box-shadow: 0 4px 14px rgba(250, 204, 21, 0.35);
+    }
+
+    /* Action Buttons (Right Side) */
+    .action-rail {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 30;
+    }
+    .rail-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      color: #fff;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s, background 0.2s;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+    .rail-btn:hover {
+      transform: scale(1.1);
+      background: rgba(255, 255, 255, 0.15);
+    }
+    .rail-btn.primary {
+      background: linear-gradient(135deg, #f59e0b, #ea580c);
+      border-color: #facc15;
+    }
+
+    /* Modal dialogs */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(3, 7, 18, 0.75);
+      backdrop-filter: blur(10px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .modal-card {
+      background: #0f172a;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 24px;
+      padding: 30px;
+      width: 90%;
+      max-width: 460px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes popIn {
+      from { transform: scale(0.85); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .modal-card h2 {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .modal-card p {
+      color: #94a3b8;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+    .modal-reward-badge {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      color: #facc15;
+      font-size: 16px;
+      font-weight: 800;
+      padding: 10px 20px;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      display: inline-block;
+    }
+    .modal-stamp-badge {
+      font-size: 13px;
+      color: #38bdf8;
+      margin-bottom: 24px;
+      font-weight: 600;
+    }
+    .btn-close {
+      background: #facc15;
+      color: #0f172a;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      font-size: 14px;
+      width: 100%;
+    }
+
+    /* Stamp Book Grid */
+    .stamp-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin: 18px 0;
+      max-height: 320px;
+      overflow-y: auto;
+    }
+    .stamp-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px dashed rgba(255, 255, 255, 0.16);
+      border-radius: 14px;
+      padding: 12px;
+      text-align: center;
+    }
+    .stamp-card.unlocked {
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+    .stamp-card .stamp-icon { font-size: 30px; margin-bottom: 4px; }
+    .stamp-card .stamp-title { font-size: 12px; font-weight: 700; color: #f8fafc; }
+    .stamp-card .stamp-desc { font-size: 10px; color: #94a3b8; margin-top: 2px; }
+
+    /* Emote Wheel Radial Menu */
+    .emote-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 18px 0;
+    }
+    .emote-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      padding: 12px;
+      font-size: 28px;
+      cursor: pointer;
+      transition: transform 0.15s, background 0.15s;
+    }
+    .emote-btn:hover {
+      transform: scale(1.15);
+      background: rgba(245, 158, 11, 0.2);
+    }
+
+    /* Notification Toast */
+    #toast {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      padding: 10px 22px;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+
+    /* Controls helper card */
+    .controls-hint {
+      position: fixed;
+      bottom: 24px;
+      right: 90px;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      color: #94a3b8;
+      display: flex;
+      gap: 10px;
+      pointer-events: none;
+    }
+    @media (max-width: 768px) {
+      .controls-hint { display: none; }
+      .mission-hud-card { width: calc(100vw - 48px); left: 24px; }
+      #mini-globe-container { width: 110px; height: 110px; bottom: 85px; left: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Canvas Container for WebGL Scene -->
+  <div id="canvas-container"></div>
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="brand-pill">
+      <div class="brand-title">Mini Mumbai Messenger</div>
+      <div class="brand-badge" id="hud-mode-badge">🚲 Dabbawala Bicycle</div>
+    </div>
+    <div class="stats-group">
+      <div class="stat-pill"><span style="color:#facc15">₹</span> <span id="hud-coins">0 ₹</span></div>
+      <div class="stat-pill"><span style="color:#22c55e">🛡️</span> <span id="hud-score">100 pts</span></div>
+      <div class="stat-pill"><span style="color:#38bdf8">🏆</span> <span id="hud-rank">Apprentice Courier</span></div>
+    </div>
+  </div>
+
+  <!-- Active Mission Card -->
+  <div class="mission-hud-card">
+    <div class="mission-header">
+      <span class="mission-label">Active Delivery Mission</span>
+      <span class="mission-distance" id="hud-dist-meter">Calculating...</span>
+    </div>
+    <div class="mission-body">
+      <div class="mission-icon" id="hud-quest-icon">🍱</div>
+      <div class="mission-info">
+        <h3 id="hud-quest-title">The 6-Sigma Dabba Express</h3>
+        <p id="hud-quest-brief">CSMT Station to Marine Drive</p>
+      </div>
+    </div>
+    <button class="btn-deliver" onclick="window.mumbaiMessenger && window.mumbaiMessenger.tryDeliver()">
+      📦 Deliver Package [E]
+    </button>
+  </div>
+
+  <!-- Vehicle Switcher Dock -->
+  <div class="vehicle-dock">
+    <button class="dock-btn active" id="btn-mode-bike" onclick="selectMode('bicycle', this)">
+      🚲 Dabbawala Bike [1]
+    </button>
+    <button class="dock-btn" id="btn-mode-auto" onclick="selectMode('auto', this)">
+      🛺 Auto-Rickshaw [2]
+    </button>
+    <button class="dock-btn" id="btn-mode-foot" onclick="selectMode('foot', this)">
+      🏃 On Foot [3]
+    </button>
+  </div>
+
+  <!-- Action Rail Buttons -->
+  <div class="action-rail">
+    <button class="rail-btn primary" title="Horn / Bell [H or B]" onclick="window.mumbaiMessenger && window.mumbaiMessenger.triggerHeroHorn()">
+      📢
+    </button>
+    <button class="rail-btn" title="Desi Emote Wheel [R]" onclick="window.mumbaiMessenger && window.mumbaiMessenger.openEmoteWheel()">
+      💬
+    </button>
+    <button class="rail-btn" title="Mumbai Postal Passport" onclick="window.mumbaiMessenger && window.mumbaiMessenger.toggleStampBook()">
+      📜
+    </button>
+    <button class="rail-btn" title="Toggle Day / Sunset / Night [T]" onclick="window.mumbaiMessenger && window.mumbaiMessenger.dayNight.toggleTime()">
+      ☀️
+    </button>
+    <button class="rail-btn" title="Mute Music" onclick="toggleAudio(this)">
+      🎵
+    </button>
+  </div>
+
+  <!-- Controls Hint Overlay -->
+  <div class="controls-hint">
+    <span>WASD: Drive</span>
+    <span>Space: Jump</span>
+    <span>Shift: Sprint</span>
+    <span>H/B: Horn</span>
+    <span>E: Deliver</span>
+    <span>Drag: Orbit Cam</span>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast">Notification</div>
+
+  <!-- Delivery Celebration Modal -->
+  <div class="modal-overlay" id="delivery-modal">
+    <div class="modal-card">
+      <h2 id="modal-title">🎉 Delivery Completed!</h2>
+      <p id="modal-text">The hot tiffins arrived right on time!</p>
+      <div class="modal-reward-badge" id="modal-reward">+150 ₹ Earned</div>
+      <div class="modal-stamp-badge" id="modal-stamp">Unlocked: 6-Sigma Dabbawala Stamp</div>
+      <button class="btn-close" onclick="closeModal('delivery-modal')">Continue Delivery Route 🚀</button>
+    </div>
+  </div>
+
+  <!-- Postal Stamp Passport Modal -->
+  <div class="modal-overlay" id="stamp-book-modal">
+    <div class="modal-card">
+      <h2>📜 Mumbai Postal Passport</h2>
+      <p>Collect all 6 illustrated regional stamps across the city!</p>
+      <div class="stamp-grid" id="stamp-grid"></div>
+      <button class="btn-close" onclick="closeModal('stamp-book-modal')">Close Passport</button>
+    </div>
+  </div>
+
+  <!-- Desi Emote Modal -->
+  <div class="modal-overlay" id="emote-modal">
+    <div class="modal-card">
+      <h2>💬 Choose Reaction</h2>
+      <p>Wave or celebrate across Mini Mumbai!</p>
+      <div class="emote-grid">
+        <button class="emote-btn" onclick="sendEmoji('🙏')">🙏</button>
+        <button class="emote-btn" onclick="sendEmoji('🛺')">🛺</button>
+        <button class="emote-btn" onclick="sendEmoji('☕')">☕</button>
+        <button class="emote-btn" onclick="sendEmoji('❤️')">❤️</button>
+        <button class="emote-btn" onclick="sendEmoji('🎉')">🎉</button>
+        <button class="emote-btn" onclick="sendEmoji('🍱')">🍱</button>
+        <button class="emote-btn" onclick="sendEmoji('⚡')">⚡</button>
+        <button class="emote-btn" onclick="sendEmoji('🌊')">🌊</button>
+      </div>
+      <button class="btn-close" onclick="closeModal('emote-modal')">Cancel</button>
+    </div>
+  </div>
+
+  <script type="module" src="/src/messenger/main.ts"></script>
+  <script>
+    function selectMode(mode, btn) {
+      document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      if (window.mumbaiMessenger) window.mumbaiMessenger.setHeroMode(mode);
+    }
+
+    function closeModal(id) {
+      const modal = document.getElementById(id);
+      if (modal) modal.style.display = 'none';
+    }
+
+    function sendEmoji(symbol) {
+      if (window.mumbaiMessenger) window.mumbaiMessenger.triggerEmote(symbol);
+    }
+
+    function toggleAudio(btn) {
+      if (window.mumbaiMessenger) {
+        const isMuted = window.mumbaiMessenger.toggleAudio();
+        btn.textContent = isMuted ? '🔇' : '🎵';
+      }
+    }
+  </script>
+</body>
+</html>

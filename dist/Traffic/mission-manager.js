@@ -197,11 +197,16 @@ class Mission {
     this.onFail = config.onFail || null;
   }
 
+  complete() {
+    if (this.status === 'completed') {return;}
+    this.status = 'completed';
+    if (this.onComplete) {this.onComplete(this);}
+  }
+
   updateProgress(value) {
     this.progress = Math.min(value, this.target);
     if (this.progress >= this.target) {
-      this.status = 'completed';
-      if (this.onComplete) {this.onComplete(this);}
+      this.complete();
     }
   }
 
@@ -556,8 +561,7 @@ class CrossingGuardMission extends Mission {
     }
 
     if (this.data.childrenCrossed >= this.data.targetChildren) {
-      this.status = 'completed';
-      if (this.onComplete) {this.onComplete(this);}
+      this.complete();
     }
   }
 
@@ -599,8 +603,7 @@ class SidewalkPatrolMission extends Mission {
     }
 
     if (this.data.violationsReported >= this.data.targetViolations) {
-      this.status = 'completed';
-      if (this.onComplete) {this.onComplete(this);}
+      this.complete();
     }
   }
 
@@ -696,8 +699,7 @@ class SchoolPatrolMission extends Mission {
     }
 
     if (this.data.speedersCaught >= this.data.targetSpeeders) {
-      this.status = 'completed';
-      if (this.onComplete) {this.onComplete(this);}
+      this.complete();
     }
   }
 
@@ -1042,7 +1044,8 @@ class MissionManager {
   createEscortMission(levelConfig) {
     if (!levelConfig.route || levelConfig.route.length < 3) {return null;}
     const theme = levelConfig.themeType || levelConfig.theme || '';
-    if (!['emergency_access', 'bonus_vip_convoy', 'highway_discipline'].includes(theme)) {return null;}
+    const escortThemes = ['emergency_access', 'bonus_vip_convoy', 'highway_discipline', 'ambulance_priority', 'festival', 'highway_merge', 'grand_test'];
+    if (!escortThemes.includes(theme)) {return null;}
 
     const baseReward = levelConfig.isPedestrian ? 4000 : 6000;
     return new EscortMission({
@@ -1058,7 +1061,8 @@ class MissionManager {
 
   createChaseMission(levelConfig) {
     const theme = levelConfig.themeType || levelConfig.theme || '';
-    if (!['emergency_access', 'night_driving', 'bonus_vip_convoy', 'chaos'].includes(theme)) {return null;}
+    const chaseThemes = ['emergency_access', 'night_driving', 'bonus_vip_convoy', 'chaos', 'road_rage', 'wrong_side', 'night_monsoon'];
+    if (!chaseThemes.includes(theme)) {return null;}
 
     const baseReward = levelConfig.isPedestrian ? 4500 : 7000;
     return new ChaseMission({
@@ -1074,7 +1078,8 @@ class MissionManager {
 
   createParkingMission(levelConfig) {
     const theme = levelConfig.themeType || levelConfig.theme || '';
-    if (!['speed_management', 'pedestrian_courtesy', 'silence_zone'].includes(theme)) {return null;}
+    const parkingThemes = ['speed_management', 'pedestrian_courtesy', 'silence_zone', 'parking_rules', 'respectful_parking', 'street_parking', 'hospital_quiet'];
+    if (!parkingThemes.includes(theme)) {return null;}
     if (levelConfig.isPedestrian) {return null;}
 
     const spot = this._generateParkingSpot(levelConfig);
@@ -1090,7 +1095,8 @@ class MissionManager {
 
   createCargoMission(levelConfig) {
     const theme = levelConfig.themeType || levelConfig.theme || '';
-    if (!['highway_discipline', 'monsoon_survival', 'bonus_night_monsoon', 'rail_safety'].includes(theme)) {return null;}
+    const cargoThemes = ['highway_discipline', 'monsoon_survival', 'bonus_night_monsoon', 'rail_safety', 'market_street', 'mountain', 'hill_driving', 'night_monsoon', 'rain_driving', 'highway_merge'];
+    if (!cargoThemes.includes(theme)) {return null;}
     if (levelConfig.isPedestrian) {return null;}
 
     return new CargoMission({
@@ -1107,7 +1113,8 @@ class MissionManager {
 
   createEvasionMission(levelConfig) {
     const theme = levelConfig.themeType || levelConfig.theme || '';
-    if (!['night_driving', 'chaos', 'bonus_night_monsoon'].includes(theme)) {return null;}
+    const evasionThemes = ['night_driving', 'chaos', 'bonus_night_monsoon', 'road_rage', 'night_monsoon'];
+    if (!evasionThemes.includes(theme)) {return null;}
 
     const baseReward = levelConfig.isPedestrian ? 3500 : 6000;
     const safeZone = this._generateSafeZone(levelConfig);
@@ -1125,7 +1132,8 @@ class MissionManager {
   createCrossingGuardMission(levelConfig) {
     if (!levelConfig.isPedestrian) {return null;}
     const theme = levelConfig.themeType || levelConfig.theme || '';
-    if (!['pedestrian_courtesy', 'silence_zone', 'rail_safety'].includes(theme)) {return null;}
+    const crossingThemes = ['pedestrian_courtesy', 'silence_zone', 'rail_safety', 'pedestrian_priority', 'bus_stop', 'driving_school'];
+    if (!crossingThemes.includes(theme)) {return null;}
 
     return new CrossingGuardMission({
       target: 5,
@@ -1153,7 +1161,8 @@ class MissionManager {
 
   createEmergencyClearMission(levelConfig) {
     const theme = levelConfig.themeType || levelConfig.theme || '';
-    if (!['emergency_access', 'silence_zone', 'rail_safety'].includes(theme)) {return null;}
+    const clearThemes = ['emergency_access', 'silence_zone', 'rail_safety', 'ambulance_priority', 'hospital_quiet', 'festival'];
+    if (!clearThemes.includes(theme)) {return null;}
 
     const baseReward = levelConfig.isPedestrian ? 3500 : 5000;
     return new EmergencyClearMission({
@@ -1165,7 +1174,9 @@ class MissionManager {
   }
 
   createSchoolPatrolMission(levelConfig) {
-    if (!levelConfig.hasSchool && !levelConfig.isSilenceZone) {return null;}
+    const theme = levelConfig.themeType || levelConfig.theme || '';
+    const isSchoolTheme = ['driving_school', 'pedestrian_priority', 'suburban_neighborhood', 'silent_zone'].includes(theme);
+    if (!levelConfig.hasSchool && !levelConfig.isSilenceZone && !isSchoolTheme) {return null;}
 
     const baseReward = levelConfig.isPedestrian ? 3000 : 4500;
     // Zone follows the level's real school: explicit schoolX/schoolZ, else route finish, else origin.

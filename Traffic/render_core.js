@@ -211,10 +211,15 @@ class RenderCore {
         const dpr = window.devicePixelRatio || 1;
         const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || vw <= 767;
         if (isMobile) {
-            // 720p budget phones (360w @3x): force LOW, 1080p mid: cap at MED, 2K tablets allow HIGH
-            if (vw <= 389 && dpr >= 2.8) {finalPreset = 'HIGH';}
-            else if (vw <= 479 && finalPreset === 'ULTRA') {finalPreset = 'HIGH';}
-            else if (vw <= 599 && finalPreset === 'ULTRA') {finalPreset = 'HIGH';}
+            // Mobile devices default to MED, or LOW on budget phones/low memory
+            if (vw <= 420 || (navigator.deviceMemory && navigator.deviceMemory < 4) || score <= 0) {
+                finalPreset = 'LOW';
+            } else {
+                finalPreset = 'MED'; // Cap mobile at MED by default to ensure solid 60 FPS
+            }
+        } else if (finalPreset === 'ULTRA') {
+            // Make ULTRA opt-in only: default high-end desktop to HIGH to preserve headroom
+            finalPreset = 'HIGH';
         }
         // High-DPI desktop 2K: allow ULTRA but with resScale correction
         console.log(`RenderCore: Auto-detected quality: ${finalPreset} (score: ${score}, vw:${vw}, dpr:${dpr.toFixed(1)})`);

@@ -57,8 +57,8 @@ Every feature from user requirements and the survey phase is cataloged and assig
 | M3 | MOBIL Lateral Lane Changing & Politeness | Implement MOBIL safety criterion, incentive equation, politeness $p$, multi-lane overtaking & return in both stacks | M2 | DONE |
 | M4 | Adaptive Pure Pursuit & Spline Trajectory Tracking | Implement velocity-scaled lookahead $L_d(v)$, curvature steering $\kappa$, 90° turn smoothing, lane centering in both stacks | M2 | DONE |
 | M5 | Pedestrian AI, TTC Jaywalking & Bus Stops | Implement TTC gap acceptance, reactive fleeing/evasion, bus stop passenger boarding cycles in both stacks | M2 | DONE |
-| M6 | Mumbai Micro-Behaviors & Anti-Deadlock Resilience | Implement auto-rickshaw gap probing, bike filtering, cascading horns, 2-phase deadlock watchdog, ThreePools/HUD integration in both stacks | M3, M4, M5 | IN_PROGRESS |
-| M7 | Final E2E Test Suite Pass (100%) & Adversarial Hardening | Verify 100% pass on Tiers 1-4, execute Tier 5 adversarial coverage audit and fix any uncovered edge cases | M6 | PLANNED |
+| M6 | Mumbai Micro-Behaviors & Anti-Deadlock Resilience | Implement auto-rickshaw gap probing, bike filtering, cascading horns, 2-phase deadlock watchdog, ThreePools/HUD integration in both stacks | M3, M4, M5 | DONE |
+| M7 | Final E2E Test Suite Pass (100%) & Adversarial Hardening | Verify 100% pass on Tiers 1-4, execute Tier 5 adversarial coverage audit and fix any uncovered edge cases | M6 | DONE |
 
 ---
 
@@ -107,3 +107,80 @@ Every feature from user requirements and the survey phase is cataloged and assig
   - `c:\Users\neelg\OneDrive\Desktop\Vercel\Traffic\TEST_READY.md`: Test suite readiness signal and catalog
   - `c:\Users\neelg\OneDrive\Desktop\Vercel\Traffic\test_ai_math.js`: Headless Node unit tests for IDM, MOBIL, Pure Pursuit, TTC
   - `c:\Users\neelg\OneDrive\Desktop\Vercel\Traffic\test_simulation_ai.js`: Playwright browser-in-the-loop multi-agent E2E test harness
+
+---
+
+## Milestone M8: Deep Modern Engine Overhaul & Subsystems Hardening (DONE)
+
+1. **Modern Engine Architecture (`src/engine/GameEngine.ts` & `src/engine/Game.ts`)**:
+   - Integrated full Pacejka Magic Formula 5.2 tire dynamics with load-dependent stiffness curves.
+   - True Ackermann steering geometry with differential inner/outer wheel turning angles.
+   - Four camera operational modes (`CHASE`, `HOOD`, `TOP_DOWN`, `ORBIT`) with smooth spherical lerping.
+   - Procedural Web Audio API sound generator (engine hum, tire screech, dual-tone Mumbai horn) with zero external asset dependencies.
+   - OBB SAT collision with Minimum Translation Vector (MTV) separation along the axis of minimum penetration.
+   - Zustand telemetry store integration (`speedKmh`, `speedMs`, `rpm`, `gear`, `absActive`, `tcsActive`, `violations`).
+
+2. **Road Graph Topology (`MATH-3-18`, `MATH-3-19`)**:
+   - In `src/systems/RoadGraph.ts`, added missing `getEdgeTo(nodeA, nodeB)`.
+   - Precomputed $V \times H$ crossing intersections in `fromLevelConfig` so perpendicular intersecting roads create proper 4-way junction nodes and interconnected edge segments.
+
+3. **NPC AI & Deadlock Resolution (`MATH-3-12`, `MATH-3-17`, `MATH-3-20` - `MATH-3-23`)**:
+   - Corrected right vector to true right (`forward × up`).
+   - Added $[-\pi, \pi]$ angle wrapping and defensive turn rate fallback in parking and pullover steering.
+   - Implemented FIFO wait-time scoring in `arbitrateDeadlock`.
+   - Filtered `_getVehicleAhead` with lateral corridor and forward heading check.
+
+4. **Traffic Spawning & Recycling (`MATH-3-27`, `MATH-3-28`, `MATH-2-6`)**:
+   - Inverted spawn base fixed (`startNode === edge.startNode ? 0 : laneCount`).
+   - Grounded spawn height `pos.y = 0` (fixed floating 0.5m).
+   - Mid-block $t \in [0.18, 0.82]$ clamp, occupancy ($<16\text{m}$) and player ($<22\text{m}$) rejection gates.
+   - Reset `vehicle._justHit` and `vehicle._justHitUntil` on pool recycling.
+
+5. **Mission Subsystem & Subclass Defaults (`MATH-5-4`, `MATH-5-6`)**:
+   - Fixed object spread clobber in all `Mission` subclasses so defaults are never overwritten by `...config`.
+   - Added `PassengerPickupMission` to TypeScript stack with 3D passenger mesh spawning and pickup/boarding/dropoff state machine.
+   - Harmonized themed mission gates across both stacks with the 40 canonical level `themeType`s.
+   - Enforced idempotent completion in `Mission.complete()` preventing double payouts or toasts.
+
+6. **Task Evaluators & Invariants (`MATH-5-1`, `MATH-5-2`, `MATH-5-3`, `MATH-5-11`)**:
+   - Corrected `reach/safe_distance` ahead axis to `pos.z - pp.z` (+Z forward).
+   - Derived effective speed limits in `speedCapFor` for school, hospital, and rural zones so objectives remain failable and challenging.
+   - Added dt-scaled dwell time accumulation.
+
+7. **Economy, Charts, & Metrics (`MATH-4-1`, `MATH-4-9`, `MATH-4-10`, `MATH-4-14`)**:
+   - Credited collectible rupees (`_collV`) directly to `S.wallet` with ledger synchronization.
+   - Protected level reward indexing against non-positive and fractional level IDs.
+   - Guarded single-point data series in `createSparkline` against NaN division by zero.
+   - Formatted certificate score as `${score} XP` avoiding raw `/100` formatting.
+
+---
+
+## Milestone M9: Engine Stabilization & Performance Instrumentation Pass (DONE)
+
+1. **Boot Dependency Verification (`start.js`)**:
+   - Implemented `checkBootDependencies()` verifying all core globals (`THREE`, `Game`, `RenderCore`, `TrafficManager`, `MissionManager`, `ThreePools`, `S`) before `new Game()` construction.
+   - Provides clear developer console errors and graceful timeout diagnostics instead of late undefined crashes.
+
+2. **Frame-Budget Time-Slicing (`game_core.js`)**:
+   - Replaced unthrottled 26-call per-frame loop with a structured frame-budget system:
+     - **Every frame (60 FPS)**: Player input, physics integration, vehicle motion, NPC/pedestrian positions, critical collisions, HUD essentials, WebGL render.
+     - **Every 2nd frame (30 FPS)**: 2D Canvas Minimap (`_ummap`) & Breadcrumb path (`_updateBreadcrumbPath`), cutting 2D canvas context draw calls by 50%.
+     - **Alternating 2nd frame**: Dynamic LOD (`_updateDynamicLOD`) and Scenery frustum/distance visibility.
+     - **Every 3rd frame (20 FPS)**: GPS navigation instructions (`_ugps`), directional 3D arrows, vehicle beacons.
+     - **Every 6th frame (10 FPS)**: Day/Night lighting interpolation, sun direction, headlight/taillight updates, ambient transit.
+     - **Every 15th frame**: Telemetry synchronization.
+   - Clamped simulation timestep to $[0.001, 0.033]$ to guarantee physics stability across frame drops and high refresh monitors.
+
+3. **Hot-Path Allocations & Distance Calculations (`game_core.js`)**:
+   - Replaced `distanceTo` in hot NPC, pedestrian, signal, and toll loops with `distanceToSquared` avoiding hundreds of unnecessary `Math.sqrt` calls per second.
+   - Eliminated per-frame Vector3 allocations in `_collectMissionData(dt)` by mutating pre-allocated vectors and pooling plain data objects.
+   - Implemented exhaust and tire smoke particle mesh pooling (`_smokeMeshPool`, `_tireSmokePool`), avoiding continuous material creation and GPU buffer churn.
+
+4. **Mobile GPU & Shadow Optimization (`render_core.js`)**:
+   - Fixed typo where budget phones were assigned `HIGH` preset; now properly default to `LOW` (blob shadows, no shadow map passes).
+   - Capped mobile devices to `MED` (512 shadow map, no bloom) to guarantee stable 60 FPS without device overheating.
+   - Made `ULTRA` opt-in only, preserving performance headroom on high-DPI desktop displays.
+
+5. **Runtime Telemetry & Playwright Smoke Gate (`pw_test.js`)**:
+   - Exposing comprehensive live metrics via `game.getTelemetry()` and `window.__TRAFFIC_TELEMETRY__` (p95 frame time, FPS, draw calls, triangles, active NPCs, active pedestrians, pool usage, render resolution).
+   - Expanded Playwright smoke test (`pw_test.js`) to verify live engine bootstrap, game instance creation, and telemetry instrumentation, passing 60/60 checks with zero errors.

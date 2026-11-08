@@ -928,7 +928,8 @@ function initBmcBadge() {
     let pointerDown = false
     let didDrag = false
     let suppressNextClick = false
-    let startX = 0, startY = 0, origX = 0, origY = 0
+    let startX = 0, startY = 0, origX = 0, origY = 0, origW = 180, origH = 40
+    let dragRaf = null, currentDx = 0, currentDy = 0
 
     function onDown(e) {
       if (e.target && e.target.closest && e.target.closest('.bmc-dismiss')) {return}
@@ -942,6 +943,10 @@ function initBmcBadge() {
       const rect = badge.getBoundingClientRect()
       origX = rect.left
       origY = rect.top
+      origW = rect.width || badge.offsetWidth || 180
+      origH = rect.height || badge.offsetHeight || 40
+      currentDx = 0
+      currentDy = 0
       // Suppress the browser's native image drag. Without this the <img>
       // starts a native drag on the first few pixels of movement, which
       // swallows the remaining mousemove/mouseup events and the badge
@@ -960,19 +965,28 @@ function initBmcBadge() {
       }
       if (!didDrag) {return}
       if (e.cancelable) {e.preventDefault()}
-      // Clamp to viewport.
-      const w = badge.offsetWidth, h = badge.offsetHeight
-      const x = Math.max(8, Math.min(window.innerWidth - w - 8, origX + dx))
-      const y = Math.max(8, Math.min(window.innerHeight - h - 8, origY + dy))
-      badge.style.left = x + 'px'
-      badge.style.top = y + 'px'
-      badge.style.right = 'auto'
-      badge.style.bottom = 'auto'
+      currentDx = dx
+      currentDy = dy
+      if (!dragRaf) {
+        dragRaf = requestAnimationFrame(function () {
+          dragRaf = null
+          const x = Math.max(8, Math.min(window.innerWidth - origW - 8, origX + currentDx))
+          const y = Math.max(8, Math.min(window.innerHeight - origH - 8, origY + currentDy))
+          badge.style.left = x + 'px'
+          badge.style.top = y + 'px'
+          badge.style.right = 'auto'
+          badge.style.bottom = 'auto'
+        })
+      }
     }
 
     function onUp() {
       if (!pointerDown) {return}
       pointerDown = false
+      if (dragRaf) {
+        cancelAnimationFrame(dragRaf)
+        dragRaf = null
+      }
       badge.style.cursor = 'grab'
       if (didDrag) {
         // The click that follows a drag must not open the badge link.
@@ -1050,7 +1064,7 @@ window.hzSync = function () {
   const tsck = document.getElementById('tsck')
   if (tsck) {tsck.checked = isLight}
   const meta = document.getElementById('themeMeta') || document.querySelector('meta[name="theme-color"]')
-  if (meta) {meta.setAttribute('content', isLight ? '#f3f2eb' : '#070a14')}
+  if (meta) {meta.setAttribute('content', isLight ? '#fafaf9' : '#070a14')}
 }
 
 window.hzToggle = function () {
@@ -1106,5 +1120,32 @@ window.toggleTheme = function (el) {
     window.hzSync()
   }
 })()
+
+// Silky 60 FPS Scroll Lock (Suppresses hover hit-testing & layout thrashing during scroll)
+;(function () {
+  let scrollTimeout = null
+  window.addEventListener(
+    'scroll',
+    function () {
+      if (document.body && !document.body.classList.contains('is-scrolling')) {
+        document.body.classList.add('is-scrolling')
+      }
+      clearTimeout(scrollTimeout)
+      scrollTimeout = setTimeout(function () {
+        if (document.body) document.body.classList.remove('is-scrolling')
+      }, 100)
+    },
+    { passive: true }
+  )
+})()
+
+// Auto-initialize Universal Navigation if col-nav.js is loaded
+if (typeof window.initColNavbar === 'function') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', window.initColNavbar)
+  } else {
+    window.initColNavbar()
+  }
+}
 
 

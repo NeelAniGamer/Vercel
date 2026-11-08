@@ -1,9 +1,9 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995" crossorigin="anonymous"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995" crossorigin="anonymous"></script>
     <meta name="theme-color" content="#070A14" id="themeMeta" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -40,6 +40,7 @@
         } catch (e) {}
       })()
     </script>
+    <meta name="author" content="Class Of Learners Studio" />
     <meta name="description" content="See the AI tools, local models, cloud platforms, design systems, and step-by-step engineering practices behind the interactive projects built by Class Of Learners." />
     <meta name="keywords" content="how we built it, engineering behind Class Of Learners, Three.js development, student project development, web app architecture, AI tools for development, building educational software, development story, student engineering process, web development India">
     <meta property="og:site_name" content="Class Of Learners" />
@@ -80,7 +81,7 @@
               s = cfg.pages[p] || '200'
             if (s === '503') {
               document.write(
-                '<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:#F2B84B">503</h1><h2>System Maintenance</h2><p style="color:#8C94B0">Check Back Soon.</p></div>'
+                '<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><div style="font-size:5rem;margin:0;font-weight:800;color:#F2B84B">503</div><h2>System Maintenance</h2><p style="color:#8C94B0">Check Back Soon.</p></div>'
               )
               window.stop()
             }
@@ -124,7 +125,7 @@
       }
 
       html {
-        scroll-behavior: smooth;
+        scroll-behavior: auto;
       }
 
       body {
@@ -1367,6 +1368,7 @@
     <link rel="stylesheet" href="liquid-glass.css" />
     <link rel="stylesheet" href="mobile-perf.css" />
     <script defer src="pull-refresh.js"></script>
+    <script defer src="col-nav.js"></script>
     <script defer src="col-ui.js"></script>
     <script defer src="col-auth.js"></script>
     <link rel="manifest" href="manifest.json" />
@@ -1396,7 +1398,7 @@
     </div>
 
     <!-- Top Navigation -->
-    <nav class="top-nav" id="topNav">
+    <nav class="top-nav" id="topNav" data-page="making">
       <a href="/" class="nav-brand">
         <img src="Class.png" alt="Class Of Learners" class="brand-logo" width="44" height="44" fetchpriority="high" decoding="async" />
         <span class="brand-name">Class Of Learners</span>
@@ -2393,7 +2395,7 @@ webView.loadUrl("https://advancedlogiclabs.dpdns.org");</code>
               </div>
               <div class="section-body">
                 <p>
-                  GitHub Coordinates Collaborative Source Control Across Our Student Team (Co‑Founders Neel, Ansh, And Aarush, Plus Contributors Yashraj Jadhav, Aaryaman Jadhav, And John Doe). It Manages Release Binaries For The Advanced Typing Instructor Windows Installer (<code>AdvancedTypingInstructor_Setup.exe</code>), Automates Asset Sync, And Safeguards Branch History.
+                  GitHub Coordinates Collaborative Source Control Across Our Student Team (Co‑Founders Neel Badri, Aarush Vangari, And Ansh Patil). It Manages Release Binaries For The Advanced Typing Instructor Windows Installer (<code>AdvancedTypingInstructor_Setup.exe</code>), Automates Asset Sync, And Safeguards Branch History.
                 </p>
               </div>
             </div>
@@ -2765,7 +2767,7 @@ response = requests.post(url, json=payload, headers=headers)</code>
       <script>
         ;(function () {
           var SITE_KB = [
-            { keys: ['studio', 'class of learners', 'team', 'who built', 'about'], title: 'The Studio', answer: '<strong>Class Of Learners:</strong> A Student Studio Run By Co‑Founders Neel, Ansh, And Aarush, With Contributions From Yashraj Jadhav, Aaryaman Jadhav, And John Doe. Everything Ships As Static HTML Plus Vanilla JavaScript On Vercel, With Zero-Cost Local AI Tooling.' },
+            { keys: ['studio', 'class of learners', 'team', 'who built', 'about'], title: 'The Studio', answer: '<strong>Class Of Learners:</strong> A Student Studio Run By Co‑Founders Neel Badri, Aarush Vangari, And Ansh Patil. Everything Ships As Static HTML Plus Vanilla JavaScript On Vercel, With Zero-Cost Local AI Tooling.' },
             { keys: ['ollama', 'qwen', 'deepseek', 'local llm', 'claude code'], title: 'Claude Code Plus Ollama', answer: '<strong>Claude Code Plus Ollama:</strong> A Terminal Coding Agent Driving Local Open-Weight Models Like Qwen 2.5 Coder 32B. Start With <strong>ollama run qwen2.5-coder:32b</strong> For Private, Zero-Cost Refactoring.' },
             { keys: ['antigravity', 'google'], title: 'Antigravity', answer: '<strong>Google Antigravity:</strong> The Senior Pair-Programmer Behind The Studio Planning Discipline. Always Draft An Implementation Plan Before Touching Code, Then Verify With Headless Browser Screenshots.' },
             { keys: ['opencode', 'terminal', 'cli'], title: 'OpenCode', answer: '<strong>OpenCode:</strong> The Terminal-First Agent Used For Subprojects. Install With NPM, Add An <strong>opencode.json</strong> In The Project Root, And Run <strong>opencode</strong> To Start.' },

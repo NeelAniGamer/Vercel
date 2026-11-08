@@ -147,7 +147,7 @@
       display: block;
     }
     .hero-banner {
-      background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.85)), url('suburban_scenery.js');
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.85));
       border: 1px solid var(--border);
       border-radius: 20px;
       padding: 36px 44px;
@@ -335,6 +335,9 @@
       </div>
 
       <nav class="nav-tabs">
+        <a class="nav-tab" href="traffic-messenger.html" style="text-decoration:none; color: #facc15; border: 1px solid rgba(250, 204, 21, 0.4); background: rgba(250, 204, 21, 0.12);">
+          🌟 Mini Mumbai Messenger
+        </a>
         <button class="nav-tab active" data-target="home-hub" onclick="switchView('home-hub')">
           🏠 Home Hub
         </button>
@@ -368,6 +371,9 @@
             <p>Experience realistic 3D Mumbai driving physics, 360° fullscreen mouselook, suburban neighborhoods, intelligent traffic fleets, and complete driver telemetry analytics.</p>
           </div>
           <div class="hero-actions">
+            <a href="traffic-messenger.html" class="btn-primary" style="text-decoration:none; background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);">
+              🌟 Play Mini Mumbai Messenger
+            </a>
             <button class="btn-primary" onclick="switchView('driving-frame')">
               🚗 Launch Simulator
             </button>
@@ -404,6 +410,14 @@
         <!-- Feature Showcase Cards -->
         <div class="section-title">✨ Featured Simulator Systems</div>
         <div class="features-grid">
+          <div class="feature-card" onclick="window.location.href='traffic-messenger.html'" style="border-color: rgba(250, 204, 21, 0.5); background: linear-gradient(180deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));">
+            <div>
+              <div class="feature-icon">🛺</div>
+              <div class="feature-title" style="color: #facc15;">Mini Mumbai Messenger</div>
+              <div class="feature-desc">Explore spherical Planet Mumbai! Deliver hot tiffins on a Dabbawala bicycle or Kaali-Peeli auto-rickshaw with Messenger curved navigation ribbons, traffic rules & stamps!</div>
+            </div>
+            <div class="feature-link" style="color: #facc15; font-weight: 700;">Launch Messenger Mode →</div>
+          </div>
           <div class="feature-card" onclick="switchView('driving-frame')">
             <div>
               <div class="feature-icon">🏎️</div>

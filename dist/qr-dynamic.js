@@ -471,6 +471,7 @@
   DYNAMIC_QR.ready = sanitizeStoredEntries();
 
   // Seed default templates if not yet initialized
+  try {
   if (typeof localStorage !== 'undefined' && !localStorage.getItem(TEMPLATES_KEY)) {
     DYNAMIC_QR.templates.saveAll([
       {
@@ -525,6 +526,7 @@
       }
     ]);
   }
+  } catch (e) {}
 
   // Export globally
   if (typeof window !== 'undefined') {window.DYNAMIC_QR = DYNAMIC_QR;}

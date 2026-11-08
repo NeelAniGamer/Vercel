@@ -33,6 +33,17 @@ export interface Settings {
   autoQuality: boolean;
 }
 
+export interface TelemetryData {
+  speed: number;
+  speedMs: number;
+  rpm: number;
+  gear: string;
+  absActive: boolean;
+  tcsActive: boolean;
+  score: number;
+  violations: string[];
+}
+
 export interface GameState {
   // Player
   player: PlayerProfile;
@@ -55,6 +66,8 @@ export interface GameState {
   setPaused: (paused: boolean) => void;
   setCurrentLevel: (id: string | null, mode: string | null) => void;
   addWallet: (amount: number) => void;
+  telemetry: TelemetryData;
+  setTelemetry: (partial: Partial<TelemetryData>) => void;
 }
 
 const today = () => new Date().toISOString().split('T')[0];
@@ -117,7 +130,21 @@ export const store = create<GameState>()(
       setCurrentLevel: (id, mode) => set({ currentLevel: id, currentMode: mode }),
 
       addWallet: (amount) =>
-        set((s) => ({ player: { ...s.player, wallet: s.player.wallet + amount } }))
+        set((s) => ({ player: { ...s.player, wallet: s.player.wallet + amount } })),
+
+      telemetry: {
+        speed: 0,
+        speedMs: 0,
+        rpm: 850,
+        gear: 'D',
+        absActive: false,
+        tcsActive: false,
+        score: 1000,
+        violations: []
+      },
+
+      setTelemetry: (partial) =>
+        set((s) => ({ telemetry: { ...s.telemetry, ...partial } }))
     }),
     {
       name: 'traffic_sim_state',

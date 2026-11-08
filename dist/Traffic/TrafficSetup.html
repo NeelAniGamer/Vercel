@@ -13,7 +13,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,600;0,700;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 
     <!-- Local Libraries -->
-    <script defer src="libs/three-bundle.js"></script>
+    <!-- three-bundle must be blocking: render_core.js reads THREE.* at parse time.
+         defer would race and throw ReferenceError: THREE is not defined. -->
+    <script src="libs/three-bundle.js"></script>
     <script defer src="libs/chart.umd.min.js"></script>
     <script defer src="traffic-charts.js"></script>
     <link rel="stylesheet" href="traffic-charts.css" />

@@ -1,32 +1,42 @@
 # Class Of Learners
 
-> Class Of Learners is a Mumbai student studio building interactive learning products, 3D engineering projects, browser tools, and practical AI experiments. The studio focuses on learning by doing, real-world usefulness, and accessible technology.
+> Class Of Learners is an independent student software studio based in Mumbai, Maharashtra, India. The studio builds interactive learning software, real-time 3D web simulations, touch typing engines, browser utilities, and accessibility experiments. All applications are 100% free, client-side capable, open, and free of paywalls or invasive tracking.
+
+## Entity Overview
+
+- **Organization**: Class Of Learners (Educational Technology Studio)
+- **Founding Location**: Mumbai, Maharashtra, India
+- **Origin**: CBSE Bhavani Shankar School student engineering initiative
+- **Core Focus**: Learning by doing, accessible STEM tools, digital inclusion (Sneh Asha), and browser-native computing
+- **Canonical Website**: https://advancedlogiclabs.dpdns.org/
+- **Production Mirrors**: https://col.dpdns.org/
 
 ## Primary Pages
 
-- [Studio Hub](https://advancedlogiclabs.dpdns.org/): Interactive learning and engineering projects built by students in Mumbai.
-- [About](https://advancedlogiclabs.dpdns.org/about): The team, story, and mission behind Class Of Learners.
-- [The Making](https://advancedlogiclabs.dpdns.org/making): The tools, models, platforms, and engineering practices behind the studio's work.
-- [Sneh Asha](https://advancedlogiclabs.dpdns.org/sneh-asha): The studio's technology-for-good initiative focused on the digital divide.
+- [Studio Hub](https://advancedlogiclabs.dpdns.org/): Central interactive showcase of learning projects, student engineering tools, and 3D web applications.
+- [About Us](https://advancedlogiclabs.dpdns.org/about): Team background, educational philosophy, student-led structure, and mission.
+- [CBSE Bhavani Shankar School](https://advancedlogiclabs.dpdns.org/school): The foundational school environment and academic community in Mumbai that inspired Class Of Learners.
+- [The Making](https://advancedlogiclabs.dpdns.org/making): Deep dive into the studio's technical architecture, Three.js 3D rendering pipeline, procedural generation, and local AI workflows.
+- [Sneh Asha](https://advancedlogiclabs.dpdns.org/sneh-asha): Social impact and digital divide initiative delivering lightweight educational software for low-resource environments.
 
-## Learning Products
+## Interactive Learning Products
 
-- [Mumbai Traffic Academy](https://advancedlogiclabs.dpdns.org/Traffic/Academy): Interactive Mumbai traffic-rules lessons, quizzes, licenses, and certificates.
-- [Mumbai Traffic Driving Simulator](https://advancedlogiclabs.dpdns.org/Traffic/Driving): A 3D driving simulator for practicing road rules and safety.
-- [Solar Engine](https://advancedlogiclabs.dpdns.org/solar): An interactive 3D solar system with orbital motion, planet data, and planetary exploration.
-- [Advanced Typing Instructor](https://advancedlogiclabs.dpdns.org/ati): Adaptive touch typing, code syntax practice, keyboard guidance, and WPM analytics.
-- [Terra3D](https://advancedlogiclabs.dpdns.org/Terra3D/): An interactive 3D world atlas for countries, continents, landmarks, and cultures.
+- [Mumbai Traffic Academy](https://advancedlogiclabs.dpdns.org/Traffic/Academy): Interactive traffic education with 57 progressive rule levels, quizzes, road sign mastery, and downloadable completion certificates.
+- [Mumbai Traffic Driving Simulator](https://advancedlogiclabs.dpdns.org/Traffic/Driving): High-performance 3D urban driving simulator built with Three.js to practice defensive driving and Mumbai traffic laws.
+- [Solar Engine 3D](https://advancedlogiclabs.dpdns.org/solar): Real-time WebGL celestial simulator featuring accurate planetary orbits, physical scales, planetary composition metrics, and space exploration.
+- [Advanced Typing Instructor (ATI)](https://advancedlogiclabs.dpdns.org/ati): Adaptive touch-typing coach with 200 skill levels, real-time WPM/accuracy tracking, code syntax modules (JS, Python, C++, HTML), and multiplayer typing races.
+- [Terra3D](https://advancedlogiclabs.dpdns.org/Terra3D/): Interactive 3D planetary globe for exploring continents, country metrics, geopolitical boundaries, and geographic landmarks.
 
-## Tools
+## Productivity & Utility Tools
 
-- [Perceptus Flow](https://advancedlogiclabs.dpdns.org/gesture): Touchless computer control using webcam hand gestures, pinch-to-click, voice tasks, and multimodal AI.
-- [QR Editor](https://advancedlogiclabs.dpdns.org/qr-editor): A browser-based editor for static and dynamic QR codes: colors, gradients, logos, frames, link hubs, contact cards, smart redirects, scan analytics, passcodes, expiry and high-resolution downloads, all free.
-- [CastFlow](https://advancedlogiclabs.dpdns.org/CastFlow): Android screen casting, file sharing, and desktop mode from a browser.
-- [FutureScape](https://advancedlogiclabs.dpdns.org/Career): An interactive career and education guide with pathways, roadmaps, entrance exams, salary tiers, and AI resilience ratings.
-- [Downloads](https://advancedlogiclabs.dpdns.org/download): Available Class Of Learners apps and desktop builds.
+- [Perceptus Flow](https://advancedlogiclabs.dpdns.org/gesture): Touchless computer navigation using standard webcams and MediaPipe computer vision. Supports air-pointing, three-finger clicking, two-finger scrolling, and virtual air-drawing with 100% local client-side processing.
+- [QR Editor](https://advancedlogiclabs.dpdns.org/qr-editor): Professional static and dynamic QR code designer. Features custom linear/radial gradients, embedded logo images, customizable corner markers, scan analytics, password-protected redirects, and SVG/PNG vector downloads with zero limits.
+- [CastFlow](https://advancedlogiclabs.dpdns.org/CastFlow): High-efficiency browser tool for wireless screen casting, multi-window desktop mode (DeX-style UI), and local network file sharing.
+- [FutureScape Career Guide](https://advancedlogiclabs.dpdns.org/Career): Interactive career mapping platform covering 440+ professions, entrance exams, compensation tiers, and AI displacement resilience analysis.
+- [Software Downloads](https://advancedlogiclabs.dpdns.org/download): Desktop binaries (Windows .exe, Linux .deb and .tar.gz), Android APK packages, and PWA installs.
 
-## Contact And Policies
+## Legal & Compliance
 
-- [Feedback](https://advancedlogiclabs.dpdns.org/feedback): Report bugs, suggest features, or contact the studio.
-- [Privacy Policy](https://advancedlogiclabs.dpdns.org/privacy): Data handling, authentication, analytics, and user rights.
-- [Terms Of Service](https://advancedlogiclabs.dpdns.org/terms): Usage guidelines and licensing terms.
+- [Privacy Policy](https://advancedlogiclabs.dpdns.org/privacy): Transparent data handling policies, client-side first architecture, and user rights.
+- [Terms Of Service](https://advancedlogiclabs.dpdns.org/terms): Licensing, acceptable usage terms, and open educational guidelines.
+- [Studio Feedback](https://advancedlogiclabs.dpdns.org/feedback): User feedback, feature requests, and bug reports.

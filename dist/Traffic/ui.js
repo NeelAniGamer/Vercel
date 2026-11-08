@@ -44,6 +44,7 @@ window.sfx = Object.assign(window.sfx || {}, {
   },
   play(t) {
     if (!this._c) {return}
+    if (this._c.state === 'suspended') { this._c.resume().catch(() => {}); }
     if (t === 'horn') {
       try {
         const catVol = this.vol.sfx !== undefined ? this.vol.sfx : 1
@@ -943,7 +944,7 @@ var ui = window.ui = Object.assign(window.ui || {}, {
     save()
     
 
-    const localUser = JSON.parse(localStorage.getItem('traffic_local_user') || '{}')
+    const localUser = (() => { try { return JSON.parse(localStorage.getItem('traffic_local_user') || '{}') || {}; } catch (e) { return {}; } })()
     const safeTrafficProfile = {
       id: String(localUser.id || 'local_' + Date.now()),
       name: String(localUser.name || n || ''),
@@ -4481,7 +4482,7 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
     
     const cert = window.LAST_CERTIFICATE;
     const shareUrl = cert.verificationUrl;
-    const shareText = `🏆 I earned the "${cert.levelName}" certificate from Mumbai Traffic Hero Academy! Score: ${cert.score}/100 | Civic Score: ${cert.civicScore} | Verify: ${shareUrl}`;
+    const shareText = `🏆 I earned the "${cert.levelName}" certificate from Mumbai Traffic Hero Academy! Score: ${cert.score.toLocaleString('en-IN')} XP | Civic Score: ${cert.civicScore} | Verify: ${shareUrl}`;
     
     if (navigator.share) {
       navigator.share({ title: 'My Traffic Academy Certificate', text: shareText, url: shareUrl })
@@ -4532,8 +4533,8 @@ ${stats.fineAmt ? `<div class="rr"><span class="rl" style="color:#ff3b30">Fines 
         <!-- Stats Grid -->
         <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
           <div style="background: #f0fdf4; border-radius: 12px; padding: 16px; text-align: center;">
-            <p style="font-size: 2rem; font-weight: 800; color: #059669; margin: 0; font-family: 'Space Mono', monospace;">${cert.score}/100</p>
-            <p style="font-size: 0.75rem; color: #666; margin-top: 4px; text-transform: uppercase;">Score</p>
+            <p style="font-size: 2rem; font-weight: 800; color: #059669; margin: 0; font-family: 'Space Mono', monospace;">${cert.score.toLocaleString('en-IN')}</p>
+            <p style="font-size: 0.75rem; color: #666; margin-top: 4px; text-transform: uppercase;">Score (XP)</p>
           </div>
           <div style="background: #fff7ed; border-radius: 12px; padding: 16px; text-align: center;">
             <p style="font-size: 2rem; font-weight: 800; color: #d97706; margin: 0; font-family: 'Space Mono', monospace;">${cert.violations === 0 ? 'Perfect' : cert.violations}</p>

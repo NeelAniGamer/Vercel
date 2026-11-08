@@ -3408,8 +3408,15 @@ class Game {
                 isFlame: true
               });
             } else if ((isThrottle || absSpd > 0.05) && Math.random() < 0.35) {
-              // Normal Exhaust Smoke Puff
-              const smoke = new THREE.Mesh(this._smokeGeo, this._smokeMat.clone());
+              // Normal Exhaust Smoke Puff (reused from pool)
+              let smoke;
+              if (this._smokeMeshPool && this._smokeMeshPool.length > 0) {
+                smoke = this._smokeMeshPool.pop();
+                smoke.visible = true;
+                if (smoke.material) { smoke.material.opacity = 0.5; }
+              } else {
+                smoke = new THREE.Mesh(this._smokeGeo, this._smokeMat.clone());
+              }
               smoke.scale.set(0.3, 0.3, 0.3);
               smoke.position.set(exX, exY, exZ);
               this.scene.add(smoke);
@@ -3437,7 +3444,14 @@ class Game {
               const tireZ = pPos.z + (-1.4) * -cosR + tOffset * sinR;
 
               if (Math.random() < 0.5) {
-                const tSmoke = new THREE.Mesh(this._smokeGeo, this._tireSmokeMat.clone());
+                let tSmoke;
+                if (this._tireSmokePool && this._tireSmokePool.length > 0) {
+                  tSmoke = this._tireSmokePool.pop();
+                  tSmoke.visible = true;
+                  if (tSmoke.material) { tSmoke.material.opacity = 0.6; }
+                } else {
+                  tSmoke = new THREE.Mesh(this._smokeGeo, this._tireSmokeMat.clone());
+                }
                 tSmoke.scale.set(0.5, 0.5, 0.5);
                 tSmoke.position.set(tireX + (Math.random()-0.5)*0.2, tireY, tireZ + (Math.random()-0.5)*0.2);
                 this.scene.add(tSmoke);
@@ -3525,12 +3539,13 @@ class Game {
           p.age += dt;
           if (p.age >= p.life) {
             this.scene.remove(p.mesh);
-            // The GEOMETRY is shared (this._smokeGeo) by every puff, so it must
-            // never be disposed here — doing so freed the vertex buffers for
-            // every live particle and forced a re-upload on the next frame.
-            // The MATERIAL is per-particle (cloned at spawn), so it is safe to
-            // dispose.
-            if (p.mesh.material) {p.mesh.material.dispose();}
+            p.mesh.visible = false;
+            if (!this._smokeMeshPool) { this._smokeMeshPool = []; }
+            if (this._smokeMeshPool.length < 30) {
+              this._smokeMeshPool.push(p.mesh);
+            } else if (p.mesh.material) {
+              p.mesh.material.dispose();
+            }
             this._exhaustParticles.splice(i, 1);
             continue;
           }
@@ -3549,7 +3564,13 @@ class Game {
           p.age += dt;
           if (p.age >= p.life) {
             this.scene.remove(p.mesh);
-            if (p.mesh.material) {p.mesh.material.dispose();}
+            p.mesh.visible = false;
+            if (!this._tireSmokePool) { this._tireSmokePool = []; }
+            if (this._tireSmokePool.length < 30) {
+              this._tireSmokePool.push(p.mesh);
+            } else if (p.mesh.material) {
+              p.mesh.material.dispose();
+            }
             this._tireSmokeParticles.splice(i, 1);
             continue;
           }
@@ -4353,7 +4374,7 @@ class Game {
           if (timeEl) { const t = lv.timeLimit || 120; const m = Math.floor(t/60); const s = t%60; timeEl.textContent = m + ':' + String(s).padStart(2,'0'); }
           const bestEl = document.getElementById('lp-best');
           if (bestEl) {
-            const saved = JSON.parse(localStorage.getItem('mth4') || '{}');
+            const saved = (() => { try { return JSON.parse(localStorage.getItem('mth4') || '{}') || {}; } catch (e) { return {}; } })();
             const completed = saved.completed || {};
             const lvData = completed[String(lv.id)];
             bestEl.textContent = (lvData && lvData.score > 0) ? lvData.score.toLocaleString() : '—';
@@ -4762,8 +4783,8 @@ class Game {
         if (this.npcs) {
           for (const n of this.npcs) {
             if (!n.position) {continue;}
-            const d = this.player ? this.player.position.distanceTo(n.position) : 999;
-            if (d < 16) {
+            const d2 = this.player ? this.player.position.distanceToSquared(n.position) : 999999;
+            if (d2 < 256) {
               if (n.userData && (n.userData.npcType === 'guard' || n.userData.isGuard)) {this._reachedGuard = true;}
               if (n.userData && n.userData.npcType === 'volunteer') {this._reachedVolunteer = true;}
             }
@@ -4772,31 +4793,24 @@ class Game {
         if (this.peds) {
           for (const p of this.peds) {
             if (!p.position) {continue;}
-            const d = this.player ? this.player.position.distanceTo(p.position) : 999;
-            if (d < 16) {
+            const d2 = this.player ? this.player.position.distanceToSquared(p.position) : 999999;
+            if (d2 < 256) {
               if (p.userData && (p.userData.npcType === 'guard' || p.userData.isGuard)) {this._reachedGuard = true;}
             }
           }
         }
         if (this.npcs && this.player && !this._reachedGap) {
-          // Gap: find two NPCs close together with space between.
-          //
-          // The old form scanned every NPC pair — O(n²) over up to 110 vehicles,
-          // i.e. ~6,000 distanceTo() calls every frame, and it recomputed dPA/dPB
-          // inside the inner loop. Both members of a matching pair must satisfy
-          // `dP < 8`, so prefiltering to the near set first is exactly
-          // equivalent and reduces the inner loop to a handful of candidates.
           const near = [];
           for (let i = 0; i < this.npcs.length; i++) {
             const a = this.npcs[i];
             if (!a.position) {continue;}
-            if (this.player.position.distanceTo(a.position) < 8) {near.push(a);}
+            if (this.player.position.distanceToSquared(a.position) < 64) {near.push(a);}
           }
           for (let i = 0; i < near.length && !this._reachedGap; i++) {
             for (let j = i + 1; j < near.length; j++) {
               const b = near[j];
-              const dAB = near[i].position.distanceTo(b.position);
-              if (dAB > 4 && dAB < 12) {
+              const dAB2 = near[i].position.distanceToSquared(b.position);
+              if (dAB2 > 16 && dAB2 < 144) {
                 this._reachedGap = true;
                 break;
               }
@@ -5156,47 +5170,65 @@ class Game {
       _collectMissionData(dt) {
         if (!this.player || !this.player.position) {return;}
 
-        // Track lead vehicle for ESCORT missions
+        // Track lead vehicle for ESCORT missions (zero per-frame allocations)
         if (this.npcs && this.npcs.length > 0) {
-          // Find the lead vehicle (first NPC on route for escort missions)
           const escortNPCs = this.npcs.filter(n => n.userData?.missionRole === 'escort_lead');
-          if (escortNPCs.length > 0) {
-            this._leadVehiclePos = escortNPCs[0].position.clone();
-          } else if (!this._leadVehiclePos && this.npcs[0]) {
-            // Default to first NPC if no specific lead vehicle
-            this._leadVehiclePos = this.npcs[0].position.clone();
+          const leadSource = escortNPCs.length > 0 ? escortNPCs[0] : (!this._leadVehiclePos && this.npcs[0] ? this.npcs[0] : null);
+          if (leadSource && leadSource.position) {
+            if (!this._leadVehiclePos) { this._leadVehiclePos = new THREE.Vector3(); }
+            this._leadVehiclePos.copy(leadSource.position);
           }
 
           // Track target vehicle for CHASE missions
           const chaseTargets = this.npcs.filter(n => n.userData?.missionRole === 'chase_target');
-          if (chaseTargets.length > 0) {
-            this._targetVehiclePos = chaseTargets[0].position.clone();
+          if (chaseTargets.length > 0 && chaseTargets[0].position) {
+            if (!this._targetVehiclePos) { this._targetVehiclePos = new THREE.Vector3(); }
+            this._targetVehiclePos.copy(chaseTargets[0].position);
           }
 
-          // Track pursuers for EVASION missions
+          // Track pursuers for EVASION missions (reuse vector pool)
           const pursuers = this.npcs.filter(n => n.userData?.missionRole === 'pursuer');
           if (pursuers.length > 0) {
-            this._pursuerPositions = pursuers.map(p => p.position.clone());
+            if (!this._pursuerPositions) { this._pursuerPositions = []; }
+            while (this._pursuerPositions.length < pursuers.length) {
+              this._pursuerPositions.push(new THREE.Vector3());
+            }
+            this._pursuerPositions.length = pursuers.length;
+            for (let i = 0; i < pursuers.length; i++) {
+              if (pursuers[i].position) {
+                this._pursuerPositions[i].copy(pursuers[i].position);
+              }
+            }
           }
 
           // Track ambulance for EMERGENCY_CLEAR missions
           const ambulances = this.npcs.filter(n => n.userData?.npcType === 'ambulance' || n.userData?.missionRole === 'ambulance');
-          if (ambulances.length > 0) {
-            this._ambulancePos = ambulances[0].position.clone();
+          if (ambulances.length > 0 && ambulances[0].position) {
+            if (!this._ambulancePos) { this._ambulancePos = new THREE.Vector3(); }
+            this._ambulancePos.copy(ambulances[0].position);
           }
         }
 
-        // Track children groups for CROSSING_GUARD missions (pedestrian mode)
+        // Track children groups for CROSSING_GUARD missions (reuse plain object pool)
         if (this.peds && this.peds.length > 0) {
-          this._childrenGroups = this.peds
-            .filter(p => p.userData?.isChildGroup)
-            .map(p => ({
-              x: p.position.x,
-              z: p.position.z,
-              waiting: p.userData?.waiting ?? true,
-              crossing: p.userData?.crossing ?? false,
-              crossed: p.userData?.crossed ?? false
-            }));
+          if (!this._childrenGroups) { this._childrenGroups = []; }
+          let cgIdx = 0;
+          for (let i = 0; i < this.peds.length; i++) {
+            const p = this.peds[i];
+            if (p && p.userData?.isChildGroup && p.position) {
+              if (!this._childrenGroups[cgIdx]) {
+                this._childrenGroups[cgIdx] = { x: 0, z: 0, waiting: true, crossing: false, crossed: false };
+              }
+              const cg = this._childrenGroups[cgIdx];
+              cg.x = p.position.x;
+              cg.z = p.position.z;
+              cg.waiting = p.userData?.waiting ?? true;
+              cg.crossing = p.userData?.crossing ?? false;
+              cg.crossed = p.userData?.crossed ?? false;
+              cgIdx++;
+            }
+          }
+          this._childrenGroups.length = cgIdx;
         }
 
         // Track sidewalk violations for SIDEWALK_PATROL missions
@@ -5394,7 +5426,7 @@ class Game {
         else {this._confettiThree();}
         // ── LEVEL REWARD CALCULATION ──
         const _rewards = [2000,2000,2500,2500,3000,3000,3000,3500,3500,4000,4000,4500,4500,5000,6000];
-        const _baseRew = _rewards[Math.min(_lvId - 1, 14)];
+        const _baseRew = _rewards[Math.min(Math.max((_lvId || 1) - 1, 0), _rewards.length - 1)] || 2000;
         const _noViolBonus = this.vio === 0 ? 800 : this.vio <= 2 ? 300 : 0;
         const _reward = _baseRew + _noViolBonus;
         const _mm = this.missionManager;
@@ -5403,9 +5435,10 @@ class Game {
         const _collN = (_mm && _mm.totalCollected) || 0;
         const _collV = (_mm && _mm.totalReward) || 0;
         const _tokEarn = Math.max(0, (S.missionTokens || 0) - ((_mm && _mm._runTokensStart) || 0));
-        S.wallet += _reward;
-        if (window.WalletHistory) {WalletHistory.earn('level_reward', _reward, { levelId: _lvId, levelName: (ui.cur ? ui.cur.name : ''), violations: this.vio });}
-        this._syncWalletToSupabase(_reward, 'earn', 'level_reward');
+        const _totalEarned = _reward + _collV;
+        S.wallet = (Number.isFinite(S.wallet) ? S.wallet : 0) + _totalEarned;
+        if (window.WalletHistory) {WalletHistory.earn('level_reward', _totalEarned, { levelId: _lvId, levelName: (ui.cur ? ui.cur.name : ''), violations: this.vio, collectibles: _collV });}
+        this._syncWalletToSupabase(_totalEarned, 'earn', 'level_reward');
         // Deduct fines from wallet
         if (this.fine > 0) {
           S.wallet = Math.max(0, S.wallet - this.fine);
@@ -7353,6 +7386,50 @@ class Game {
       }
       // Debug overlay: fps, p95 frame ms, draw calls, tris, NPCs.
       // Console-only via colDev.telemetry(true); never persisted.
+      getTelemetry() {
+        const fd = (this._frameDts || []).slice().sort((a, b) => a - b);
+        const avg = fd.length ? fd.reduce((a, b) => a + b, 0) / fd.length : 16.6;
+        const p95 = fd.length ? fd[Math.min(fd.length - 1, Math.floor(fd.length * 0.95))] : 16.6;
+        let calls = 0, tris = 0, geoms = 0, texs = 0;
+        try {
+          const info = this.renderCore && this.renderCore.renderer && this.renderCore.renderer.info;
+          if (info) {
+            calls = info.render.calls;
+            tris = info.render.triangles;
+            geoms = (info.memory && info.memory.geometries) || 0;
+            texs = (info.memory && info.memory.textures) || 0;
+          }
+        } catch (e) {}
+        const npcs = (this.npcs || []).length;
+        const peds = (this.peds || []).length;
+        const pools = (typeof ThreePools !== 'undefined' && typeof ThreePools.getActiveCount === 'function')
+          ? ThreePools.getActiveCount()
+          : 0;
+        const res = this.renderCore && this.renderCore.canvas
+          ? `${this.renderCore.canvas.width}x${this.renderCore.canvas.height}`
+          : '0x0';
+        const quality = this.renderCore && typeof this.renderCore.getQuality === 'function'
+          ? this.renderCore.getQuality()
+          : 'MED';
+
+        return {
+          fps: Math.round(1000 / Math.max(1, avg)),
+          p95Ms: parseFloat(p95.toFixed(1)),
+          avgMs: parseFloat(avg.toFixed(1)),
+          drawCalls: calls,
+          triangles: tris,
+          geometries: geoms,
+          textures: texs,
+          activeNPCs: npcs,
+          activePeds: peds,
+          activePools: pools,
+          resolution: res,
+          quality: quality,
+          timer: parseFloat((this.timer || 0).toFixed(2)),
+          levelId: this.lvId || 1
+        };
+      }
+
       _updateTelemetryOverlay() {
         try {
           const on = !!window._trafficTelemetry;
@@ -12604,7 +12681,7 @@ class Game {
           if (this.renderCore && this.scene && this.camera) {this.renderCore.render(this.scene, this.camera);}
           return;
         }
-        const rawDt = Math.min(this.clock.getDelta(), .033);
+        const rawDt = Math.max(0.001, Math.min(this.clock.getDelta(), .033));
         // Victory beat: quarter-speed celebration window before the reward screen
         let dt = rawDt;
         if (this._victorySlow > 0) {
@@ -12675,9 +12752,60 @@ class Game {
           this.targetCamPitch -= this._camJoyDy * dt;
           this.targetCamPitch = Math.max(-1.2, Math.min(1.2, this.targetCamPitch));
         }
+        this._lastDt = dt;
         // Gamepad polling (Fix 5)
+        this._frameTick = (this._frameTick || 0) + 1;
+        const tick = this._frameTick;
         this._pollGamepad(dt);
-        this._input(dt); this._usigs(dt); this._unpcs(dt); this._upeds(dt); this._ucps(dt); this._updateArrows(); this._updateVehicleBeacon(dt); this._ugps(); this._checkBrakeZones(dt); this._uobs(dt); this._umode(dt); this._updateLights(dt); this._decayCameraLook(dt); this._ucam(dt); this._usun(dt); this._updateDayNight(dt); this._uhud(dt); this._ummap(dt); this._utransit(); this._computeTaskFlags(); this._checkTasks(); if (this.taskManager) {this.taskManager.update(dt);} this._updateRain(dt); this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain); this._updateDynamicLOD(lodMult); this._updateBreadcrumbPath(dt); if (this.sceneryKit && this.player && this.player.position) {this.sceneryKit.updateVisibility(this.player.position, this.renderDistance);}
+        this._input(dt);
+        this._usigs(dt);
+        this._unpcs(dt);
+        this._upeds(dt);
+        this._ucps(dt);
+        this._checkBrakeZones(dt);
+        this._uobs(dt);
+        this._umode(dt);
+        this._decayCameraLook(dt);
+        this._ucam(dt);
+        this._uhud(dt);
+        this._computeTaskFlags();
+        this._checkTasks();
+        if (this.taskManager) {this.taskManager.update(dt);}
+        this._updateRain(dt);
+
+        // ── Frame-Budget Time-Slicing (P1 Optimization) ──
+        // 1. Every 2nd frame: 2D Canvas Minimap & breadcrumb path
+        if (tick % 2 === 0) {
+          this._ummap(dt * 2);
+          this._updateBreadcrumbPath(dt * 2);
+        } else {
+          // Dynamic LOD & Scenery visibility on alternating odd frames
+          this._updateDynamicLOD(lodMult);
+          if (this.sceneryKit && this.player && this.player.position) {
+            this.sceneryKit.updateVisibility(this.player.position, this.renderDistance);
+          }
+        }
+
+        // 2. Every 3rd frame: GPS route recalculation & direction arrows
+        if (tick % 3 === 0) {
+          this._ugps();
+          this._updateArrows();
+          this._updateVehicleBeacon(dt * 3);
+        }
+
+        // 3. Every 6th frame: Slow visual cycles (sun angle, day/night transitions, headlights/ambient, transit audio)
+        if (tick % 6 === 0) {
+          this._updateLights(dt * 6);
+          this._usun(dt * 6);
+          this._updateDayNight(dt * 6);
+          this._utransit();
+          this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain);
+        }
+
+        // 4. Every 15th frame: Telemetry sync
+        if (tick % 15 === 0) {
+          window.__TRAFFIC_TELEMETRY__ = this.getTelemetry();
+        }
         if (this._blobShadow && this.player && this.player.position) {
           this._blobShadow.position.x = this.player.position.x;
           this._blobShadow.position.z = this.player.position.z;
@@ -12728,7 +12856,7 @@ class Game {
         }
         if (this._tollBarriers) {
           this._tollBarriers.forEach(tb => {
-            if (this.player && Math.hypot(this.player.position.x - tb.pivotX, this.player.position.z - tb.bar.position.z) < 15) {
+            if (this.player && (this.player.position.x - tb.pivotX) * (this.player.position.x - tb.pivotX) + (this.player.position.z - tb.bar.position.z) * (this.player.position.z - tb.bar.position.z) < 225) {
               tb.open = true;
             }
             if (tb.open && tb.angle < Math.PI / 2) {
@@ -14055,26 +14183,32 @@ class Game {
                 if (overlapX > 0 && overlapZ > 0 && this.timer >= (v._justHitUntil || 0)) {
                   v._justHit = true; v._justHitUntil = this.timer + 1.0;
 
-                  const relSpeed = Math.abs((v.npcAI?.currentSpeed || 0) - (this.speed || 0));
-                  // Soft touch check: low speed bumper contact gently pushes without catastrophic failure
-                  const isGentleTouch = relSpeed < 2.5 && !isPed;
+                  // MATH-2-3: Convert player speed to m/s (* 30) for physical parity with npcAI.currentSpeed
+                  const playerSpeedMs = Math.abs(this.speed || 0) * 30;
+                  const relSpeed = Math.abs((v.npcAI?.currentSpeed || 0) - playerSpeedMs);
+                  // Soft touch check: low relative speed bumper contact gently pushes without catastrophic failure
+                  const isGentleTouch = relSpeed < 3.5 && !isPed;
 
                   // Record the contact and which vehicle class caused it.
-                  // Without this, objectives like "keep distance from buses"
-                  // and "give trucks space" cannot tell what was hit, and the
-                  // per-frame collision latch the other objectives read stays
-                  // false because this path returns before the legacy check.
                   this._collidedThisFrame = true;
                   this._lastCollisionType = v.type
                     || (v.userData && v.userData.npcType)
                     || (v.mesh && v.mesh.userData && v.mesh.userData.npcType)
                     || '';
 
+                  // MATH-2-5: MTV (Minimum Translation Vector) penetration resolution along axis of least penetration
+                  const pushSep = isGentleTouch ? 0.08 : 0.15;
+                  if (overlapX < overlapZ) {
+                    const pushLX = (vLocX > 0 ? overlapX + pushSep : -(overlapX + pushSep));
+                    this.player.position.x += cosV * pushLX;
+                    this.player.position.z -= sinV * pushLX;
+                  } else {
+                    const pushLZ = (vLocZ > 0 ? overlapZ + pushSep : -(overlapZ + pushSep));
+                    this.player.position.x += sinV * pushLZ;
+                    this.player.position.z += cosV * pushLZ;
+                  }
+
                   if (isGentleTouch) {
-                    // Soft bumper nudge
-                    const pushAngle = Math.atan2(dx, dz);
-                    this.player.position.x += Math.sin(pushAngle) * (Math.min(overlapX, overlapZ) + 0.15);
-                    this.player.position.z += Math.cos(pushAngle) * (Math.min(overlapX, overlapZ) + 0.15);
                     if (window.TrafficAudio && Math.random() < 0.3) {window.TrafficAudio.playHonk(1.0);}
                   } else {
                     this.speed = 0;
@@ -14086,11 +14220,6 @@ class Game {
                     this._crashPushX = 0;
                     this._crashPushZ = 0;
                     this._camShakeAmt = Math.max(this._camShakeAmt, 0.4);
-
-                    const pushAngle = Math.atan2(dx, dz);
-                    const pushDist = Math.min(overlapX, overlapZ) + 0.2;
-                    this.player.position.x += Math.sin(pushAngle) * pushDist;
-                    this.player.position.z += Math.cos(pushAngle) * pushDist;
 
                     if (window.TrafficAudio) {window.TrafficAudio.playCrash(1.2);}
                     toast('💥 Contact with traffic!', '#ef4444', 2000);

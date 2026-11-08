@@ -1,10 +1,34 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995"
-     crossorigin="anonymous"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995"
+     crossorigin="anonymous"></script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What school inspired Class Of Learners?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Class Of Learners was founded by students attending CBSE Bhavani Shankar School in Mumbai, Maharashtra."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How does Bhavani Shankar School foster student technology?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "The school provides a collaborative, supportive educational environment encouraging student experimentation with computer science, robotics, and community projects."
+            }
+          }
+        ]
+      }
+    </script>
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Class Of Learners" />
@@ -41,8 +65,8 @@
         } catch (e) {}
       })()
     </script>
-    <meta
-      name="description"
+    <meta name="author" content="Class Of Learners Studio" />
+    <meta name="description"
       content="See how CBSE Bhavani Shankar School in Mumbai shaped Class Of Learners through academic programs, technical curiosity, and a student-led learning culture."
     />
     <meta name="keywords" content="Bhavani Shankar School Mumbai, CBSE school Mumbai, school coding projects, student innovation school, school technology programs, Mumbai schools, school engineering club, CBSE education, student led learning, school STEM programs" />
@@ -92,13 +116,13 @@
               s = cfg.pages[p] || '200'
             if (s === '503') {
               document.write(
-                '<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:#F2B84B">503</h1><h2>System Maintenance</h2><p style="color:#8C94B0">Check back soon.</p></div>'
+                '<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><div style="font-size:5rem;margin:0;font-weight:800;color:#F2B84B">503</div><h2>System Maintenance</h2><p style="color:#8C94B0">Check back soon.</p></div>'
               )
               window.stop()
             }
             if (s === '404') {
               document.write(
-                '<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:#ef4444">404</h1><h2>Page Not Found</h2><a href="/" style="margin-top:20px;color:#F2B84B;text-decoration:none;font-weight:bold">Return Home</a></div>'
+                '<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><div style="font-size:5rem;margin:0;font-weight:800;color:#ef4444">404</div><h2>Page Not Found</h2><a href="/" style="margin-top:20px;color:#F2B84B;text-decoration:none;font-weight:bold">Return Home</a></div>'
               )
               window.stop()
             }
@@ -106,6 +130,8 @@
         } catch (e) {}
       })()
     </script>
+        <link rel="preconnect" href="https://hvukxajztizsuhfubjws.supabase.co" crossorigin />
+    <link rel="dns-prefetch" href="https://hvukxajztizsuhfubjws.supabase.co" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
@@ -141,7 +167,7 @@
         padding: 0;
       }
       html {
-        scroll-behavior: smooth;
+        scroll-behavior: auto;
       }
       body {
         background: var(--void);
@@ -991,6 +1017,7 @@
     <link rel="stylesheet" href="liquid-glass.css" />
     <link rel="stylesheet" href="mobile-perf.css" />
     <script defer src="pull-refresh.js"></script>
+    <script defer src="col-nav.js"></script>
     <script defer src="col-ui.js"></script>
     <script defer src="col-auth.js"></script>
     <link rel="manifest" href="manifest.json" />
@@ -1010,7 +1037,7 @@
     <div class="cd" id="cDot"></div>
     <div class="cr" id="cRing"></div>
 
-    <nav class="top-nav" id="topNav">
+    <nav class="top-nav" id="topNav" data-page="school">
       <a href="/" class="nav-brand"
         ><img src="Class.png" alt="Class Of Learners" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" /><span class="brand-name">Class Of Learners</span></a
       >

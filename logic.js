@@ -4708,7 +4708,7 @@ function animate() {
     fpsN++;
     if (fpsN >= 20) {
         const avgFps = fpsAcc / fpsN;
-        EL_FPS.textContent = avgFps.toFixed(0) + ' FPS';
+        if (EL_FPS) EL_FPS.textContent = avgFps.toFixed(0) + ' FPS';
         fpsAcc = 0; fpsN = 0;
         // Full unthrottled high-performance render: allow hardware to utilize system resources without artificial downsampling
         if (!perfMode && _frameId - _adaptCooldown > 1800 && avgFps < 16) {
@@ -4728,7 +4728,7 @@ function animate() {
     simClock      += simDt;
 
     // Simulation date display (throttled: string alloc + DOM write every 10th frame)
-    if (_frameId % 10 === 0) {
+    if (_frameId % 10 === 0 && EL_DATE) {
         const simDate = new Date(EPOCH_MS + simClock * 86400000);
         EL_DATE.textContent = simDate.toISOString().slice(0, 10);
     }
@@ -4738,7 +4738,7 @@ function animate() {
     // rescaling to the current viewing distance is the standard space-game fix
     // (cheaper than a logarithmic depth buffer, no shader cost).
     const camDist = camera.position.length();
-    EL_CAM.textContent = 'CAM ' +
+    if (EL_CAM) EL_CAM.textContent = 'CAM ' +
         (camDist < 1000 ? camDist.toFixed(0) : (camDist / 1000).toFixed(1) + 'k') + ' u';
     if (_frameId % 10 === 0) {
         const nn = Math.max(0.5, camDist / 5000);

@@ -2425,7 +2425,7 @@ class PedestrianAI {
         vSpeed = Math.hypot(v.velocity.x || 0, v.velocity.z || 0);
         vHeading = Math.atan2(v.velocity.x || 0, v.velocity.z || 0);
       } else {
-        vSpeed = Math.abs(v.speed !== undefined ? v.speed : (v.userData?.spd ? v.userData.spd * 20 : 0));
+        vSpeed = Math.abs(v.speed !== undefined ? v.speed : (v.userData?.spd ? v.userData.spd * 35 : 0));
         const rotY = v.rotation ? (typeof v.rotation.y === 'number' ? v.rotation.y : v.rotation) : (v.mesh?.rotation?.y || 0);
         vHeading = rotY;
       }
@@ -2925,7 +2925,7 @@ class PedestrianAI {
         const nDistSq = ndx * ndx + ndz * ndz;
         if (nDistSq >= 225.0) {continue;} // 15.0m squared
         const dist = Math.sqrt(nDistSq);
-        let nSpeed = Math.abs(npc.speed !== undefined ? npc.speed : (npc.userData?.spd ? npc.userData.spd * 20 : 0));
+        let nSpeed = Math.abs(npc.speed !== undefined ? npc.speed : (npc.userData?.spd ? npc.userData.spd * 35 : 0));
         let nHeading = npc.rotation ? (typeof npc.rotation.y === 'number' ? npc.rotation.y : npc.rotation) : (npc.mesh?.rotation?.y || 0);
         if (npc.velocity) {
           nSpeed = Math.hypot(npc.velocity.x || 0, npc.velocity.z || 0);

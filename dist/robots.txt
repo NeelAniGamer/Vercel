@@ -1,6 +1,25 @@
 User-agent: *
 Allow: /
 
+# Private, duplicate, unfinished, and internal routes — also served with X-Robots-Tag: noindex
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /q
+Disallow: /q.html
+Disallow: /qr-editor
+Disallow: /verify
+Disallow: /engine
+Disallow: /Database_Logic
+Disallow: /feedback
+Disallow: /sitemap
+Disallow: /ati-demo
+Disallow: /ati-lite
+Disallow: /Traffic/TrafficDashboard
+Disallow: /Traffic/TrafficSetup
+Disallow: /Traffic/GamePage
+Disallow: /Traffic/Models/
+Disallow: /Traffic/research/
+
 # Explicit Search Engine & AI Crawlers
 User-agent: Googlebot
 Allow: /
@@ -29,6 +48,4 @@ Allow: /
 User-agent: CCBot
 Allow: /
 
-# Private, duplicate, unfinished, and internal routes are served with a noindex X-Robots-Tag header.
 Sitemap: https://advancedlogiclabs.dpdns.org/sitemap.xml
-Host: https://advancedlogiclabs.dpdns.org

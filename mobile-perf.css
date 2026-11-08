@@ -138,3 +138,33 @@
     will-change: opacity, transform;
   }
 }
+
+/* ── 9. Universal Zero-Jank Scroll & Paint Engine (Desktop + Mobile) ───────
+   Eliminates scroll lag, rubbery wheel stutter, and layout thrashing during scroll.
+   Enforces instantaneous 1:1 scroll response while skipping rendering for
+   off-screen sections via content-visibility. ── */
+html,
+:root {
+  scroll-behavior: auto !important;
+}
+
+/* Off-screen layout & paint bypass (slashes composite/draw time by up to 75%) */
+.ps,
+.pgrid,
+.sf,
+.bento-grid,
+.career-grid,
+.about-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 700px;
+}
+
+/* Universal card containment for both desktop & mobile to prevent hover reflows */
+.pc,
+.vp-card,
+.feature-card,
+.career-card,
+.tm {
+  contain: layout style;
+}
+

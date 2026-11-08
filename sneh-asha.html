@@ -1,10 +1,34 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995"
-     crossorigin="anonymous"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995"
+     crossorigin="anonymous"></script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is the Sneh Asha initiative?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Sneh Asha is the social impact initiative of Class Of Learners dedicated to bridging the digital divide through free software, accessible technology, and community education."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How does Sneh Asha provide accessible technology?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "By developing lightweight tools that function reliably on low-cost devices and offline environments, ensuring equal access to quality digital learning."
+            }
+          }
+        ]
+      }
+    </script>
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Class Of Learners" />
@@ -40,6 +64,7 @@
         } catch (e) {}
       })()
     </script>
+    <meta name="author" content="Class Of Learners Studio" />
     <meta name="description" content="Sneh Asha is the Class Of Learners social impact initiative, using accessible technology and interactive learning to help students bridge the digital divide." />
     <meta name="keywords" content="technology for good, digital divide India, social impact technology, educational charity, student social initiative, accessible education, technology accessibility, Sneh Asha, community technology, digital literacy India">
     <meta property="og:site_name" content="Class Of Learners" />
@@ -67,7 +92,10 @@
         "description": "A Class Of Learners social impact initiative focused on accessible technology and digital education.",
         "inLanguage": "en-IN",
         "isPartOf": { "@id": "https://advancedlogiclabs.dpdns.org/#website" },
-        "about": { "@id": "https://advancedlogiclabs.dpdns.org/#organization" }
+        "about": { "@id": "https://advancedlogiclabs.dpdns.org/#organization" },
+        "datePublished": "2026-09-25",
+        "dateModified": "2026-11-08",
+        "author": { "@type": "Organization", "name": "Class Of Learners Studio", "url": "https://advancedlogiclabs.dpdns.org/" }
       }
     </script>
     <script>
@@ -80,13 +108,13 @@
               s = cfg.pages[p] || '200'
             if (s === '503') {
               document.write(
-                '<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:#F2B84B">503</h1><h2>System Maintenance</h2><p style="color:#8C94B0">Check back soon.</p></div>'
+                '<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><div style="font-size:5rem;margin:0;font-weight:800;color:#F2B84B">503</div><h2>System Maintenance</h2><p style="color:#8C94B0">Check back soon.</p></div>'
               )
               window.stop()
             }
             if (s === '404') {
               document.write(
-                '<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><h1 style="font-size:5rem;margin:0;color:#ef4444">404</h1><h2>Page Not Found</h2><a href="/" style="margin-top:20px;color:#F2B84B;text-decoration:none;font-weight:bold">Return Home</a></div>'
+                '<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><div style="font-size:5rem;margin:0;font-weight:800;color:#ef4444">404</div><h2>Page Not Found</h2><a href="/" style="margin-top:20px;color:#F2B84B;text-decoration:none;font-weight:bold">Return Home</a></div>'
               )
               window.stop()
             }
@@ -128,7 +156,7 @@
         padding: 0;
       }
       html {
-        scroll-behavior: smooth;
+        scroll-behavior: auto;
       }
       body {
         background: var(--void);
@@ -1559,6 +1587,7 @@
     <link rel="stylesheet" href="liquid-glass.css" />
     <link rel="stylesheet" href="mobile-perf.css" />
     <script defer src="pull-refresh.js"></script>
+    <script defer src="col-nav.js"></script>
     <script defer src="col-ui.js"></script>
     <script defer src="col-auth.js"></script>
     <link rel="manifest" href="manifest.json" />
@@ -1575,7 +1604,7 @@
         } catch (e) {}
       })()
     </script>
-    <nav class="top-nav" id="topNav">
+    <nav class="top-nav" id="topNav" data-page="sneh-asha">
       <a href="/" class="nav-brand">
         <img src="Class.png" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" />
         <span class="brand-name">Class Of Learners</span>
@@ -2138,18 +2167,30 @@
         })
       })()
 
-      // 3D tilt on cards
+      // 3D tilt on cards (silky 60fps rAF + cached rect)
       document.querySelectorAll('.init-card').forEach(function (card) {
+        var rafId = null, rect = null, ex = 0, ey = 0
+        card.addEventListener('mouseenter', function () {
+          rect = card.getBoundingClientRect()
+        }, { passive: true })
         card.addEventListener('mousemove', function (e) {
           if (innerWidth < 768) return
-          var r = card.getBoundingClientRect(),
-            x = (e.clientX - r.left) / r.width - 0.5,
-            y = (e.clientY - r.top) / r.height - 0.5
-          card.style.transform = 'translateY(-10px) perspective(900px) rotateX(' + -y * 5 + 'deg) rotateY(' + x * 5 + 'deg)'
-        })
+          ex = e.clientX
+          ey = e.clientY
+          if (rafId) return
+          rafId = requestAnimationFrame(function () {
+            rafId = null
+            if (!rect) rect = card.getBoundingClientRect()
+            var x = (ex - rect.left) / rect.width - 0.5,
+              y = (ey - rect.top) / rect.height - 0.5
+            card.style.transform = 'translateY(-10px) perspective(900px) rotateX(' + -y * 5 + 'deg) rotateY(' + x * 5 + 'deg)'
+          })
+        }, { passive: true })
         card.addEventListener('mouseleave', function () {
+          if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+          rect = null
           card.style.transform = ''
-        })
+        }, { passive: true })
       })
 
       // 4. Unified Theme Controller — syncs BOTH <html> and <body>

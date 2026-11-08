@@ -34,12 +34,12 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const { request } = event;
-  if (request.method !== 'GET') return;
+  if (request.method !== 'GET') {return;}
 
   const url = new URL(request.url);
 
   // Skip cross-origin requests we can't control (CDN fonts etc. use browser cache)
-  if (url.origin !== self.location.origin) return;
+  if (url.origin !== self.location.origin) {return;}
 
   // Navigation: network-first with offline fallback
   if (request.mode === 'navigate') {
@@ -58,7 +58,7 @@ self.addEventListener('fetch', (event) => {
   // Hashed build assets + models + textures: cache-first with runtime fill
   event.respondWith(
     caches.match(request).then((cached) => {
-      if (cached) return cached;
+      if (cached) {return cached;}
       return fetch(request).then((response) => {
         if (response.ok || response.type === 'opaque') {
           const isAsset =

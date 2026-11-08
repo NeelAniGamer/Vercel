@@ -1,17 +1,45 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995" crossorigin="anonymous"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="description" content="Advanced Typing Instructor (ATI 1.4) Web Velocity Studio — Master touch typing, Python, C++, and JavaScript code syntax with AI typist simulation, WebAudio mechanical switch sound synthesis, live WPM telemetry, and keyboard radar." />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="theme-color" content="#070a14" id="themeMeta" />
+    <meta name="description" content="ATI 1.4 Velocity Studio — practice touch typing, Python and JavaScript code, and timed runs. Live speed scores, keyboard hints, switch sounds, and a ghost to race." />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
     <title>ATI Velocity Studio · Advanced Typing Instructor 1.4 · Class Of Learners</title>
+    <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/ati-demo" />
+    <meta property="og:site_name" content="Class Of Learners" />
+    <meta property="og:title" content="ATI Velocity Studio · Advanced Typing Instructor 1.4" />
+    <meta property="og:description" content="Practice touch typing and code syntax with live speed scores, keyboard hints, switch sounds, and a ghost to race." />
+    <meta property="og:url" content="https://advancedlogiclabs.dpdns.org/ati-demo" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://advancedlogiclabs.dpdns.org/og/ati.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="ATI Velocity Studio · Advanced Typing Instructor 1.4" />
+    <meta name="twitter:description" content="Practice touch typing and code syntax with live speed scores, keyboard hints, switch sounds, and a ghost to race." />
+    <meta name="twitter:image" content="https://advancedlogiclabs.dpdns.org/og/ati.jpg" />
     <link rel="icon" type="image/png" href="Icon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" /></noscript>
+    <link rel="manifest" href="manifest.json" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "ATI Velocity Studio",
+        "url": "https://advancedlogiclabs.dpdns.org/ati-demo",
+        "description": "Touch typing and code syntax practice with live speed scores and keyboard hints.",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Web browser",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+      }
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995" crossorigin="anonymous"></script>
     
     <script>
       (function () {
@@ -94,7 +122,9 @@
       .page-wrap {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 40px 20px 90px;
+        /* Clear the fixed pill nav (66px + breathing room). Was 40px —
+           breadcrumbs clipped under the nav on load. */
+        padding: 96px 20px 90px;
         min-height: 100vh;
         display: flex;
         flex-direction: column;
@@ -312,20 +342,28 @@
         flex-wrap: wrap;
       }
       .deck-select {
-        background: var(--void);
+        appearance: none;
+        -webkit-appearance: none;
+        background-color: rgba(255, 255, 255, 0.05);
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238492a6' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
         border: 1px solid var(--lineb);
         color: var(--ink);
-        padding: 6px 10px;
+        padding: 6px 30px 6px 10px;
         border-radius: 8px;
         font-family: var(--mono);
         font-size: 0.74rem;
         font-weight: 600;
         outline: none;
       }
+      .deck-select:hover { background-color: rgba(255, 255, 255, 0.08); }
       body.lm .deck-select {
-        background: #f8fafc;
+        background-color: #ffffff;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
         border-color: rgba(0, 0, 0, 0.15);
       }
+      .deck-select option { background: var(--panel); color: var(--ink); }
 
       .btn-auto-sim {
         background: linear-gradient(135deg, #10b981, #059669);
@@ -542,17 +580,21 @@
         line-height: 1.85;
         position: relative;
         transition: transform 0.2s var(--ease);
+        text-transform: none !important;
       }
 
       .word {
         display: inline-flex;
         position: relative;
+        text-transform: none !important;
       }
       .char {
         color: var(--dim);
-        opacity: 0.55;
+        opacity: 0.85;
         transition: color 0.08s, opacity 0.08s, text-shadow 0.08s;
+        text-transform: none !important;
       }
+      body.lm .char { opacity: 1; }
       .char.correct {
         color: var(--ink);
         opacity: 1;
@@ -630,6 +672,10 @@
         justify-content: center;
         z-index: 15;
         cursor: pointer;
+        border: none;
+        font: inherit;
+        color: inherit;
+        padding: 0;
       }
       .focus-overlay-prompt.show {
         display: flex;
@@ -1143,7 +1189,7 @@
       /* Responsive Media Queries */
       @media (max-width: 900px) {
         .page-wrap {
-          padding: 85px 14px 90px;
+          padding: 104px 14px 90px;
         }
         .telemetry-grid {
           grid-template-columns: repeat(3, 1fr);
@@ -1185,11 +1231,262 @@
         .doubt-row { flex-direction: column; }
         .doubt-ask { width: 100%; }
       }
+
+      /* --- Engineering fixes: accessibility, contrast, motion --- */
+      .skip-link {
+        position: fixed; top: -60px; left: 50%; transform: translateX(-50%);
+        z-index: 2000; padding: 10px 18px; border-radius: 10px;
+        background: var(--signal); color: #070a14; font: 700 .8rem var(--mono);
+        text-decoration: none; transition: top .15s;
+      }
+      .skip-link:focus { top: 12px; }
+      *:focus-visible { outline: 2px solid var(--ion); outline-offset: 2px; border-radius: 6px; }
+      .char { opacity: .85; text-transform: none !important; }
+      body.lm .char { opacity: 1; }
+      .ghost-delta-badge { background: rgba(255,255,255,.08); border: 1px solid var(--line); }
+      body.lm .ghost-delta-badge { background: rgba(0,0,0,.04); }
+      #wpmCanvas { display: block; }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+        html { scroll-behavior: auto; }
+      }
+
+      /* ══════════════════════════════════════════════════════════════
+         UI REFINE — Operate mode. Preserves the dark-workshop world
+         (void / amber / serif + mono). No new palette, no redesign.
+         Fixes: Title-Case war, dead skip link, <44px targets,
+         aria-live spam, canvas sizing, Nitro leftovers, [hidden].
+         ══════════════════════════════════════════════════════════════ */
+      :root {
+        --ati-touch: 44px;
+        --ati-card-b: 1px solid var(--line);
+        --ati-shadow: 0 8px 30px rgba(0, 0, 0, 0.22);
+        --ati-shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.08);
+      }
+      body.lm {
+        --ati-shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+        --ati-shadow-sm: 0 2px 10px rgba(15, 23, 42, 0.05);
+      }
+      ::selection { background: var(--signal); color: #070a14; }
+      [hidden] { display: none !important; }
+
+      /* Global col-ui.css forces Title Case via capitalize !important.
+         Restore sentence case for prose inside this page. Intentional
+         eyebrows/labels re-assert uppercase below. */
+      .ati-hero p,
+      .tip-card p,
+      .doubt-note,
+      .doubt-answer,
+      .res-stat-lbl,
+      .term-meta,
+      .kb-title,
+      .ati-section-title,
+      .doubt-chip,
+      .tel-lbl,
+      .sub-opt-label,
+      .ghost-track-label,
+      .focus-prompt-badge {
+        text-transform: none !important;
+      }
+      .ati-eyebrow,
+      .res-title-text,
+      .res-unit,
+      .kb-title,
+      .ati-section-title,
+      .tel-lbl,
+      .sub-opt-label {
+        text-transform: uppercase !important;
+      }
+      .ati-section-title { letter-spacing: .25em; }
+      .tel-lbl { letter-spacing: .12em; }
+
+      .page-wrap { gap: 0; }
+      .page-wrap > * + * { margin-top: 0; }
+
+      /* Breadcrumbs — compact, full-width on mobile */
+      .ati-nav-breadcrumb { margin-bottom: 18px; }
+      .ati-back-link, .ati-desktop-link {
+        min-height: 40px; justify-content: center; text-align: center;
+        transition: background-color .18s var(--ease), color .18s var(--ease), transform .18s var(--ease), border-color .18s var(--ease);
+      }
+      .ati-back-link:focus-visible, .ati-desktop-link:focus-visible { outline: 2px solid var(--ion); outline-offset: 2px; }
+      @media (max-width: 640px) {
+        .ati-nav-breadcrumb { flex-direction: column; align-items: stretch; }
+        .crumb-left { width: 100%; }
+        .crumb-left a { flex: 1 1 0; }
+        .ati-desktop-link { width: 100%; }
+      }
+
+      /* Hero — tighter rhythm, one anchor CTA, status meta */
+      .ati-hero { margin-bottom: 22px; }
+      .ati-hero h1 { letter-spacing: -0.01em; text-wrap: balance; }
+      .ati-hero p { text-wrap: pretty; }
+      .ati-hero-cta { margin-top: 16px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+      .ati-hero-cta .btn-res-action { min-height: var(--ati-touch); }
+      .ati-hero-meta {
+        margin-top: 12px; font: 600 .72rem var(--mono); letter-spacing: .08em;
+        color: var(--dim); display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
+      }
+      .ati-hero-meta span { display: inline-flex; align-items: center; gap: 6px; }
+      .ati-hero-meta i { width: 6px; height: 6px; border-radius: 50%; background: var(--em); display: inline-block; }
+
+      /* Control deck — touch targets, specific transitions, scrollable pills */
+      .control-deck {
+        box-shadow: var(--ati-shadow);
+        background: linear-gradient(180deg, color-mix(in srgb, var(--panel) 96%, transparent), var(--panel));
+      }
+      .mode-pills-bar { scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+      .mode-pills-bar::-webkit-scrollbar { display: none; }
+      .mode-pill {
+        min-height: 40px; white-space: nowrap;
+        transition: background-color .18s var(--ease), color .18s var(--ease), border-color .18s var(--ease), transform .18s var(--ease);
+      }
+      .mode-pill:active { transform: translateY(1px) scale(.98); }
+      .sub-opt-btn {
+        min-height: 40px; min-width: 44px; padding: 8px 12px;
+        transition: background-color .16s var(--ease), color .16s var(--ease), border-color .16s var(--ease);
+      }
+      .sub-opt-btn:active { transform: translateY(1px); }
+      .deck-select {
+        min-height: 40px; cursor: pointer;
+        transition: border-color .16s var(--ease), background-color .16s var(--ease);
+      }
+      .deck-select:focus-visible { outline: 2px solid var(--ion); outline-offset: 1px; border-color: var(--ion); }
+      .btn-auto-sim {
+        min-height: 40px;
+        transition: transform .18s var(--ease), box-shadow .18s var(--ease), background .18s var(--ease);
+      }
+      .btn-auto-sim:active { transform: translateY(1px) scale(.98); }
+      @media (max-width: 900px) {
+        .mode-pills-bar {
+          flex-wrap: nowrap; overflow-x: auto; max-width: 100%; padding-bottom: 2px;
+          scroll-snap-type: x proximity;
+        }
+        .mode-pill { scroll-snap-align: start; }
+        .deck-row-primary { align-items: stretch; }
+        .sim-deck-controls { width: 100%; }
+        .btn-auto-sim { flex: 1 1 auto; justify-content: center; }
+      }
+
+      /* Telemetry — tabular numbers, WPM hierarchy, no live spam */
+      .telemetry-grid { margin-bottom: 16px; }
+      .tel-card {
+        box-shadow: var(--ati-shadow-sm);
+        border-top: 2px solid transparent;
+        transition: border-color .2s var(--ease), transform .2s var(--ease);
+      }
+      .tel-card:nth-child(1) { border-top-color: color-mix(in srgb, var(--ion) 55%, transparent); }
+      .tel-card:nth-child(2) { border-top-color: color-mix(in srgb, var(--signal) 55%, transparent); }
+      .tel-card:nth-child(3) { border-top-color: color-mix(in srgb, var(--teal) 55%, transparent); }
+      .tel-card:nth-child(4) { border-top-color: color-mix(in srgb, var(--em) 55%, transparent); }
+      .tel-card:nth-child(5) { border-top-color: color-mix(in srgb, var(--plasma) 55%, transparent); }
+      .tel-card:nth-child(6) { border-top-color: color-mix(in srgb, var(--violet) 55%, transparent); }
+      .tel-val { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+      #telNetWPM { font-size: 2.1rem; }
+      .tel-lbl { font-variant-numeric: tabular-nums; }
+      @media (max-width: 480px) {
+        .telemetry-grid { grid-template-columns: repeat(2, 1fr); }
+        .tel-val { font-size: 1.35rem; }
+        #telNetWPM { font-size: 1.6rem; }
+        .tel-card { padding: 12px 8px; }
+      }
+      @media (hover: hover) {
+        .tel-card:hover { transform: translateY(-2px); }
+        .tip-card:hover { transform: translateY(-2px); }
+      }
+
+      /* Ghost — progress fill + consistent copy */
+      .ghost-track-bar { background: linear-gradient(90deg, var(--ion) 0 var(--p, 0%), transparent var(--p, 0%)), var(--void); }
+      .ghost-delta-badge { font-variant-numeric: tabular-nums; }
+
+      /* Terminal — breathing room, focus ring, canvas parity */
+      .terminal { box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45); }
+      .typing-stage { min-height: 210px; overscroll-behavior: contain; }
+      .typing-stage:focus-visible { outline: 2px solid var(--ion); outline-offset: -2px; }
+      .words-wrapper { font-variant-numeric: tabular-nums; }
+      body.lm .char.correct { text-shadow: none; }
+      .term-bar .sub-opt-btn { min-height: 40px; }
+      .term-focus-badge { font-variant-numeric: tabular-nums; }
+      #wpmCanvas { width: 100%; max-width: 340px; height: 38px; }
+      @media (max-width: 900px) {
+        #wpmCanvas { max-width: none; height: 38px; }
+        .typing-stage { padding: 22px 18px; min-height: 190px; }
+      }
+
+      /* Keyboard — 44px targets on touch, tabular mono */
+      .key {
+        font-variant-numeric: tabular-nums; -webkit-tap-highlight-color: transparent;
+        transition: transform .08s var(--ease), background-color .12s var(--ease), box-shadow .12s var(--ease), border-color .12s var(--ease), color .12s var(--ease);
+      }
+      .key:active { transform: translateY(1px) scale(.97); }
+      @media (pointer: coarse), (max-width: 768px) {
+        .key { height: 44px; }
+        .kb-row { gap: 5px; }
+      }
+
+      /* Tips + doubt — real numbers, lifts, touch targets */
+      .tip-card { transition: transform .2s var(--ease), border-color .2s var(--ease), box-shadow .2s var(--ease); }
+      .tip-card h3 span {
+        display: inline-flex; align-items: center; justify-content: center;
+        min-width: 28px; height: 24px; padding: 0 6px; border-radius: 6px;
+        background: color-mix(in srgb, var(--teal) 14%, transparent);
+        border: 1px solid color-mix(in srgb, var(--teal) 30%, transparent);
+      }
+      .doubt-chip { min-height: 40px; display: inline-flex; align-items: center; }
+      .doubt-chip:focus-visible { outline: 2px solid var(--ion); outline-offset: 2px; }
+      .doubt-input, .doubt-ask { min-height: 48px; }
+      .doubt-answer strong { color: var(--teal); }
+      body.lm .doubt-answer strong { color: #15803d; }
+
+      /* Dialogs — close affordance, backdrop, hidden rule */
+      .results-overlay, .modal-backdrop { overscroll-behavior: contain; }
+      .res-modal-card, .modal-card { position: relative; }
+      .dialog-close {
+        position: absolute; top: 12px; right: 12px; width: 40px; height: 40px;
+        display: inline-flex; align-items: center; justify-content: center;
+        border-radius: 10px; border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.04); color: var(--ink);
+        cursor: pointer; font: 700 1.1rem/1 var(--mono);
+        transition: background-color .16s var(--ease), transform .16s var(--ease);
+      }
+      .dialog-close:hover { background: rgba(255, 255, 255, 0.1); }
+      .dialog-close:active { transform: scale(.95); }
+      body.lm .dialog-close { background: #f8fafc; border-color: rgba(0,0,0,.1); }
+      body.lm .dialog-close:hover { background: #f1f5f9; }
+      .btn-res-action { min-height: var(--ati-touch); }
+      .btn-res-action:active { transform: translateY(1px) scale(.98); }
+      .modal-textarea { min-height: 160px; }
+      .modal-textarea:focus-visible { outline: 2px solid var(--ion); outline-offset: 1px; border-color: var(--ion); }
+      .weak-keys-box { font-variant-numeric: tabular-nums; }
+
+      /* Footer fallback (shared .sf comes from col-ui.css) */
+      .sf { padding: 36px 20px 28px; text-align: center; border-top: 1px solid var(--line); }
+      .sf .fi { max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; align-items: center; }
+      .sf .fb { font: 700 .85rem var(--sans); color: var(--ink); }
+      .sf .fb span { color: var(--signal); }
+      .sf .fl { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; }
+      .sf .fl a { color: var(--dim); text-decoration: none; font: 600 .85rem var(--sans); }
+      .sf .fl a:hover, .sf .fl a:focus-visible { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+      .sf .fc { color: var(--dim); font-size: .8rem; }
+
+      /* Hero meta separators — readable, consistent */
+      .ati-hero-meta { color: var(--dim); }
+      .ati-hero-meta span + span::before { content: "·"; margin-right: 14px; opacity: .5; }
+
+      /* Touch: no hover lifts to fight scroll */
+      @media (hover: none) {
+        .ati-back-link:hover, .ati-desktop-link:hover,
+        .mode-pill:hover, .sub-opt-btn:hover,
+        .btn-auto-sim:hover, .btn-res-action:hover { transform: none; }
+        .tip-card:hover, .tel-card:hover { transform: none; }
+      }
     </style>
   </head>
   <body>
+    <a class="skip-link" href="#terminal">Skip to typing arena</a>
     <!-- Navigation Bar -->
-    <nav class="top-nav" id="topNav">
+    <nav class="top-nav" id="topNav" aria-label="Primary">
+
       <a href="/" class="nav-brand">
         <img src="Class.png" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" />
         <span class="brand-name">Class Of Learners</span>
@@ -1291,23 +1588,23 @@
         </div>
       </div>
       <div class="nav-actions">
-        <div class="hz-toggle" onclick="hzToggle()">
+        <button class="hz-toggle night" id="hzToggleBtn" type="button" onclick="window.hzToggle ? window.hzToggle() : (function(){var l=!document.documentElement.classList.contains('lm');document.documentElement.classList.toggle('lm',l);var b=document.body;if(b)b.classList.toggle('lm',l);try{localStorage.setItem('theme',l?'light':'dark')}catch(e){}})()" aria-pressed="false" aria-label="Toggle light and dark theme">
           <div class="hz-clouds"></div>
           <div class="hz-stars"></div>
           <div class="hz-orb"></div>
-        </div>
+        </button>
         <button class="nav-login-btn" id="navLoginBtn" onclick="if (window.openGlobalLogin) window.openGlobalLogin(); else if (window.openLogin) window.openLogin();">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
             <circle cx="12" cy="7" r="4" />
           </svg>Sign In
         </button>
-        <div class="nav-user-profile" id="navUserProfile" onclick="if (window.openGlobalLogin) window.openGlobalLogin(); else if (window.openLogin) window.openLogin();">
+        <button class="nav-user-profile" id="navUserProfile" type="button" onclick="if (window.openGlobalLogin) window.openGlobalLogin(); else if (window.openLogin) window.openLogin();">
           <div class="nav-user-avatar" id="navUserAv">?</div>
           <span class="nun" id="navUserName">User</span>
-        </div>
+        </button>
         <a href="download" class="nav-dl-btn desktop-dl">Downloads Hub</a>
-        <button class="mmb" id="mmb" aria-label="Toggle menu">
+        <button class="mmb" id="mmb" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks">
           <svg viewBox="0 0 24 24" fill="none">
             <path d="M3 6H21M3 12H21M3 18H21" stroke-width="1.5" stroke-linecap="round" />
           </svg>
@@ -1339,45 +1636,60 @@
       <div class="ati-hero">
         <div class="ati-eyebrow">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          ATI v1.4 &bull; Flagship Interactive Velocity Studio
+          ATI 1.4 &bull; Velocity Studio
         </div>
-        <h1>Syntax &amp; <em>Velocity Studio</em></h1>
-        <p>Engineered touch-typing evaluation suite with real-time keystroke telemetry, tactile WebAudio switches, code syntax recognition, Ghost AI racing, and dynamic key radar.</p>
+        <h1>Typing <em>Practice, Live</em></h1>
+        <p>Pick a mode and start typing. You get a speed score, accuracy, and a key hint for the next letter. You can also race a ghost or turn on switch sounds.</p>
+        <div class="ati-hero-cta">
+          <a class="btn-res-action primary" href="#terminal" id="heroStartBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            <span>Start typing</span>
+          </a>
+          <a class="btn-res-action secondary" href="ati-lite">
+            <span>Try Lite arcade</span>
+          </a>
+        </div>
+        <div class="ati-hero-meta" aria-hidden="true">
+          <span><i></i>Time &amp; words</span>
+          <span>JS · Python · Rust</span>
+          <span>Ghost race</span>
+          <span>Switch sounds</span>
+        </div>
       </div>
 
       <!-- Studio Control Deck -->
-      <div class="control-deck">
+      <section class="control-deck" aria-label="Practice controls">
         <div class="deck-row-primary">
-          <div class="mode-pills-bar" id="modePillsBar">
-            <button class="mode-pill active" data-mode="time" onclick="setStudioMode('time')">
+          <div class="mode-pills-bar" id="modePillsBar" role="tablist" aria-label="Practice mode">
+            <button class="mode-pill active" data-mode="time" onclick="setStudioMode('time')" role="tab" aria-selected="true">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
               Time
             </button>
-            <button class="mode-pill" data-mode="words" onclick="setStudioMode('words')">
+            <button class="mode-pill" data-mode="words" onclick="setStudioMode('words')" role="tab" aria-selected="false">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
               Words
             </button>
-            <button class="mode-pill" data-mode="js" onclick="setStudioMode('js')">
+            <button class="mode-pill" data-mode="js" onclick="setStudioMode('js')" role="tab" aria-selected="false">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
               JavaScript
             </button>
-            <button class="mode-pill" data-mode="py" onclick="setStudioMode('py')">
+            <button class="mode-pill" data-mode="py" onclick="setStudioMode('py')" role="tab" aria-selected="false">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><circle cx="9" cy="9" r="1"/><circle cx="15" cy="15" r="1"/></svg>
               Python
             </button>
-            <button class="mode-pill" data-mode="rust" onclick="setStudioMode('rust')">
+            <button class="mode-pill" data-mode="rust" onclick="setStudioMode('rust')" role="tab" aria-selected="false">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
               Rust / C++
             </button>
-            <button class="mode-pill" data-mode="quotes" onclick="setStudioMode('quotes')">
+            <button class="mode-pill" data-mode="quotes" onclick="setStudioMode('quotes')" role="tab" aria-selected="false">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/></svg>
               Quotes
             </button>
-            <button class="mode-pill" data-mode="symbols" onclick="setStudioMode('symbols')">
+            <button class="mode-pill" data-mode="symbols" onclick="setStudioMode('symbols')" role="tab" aria-selected="false">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>
               Symbols
             </button>
-            <button class="mode-pill" data-mode="custom" onclick="openCustomTextModal()">
+            <button class="mode-pill" data-mode="custom" onclick="openCustomTextModal()" role="tab" aria-selected="false">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
               Custom
             </button>
@@ -1388,11 +1700,12 @@
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
               <span>Run Auto-Test</span>
             </button>
-            <select class="deck-select" id="simSpeedSelect" title="Simulation Speed">
+            <label class="sub-opt-label" for="simSpeedSelect">Sim speed</label>
+            <select class="deck-select" id="simSpeedSelect" aria-label="Auto-test speed">
               <option value="45">45 WPM (Human)</option>
               <option value="75" selected>75 WPM (Pro)</option>
-              <option value="120">120 WPM (Speed Demon)</option>
-              <option value="180">180 WPM (Cyber Typist)</option>
+              <option value="120">120 WPM (Fast)</option>
+              <option value="180">180 WPM (Very fast)</option>
             </select>
           </div>
         </div>
@@ -1410,8 +1723,8 @@
 
           <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
             <div style="display: flex; align-items: center; gap: 6px;">
-              <span class="sub-opt-label">Ghost Pacer:</span>
-              <select class="deck-select" id="ghostSelect" onchange="setGhostPacer(this.value)">
+              <label class="sub-opt-label" for="ghostSelect">Ghost</label>
+              <select class="deck-select" id="ghostSelect" onchange="setGhostPacer(this.value)" aria-label="Ghost pacer speed">
                 <option value="0" selected>Off</option>
                 <option value="40">40 WPM</option>
                 <option value="60">60 WPM</option>
@@ -1423,8 +1736,8 @@
             </div>
 
             <div style="display: flex; align-items: center; gap: 6px;">
-              <span class="sub-opt-label">Caret:</span>
-              <select class="deck-select" id="caretSelect" onchange="setCaretStyle(this.value)">
+              <label class="sub-opt-label" for="caretSelect">Caret</label>
+              <select class="deck-select" id="caretSelect" onchange="setCaretStyle(this.value)" aria-label="Caret style">
                 <option value="style-line" selected>Line</option>
                 <option value="style-block">Block</option>
                 <option value="style-underline">Underline</option>
@@ -1437,10 +1750,10 @@
             </button>
           </div>
         </div>
-      </div>
+      </section>
 
       <!-- Telemetry Strip -->
-      <div class="telemetry-grid">
+      <div class="telemetry-grid" aria-label="Live typing scores">
         <div class="tel-card">
           <div class="tel-val time" id="telTime">30</div>
           <div class="tel-lbl" id="telTimeLbl">Time Left (s)</div>
@@ -1477,57 +1790,52 @@
           <div class="ghost-player-pin" id="ghostPlayerPin" style="left: 0%;" title="You"></div>
           <div class="ghost-ai-pin" id="ghostAiPin" style="left: 0%;" title="Ghost Pacer"></div>
         </div>
-        <div class="ghost-delta-badge" id="ghostDeltaBadge">Even Pace</div>
+        <div class="ghost-delta-badge" id="ghostDeltaBadge">Even pace</div>
       </div>
 
       <!-- Typing Terminal -->
-      <div class="terminal" id="terminal">
+      <section class="terminal" id="terminal" aria-label="Typing arena" tabindex="-1">
         <div class="term-bar">
           <div style="display: flex; align-items: center; gap: 10px;">
-            <div class="term-dots">
-              <div class="term-dot red"></div>
-              <div class="term-dot yellow"></div>
-              <div class="term-dot green"></div>
-            </div>
+            <div class="term-dots" aria-hidden="true"><div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div></div>
             <span class="term-meta" id="termMetaTitle">ati_velocity_core.exe &bull; Ready</span>
           </div>
 
           <div style="display: flex; align-items: center; gap: 8px;">
-            <span class="term-focus-badge" id="focusBadge">Focused</span>
+            <span class="term-focus-badge" id="focusBadge" aria-live="polite">Focused</span>
             <button class="sub-opt-btn" onclick="resetGame()" style="padding: 4px 10px; font-size: 0.72rem;">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 3px;"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
-              <span>Reset (Esc)</span>
+              <span>Restart</span>
             </button>
           </div>
         </div>
 
         <!-- Words Typing Area -->
-        <div class="typing-stage" id="typingStage" onclick="focusTypingInput()">
-          <div class="caret style-line" id="caret"></div>
+        <div class="typing-stage" id="typingStage" role="textbox" aria-label="Type the highlighted text" aria-multiline="true" tabindex="0" onclick="focusTypingInput()">
+          <div class="caret style-line" id="caret" aria-hidden="true"></div>
           <div class="words-wrapper" id="wordsWrapper">
             <!-- Dynamically populated word and character spans -->
           </div>
 
-          <div class="focus-overlay-prompt" id="focusPrompt">
-            <div class="focus-prompt-badge">
+          <button type="button" class="focus-overlay-prompt" id="focusPrompt" onclick="focusTypingInput()" aria-label="Click to focus and start typing">
+            <span class="focus-prompt-badge">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              Click or tap here to focus &amp; type
-            </div>
-          </div>
-        </div>
+              Click to focus &amp; type
+            </span>
+          </button>
         </div>
 
-        <!-- Live Sparkline Telemetry -->
+        <!-- Live Sparkline -->
         <div class="sparkline-box">
-          <span style="font-family: var(--mono); font-size: 0.7rem; color: var(--dim);">VELOCITY ACCELERATION CURVE</span>
-          <canvas id="wpmCanvas" width="320" height="38"></canvas>
+          <span style="font-family: var(--mono); font-size: 0.7rem; color: var(--dim);">SPEED OVER TIME</span>
+          <canvas id="wpmCanvas" width="640" height="76" aria-label="Speed over time chart" role="img"></canvas>
         </div>
-      </div>
+      </section>
 
-      <!-- Interactive QWERTY Keyboard Radar -->
-      <div class="kb-container">
+      <!-- On-screen keyboard -->
+      <section class="kb-container" aria-label="Keyboard guide">
         <div class="kb-header">
-          <span class="kb-title">Interactive QWERTY Finger Anatomy &amp; Shift Radar</span>
+          <span class="kb-title">Keyboard &amp; finger guide</span>
           <div class="finger-guide-legend">
             <div class="legend-item"><div class="legend-dot" style="background: #fb923c;"></div> Pinky</div>
             <div class="legend-item"><div class="legend-dot" style="background: #3b82f6;"></div> Ring</div>
@@ -1537,60 +1845,63 @@
           </div>
         </div>
 
-        <div class="kb-layout" id="virtualKeyboard">
+        <div class="kb-layout" id="virtualKeyboard" aria-label="On-screen keyboard">
           <!-- Dynamically populated keys -->
         </div>
-      </div>
+      </section>
 
-      <!-- Hidden Input Trap For Soft Mobile / Touch Keyboards -->
-      <input type="text" class="mobile-input-trap" id="mobileInputTrap" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+      <!-- Hidden Input For Soft Mobile Keyboards -->
+      <input type="text" class="mobile-input-trap" id="mobileInputTrap" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Typing input" />
+      <div class="sr-only" id="ariaLive" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;"></div>
+
 
       <!-- Typing Playbook -->
-      <div class="ati-section-title">Typing Playbook</div>
+      <div class="ati-section-title">Tips</div>
       <div class="tips-grid">
         <div class="tip-card">
-          <h3><span>01</span>Accuracy Before Speed</h3>
-          <p>Every mistake breaks rhythm and penalizes your net velocity. Anchor at 95%+ accuracy first, then steadily accelerate.</p>
+          <h3><span>01</span>Accuracy first</h3>
+          <p>Mistakes lower your net score. Get to about 95% accuracy before you push for speed.</p>
         </div>
         <div class="tip-card">
-          <h3><span>02</span>Home Row Anchoring</h3>
-          <p>Rest fingers on A S D F and J K L ;. Feel for the tactile bumps on F and J to verify your position without glancing down.</p>
+          <h3><span>02</span>Home row</h3>
+          <p>Rest on A S D F and J K L ;. The small bumps on F and J tell you where you are without looking down.</p>
         </div>
         <div class="tip-card">
-          <h3><span>03</span>Fifteen Focused Minutes</h3>
-          <p>Daily micro-drills yield dramatically higher neuroplastic retention than long, sporadic weekend marathons.</p>
+          <h3><span>03</span>Short daily practice</h3>
+          <p>Fifteen minutes a day helps more than one long session on weekends.</p>
         </div>
         <div class="tip-card">
-          <h3><span>04</span>Eyes On The Screen</h3>
-          <p>Never watch the physical keyboard. Trust muscle memory and let the next-key radar guide your finger assignments.</p>
+          <h3><span>04</span>Look at the screen</h3>
+          <p>Do not look at your keyboard. Let the next-key hint show which finger to use.</p>
         </div>
         <div class="tip-card">
-          <h3><span>05</span>Opposite-Hand Shift</h3>
-          <p>Use your opposite pinky for capital letters: right shift for left-hand letters, left shift for right-hand letters.</p>
+          <h3><span>05</span>Shift with the other hand</h3>
+          <p>Use the opposite shift key: right Shift for left-hand letters, left Shift for right-hand letters.</p>
         </div>
         <div class="tip-card">
-          <h3><span>06</span>Loose Wrists &amp; Rhythm</h3>
-          <p>Tense fingers slow down keystrokes. Float wrists slightly above desk surface and maintain a relaxed metronome cadence.</p>
+          <h3><span>06</span>Relax your hands</h3>
+          <p>Keep wrists loose and just above the desk. Tense fingers type slower.</p>
         </div>
       </div>
 
-      <!-- Typing Doubt Solver -->
-      <div class="ati-section-title">Doubt Solver</div>
+      <!-- Doubt Solver -->
+      <div class="ati-section-title">Questions</div>
       <div class="doubt-panel">
-        <p class="doubt-note">Ask any doubt regarding touch-typing ergonomics, switch acoustics, grading rubrics, or training techniques.</p>
+        <p class="doubt-note">Ask about speed, accuracy, home row, switch sounds, or code practice.</p>
         <div class="doubt-chips" id="atiDoubtChips"></div>
-        <div class="doubt-row">
-          <input type="text" class="doubt-input" id="atiDoubtInput" placeholder="Ask anything, for example: How do I break past 80 WPM?" aria-label="Ask a typing doubt" autocomplete="off" />
-          <button class="doubt-ask" id="atiDoubtAsk" type="button">Ask</button>
-        </div>
+        <form class="doubt-row" id="doubtForm" onsubmit="return false;">
+          <input type="text" class="doubt-input" id="atiDoubtInput" placeholder="Example: How do I get past 80 WPM?" aria-label="Ask a typing question" autocomplete="off" />
+          <button class="doubt-ask" id="atiDoubtAsk" type="submit">Ask</button>
+        </form>
         <div class="doubt-answer" id="atiDoubtAnswer" role="status" aria-live="polite" hidden></div>
       </div>
     </div>
 
-    <!-- Evaluation Overlay Modal -->
-    <div class="results-overlay" id="resultsOverlay">
+    <!-- Results dialog -->
+    <div class="results-overlay" id="resultsOverlay" role="dialog" aria-modal="true" aria-labelledby="resTitle">
       <div class="res-modal-card">
-        <div class="res-title-text">Evaluation Finalized</div>
+        <button class="dialog-close" type="button" onclick="resetGame()" aria-label="Close results and restart">&times;</button>
+        <div class="res-title-text" id="resTitle">Results</div>
         <div class="res-hero-badge grade-A" id="resGrade">A</div>
         <div class="res-score-row">
           <div class="res-score" id="resWPM">0</div>
@@ -1608,7 +1919,7 @@
           </div>
           <div class="res-stat-card">
             <div class="res-stat-val" id="resStreak" style="color: var(--plasma);">0</div>
-            <div class="res-stat-lbl">Max Nitro Streak</div>
+            <div class="res-stat-lbl">Best streak</div>
           </div>
           <div class="res-stat-card">
             <div class="res-stat-val" id="resConsistency" style="color: var(--signal);">100%</div>
@@ -1633,40 +1944,41 @@
         </div>
 
         <div class="weak-keys-box" id="weakKeysBox" style="display: none;">
-          <span id="weakKeysText">Weak Keys: none</span>
-          <button class="btn-res-action teal" style="padding: 6px 12px; font-size: 0.75rem;" onclick="drillWeakKeys()">Drill Weak Keys</button>
+          <span id="weakKeysText">Weak keys: none</span>
+          <button class="btn-res-action teal" style="padding: 6px 12px; font-size: 0.75rem;" onclick="drillWeakKeys()">Practice weak keys</button>
         </div>
 
         <div class="res-actions-bar">
-          <button class="btn-res-action primary" onclick="resetGame()">
+          <button class="btn-res-action primary" id="resRestartBtn" onclick="resetGame()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
-            <span>Restart (Esc)</span>
+            <span>Try again</span>
           </button>
           <button class="btn-res-action secondary" onclick="copyShareCard()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            <span id="copyBtnText">Copy Share Card</span>
+            <span id="copyBtnText">Copy result</span>
           </button>
           <a href="download" class="btn-res-action secondary">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            <span>Get Native App</span>
+            <span>Get the app</span>
           </a>
         </div>
       </div>
     </div>
 
-    <!-- Custom Text Modal -->
-    <div class="modal-backdrop" id="customTextModal">
+    <!-- Custom text dialog -->
+    <div class="modal-backdrop" id="customTextModal" role="dialog" aria-modal="true" aria-labelledby="customTextTitle" hidden>
       <div class="modal-card">
-        <h3 class="modal-title">Paste Custom Typing Text</h3>
-        <textarea class="modal-textarea" id="customTextInput" placeholder="Paste your article, code snippet, or custom paragraph here..."></textarea>
+        <button class="dialog-close" type="button" onclick="closeCustomTextModal()" aria-label="Close">&times;</button>
+        <h3 class="modal-title" id="customTextTitle">Practice your own text</h3>
+        <textarea class="modal-textarea" id="customTextInput" placeholder="Paste a few lines of text or code…" aria-label="Your practice text"></textarea>
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
           <div style="display: flex; gap: 6px;">
-            <button class="sub-opt-btn" onclick="insertCustomPreset('code')">Sample Code</button>
-            <button class="sub-opt-btn" onclick="insertCustomPreset('quote')">Sample Quote</button>
+            <button class="sub-opt-btn" onclick="insertCustomPreset('code')">Sample code</button>
+            <button class="sub-opt-btn" onclick="insertCustomPreset('quote')">Sample quote</button>
           </div>
           <div style="display: flex; gap: 8px;">
             <button class="sub-opt-btn" onclick="closeCustomTextModal()">Cancel</button>
-            <button class="btn-res-action primary" style="padding: 8px 16px;" onclick="applyCustomText()">Apply &amp; Practice</button>
+            <button class="btn-res-action primary" style="padding: 8px 16px;" onclick="applyCustomText()">Use this text</button>
           </div>
         </div>
       </div>
@@ -1674,6 +1986,18 @@
 
     <!-- Script Engine -->
     <script>
+      'use strict';
+      /* ATI Velocity Studio — single-file engine, fixed & hardened.
+         - Caret uses getBoundingClientRect so it stays aligned after wrap/scroll.
+         - WPM counts correct chars only; space is not double-counted.
+         - Storage/clipboard/audio are guarded; sim cannot leak timers.
+         - Esc closes dialogs first; Tab is not hijacked. */
+      const store = {
+        get(k, fallback) { try { const v = localStorage.getItem(k); return v == null ? fallback : v; } catch (e) { return fallback; } },
+        set(k, v) { try { localStorage.setItem(k, String(v)); } catch (e) { /* private mode: keep in-memory */ } }
+      };
+      const $ = (id) => document.getElementById(id);
+      const clamp01 = (n) => Math.min(1, Math.max(0, n));
       // Practice Corpus Database
       const CORPUS = {
         words: [
@@ -1781,28 +2105,35 @@
         const rawCPM = Math.max(0, Math.round(totalKeystrokes / elapsedMin));
         const acc = totalKeystrokes > 0 ? Math.max(0, Math.min(100, Math.round((correctKeystrokes / totalKeystrokes) * 100))) : 100;
 
-        document.getElementById('telNetWPM').textContent = netWPM;
-        document.getElementById('telRawCPM').textContent = rawCPM;
-        document.getElementById('telAcc').textContent = acc + '%';
-        document.getElementById('telStreak').textContent = currentStreak;
+        const setT = (id, v) => { const el = $(id); if (el) el.textContent = v; };
+        setT('telNetWPM', netWPM);
+        setT('telRawCPM', rawCPM);
+        setT('telAcc', acc + '%');
+        setT('telStreak', currentStreak);
       }
 
       function initAudioContext() {
         if (!audioCtx) {
           const AudioContextClass = window.AudioContext || window.webkitAudioContext;
           if (AudioContextClass) {
-            audioCtx = new AudioContextClass();
+            try { audioCtx = new AudioContextClass(); } catch (e) { audioCtx = null; }
           }
         }
         if (audioCtx && audioCtx.state === 'suspended') {
-          audioCtx.resume();
+          const r = audioCtx.resume();
+          if (r && typeof r.catch === 'function') r.catch(() => {});
         }
       }
+
+      function isResultOpen() { const el = $('resultsOverlay'); return !!(el && el.classList.contains('show')); }
+      function isCustomOpen() { const el = $('customTextModal'); return !!(el && el.classList.contains('show')); }
 
       function playKeySound(isError) {
         if (audioProfileIndex === 4) return; // Muted
         initAudioContext();
         if (!audioCtx) return;
+        // If still suspended (e.g. sim from a timer), skip — it will be audible on the next user-gesture key.
+        if (audioCtx.state === 'suspended') return;
 
         const now = audioCtx.currentTime;
 
@@ -1925,36 +2256,64 @@
       ];
 
       function buildVirtualKeyboard() {
-        const container = document.getElementById('virtualKeyboard');
+        const container = $('virtualKeyboard');
+        if (!container) return;
         container.innerHTML = '';
+
+        // Shift / Caps state for touch typing (capital letters & symbols).
+        let shiftHeld = false;
 
         KB_CONFIG.forEach(row => {
           const rowEl = document.createElement('div');
           rowEl.className = 'kb-row';
 
           row.forEach(item => {
-            const keyEl = document.createElement('div');
+            const keyEl = document.createElement('button');
+            keyEl.type = 'button';
             keyEl.className = 'key';
             if (item.cls) keyEl.classList.add(item.cls);
             keyEl.dataset.key = item.k.toLowerCase();
             keyEl.dataset.finger = item.f;
             if (item.alt) keyEl.dataset.alt = item.alt;
             if (item.side) keyEl.dataset.side = item.side;
+            keyEl.setAttribute('aria-label', item.k === 'Space' ? 'Space' : item.k);
 
             keyEl.textContent = item.k;
             if (item.k === 'Space') keyEl.dataset.key = ' ';
 
             keyEl.addEventListener('pointerdown', (e) => {
               e.preventDefault();
+              // Don't trap focus away from the key itself on touch; focus the trap
+              // so the soft keyboard opens, but keep the key press working.
               focusTypingInput();
+              lastKeyHandledAt = performance.now();
               if (item.k === 'Backspace') {
                 handleBackspace();
               } else if (item.k === 'Enter') {
                 handleInputCharacter('\n');
               } else if (item.k === 'Space') {
                 handleSpace();
+              } else if (item.k === 'Shift') {
+                shiftHeld = !shiftHeld;
+                keyEl.classList.toggle('active', shiftHeld);
+              } else if (item.k === 'Caps' || item.k === 'Tab') {
+                // No-op by design: Caps/Tab have no meaning in this trainer.
+                // Tab must never restart or steal focus.
+                if (item.k === 'Caps') {
+                  keyEl.classList.toggle('active');
+                  shiftHeld = keyEl.classList.contains('active');
+                }
               } else if (item.k.length === 1) {
-                handleInputCharacter(item.k);
+                const alt = keyEl.dataset.alt;
+                if (shiftHeld) {
+                  // Shifted symbol, or capital letter.
+                  const ch = alt ? alt : item.k.toUpperCase();
+                  handleInputCharacter(ch);
+                  shiftHeld = false;
+                  document.querySelectorAll('.key.shift.active').forEach(k => k.classList.remove('active'));
+                } else {
+                  handleInputCharacter(item.k);
+                }
               }
             });
 
@@ -2019,6 +2378,15 @@
         return tokens;
       }
 
+      function pickSnippet(snippets) {
+        if (!snippets || !snippets.length) return '';
+        // Standard: random pick. Pro: longest snippet (more symbols/indent).
+        if (currentSubVal === 'pro') {
+          return [...snippets].sort((a, b) => b.length - a.length)[0];
+        }
+        return snippets[Math.floor(Math.random() * snippets.length)];
+      }
+
       function generateTextCorpus() {
         let text = '';
 
@@ -2031,7 +2399,7 @@
           }
           text = words.join(' ');
         } else if (currentMode === 'words') {
-          const count = currentSubVal || 25;
+          const count = Number(currentSubVal) || 25;
           const list = CORPUS.words;
           const words = [];
           for (let i = 0; i < count; i++) {
@@ -2039,19 +2407,16 @@
           }
           text = words.join(' ');
         } else if (currentMode === 'js' || currentMode === 'py' || currentMode === 'rust') {
-          const snippets = CORPUS[currentMode];
-          text = snippets[Math.floor(Math.random() * snippets.length)];
+          text = pickSnippet(CORPUS[currentMode]);
         } else if (currentMode === 'quotes') {
-          const quotes = CORPUS.quotes;
-          text = quotes[Math.floor(Math.random() * quotes.length)];
+          text = pickSnippet(CORPUS.quotes);
         } else if (currentMode === 'symbols') {
-          const syms = CORPUS.symbols;
-          text = syms[Math.floor(Math.random() * syms.length)];
+          text = pickSnippet(CORPUS.symbols);
         } else if (currentMode === 'custom') {
           text = rawText || 'Technology is best when it brings people together.';
         } else if (currentMode === 'weak') {
-          // Weak keys drill generator
-          const weakKeys = Object.keys(missedKeyFreq);
+          // Weak keys drill generator — keys are lower-cased letters only.
+          const weakKeys = Object.keys(missedKeyFreq || {}).map(k => String(k).toLowerCase()).filter(k => /^[a-z]$/.test(k));
           if (weakKeys.length === 0) {
             text = 'great speed practice touch typing precision rhythm consistency';
           } else {
@@ -2065,7 +2430,7 @@
           }
         }
 
-        rawText = text;
+        rawText = text || 'speed practice touch typing precision rhythm consistency';
         parseWordsData(rawText);
       }
 
@@ -2163,51 +2528,72 @@
       }
 
       function updateCaret() {
-        const caret = document.getElementById('caret');
-        const activeWordEl = document.getElementById('w_' + currentWordIndex);
-        if (!activeWordEl) {
+        const caret = $('caret');
+        const stage = $('typingStage');
+        const wrapper = $('wordsWrapper');
+        if (!caret || !stage || !wrapper) return;
+        const activeWordEl = $('w_' + currentWordIndex);
+        const wObj = wordsData[currentWordIndex];
+        if (!activeWordEl || !wObj) {
           caret.style.display = 'none';
           return;
         }
 
         caret.style.display = 'block';
         const currentTyped = typedWords[currentWordIndex] || '';
-        const wObj = wordsData[currentWordIndex];
+        const stageRect = stage.getBoundingClientRect();
 
-        let targetLeft = 0;
-        let targetTop = 0;
+        // Scroll BEFORE measuring so getBoundingClientRect reflects the final layout.
+        const lineOffset = activeWordEl.offsetTop;
+        const shift = lineOffset > 70 ? (lineOffset - 35) : 0;
+        wrapper.style.transform = shift ? `translateY(-${shift}px)` : 'translateY(0px)';
 
+        let refEl = null;
         if (currentTyped.length < wObj.chars.length) {
-          const charSpan = document.getElementById('c_' + currentWordIndex + '_' + currentTyped.length);
-          if (charSpan) {
-            targetLeft = charSpan.offsetLeft;
-            targetTop = charSpan.offsetTop;
-          }
+          refEl = $('c_' + currentWordIndex + '_' + currentTyped.length);
         } else {
-          // At the end of word or extra chars
           const spans = activeWordEl.querySelectorAll('.char:not(.newline-char)');
-          if (spans.length > 0) {
-            const lastSpan = spans[spans.length - 1];
-            targetLeft = lastSpan.offsetLeft + lastSpan.offsetWidth;
-            targetTop = lastSpan.offsetTop;
-          } else {
-            targetLeft = activeWordEl.offsetLeft;
-            targetTop = activeWordEl.offsetTop;
-          }
+          if (spans.length > 0) refEl = spans[spans.length - 1];
+          else refEl = activeWordEl;
         }
 
-        caret.style.left = targetLeft + 'px';
-        caret.style.top = targetTop + 'px';
-
-        // Auto-scroll container when moving to lower lines
-        const stage = document.getElementById('typingStage');
-        const wrapper = document.getElementById('wordsWrapper');
-        const lineOffset = activeWordEl.offsetTop;
-
-        if (lineOffset > 70) {
-          wrapper.style.transform = `translateY(-${lineOffset - 35}px)`;
+        if (refEl) {
+          const r = refEl.getBoundingClientRect();
+          const atEnd = currentTyped.length >= wObj.chars.length;
+          caret.style.left = (r.left - stageRect.left + (atEnd ? r.width : 0)) + 'px';
+          caret.style.top = (r.top - stageRect.top) + 'px';
         } else {
-          wrapper.style.transform = 'translateY(0px)';
+          caret.style.left = '0px';
+          caret.style.top = '0px';
+        }
+
+        // Single re-sync after fonts wrap lines (guard stops the loop).
+        if (!updateCaret._pending) {
+          updateCaret._pending = true;
+          requestAnimationFrame(() => {
+            updateCaret._pending = false;
+            // Direct reposition without scheduling another pass.
+            const c2 = $('caret'); if (!c2) return;
+            const e2 = $('w_' + currentWordIndex);
+            if (!e2) return;
+            const s2 = $('typingStage'); if (!s2) return;
+            const sr = s2.getBoundingClientRect();
+            const t2 = typedWords[currentWordIndex] || '';
+            const w2 = wordsData[currentWordIndex];
+            if (!w2) return;
+            let r2 = null;
+            if (t2.length < w2.chars.length) r2 = $('c_' + currentWordIndex + '_' + t2.length);
+            else {
+              const sp = e2.querySelectorAll('.char:not(.newline-char)');
+              r2 = sp.length ? sp[sp.length - 1] : e2;
+            }
+            if (r2) {
+              const rr = r2.getBoundingClientRect();
+              const atEnd = t2.length >= w2.chars.length;
+              c2.style.left = (rr.left - sr.left + (atEnd ? rr.width : 0)) + 'px';
+              c2.style.top = (rr.top - sr.top) + 'px';
+            }
+          });
         }
       }
 
@@ -2284,11 +2670,14 @@
       }
 
       function handleInputCharacter(char) {
+        // In code modes Enter means end of line: move to next word instead of typing a forced char.
+        if (char === '\n') { handleSpace(); return; }
+        if (isResultOpen() || isCustomOpen()) return;
         if (!isPlaying) startTest();
-        if (currentWordIndex >= wordsData.length) return;
+        if (currentWordIndex >= wordsData.length || !wordsData[currentWordIndex]) return;
 
         const wObj = wordsData[currentWordIndex];
-        const typed = typedWords[currentWordIndex];
+        const typed = typedWords[currentWordIndex] || '';
         const now = performance.now();
 
         // Stroke interval for consistency metric
@@ -2309,40 +2698,47 @@
           mistakeKeystrokes++;
           currentStreak = 0;
           playKeySound(true);
-          if (targetChar) {
-            missedKeyFreq[targetChar] = (missedKeyFreq[targetChar] || 0) + 1;
+          if (targetChar && /^[a-zA-Z]$/.test(targetChar)) {
+            const k = targetChar.toLowerCase();
+            missedKeyFreq[k] = (missedKeyFreq[k] || 0) + 1;
           }
         }
 
-        typedWords[currentWordIndex] += char;
+        typedWords[currentWordIndex] = typed + char;
         updateWordDOM(currentWordIndex);
         flashVirtualKey(char);
         updateCaret();
         highlightRadarKeys();
         updateHUD();
+
+        // Finish last word without trailing space (words/code/quote/symbol/custom modes).
+        if (currentMode !== 'time' && currentWordIndex === wordsData.length - 1 && typedWords[currentWordIndex].length >= wObj.chars.length) {
+          // Small delay so the last highlight paints before the modal.
+          setTimeout(() => { if (isPlaying && currentWordIndex === wordsData.length - 1) endTest(); }, 120);
+        }
       }
 
       function handleSpace() {
-        if (!isPlaying) startTest();
-        if (currentWordIndex >= wordsData.length) return;
+        if (isResultOpen() || isCustomOpen()) return;
+        if (!isPlaying && currentMode !== 'time') { /* allow starting via space */ startTest(); }
+        if (currentWordIndex >= wordsData.length || !wordsData[currentWordIndex]) return;
 
-        const typed = typedWords[currentWordIndex];
+        const typed = typedWords[currentWordIndex] || '';
         const wObj = wordsData[currentWordIndex];
 
         // Do not advance if nothing typed in current word
         if (typed.length === 0) return;
 
         totalKeystrokes++;
-        if (typed === wObj.word) {
-          correctKeystrokes++;
-          currentStreak++;
-          if (currentStreak > maxStreak) maxStreak = currentStreak;
-          playKeySound(false);
-        } else {
+        // Space is a separator, not a correct char. Count it only toward total
+        // and judge the finished word — no double-count of the last letter.
+        const wordCorrect = typed === wObj.word;
+        if (!wordCorrect) {
           mistakeKeystrokes++;
           currentStreak = 0;
           playKeySound(true);
-          missedKeyFreq[' '] = (missedKeyFreq[' '] || 0) + 1;
+        } else {
+          playKeySound(false);
         }
 
         currentWordIndex++;
@@ -2358,27 +2754,39 @@
       }
 
       function handleBackspace(ctrlKey = false) {
-        if (currentWordIndex >= wordsData.length && !isPlaying) return;
+        // Hard bounds check — never dereference past the last word.
+        if (!wordsData.length || currentWordIndex >= wordsData.length) {
+          if (currentWordIndex > 0 && wordsData.length) { /* allow stepping back from end */ }
+          else return;
+        }
+        if (isResultOpen() || isCustomOpen()) return;
+        const curIdx = Math.min(currentWordIndex, wordsData.length - 1);
+        const curTyped = typedWords[curIdx] || '';
+        if (curTyped.length === 0 && curIdx === 0) return;
         backspaceCount++;
 
         if (ctrlKey) {
-          // Delete entire word
-          if (typedWords[currentWordIndex].length > 0) {
-            typedWords[currentWordIndex] = '';
-          } else if (currentWordIndex > 0) {
-            currentWordIndex--;
+          // Delete entire current word.
+          if ((typedWords[curIdx] || '').length > 0) {
+            typedWords[curIdx] = '';
+            currentWordIndex = curIdx;
+          } else if (curIdx > 0) {
+            currentWordIndex = curIdx - 1;
             typedWords[currentWordIndex] = '';
           }
         } else {
-          // Single character backspace
-          if (typedWords[currentWordIndex].length > 0) {
-            typedWords[currentWordIndex] = typedWords[currentWordIndex].slice(0, -1);
-          } else if (currentWordIndex > 0) {
-            // Jump back to previous word if it was wrong
-            const prevWord = typedWords[currentWordIndex - 1];
-            const expectedPrev = wordsData[currentWordIndex - 1].word;
+          // Single character backspace.
+          if ((typedWords[curIdx] || '').length > 0) {
+            typedWords[curIdx] = typedWords[curIdx].slice(0, -1);
+            currentWordIndex = curIdx;
+          } else if (curIdx > 0) {
+            // Jump back to previous word only if it was wrong.
+            const prevWord = typedWords[curIdx - 1] || '';
+            const expectedPrev = wordsData[curIdx - 1].word;
             if (prevWord !== expectedPrev) {
-              currentWordIndex--;
+              currentWordIndex = curIdx - 1;
+            } else {
+              return;
             }
           }
         }
@@ -2428,6 +2836,7 @@
 
       function startTest() {
         if (isPlaying) return;
+        if (isResultOpen() || isCustomOpen()) return;
         isPlaying = true;
         startTime = performance.now();
         lastStrokeTime = startTime;
@@ -2435,23 +2844,24 @@
         wpmHistory = [];
         lastSparklineSec = 0;
 
-        document.getElementById('termMetaTitle').textContent = 'ati_velocity_core.exe • Active Evaluation';
+        const meta = $('termMetaTitle'); if (meta) meta.textContent = 'ati_velocity_core.exe • Active';
 
         // Start 60 FPS animation loop
         runTimerLoop();
       }
 
       function runTimerLoop() {
-        if (!isPlaying) return;
+        if (!isPlaying || !startTime) return;
 
         const now = performance.now();
-        const elapsedSec = (now - startTime) / 1000;
+        const elapsedSec = Math.max(0, (now - startTime) / 1000);
         elapsedTotalSec = elapsedSec;
+        const setT = (id, v) => { const el = $(id); if (el) el.textContent = v; };
 
         // Time mode countdown
         if (currentMode === 'time') {
           const remaining = Math.max(0, Math.ceil(testDurationSec - elapsedSec));
-          document.getElementById('telTime').textContent = remaining;
+          setT('telTime', String(remaining));
 
           if (remaining <= 0) {
             endTest();
@@ -2459,7 +2869,7 @@
           }
         } else {
           // Word count or passage progress
-          document.getElementById('telTime').textContent = Math.round(elapsedSec) + 's';
+          setT('telTime', Math.round(elapsedSec) + 's');
         }
 
         // Live stats computation
@@ -2468,17 +2878,19 @@
         const rawCPM = Math.max(0, Math.round(totalKeystrokes / elapsedMin));
         const acc = totalKeystrokes > 0 ? Math.max(0, Math.min(100, Math.round((correctKeystrokes / totalKeystrokes) * 100))) : 100;
 
-        document.getElementById('telNetWPM').textContent = netWPM;
-        document.getElementById('telRawCPM').textContent = rawCPM;
-        document.getElementById('telAcc').textContent = acc + '%';
-        document.getElementById('telStreak').textContent = currentStreak;
+        setT('telNetWPM', netWPM);
+        setT('telRawCPM', rawCPM);
+        setT('telAcc', acc + '%');
+        setT('telStreak', currentStreak);
 
         // Multiplier badges on streak
-        const streakLbl = document.getElementById('telStreakLbl');
-        if (currentStreak >= 50) streakLbl.innerHTML = 'Nitro Streak <span style="color: var(--rose); font-weight: 800;">&times;3.0</span>';
-        else if (currentStreak >= 25) streakLbl.innerHTML = 'Nitro Streak <span style="color: var(--signal); font-weight: 800;">&times;2.0</span>';
-        else if (currentStreak >= 10) streakLbl.innerHTML = 'Nitro Streak <span style="color: var(--ion); font-weight: 800;">&times;1.5</span>';
-        else streakLbl.textContent = 'Combo Streak';
+        const streakLbl = $('telStreakLbl');
+        if (streakLbl) {
+          if (currentStreak >= 50) streakLbl.innerHTML = 'Streak <span style="color: var(--rose); font-weight: 800;">&times;3.0</span>';
+          else if (currentStreak >= 25) streakLbl.innerHTML = 'Streak <span style="color: var(--signal); font-weight: 800;">&times;2.0</span>';
+          else if (currentStreak >= 10) streakLbl.innerHTML = 'Streak <span style="color: var(--ion); font-weight: 800;">&times;1.5</span>';
+          else streakLbl.textContent = 'Combo Streak';
+        }
 
         // Sparkline sample every 1 sec
         if (elapsedSec - lastSparklineSec >= 1) {
@@ -2493,58 +2905,66 @@
         }
 
         // Terminal glow
-        const term = document.getElementById('terminal');
-        if (currentStreak >= 40) term.className = 'terminal glow-3';
-        else if (currentStreak >= 25) term.className = 'terminal glow-2';
-        else if (currentStreak >= 12) term.className = 'terminal glow-1';
-        else term.className = 'terminal';
+        const term = $('terminal');
+        if (term) {
+          if (currentStreak >= 40) term.className = 'terminal glow-3';
+          else if (currentStreak >= 25) term.className = 'terminal glow-2';
+          else if (currentStreak >= 12) term.className = 'terminal glow-1';
+          else term.className = 'terminal';
+        }
 
         timerRafId = requestAnimationFrame(runTimerLoop);
       }
 
       function updateGhostPacer(elapsedSec, playerWpm) {
-        const totalWords = wordsData.length;
-        const playerProgress = Math.min(100, (currentWordIndex / totalWords) * 100);
+        const totalWords = Math.max(1, wordsData.length);
+        const playerProgress = clamp01(currentWordIndex / totalWords) * 100;
         const ghostTargetWords = (ghostWpm / 60) * elapsedSec;
-        const ghostProgress = Math.min(100, (ghostTargetWords / totalWords) * 100);
+        const ghostProgress = clamp01(ghostTargetWords / totalWords) * 100;
 
-        document.getElementById('ghostPlayerPin').style.left = playerProgress + '%';
-        document.getElementById('ghostAiPin').style.left = ghostProgress + '%';
+        const pPin = $('ghostPlayerPin'), gPin = $('ghostAiPin'), badge = $('ghostDeltaBadge');
+        if (pPin) pPin.style.left = playerProgress + '%';
+        if (gPin) gPin.style.left = ghostProgress + '%';
+        if (!badge) return;
 
         const delta = Math.round(currentWordIndex - ghostTargetWords);
-        const badge = document.getElementById('ghostDeltaBadge');
         if (delta > 0) {
-          badge.textContent = '+' + delta + ' words ahead';
+          badge.textContent = '+' + delta + (delta === 1 ? ' word' : ' words') + ' ahead';
           badge.className = 'ghost-delta-badge ahead';
         } else if (delta < 0) {
-          badge.textContent = Math.abs(delta) + ' words behind';
+          badge.textContent = Math.abs(delta) + (Math.abs(delta) === 1 ? ' word' : ' words') + ' behind';
           badge.className = 'ghost-delta-badge behind';
         } else {
-          badge.textContent = 'Even Pace';
+          badge.textContent = 'Even pace';
           badge.className = 'ghost-delta-badge';
         }
       }
 
       function setGhostPacer(val) {
-        if (val === '0') {
+        if (val === '0' || !val) {
           ghostWpm = 0;
-          document.getElementById('ghostTrackContainer').classList.remove('show');
+          const c = $('ghostTrackContainer'); if (c) c.classList.remove('show');
         } else if (val === 'best') {
-          const pb = parseInt(localStorage.getItem('ati_best_wpm_' + currentMode) || '60', 10);
-          ghostWpm = pb || 60;
-          document.getElementById('ghostLabelText').textContent = 'Ghost (PB: ' + ghostWpm + ' WPM)';
-          document.getElementById('ghostTrackContainer').classList.add('show');
+          const pb = parseInt(store.get('ati_best_wpm_' + currentMode, '60'), 10);
+          ghostWpm = Number.isFinite(pb) && pb > 0 ? pb : 60;
+          const lbl = $('ghostLabelText'); if (lbl) lbl.textContent = 'Ghost (best: ' + ghostWpm + ' WPM)';
+          const c = $('ghostTrackContainer'); if (c) c.classList.add('show');
         } else {
-          ghostWpm = parseInt(val, 10);
-          document.getElementById('ghostLabelText').textContent = 'Ghost (' + ghostWpm + ' WPM)';
-          document.getElementById('ghostTrackContainer').classList.add('show');
+          ghostWpm = parseInt(val, 10) || 0;
+          const lbl = $('ghostLabelText'); if (lbl) lbl.textContent = 'Ghost (' + ghostWpm + ' WPM)';
+          const c = $('ghostTrackContainer'); if (c) c.classList.add('show');
         }
+        // Reset pins now so they don't freeze mid-track.
+        const pPin = $('ghostPlayerPin'), gPin = $('ghostAiPin'), badge = $('ghostDeltaBadge');
+        if (pPin) pPin.style.left = '0%';
+        if (gPin) gPin.style.left = '0%';
+        if (badge) { badge.textContent = 'Even pace'; badge.className = 'ghost-delta-badge'; }
       }
 
       function setCaretStyle(style) {
         caretStyle = style;
-        const caret = document.getElementById('caret');
-        caret.className = 'caret ' + caretStyle;
+        const caret = $('caret');
+        if (caret) caret.className = 'caret ' + caretStyle;
       }
 
       function endTest() {
@@ -2552,11 +2972,16 @@
         isSimulating = false;
         cancelAnimationFrame(timerRafId);
         clearTimeout(simTimeout);
+        simTimeout = null;
 
-        const simBtn = document.getElementById('btnAutoSim');
-        simBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span>Run Auto-Test</span>';
-        simBtn.classList.remove('running');
+        const simBtn = $('btnAutoSim');
+        if (simBtn) {
+          simBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span>Run Auto-Test</span>';
+          simBtn.classList.remove('running');
+        }
 
+        // Use wall-clock elapsed, not the last RAF frame (which goes stale in background tabs).
+        elapsedTotalSec = startTime ? Math.max(0.1, (performance.now() - startTime) / 1000) : Math.max(0.1, elapsedTotalSec);
         const elapsedMin = Math.max(0.001, elapsedTotalSec / 60);
         const finalNetWPM = Math.max(0, Math.round((correctKeystrokes / 5) / elapsedMin));
         const finalRawCPM = Math.max(0, Math.round(totalKeystrokes / elapsedMin));
@@ -2574,14 +2999,14 @@
 
         // Personal best handling
         const bestKey = 'ati_best_wpm_' + currentMode;
-        let prevBest = parseInt(localStorage.getItem(bestKey) || '0', 10);
+        let prevBest = parseInt(store.get(bestKey, '0'), 10) || 0;
         let isNewPB = false;
         if (finalNetWPM > prevBest && finalAcc >= 90) {
           prevBest = finalNetWPM;
-          localStorage.setItem(bestKey, String(finalNetWPM));
+          store.set(bestKey, String(finalNetWPM));
           isNewPB = true;
         }
-        document.getElementById('telBest').textContent = prevBest;
+        const telBest = $('telBest'); if (telBest) telBest.textContent = prevBest;
 
         // Grade calculation
         let grade = 'F';
@@ -2593,54 +3018,82 @@
         else if (finalNetWPM >= 30 && finalAcc >= 78) { grade = 'C'; gradeCls = 'grade-C'; }
 
         // Populate Results Modal
-        const gradeBadge = document.getElementById('resGrade');
-        gradeBadge.textContent = grade;
-        gradeBadge.className = 'res-hero-badge ' + gradeCls;
+        const gradeBadge = $('resGrade');
+        if (gradeBadge) {
+          gradeBadge.textContent = grade;
+          gradeBadge.className = 'res-hero-badge ' + gradeCls;
+        }
+        const setText = (id, v) => { const el = $(id); if (el) el.textContent = v; };
+        setText('resWPM', finalNetWPM);
+        setText('resAcc', finalAcc + '%');
+        setText('resRawCPM', finalRawCPM);
+        setText('resStreak', maxStreak);
+        setText('resConsistency', consistency + '%');
+        setText('resKeys', totalKeystrokes);
+        setText('resErrors', mistakeKeystrokes);
+        setText('resBackspaces', backspaceCount);
+        setText('resTimeElapsed', Math.round(elapsedTotalSec) + 's');
 
-        document.getElementById('resWPM').textContent = finalNetWPM;
-        document.getElementById('resAcc').textContent = finalAcc + '%';
-        document.getElementById('resRawCPM').textContent = finalRawCPM;
-        document.getElementById('resStreak').textContent = maxStreak;
-        document.getElementById('resConsistency').textContent = consistency + '%';
-        document.getElementById('resKeys').textContent = totalKeystrokes;
-        document.getElementById('resErrors').textContent = mistakeKeystrokes;
-        document.getElementById('resBackspaces').textContent = backspaceCount;
-        document.getElementById('resTimeElapsed').textContent = Math.round(elapsedTotalSec) + 's';
-
-        // Weak keys callout
-        const weakEntries = Object.entries(missedKeyFreq).sort((a, b) => b[1] - a[1]);
-        const weakBox = document.getElementById('weakKeysBox');
-        if (weakEntries.length > 0) {
-          const topMissed = weakEntries.slice(0, 3).map(e => `${e[0].toUpperCase()} (${e[1]})`).join(', ');
-          document.getElementById('weakKeysText').textContent = 'Weak Keys: ' + topMissed;
-          weakBox.style.display = 'flex';
-        } else {
-          weakBox.style.display = 'none';
+        // Weak keys callout (letters only)
+        const weakEntries = Object.entries(missedKeyFreq || {}).filter(e => /^[a-z]$/.test(e[0])).sort((a, b) => b[1] - a[1]);
+        const weakBox = $('weakKeysBox');
+        if (weakBox) {
+          if (weakEntries.length > 0) {
+            const topMissed = weakEntries.slice(0, 3).map(e => e[0].toUpperCase() + ' (' + e[1] + ')').join(', ');
+            const wt = $('weakKeysText'); if (wt) wt.textContent = 'Weak keys: ' + topMissed + (isNewPB ? ' · New best!' : '');
+            weakBox.style.display = 'flex';
+          } else {
+            weakBox.style.display = 'none';
+          }
         }
 
-        document.getElementById('resultsOverlay').classList.add('show');
+        const overlay = $('resultsOverlay');
+        if (overlay) {
+          overlay.classList.add('show');
+          overlay.removeAttribute('hidden');
+          // Move focus into the dialog for keyboard users.
+          const first = overlay.querySelector('button, a[href]');
+          if (first && typeof first.focus === 'function') first.focus();
+        }
+        const live = $('ariaLive');
+        if (live) live.textContent = `Done. ${finalNetWPM} words per minute, ${finalAcc} percent accuracy, grade ${grade}.`;
+        const termMeta = $('termMetaTitle'); if (termMeta) termMeta.textContent = 'ati_velocity_core.exe • Done';
       }
 
       function drillWeakKeys() {
-        document.getElementById('resultsOverlay').classList.remove('show');
-        setStudioMode('weak');
+        const overlay = $('resultsOverlay');
+        if (overlay) overlay.classList.remove('show');
+        // Do NOT clear missedKeyFreq — resetGame(true) preserves it for the drill.
+        setStudioMode('weak', true);
       }
 
       function copyShareCard() {
-        const wpm = document.getElementById('resWPM').textContent;
-        const acc = document.getElementById('resAcc').textContent;
-        const grade = document.getElementById('resGrade').textContent;
-        const text = `⚡ ATI Velocity Studio: ${wpm} WPM · ${acc} Accuracy · Grade ${grade} · https://advancedlogiclabs.dpdns.org/ati-demo`;
-        navigator.clipboard.writeText(text).then(() => {
-          const btn = document.getElementById('copyBtnText');
-          btn.textContent = 'Copied to Clipboard!';
-          setTimeout(() => { btn.textContent = 'Copy Share Card'; }, 2000);
-        });
+        const wpm = ($('resWPM') || {}).textContent || '0';
+        const acc = ($('resAcc') || {}).textContent || '0%';
+        const grade = ($('resGrade') || {}).textContent || 'F';
+        const text = `ATI Velocity Studio: ${wpm} WPM · ${acc} Accuracy · Grade ${grade} · https://advancedlogiclabs.dpdns.org/ati-demo`;
+        const btn = $('copyBtnText');
+        const done = () => { if (btn) { btn.textContent = 'Copied!'; setTimeout(() => { if (btn) btn.textContent = 'Copy result'; }, 2000); } };
+        const fallback = () => {
+          try {
+            const ta = document.createElement('textarea');
+            ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+            document.body.appendChild(ta); ta.select();
+            const ok = document.execCommand && document.execCommand('copy');
+            ta.remove();
+            if (ok) done(); else if (btn) btn.textContent = 'Copy failed — select manually';
+          } catch (e) { if (btn) btn.textContent = 'Copy failed'; }
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(done, fallback);
+        } else {
+          fallback();
+        }
       }
 
-      function resetGame() {
+      function resetGame(keepWeak) {
         cancelAnimationFrame(timerRafId);
-        clearTimeout(simTimeout);
+        clearTimeout(simTimeout); simTimeout = null;
         isPlaying = false;
         isSimulating = false;
         startTime = null;
@@ -2652,36 +3105,52 @@
         currentStreak = 0;
         maxStreak = 0;
         wpmHistory = [];
-        missedKeyFreq = {};
+        if (!keepWeak) missedKeyFreq = {};
         strokeIntervals = [];
+        elapsedTotalSec = 0;
 
-        document.getElementById('resultsOverlay').classList.remove('show');
-        document.getElementById('terminal').className = 'terminal';
+        const overlay = $('resultsOverlay'); if (overlay) overlay.classList.remove('show');
+        const term = $('terminal'); if (term) term.className = 'terminal';
 
-        const simBtn = document.getElementById('btnAutoSim');
-        simBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span>Run Auto-Test</span>';
-        simBtn.classList.remove('running');
-
-        // Setup timer or word display
-        if (currentMode === 'time') {
-          testDurationSec = currentSubVal || 30;
-          document.getElementById('telTime').textContent = testDurationSec;
-          document.getElementById('telTimeLbl').textContent = 'Time Left (s)';
-        } else {
-          document.getElementById('telTime').textContent = '0s';
-          document.getElementById('telTimeLbl').textContent = 'Time Elapsed';
+        const simBtn = $('btnAutoSim');
+        if (simBtn) {
+          simBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span>Run Auto-Test</span>';
+          simBtn.classList.remove('running');
         }
 
-        document.getElementById('telNetWPM').textContent = '0';
-        document.getElementById('telRawCPM').textContent = '0';
-        document.getElementById('telAcc').textContent = '100%';
-        document.getElementById('telStreak').textContent = '0';
-        document.getElementById('telStreakLbl').textContent = 'Combo Streak';
+        // Setup timer or word display
+        const tTime = $('telTime'), tLbl = $('telTimeLbl');
+        if (currentMode === 'time') {
+          testDurationSec = Number(currentSubVal) || 30;
+          if (tTime) tTime.textContent = testDurationSec;
+          if (tLbl) tLbl.textContent = 'Time Left (s)';
+        } else {
+          if (tTime) tTime.textContent = '0s';
+          if (tLbl) tLbl.textContent = 'Time Elapsed';
+        }
 
-        const bestKey = 'ati_best_wpm_' + currentMode;
-        document.getElementById('telBest').textContent = localStorage.getItem(bestKey) || '0';
+        const setT = (id, v) => { const el = $(id); if (el) el.textContent = v; };
+        setT('telNetWPM', '0');
+        setT('telRawCPM', '0');
+        setT('telAcc', '100%');
+        setT('telStreak', '0');
+        setT('telStreakLbl', 'Combo Streak');
 
-        document.getElementById('termMetaTitle').textContent = 'ati_velocity_core.exe • Ready';
+        setT('telBest', store.get('ati_best_wpm_' + currentMode, '0'));
+        if (ghostWpm > 0 && $('ghostSelect') && $('ghostSelect').value === 'best') {
+          // Refresh ghost PB for the new mode so the label stays true.
+          const pb = parseInt(store.get('ati_best_wpm_' + currentMode, '60'), 10);
+          ghostWpm = Number.isFinite(pb) && pb > 0 ? pb : 60;
+          const lbl = $('ghostLabelText'); if (lbl) lbl.textContent = 'Ghost (best: ' + ghostWpm + ' WPM)';
+        }
+
+        const meta = $('termMetaTitle'); if (meta) meta.textContent = 'ati_velocity_core.exe • Ready';
+
+        // Reset ghost pins so they don't freeze mid-track.
+        const pPin = $('ghostPlayerPin'), gPin = $('ghostAiPin'), badge = $('ghostDeltaBadge');
+        if (pPin) pPin.style.left = '0%';
+        if (gPin) gPin.style.left = '0%';
+        if (badge) { badge.textContent = 'Even pace'; badge.className = 'ghost-delta-badge'; }
 
         generateTextCorpus();
         renderWords();
@@ -2689,44 +3158,62 @@
         focusTypingInput();
       }
 
-      function setStudioMode(mode) {
+      function setStudioMode(mode, keepWeak) {
+        if (mode !== 'weak' && mode !== 'custom') {
+          // Preserve time/word choices when coming back.
+          if (mode !== 'time' && mode !== 'words' && currentMode === mode) {
+            // no-op, just re-roll
+          }
+        }
         currentMode = mode;
         document.querySelectorAll('.mode-pill').forEach(btn => {
-          btn.classList.toggle('active', btn.dataset.mode === mode);
+          const active = btn.dataset.mode === mode;
+          btn.classList.toggle('active', active);
+          btn.setAttribute('aria-selected', active ? 'true' : 'false');
         });
 
+        // Weak drill has no pill of its own — keep the previous pill lit so context is not lost.
+        if (mode === 'weak') {
+          const prev = document.querySelector('.mode-pill.active');
+          if (!prev) {
+            const first = document.querySelector('.mode-pill[data-mode="time"]');
+            if (first) first.classList.add('active');
+          }
+        }
+
         // Configure sub-option bar based on mode
-        const subBar = document.getElementById('subOptionButtons');
-        const subLbl = document.getElementById('subOptLabel');
+        const subBar = $('subOptionButtons');
+        const subLbl = $('subOptLabel');
+        if (!subBar || !subLbl) { resetGame(keepWeak); return; }
 
         if (mode === 'time') {
           subLbl.textContent = 'Duration:';
-          subBar.innerHTML = `
-            <button class="sub-opt-btn" data-val="15" onclick="setSubOption(15)">15s</button>
-            <button class="sub-opt-btn active" data-val="30" onclick="setSubOption(30)">30s</button>
-            <button class="sub-opt-btn" data-val="60" onclick="setSubOption(60)">60s</button>
-            <button class="sub-opt-btn" data-val="120" onclick="setSubOption(120)">120s</button>
-          `;
-          currentSubVal = 30;
+          const saved = Number(currentSubVal);
+          const val = (saved === 15 || saved === 30 || saved === 60 || saved === 120) ? saved : 30;
+          currentSubVal = val;
+          subBar.innerHTML =
+            [15, 30, 60, 120].map(v => `<button class="sub-opt-btn${v === val ? ' active' : ''}" data-val="${v}" onclick="setSubOption(${v})">${v}s</button>`).join('');
         } else if (mode === 'words') {
-          subLbl.textContent = 'Word Count:';
-          subBar.innerHTML = `
-            <button class="sub-opt-btn" data-val="10" onclick="setSubOption(10)">10</button>
-            <button class="sub-opt-btn active" data-val="25" onclick="setSubOption(25)">25</button>
-            <button class="sub-opt-btn" data-val="50" onclick="setSubOption(50)">50</button>
-            <button class="sub-opt-btn" data-val="100" onclick="setSubOption(100)">100</button>
-          `;
-          currentSubVal = 25;
+          subLbl.textContent = 'Word count:';
+          const saved = Number(currentSubVal);
+          const val = (saved === 10 || saved === 25 || saved === 50 || saved === 100) ? saved : 25;
+          currentSubVal = val;
+          subBar.innerHTML =
+            [10, 25, 50, 100].map(v => `<button class="sub-opt-btn${v === val ? ' active' : ''}" data-val="${v}" onclick="setSubOption(${v})">${v}</button>`).join('');
+        } else if (mode === 'weak') {
+          subLbl.textContent = 'Weak-key drill:';
+          subBar.innerHTML = '<button class="sub-opt-btn active" data-val="weak" disabled style="cursor:default;opacity:.85">On</button>';
+          // keep currentSubVal as-is; generateTextCorpus reads missedKeyFreq, not subVal
         } else {
-          subLbl.textContent = 'Difficulty:';
-          subBar.innerHTML = `
-            <button class="sub-opt-btn active" data-val="standard" onclick="setSubOption('standard')">Standard</button>
-            <button class="sub-opt-btn" data-val="pro" onclick="setSubOption('pro')">Pro</button>
-          `;
-          currentSubVal = 'standard';
+          subLbl.textContent = 'Level:';
+          const val = currentSubVal === 'pro' ? 'pro' : 'standard';
+          currentSubVal = val;
+          subBar.innerHTML =
+            `<button class="sub-opt-btn${val === 'standard' ? ' active' : ''}" data-val="standard" onclick="setSubOption('standard')">Standard</button>` +
+            `<button class="sub-opt-btn${val === 'pro' ? ' active' : ''}" data-val="pro" onclick="setSubOption('pro')">Pro (longer)</button>`;
         }
 
-        resetGame();
+        resetGame(keepWeak);
       }
 
       function setSubOption(val) {
@@ -2738,8 +3225,10 @@
       }
 
       function drawSparkline() {
-        const canvas = document.getElementById('wpmCanvas');
+        const canvas = $('wpmCanvas');
+        if (!canvas) return;
         const ctx = canvas.getContext('2d');
+        if (!ctx) return;
         const w = canvas.width;
         const h = canvas.height;
         ctx.clearRect(0, 0, w, h);
@@ -2747,16 +3236,16 @@
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
         ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.moveTo(0, h - 2);
-        ctx.lineTo(w, h - 2);
+        ctx.moveTo(0, h - 4);
+        ctx.lineTo(w, h - 4);
         ctx.stroke();
 
-        if (wpmHistory.length < 2) return;
+        if (!Array.isArray(wpmHistory) || wpmHistory.length < 2) return;
 
-        const maxVal = Math.max(...wpmHistory, 75);
+        const maxVal = Math.max.apply(null, wpmHistory.concat([75]));
         const pts = wpmHistory.map((val, idx) => ({
           x: (idx / (wpmHistory.length - 1)) * w,
-          y: h - (val / maxVal) * (h - 10) - 4
+          y: h - (val / maxVal) * (h - 12) - 6
         }));
 
         const grad = ctx.createLinearGradient(0, 0, 0, h);
@@ -2785,42 +3274,50 @@
           ctx.quadraticCurveTo(pts[i - 1].x, pts[i - 1].y, xc, yc);
         }
         ctx.lineTo(pts[pts.length - 1].x, pts[pts.length - 1].y);
-        ctx.strokeStyle = '#a3e635';
-        ctx.lineWidth = 2.2;
-        ctx.shadowColor = 'rgba(163, 230, 53, 0.7)';
-        ctx.shadowBlur = 8;
+        ctx.strokeStyle = document.documentElement.classList.contains('lm') ? '#4d7c0f' : '#a3e635';
+        ctx.lineWidth = 4;
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
         ctx.stroke();
-        ctx.shadowBlur = 0;
       }
 
-      // AI Simulation Engine
+      // Auto-test (sim) engine
       function toggleAutoSim() {
         if (isSimulating) {
-          clearTimeout(simTimeout);
+          clearTimeout(simTimeout); simTimeout = null;
           isSimulating = false;
-          const simBtn = document.getElementById('btnAutoSim');
-          simBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span>Run Auto-Test</span>';
-          simBtn.classList.remove('running');
+          const simBtn = $('btnAutoSim');
+          if (simBtn) {
+            simBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span>Run Auto-Test</span>';
+            simBtn.classList.remove('running');
+          }
           return;
         }
 
         resetGame();
         isSimulating = true;
-        const simBtn = document.getElementById('btnAutoSim');
-        simBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="6" width="12" height="12" rx="2"/></svg><span>Stop Simulation</span>';
-        simBtn.classList.add('running');
+        const simBtn = $('btnAutoSim');
+        if (simBtn) {
+          simBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="6" width="12" height="12" rx="2"/></svg><span>Stop Auto-Test</span>';
+          simBtn.classList.add('running');
+        }
 
-        const speedWpm = parseInt(document.getElementById('simSpeedSelect').value, 10) || 75;
-        const msPerChar = 60000 / (speedWpm * 5);
+        const speedEl = $('simSpeedSelect');
+        const speedWpm = parseInt(speedEl ? speedEl.value : '75', 10) || 75;
+        const msPerChar = Math.min(200, Math.max(40, 60000 / (speedWpm * 5)));
+        const runId = (toggleAutoSim._runId = (toggleAutoSim._runId || 0) + 1);
 
         function stepSimulation() {
-          if (!isSimulating || currentWordIndex >= wordsData.length) {
-            isSimulating = false;
-            return;
+          // Guard against phantom chains after reset/stop/mode change.
+          if (!isSimulating || toggleAutoSim._runId !== runId) return;
+          if (currentWordIndex >= wordsData.length || !wordsData[currentWordIndex]) { isSimulating = false; return; }
+          if (!isPlaying && !isResultOpen()) {
+            // startTest happens inside handleInputCharacter; ensure timer loop runs.
           }
 
           const wObj = wordsData[currentWordIndex];
-          const typed = typedWords[currentWordIndex];
+          if (!wObj) { isSimulating = false; return; }
+          const typed = typedWords[currentWordIndex] || '';
 
           if (typed.length < wObj.chars.length) {
             const nextChar = wObj.chars[typed.length];
@@ -2829,7 +3326,9 @@
             handleSpace();
           }
 
-          // Natural human cadence variance
+          // If the handlers finished the test, do NOT reschedule.
+          if (!isSimulating || currentWordIndex >= wordsData.length || isResultOpen()) return;
+
           const variance = msPerChar * (0.8 + Math.random() * 0.4);
           simTimeout = setTimeout(stepSimulation, variance);
         }
@@ -2839,42 +3338,87 @@
 
       // Focus Management
       function focusTypingInput() {
-        const trap = document.getElementById('mobileInputTrap');
+        const trap = $('mobileInputTrap');
         if (trap) {
-          trap.focus();
+          try { trap.focus({ preventScroll: true }); } catch (e) { trap.focus(); }
         }
-        document.getElementById('focusPrompt').classList.remove('show');
-        document.getElementById('focusBadge').textContent = 'Focused';
-        document.getElementById('focusBadge').classList.remove('unfocused');
+        const prompt = $('focusPrompt');
+        if (prompt) prompt.classList.remove('show');
+        const badge = $('focusBadge');
+        if (badge) { badge.textContent = 'Focused'; badge.classList.remove('unfocused'); }
       }
+
+      // Hero CTA: smooth-scroll to the arena, then focus.
+      (function () {
+        var btn = $('heroStartBtn');
+        if (!btn) return;
+        btn.addEventListener('click', function (e) {
+          e.preventDefault();
+          var arena = $('terminal');
+          var stage = $('typingStage');
+          if (arena && typeof arena.scrollIntoView === 'function') {
+            arena.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+          // Focus the trap after the scroll so the OS keyboard opens on mobile.
+          setTimeout(function () {
+            if (stage && typeof stage.focus === 'function') {
+              try { stage.focus({ preventScroll: true }); } catch (e2) { stage.focus(); }
+            }
+            focusTypingInput();
+          }, 250);
+        });
+      })();
 
       function handleBlur() {
-        if (!isPlaying) {
-          document.getElementById('focusPrompt').classList.add('show');
-          document.getElementById('focusBadge').textContent = 'Tap to Focus';
-          document.getElementById('focusBadge').classList.add('unfocused');
-        }
+        // Show the tap-to-focus prompt whenever we lose focus, even mid-test,
+        // so the user always has a clear way back in.
+        const prompt = $('focusPrompt');
+        const badge = $('focusBadge');
+        if (document.activeElement === $('mobileInputTrap')) return;
+        // Don't fight the user when they are in a dialog or the doubt box.
+        const t = document.activeElement;
+        if (t && (t.id === 'atiDoubtInput' || t.id === 'customTextInput' || t.closest('#resultsOverlay, #customTextModal'))) return;
+        if (prompt) prompt.classList.add('show');
+        if (badge) { badge.textContent = 'Tap to Focus'; badge.classList.add('unfocused'); }
       }
 
-      // Keyboard Listeners
+      // Keyboard Listeners — dialogs get first pick of Esc; Tab stays native.
       window.addEventListener('keydown', (e) => {
-        // Ignore if user is inside modal or doubt solver
+        if (e.defaultPrevented) return;
         const t = e.target;
-        if (t && (t.id === 'atiDoubtInput' || t.id === 'customTextInput')) {
-          return;
-        }
+        const inDoubt = t && (t.id === 'atiDoubtInput' || t.id === 'atiDoubtAsk');
+        const inCustom = t && t.id === 'customTextInput';
+        const inSelect = t && (t.tagName === 'SELECT' || t.tagName === 'INPUT' || t.tagName === 'TEXTAREA');
 
         if (e.key === 'Escape') {
+          // 1) Custom-text dialog, 2) Results dialog, 3) Nav dropdown, else 4) game.
+          if (isCustomOpen()) { closeCustomTextModal(); e.stopPropagation(); return; }
+          if (isResultOpen()) { resetGame(); e.stopPropagation(); return; }
+          if (inDoubt || inCustom) return; // let the field handle Esc
+          const dd = $('projDD');
+          if (dd && dd.classList.contains('active')) {
+            dd.classList.remove('active');
+            const b = dd.querySelector('.dropdown-btn');
+            if (b) b.setAttribute('aria-expanded', 'false');
+            e.stopPropagation();
+            return;
+          }
+          // Only reset when the arena is actually focused / playing, so Esc
+          // never wipes a game behind an open menu elsewhere.
+          if (!isPlaying && !isSimulating) return;
+          if (inSelect) return;
           resetGame();
           return;
         }
 
-        if (e.ctrlKey && e.altKey && e.key.toLowerCase() === 't') {
+        if (e.ctrlKey && e.altKey && (e.key === 't' || e.key === 'T')) {
           e.preventDefault();
           toggleAutoSim();
           return;
         }
 
+        if (inDoubt || inCustom || inSelect) return;
+        if (isResultOpen() || isCustomOpen()) return;
         if (isSimulating) return;
 
         if (e.key === 'Backspace') {
@@ -2894,14 +3438,14 @@
         if (e.key === 'Enter') {
           e.preventDefault();
           lastKeyHandledAt = performance.now();
+          // Code modes: Enter = end of line -> advance word. Plain modes: same.
           handleInputCharacter('\n');
           return;
         }
 
         if (e.key === 'Tab') {
-          e.preventDefault();
-          lastKeyHandledAt = performance.now();
-          resetGame();
+          // Native Tab navigation. Ctrl+Tab and Cmd+Tab are browser-reserved;
+          // plain Tab must never restart the game.
           return;
         }
 
@@ -2910,51 +3454,109 @@
           lastKeyHandledAt = performance.now();
           handleInputCharacter(e.key);
         }
-      });
+      }, { capture: true });
 
       // Mobile Soft Keyboard Input Trap
-      const mobileInputTrap = document.getElementById('mobileInputTrap');
+      const mobileInputTrap = $('mobileInputTrap');
       if (mobileInputTrap) {
         mobileInputTrap.addEventListener('input', (e) => {
           if (isSimulating) return;
+          if (isResultOpen() || isCustomOpen()) return;
           if (performance.now() - lastKeyHandledAt < 40) {
             mobileInputTrap.value = '';
             return;
           }
-          if (e.inputType === 'deleteContentBackward') {
+          if (e.inputType === 'deleteContentBackward' || e.inputType === 'deleteContentForward' || e.inputType === 'deleteByCut') {
             handleBackspace();
-          } else if (e.data) {
-            for (let i = 0; i < e.data.length; i++) {
-              if (e.data[i] === ' ') handleSpace();
-              else handleInputCharacter(e.data[i]);
+          } else if (e.data != null) {
+            const data = String(e.data);
+            for (let i = 0; i < data.length; i++) {
+              if (data[i] === ' ') handleSpace();
+              else handleInputCharacter(data[i]);
+            }
+          } else if (e.inputType === 'insertLineBreak') {
+            handleInputCharacter('\n');
+          } else if (e.inputType === 'insertFromPaste' && mobileInputTrap.value) {
+            // Fallback for browsers that do not set e.data on paste.
+            const pasted = mobileInputTrap.value;
+            for (let i = 0; i < pasted.length; i++) {
+              if (pasted[i] === ' ') handleSpace();
+              else if (pasted[i] === '\n') handleInputCharacter('\n');
+              else handleInputCharacter(pasted[i]);
             }
           }
           mobileInputTrap.value = '';
         });
         mobileInputTrap.addEventListener('blur', handleBlur);
+        mobileInputTrap.addEventListener('focus', () => {
+          const prompt = $('focusPrompt'); if (prompt) prompt.classList.remove('show');
+          const badge = $('focusBadge'); if (badge) { badge.textContent = 'Focused'; badge.classList.remove('unfocused'); }
+        });
       }
 
       // Custom Text Modal
       function openCustomTextModal() {
-        document.getElementById('customTextModal').classList.add('show');
+        const m = $('customTextModal');
+        if (!m) return;
+        m.classList.add('show');
+        m.hidden = false;
+        const ta = $('customTextInput');
+        if (ta) { try { ta.focus({ preventScroll: true }); } catch (e) { ta.focus(); } }
       }
       function closeCustomTextModal() {
-        document.getElementById('customTextModal').classList.remove('show');
+        const m = $('customTextModal');
+        if (!m) return;
+        m.classList.remove('show');
+        m.hidden = true;
+        focusTypingInput();
       }
+      // Backdrop click closes; Esc handled globally. Simple focus trap: keep Tab inside the dialog.
+      (function () {
+        const m = $('customTextModal');
+        if (m) {
+          m.addEventListener('click', (e) => { if (e.target === m) closeCustomTextModal(); });
+          m.addEventListener('keydown', (e) => {
+            if (e.key !== 'Tab') return;
+            const focusables = m.querySelectorAll('button, textarea, input, a[href]');
+            if (!focusables.length) return;
+            const first = focusables[0], last = focusables[focusables.length - 1];
+            if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+            else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+          });
+        }
+        // Results dialog: same trap + backdrop click restarts.
+        const r = $('resultsOverlay');
+        if (r) {
+          r.addEventListener('click', (e) => { if (e.target === r) resetGame(); });
+          r.addEventListener('keydown', (e) => {
+            if (e.key !== 'Tab') return;
+            const focusables = r.querySelectorAll('button, a[href]');
+            if (!focusables.length) return;
+            const first = focusables[0], last = focusables[focusables.length - 1];
+            if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+            else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+          });
+        }
+      })();
       function insertCustomPreset(type) {
+        const ta = $('customTextInput');
+        if (!ta) return;
         if (type === 'code') {
-          document.getElementById('customTextInput').value = 'const calculateTrajectory = (velocity, angle) => {\n  const radians = angle * (Math.PI / 180);\n  return { x: velocity * Math.cos(radians), y: velocity * Math.sin(radians) };\n};';
+          ta.value = 'const calculateTrajectory = (velocity, angle) => {\n  const radians = angle * (Math.PI / 180);\n  return { x: velocity * Math.cos(radians), y: velocity * Math.sin(radians) };\n};';
         } else {
-          document.getElementById('customTextInput').value = 'The greatest glory in living lies not in never falling, but in rising every time we fall.';
+          ta.value = 'The greatest glory in living lies not in never falling, but in rising every time we fall.';
         }
       }
       function applyCustomText() {
-        const val = document.getElementById('customTextInput').value.trim();
+        const ta = $('customTextInput');
+        const val = ta ? ta.value.trim() : '';
         if (val.length > 5) {
           rawText = val;
+          closeCustomTextModal();
           setStudioMode('custom');
+        } else if (ta) {
+          ta.focus();
         }
-        closeCustomTextModal();
       }
 
       // Initial Bootstrap
@@ -2962,23 +3564,23 @@
       setStudioMode('time');
       window.debugGetTyped = () => (typedWords && typedWords[currentWordIndex]) || '';
 
-      // Typing Doubt Solver (Built-in Knowledge Engine)
+      // Doubt solver (built-in answers, no network)
       ;(function () {
         var TYPING_KB = [
-          { keys: ['wpm', 'speed', 'fast', 'words per minute', 'net'], title: 'Net WPM vs Raw WPM', answer: '<strong>Net WPM vs Raw WPM:</strong> Net WPM = (Correct Characters ÷ 5) ÷ Elapsed Minutes. Mistakes penalize your net score. Raw CPM tracks every single keystroke. Most beginners average 30–40 WPM, while 75+ WPM is professional grade and 100+ WPM enters the top 1%.' },
-          { keys: ['accuracy', 'accurate', 'mistake', 'error', 'penalty'], title: 'Accuracy Priority', answer: '<strong>Accuracy Rate:</strong> Computed as (Correct Keystrokes ÷ Total Keystrokes) &times; 100. Always train accuracy before pure velocity: making mistakes breaks muscle memory rhythm and streak multipliers. Target 96%+ accuracy consistently.' },
-          { keys: ['home row', 'homerow', 'finger', 'asdf', 'jkl', 'bump'], title: 'Home Row Foundation', answer: '<strong>Home Row Technique:</strong> Rest your left fingers on A S D F and right fingers on J K L ;. The tactile bumps on F and J provide immediate tactile confirmation without needing to look down. Each finger owns its vertical lane; thumbs actuate Space.' },
-          { keys: ['improve', 'better', 'practice', 'tips', 'learn', 'beginner', 'faster'], title: 'How To Accelerate', answer: '<strong>How To Improve:</strong> 1) Do 15 focused minutes every day rather than weekend cramming. 2) Never glance at the physical keyboard; trust muscle memory. 3) Practice with opposite-hand Shift. 4) Use our Weak Keys Drill to isolate error patterns.' },
-          { keys: ['switch', 'mechanical', 'sound', 'blue', 'brown', 'red', 'panda', 'audio'], title: 'Mechanical Switch Acoustics', answer: '<strong>Switch Acoustics:</strong> <strong>Blue</strong> delivers crisp tactile clicks with high-frequency feedback. <strong>Brown</strong> offers creamy, dampened tactile thocks. <strong>Red</strong> provides smooth linear gliding. <strong>Holy Panda</strong> features a heavy tactile pop. Audio feedback anchors typing tempo.' },
-          { keys: ['code', 'javascript', 'python', 'rust', 'syntax', 'programming'], title: 'Code Syntax Typing', answer: '<strong>Coding Practice:</strong> Typing code introduces dense symbols: braces {}, brackets [], arrows =>, and indentation. Practicing code syntax builds muscle memory for operator combos and speeds up programming significantly.' },
-          { keys: ['ghost', 'pacer', 'race', 'ai', 'target'], title: 'Ghost AI Pacing', answer: '<strong>Ghost AI Pacer:</strong> The ghost runner races alongside you at a constant velocity (e.g. 60 or 100 WPM). Watching the distance delta helps you maintain a smooth, steady cadence without sudden surges.' },
-          { keys: ['grade', 'rank', 's', 's+', 'a', 'b', 'c', 'score'], title: 'Grading Rubric', answer: '<strong>Grading Standards:</strong> <strong>S+</strong> (120+ WPM at 97%+ Acc), <strong>S</strong> (100+ WPM at 95%+ Acc), <strong>A</strong> (75+ WPM at 92%+ Acc), <strong>B</strong> (50+ WPM at 86%+ Acc), <strong>C</strong> (30+ WPM at 78%+ Acc). Strive for S-tier mastery!' },
-          { keys: ['streak', 'nitro', 'combo', 'multiplier'], title: 'Nitro Combo Streaks', answer: '<strong>Nitro Streaks:</strong> Consecutive error-free keystrokes build your streak combo: 10+ unlocks x1.5 Nitro, 25+ unlocks x2.0 Overdrive, and 50+ ignites x3.0 Hyperdrive with terminal aura glow.' },
-          { keys: ['ergonomics', 'posture', 'wrist', 'pain', 'relax'], title: 'Typing Ergonomics', answer: '<strong>Ergonomics & Posture:</strong> Keep your wrists straight and slightly floating above the desk. Relax your shoulders and keep your elbows at a 90-degree angle. Take short 30-second wrist release breaks every 20 minutes.' }
+          { keys: ['wpm', 'speed', 'fast', 'words per minute', 'net', 'score'], title: 'WPM', answer: '<strong>WPM:</strong> Net WPM = (correct characters / 5) / minutes. Mistakes lower it. Raw CPM counts every key you press. Beginners often land at 30–40 WPM; 75 WPM and up is strong; 100 WPM is rare.' },
+          { keys: ['accuracy', 'accurate', 'mistake', 'error', 'penalty', 'wrong'], title: 'Accuracy', answer: '<strong>Accuracy:</strong> correct keys / total keys, times 100. Get to about 95–96% before you chase speed. A mistake resets your streak, so accuracy matters more than raw taps.' },
+          { keys: ['home row', 'homerow', 'finger', 'asdf', 'jkl', 'bump'], title: 'Home row', answer: '<strong>Home row:</strong> left fingers on A S D F, right fingers on J K L ;. The bumps on F and J let you feel your place without looking down. Thumbs handle Space.' },
+          { keys: ['improve', 'better', 'practice', 'tips', 'learn', 'beginner', 'faster', 'break', 'past'], title: 'Improving', answer: '<strong>Getting faster:</strong> 1) Practice 15 minutes a day. 2) Keep your eyes on the screen, not the keys. 3) Use opposite-hand Shift. 4) Run the weak-keys drill after a run to fix your worst letters.' },
+          { keys: ['switch', 'mechanical', 'sound', 'blue', 'brown', 'red', 'panda', 'audio'], title: 'Switch sounds', answer: '<strong>Switch sounds:</strong> Blue is clicky, Brown is a softer bump, Red is light and smooth, Holy Panda has a heavy pop. Pick the one that helps you keep time; Muted is silent.' },
+          { keys: ['code', 'javascript', 'python', 'rust', 'syntax', 'programming'], title: 'Code practice', answer: '<strong>Code practice:</strong> Code has lots of symbols — braces {}, brackets [], and arrows ->. The code modes give you short snippets so the symbol combos become automatic.' },
+          { keys: ['ghost', 'pacer', 'race', 'ai', 'target', 'chase'], title: 'Ghost', answer: '<strong>Ghost:</strong> a marker that moves at a fixed speed (for example 60 WPM). The gap badge tells you if you are ahead or behind. It helps you keep a steady pace instead of bursts.' },
+          { keys: ['grade', 'rank', 'score', 'rubric'], title: 'Grades', answer: '<strong>Grades:</strong> S+ needs 120+ WPM at 97%+, S needs 100+ at 95%+, A needs 75+ at 92%+, B needs 50+ at 86%+, C needs 30+ at 78%. Everything else is F.' },
+          { keys: ['streak', 'nitro', 'combo', 'multiplier'], title: 'Streaks', answer: '<strong>Streaks:</strong> a run of correct keys without a mistake. 10+ gives a x1.5 badge, 25+ gives x2.0, and 50+ gives x3.0. One mistake clears it.' },
+          { keys: ['ergonomics', 'posture', 'wrist', 'pain', 'relax', 'hands'], title: 'Posture', answer: '<strong>Posture:</strong> wrists loose, just above the desk. Elbows near 90 degrees. Take a short break every 20 minutes if your hands feel tight.' }
         ];
 
         var STOPWORDS = ['what', 'why', 'how', 'when', 'where', 'which', 'is', 'are', 'was', 'were', 'do', 'does', 'did', 'tell', 'me', 'about', 'the', 'a', 'an', 'of', 'in', 'on', 'and', 'or', 'for', 'to', 'it', 'its', 'please'];
-        var CHIPS = ['How To Accelerate', 'Net WPM vs Raw WPM', 'Home Row Foundation', 'Mechanical Switch Acoustics', 'Code Syntax Typing', 'Grading Rubric'];
+        var CHIPS = ['How do I get faster?', 'What is the difference between WPM and accuracy?', 'Home row', 'Switch sounds', 'Code practice', 'Grades'];
 
         function norm(s) { return (s || '').toLowerCase().replace(/[^a-z0-9 ]/g, ' '); }
         function queryWords(q) {
@@ -2990,9 +3592,11 @@
           var scored = TYPING_KB.map(entry => {
             var score = 0;
             entry.keys.forEach(k => {
-              if (words.some(w => k.includes(w) || w.includes(k))) score += 2;
+              // Exact word match only — substring matching caused false positives.
+              if (words.includes(k)) score += 3;
+              else if (k.split(' ').some(part => part.length > 3 && words.includes(part))) score += 1;
             });
-            return { entry, score };
+            return { entry: entry, score: score };
           }).filter(x => x.score > 0);
           scored.sort((a, b) => b.score - a.score);
           return scored.slice(0, 2).map(x => x.entry);
@@ -3014,26 +3618,27 @@
             input.value = chipText;
             renderAnswer(chipText);
           });
-          chipsBox.appendChild(chip);
+          if (chipsBox) chipsBox.appendChild(chip);
         });
 
         function renderAnswer(q) {
           var hits = findAnswers(q);
           answerBox.hidden = false;
           if (hits.length === 2) {
-            answerBox.innerHTML = hits[0].answer + '<br><br><strong>Related Insights:</strong><br>' + hits[1].answer;
+            answerBox.innerHTML = hits[0].answer + '<br><br><strong>Also:</strong><br>' + hits[1].answer;
           } else if (hits.length === 1) {
             answerBox.innerHTML = hits[0].answer;
           } else {
-            answerBox.innerHTML = '<strong>Study Notes Insight:</strong> For optimal results, aim for steady rhythm and 95%+ accuracy before pushing raw speed. Try asking about Home Row, WPM, Switch Acoustics, or Coding Syntax.';
+            answerBox.innerHTML = '<strong>Try one of these:</strong> aim for steady rhythm and about 95% accuracy before pushing speed. Ask about home row, WPM, switch sounds, or code practice.';
           }
         }
 
-        function askNow() {
+        function askNow(ev) {
+          if (ev && ev.preventDefault) ev.preventDefault();
           var q = input.value.trim();
           if (!q) {
             answerBox.hidden = false;
-            answerBox.innerHTML = '<strong>Type your doubt above,</strong> or tap any suggested topic chip.';
+            answerBox.innerHTML = '<strong>Type a question above,</strong> or tap a topic.';
             return;
           }
           renderAnswer(q);
@@ -3041,9 +3646,12 @@
 
         askBtn.addEventListener('click', askNow);
         input.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') askNow();
+          if (e.key === 'Enter') askNow(e);
+          // Keep the global typing handler from eating this field.
           e.stopPropagation();
         });
+        var form = document.getElementById('doubtForm');
+        if (form) form.addEventListener('submit', askNow);
       })();
     </script>
 
@@ -3075,60 +3683,25 @@
             });
           }
         }
+        // Outside-click closes the dropdown. Esc is handled by the main engine
+        // (capture phase, with stopPropagation) so it never also resets the game.
         document.addEventListener('click', function (e) {
           var d = document.getElementById('projDD');
           if (d && !d.contains(e.target)) {
-            d.classList.remove('active');
-            var b = d.querySelector('.dropdown-btn');
-            if (b) b.setAttribute('aria-expanded', 'false');
-          }
-        });
-        document.addEventListener('keydown', function (e) {
-          if (e.key === 'Escape') {
-            var d = document.getElementById('projDD');
-            if (d && d.classList.contains('active')) {
+            if (d.classList.contains('active')) {
               d.classList.remove('active');
               var b = d.querySelector('.dropdown-btn');
               if (b) b.setAttribute('aria-expanded', 'false');
             }
           }
         });
-
-        var topNav = document.getElementById('topNav');
-        if (topNav) {
-          var ticking = false;
-          window.addEventListener('scroll', function () {
-            if (!ticking) {
-              requestAnimationFrame(function () {
-                topNav.classList.toggle('s', window.scrollY > 40);
-                ticking = false;
-              });
-              ticking = true;
-            }
-          }, { passive: true });
-        }
+        // NOTE: .top-nav pill state is owned by col-ui.js (hysteresis 60/25).
+        // Do not add a second scroll listener here — it raced the canonical one.
       })();
-
-      function applyTheme(isLight) {
-        document.documentElement.classList.toggle('lm', isLight);
-        document.body.classList.toggle('lm', isLight);
-        try {
-          localStorage.setItem('theme', isLight ? 'light' : 'dark');
-        } catch (_e) {}
-        var tsck = document.getElementById('tsck');
-        if (tsck) tsck.checked = !isLight;
-        var lbl = document.getElementById('tLabel');
-        if (lbl) lbl.textContent = isLight ? 'Light Mode' : 'Dark Mode';
-      }
-      window.applyTheme = applyTheme;
-      window.hzToggle = function () {
-        var isLight = !document.documentElement.classList.contains('lm');
-        applyTheme(isLight);
-      };
-      window.toggleTheme = function (elem) {
-        var isLight = elem ? !elem.checked : !document.documentElement.classList.contains('lm');
-        applyTheme(isLight);
-      };
+      // NOTE: Theme toggle (hzToggle / toggleTheme / hzSync) is owned by shared
+      // col-ui.js. Do NOT redefine it here — the old inline copy inverted the
+      // checkbox state (!isLight) and was dead code once col-ui.js loaded.
+      // The nav button calls window.hzToggle if present, else falls back inline.
     </script>
   </body>
 </html>

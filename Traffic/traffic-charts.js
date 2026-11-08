@@ -418,7 +418,8 @@
 
     ctx.beginPath();
     data.forEach((val, i) => {
-      const x = padding + (i / (data.length - 1)) * (width - padding * 2);
+      const denom = Math.max(1, data.length - 1);
+      const x = padding + (i / denom) * (width - padding * 2);
       const y = height - padding - ((val - min) / range) * (height - padding * 2);
       if (i === 0) {ctx.moveTo(x, y);}
       else {ctx.lineTo(x, y);}

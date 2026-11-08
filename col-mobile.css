@@ -612,9 +612,15 @@ code {
   .desktop-dl {
     display: none !important;
   }
+}
+
+@media (max-width: 900px) {
   .mobile-dl {
     display: flex !important;
   }
+}
+
+@media (max-width: 1100px) {
 
   /* ─────────────────────────────────────────────────────────────────
      3. MOBILE FLOATING BOTTOM THUMB BAR (PERSISTENT ON SCROLL)

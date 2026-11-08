@@ -51,6 +51,11 @@ const excludedFilePatterns = [
   /^vite\.config\.(?:ts|mts|cts|js|mjs|cjs)$/i,
   /\.(?:fbx|obj|mtl|blend|blend1|max|3ds|dae|mb|tscn|gd)$/i,
   /\.pdf$/i,
+  /\.docx$/i,
+  // NOTE: COL.apk intentionally SHIPS — it is the Android download referenced
+  // by home.html / download.html / version.json (7.2 MB). Only
+  // AdvancedTypingInstructor.apk (desktop dev artifact, excludedFiles above)
+  // stays out. Do not add /\.apk$/ here or the download link 404s.
   /\.(?:zip|7z|tar|gz|rar)$/i,
   /\.md$/i,
   /^vitest\.config\.(?:ts|mts|cts|js|mjs|cjs)$/i,
@@ -233,6 +238,13 @@ async function build() {
     );
   } catch (err) {
     console.error("Level validation failed — fix Traffic/levels errors above.");
+    process.exit(1);
+  }
+  console.log("Validating career data...");
+  try {
+    require('child_process').execSync('node scripts/validate_career_data.js', { stdio: 'inherit' });
+  } catch (err) {
+    console.error("Career data validation failed — fix careers-data.js issues above.");
     process.exit(1);
   }
   console.log("Copying static files to dist/...");

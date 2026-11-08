@@ -305,6 +305,24 @@ function watch(page) {
       const lvs = await page.evaluate(() => (window.LVS ? Object.keys(window.LVS).length : 0));
       check('levels registered in window.LVS', lvs > 0, `${lvs} levels`);
 
+      // Verify game engine bootstrap and telemetry availability
+      const gameState = await page.evaluate(async () => {
+        for (let i = 0; i < 50; i++) {
+          if (window.game) break;
+          await new Promise(r => setTimeout(r, 100));
+        }
+        const g = window.game;
+        return {
+          gameClass: typeof window.Game !== 'undefined',
+          gameReady: typeof g !== 'undefined' && g !== null,
+          hasTelemetry: (g && typeof g.getTelemetry === 'function') || typeof window.__TRAFFIC_TELEMETRY__ !== 'undefined',
+          telemetry: g && typeof g.getTelemetry === 'function' ? g.getTelemetry() : window.__TRAFFIC_TELEMETRY__ || null
+        };
+      });
+      check('Game class defined', gameState.gameClass);
+      check('game instance booted', gameState.gameReady);
+      check('engine telemetry active', gameState.hasTelemetry);
+
       // The core regression: nothing may be fetched from a CDN.
       check('ZERO functional CDN requests', s.forbidden.length === 0,
         s.forbidden.length ? s.forbidden.slice(0, 3).join(' | ') : 'all local');

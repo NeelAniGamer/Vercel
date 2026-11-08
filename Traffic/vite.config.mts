@@ -14,7 +14,8 @@ export default defineConfig(({ mode }) => {
       sourcemap: false,
       rollupOptions: {
         input: {
-          main: resolve(rootDir, 'index.html')
+          main: resolve(rootDir, 'index.html'),
+          messenger: resolve(rootDir, 'traffic-messenger.html')
         }
       }
     },

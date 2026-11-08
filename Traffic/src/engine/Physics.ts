@@ -209,10 +209,12 @@ export class PacejkaModel {
     const staticFront = totalWeight * (lr / wheelbase);
     const staticRear = totalWeight * (lf / wheelbase);
 
-    // Longitudinal weight transfer (brake dive shifts load forward; acceleration shifts load rearward)
-    const deltaLong = (mass * ax * cgHeight) / wheelbase;
-    const frontTotal = Math.max(totalWeight * 0.1, Math.min(totalWeight * 0.85, staticFront - deltaLong));
-    const rearTotal = Math.max(totalWeight * 0.1, Math.min(totalWeight * 0.85, staticRear + deltaLong));
+    // Longitudinal weight transfer (conserving total weight: frontTotal + rearTotal === totalWeight)
+    const maxTransfer = Math.min(staticFront - totalWeight * 0.1, totalWeight * 0.85 - staticFront);
+    const rawDeltaLong = (mass * ax * cgHeight) / wheelbase;
+    const deltaLong = Math.max(-maxTransfer, Math.min(maxTransfer, rawDeltaLong));
+    const frontTotal = staticFront - deltaLong;
+    const rearTotal = staticRear + deltaLong;
 
     // Lateral weight transfer (roll load shift)
     const deltaLatFront = (frontTotal * Math.abs(ay) * cgHeight) / (trackWidth * g);

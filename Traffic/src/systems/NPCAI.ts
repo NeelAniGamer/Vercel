@@ -345,10 +345,13 @@ export function arbitrateDeadlock(stalledVehicles: DeadlockVehicle[], stuckDurat
 
   if (stuckDurationSec >= 3.5 && stuckDurationSec < 8.0) {
     // Phase 1: Soft Token Arbitration
+    const now = Date.now();
     const scored = (stalledVehicles || []).map(v => {
       const typeWeight = v.type === 'bus' ? 30 : (v.type === 'truck' ? 25 : (v.type === 'car' ? 20 : 15));
       const aggressionBias = (v.aggression || 0.5) * 10;
-      const score = (v.arrivalTimeMs || 0) * 0.001 + typeWeight + aggressionBias;
+      // FIFO: Vehicle waiting longest accumulates highest wait score
+      const waitSec = Math.max(0, (now - (v.arrivalTimeMs || now)) / 1000);
+      const score = waitSec * 5.0 + typeWeight + aggressionBias;
       return { vehicle: v, score };
     });
     scored.sort((a, b) => b.score - a.score);
@@ -1187,17 +1190,68 @@ export class NPCAI {
   }
 
   _getVehicleAhead(): any {
-    if (!this.currentEdge || !this.trafficManager) return null;
-    const vehicles: any[] = this.trafficManager.getVehiclesOnEdge(this.currentEdge.id) || [];
-    const forward = this.currentEdge.getForwardVector(this.vehicle.currentNode);
-    let closest = null, minDist = Infinity;
-    vehicles.forEach(v => {
-      if (v === this.vehicle || !v.position) return;
-      const toV = new THREE.Vector3().subVectors(v.position, this.vehicle.position);
-      const proj = toV.dot(forward);
-      if (proj > 0 && proj < minDist) { minDist = proj; closest = v; }
-    });
-    return closest;
+    if (!this.trafficManager || !this.vehicle || !this.vehicle.position) return null;
+    const myPos = this.vehicle.position;
+    const rotY = this.vehicle.rotation ? (typeof this.vehicle.rotation.y === 'number' ? this.vehicle.rotation.y : 0) : 0;
+    const sinY = Math.sin(rotY);
+    const cosY = Math.cos(rotY);
+    let closestVeh: any = null;
+    let closestDist = Infinity;
+    const maxCheckDist = 45;
+    const maxCheckDistSq = maxCheckDist * maxCheckDist;
+
+    // Check NPC vehicles
+    const vehicles = this.trafficManager.vehicles || [];
+    for (let i = 0; i < vehicles.length; i++) {
+      const v = vehicles[i];
+      if (!v || v === this.vehicle || !v.position || !v.active) continue;
+      const dx = v.position.x - myPos.x;
+      const dz = v.position.z - myPos.z;
+      const dSq = dx * dx + dz * dz;
+      if (dSq > maxCheckDistSq || dSq >= closestDist * closestDist) continue;
+
+      const dist = Math.sqrt(dSq);
+      const forwardDot = (dx * sinY + dz * cosY) / (dist || 1);
+      const lateral = Math.abs(dx * cosY - dz * sinY);
+
+      // Heading alignment check
+      const vRot = v.rotation ? (typeof v.rotation.y === 'number' ? v.rotation.y : 0) : (v.mesh ? v.mesh.rotation.y : 0);
+      const vForwardX = Math.sin(vRot), vForwardZ = Math.cos(vRot);
+      const headingDot = sinY * vForwardX + cosY * vForwardZ;
+
+      // 1. Same-direction / same-lane trailing vehicle or curve leader
+      if (forwardDot > 0.30 && headingDot > 0.35 && lateral < 1.9) {
+        closestDist = dist;
+        closestVeh = v;
+      }
+      // 2. Cross-traffic at intersection: only react if directly ahead within narrow path
+      else if (forwardDot > 0.50 && dist < 4.5 && lateral < 1.1 && !this._clearingIntersection) {
+        const vSpeed = Math.abs(v.speed !== undefined ? v.speed : (v.npcAI?.currentSpeed || 0));
+        if (vSpeed > 0.8) {
+          closestDist = dist;
+          closestVeh = v;
+        }
+      }
+    }
+
+    // Check player vehicle
+    const p = this.trafficManager.game?.playerVehicle || this.trafficManager.game?.player;
+    if (p && p.position && p !== this.vehicle) {
+      const dx = p.position.x - myPos.x;
+      const dz = p.position.z - myPos.z;
+      const dSq = dx * dx + dz * dz;
+      if (dSq <= maxCheckDistSq && dSq < closestDist * closestDist) {
+        const dist = Math.sqrt(dSq);
+        const forwardDot = (dx * sinY + dz * cosY) / (dist || 1);
+        const lateral = Math.abs(dx * cosY - dz * sinY);
+        if (forwardDot > 0.30 && lateral < 2.0) {
+          closestDist = dist;
+          closestVeh = p;
+        }
+      }
+    }
+
+    return closestVeh;
   }
 
   _getSignalAhead(signals: any[]): any {
@@ -1236,7 +1290,11 @@ export class NPCAI {
     if (!signal || !this.vehicle || !this.vehicle.position) return Infinity;
     const pos = signal.pos || signal.position || signal.mesh?.position;
     if (!pos) return Infinity;
-    return this.vehicle.position.distanceTo(pos);
+    const jx = (signal.userData?.junctionX !== undefined) ? signal.userData.junctionX : pos.x;
+    const jz = (signal.userData?.junctionZ !== undefined) ? signal.userData.junctionZ : pos.z;
+    const dx = jx - this.vehicle.position.x;
+    const dz = jz - this.vehicle.position.z;
+    return Math.sqrt(dx * dx + dz * dz);
   }
 
   /**
@@ -1500,16 +1558,20 @@ export class NPCAI {
     toSpot.y = 0;
     const desiredDir = toSpot.normalize();
     const currentDir = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
-    const angle = Math.atan2(desiredDir.x, desiredDir.z) - Math.atan2(currentDir.x, currentDir.z);
-    const maxTurn = this.vehicle.stats.turn * dt * 60 * 0.5;
+    let angle = Math.atan2(desiredDir.x, desiredDir.z) - Math.atan2(currentDir.x, currentDir.z);
+    while (angle > Math.PI) angle -= Math.PI * 2;
+    while (angle < -Math.PI) angle += Math.PI * 2;
+    const maxTurn = (this.vehicle.stats?.turn || 0.05) * dt * 60 * 0.5;
     this.vehicle.rotation.y += THREE.MathUtils.clamp(angle, -maxTurn, maxTurn);
   }
 
   _alignForParking(dt: number): void {
     if (!this.parkingSpot) return;
     const targetRot = this.parkingSpot.rotation;
-    const diff = targetRot - this.vehicle.rotation.y;
-    const maxTurn = this.vehicle.stats.turn * dt * 60 * 0.3;
+    let diff = targetRot - this.vehicle.rotation.y;
+    while (diff > Math.PI) diff -= Math.PI * 2;
+    while (diff < -Math.PI) diff += Math.PI * 2;
+    const maxTurn = (this.vehicle.stats?.turn || 0.05) * dt * 60 * 0.3;
     this.vehicle.rotation.y += THREE.MathUtils.clamp(diff, -maxTurn, maxTurn);
   }
 
@@ -1556,18 +1618,20 @@ export class NPCAI {
     this.pullOverTimer = (this.pullOverTimer || 0) + dt;
     if (this.currentEdge) {
       const curbPos = this.currentEdge.getLaneCenter(0, this.vehicle.routeProgress);
-      const right = new THREE.Vector3().crossVectors(
-        new THREE.Vector3(0, 1, 0),
-        new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y))
-      );
-      const targetPos = curbPos.clone().addScaledVector(right, -3);
+      // True right vector in three.js: forward × up
+      const forward = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
+      const right = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize();
+      const targetPos = curbPos.clone().addScaledVector(right, 3);
       const toTarget = new THREE.Vector3().subVectors(targetPos, this.vehicle.position);
       toTarget.y = 0;
       if (toTarget.length() > 0.5) {
         const desiredDir = toTarget.normalize();
-        const currentDir = new THREE.Vector3(Math.sin(this.vehicle.rotation.y), 0, Math.cos(this.vehicle.rotation.y));
-        const angle = Math.atan2(desiredDir.x, desiredDir.z) - Math.atan2(currentDir.x, currentDir.z);
-        this.vehicle.rotation.y += THREE.MathUtils.clamp(angle, -this.vehicle.stats.turn * dt * 60 * 0.5, this.vehicle.stats.turn * dt * 60 * 0.5);
+        const currentDir = forward;
+        let angle = Math.atan2(desiredDir.x, desiredDir.z) - Math.atan2(currentDir.x, currentDir.z);
+        while (angle > Math.PI) angle -= Math.PI * 2;
+        while (angle < -Math.PI) angle += Math.PI * 2;
+        const turnLimit = (this.vehicle.stats?.turn || 0.05) * dt * 60 * 0.5;
+        this.vehicle.rotation.y += THREE.MathUtils.clamp(angle, -turnLimit, turnLimit);
       }
     }
     this.desiredSpeed = 0;
@@ -1724,11 +1788,19 @@ export class NPCAI {
     if (tm && tm.game) {
       const cfg = tm.game.mapCfg;
       if (cfg) {
-        if (cfg.hasRain || cfg.hasPuddles) speed *= (0.65 + Math.random() * 0.15);
+        // Deterministic weather reduction (no per-frame Math.random jitter)
+        if (cfg.hasRain || cfg.hasPuddles) speed *= 0.75;
         if (cfg.isNight) speed *= 0.85;
+        if (cfg.schoolSpeedLimit) {
+          const schoolLimit = cfg.schoolSpeedLimit / 3.6;
+          speed = Math.min(speed, schoolLimit);
+        }
       }
     }
-    return speed;
+    // Cap to vehicle class maximum design speed
+    const vType = (this.vehicle?.type || 'car').toLowerCase();
+    const classV0 = VehicleClassProfiles[vType]?.v0 || 15.0;
+    return Math.min(speed, classV0 * 1.2);
   }
 
   _applyPhysics(dt: number): void {
@@ -1746,13 +1818,16 @@ export class NPCAI {
   }
 
   _respawn(): void {
-    this.vehicle.health = 100;
-    this.vehicle.position.set(0, 0.5, 0);
-    this.vehicle.velocity.set(0, 0, 0);
-    this.currentSpeed = 0;
-    this.state = NPC_STATE.IDLE;
-    this.routeIndex = 0;
-    this.crashTimer = 0;
+    if (this.trafficManager && typeof this.trafficManager._despawnVehicle === 'function') {
+      this.trafficManager._despawnVehicle(this.vehicle);
+    } else {
+      this.vehicle.health = 100;
+      this.vehicle.velocity.set(0, 0, 0);
+      this.currentSpeed = 0;
+      this.state = NPC_STATE.IDLE;
+      this.routeIndex = 0;
+      this.crashTimer = 0;
+    }
   }
 
   getDebugInfo(): any {

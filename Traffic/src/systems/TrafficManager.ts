@@ -369,6 +369,8 @@ export class TrafficManager {
   _resetVehicle(vehicle: VehicleInstance, color: number, profileKey: string): void {
     vehicle.active = false; vehicle.speed = 0; vehicle.velocity.set(0, 0, 0);
     vehicle.profileKey = profileKey; vehicle.health = 100; vehicle.npcAI = null;
+    (vehicle as any)._justHit = false;
+    (vehicle as any)._justHitUntil = 0;
     if (vehicle.mesh && vehicle.mesh.userData.materials) {
       const mats = vehicle.mesh.userData.materials;
       if (mats.body) mats.body.color.setHex(color);
@@ -422,6 +424,7 @@ export class TrafficManager {
     const isPedMode = this.levelConfig && this.levelConfig.isPedestrian;
     let offset: number;
 
+    let chosenLane = 0;
     if (isPedMode) {
       const roadHalfWidth = edge.width / 2;
       const sidewalkWidth = this.levelConfig.sidewalkWidth || 3;
@@ -430,13 +433,19 @@ export class TrafficManager {
     } else {
       const offsets = edge.getLaneOffsets();
       const laneCount = Math.max(1, edge.lanes || 1);
-      const lane = Math.floor(Math.random() * laneCount);
-      const dirBase = startNode === edge.startNode ? laneCount : 0;
-      offset = offsets[dirBase + lane] !== undefined ? offsets[dirBase + lane] : 0;
+      chosenLane = Math.floor(Math.random() * laneCount);
+      const dirBase = startNode === edge.startNode ? 0 : laneCount;
+      offset = offsets[dirBase + chosenLane] !== undefined ? offsets[dirBase + chosenLane] : 0;
     }
-    pos.addScaledVector(right, offset); pos.y = 0.5;
+    pos.addScaledVector(right, offset);
+    pos.y = 0;
 
-    return { position: pos, rotation: Math.atan2(forward.x, forward.z), node: startNode!, edge, lane: 0 };
+    const player = this.game && (this.game.playerVehicle || this.game.player) && (this.game.playerVehicle?.position || this.game.player?.position);
+    const isOccupied = this.vehicles.some(v => v.active && v.position && v.position.distanceTo(pos) < 16.0);
+    const isNearPlayer = player && Math.hypot(pos.x - player.x, pos.z - player.z) < 22.0;
+    if (isOccupied || isNearPlayer) return null;
+
+    return { position: pos, rotation: Math.atan2(forward.x, forward.z), node: startNode!, edge, lane: chosenLane };
   }
 
   _spawnCandidateEdges(): RoadEdge[] {
@@ -470,7 +479,7 @@ export class TrafficManager {
     t = Math.max(0, Math.min(1, t));
     const span = (SPAWN_MIN_GAP + Math.random() * (SPAWN_MAX_GAP - SPAWN_MIN_GAP)) / edge.length;
     t += Math.random() < 0.5 ? -span : span;
-    return Math.max(0.02, Math.min(0.98, t));
+    return Math.max(0.18, Math.min(0.82, t));
   }
 
   _getNextRouteNode(currentNode: RoadNode | null): RoadNode | null {

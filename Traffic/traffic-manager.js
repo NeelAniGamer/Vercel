@@ -844,6 +844,8 @@ class TrafficManager {
     vehicle.profileKey = profileKey;
     vehicle.health = 100;
     vehicle.npcAI = null;
+    vehicle._justHit = false;
+    vehicle._justHitUntil = 0;
 
 
     if (vehicle.mesh && vehicle.mesh.userData.materials) {

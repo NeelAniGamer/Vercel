@@ -376,7 +376,13 @@ window.closeMo = function () {
       authConfig = config.auth
     }
   } catch (e) {
-    console.warn('[col-auth] Could not load config.json — authentication disabled.')
+    console.warn('[col-auth] Could not load config.json — using default auth config.')
+  }
+  if (!authConfig) {
+    authConfig = {
+      url: 'https://hvukxajztizsuhfubjws.supabase.co',
+      key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2dWt4YWp6dGl6c3VoZnViandzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4Mzc1MTAsImV4cCI6MjA5NjQxMzUxMH0.KqQRkmhuB_rFlzQ2N3NhSQrftmVZgGE3NUuVHYh3aYE'
+    }
   }
 
   // 2. Load Supabase SDK if keys exist
@@ -403,25 +409,62 @@ window.closeMo = function () {
   }
 
   window.handleGoogleOneTap = async (response) => {
-    if (!window.supabaseClient) {return}
+    if (!response || !response.credential) {return}
+    let client = window.supabaseClient
+    if (!client && window.__colConfigPromise) {
+      try {
+        await window.__colConfigPromise
+        for (let i = 0; i < 25 && !window.supabaseClient; i++) {
+          await new Promise((r) => setTimeout(r, 100))
+        }
+        client = window.supabaseClient
+      } catch (e) {}
+    }
+    if (!client) {
+      console.error('[col-auth] Cannot complete Google One Tap: Supabase client unavailable')
+      return
+    }
     try {
-      const { data, error } = await window.supabaseClient.auth.signInWithIdToken({
+      const { data, error } = await client.auth.signInWithIdToken({
         provider: 'google',
         token: response.credential
       })
       if (error) {throw error}
+      if (typeof toast === 'function') {
+        toast('Signed In With Google', '#22c55e')
+      }
     } catch (error) {
-      console.error('One Tap Sign-in error:', error.message)
+      console.error('[col-auth] One Tap Sign-in error:', error.message)
+      if (typeof toast === 'function') {
+        toast('Google Sign-in Failed: ' + (error.message || 'Authentication error'), '#ef4444')
+      }
     }
+  }
+
+  function clearOneTapCoolDown() {
+    try {
+      // Google GSI sets a client-side 'g_state' cookie on dismissal that suppresses
+      // One Tap for 2 hours up to 7 days. Clearing it unblocks immediate display.
+      const past = 'Thu, 01 Jan 1970 00:00:01 GMT'
+      document.cookie = 'g_state=; expires=' + past + '; path=/;'
+      document.cookie = 'g_state=; expires=' + past + ';'
+    } catch (e) {}
   }
 
   function initOneTap() {
     if (window.colUser) {return}
-    if (typeof google === 'undefined' || !google.accounts) {
-      const script = document.createElement('script')
-      script.src = 'https://accounts.google.com/gsi/client'
-      script.onload = () => setupOneTap()
-      document.head.appendChild(script)
+    if (typeof google === 'undefined' || !google.accounts || !google.accounts.id) {
+      if (!document.querySelector('script[src*="accounts.google.com/gsi/client"]')) {
+        const script = document.createElement('script')
+        script.src = 'https://accounts.google.com/gsi/client'
+        script.async = true
+        script.defer = true
+        script.onload = () => setupOneTap()
+        document.head.appendChild(script)
+      } else {
+        const existing = document.querySelector('script[src*="accounts.google.com/gsi/client"]')
+        existing.addEventListener('load', () => setupOneTap())
+      }
     } else {
       setupOneTap()
     }
@@ -429,33 +472,62 @@ window.closeMo = function () {
 
   function setupOneTap() {
     if (window.colUser) {return}
+    // Respect explicit dismissal within this browser tab session so we don't nag
+    if (sessionStorage.getItem('col_onetap_dismissed_session')) {return}
+
     // Don't show One Tap on Driving.html levels screen or briefing screen
     const path = window.location.pathname.toLowerCase()
     if (path.includes('setup') || (path.includes('driving') && (new URLSearchParams(window.location.search).get('screen') === 'levels' || new URLSearchParams(window.location.search).get('lv')))) {
       return
     }
-    google.accounts.id.initialize({
-      client_id: '500448449044-hv2rp3k0lsok9ara1bred87c75lnsp7l.apps.googleusercontent.com',
-      callback: window.handleGoogleOneTap,
-      use_fedcm_for_prompt: false,
-      itp_support: true
-    })
-    google.accounts.id.prompt((notification) => {
-      if (notification.isNotDisplayed()) {
-        console.log('One tap not displayed: ', notification.getNotDisplayedReason())
-      } else if (notification.isSkippedMoment()) {
-        console.log('One tap skipped: ', notification.getSkippedReason())
-      } else if (notification.isDismissedMoment()) {
-        console.log('One tap dismissed: ', notification.getDismissedReason())
-      }
-    })
 
-    // Re-render button if modal is open
-    const container = document.getElementById('gSignInBtnContainer')
-    if (container && !window.AndroidBridge) {
-      container.innerHTML = ''
-      google.accounts.id.renderButton(container, { theme: 'filled_black', size: 'large', type: 'standard', shape: 'rectangular', width: 280 })
+    // Clear stale multi-day g_state cool-down cookie so returning visitors receive the prompt
+    clearOneTapCoolDown()
+
+    if (!window._gsiInitialized && typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+      google.accounts.id.initialize({
+        client_id: '500448449044-hv2rp3k0lsok9ara1bred87c75lnsp7l.apps.googleusercontent.com',
+        callback: window.handleGoogleOneTap,
+        auto_select: false,
+        use_fedcm_for_prompt: true,
+        itp_support: true
+      })
+      window._gsiInitialized = true
     }
+
+    if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+      google.accounts.id.prompt((notification) => {
+        if (notification.isNotDisplayed()) {
+          const reason = typeof notification.getNotDisplayedReason === 'function' ? notification.getNotDisplayedReason() : 'unknown'
+          console.log('[col-auth] One Tap not displayed:', reason)
+        } else if (notification.isSkippedMoment()) {
+          const reason = typeof notification.getSkippedReason === 'function' ? notification.getSkippedReason() : 'unknown'
+          console.log('[col-auth] One Tap skipped:', reason)
+        } else if (notification.isDismissedMoment()) {
+          const reason = typeof notification.getDismissedReason === 'function' ? notification.getDismissedReason() : 'dismissed'
+          console.log('[col-auth] One Tap dismissed by user:', reason)
+          try {
+            sessionStorage.setItem('col_onetap_dismissed_session', '1')
+          } catch (e) {}
+        }
+      })
+
+      // Re-render button if container exists
+      const container = document.getElementById('gSignInBtnContainer')
+      if (container && !window.AndroidBridge && typeof google.accounts.id.renderButton === 'function') {
+        container.innerHTML = ''
+        google.accounts.id.renderButton(container, { theme: 'filled_black', size: 'large', type: 'standard', shape: 'rectangular', width: 280 })
+      }
+    }
+  }
+
+  // Expose manual prompt trigger for explicit login actions
+  window.colPromptGoogleOneTap = function (force = false) {
+    if (force) {
+      try { sessionStorage.removeItem('col_onetap_dismissed_session') } catch (e) {}
+      clearOneTapCoolDown()
+    }
+    initOneTap()
   }
 
   function initSupabase(url, key) {
@@ -487,7 +559,7 @@ window.closeMo = function () {
           try {
             const { data: upProfile, error: upError } = await supabaseClient
               .from('user_profiles')
-              .select('*')
+              .select('id, user_id, display_name, username, preferred_vehicle, age, language, student_id, avatar_url, updated_at')
               .eq('user_id', userId)
               .maybeSingle()
 
@@ -552,11 +624,9 @@ window.closeMo = function () {
       dispatchAuthEvent()
       updateAuthUI()
 
-      if (!session && !window.colUser && !window._oneTapAttempted && (event === 'INITIAL_SESSION' || event === 'SIGNED_OUT')) {
+      if (!session && !window.colUser && !window._oneTapAttempted) {
         window._oneTapAttempted = true
-        if (event === 'INITIAL_SESSION') {
-          initOneTap()
-        }
+        initOneTap()
       }
     })
 
@@ -565,6 +635,14 @@ window.closeMo = function () {
 
     // If there's a custom handler provided by the page (like in qr.html to fetch drive data), fire it.
     dispatchAuthEvent()
+
+    // Safety fallback: Ensure One Tap is triggered for unauthenticated visitors if onAuthStateChange was delayed
+    setTimeout(() => {
+      if (!window.colUser && !window._oneTapAttempted && !window.AndroidBridge) {
+        window._oneTapAttempted = true
+        initOneTap()
+      }
+    }, 1500)
   }
 
   function dispatchAuthEvent() {
@@ -1200,6 +1278,9 @@ window.closeMo = function () {
         mo.removeAttribute('inert')
         // Focus first focusable element
         setTimeout(function(){ const f = mo.querySelector('button, input, [tabindex]:not([tabindex="-1"])'); if(f) {f.focus();} }, 100)
+      }
+      if (!window.colUser && typeof window.colPromptGoogleOneTap === 'function') {
+        window.colPromptGoogleOneTap(true)
       }
     }
     window.openLogin = window.openGlobalLogin
@@ -2103,6 +2184,11 @@ window.closeMo = function () {
     closeAuthModal()
     const loginMo = document.getElementById('loginMo')
     if (loginMo) {loginMo.classList.remove('open')}
+    window._oneTapAttempted = false
+    try {
+      sessionStorage.removeItem('col_onetap_dismissed_session')
+      clearOneTapCoolDown()
+    } catch (e) {}
     dispatchAuthEvent()
     updateAuthUI()
   }

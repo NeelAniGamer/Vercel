@@ -1,10 +1,34 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995"
-     crossorigin="anonymous"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995"
+     crossorigin="anonymous"></script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Which operating systems are supported by Class Of Learners downloads?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Class Of Learners software packages support Windows 10/11 (.exe), Linux (.deb and tar.gz), Android (.apk), and modern web browsers as Progressive Web Apps."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Are the downloads safe, free, and open?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, all builds are free, verified with checksums, and built directly from vetted source code without telemetry or adware."
+            }
+          }
+        ]
+      }
+    </script>
     <meta name="theme-color" content="#070A14" id="themeMeta" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -41,6 +65,7 @@
         } catch (e) {}
       })()
     </script>
+    <meta name="author" content="Class Of Learners Studio" />
     <meta name="description" content="Download Class Of Learners apps and desktop builds for ATI, Solar Engine, Perceptus Flow, CastFlow, and the Mumbai Traffic learning academy." />
     <meta name="keywords" content="download Class Of Learners, desktop app download, typing tutor download, traffic simulator download, educational apps free download, Windows app download, Linux app download, Android APK download, student apps download, free educational software">
     <meta property="og:site_name" content="Class Of Learners" />
@@ -68,9 +93,14 @@
         "description": "Downloadable Class Of Learners web, desktop, and Android projects.",
         "inLanguage": "en-IN",
         "isPartOf": { "@id": "https://advancedlogiclabs.dpdns.org/#website" },
-        "about": { "@id": "https://advancedlogiclabs.dpdns.org/#organization" }
+        "about": { "@id": "https://advancedlogiclabs.dpdns.org/#organization" },
+        "datePublished": "2026-09-25",
+        "dateModified": "2026-11-08",
+        "author": { "@type": "Organization", "name": "Class Of Learners Studio", "url": "https://advancedlogiclabs.dpdns.org/" }
       }
     </script>
+        <link rel="preconnect" href="https://hvukxajztizsuhfubjws.supabase.co" crossorigin />
+    <link rel="dns-prefetch" href="https://hvukxajztizsuhfubjws.supabase.co" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
@@ -1740,6 +1770,7 @@
     <link rel="stylesheet" href="liquid-glass.css" />
     <link rel="stylesheet" href="mobile-perf.css" />
     <script defer src="pull-refresh.js"></script>
+    <script defer src="col-nav.js"></script>
     <script defer src="col-ui.js"></script>
     <script defer src="col-auth.js"></script>
     <link rel="manifest" href="manifest.json" />
@@ -1761,7 +1792,7 @@
     <div class="cd" id="cDot"></div>
     <div class="cr" id="cRing"></div>
 
-    <nav class="top-nav" id="topNav">
+    <nav class="top-nav" id="topNav" data-page="download">
       <a href="/" class="nav-brand"
         ><img src="Class.png" alt="Class Of Learners" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" /><span class="brand-name">Class Of Learners</span></a
       >
@@ -1935,8 +1966,8 @@
           </div>
 
           <div style="display: flex; gap: 8px; width: 100%; margin-top: auto; flex-wrap: wrap;">
-            <a id="btn-ati-setup" class="btn-download locked" style="flex: 1 1 110px" onclick="handleLockedClick(event, 'ati')">.EXE (Setup)</a>
-            <a id="btn-ati-portable" class="btn-download locked" style="flex: 1 1 110px" onclick="handleLockedClick(event, 'ati')">.EXE (Portable)</a>
+            <button id="btn-ati-setup" class="btn-download locked" style="flex: 1 1 110px" onclick="handleLockedClick(event, 'ati')">.EXE (Setup)</button>
+            <button id="btn-ati-portable" class="btn-download locked" style="flex: 1 1 110px" onclick="handleLockedClick(event, 'ati')">.EXE (Portable)</button>
             <a href="ati-demo" class="btn-download" style="flex: 1 1 110px; background: rgba(242, 184, 75, 0.1); border: 1px solid rgba(242, 184, 75, 0.4); color: var(--signal); box-shadow: none;" title="Test in browser without installing">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><polygon points="5 3 19 12 5 21 5 3"/></svg>Web Demo
             </a>
@@ -1964,8 +1995,8 @@
           </div>
 
           <div style="display: flex; gap: 10px; width: 100%; margin-top: auto; flex-wrap: wrap;">
-            <a id="btn-solar-exe" class="btn-download solar-btn locked" style="flex: 1 1 120px" onclick="handleLockedClick(event, 'solar')">.EXE (Setup)</a>
-            <a id="btn-solar-zip" class="btn-download solar-btn locked" style="flex: 1 1 120px" onclick="handleLockedClick(event, 'solar')">.7Z (Source)</a>
+            <button id="btn-solar-exe" class="btn-download solar-btn locked" style="flex: 1 1 120px" onclick="handleLockedClick(event, 'solar')">.EXE (Setup)</button>
+            <button id="btn-solar-zip" class="btn-download solar-btn locked" style="flex: 1 1 120px" onclick="handleLockedClick(event, 'solar')">.7Z (Source)</button>
           </div>
         </div>
 
@@ -1990,8 +2021,8 @@
           </div>
 
           <div style="display: flex; gap: 10px; width: 100%; margin-top: auto; flex-wrap: wrap;">
-            <a id="btn-perceptus-exe" class="btn-download perceptus-btn locked" style="flex: 1 1 120px" onclick="handleLockedClick(event, 'perceptus')">.EXE (App)</a>
-            <a id="btn-perceptus-zip" class="btn-download perceptus-btn locked" style="flex: 1 1 120px" onclick="handleLockedClick(event, 'perceptus')">.7Z (Source)</a>
+            <button id="btn-perceptus-exe" class="btn-download perceptus-btn locked" style="flex: 1 1 120px" onclick="handleLockedClick(event, 'perceptus')">.EXE (App)</button>
+            <button id="btn-perceptus-zip" class="btn-download perceptus-btn locked" style="flex: 1 1 120px" onclick="handleLockedClick(event, 'perceptus')">.7Z (Source)</button>
           </div>
         </div>
 
@@ -2014,7 +2045,7 @@
             <label id="label-col">Click to Read Terms &amp; Unlock</label>
           </div>
 
-          <a id="btn-col" class="btn-download col-btn locked" style="margin-top: auto" onclick="handleLockedClick(event, 'col')">Download .APK (7.2 MB)</a>
+          <button type="button" id="btn-col" class="btn-download col-btn locked" style="margin-top: auto" onclick="handleLockedClick(event, 'col')">Download .APK (7.2 MB)</button>
         </div>
 
         <!-- Card 5: CastFlow Studio -->
@@ -2036,7 +2067,7 @@
             <label id="label-cast">Click to Read Terms &amp; Unlock</label>
           </div>
 
-          <a id="btn-cast" class="btn-download cast-btn locked" style="margin-top: auto" onclick="handleLockedClick(event, 'cast')">Download .APK (76.2 MB)</a>
+          <button type="button" id="btn-cast" class="btn-download cast-btn locked" style="margin-top: auto" onclick="handleLockedClick(event, 'cast')">Download .APK (76.2 MB)</button>
         </div>
 
         <!-- Card 6: Terra 3D Earth Globe -->
@@ -2059,7 +2090,7 @@
           </div>
 
           <div style="display: flex; gap: 10px; width: 100%; margin-top: auto; flex-wrap: wrap;">
-            <a id="btn-terra" class="btn-download terra-btn locked" style="flex: 1 1 140px" onclick="handleLockedClick(event, 'terra')">Download .EXE</a>
+            <button type="button" id="btn-terra" class="btn-download terra-btn locked" style="flex: 1 1 140px" onclick="handleLockedClick(event, 'terra')">Download .EXE</button>
             <a href="Terra3D/" class="btn-download" style="flex: 1 1 120px; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8; box-shadow: none;" title="Explore live in browser">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><polygon points="5 3 19 12 5 21 5 3"/></svg>Web Atlas
             </a>
@@ -2245,7 +2276,7 @@
           color: 'var(--signal)',
           textColor: '#0A0500',
           acceptedText: 'Terms Accepted & Unlocked',
-          html: '<div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:var(--signal); color:var(--signal);"></span>1. About This Project</div><div class="modal-term-desc">Created by Neel, Ansh, and Aarush (Co‑Founders) with contributions from Yashraj Jadhav, Aaryaman Jadhav, and John Doe as a student learning project focused on syntax mastery.</div></div><div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:var(--signal); color:var(--signal);"></span>2. Free To Use</div><div class="modal-term-desc">Provided completely free of charge without strict copyrights. Fully offline capable with optional LAN/Supabase cloud racing.</div></div>',
+          html: '<div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:var(--signal); color:var(--signal);"></span>1. About This Project</div><div class="modal-term-desc">Created by Neel Badri, Aarush Vangari, and Ansh Patil (Co-Founders) as a student learning project focused on syntax mastery.</div></div><div class="modal-term-section"><div class="modal-term-title"><span class="term-dot" style="background:var(--signal); color:var(--signal);"></span>2. Free To Use</div><div class="modal-term-desc">Provided completely free of charge without strict copyrights. Fully offline capable with optional LAN/Supabase cloud racing.</div></div>',
           links: [
             { id: 'btn-ati-setup', url: 'https://github.com/NeelAniGamer/Vercel/releases/download/Projects/AdvancedTypingInstructor_Setup.exe' },
             { id: 'btn-ati-portable', url: 'https://github.com/NeelAniGamer/Vercel/releases/download/Projects/AdvancedTypingInstructor.exe' }
@@ -2360,8 +2391,12 @@
           if (btn) {
             btn.classList.remove('locked');
             btn.setAttribute('download', '');
-            btn.href = item.url;
             btn.removeAttribute('onclick');
+            if (btn.tagName === 'BUTTON') {
+              btn.onclick = function () { window.location.href = item.url; };
+            } else {
+              btn.href = item.url;
+            }
           }
         });
       }

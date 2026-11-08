@@ -1,13 +1,13 @@
-// pull-refresh.js — Pull-to-Refresh + iPhone Liquid Glass Detection
+// pull-refresh.js — Pull-to-Refresh + Apple Liquid Glass Engine
 // Loaded on every page via col-ui.js or inline script.
 ;(function () {
   'use strict'
 
   // ═══════════════════════════════════════════════════════════════════════
-  // 1. iPhone Liquid Glass Detection & Ambient Fluid Aurora Mounting
+  // 1. iPhone & Desktop Apple Liquid Glass Engine + Caustic Aurora Mount
   // ═══════════════════════════════════════════════════════════════════════
   function mountLiquidBackdrop() {
-    if (!document.documentElement.classList.contains('is-iphone')) return
+    if (!document.documentElement.classList.contains('apple-glass') && !document.documentElement.classList.contains('is-iphone')) return
     if (document.getElementById('apple-liquid-backdrop')) return
     if (!document.body) {
       document.addEventListener('DOMContentLoaded', mountLiquidBackdrop)
@@ -21,25 +21,37 @@
       '<div class="apple-glass-orb apple-orb-amber"></div>' +
       '<div class="apple-glass-orb apple-orb-cyan"></div>' +
       '<div class="apple-glass-orb apple-orb-purple"></div>' +
-      '<div class="apple-glass-orb apple-orb-rose"></div>'
+      '<div class="apple-glass-orb apple-orb-emerald"></div>' +
+      '<div class="apple-glass-orb apple-orb-rose"></div>' +
+      '<div class="apple-glass-orb apple-orb-center"></div>'
     document.body.prepend(backdrop)
   }
 
-  function detectiPhone() {
+  function detectLiquidGlass() {
     var ua = navigator.userAgent || ''
     var platform = navigator.platform || ''
-    var hasForceFlag = false
+    var forceIPhone = false
+    var glassPref = null
     try {
-      hasForceFlag =
+      glassPref = localStorage.getItem('liquid_glass')
+      forceIPhone =
         window.location.search.indexOf('iphone=1') !== -1 ||
-        window.location.search.indexOf('glass=1') !== -1 ||
-        localStorage.getItem('force_iphone') === 'true' ||
-        localStorage.getItem('liquid_glass') === 'true'
+        localStorage.getItem('force_iphone') === 'true'
     } catch (e) {}
 
-    // Strict iPhone detection — excludes iPad, Mac, Android, unless force flag is set
-    var isIPhone = (/iPhone/i.test(ua) || platform === 'iPhone' || hasForceFlag) && !/iPad/i.test(ua)
+    var pName = (window.location.pathname || '').toLowerCase()
+    var isHome = pName === '' || pName === '/' || pName === '/home' || pName.indexOf('home.html') !== -1
+    var hasGlassFlag = window.location.search.indexOf('glass=1') !== -1
 
+    // Enable Master Apple Glass by default on home.html, or if preference is true, or with glass=1
+    var enableGlass = (glassPref === 'true') || (isHome && glassPref !== 'false') || hasGlassFlag
+
+    if (enableGlass) {
+      document.documentElement.classList.add('apple-glass')
+      mountLiquidBackdrop()
+    }
+
+    var isIPhone = (/iPhone/i.test(ua) || platform === 'iPhone' || forceIPhone) && !/iPad/i.test(ua)
     if (isIPhone) {
       document.documentElement.classList.add('is-iphone')
       var match = ua.match(/OS (\d+)_/)
@@ -55,147 +67,53 @@
   }
 
   window.toggleAppleLiquidGlass = function (force) {
-    var willEnable = typeof force === 'boolean' ? force : !document.documentElement.classList.contains('is-iphone')
+    var isCurrentlyOn = document.documentElement.classList.contains('apple-glass') || document.documentElement.classList.contains('is-iphone')
+    var willEnable = typeof force === 'boolean' ? force : !isCurrentlyOn
     try {
       localStorage.setItem('force_iphone', willEnable ? 'true' : 'false')
       localStorage.setItem('liquid_glass', willEnable ? 'true' : 'false')
     } catch (e) {}
     if (willEnable) {
-      document.documentElement.classList.add('is-iphone')
+      document.documentElement.classList.add('apple-glass', 'is-iphone')
       mountLiquidBackdrop()
     } else {
-      document.documentElement.classList.remove('is-iphone')
+      document.documentElement.classList.remove('apple-glass', 'is-iphone')
       var el = document.getElementById('apple-liquid-backdrop')
       if (el && el.parentNode) el.parentNode.removeChild(el)
     }
     return willEnable
   }
 
-  detectiPhone()
+  detectLiquidGlass()
 
   // ═══════════════════════════════════════════════════════════════════════
-  // 2. Pull-to-Refresh
+  // 2. Native Browser Pull-to-Refresh Enablement (iOS Safari & Android Chrome)
   // ═══════════════════════════════════════════════════════════════════════
-  function initPullToRefresh() {
-    // Only on touch devices, only on pages that don't have their own scroll handling
-    if (!('ontouchstart' in window)) {return}
-    var isGamePage = /Driving|Academy|solar|gesture|rpg|qr-editor/i.test(location.pathname)
-    if (isGamePage) {return}
+  function enableNativePullToRefresh() {
+    // Ensure document and body explicitly permit native browser overscroll and pull-down reload
+    try {
+      if (document.documentElement) {
+        document.documentElement.style.overscrollBehaviorY = 'auto'
+      }
+      if (document.body) {
+        document.body.style.overscrollBehaviorY = 'auto'
+      }
+    } catch (e) {}
 
-    var pullThreshold = 80
-    var startY = 0
-    var pulling = false
-    var indicator = null
-    var spinner = null
-
-    function createIndicator() {
-      if (indicator) {return}
-      indicator = document.createElement('div')
-      indicator.id = 'pull-indicator'
-      indicator.style.cssText = [
-        'position:fixed',
-        'top:-60px',
-        'left:50%',
-        'transform:translateX(-50%)',
-        'width:44px',
-        'height:44px',
-        'border-radius:50%',
-        'background:rgba(17,24,39,0.85)',
-        'backdrop-filter:blur(16px) saturate(180%)',
-        '-webkit-backdrop-filter:blur(16px) saturate(180%)',
-        'border:1px solid rgba(255,255,255,0.15)',
-        'box-shadow:0 4px 20px rgba(0,0,0,0.3)',
-        'display:flex',
-        'align-items:center',
-        'justify-content:center',
-        'z-index:10001',
-        'transition:top 0.3s cubic-bezier(0.25,0.46,0.45,0.94)',
-        'pointer-events:none'
-      ].join(';')
-
-      spinner = document.createElement('div')
-      spinner.style.cssText = [
-        'width:20px',
-        'height:20px',
-        'border:2px solid rgba(255,255,255,0.2)',
-        'border-top-color:#f2b84b',
-        'border-radius:50%',
-        'transition:transform 0.2s'
-      ].join(';')
-      indicator.appendChild(spinner)
-      document.body.appendChild(indicator)
+    // Clean up any stale synthetic indicators or styles if present
+    var staleInd = document.getElementById('apple-pull-indicator') || document.getElementById('pull-indicator')
+    if (staleInd && staleInd.parentNode) {
+      staleInd.parentNode.removeChild(staleInd)
     }
-
-    function removeIndicator() {
-      if (indicator) {
-        indicator.style.top = '-60px'
-        setTimeout(function () {
-          if (indicator && indicator.parentNode) {
-            indicator.parentNode.removeChild(indicator)
-            indicator = null
-            spinner = null
-          }
-        }, 350)
-      }
+    var staleStyle = document.getElementById('apple-pull-style') || document.getElementById('pull-spin-style')
+    if (staleStyle && staleStyle.parentNode) {
+      staleStyle.parentNode.removeChild(staleStyle)
     }
-
-    document.addEventListener('touchstart', function (e) {
-      if (window.scrollY > 5) {return}
-      if (e.target && e.target.closest && e.target.closest('input,textarea,select,canvas,.mo,[data-no-pull]')) {return}
-      startY = e.touches[0].clientY
-      pulling = true
-    }, { passive: true })
-
-    document.addEventListener('touchmove', function (e) {
-      if (!pulling) {return}
-      var currentY = e.touches[0].clientY
-      var diff = currentY - startY
-      if (diff < 10 || window.scrollY > 0) {
-        pulling = false
-        return
-      }
-
-      createIndicator()
-      var progress = Math.min(diff / pullThreshold, 1)
-      var topPos = -60 + (60 + 16) * progress
-      indicator.style.top = topPos + 'px'
-      if (spinner) {
-        spinner.style.transform = 'rotate(' + (progress * 360) + 'deg)'
-      }
-    }, { passive: true })
-
-    document.addEventListener('touchend', function () {
-      if (!pulling) {return}
-      pulling = false
-
-      if (indicator) {
-        var currentTop = parseFloat(indicator.style.top)
-        if (currentTop > -20) {
-          // Threshold reached — trigger refresh
-          if (spinner) {
-            spinner.style.animation = 'pull-spin 0.6s linear infinite'
-          }
-          // Add spin keyframes if not present
-          if (!document.getElementById('pull-spin-style')) {
-            var style = document.createElement('style')
-            style.id = 'pull-spin-style'
-            style.textContent = '@keyframes pull-spin{to{transform:rotate(360deg)}}'
-            document.head.appendChild(style)
-          }
-          setTimeout(function () {
-            window.location.reload()
-          }, 400)
-          return
-        }
-        removeIndicator()
-      }
-    }, { passive: true })
   }
 
-  // Init pull-to-refresh after DOM is ready
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initPullToRefresh)
+    document.addEventListener('DOMContentLoaded', enableNativePullToRefresh)
   } else {
-    initPullToRefresh()
+    enableNativePullToRefresh()
   }
 })()

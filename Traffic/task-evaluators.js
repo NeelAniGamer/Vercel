@@ -83,9 +83,10 @@
   // 1-2 seconds of driving long; holding a condition for a fixed number of
   // frames stops a single frame that happens to satisfy the test from
   // completing the objective as the player flashes past.
-  function dwell(task, key, dtFrames, required) {
+  function dwell(task, key, dtFrames, required, game) {
     const k = '_dwell_' + key;
-    task[k] = (task[k] || 0) + (dtFrames || 1);
+    const step = (game && typeof game._lastDt === 'number' && game._lastDt > 0) ? Math.min(3, game._lastDt * 60) : (dtFrames || 1);
+    task[k] = (task[k] || 0) + step;
     return task[k] >= (required || 30);
   }
 
@@ -587,7 +588,7 @@
       let closestAhead = Infinity;
       let aggressive = null;
       forEachVehicle(game, (pos, type, obj) => {
-        const ahead = pp.z - pos.z;
+        const ahead = pos.z - pp.z; // positive => in front of player (+Z forward)
         if (ahead <= 0 || ahead > 30) return;
         if (Math.abs(pos.x - pp.x) > 2.5) return;
         const ud = (obj && obj.userData) || {};
@@ -810,8 +811,11 @@
     // and the objective could therefore never fail: "Crawl at walking pace"
     // was free. 70% of the posted limit matches the sibling night cap (0.35
     // for a 50 km/h limit).
-    if (typeof cfg.speedLimit === 'number' && cfg.speedLimit > 0) {
-      return Math.max(0.1, (cfg.speedLimit / 100) * 0.7);
+    const effLimit = (typeof cfg.speedLimit === 'number' && cfg.speedLimit > 0)
+      ? cfg.speedLimit
+      : (cfg.hasSchool || cfg.isRural ? 25 : (cfg.hasHospital ? 30 : 0));
+    if (effLimit > 0) {
+      return Math.max(0.1, (effLimit / 100) * 0.7);
     }
     return 0.28;
   }

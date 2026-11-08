@@ -20,7 +20,8 @@ export const MISSION_TYPES: Record<string, any> = {
   CROSSING_GUARD: { id: 'crossing_guard', icon: '🚸', label: 'Crossing Guard', description: 'Guide pedestrians safely across intersections' },
   SIDEWALK_PATROL: { id: 'sidewalk_patrol', icon: '🚶', label: 'Sidewalk Patrol', description: 'Monitor sidewalk for violations' },
   EMERGENCY_CLEAR: { id: 'emergency_clear', icon: '🚑', label: 'Emergency Clear', description: 'Clear path for emergency vehicle' },
-  SCHOOL_PATROL: { id: 'school_patrol', icon: '🏫', label: 'School Zone Patrol', description: 'Enforce school zone speed limits' }
+  SCHOOL_PATROL: { id: 'school_patrol', icon: '🏫', label: 'School Zone Patrol', description: 'Enforce school zone speed limits' },
+  PASSENGER_PICKUP: { id: 'passenger_pickup', icon: '🚖', label: 'Passenger Transit', description: 'Pick up and drop off passengers across Mumbai' }
 };
 
 export const COLLECTIBLE_TYPES: Record<string, any> = {
@@ -125,11 +126,16 @@ export class Mission {
     this.onFail = config.onFail || null;
   }
 
+  complete(): void {
+    if (this.status === 'completed') return;
+    this.status = 'completed';
+    if (this.onComplete) this.onComplete(this);
+  }
+
   updateProgress(value: number): void {
     this.progress = Math.min(value, this.target);
     if (this.progress >= this.target) {
-      this.status = 'completed';
-      if (this.onComplete) this.onComplete(this);
+      this.complete();
     }
   }
 
@@ -152,16 +158,19 @@ export class EscortMission extends Mission {
   maxViolationTime: number = 5;
 
   constructor(config: any = {}) {
+    const targetIntersections = config.data?.targetIntersections || 3;
     super('ESCORT', {
-      target: config.target || 1,
+      ...config,
+      target: (config.data && config.data.targetIntersections) || config.target || targetIntersections,
       reward: config.reward || 5000,
       data: {
-        leadVehicle: null, minDistance: 10, maxDistance: 35,
+        leadVehicle: null,
+        minDistance: 10,
+        maxDistance: 35,
         intersectionsCleared: 0,
-        targetIntersections: config.data?.targetIntersections || 3,
-        ...config.data
-      },
-      ...config
+        targetIntersections,
+        ...(config.data || {})
+      }
     });
   }
 
@@ -174,20 +183,18 @@ export class EscortMission extends Mission {
     const dist = Math.sqrt(dx * dx + dz * dz);
     this.data.currentDistance = dist;
 
-    if (dist < this.data.minDistance) {
+    if (dist < this.data.minDistance || dist > this.data.maxDistance) {
       this.distanceViolationTime += dt;
-      if (this.distanceViolationTime > this.maxViolationTime) {
-        this.fail();
-        if (typeof toast === 'function') toast('❌ Too close to VIP vehicle!', '#ef4444');
+      if (typeof toast === 'function') {
+        toast(`⚠️ Keep distance! (${Math.round(dist)}m)`, '#f2b84b');
       }
-    } else if (dist > this.data.maxDistance) {
-      this.distanceViolationTime += dt;
       if (this.distanceViolationTime > this.maxViolationTime) {
         this.fail();
-        if (typeof toast === 'function') toast('❌ Fell too far behind!', '#ef4444');
+        if (typeof toast === 'function') toast('❌ Escort failed — lost formation!', '#ef4444');
+        return;
       }
     } else {
-      this.distanceViolationTime = Math.max(0, this.distanceViolationTime - dt * 2);
+      this.distanceViolationTime = Math.max(0, this.distanceViolationTime - dt);
     }
 
     if (intersections && intersections.length > 0) {
@@ -200,8 +207,7 @@ export class EscortMission extends Mission {
     }
 
     if (this.data.intersectionsCleared >= this.data.targetIntersections) {
-      this.status = 'completed';
-      if (this.onComplete) this.onComplete(this);
+      this.complete();
     }
   }
 
@@ -213,14 +219,17 @@ export class EscortMission extends Mission {
 export class ChaseMission extends Mission {
   constructor(config: any = {}) {
     super('CHASE', {
+      ...config,
       target: config.target || 1,
       reward: config.reward || 6000,
       data: {
-        targetVehicle: null, catchDistance: 8, pitDistance: 5,
-        maxChaseTime: config.data?.maxChaseTime || 120, chaseTime: 0,
-        ...config.data
-      },
-      ...config
+        targetVehicle: null,
+        catchDistance: 8,
+        pitDistance: 5,
+        maxChaseTime: config.data?.maxChaseTime || 120,
+        chaseTime: 0,
+        ...(config.data || {})
+      }
     });
   }
 
@@ -242,9 +251,8 @@ export class ChaseMission extends Mission {
 
     if (dist < this.data.catchDistance) {
       this.data.targetVehicle = 'stopped';
-      this.status = 'completed';
+      this.complete();
       if (typeof toast === 'function') toast('🚓 Target apprehended!', '#34d399');
-      if (this.onComplete) this.onComplete(this);
     } else if (dist < this.data.pitDistance) {
       if (typeof toast === 'function') toast('⚡ PIT maneuver available!', '#f2b84b');
     }
@@ -258,15 +266,17 @@ export class ChaseMission extends Mission {
 export class ParkingMission extends Mission {
   constructor(config: any = {}) {
     super('PARKING', {
+      ...config,
       target: config.target || 1,
       reward: config.reward || 3000,
       data: {
         spot: config.data?.spot || { x: 0, z: 0, rotation: 0, type: 'parallel' },
-        maxDeviation: 2.0, maxAngleDeviation: 0.3,
-        parked: false, parkStartTime: 0,
-        ...config.data
-      },
-      ...config
+        maxDeviation: 2.0,
+        maxAngleDeviation: 0.3,
+        parked: false,
+        parkStartTime: 0,
+        ...(config.data || {})
+      }
     });
   }
 
@@ -276,7 +286,8 @@ export class ParkingMission extends Mission {
     const dx = playerPos.x - spot.x;
     const dz = playerPos.z - spot.z;
     const dist = Math.sqrt(dx * dx + dz * dz);
-    const angleDiff = Math.abs((playerRot - spot.rotation + Math.PI) % (2 * Math.PI) - Math.PI);
+    const _rot = playerRot - spot.rotation;
+    const angleDiff = Math.abs(Math.atan2(Math.sin(_rot), Math.cos(_rot)));
 
     this.data.currentDistance = dist;
     this.data.currentAngleDiff = angleDiff;
@@ -287,9 +298,8 @@ export class ParkingMission extends Mission {
         this.data.parkStartTime = Date.now();
         if (typeof toast === 'function') toast('🅿️ Parked! Hold position...', '#34d399');
       } else if (Date.now() - this.data.parkStartTime > 3000) {
-        this.status = 'completed';
+        this.complete();
         if (typeof toast === 'function') toast('✅ Perfect park!', '#34d399');
-        if (this.onComplete) this.onComplete(this);
       }
     } else {
       this.data.parked = false;
@@ -310,15 +320,19 @@ export class ParkingMission extends Mission {
 export class CargoMission extends Mission {
   constructor(config: any = {}) {
     super('CARGO', {
+      ...config,
       target: config.target || 100,
       reward: config.reward || 4000,
       data: {
-        cargoIntegrity: 100, maxLateralG: 0.8, maxLongitudinalG: 1.0,
-        potholeImpacts: 0, maxPotholes: 3,
-        distanceTarget: config.data?.distanceTarget || 500, distanceTraveled: 0,
-        ...config.data
-      },
-      ...config
+        cargoIntegrity: 100,
+        maxLateralG: 0.8,
+        maxLongitudinalG: 1.0,
+        potholeImpacts: 0,
+        maxPotholes: 3,
+        distanceTarget: config.data?.distanceTarget || 500,
+        distanceTraveled: 0,
+        ...(config.data || {})
+      }
     });
   }
 
@@ -352,9 +366,8 @@ export class CargoMission extends Mission {
       this.fail();
       if (typeof toast === 'function') toast('💥 Cargo destroyed!', '#ef4444');
     } else if (this.data.distanceTraveled >= this.data.distanceTarget) {
-      this.status = 'completed';
+      this.complete();
       if (typeof toast === 'function') toast(`📦 Cargo delivered! Integrity: ${Math.round(this.data.cargoIntegrity)}%`, '#34d399');
-      if (this.onComplete) this.onComplete(this);
     }
   }
 
@@ -367,15 +380,16 @@ export class CargoMission extends Mission {
 export class EvasionMission extends Mission {
   constructor(config: any = {}) {
     super('EVASION', {
+      ...config,
       target: config.target || 1,
       reward: config.reward || 5000,
       data: {
         pursuers: [],
         safeZone: config.data?.safeZone || { x: 0, z: 0, radius: 50 },
-        maxEvasionTime: config.data?.maxEvasionTime || 180, evasionTime: 0,
-        ...config.data
-      },
-      ...config
+        maxEvasionTime: config.data?.maxEvasionTime || 180,
+        evasionTime: 0,
+        ...(config.data || {})
+      }
     });
   }
 
@@ -405,9 +419,8 @@ export class EvasionMission extends Mission {
     const distToSafe = Math.sqrt(dx * dx + dz * dz);
 
     if (distToSafe < this.data.safeZone.radius) {
-      this.status = 'completed';
+      this.complete();
       if (typeof toast === 'function') toast('🏁 Reached safe zone!', '#34d399');
-      if (this.onComplete) this.onComplete(this);
     }
   }
 
@@ -421,16 +434,17 @@ export class EvasionMission extends Mission {
 
 export class CrossingGuardMission extends Mission {
   constructor(config: any = {}) {
+    const targetChildren = config.data?.targetChildren || config.target || 5;
     super('CROSSING_GUARD', {
-      target: config.target || 5,
+      ...config,
+      target: targetChildren,
       reward: config.reward || 3000,
       data: {
         childrenCrossed: 0,
-        targetChildren: config.data?.targetChildren || 5,
+        targetChildren,
         currentGroup: null,
-        ...config.data
-      },
-      ...config
+        ...(config.data || {})
+      }
     });
   }
 
@@ -458,8 +472,7 @@ export class CrossingGuardMission extends Mission {
     }
 
     if (this.data.childrenCrossed >= this.data.targetChildren) {
-      this.status = 'completed';
-      if (this.onComplete) this.onComplete(this);
+      this.complete();
     }
   }
 
@@ -470,16 +483,18 @@ export class CrossingGuardMission extends Mission {
 
 export class SidewalkPatrolMission extends Mission {
   constructor(config: any = {}) {
+    const targetViolations = config.data?.targetViolations || config.target || 3;
     super('SIDEWALK_PATROL', {
-      target: config.target || 3,
+      ...config,
+      target: targetViolations,
       reward: config.reward || 2500,
       data: {
         violationsReported: 0,
-        targetViolations: config.data?.targetViolations || 3,
-        patrolRoute: config.data?.patrolRoute || [], currentWaypoint: 0,
-        ...config.data
-      },
-      ...config
+        targetViolations,
+        patrolRoute: config.data?.patrolRoute || [],
+        currentWaypoint: 0,
+        ...(config.data || {})
+      }
     });
   }
 
@@ -500,8 +515,7 @@ export class SidewalkPatrolMission extends Mission {
     }
 
     if (this.data.violationsReported >= this.data.targetViolations) {
-      this.status = 'completed';
-      if (this.onComplete) this.onComplete(this);
+      this.complete();
     }
   }
 
@@ -513,10 +527,15 @@ export class SidewalkPatrolMission extends Mission {
 export class EmergencyClearMission extends Mission {
   constructor(config: any = {}) {
     super('EMERGENCY_CLEAR', {
+      ...config,
       target: config.target || 1,
       reward: config.reward || 4000,
-      data: { ambulancePos: null, pathCleared: false, clearDistance: 25, ...config.data },
-      ...config
+      data: {
+        ambulancePos: null,
+        pathCleared: false,
+        clearDistance: 25,
+        ...(config.data || {})
+      }
     });
   }
 
@@ -538,9 +557,8 @@ export class EmergencyClearMission extends Mission {
       }
       if (blocking === 0) {
         this.data.pathCleared = true;
-        this.status = 'completed';
+        this.complete();
         if (typeof toast === 'function') toast('🚑 Path cleared for ambulance!', '#34d399');
-        if (this.onComplete) this.onComplete(this);
       } else if (typeof toast === 'function') {
         toast(`🚑 Clear ${blocking} pedestrians from path!`, '#f2b84b');
       }
@@ -554,16 +572,17 @@ export class EmergencyClearMission extends Mission {
 
 export class SchoolPatrolMission extends Mission {
   constructor(config: any = {}) {
+    const targetSpeeders = config.data?.targetSpeeders || config.target || 3;
     super('SCHOOL_PATROL', {
-      target: config.target || 3,
+      ...config,
+      target: targetSpeeders,
       reward: config.reward || 3500,
       data: {
         speedersCaught: 0,
-        targetSpeeders: config.data?.targetSpeeders || 3,
+        targetSpeeders,
         schoolZone: config.data?.schoolZone || { x: 0, z: 0, radius: 50 },
-        ...config.data
-      },
-      ...config
+        ...(config.data || {})
+      }
     });
   }
 
@@ -584,13 +603,123 @@ export class SchoolPatrolMission extends Mission {
     }
 
     if (this.data.speedersCaught >= this.data.targetSpeeders) {
-      this.status = 'completed';
-      if (this.onComplete) this.onComplete(this);
+      this.complete();
     }
   }
 
   getProgressPercent(): number {
     return (this.data.speedersCaught / this.data.targetSpeeders) * 100;
+  }
+}
+
+export class PassengerPickupMission extends Mission {
+  constructor(config: any = {}) {
+    super('PASSENGER_PICKUP', {
+      ...config,
+      target: 1,
+      reward: config.reward || 6500,
+      tokenReward: config.tokenReward || 65,
+      data: {
+        stage: 'DRIVE_TO_PICKUP',
+        pickupSpot: config.data?.pickupSpot || { x: 0, z: -80, name: 'Bus Shelter #1' },
+        dropoffSpot: config.data?.dropoffSpot || { x: 0, z: 180, name: 'Metro Central' },
+        passengerMesh: null,
+        passengerName: config.data?.passengerName || 'Priya (Commuter)',
+        dialogue: config.data?.dialogue || 'Thanks for stopping! Please drop me at the Central Station.',
+        dwellTimer: 0,
+        ...(config.data || {})
+      }
+    });
+  }
+
+  update(playerPos: any, playerRot: number, dt: number, speed: number, game: any): void {
+    if (this.status !== 'active') return;
+    const stage = this.data.stage;
+    const g = game || (typeof window !== 'undefined' ? (window as any).game : null);
+
+    if (!this.data.passengerMesh && g && g.scene) {
+      this._spawnWaitingPassenger(g);
+    }
+
+    if (stage === 'DRIVE_TO_PICKUP') {
+      const pSpot = this.data.pickupSpot;
+      const dist = Math.hypot(playerPos.x - pSpot.x, playerPos.z - pSpot.z);
+      this.data.currentDistance = dist;
+
+      if (dist < 8.0 && Math.abs(speed || 0) < 0.25) {
+        this.data.stage = 'BOARDING';
+        this.data.dwellTimer = 0;
+        if (typeof toast === 'function') {
+          toast(`🙋 ${this.data.passengerName}: "${this.data.dialogue}"`, '#00f0cc', 4500);
+        }
+      }
+    } else if (stage === 'BOARDING') {
+      this.data.dwellTimer += dt;
+      if (this.data.passengerMesh) {
+        const pm = this.data.passengerMesh;
+        const dx = playerPos.x - pm.position.x;
+        const dz = playerPos.z - pm.position.z;
+        pm.position.x += dx * dt * 1.8;
+        pm.position.z += dz * dt * 1.8;
+        pm.position.y = 0.05 + Math.abs(Math.sin(this.data.dwellTimer * 8)) * 0.1;
+      }
+
+      if (this.data.dwellTimer >= 2.2) {
+        if (this.data.passengerMesh && this.data.passengerMesh.parent && g && g.scene) {
+          g.scene.remove(this.data.passengerMesh);
+          this.data.passengerMesh = null;
+        }
+        this.data.stage = 'DRIVE_TO_DROPOFF';
+        if (typeof toast === 'function') {
+          toast(`🚘 Passenger on board! Destination: ${this.data.dropoffSpot.name}`, '#fbbf24', 4500);
+        }
+      }
+    } else if (stage === 'DRIVE_TO_DROPOFF') {
+      const dSpot = this.data.dropoffSpot;
+      const dist = Math.hypot(playerPos.x - dSpot.x, playerPos.z - dSpot.z);
+      this.data.currentDistance = dist;
+
+      if (dist < 8.5 && Math.abs(speed || 0) < 0.25) {
+        this.data.stage = 'COMPLETED';
+        this.complete();
+        if (typeof toast === 'function') {
+          toast(`🎉 Dropped off ${this.data.passengerName}! +₹${this.reward} Bonus`, '#34d399', 5000);
+        }
+      }
+    }
+  }
+
+  _spawnWaitingPassenger(g: any): void {
+    const pSpot = this.data.pickupSpot;
+    const group = new THREE.Group();
+    const mat = new THREE.MeshToonMaterial({ color: 0x3b82f6 });
+    const skinMat = new THREE.MeshToonMaterial({ color: 0xf5cba7 });
+
+    const body = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.7, 0.35), mat);
+    body.position.y = 0.85;
+    group.add(body);
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.24, 8, 6), skinMat);
+    head.position.y = 1.45;
+    group.add(head);
+
+    const ringGeo = new THREE.RingGeometry(1.5, 2.2, 16);
+    const ringMat = new THREE.MeshBasicMaterial({ color: 0x00f0cc, side: THREE.DoubleSide, transparent: true, opacity: 0.75 });
+    const ring = new THREE.Mesh(ringGeo, ringMat);
+    ring.rotation.x = -Math.PI / 2;
+    ring.position.y = 0.05;
+    group.add(ring);
+
+    group.position.set(pSpot.x, 0, pSpot.z);
+    g.scene.add(group);
+    this.data.passengerMesh = group;
+  }
+
+  getProgressPercent(): number {
+    if (this.data.stage === 'DRIVE_TO_PICKUP') return 25;
+    if (this.data.stage === 'BOARDING') return 50;
+    if (this.data.stage === 'DRIVE_TO_DROPOFF') return 75;
+    if (this.data.stage === 'COMPLETED') return 100;
+    return 0;
   }
 }
 
@@ -636,6 +765,7 @@ export class MissionManager {
     const specialMissions: (Mission | null)[] = [];
     if (!levelConfig.isPedestrian) {
       specialMissions.push(
+        this.createPassengerPickupMission(levelConfig),
         this.createEscortMission(levelConfig),
         this.createChaseMission(levelConfig),
         this.createParkingMission(levelConfig),
@@ -780,10 +910,46 @@ export class MissionManager {
     });
   }
 
+  createPassengerPickupMission(levelConfig: any): Mission | null {
+    if (levelConfig.isPedestrian) return null;
+    const roads = levelConfig.roads || [];
+    if (roads.length === 0) return null;
+
+    const r1 = roads[0];
+    const r2 = roads[roads.length - 1] || r1;
+    const isV1 = r1.type === 'v';
+    const isV2 = r2.type === 'v';
+
+    const pX = isV1 ? r1.x - 4 : (r1.x1 + r1.x2) / 2;
+    const pZ = isV1 ? (r1.z1 + r1.z2) / 2 : r1.z - 4;
+    const dX = isV2 ? r2.x + 4 : Math.min(r2.x1, r2.x2) + 25;
+    const dZ = isV2 ? Math.max(r2.z1, r2.z2) - 25 : r2.z + 4;
+
+    const stories = [
+      { name: 'Rohan (Student)', pickup: 'Bus Stop #1', dropoff: 'Metro Station West', text: 'Hey, I am getting late for college! Can you drop me at the station?' },
+      { name: 'Dr. Priya (Doctor)', pickup: 'South Community Clinic', dropoff: 'City Trauma Center', text: 'Urgent hospital duty! Please drive safely to the medical center.' },
+      { name: 'Ananya (Tourist)', pickup: 'Gateway Heritage Spot', dropoff: 'Marine Drive Viewpoint', text: 'Hello! I would love to visit the sea-facing promenade.' }
+    ];
+    const item = stories[Math.floor(Math.random() * stories.length)];
+
+    return new PassengerPickupMission({
+      target: 1,
+      reward: 6500,
+      tokenReward: 65,
+      data: {
+        pickupSpot: { x: pX, z: pZ, name: item.pickup },
+        dropoffSpot: { x: dX, z: dZ, name: item.dropoff },
+        passengerName: item.name,
+        dialogue: item.text
+      }
+    });
+  }
+
   createEscortMission(levelConfig: any): Mission | null {
     if (!levelConfig.route || levelConfig.route.length < 3) return null;
     const theme = levelConfig.themeType || levelConfig.theme || '';
-    if (!['emergency_access', 'bonus_vip_convoy', 'highway_discipline'].includes(theme)) return null;
+    const escortThemes = ['emergency_access', 'bonus_vip_convoy', 'highway_discipline', 'ambulance_priority', 'festival', 'highway_merge', 'grand_test'];
+    if (!escortThemes.includes(theme)) return null;
     const baseReward = levelConfig.isPedestrian ? 4000 : 6000;
     return new EscortMission({
       target: 1, reward: baseReward, tokenReward: Math.floor(baseReward / 100),
@@ -793,7 +959,8 @@ export class MissionManager {
 
   createChaseMission(levelConfig: any): Mission | null {
     const theme = levelConfig.themeType || levelConfig.theme || '';
-    if (!['emergency_access', 'night_driving', 'bonus_vip_convoy', 'chaos'].includes(theme)) return null;
+    const chaseThemes = ['emergency_access', 'night_driving', 'bonus_vip_convoy', 'chaos', 'road_rage', 'wrong_side', 'night_monsoon'];
+    if (!chaseThemes.includes(theme)) return null;
     const baseReward = levelConfig.isPedestrian ? 4500 : 7000;
     return new ChaseMission({
       target: 1, reward: baseReward, tokenReward: Math.floor(baseReward / 100),
@@ -803,7 +970,8 @@ export class MissionManager {
 
   createParkingMission(levelConfig: any): Mission | null {
     const theme = levelConfig.themeType || levelConfig.theme || '';
-    if (!['speed_management', 'pedestrian_courtesy', 'silence_zone'].includes(theme)) return null;
+    const parkingThemes = ['speed_management', 'pedestrian_courtesy', 'silence_zone', 'parking_rules', 'respectful_parking', 'street_parking', 'hospital_quiet'];
+    if (!parkingThemes.includes(theme)) return null;
     if (levelConfig.isPedestrian) return null;
     const spot = this._generateParkingSpot(levelConfig);
     if (!spot) return null;
@@ -812,7 +980,8 @@ export class MissionManager {
 
   createCargoMission(levelConfig: any): Mission | null {
     const theme = levelConfig.themeType || levelConfig.theme || '';
-    if (!['highway_discipline', 'monsoon_survival', 'bonus_night_monsoon', 'rail_safety'].includes(theme)) return null;
+    const cargoThemes = ['highway_discipline', 'monsoon_survival', 'bonus_night_monsoon', 'rail_safety', 'market_street', 'mountain', 'hill_driving', 'night_monsoon', 'rain_driving', 'highway_merge'];
+    if (!cargoThemes.includes(theme)) return null;
     if (levelConfig.isPedestrian) return null;
     return new CargoMission({
       target: 100, reward: 5000, tokenReward: 50,
@@ -826,7 +995,8 @@ export class MissionManager {
 
   createEvasionMission(levelConfig: any): Mission | null {
     const theme = levelConfig.themeType || levelConfig.theme || '';
-    if (!['night_driving', 'chaos', 'bonus_night_monsoon'].includes(theme)) return null;
+    const evasionThemes = ['night_driving', 'chaos', 'bonus_night_monsoon', 'road_rage', 'night_monsoon'];
+    if (!evasionThemes.includes(theme)) return null;
     const baseReward = levelConfig.isPedestrian ? 3500 : 6000;
     const safeZone = this._generateSafeZone(levelConfig);
     return new EvasionMission({
@@ -838,7 +1008,8 @@ export class MissionManager {
   createCrossingGuardMission(levelConfig: any): Mission | null {
     if (!levelConfig.isPedestrian) return null;
     const theme = levelConfig.themeType || levelConfig.theme || '';
-    if (!['pedestrian_courtesy', 'silence_zone', 'rail_safety'].includes(theme)) return null;
+    const crossingThemes = ['pedestrian_courtesy', 'silence_zone', 'rail_safety', 'pedestrian_priority', 'bus_stop', 'driving_school'];
+    if (!crossingThemes.includes(theme)) return null;
     return new CrossingGuardMission({
       target: 5, reward: 3500, tokenReward: 35,
       data: { targetChildren: 4 + Math.floor(Math.random() * 3) }
@@ -855,7 +1026,8 @@ export class MissionManager {
 
   createEmergencyClearMission(levelConfig: any): Mission | null {
     const theme = levelConfig.themeType || levelConfig.theme || '';
-    if (!['emergency_access', 'silence_zone', 'rail_safety'].includes(theme)) return null;
+    const clearThemes = ['emergency_access', 'silence_zone', 'rail_safety', 'ambulance_priority', 'hospital_quiet', 'festival'];
+    if (!clearThemes.includes(theme)) return null;
     const baseReward = levelConfig.isPedestrian ? 3500 : 5000;
     return new EmergencyClearMission({
       target: 1, reward: baseReward, tokenReward: Math.floor(baseReward / 100),
@@ -864,7 +1036,9 @@ export class MissionManager {
   }
 
   createSchoolPatrolMission(levelConfig: any): Mission | null {
-    if (!levelConfig.hasSchool && !levelConfig.isSilenceZone) return null;
+    const theme = levelConfig.themeType || levelConfig.theme || '';
+    const isSchoolTheme = ['driving_school', 'pedestrian_priority', 'suburban_neighborhood', 'silent_zone'].includes(theme);
+    if (!levelConfig.hasSchool && !levelConfig.isSilenceZone && !isSchoolTheme) return null;
     const baseReward = levelConfig.isPedestrian ? 3000 : 4500;
     return new SchoolPatrolMission({
       target: 3, reward: baseReward, tokenReward: Math.floor(baseReward / 100),

@@ -664,35 +664,54 @@ preloadModels(() => {
     document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'))
   }
 
-  // Init UI then create game (guard against ui.js/game_core.js not loaded yet)
+  // Boot Dependency Verification (P0: Fail with clear diagnostics rather than silent/late crashes)
+  function checkBootDependencies() {
+    const critical = [
+      { name: 'THREE', ok: typeof THREE !== 'undefined' },
+      { name: 'Game', ok: typeof Game !== 'undefined' },
+      { name: 'RenderCore', ok: typeof RenderCore !== 'undefined' },
+      { name: 'TrafficManager', ok: typeof TrafficManager !== 'undefined' },
+      { name: 'MissionManager', ok: typeof MissionManager !== 'undefined' },
+      { name: 'ThreePools', ok: typeof ThreePools !== 'undefined' },
+      { name: 'S (Save State)', ok: typeof S !== 'undefined' }
+    ];
+    const missing = critical.filter(c => !c.ok).map(c => c.name);
+    return { ok: missing.length === 0, missing };
+  }
+
   function _doBoot() {
-    if (typeof ui.init === 'function') {ui.init()}
+    const deps = checkBootDependencies();
+    if (!deps.ok) {
+      console.warn('[Engine Boot] Waiting for dependencies: ' + deps.missing.join(', '));
+    }
+    if (typeof ui.init === 'function') { try { ui.init(); } catch (e) { console.error('[UI Init Error]', e); } }
     if (typeof Game !== 'undefined') {
-      game = new Game()
-      window.game = game
+      console.log('[Engine Boot] All core globals ready. Booting Game engine...');
+      game = new Game();
+      window.game = game;
     } else {
-      // game_core.js hasn't loaded yet - report error
-      console.error('Game class not found - game_core.js failed to load')
-      document.body.innerHTML = '<div style="color:white;text-align:center;padding:50px;font-family:sans-serif"><h1>Loading Error</h1><p>Game engine failed to load. Please refresh.</p></div>'
+      console.error('Game class not found - game_core.js failed to load. Missing:', deps.missing);
+      document.body.innerHTML = '<div style="color:white;text-align:center;padding:50px;font-family:sans-serif"><h1>Loading Error</h1><p>Game engine dependencies failed to load: ' + deps.missing.join(', ') + '. Please refresh.</p></div>';
     }
   }
 
-  if (typeof Game !== 'undefined') {
-    // Game class ready - boot now (ui.init can run later if needed)
-    if (typeof ui.init === 'function') {ui.init()}
-    game = new Game()
-    window.game = game
+  const initialDeps = checkBootDependencies();
+  if (initialDeps.ok && typeof Game !== 'undefined') {
+    _doBoot();
   } else {
-    // game_core.js hasn't loaded yet - poll for it
-    var _bootWait = setInterval(function() {
-      if (typeof Game !== 'undefined') {
-        clearInterval(_bootWait)
-        if (typeof ui.init === 'function') {ui.init()}
-        game = new Game()
-        window.game = game
+    let _bootAttempts = 0;
+    const _bootWait = setInterval(function() {
+      _bootAttempts++;
+      const currentDeps = checkBootDependencies();
+      if (currentDeps.ok && typeof Game !== 'undefined') {
+        clearInterval(_bootWait);
+        _doBoot();
+      } else if (_bootAttempts > 100) { // 5 seconds timeout (100 * 50ms)
+        clearInterval(_bootWait);
+        console.error('[Engine Boot Timeout] Missing critical globals after 5s:', currentDeps.missing);
+        _doBoot();
       }
-    }, 50)
-    setTimeout(function() { clearInterval(_bootWait) }, 5000)
+    }, 50);
   }
 
   const urlParams = new URLSearchParams(window.location.search)

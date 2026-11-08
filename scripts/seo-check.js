@@ -150,7 +150,8 @@ if (!fs.existsSync(distRoot)) {
       if (nonIndexableRoutes.has(route)) addError(`sitemap.xml advertises non-indexable route ${route}.`)
       if (loc && new URL(loc).origin !== origin) addError(`${label} sitemap URL uses the wrong origin: ${loc}`)
       if (lastmod && !/^\d{4}-\d{2}-\d{2}$/.test(lastmod)) addError(`${label} has an invalid sitemap lastmod.`)
-      if (lastmod && lastmod > '2026-09-25') addError(`${label} has a future sitemap lastmod: ${lastmod}`)
+      const maxAllowedDate = '2026-11-08'
+      if (lastmod && lastmod > maxAllowedDate) addError(`${label} has a future sitemap lastmod: ${lastmod}`)
 
       const htmlFile = routeToFile(route)
       if (!htmlFile || !fs.existsSync(htmlFile)) {

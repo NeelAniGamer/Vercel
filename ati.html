@@ -1,10 +1,11 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta name="description" content="Build speed and accuracy with adaptive touch typing, code syntax practice, finger guidance, WPM analytics, and AI-assisted typing simulations in the browser." />
-    <meta name="keywords" content="typing tutor, learn to type, typing practice, typing speed test, WPM test, touch typing course, coding typing practice, free typing game, keyboard practice, typing instructor, competitive typing game, typing test online free, learn coding by typing, typing speed improvement, advanced typing instructor">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="author" content="Class Of Learners Studio" />
+    <meta name="description" content="Build speed and accuracy with adaptive touch typing, code syntax practice, finger guidance, WPM analytics, and AI-assisted typing simulations in the browser." />
+    <meta name="keywords" content="typing tutor, learn to type, typing practice, typing speed test, WPM test, touch typing course, coding typing practice, free typing game, keyboard practice, typing instructor, competitive typing game, typing test online free, learn coding by typing, typing speed improvement, advanced typing instructor">
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -31,6 +32,30 @@
           }
         }
       })()
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is Advanced Typing Instructor (ATI)?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Advanced Typing Instructor is an adaptive touch typing tutor and competitive typing speed platform designed to improve words per minute (WPM), accuracy, and code syntax proficiency."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I practice coding syntax on ATI?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, ATI includes specialized modules for practicing JavaScript, Python, C++, and HTML/CSS programming syntax."
+            }
+          }
+        ]
+      }
     </script>
     <script>
       ;(function () {
@@ -71,7 +96,9 @@
         "inLanguage": "en-IN",
         "isPartOf": { "@id": "https://advancedlogiclabs.dpdns.org/#website" },
         "author": { "@id": "https://advancedlogiclabs.dpdns.org/#organization" },
-        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "datePublished": "2026-09-25",
+        "dateModified": "2026-11-08"
       }
     </script>
 <script type="application/ld+json">
@@ -1576,6 +1603,7 @@
     <link rel="stylesheet" href="liquid-glass.css" />
     <link rel="stylesheet" href="mobile-perf.css" />
     <script defer src="pull-refresh.js"></script>
+    <script defer src="col-nav.js"></script>
     <script defer src="col-ui.js"></script>
     <script defer src="col-auth.js"></script>
     <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
@@ -1596,7 +1624,7 @@
     <div class="cd" id="cDot"></div>
     <div class="cr" id="cRing"></div>
 
-    <nav class="top-nav" id="topNav">
+    <nav class="top-nav" id="topNav" data-page="projects">
       <a href="/" class="nav-brand">
         <img src="Class.png" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" />
         <span class="brand-name">Class Of Learners</span>
@@ -1942,30 +1970,42 @@
     </div>
 
     <script>
-      // --- 3D TILT EFFECT FOR FEATURE CARDS ---
+      // --- 3D TILT EFFECT FOR FEATURE CARDS (silky 60fps rAF + cached rect) ---
       function initTiltEffect() {
         const cards = document.querySelectorAll('.feature-card')
         cards.forEach((card) => {
+          let rafId = null, rect = null, ex = 0, ey = 0
+          card.addEventListener('mouseenter', () => {
+            rect = card.getBoundingClientRect()
+          }, { passive: true })
           card.addEventListener('mousemove', (e) => {
-            const rect = card.getBoundingClientRect()
-            const x = e.clientX - rect.left
-            const y = e.clientY - rect.top
+            ex = e.clientX
+            ey = e.clientY
+            if (rafId) return
+            rafId = requestAnimationFrame(() => {
+              rafId = null
+              if (!rect) rect = card.getBoundingClientRect()
+              const x = ex - rect.left
+              const y = ey - rect.top
 
-            const centerX = rect.width / 2
-            const centerY = rect.height / 2
+              const centerX = rect.width / 2
+              const centerY = rect.height / 2
 
-            // Calculate rotation (max 12 degrees)
-            const rotateX = ((y - centerY) / centerY) * -12
-            const rotateY = ((x - centerX) / centerX) * 12
+              // Calculate rotation (max 12 degrees)
+              const rotateX = ((y - centerY) / centerY) * -12
+              const rotateY = ((x - centerX) / centerX) * 12
 
-            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`
-            card.style.transition = 'none' // Disable transition for instant tracking
-          })
+              card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`
+              card.style.transition = 'none'
+            })
+          }, { passive: true })
 
           card.addEventListener('mouseleave', () => {
+            if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+            rect = null
             card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`
-            card.style.transition = 'transform 0.5s ease' // Smooth snap back
-          })
+            card.style.transition = 'transform 0.5s ease'
+          }, { passive: true })
         })
       }
 
@@ -1989,7 +2029,7 @@
 
       function updateSlideUI(index) {
         currentSlideIndex = (index + SLIDE_CAPTIONS.length) % SLIDE_CAPTIONS.length;
-        const imgSrc = 'ATI ' + (currentSlideIndex + 1) + '.png';
+        const imgSrc = 'ATI ' + (currentSlideIndex + 1) + '.webp';
         
         const mainImg = document.getElementById('mainShowcaseImg');
         const caption = document.getElementById('showcaseCaption');
@@ -2016,7 +2056,7 @@
       function prevSlide() { updateSlideUI(currentSlideIndex - 1); }
 
       function updateShowcase(element, imgSrc) {
-        const match = imgSrc.match(/ATI\s*(\d+)\.png/);
+        const match = imgSrc.match(/ATI\s*(\d+)\.(?:png|webp)/);
         if (match) {
           updateSlideUI(parseInt(match[1], 10) - 1);
         }
@@ -2039,15 +2079,8 @@
         document.querySelectorAll('.anim-target').forEach((t) => t.classList.add('animate-in'));
       }
 
-      // Global theme toggle function
-      window.hzToggle = function () {
-        var isLight = !document.documentElement.classList.contains('lm');
-        document.documentElement.classList.toggle('lm', isLight);
-        document.body.classList.toggle('lm', isLight);
-        try {
-          localStorage.setItem('theme', isLight ? 'light' : 'dark');
-        } catch (_e) {}
-      };
+      // Global theme toggle: canonical window.hzToggle from col-ui.js (defer) handles
+      // aria sync via hzSync(), theme-color meta and safeThemeSet(). No local override.
 
       // Accessible Dropdown Interaction & Close on Outside Click
       var projDD = document.getElementById('projDD')

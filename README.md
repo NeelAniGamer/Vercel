@@ -371,19 +371,11 @@ Never commit Supabase service-role keys, access tokens, passwords, private datab
 
 ## Team
 
-Class Of Learners is built by students in Mumbai:
+Class Of Learners is built by three high school co-founders in Mumbai:
 
-- **Neel Badri** — Lead developer and logic engine
-- **Ansh Patil** — Co-developer and quality assurance
-- **Aarush Vangari** — UI/UX design and physics engine
-- **Yashraj Jadhav** — QA, UI/UX, product ideation, and Terra3D (Special Space Credit)
-- **Aaryaman Jadhav** — 3D systems, geospatial data, and Terra3D (Special Space Credit)
-- **John Doe** — Anonymous secret helper in developing CoL, core architecture advisor, and stealth systems contributor
-
-### Teachers & Mentors
-
-- **Sanjana Kasbe** — Project mentor & educator (ATI, Solar System Engine, Hand Tracking / GestureUI, and more)
-- **Avantika Raskar** — Teacher & project mentor (Traffic Simulator, ATI updates)
+- **Neel Badri** — Co-Founder · Lead Developer & Architecture
+- **Aarush Vangari** — Co-Founder · UI/UX Design & Physics Engine
+- **Ansh Patil** — Co-Founder · QA & Systems
 
 ## License
 

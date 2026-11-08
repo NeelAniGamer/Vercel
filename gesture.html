@@ -2,10 +2,35 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995" crossorigin="anonymous"></script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Does Perceptus Flow require specialized hardware?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No, Perceptus Flow operates entirely within the browser using standard webcams and client-side MediaPipe hand tracking."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is my webcam feed private and secure?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, all hand tracking is executed locally on your device in real-time. Video frames never leave your computer."
+            }
+          }
+        ]
+      }
+    </script>
+    <meta name="author" content="Class Of Learners Studio" />
     <meta name="description" content="Control your computer with webcam hand gestures, pinch-to-click, air drawing, voice tasks, and multimodal AI in the Perceptus Flow desktop assistant." />
     <meta name="keywords" content="gesture control, hand tracking, webcam gesture control, touchless control, MediaPipe hands, computer vision, hand gesture recognition, air mouse, touchless desktop control, Perceptus Flow, webcam mouse control, gesture based interface, hand tracking software, contactless computer control">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#070A14" id="themeMeta" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -74,7 +99,9 @@
         "inLanguage": "en-IN",
         "isPartOf": { "@id": "https://advancedlogiclabs.dpdns.org/#website" },
         "author": { "@id": "https://advancedlogiclabs.dpdns.org/#organization" },
-        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "datePublished": "2026-09-25",
+        "dateModified": "2026-11-08"
       }
     </script>
 <script type="application/ld+json">
@@ -113,6 +140,7 @@
     <link rel="stylesheet" href="liquid-glass.css" />
     <link rel="stylesheet" href="mobile-perf.css" />
     <script defer src="pull-refresh.js"></script>
+    <script defer src="col-nav.js"></script>
     <script defer src="col-ui.js"></script>
     <script defer src="col-auth.js"></script>
 
@@ -1974,7 +2002,7 @@
     <div id="virtual-cursor"></div>
 
     <!-- ──── GLOBAL NAVBAR ──── -->
-    <nav class="top-nav" id="topNav">
+    <nav class="top-nav" id="topNav" data-page="projects">
       <a href="/" class="nav-brand">
         <img src="Class.png" alt="Class Of Learners Logo" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" />
         <span class="brand-name">Class Of Learners</span>

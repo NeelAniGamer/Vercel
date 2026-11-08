@@ -17,7 +17,8 @@
     "security:fix": "npm audit fix",
     "test": "npm run test:smoke && npm run test:stubs",
     "test:smoke": "node Traffic/pw_test.js",
-    "test:stubs": "node Traffic/tools/check-startup-stubs.js"
+    "test:stubs": "node Traffic/tools/check-startup-stubs.js",
+    "prune:deployments": "node scripts/prune-deployments.js"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

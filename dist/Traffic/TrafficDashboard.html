@@ -1840,9 +1840,14 @@
         const client = await _initSupabase()
         if (!client) return null
         try {
-          const { data: progress } = await client.from('game_progress').select('*').eq('user_id', userId)
-          const { data: badges } = await client.from('badges').select('badge_type').eq('user_id', userId)
-          const { data: wallet } = await client.from('wallets').select('balance').eq('user_id', userId).maybeSingle()
+          const [progressRes, badgesRes, walletRes] = await Promise.all([
+            client.from('game_progress').select('level_id, score, completed_at, stars, completed').eq('user_id', userId),
+            client.from('badges').select('badge_type').eq('user_id', userId),
+            client.from('wallets').select('balance').eq('user_id', userId).maybeSingle()
+          ])
+          const progress = progressRes.data
+          const badges = badgesRes.data
+          const wallet = walletRes.data
 
           if (progress && progress.length > 0) {
             const comp = {}
@@ -3179,13 +3184,21 @@
           }
         }
 
-        // 3. Wallets
+        // 3. Wallets (Try hardened get_leaderboard_wallets RPC first, fallback to direct query)
         try {
-          const { data: wData, error: wErr } = await window.supabaseClient
-            .from('wallets')
-            .select('user_id, balance')
-            .order('balance', { ascending: false })
-            .limit(500)
+          let wData = null, wErr = null
+          const rpcRes = await window.supabaseClient.rpc('get_leaderboard_wallets', { p_limit: 500 })
+          if (!rpcRes.error && rpcRes.data) {
+            wData = rpcRes.data
+          } else {
+            const queryRes = await window.supabaseClient
+              .from('wallets')
+              .select('user_id, balance')
+              .order('balance', { ascending: false })
+              .limit(500)
+            wData = queryRes.data
+            wErr = queryRes.error
+          }
           if (wErr) { console.warn('Leaderboard wallets query error:', wErr); wallets = [] }
           else {
             wallets = wData || []

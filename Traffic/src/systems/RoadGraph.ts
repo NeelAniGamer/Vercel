@@ -221,43 +221,67 @@ export class RoadGraph {
   static fromLevelConfig(cfg: RoadConfig): RoadGraph {
     const graph = new RoadGraph();
     const nodeMap = new Map<string, RoadNode>();
+    const roads = cfg.roads || [];
 
-    // Create nodes from road endpoints
-    cfg.roads.forEach(r => {
-      const isV = r.type === 'v';
-      const pts = isV
-        ? [{ x: r.x!, z: r.z1! }, { x: r.x!, z: r.z2! }]
-        : [{ x: r.x1!, z: r.z! }, { x: r.x2!, z: r.z! }];
-      pts.forEach(p => {
-        const k = `${Math.round(p.x)},${Math.round(p.z)}`;
-        if (!nodeMap.has(k)) {
-          const node = new RoadNode(`n_${graph.nodes.size}`, p.x, p.z);
-          nodeMap.set(k, node);
-          graph.nodes.set(node.id, node);
+    const getNode = (x: number, z: number): RoadNode => {
+      const k = `${Math.round(x)},${Math.round(z)}`;
+      if (!nodeMap.has(k)) {
+        const node = new RoadNode(`n_${graph.nodes.size}`, x, z);
+        nodeMap.set(k, node);
+        graph.nodes.set(node.id, node);
+      }
+      return nodeMap.get(k)!;
+    };
+
+    // Precompute all v×h crossing points so intersecting roads connect
+    const vRoads = roads.filter(r => r.type === 'v');
+    const hRoads = roads.filter(r => r.type === 'h');
+    const crossings = new Map<any, number[]>();
+    vRoads.forEach(v => crossings.set(v, []));
+    hRoads.forEach(h => crossings.set(h, []));
+
+    vRoads.forEach(v => {
+      hRoads.forEach(h => {
+        const vX = v.x ?? 0;
+        const vZmin = Math.min(v.z1 ?? 0, v.z2 ?? 0);
+        const vZmax = Math.max(v.z1 ?? 0, v.z2 ?? 0);
+        const hZ = h.z ?? 0;
+        const hXmin = Math.min(h.x1 ?? 0, h.x2 ?? 0);
+        const hXmax = Math.max(h.x1 ?? 0, h.x2 ?? 0);
+
+        if (vX >= hXmin && vX <= hXmax && hZ >= vZmin && hZ <= vZmax) {
+          crossings.get(v)!.push(hZ);
+          crossings.get(h)!.push(vX);
         }
       });
     });
 
-    // Create edges from roads
-    cfg.roads.forEach(r => {
+    // Build nodes + edge segments per road (endpoints + sorted crossings)
+    roads.forEach(r => {
       const isV = r.type === 'v';
-      const pts = isV
-        ? [{ x: r.x!, z: r.z1! }, { x: r.x!, z: r.z2! }]
-        : [{ x: r.x1!, z: r.z! }, { x: r.x2!, z: r.z! }];
-      const kA = `${Math.round(pts[0].x)},${Math.round(pts[0].z)}`;
-      const kB = `${Math.round(pts[1].x)},${Math.round(pts[1].z)}`;
-      const nA = nodeMap.get(kA);
-      const nB = nodeMap.get(kB);
-      if (nA && nB) {
-        const edge = new RoadEdge(`e_${nA.id}_${nB.id}`, nA, nB, {
-          lanes: r.lanes || 1,
-          width: r.width || 12,
-          oneWay: r.oneWay || false,
-          speedLimit: r.speedLimit || 50,
-          type: r.roadType || 'arterial'
-        });
-        graph.edges.set(edge.id, edge);
-      }
+      const crs = (crossings.get(r) || []).slice().sort((a, b) => a - b);
+      const lo = isV ? Math.min(r.z1 ?? 0, r.z2 ?? 0) : Math.min(r.x1 ?? 0, r.x2 ?? 0);
+      const hi = isV ? Math.max(r.z1 ?? 0, r.z2 ?? 0) : Math.max(r.x1 ?? 0, r.x2 ?? 0);
+      const stations = [lo, ...crs.filter(c => c > lo + 0.5 && c < hi - 0.5), hi]
+        .filter((val, i, arr) => i === 0 || val !== arr[i - 1]);
+
+      let prevNode: RoadNode | null = null;
+      stations.forEach(s => {
+        const px = isV ? (r.x ?? 0) : s;
+        const pz = isV ? s : (r.z ?? 0);
+        const node = getNode(px, pz);
+        if (prevNode && prevNode !== node) {
+          const edge = new RoadEdge(`e_${prevNode.id}_${node.id}`, prevNode, node, {
+            lanes: r.lanes || 1,
+            width: r.width || 12,
+            oneWay: r.oneWay || false,
+            speedLimit: r.speedLimit || 50,
+            type: r.roadType || 'arterial'
+          });
+          graph.edges.set(edge.id, edge);
+        }
+        prevNode = node;
+      });
     });
 
     // Subdivide edges, build slots, index
@@ -423,6 +447,11 @@ export class RoadGraph {
       this._edgeList = Array.from(this.edges.values());
     }
     return this._edgeList;
+  }
+
+  getEdgeTo(nodeA: RoadNode, nodeB: RoadNode): RoadEdge | null {
+    if (!nodeA) return null;
+    return nodeA.getEdgeTo(nodeB) || null;
   }
 
   getRandomEdge(): RoadEdge | null {

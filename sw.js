@@ -1,10 +1,12 @@
-const CACHE_NAME = 'col-cache-v14'
-const SW_VERSION = '2026-10-24-v3'
-const OFFLINE_FALLBACK = '/home.html'
+const CACHE_NAME = 'col-cache-v15'
+const SW_VERSION = '2026-11-06-v4'
+const OFFLINE_FALLBACK = '/home'
 const urlsToCache = [
-  '/home.html',
+  '/home',
   '/col-ui.css',
   '/col-mobile.css',
+  '/mobile-perf.css',
+  '/liquid-glass.css',
   '/Traffic/traffic-mobile.css',
   '/col-ui.js',
   '/col-router.js',
@@ -45,7 +47,11 @@ function shouldHandleRequest(request) {
   if (request.headers.has('range')) {return false}
 
   const url = new URL(request.url)
-  if (url.hostname === 'localhost' || url.hostname === '127.0.0.1' || url.port === '3000' || url.port === '5173') { return false }
+  // Never intercept local dev — including the Python prod server on :8585,
+  // LAN IPs, IPv6 loopback, and file:// so dev never gets the prod SW.
+  if (url.hostname === 'localhost' || url.hostname === '127.0.0.1' || url.hostname === '::1' || url.protocol === 'file:') { return false }
+  if (url.port === '3000' || url.port === '5173' || url.port === '8585') { return false }
+  if (/^(192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)/.test(url.hostname)) { return false }
   if (url.origin !== self.location.origin) {return false}
   if (isPrivateOrDynamicPath(url.pathname)) {return false}
 
@@ -92,49 +98,47 @@ self.addEventListener('fetch', (event) => {
   const request = event.request
   if (!shouldHandleRequest(request)) {return}
 
+  // Start network work synchronously so background revalidation can be
+  // registered with waitUntil during dispatch (not inside the async body,
+  // where it throws "extended lifetime not supported").
+  const networkPromise = fetch(request).catch((e) => { throw e; });
+  event.waitUntil(networkPromise.then(() => undefined).catch(() => undefined));
+
+  // Stale-while-revalidate: serve cache immediately when present so
+  // ?v= cache-busters (e.g. col-ui.css?v=…) never 404 offline.
+  const cachedPromise = caches.open(CACHE_NAME).then((cache) => cache.match(request, { ignoreSearch: true }));
+
   event.respondWith(
     (async () => {
-      const cache = await caches.open(CACHE_NAME)
-      const cached = await cache.match(request)
+      const [cache, cached, networkResult] = await Promise.all([
+        caches.open(CACHE_NAME),
+        cachedPromise,
+        networkPromise.then((r) => ({ ok: true, r }), (e) => ({ ok: false, e }))
+      ]);
 
       // Network-first for core scripts and navigation to ensure deployments are live immediately
-      const isCoreUpdate = request.mode === 'navigate' || request.url.includes('col-ui.js') || request.url.includes('col-ui.css') || request.url.includes('col-auth.js') || request.url.includes('bmc-button.svg') || request.url.includes('qr-dynamic.js')
-      if (isCoreUpdate) {
-        try {
-          const fresh = await fetch(request)
-          if (fresh && fresh.ok && fresh.type === 'basic') {
-            cache.put(request, fresh.clone())
-            return fresh
-          }
-        } catch (_e) {
-          if (cached) {return cached}
-        }
+      const isCoreUpdate = request.mode === 'navigate' || request.url.includes('col-ui.js') || request.url.includes('col-ui.css') || request.url.includes('col-auth.js') || request.url.includes('bmc-button.svg') || request.url.includes('qr-dynamic.js');
+      if (isCoreUpdate && networkResult.ok && networkResult.r && networkResult.r.ok && networkResult.r.type === 'basic') {
+        // Clone before consume — Put needs its own copy.
+        await cache.put(request, networkResult.r.clone());
+        return networkResult.r;
       }
-
-      const networkPromise = fetch(request).then((networkResponse) => {
-        if (networkResponse && networkResponse.ok && networkResponse.type === 'basic') {
-          event.waitUntil(cache.put(request, networkResponse.clone()))
+      if (cached) {
+        if (networkResult.ok && networkResult.r && networkResult.r.ok && networkResult.r.type === 'basic') {
+          await cache.put(request, networkResult.r.clone());
         }
-        return networkResponse
-      })
-
-      event.waitUntil(networkPromise.then(() => undefined).catch(() => undefined))
-
-      if (cached) {return cached}
-
-      try {
-        return await networkPromise
-      } catch (error) {
-        if (request.mode === 'navigate') {
-          const fallback = await cache.match(OFFLINE_FALLBACK)
-          if (fallback) {return fallback}
-        }
-        return new Response('Offline', {
-          status: 503,
-          statusText: 'Offline',
-          headers: { 'Content-Type': 'text/plain; charset=utf-8' }
-        })
+        return cached;
       }
+      if (networkResult.ok) return networkResult.r;
+      if (request.mode === 'navigate') {
+        const fallback = await cache.match(OFFLINE_FALLBACK, { ignoreSearch: true }) || await cache.match('/home.html', { ignoreSearch: true });
+        if (fallback) return fallback;
+      }
+      return new Response('Offline', {
+        status: 503,
+        statusText: 'Offline',
+        headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+      });
     })()
   )
 })
