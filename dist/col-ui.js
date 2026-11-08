@@ -34,6 +34,101 @@
     };
   };
 
+  // OS & Platform Detection System: Windows, Mac, Linux, Android, iOS
+  function initColOS() {
+    var nav = window.navigator || {};
+    var ua = nav.userAgent || '';
+    var platform = nav.platform || '';
+    var userAgentData = nav.userAgentData || null;
+    var osName = 'windows';
+
+    if (userAgentData && userAgentData.platform) {
+      var p = userAgentData.platform.toLowerCase();
+      if (p.includes('win')) osName = 'windows';
+      else if (p.includes('mac')) osName = 'mac';
+      else if (p.includes('linux')) osName = 'linux';
+      else if (p.includes('android')) osName = 'android';
+      else if (p.includes('ios') || p.includes('iphone') || p.includes('ipad')) osName = 'ios';
+    } else {
+      if (/Win/i.test(platform) || /Windows/i.test(ua)) osName = 'windows';
+      else if (/Mac/i.test(platform) || /Macintosh/i.test(ua)) osName = 'mac';
+      else if (/Linux/i.test(platform) || /Linux/i.test(ua)) osName = 'linux';
+      else if (/Android/i.test(ua)) osName = 'android';
+      else if (/iPhone|iPad|iPod/i.test(ua)) osName = 'ios';
+    }
+
+    var isMac = osName === 'mac' || osName === 'ios';
+    var isWin = osName === 'windows';
+    var isLinux = osName === 'linux';
+    var isAndroid = osName === 'android';
+
+    document.documentElement.setAttribute('data-os', osName);
+    document.documentElement.classList.add('os-' + osName);
+
+    window.__colOS = {
+      name: osName,
+      isMac: isMac,
+      isWindows: isWin,
+      isAndroid: isAndroid,
+      isLinux: isLinux,
+      modKey: isMac ? '⌘' : 'Ctrl',
+      shortcutText: isMac ? '⌘K' : 'Ctrl+K',
+      shortcutInline: isMac ? '⌘K' : 'Ctrl K'
+    };
+
+    function applyPlatformKeys() {
+      var kText = window.__colOS.shortcutInline;
+      var fullKey = window.__colOS.shortcutText;
+      var tip = 'Press ' + fullKey + ' or / to search all 16 applications';
+
+      var navTrig = document.querySelector('.nav-cmd-trigger');
+      if (navTrig) {
+        navTrig.setAttribute('title', tip);
+        var nk = navTrig.querySelector('kbd');
+        if (nk) nk.textContent = kText;
+      }
+
+      var heroPill = document.querySelector('.hero-cmd-pill');
+      if (heroPill) {
+        heroPill.setAttribute('title', tip);
+        var hk = heroPill.querySelector('.hcp-kbd');
+        if (hk) hk.textContent = kText;
+      }
+
+      var sfBtn = document.querySelector('.sf-cmd-btn');
+      if (sfBtn) {
+        sfBtn.setAttribute('title', tip);
+        var sk = sfBtn.querySelector('kbd');
+        if (sk) sk.textContent = kText;
+      }
+
+      var osHint = document.querySelector('.col-cmd-hint-toggle kbd');
+      if (osHint) {
+        osHint.textContent = fullKey;
+      }
+
+      document.querySelectorAll('.col-os-key').forEach(function (el) {
+        el.textContent = kText;
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', applyPlatformKeys);
+    } else {
+      applyPlatformKeys();
+    }
+
+    window.addEventListener('keydown', function (e) {
+      var isK = (isMac ? e.metaKey : e.ctrlKey) && (e.key === 'k' || e.key === 'K');
+      if (isK && typeof window.toggleColCmdPalette === 'function') {
+        e.preventDefault();
+        e.stopPropagation();
+        window.toggleColCmdPalette();
+      }
+    }, true);
+  }
+  initColOS();
+
   // 0. Ambient Visual System Auto-Injector (Aurora Mesh & Cyber Grid)
   // Full-fidelity 3-orb ambient mesh + cyber spotlight across all devices.
   // Hardware-accelerated GPU layers run at full unthrottled refresh rates.

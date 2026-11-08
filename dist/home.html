@@ -108,6 +108,79 @@
         } catch (e) {}
       })()
     </script>
+    <!-- Operating System Detection & Dynamic Platform Key Binding -->
+    <script id="colOsDetector">
+      ;(function () {
+        var ua = navigator.userAgent || ''
+        var p = navigator.platform || (navigator.userAgentData && navigator.userAgentData.platform) || ''
+        var isMac = /Mac|iPhone|iPad|iPod/i.test(p) || /Macintosh|Mac OS/i.test(ua)
+        var isWin = /Win/i.test(p) || /Windows/i.test(ua)
+        var isAndroid = /Android/i.test(ua)
+        var isLinux = /Linux/i.test(p) && !isAndroid
+
+        var osName = isMac ? 'mac' : (isWin ? 'windows' : (isAndroid ? 'android' : (isLinux ? 'linux' : 'pc')))
+        document.documentElement.setAttribute('data-os', osName)
+        document.documentElement.classList.add('os-' + osName)
+
+        window.__colOS = {
+          name: osName,
+          isMac: isMac,
+          isWindows: isWin,
+          isAndroid: isAndroid,
+          isLinux: isLinux,
+          modKey: isMac ? '⌘' : 'Ctrl',
+          shortcutText: isMac ? '⌘K' : 'Ctrl+K',
+          shortcutInline: isMac ? '⌘K' : 'Ctrl K'
+        }
+
+        function applyPlatformKeys() {
+          var kText = window.__colOS.shortcutInline
+          var fullKey = window.__colOS.shortcutText
+          var tip = 'Press ' + fullKey + ' or / to search all 16 applications'
+
+          // Header search trigger
+          var navTrig = document.querySelector('.nav-cmd-trigger')
+          if (navTrig) {
+            navTrig.setAttribute('title', tip)
+            var nk = navTrig.querySelector('kbd')
+            if (nk) nk.textContent = kText
+          }
+
+          // Hero quick launcher pill
+          var heroPill = document.querySelector('.hero-cmd-pill')
+          if (heroPill) {
+            heroPill.setAttribute('title', tip)
+            var hk = heroPill.querySelector('.hcp-kbd')
+            if (hk) hk.textContent = kText
+          }
+
+          // Footer command button
+          var sfBtn = document.querySelector('.sf-cmd-btn')
+          if (sfBtn) {
+            sfBtn.setAttribute('title', tip)
+            var sk = sfBtn.querySelector('kbd')
+            if (sk) sk.textContent = kText
+          }
+
+          // Command palette footer hint
+          var osHint = document.querySelector('.col-cmd-hint-toggle kbd')
+          if (osHint) {
+            osHint.textContent = fullKey
+          }
+
+          // General OS keys
+          document.querySelectorAll('.col-os-key').forEach(function (el) {
+            el.textContent = kText
+          })
+        }
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', applyPlatformKeys)
+        } else {
+          applyPlatformKeys()
+        }
+      })()
+    </script>
     <script>
       ;(function () {
         try {
@@ -3919,6 +3992,1053 @@
           animation: none !important;
         }
       }
+
+      /* ═══════════════════════════════════════════════════════════════════════════
+         SEARCH SHORTCUT TRIGGERS (Header, Hero, Footer)
+         ═══════════════════════════════════════════════════════════════════════════ */
+      .nav-cmd-trigger {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: var(--dim, #94a3b8);
+        font-family: var(--sans, 'Inter', sans-serif);
+        font-size: 0.82rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        user-select: none;
+      }
+      .nav-cmd-trigger:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(242, 184, 75, 0.4);
+        color: var(--ink, #ffffff);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      }
+      .nav-cmd-trigger svg {
+        width: 15px;
+        height: 15px;
+        stroke: currentColor;
+        stroke-width: 2.2;
+      }
+      .nav-cmd-trigger kbd {
+        font-family: var(--mono, monospace);
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 5px;
+        padding: 2px 5px;
+        color: var(--ink, #ffffff);
+      }
+
+      .hero-cmd-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 18px;
+        border-radius: 999px;
+        background: rgba(14, 20, 36, 0.85);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-top: 1.5px solid rgba(255, 255, 255, 0.28);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        color: var(--ink, #ffffff);
+        font-family: var(--sans, 'Inter', sans-serif);
+        font-size: 0.84rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.5);
+        user-select: none;
+      }
+      .hero-cmd-pill:hover {
+        background: rgba(242, 184, 75, 0.14);
+        border-color: rgba(242, 184, 75, 0.45);
+        color: #ffd166;
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px -4px rgba(242, 184, 75, 0.25);
+      }
+      .hero-cmd-pill svg {
+        width: 16px;
+        height: 16px;
+        stroke: var(--signal, #f2b84b);
+      }
+      .hero-cmd-pill .hcp-kbd {
+        font-family: var(--mono, monospace);
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 5px;
+        padding: 2px 6px;
+        color: var(--ink, #ffffff);
+      }
+
+      .sf-cmd-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 14px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: var(--dim, #94a3b8);
+        font-family: var(--sans, 'Inter', sans-serif);
+        font-size: 0.78rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .sf-cmd-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(242, 184, 75, 0.35);
+        color: var(--ink, #ffffff);
+        transform: translateY(-1px);
+      }
+      .sf-cmd-btn svg {
+        width: 14px;
+        height: 14px;
+        stroke: currentColor;
+      }
+      .sf-cmd-btn kbd {
+        font-family: var(--mono, monospace);
+        font-size: 0.62rem;
+        font-weight: 700;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 4px;
+        padding: 2px 5px;
+        color: var(--ink, #ffffff);
+      }
+
+      /* ═══════════════════════════════════════════════════════════════════════════
+         STUDIO MARQUEE TICKER SECTION
+         ═══════════════════════════════════════════════════════════════════════════ */
+      .studio-marquee-section {
+        width: 100%;
+        overflow: hidden;
+        padding: 14px 0;
+        background: rgba(10, 16, 32, 0.72);
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        mask-image: linear-gradient(90deg, transparent 0%, black 10%, black 90%, transparent 100%);
+        -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 10%, black 90%, transparent 100%);
+        contain: layout style;
+      }
+      .marquee-track {
+        display: flex;
+        width: max-content;
+        user-select: none;
+      }
+      .marquee-group {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        padding-right: 28px;
+        animation: marqueeRoll 45s linear infinite;
+        white-space: nowrap;
+      }
+      .marquee-track:hover .marquee-group {
+        animation-play-state: paused;
+      }
+      @keyframes marqueeRoll {
+        from { transform: translate3d(0, 0, 0); }
+        to { transform: translate3d(-100%, 0, 0); }
+      }
+      .m-item {
+        font-family: var(--mono);
+        font-size: 0.74rem;
+        letter-spacing: 0.08em;
+        color: var(--ink);
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        white-space: nowrap;
+      }
+      .m-code {
+        font-weight: 800;
+        color: var(--signal);
+        background: rgba(242, 184, 75, 0.12);
+        padding: 2px 7px;
+        border-radius: 4px;
+        border: 1px solid rgba(242, 184, 75, 0.28);
+      }
+      .m-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+      .m-dot.m-cyan { background: #00f0ff; box-shadow: 0 0 8px #00f0ff; }
+      .m-dot.m-gold { background: #f2b84b; box-shadow: 0 0 8px #f2b84b; }
+      .m-dot.m-emerald { background: #34d399; box-shadow: 0 0 8px #34d399; }
+      .m-dot.m-purple { background: #c084fc; box-shadow: 0 0 8px #c084fc; }
+      .m-sep {
+        color: var(--lineb);
+        font-size: 0.85rem;
+        margin: 0 4px;
+      }
+
+      /* ═══════════════════════════════════════════════════════════════════════════
+         STUDIO ARCHITECTURE MATRIX SECTION
+         ═══════════════════════════════════════════════════════════════════════════ */
+      .arch-section {
+        max-width: 1360px;
+        margin: 0 auto;
+        padding: 100px 52px 60px;
+        contain: layout style;
+        position: relative;
+      }
+      .arch-header {
+        text-align: center;
+        max-width: 740px;
+        margin: 0 auto 56px;
+      }
+      .arch-grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 22px;
+      }
+      .arch-card {
+        grid-column: span 3;
+        background: linear-gradient(165deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 60%, rgba(8, 12, 24, 0.65) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.11);
+        border-top: 1.5px solid rgba(255, 255, 255, 0.26);
+        border-radius: 22px;
+        padding: 34px 30px;
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        transition: transform 0.35s var(--ease), border-color 0.35s var(--ease), box-shadow 0.35s var(--ease);
+      }
+      .arch-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(255, 255, 255, 0.24);
+        box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.7);
+      }
+      .arch-badge {
+        font-family: var(--mono);
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: var(--dim);
+        display: inline-block;
+        margin-bottom: 20px;
+      }
+      .arch-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        color: var(--signal);
+      }
+      .arch-icon svg {
+        width: 22px;
+        height: 22px;
+        stroke: var(--signal);
+      }
+      .arch-title {
+        font-family: var(--serif);
+        font-size: 1.6rem;
+        color: var(--ink);
+        margin-bottom: 10px;
+        font-weight: 400;
+        line-height: 1.2;
+      }
+      .arch-desc {
+        color: rgba(203, 213, 225, 0.85);
+        font-size: 0.9rem;
+        line-height: 1.65;
+        margin-bottom: 24px;
+      }
+      .arch-stat {
+        margin-bottom: 16px;
+      }
+      .arch-stat-val {
+        font-family: var(--mono);
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--signal);
+        line-height: 1.1;
+      }
+      .arch-stat-lbl {
+        font-family: var(--mono);
+        font-size: 0.62rem;
+        color: var(--dim);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-top: 4px;
+      }
+      .arch-metric-display {
+        background: rgba(0, 0, 0, 0.35);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 12px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .arch-metric-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .ami-label {
+        font-family: var(--mono);
+        font-size: 0.62rem;
+        color: var(--dim);
+      }
+      .ami-val {
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--ink);
+      }
+      .arch-metric-bar {
+        height: 4px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+      .arch-metric-fill {
+        height: 100%;
+        background: var(--signal);
+        border-radius: 999px;
+      }
+      @media (max-width: 1024px) {
+        .arch-card { grid-column: span 6; }
+        .arch-section { padding: 80px 24px 40px; }
+      }
+      @media (max-width: 640px) {
+        .arch-card { grid-column: span 12; }
+      }
+
+      /* ═══════════════════════════════════════════════════════════════════════════
+         RAYCAST / LINEAR COMMAND PALETTE SEARCH MODAL
+         ═══════════════════════════════════════════════════════════════════════════ */
+      .col-cmd-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 9500;
+        background: rgba(2, 6, 18, 0.76);
+        backdrop-filter: blur(28px) saturate(190%) contrast(105%);
+        -webkit-backdrop-filter: blur(28px) saturate(190%) contrast(105%);
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding-top: max(72px, 11vh);
+        padding-bottom: 40px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+        isolation: isolate;
+      }
+      .col-cmd-modal.is-open {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .col-cmd-backdrop {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+      }
+      .col-cmd-box {
+        position: relative;
+        z-index: 2;
+        width: 92%;
+        max-width: 680px;
+        max-height: calc(100vh - max(90px, 14vh));
+        background: linear-gradient(165deg, rgba(17, 24, 39, 0.96) 0%, rgba(9, 13, 24, 0.98) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-top: 1.5px solid rgba(255, 255, 255, 0.45);
+        border-radius: 22px;
+        box-shadow:
+          0 32px 80px -10px rgba(0, 0, 0, 0.85),
+          0 0 50px -12px rgba(242, 184, 75, 0.18),
+          inset 0 1.5px 1px rgba(255, 255, 255, 0.25);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transform: scale(0.96) translateY(-12px);
+        transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease;
+      }
+      .col-cmd-modal.is-open .col-cmd-box {
+        transform: scale(1) translateY(0);
+      }
+      .col-cmd-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 16px 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.02);
+      }
+      .col-cmd-search-icon {
+        width: 22px;
+        height: 22px;
+        color: var(--signal, #f2b84b);
+        flex-shrink: 0;
+        stroke-width: 2.2;
+        filter: drop-shadow(0 0 8px rgba(242, 184, 75, 0.4));
+      }
+      .col-cmd-input,
+      .col-cmd-input:focus,
+      .col-cmd-input:focus-visible,
+      #colCmdInput,
+      #colCmdInput:focus,
+      #colCmdInput:focus-visible {
+        flex: 1;
+        background: transparent !important;
+        border: none !important;
+        outline: none !important;
+        outline-offset: 0 !important;
+        box-shadow: none !important;
+        -webkit-appearance: none !important;
+        color: var(--ink, #f8fafc) !important;
+        font-family: var(--sans, 'Inter', sans-serif);
+        font-size: 1.05rem;
+        font-weight: 500;
+        padding: 0;
+      }
+      .col-cmd-group-label {
+        font-family: var(--mono, monospace);
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--dim, #94a3b8);
+        padding: 14px 14px 4px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        user-select: none;
+      }
+      .col-cmd-group-label::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.08);
+      }
+      body.lm .col-cmd-group-label {
+        color: #64748b !important;
+      }
+      body.lm .col-cmd-group-label::after {
+        background: rgba(15, 23, 42, 0.08) !important;
+      }
+      .col-cmd-input::placeholder {
+        color: rgba(148, 163, 184, 0.65);
+        font-weight: 400;
+      }
+      .col-cmd-clear-btn {
+        appearance: none;
+        background: rgba(255, 255, 255, 0.08);
+        border: none;
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        color: var(--dim, #94a3b8);
+        cursor: pointer;
+        padding: 0;
+        transition: all 0.15s ease;
+      }
+      .col-cmd-clear-btn:hover {
+        background: rgba(255, 255, 255, 0.16);
+        color: #ffffff;
+      }
+      .col-cmd-esc {
+        font-family: var(--mono, monospace);
+        font-size: 0.64rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        padding: 4px 8px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        color: var(--dim, #94a3b8);
+        cursor: pointer;
+        transition: all 0.15s ease;
+        user-select: none;
+      }
+      .col-cmd-esc:hover {
+        background: rgba(255, 255, 255, 0.12);
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, 0.28);
+      }
+      .col-cmd-filters {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 18px 8px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        background: rgba(0, 0, 0, 0.18);
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .col-cmd-filters::-webkit-scrollbar { display: none; }
+      .col-cmd-pill {
+        appearance: none;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 999px;
+        padding: 4px 11px;
+        font-family: var(--mono, monospace);
+        font-size: 0.65rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        color: var(--dim, #94a3b8);
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.2s ease;
+      }
+      .col-cmd-pill:hover {
+        background: rgba(255, 255, 255, 0.09);
+        color: var(--ink, #ffffff);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+      .col-cmd-pill.is-active {
+        background: rgba(242, 184, 75, 0.18);
+        border-color: rgba(242, 184, 75, 0.5);
+        color: #ffd166;
+        box-shadow: 0 0 12px rgba(242, 184, 75, 0.25);
+      }
+      .col-cmd-list {
+        max-height: 420px;
+        overflow-y: auto;
+        padding: 10px 12px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+      }
+      .col-cmd-list::-webkit-scrollbar { width: 6px; }
+      .col-cmd-list::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.16);
+        border-radius: 6px;
+      }
+      .col-cmd-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 14px;
+        border-radius: 14px;
+        cursor: pointer;
+        text-decoration: none;
+        background: transparent;
+        border: 1px solid transparent;
+        transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+        gap: 12px;
+      }
+      .col-cmd-item:hover,
+      .col-cmd-item.is-selected {
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+        border-color: rgba(255, 255, 255, 0.16);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+        transform: translateX(2px);
+      }
+      .col-cmd-item-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        min-width: 0;
+        flex: 1;
+      }
+      .col-cmd-icon-box {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--cmd-accent, var(--signal, #f2b84b));
+        flex-shrink: 0;
+        transition: all 0.2s ease;
+      }
+      .col-cmd-icon-box svg {
+        width: 19px;
+        height: 19px;
+        stroke: currentColor;
+      }
+      .col-cmd-item:hover .col-cmd-icon-box,
+      .col-cmd-item.is-selected .col-cmd-icon-box {
+        transform: scale(1.08);
+        border-color: var(--cmd-accent, var(--signal));
+        box-shadow: 0 0 14px rgba(242, 184, 75, 0.3);
+      }
+      .col-cmd-text { min-width: 0; flex: 1; }
+      .col-cmd-title {
+        font-weight: 600;
+        font-size: 0.94rem;
+        color: var(--ink, #f8fafc);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.3;
+      }
+      .col-cmd-sub {
+        font-size: 0.76rem;
+        color: var(--dim, #94a3b8);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-top: 2px;
+      }
+      .col-cmd-item-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+      }
+      .col-cmd-badge {
+        font-family: var(--mono, monospace);
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        padding: 3px 8px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--dim, #94a3b8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .col-cmd-action {
+        font-family: var(--mono, monospace);
+        font-size: 0.64rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        padding: 3px 8px;
+        border-radius: 6px;
+        background: rgba(242, 184, 75, 0.12);
+        color: var(--signal, #f2b84b);
+        border: 1px solid rgba(242, 184, 75, 0.28);
+        opacity: 0.85;
+      }
+      .col-cmd-item:hover .col-cmd-action,
+      .col-cmd-item.is-selected .col-cmd-action {
+        background: var(--signal, #f2b84b);
+        color: #070a14;
+        border-color: var(--signal, #f2b84b);
+        opacity: 1;
+        box-shadow: 0 0 10px rgba(242, 184, 75, 0.45);
+      }
+      .col-cmd-mark {
+        background: rgba(242, 184, 75, 0.35);
+        color: #ffffff;
+        border-radius: 2px;
+        padding: 0 2px;
+        font-weight: 700;
+      }
+      .col-cmd-empty {
+        padding: 44px 20px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+      }
+      .col-cmd-empty-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--signal);
+      }
+      .col-cmd-empty-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--ink);
+      }
+      .col-cmd-empty-sub {
+        font-size: 0.85rem;
+        color: var(--dim);
+        max-width: 380px;
+      }
+      .col-cmd-empty-btn {
+        margin-top: 8px;
+        padding: 8px 18px;
+        border-radius: 999px;
+        background: rgba(242, 184, 75, 0.15);
+        border: 1px solid rgba(242, 184, 75, 0.35);
+        color: var(--signal);
+        font-weight: 600;
+        font-size: 0.82rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .col-cmd-empty-btn:hover {
+        background: var(--signal);
+        color: #070a14;
+      }
+      .col-cmd-footer {
+        padding: 12px 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-family: var(--mono, monospace);
+        font-size: 0.66rem;
+        color: var(--dim, #94a3b8);
+        background: rgba(0, 0, 0, 0.22);
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .col-cmd-hints {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .col-cmd-hints span {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .col-cmd-hints kbd {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        padding: 2px 5px;
+        border-radius: 4px;
+        color: var(--ink, #ffffff);
+        font-size: 0.62rem;
+        font-weight: 700;
+      }
+      .col-cmd-status-count {
+        color: rgba(148, 163, 184, 0.85);
+        font-weight: 600;
+      }
+
+      /* ═══════════════════════════════════════════════════════════════════════════
+         MASTER LIGHT MODE ELEVATION OVERRIDES
+         ═══════════════════════════════════════════════════════════════════════════ */
+      body.lm .studio-marquee-section {
+        background: rgba(244, 243, 238, 0.9) !important;
+        border-color: rgba(15, 23, 42, 0.09) !important;
+      }
+      body.lm .top-nav {
+        background: rgba(255, 255, 255, 0.88) !important;
+        backdrop-filter: blur(24px) saturate(190%) !important;
+        -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+        border-bottom: 1px solid rgba(15, 23, 42, 0.08) !important;
+        border-top: 1.5px solid rgba(255, 255, 255, 0.95) !important;
+        box-shadow:
+          0 4px 6px -1px rgba(15, 23, 42, 0.02),
+          0 20px 40px -8px rgba(15, 23, 42, 0.07),
+          inset 0 1px 0 #ffffff !important;
+      }
+      body.lm .nav-cmd-trigger {
+        background: rgba(241, 245, 249, 0.85) !important;
+        border: 1px solid rgba(15, 23, 42, 0.1) !important;
+        color: #334155 !important;
+        box-shadow: inset 0 1px 0 #ffffff, 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+      }
+      body.lm .nav-cmd-trigger:hover {
+        background: #ffffff !important;
+        border-color: rgba(217, 119, 6, 0.4) !important;
+        color: #0f172a !important;
+        box-shadow: 0 4px 12px rgba(217, 119, 6, 0.15), inset 0 1px 0 #ffffff !important;
+      }
+      body.lm .nav-cmd-trigger kbd {
+        background: #ffffff !important;
+        border: 1px solid rgba(15, 23, 42, 0.14) !important;
+        color: #0f172a !important;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06), inset 0 1px 0 #ffffff !important;
+      }
+      body.lm .hero-cmd-pill {
+        background: rgba(255, 255, 255, 0.88) !important;
+        backdrop-filter: blur(16px) !important;
+        border: 1px solid rgba(15, 23, 42, 0.1) !important;
+        border-top: 1.5px solid #ffffff !important;
+        color: #334155 !important;
+        box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.08), inset 0 1px 0 #ffffff !important;
+      }
+      body.lm .hero-cmd-pill:hover {
+        background: #ffffff !important;
+        border-color: rgba(217, 119, 6, 0.45) !important;
+        color: #0f172a !important;
+        box-shadow: 0 8px 24px -4px rgba(217, 119, 6, 0.2), inset 0 1px 0 #ffffff !important;
+        transform: translateY(-2px);
+      }
+      body.lm .hero-cmd-pill .hcp-kbd {
+        background: #f1f5f9 !important;
+        border: 1px solid rgba(15, 23, 42, 0.14) !important;
+        color: #0f172a !important;
+        box-shadow: inset 0 1px 0 #ffffff !important;
+      }
+      body.lm .pc {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.94) 100%) !important;
+        border: 1px solid rgba(15, 23, 42, 0.08) !important;
+        border-top: 1.5px solid #ffffff !important;
+        box-shadow:
+          0 2px 4px rgba(15, 23, 42, 0.02),
+          0 14px 34px -6px rgba(15, 23, 42, 0.08),
+          inset 0 1px 0 0 #ffffff,
+          inset 0 0 0 1px rgba(255, 255, 255, 0.7) !important;
+      }
+      body.lm .pc:hover {
+        box-shadow:
+          0 4px 8px rgba(15, 23, 42, 0.03),
+          0 24px 52px -10px rgba(15, 23, 42, 0.14),
+          inset 0 1px 0 0 #ffffff,
+          inset 0 0 0 1px rgba(255, 255, 255, 0.9) !important;
+      }
+      body.lm .pc::after {
+        background: radial-gradient(
+          circle 320px at var(--card-mx, -9999px) var(--card-my, -9999px),
+          rgba(255, 255, 255, 0.92) 0%,
+          rgba(217, 119, 6, 0.06) 45%,
+          transparent 70%
+        ) !important;
+      }
+      body.lm .pc .pv {
+        border-bottom: 1px solid rgba(15, 23, 42, 0.07) !important;
+        background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%) !important;
+        box-shadow: inset 0 2px 4px rgba(15, 23, 42, 0.03) !important;
+      }
+      body.lm .pname { color: #0f172a !important; font-weight: 700 !important; }
+      body.lm .pdesc { color: #475569 !important; line-height: 1.65 !important; }
+      body.lm .plink { color: #b45309 !important; font-weight: 700 !important; }
+      body.lm .pc:hover .plink { color: #92400e !important; }
+      body.lm .ptags .tag {
+        background: #f1f5f9 !important;
+        border: 1px solid rgba(15, 23, 42, 0.09) !important;
+        color: #334155 !important;
+        box-shadow: inset 0 1px 0 #ffffff !important;
+      }
+      body.lm .pc:hover .ptags .tag {
+        background: #e2e8f0 !important;
+        border-color: rgba(15, 23, 42, 0.18) !important;
+        color: #0f172a !important;
+      }
+      body.lm .arch-section {
+        background: linear-gradient(180deg, transparent 0%, rgba(241, 245, 249, 0.5) 50%, transparent 100%);
+      }
+      body.lm .arch-card {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.94) 100%) !important;
+        border: 1px solid rgba(15, 23, 42, 0.09) !important;
+        border-top: 1.5px solid #ffffff !important;
+        box-shadow:
+          0 2px 4px rgba(15, 23, 42, 0.02),
+          0 20px 42px -8px rgba(15, 23, 42, 0.08),
+          inset 0 1px 0 #ffffff,
+          inset 0 0 0 1px rgba(255, 255, 255, 0.7) !important;
+      }
+      body.lm .arch-card:hover {
+        border-color: rgba(217, 119, 6, 0.35) !important;
+        box-shadow:
+          0 6px 12px rgba(15, 23, 42, 0.03),
+          0 28px 56px -12px rgba(217, 119, 6, 0.16),
+          inset 0 1px 0 #ffffff !important;
+      }
+      body.lm .arch-title { color: #0f172a !important; }
+      body.lm .arch-desc { color: #475569 !important; }
+      body.lm .arch-metric-display {
+        background: linear-gradient(135deg, rgba(241, 245, 249, 0.92) 0%, rgba(255, 255, 255, 0.98) 100%) !important;
+        border: 1px solid rgba(15, 23, 42, 0.09) !important;
+        box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.03), 0 2px 6px rgba(15, 23, 42, 0.04), 0 1px 0 #ffffff !important;
+      }
+      body.lm .arch-stat-val { color: #0f172a !important; }
+      body.lm .arch-stat-lbl { color: #64748b !important; }
+      body.lm .ami-label { color: #64748b !important; }
+      body.lm .ami-val { color: #0f172a !important; }
+      body.lm .vp-card {
+        background: linear-gradient(180deg, #ffffff 0%, rgba(248, 250, 252, 0.92) 100%) !important;
+        border: 1px solid rgba(15, 23, 42, 0.08) !important;
+        border-top: 1.5px solid #ffffff !important;
+        box-shadow:
+          0 2px 4px rgba(15, 23, 42, 0.02),
+          0 16px 36px -6px rgba(15, 23, 42, 0.07),
+          inset 0 1px 0 #ffffff !important;
+      }
+      body.lm .vp-card:hover {
+        border-color: rgba(15, 23, 42, 0.16) !important;
+        box-shadow:
+          0 4px 8px rgba(15, 23, 42, 0.03),
+          0 24px 48px -10px rgba(15, 23, 42, 0.12),
+          inset 0 1px 0 #ffffff !important;
+        transform: translateY(-6px);
+      }
+      body.lm .vp-title { color: #0f172a !important; }
+      body.lm .vp-desc { color: #475569 !important; }
+      body.lm .vp-icon {
+        filter: drop-shadow(0 4px 12px rgba(217, 119, 6, 0.25)) !important;
+        color: #d97706 !important;
+      }
+      body.lm .site-footer {
+        background: linear-gradient(180deg, rgba(248, 250, 252, 0.96) 0%, rgba(241, 245, 249, 0.98) 100%) !important;
+        border-top: 1.5px solid rgba(15, 23, 42, 0.08) !important;
+        box-shadow: inset 0 1px 0 #ffffff, 0 -10px 40px -10px rgba(15, 23, 42, 0.04) !important;
+      }
+      body.lm .sf-brand-name { color: #0f172a !important; }
+      body.lm .sf-links a { color: #475569 !important; }
+      body.lm .sf-links a:hover { color: #0f172a !important; }
+      body.lm .sf-status-pill {
+        background: rgba(16, 185, 129, 0.1) !important;
+        border: 1px solid rgba(16, 185, 129, 0.25) !important;
+        color: #047857 !important;
+      }
+      body.lm .sf-cmd-btn {
+        background: #ffffff !important;
+        border: 1px solid rgba(15, 23, 42, 0.12) !important;
+        color: #334155 !important;
+        box-shadow: inset 0 1px 0 #ffffff, 0 1px 3px rgba(15, 23, 42, 0.04) !important;
+      }
+      body.lm .sf-cmd-btn:hover {
+        background: #f8fafc !important;
+        border-color: rgba(217, 119, 6, 0.4) !important;
+        color: #0f172a !important;
+        box-shadow: 0 4px 12px rgba(217, 119, 6, 0.15), inset 0 1px 0 #ffffff !important;
+      }
+      body.lm .sf-cmd-btn kbd {
+        background: #f1f5f9 !important;
+        border-color: rgba(15, 23, 42, 0.14) !important;
+        color: #0f172a !important;
+      }
+      body.lm .sf-bottom { color: #64748b !important; }
+
+      /* Crystalline Daylight Quartz for Command Palette */
+      body.lm .col-cmd-modal {
+        background: rgba(15, 23, 42, 0.42) !important;
+        backdrop-filter: blur(28px) saturate(180%) !important;
+        -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+      }
+      body.lm .col-cmd-box {
+        background: linear-gradient(165deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.96) 100%) !important;
+        border: 1px solid rgba(15, 23, 42, 0.12) !important;
+        border-top: 1.5px solid #ffffff !important;
+        box-shadow:
+          0 32px 80px -15px rgba(15, 23, 42, 0.25),
+          0 4px 16px rgba(15, 23, 42, 0.06),
+          inset 0 1.5px 1.5px #ffffff !important;
+      }
+      body.lm .col-cmd-header {
+        border-bottom-color: rgba(15, 23, 42, 0.08) !important;
+        background: rgba(255, 255, 255, 0.6) !important;
+      }
+      body.lm .col-cmd-search-icon {
+        color: #b45309 !important;
+        filter: drop-shadow(0 0 6px rgba(217, 119, 6, 0.3)) !important;
+      }
+      body.lm .col-cmd-input {
+        color: #0f172a !important;
+        outline: none !important;
+        box-shadow: none !important;
+        -webkit-appearance: none !important;
+      }
+      body.lm .col-cmd-input::placeholder { color: #64748b !important; }
+      body.lm .col-cmd-clear-btn {
+        background: rgba(15, 23, 42, 0.06) !important;
+        color: #475569 !important;
+      }
+      body.lm .col-cmd-clear-btn:hover {
+        background: rgba(15, 23, 42, 0.12) !important;
+        color: #0f172a !important;
+      }
+      body.lm .col-cmd-esc {
+        background: rgba(15, 23, 42, 0.05) !important;
+        border-color: rgba(15, 23, 42, 0.12) !important;
+        color: #475569 !important;
+      }
+      body.lm .col-cmd-esc:hover {
+        background: rgba(15, 23, 42, 0.1) !important;
+        color: #0f172a !important;
+      }
+      body.lm .col-cmd-filters {
+        background: rgba(241, 245, 249, 0.7) !important;
+        border-bottom-color: rgba(15, 23, 42, 0.08) !important;
+      }
+      body.lm .col-cmd-pill {
+        background: #ffffff !important;
+        border-color: rgba(15, 23, 42, 0.1) !important;
+        color: #475569 !important;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+      }
+      body.lm .col-cmd-pill:hover {
+        background: #f8fafc !important;
+        border-color: rgba(15, 23, 42, 0.2) !important;
+        color: #0f172a !important;
+      }
+      body.lm .col-cmd-pill.is-active {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+        color: #ffffff !important;
+        border-color: #d97706 !important;
+        box-shadow: 0 2px 8px rgba(217, 119, 6, 0.35) !important;
+      }
+      body.lm .col-cmd-item:hover,
+      body.lm .col-cmd-item.is-selected {
+        background: linear-gradient(90deg, rgba(241, 245, 249, 0.95) 0%, rgba(248, 250, 252, 0.9) 100%) !important;
+        border-color: rgba(217, 119, 6, 0.3) !important;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06) !important;
+      }
+      body.lm .col-cmd-icon-box {
+        background: #ffffff !important;
+        border-color: rgba(15, 23, 42, 0.1) !important;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05) !important;
+      }
+      body.lm .col-cmd-title { color: #0f172a !important; font-weight: 600 !important; }
+      body.lm .col-cmd-sub { color: #64748b !important; }
+      body.lm .col-cmd-badge {
+        background: #f1f5f9 !important;
+        border-color: rgba(15, 23, 42, 0.1) !important;
+        color: #475569 !important;
+      }
+      body.lm .col-cmd-action {
+        background: rgba(217, 119, 6, 0.1) !important;
+        border-color: rgba(217, 119, 6, 0.25) !important;
+        color: #b45309 !important;
+      }
+      body.lm .col-cmd-item:hover .col-cmd-action,
+      body.lm .col-cmd-item.is-selected .col-cmd-action {
+        background: #d97706 !important;
+        border-color: #d97706 !important;
+        color: #ffffff !important;
+        box-shadow: 0 2px 8px rgba(217, 119, 6, 0.35) !important;
+      }
+      body.lm .col-cmd-mark {
+        background: rgba(245, 158, 11, 0.28) !important;
+        color: #92400e !important;
+        border-radius: 2px;
+      }
+      body.lm .col-cmd-footer {
+        background: rgba(241, 245, 249, 0.8) !important;
+        border-top-color: rgba(15, 23, 42, 0.08) !important;
+        color: #64748b !important;
+      }
+      body.lm .col-cmd-hints kbd {
+        background: #ffffff !important;
+        border-color: rgba(15, 23, 42, 0.14) !important;
+        color: #0f172a !important;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05) !important;
+      }
+      body.lm .col-cmd-status-count { color: #475569 !important; }
     </style>
     <script defer src="col-router.js"></script>
     <link rel="stylesheet" href="col-mobile.css" />
@@ -4065,6 +5185,11 @@
         </div>
       </div>
       <div class="nav-actions">
+        <button type="button" class="nav-cmd-trigger no-cap" onclick="window.openColCmdPalette()" title="Press Ctrl+K or / to search all 16 applications">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <span>Search</span>
+          <kbd class="col-os-key">Ctrl K</kbd>
+        </button>
         <div class="hz-toggle" onclick="hzToggle()"><div class="hz-clouds"></div><div class="hz-stars"></div><div class="hz-orb"></div></div>
         <button class="nav-login-btn" id="navLoginBtn" onclick="openLogin()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -4102,6 +5227,11 @@
           ></a>
           <a href="download" class="btn-g">Apps &amp; Downloads &#8594;</a>
           <a href="about" class="btn-g">Our Story &#8594;</a>
+          <button type="button" class="hero-cmd-pill no-cap" onclick="window.openColCmdPalette()" title="Press Ctrl+K or / to search all 16 applications">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <span class="hcp-label">Launch Suite</span>
+            <span class="hcp-kbd col-os-key">Ctrl K</span>
+          </button>
           <a href="COL.apk" class="btn-g mobile-dl" download style="border-color: var(--signal); color: var(--signal)">Download Android App</a>
         </div>
         <div class="hst" aria-label="Studio Statistics">
@@ -4218,6 +5348,47 @@
       </div>
     </section>
 
+    <section class="studio-marquee-section" aria-label="Live Technology Matrix">
+      <div class="marquee-track">
+        <div class="marquee-group">
+          <div class="m-item"><span class="m-dot m-cyan"></span><span class="m-code no-cap">60 FPS</span> Spatial Hand Tracking</div>
+          <span class="m-sep">•</span>
+          <div class="m-item"><span class="m-dot m-gold"></span><span class="m-code no-cap">64-Bit</span> Keplerian Astrophysics</div>
+          <span class="m-sep">•</span>
+          <div class="m-item"><span class="m-dot m-emerald"></span><span class="m-code no-cap">200+</span> Dev Typing Levels</div>
+          <span class="m-sep">•</span>
+          <div class="m-item"><span class="m-dot m-purple"></span><span class="m-code no-cap">Gemini 2.5</span> Audio AI Assistant</div>
+          <span class="m-sep">•</span>
+          <div class="m-item"><span class="m-dot m-cyan"></span><span class="m-code no-cap">Zero</span> Bulky JS Frameworks</div>
+          <span class="m-sep">•</span>
+          <div class="m-item"><span class="m-dot m-gold"></span><span class="m-code no-cap">4K MSS</span> Wireless Screen Cast</div>
+          <span class="m-sep">•</span>
+          <div class="m-item"><span class="m-dot m-emerald"></span><span class="m-code no-cap">50+</span> Civic Database Modules</div>
+          <span class="m-sep">•</span>
+          <div class="m-item"><span class="m-dot m-purple"></span><span class="m-code no-cap">100%</span> Open &amp; Free Access</div>
+          <span class="m-sep">•</span>
+        </div>
+        <div class="marquee-group" aria-hidden="true">
+          <div class="m-item"><span class="m-dot m-cyan"></span><span class="m-code no-cap">60 FPS</span> Spatial Hand Tracking</div>
+          <span class="m-sep">•</span>
+          <div class="m-item"><span class="m-dot m-gold"></span><span class="m-code no-cap">64-Bit</span> Keplerian Astrophysics</div>
+          <span class="m-sep">•</span>
+          <div class="m-item"><span class="m-dot m-emerald"></span><span class="m-code no-cap">200+</span> Dev Typing Levels</div>
+          <span class="m-sep">•</span>
+          <div class="m-item"><span class="m-dot m-purple"></span><span class="m-code no-cap">Gemini 2.5</span> Audio AI Assistant</div>
+          <span class="m-sep">•</span>
+          <div class="m-item"><span class="m-dot m-cyan"></span><span class="m-code no-cap">Zero</span> Bulky JS Frameworks</div>
+          <span class="m-sep">•</span>
+          <div class="m-item"><span class="m-dot m-gold"></span><span class="m-code no-cap">4K MSS</span> Wireless Screen Cast</div>
+          <span class="m-sep">•</span>
+          <div class="m-item"><span class="m-dot m-emerald"></span><span class="m-code no-cap">50+</span> Civic Database Modules</div>
+          <span class="m-sep">•</span>
+          <div class="m-item"><span class="m-dot m-purple"></span><span class="m-code no-cap">100%</span> Open &amp; Free Access</div>
+          <span class="m-sep">•</span>
+        </div>
+      </div>
+    </section>
+
     <section class="vp-section">
       <div class="vp-grid">
         <div class="vp-card rv">
@@ -4225,33 +5396,57 @@
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
           </div>
           <h2 class="vp-title">Performance First</h2>
-          <p class="vp-desc">Our tools are built natively without bulky frameworks, keeping load times fast across every device.</p>
+          <p class="vp-desc">Built directly with clean WebGL, Canvas, and native engines so every simulation loads quickly and runs smoothly on your hardware.</p>
         </div>
         <div class="vp-card rv">
           <div class="vp-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/><circle cx="12" cy="12" r="5"/></svg>
           </div>
           <h2 class="vp-title">Interactive Learning</h2>
-          <p class="vp-desc">Move beyond textbooks and static pages. We create immersive environments where you learn by experimenting in real-time.</p>
+          <p class="vp-desc">Move beyond static textbooks and diagrams. Learn astrophysics, computer vision, and programming syntax through live hands-on models.</p>
         </div>
         <div class="vp-card rv">
           <div class="vp-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
           </div>
-          <h2 class="vp-title">Open &amp; Accessible</h2>
-          <p class="vp-desc">Education should have zero barriers. Everything we build is free to access and works for anyone, anywhere.</p>
+          <h2 class="vp-title">Free &amp; Accessible</h2>
+          <p class="vp-desc">Quality learning tools should have zero barriers. Everything we make runs locally, respects your privacy, and is completely free for everyone.</p>
         </div>
       </div>
     </section>
 
+    <!-- Symmetrical Category Filter Navigation Bar -->
+    <nav class="cat-filter-nav" id="catFilterNav" aria-label="Project Category Filter">
+      <div class="cat-filter-track" role="tablist">
+        <button type="button" class="cat-pill is-active" data-target="all" role="tab" aria-selected="true">
+          <span class="cat-pill-dot gold"></span>All Projects
+        </button>
+        <button type="button" class="cat-pill" data-target="projects" role="tab" aria-selected="false">
+          <span class="cat-pill-dot gold"></span>Flagships
+        </button>
+        <button type="button" class="cat-pill" data-target="productivity" role="tab" aria-selected="false">
+          <span class="cat-pill-dot cyan"></span>Spatial Vision &amp; AI
+        </button>
+        <button type="button" class="cat-pill" data-target="educational" role="tab" aria-selected="false">
+          <span class="cat-pill-dot purple"></span>Deep Space &amp; Physics
+        </button>
+        <button type="button" class="cat-pill" data-target="mobile" role="tab" aria-selected="false">
+          <span class="cat-pill-dot emerald"></span>Android &amp; Mobility
+        </button>
+        <button type="button" class="cat-pill" data-target="atlas" role="tab" aria-selected="false">
+          <span class="cat-pill-dot rose"></span>3D Earth Atlas
+        </button>
+      </div>
+    </nav>
+
     <section class="ps" id="projects">
       <div class="sh">
         <div>
-          <div class="sey">Flagship Architectures</div>
-          <h2 class="st">Flagship Models.<br />Pinnacle Engineering.</h2>
+          <div class="sey">Founding Suites</div>
+          <h2 class="st">Flagship Projects.<br />Built To Explore.</h2>
         </div>
         <p class="ssb">
-          Our premier standalone suites &mdash; the founding touch-typing curriculum and multiplayer competition engine alongside our 64-bit Keplerian orbital astrophysics simulator.
+          Our premier standalone tools &mdash; the founding touch-typing tutor and multiplayer speed engine alongside our 64-bit Keplerian orbital solar simulator.
         </p>
       </div>
       <div class="pgrid">
@@ -4294,11 +5489,11 @@
     <section class="ps" id="productivity" style="padding-top: 40px">
       <div class="sh">
         <div>
-          <div class="sey">Applied Intelligence &amp; Spatial Suites</div>
-          <h2 class="st">Spatial Vision.<br />Dynamic Matrices &amp; Guidance.</h2>
+          <div class="sey">Spatial Vision &amp; AI Tools</div>
+          <h2 class="st">Camera Tracking.<br />Dynamic Codes &amp; Guidance.</h2>
         </div>
         <p class="ssb">
-          Real-time touchless spatial machine vision, dynamic cloud-synchronized QR matrices with live scan telemetry, and 8-dimensional psychometric career trajectory mapping.
+          Real-time optical hand tracking at 60 FPS, high-contrast dynamic QR codes with live scan analytics, and psychometric career exploration models.
         </p>
       </div>
       <div class="pgrid">
@@ -4644,10 +5839,10 @@
     <section class="ps" id="mobile" style="padding-top: 40px">
       <div class="sh">
         <div>
-          <div class="sey">Android Ecosystem</div>
-          <h2 class="st">Native Mobility.<br />Edge Intelligence.</h2>
+          <div class="sey">Mobile &amp; Wireless Systems</div>
+          <h2 class="st">Screen Streaming.<br />On-Device Audio AI.</h2>
         </div>
-        <p class="ssb">High-performance Android applications built with Jetpack Compose, hardware-accelerated wireless streaming, and on-device Gemini AI orchestration.</p>
+        <p class="ssb">Native Android applications built with Jetpack Compose &mdash; low-latency wireless presentation streaming and local Gemini audio transcription.</p>
       </div>
       <div class="pgrid">
         <a href="CastFlow" class="pc ci" data-delay="0">
@@ -4782,10 +5977,10 @@
     <section class="ps" id="atlas" style="padding-top: 40px">
       <div class="sh">
         <div>
-          <div class="sey">Planetary &amp; Lab Showcase</div>
-          <h2 class="st">Geospatial Shaders.<br />Experimental Realms.</h2>
+          <div class="sey">Planetary Shaders &amp; Games</div>
+          <h2 class="st">Interactive Earth Globe.<br />3D World Atlas &amp; Retro Lab.</h2>
         </div>
-        <p class="ssb">Interactive WebGL spherical geodesy with atmospheric Rayleigh scattering, alongside our upcoming browser action RPG engine.</p>
+        <p class="ssb">Interactive WebGL spherical geodesy with atmospheric Rayleigh scattering, alongside our browser action RPG prototype.</p>
       </div>
       <div class="pgrid">
         <a href="Terra3D/" class="pc ct t3-wide" data-delay="0">
@@ -4908,17 +6103,779 @@
         </a>
       </div>
     </section>
+      <!-- Studio Architecture & Engineering Matrix Section -->
+      <section class="arch-section" id="architecture">
+        <div class="arch-header">
+          <div class="sey">How We Build Our Software</div>
+          <h2 class="st">Built From Scratch.<br>Native, Fast, And Private.</h2>
+          <p class="ssb">Every tool we release is designed to run directly on your machine. No telemetry tracking, no monthly subscriptions, and no heavy background browser wrappers &mdash; just fast tools built for learning.</p>
+        </div>
+
+        <div class="arch-grid">
+          <!-- Card 1: Native & Self-Contained -->
+          <article class="arch-card">
+            <div class="arch-badge">Native Architecture</div>
+            <div class="arch-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 9.4 7.55 4.24a1.78 1.78 0 0 0-2.5 1.55v12.42a1.78 1.78 0 0 0 2.5 1.55L16.5 14.6a1.78 1.78 0 0 0 0-3.2z"></path><path d="M21 12h-2"></path></svg>
+            </div>
+            <h3 class="arch-title">Standalone Desktop Apps</h3>
+            <p class="arch-desc">Packaged as clean native binaries with C++, Python, and Kotlin. Quick startup, low RAM consumption, and zero extra browser tabs needed.</p>
+            <div class="arch-stat">
+              <div class="arch-stat-val">&lt; 45 MB</div>
+              <div class="arch-stat-lbl">Typical RAM Usage</div>
+            </div>
+            <div class="arch-metric-display">
+              <div class="arch-metric-item">
+                <span class="ami-label">Third-Party Wrapper</span>
+                <span class="ami-val">0.0 MB Clean</span>
+              </div>
+              <div class="arch-metric-bar"><div class="arch-metric-fill" style="width: 18%"></div></div>
+            </div>
+          </article>
+
+          <!-- Card 2: Sovereign Privacy -->
+          <article class="arch-card">
+            <div class="arch-badge">Local Privacy</div>
+            <div class="arch-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><circle cx="12" cy="11" r="2"></circle></svg>
+            </div>
+            <h3 class="arch-title">Runs 100% On-Device</h3>
+            <p class="arch-desc">Computer vision, keystrokes, and audio models run directly on your own computer. Your camera feeds and inputs never leave your device.</p>
+            <div class="arch-stat">
+              <div class="arch-stat-val">100%</div>
+              <div class="arch-stat-lbl">On-Device Processing</div>
+            </div>
+            <div class="arch-metric-display">
+              <div class="arch-metric-item">
+                <span class="ami-label">External Cloud Trackers</span>
+                <span class="ami-val">0 Trackers</span>
+              </div>
+              <div class="arch-metric-bar"><div class="arch-metric-fill" style="width: 100%; background: linear-gradient(90deg, #10b981, #059669)"></div></div>
+            </div>
+          </article>
+
+          <!-- Card 3: Real-Time Precision -->
+          <article class="arch-card">
+            <div class="arch-badge">Real-Time Engine</div>
+            <div class="arch-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            </div>
+            <h3 class="arch-title">Fluid 60 FPS Visuals</h3>
+            <p class="arch-desc">Rayleigh atmospheric shaders, 21-point hand tracking, and planetary physics simulations tuned to run smoothly even on student laptops.</p>
+            <div class="arch-stat">
+              <div class="arch-stat-val">60 FPS</div>
+              <div class="arch-stat-lbl">Smooth Frame Rate</div>
+            </div>
+            <div class="arch-metric-display">
+              <div class="arch-metric-item">
+                <span class="ami-label">Input Response</span>
+                <span class="ami-val">&lt; 16ms Smooth</span>
+              </div>
+              <div class="arch-metric-bar"><div class="arch-metric-fill" style="width: 98%; background: linear-gradient(90deg, #a78bfa, #38bdf8)"></div></div>
+            </div>
+          </article>
+
+          <!-- Card 4: Open Studio Foundations -->
+          <article class="arch-card">
+            <div class="arch-badge">Student Studio</div>
+            <div class="arch-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+            </div>
+            <h3 class="arch-title">Built By Students In Mumbai</h3>
+            <p class="arch-desc">Conceived and crafted by undergraduate students in Mumbai. Free for everyone, open to explore, and built simply for the love of learning.</p>
+            <div class="arch-stat">
+              <div class="arch-stat-val">16 Apps</div>
+              <div class="arch-stat-lbl">Open Projects</div>
+            </div>
+            <div class="arch-metric-display">
+              <div class="arch-metric-item">
+                <span class="ami-label">Student Access</span>
+                <span class="ami-val">₹0 Completely Free</span>
+              </div>
+              <div class="arch-metric-bar"><div class="arch-metric-fill" style="width: 100%; background: linear-gradient(90deg, #f2b84b, #10b981)"></div></div>
+            </div>
+          </article>
+        </div>
+      </section>
     </main>
 
-<footer class="sf">
+    <footer class="sf site-footer">
       <div class="fi">
-        <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
-        <div class="fl"><a href="making">Making</a><a href="privacy">Privacy</a><a href="terms">Terms</a><a href="feedback">Feedback</a><a href="download">Downloads</a></div>
-        <div class="fc">&copy; 2026 Neel, Ansh, &amp; Aarush (Co‑Founders).</div>
+        <div class="fb"><span class="sf-brand-name">CoL &middot; Class Of Learners</span><span class="sf-status-pill"><span class="m-dot m-emerald"></span> All Systems Operational</span></div>
+        <div class="fl sf-links"><a href="making">Making</a><a href="privacy">Privacy</a><a href="terms">Terms</a><a href="feedback">Feedback</a><a href="download">Downloads Hub</a></div>
+        <button type="button" class="sf-cmd-btn no-cap" onclick="window.openColCmdPalette()" title="Press Ctrl+K or / to search all 16 applications">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <span>Quick Launcher</span>
+          <kbd class="col-os-key">Ctrl K</kbd>
+        </button>
+        <div class="fc sf-bottom">&copy; 2026 Neel, Ansh, &amp; Aarush (Co‑Founders). Mumbai, India.</div>
       </div>
     </footer>
 
     <div class="toast" id="toast"></div>
+
+    <!-- =========================================================
+         COMMAND PALETTE SEARCH MODAL (Raycast & Spotlight Standard)
+         ========================================================= -->
+    <div class="col-cmd-modal" id="colCmdPalette" role="dialog" aria-modal="true" aria-label="Class Of Learners Quick Launcher" style="display: none;" aria-hidden="true">
+      <div class="col-cmd-backdrop" onclick="window.closeColCmdPalette()"></div>
+      <div class="col-cmd-box">
+        <!-- Search Input Header -->
+        <div class="col-cmd-header">
+          <svg class="col-cmd-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" class="col-cmd-input no-cap" id="colCmdInput" placeholder="Search applications, simulations, or formats... (e.g. ATI, Solar, Vision, EXE, APK)" autocomplete="off" spellcheck="false">
+          <button type="button" class="col-cmd-clear-btn" id="colCmdClearBtn" aria-label="Clear Search" style="display: none;">×</button>
+          <kbd class="col-cmd-esc" onclick="window.closeColCmdPalette()">ESC</kbd>
+        </div>
+
+        <!-- Category Filter Pills -->
+        <div class="col-cmd-filters" id="colCmdFilters" role="tablist" aria-label="Category Filters">
+          <button type="button" class="col-cmd-pill is-active" data-cat="all">All <span class="col-cmd-pill-count">16</span></button>
+          <button type="button" class="col-cmd-pill" data-cat="flagship">Flagships</button>
+          <button type="button" class="col-cmd-pill" data-cat="ai">AI &amp; Vision</button>
+          <button type="button" class="col-cmd-pill" data-cat="sim">3D &amp; Simulators</button>
+          <button type="button" class="col-cmd-pill" data-cat="mobility">Mobility &amp; Systems</button>
+          <button type="button" class="col-cmd-pill" data-cat="downloads">Downloads</button>
+        </div>
+
+        <!-- Command List -->
+        <div class="col-cmd-list" id="colCmdList">
+          <!-- Flagships -->
+          <div class="col-cmd-group-label" data-group="flagship">Flagship Architectures</div>
+
+          <a href="ati" class="col-cmd-item" data-category="flagship" data-keywords="ati typing keyboard code tutor touch typing speed wpm flagship offline windows android web mechanical switches 200 levels wpm accuracy speed test" style="--cmd-accent: #f2b84b;">
+            <div class="col-cmd-item-left">
+              <div class="col-cmd-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="4" width="20" height="16" rx="3"></rect>
+                  <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M6 12h.01M10 12h.01M14 12h.01M18 12h.01M8 16h8"></path>
+                </svg>
+              </div>
+              <div class="col-cmd-text">
+                <div class="col-cmd-title">Advanced Typing Instructor 1.4</div>
+                <div class="col-cmd-sub">Flagship touch typing &amp; syntax engine with 200+ levels &amp; zero-latency WebAudio</div>
+              </div>
+            </div>
+            <div class="col-cmd-item-right">
+              <span class="col-cmd-badge">Flagship</span>
+              <span class="col-cmd-action">Launch ↵</span>
+            </div>
+          </a>
+
+          <a href="solar" class="col-cmd-item" data-category="flagship" data-keywords="solar space planets astrophysics 3d engine kepler physics simulation threejs orbital ephemeris sun earth mars jupiter" style="--cmd-accent: #38bdf8;">
+            <div class="col-cmd-item-left">
+              <div class="col-cmd-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="4"></circle>
+                  <path d="M21 12a9 9 0 0 0-9-9M3 12a9 9 0 0 0 9 9"></path>
+                  <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-30 12 12)"></ellipse>
+                </svg>
+              </div>
+              <div class="col-cmd-text">
+                <div class="col-cmd-title">Solar System Engine V3.3</div>
+                <div class="col-cmd-sub">Standalone 64-bit Keplerian orbital simulation with 1:1 astronomical ephemeris</div>
+              </div>
+            </div>
+            <div class="col-cmd-item-right">
+              <span class="col-cmd-badge">Astrophysics</span>
+              <span class="col-cmd-action">Simulate ↵</span>
+            </div>
+          </a>
+
+          <!-- Spatial & AI -->
+          <div class="col-cmd-group-label" data-group="ai">Spatial &amp; Artificial Intelligence</div>
+
+          <a href="gesture" class="col-cmd-item" data-category="ai" data-keywords="gesture spatial vision ai touchless camera hand tracking mediapipe air mouse optical skeletal tracking 60fps" style="--cmd-accent: #34d399;">
+            <div class="col-cmd-item-left">
+              <div class="col-cmd-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </div>
+              <div class="col-cmd-text">
+                <div class="col-cmd-title">Spatial Vision AI (GestureUI)</div>
+                <div class="col-cmd-sub">Touchless 21-point optical skeletal tracking at 60 FPS via standard webcam</div>
+              </div>
+            </div>
+            <div class="col-cmd-item-right">
+              <span class="col-cmd-badge">Vision AI</span>
+              <span class="col-cmd-action">Track ↵</span>
+            </div>
+          </a>
+
+          <a href="cereal" class="col-cmd-item" data-category="ai" data-keywords="cereal ai audio voice notes gemini android lecture meetings speech stt transcription calendar tasks summaries" style="--cmd-accent: #f472b6;">
+            <div class="col-cmd-item-left">
+              <div class="col-cmd-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                  <line x1="12" x2="12" y1="19" y2="22"></line>
+                </svg>
+              </div>
+              <div class="col-cmd-text">
+                <div class="col-cmd-title">Cereal AI Meeting Assistant</div>
+                <div class="col-cmd-sub">Gemini 2.5 Flash live audio transcription, notes synthesis &amp; calendar tasks</div>
+              </div>
+            </div>
+            <div class="col-cmd-item-right">
+              <span class="col-cmd-badge">Android AI</span>
+              <span class="col-cmd-action">Transcribe ↵</span>
+            </div>
+          </a>
+
+          <a href="friday" class="col-cmd-item" data-category="ai" data-keywords="friday os desktop assistant pywebview python local llm ollama voice windows orchestrator system volume" style="--cmd-accent: #a855f7;">
+            <div class="col-cmd-item-left">
+              <div class="col-cmd-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="12" rx="2"></rect>
+                  <path d="M2 20h20M12 16v4M8 10l2 2-2 2M13 14h3"></path>
+                </svg>
+              </div>
+              <div class="col-cmd-text">
+                <div class="col-cmd-title">F.R.I.D.A.Y. OS Desktop</div>
+                <div class="col-cmd-sub">Voice-first desktop orchestrator with offline local LLM &amp; system automation</div>
+              </div>
+            </div>
+            <div class="col-cmd-item-right">
+              <span class="col-cmd-badge">Windows PC</span>
+              <span class="col-cmd-action">Launch ↵</span>
+            </div>
+          </a>
+
+          <a href="perceptus" class="col-cmd-item" data-category="ai" data-keywords="perceptus career psychometrics assessment guidance 8d radar psychology aptitude vector" style="--cmd-accent: #6366f1;">
+            <div class="col-cmd-item-left">
+              <div class="col-cmd-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="9"></circle>
+                  <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+                </svg>
+              </div>
+              <div class="col-cmd-text">
+                <div class="col-cmd-title">Perceptus Mind Studio</div>
+                <div class="col-cmd-sub">8-dimensional psychometric career vector analysis &amp; cognitive aptitude engine</div>
+              </div>
+            </div>
+            <div class="col-cmd-item-right">
+              <span class="col-cmd-badge">Guidance</span>
+              <span class="col-cmd-action">Assess ↵</span>
+            </div>
+          </a>
+
+          <!-- Educational & Simulators -->
+          <div class="col-cmd-group-label" data-group="sim">Educational &amp; Simulators</div>
+
+          <a href="Traffic/Driving" class="col-cmd-item" data-category="sim" data-keywords="traffic driving mumbai academy rto road rules driving simulator signals vehicle physics license test" style="--cmd-accent: #f59e0b;">
+            <div class="col-cmd-item-left">
+              <div class="col-cmd-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="9"></circle>
+                  <circle cx="12" cy="12" r="2.5"></circle>
+                  <path d="M12 3v6.5M4 15.5l5.5-3.5M20 15.5l-5.5-3.5"></path>
+                </svg>
+              </div>
+              <div class="col-cmd-text">
+                <div class="col-cmd-title">Mumbai Traffic Driving Academy</div>
+                <div class="col-cmd-sub">Interactive 3D vehicle physics simulator, RTO driving tests &amp; statutory road rules</div>
+              </div>
+            </div>
+            <div class="col-cmd-item-right">
+              <span class="col-cmd-badge">Simulator</span>
+              <span class="col-cmd-action">Drive ↵</span>
+            </div>
+          </a>
+
+          <a href="Terra3D/" class="col-cmd-item" data-category="sim" data-keywords="terra3d earth globe atlas 3d webgl rayleigh geography nations topography shaders spherical geodesy" style="--cmd-accent: #14b8a6;">
+            <div class="col-cmd-item-left">
+              <div class="col-cmd-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="9"></circle>
+                  <path d="M3.6 9h16.8M3.6 15h16.8M12 3a14 14 0 0 0 0 18M12 3a14 14 0 0 1 0 18"></path>
+                </svg>
+              </div>
+              <div class="col-cmd-text">
+                <div class="col-cmd-title">Terra3D World Atlas</div>
+                <div class="col-cmd-sub">195 sovereign nations with atmospheric shaders &amp; real-time solar illumination</div>
+              </div>
+            </div>
+            <div class="col-cmd-item-right">
+              <span class="col-cmd-badge">WebGL 3D</span>
+              <span class="col-cmd-action">Explore ↵</span>
+            </div>
+          </a>
+
+          <a href="rpg" class="col-cmd-item" data-category="sim" data-keywords="quest master rpg dungeon retro canvas game adventure sword chiptune spellcasting" style="--cmd-accent: #9333ea;">
+            <div class="col-cmd-item-left">
+              <div class="col-cmd-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14.5 17.5 3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2"></path>
+                  <path d="M9.5 17.5 21 6V3h-3L6.5 14.5M11 19l-6-6M8 16l-4 4M5 21l-2-2"></path>
+                </svg>
+              </div>
+              <div class="col-cmd-text">
+                <div class="col-cmd-title">Quest Master RPG</div>
+                <div class="col-cmd-sub">60 FPS procedural dungeon exploration engine with WebAudio chiptune synthesizer</div>
+              </div>
+            </div>
+            <div class="col-cmd-item-right">
+              <span class="col-cmd-badge">Game</span>
+              <span class="col-cmd-action">Quest ↵</span>
+            </div>
+          </a>
+
+          <a href="col-game" class="col-cmd-item" data-category="sim" data-keywords="space station 2d game physics canvas retro col game zero gravity newtonian orbital survival" style="--cmd-accent: #f97316;">
+            <div class="col-cmd-item-left">
+              <div class="col-cmd-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"></path>
+                  <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"></path>
+                </svg>
+              </div>
+              <div class="col-cmd-text">
+                <div class="col-cmd-title">Space Station Survival 2D</div>
+                <div class="col-cmd-sub">Zero-G Newtonian physics simulator and station survival mechanics in retro Canvas</div>
+              </div>
+            </div>
+            <div class="col-cmd-item-right">
+              <span class="col-cmd-badge">Physics</span>
+              <span class="col-cmd-action">Play ↵</span>
+            </div>
+          </a>
+
+          <!-- Mobility & Systems -->
+          <div class="col-cmd-group-label" data-group="mobility">Mobility &amp; System Infrastructure</div>
+
+          <a href="cast" class="col-cmd-item" data-category="mobility" data-keywords="cast screen mirror android dlna dex projector streaming chromecast virtual display" style="--cmd-accent: #0ea5e9;">
+            <div class="col-cmd-item-left">
+              <div class="col-cmd-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="3" width="20" height="14" rx="2"></rect>
+                  <path d="M8 21h8M12 17v4"></path>
+                  <path d="m9 10 3-3 3 3M12 7v6"></path>
+                </svg>
+              </div>
+              <div class="col-cmd-text">
+                <div class="col-cmd-title">Cast: Ultra Screen Streamer</div>
+                <div class="col-cmd-sub">Native Android screen capture, DLNA casting &amp; standalone desktop DeX station</div>
+              </div>
+            </div>
+            <div class="col-cmd-item-right">
+              <span class="col-cmd-badge">Android Suite</span>
+              <span class="col-cmd-action">Stream ↵</span>
+            </div>
+          </a>
+
+          <a href="CastFlow" class="col-cmd-item" data-category="mobility" data-keywords="castflow screen cast stream wireless presentation share mirroring webrtc display" style="--cmd-accent: #38bdf8;">
+            <div class="col-cmd-item-left">
+              <div class="col-cmd-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"></path>
+                  <circle cx="5" cy="19" r="1"></circle>
+                </svg>
+              </div>
+              <div class="col-cmd-text">
+                <div class="col-cmd-title">CastFlow Studio</div>
+                <div class="col-cmd-sub">Low-latency browser-to-display wireless streaming &amp; remote collaborative projection</div>
+              </div>
+            </div>
+            <div class="col-cmd-item-right">
+              <span class="col-cmd-badge">WebRTC</span>
+              <span class="col-cmd-action">Cast ↵</span>
+            </div>
+          </a>
+
+          <a href="qr" class="col-cmd-item" data-category="mobility" data-keywords="qr code generator scanner dynamic matrix analytics vector wifi vcard dynamic link" style="--cmd-accent: #10b981;">
+            <div class="col-cmd-item-left">
+              <div class="col-cmd-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+                  <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+                  <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+                  <rect x="14" y="14" width="3" height="3"></rect>
+                  <rect x="18" y="18" width="3" height="3"></rect>
+                </svg>
+              </div>
+              <div class="col-cmd-text">
+                <div class="col-cmd-title">Matrix QR Dynamic Studio</div>
+                <div class="col-cmd-sub">Vector QR studio with real-time scan analytics, error correction &amp; custom styling</div>
+              </div>
+            </div>
+            <div class="col-cmd-item-right">
+              <span class="col-cmd-badge">Vector Studio</span>
+              <span class="col-cmd-action">Generate ↵</span>
+            </div>
+          </a>
+
+          <a href="Database_Logic" class="col-cmd-item" data-category="mobility" data-keywords="database logic db sql sharding replica storage nosql distributed btree architecture indexing" style="--cmd-accent: #2563eb;">
+            <div class="col-cmd-item-left">
+              <div class="col-cmd-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                  <path d="M3 5v6c0 1.66 4 3 9 3s9-1.34 9-3V5M3 11v6c0 1.66 4 3 9 3s9-1.34 9-3v-6"></path>
+                </svg>
+              </div>
+              <div class="col-cmd-text">
+                <div class="col-cmd-title">Database Logic DB</div>
+                <div class="col-cmd-sub">Interactive distributed database architecture, partition sharding &amp; query plan visualizer</div>
+              </div>
+            </div>
+            <div class="col-cmd-item-right">
+              <span class="col-cmd-badge">Database</span>
+              <span class="col-cmd-action">Inspect ↵</span>
+            </div>
+          </a>
+
+          <!-- Downloads & Releases -->
+          <div class="col-cmd-group-label" data-group="downloads">Downloads &amp; Community Releases</div>
+
+          <a href="download" class="col-cmd-item" data-category="downloads" data-keywords="download hub windows android binaries apk installer exe releases setup packages portable" style="--cmd-accent: #f2b84b;">
+            <div class="col-cmd-item-left">
+              <div class="col-cmd-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"></path>
+                </svg>
+              </div>
+              <div class="col-cmd-text">
+                <div class="col-cmd-title">Central Downloads Hub</div>
+                <div class="col-cmd-sub">Official native Windows EXE installers, Android APK releases &amp; setup packages</div>
+              </div>
+            </div>
+            <div class="col-cmd-item-right">
+              <span class="col-cmd-badge">Binaries</span>
+              <span class="col-cmd-action">Download ↓</span>
+            </div>
+          </a>
+
+          <a href="sneh-asha" class="col-cmd-item" data-category="downloads" data-keywords="sneh asha school community education charity mumbai students portal non profit showcase" style="--cmd-accent: #f43f5e;">
+            <div class="col-cmd-item-left">
+              <div class="col-cmd-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+              </div>
+              <div class="col-cmd-text">
+                <div class="col-cmd-title">Sneh Asha Community Platform</div>
+                <div class="col-cmd-sub">Interactive community learning portal, student project showcases &amp; education programs</div>
+              </div>
+            </div>
+            <div class="col-cmd-item-right">
+              <span class="col-cmd-badge">Community</span>
+              <span class="col-cmd-action">Visit ↵</span>
+            </div>
+          </a>
+
+          <!-- Empty Search State -->
+          <div class="col-cmd-empty" id="colCmdEmpty" style="display:none">
+            <div class="col-cmd-empty-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                <line x1="8" y1="11" x2="14" y2="11"></line>
+              </svg>
+            </div>
+            <div class="col-cmd-empty-title">No applications found</div>
+            <div class="col-cmd-empty-sub" id="colCmdEmptySub">No applications matched your search. Try searching for ATI, Solar, Vision, or 3D.</div>
+            <button type="button" class="col-cmd-empty-btn" id="colCmdResetBtn">View All 16 Applications</button>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="col-cmd-footer">
+          <div class="col-cmd-hints">
+            <span><kbd>↑</kbd><kbd>↓</kbd> Navigate</span>
+            <span><kbd>↵</kbd> Open</span>
+            <span class="col-cmd-hint-toggle"><kbd class="col-os-key">Ctrl+K</kbd> Toggle</span>
+            <span><kbd>ESC</kbd> Close</span>
+          </div>
+          <span class="col-cmd-status-count" id="colCmdCount">16 of 16 apps</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Command Palette Controller Script -->
+    <script>
+      ;(function () {
+        var palette = document.getElementById('colCmdPalette')
+        var input = document.getElementById('colCmdInput')
+        var clearBtn = document.getElementById('colCmdClearBtn')
+        var list = document.getElementById('colCmdList')
+        var countEl = document.getElementById('colCmdCount')
+        var emptyEl = document.getElementById('colCmdEmpty')
+        var emptySubEl = document.getElementById('colCmdEmptySub')
+        var resetBtn = document.getElementById('colCmdResetBtn')
+        var filterContainer = document.getElementById('colCmdFilters')
+        if (!palette || !input || !list) return
+
+        var items = Array.from(list.querySelectorAll('.col-cmd-item'))
+        var defaultOrder = items.slice()
+        var filterPills = filterContainer ? filterContainer.querySelectorAll('.col-cmd-pill') : []
+        var activeIdx = -1
+        var currentCategory = 'all'
+
+        // Cache original title and subtitle strings for clean highlight resets
+        items.forEach(function (item) {
+          var tEl = item.querySelector('.col-cmd-title')
+          var sEl = item.querySelector('.col-cmd-sub')
+          if (tEl) item._origTitle = tEl.textContent
+          if (sEl) item._origSub = sEl.textContent
+        })
+
+        function getVisibleItems() {
+          var visible = items.filter(function (el) {
+            return el.style.display !== 'none'
+          })
+          if (input.value.trim()) {
+            visible.sort(function (a, b) { return (b._score || 0) - (a._score || 0) })
+          }
+          return visible
+        }
+
+        function highlightItem(idx) {
+          var visible = getVisibleItems()
+          visible.forEach(function (el) { el.classList.remove('is-selected') })
+          if (idx >= 0 && idx < visible.length) {
+            activeIdx = idx
+            visible[idx].classList.add('is-selected')
+            visible[idx].scrollIntoView({ block: 'nearest' })
+          } else {
+            activeIdx = -1
+          }
+        }
+
+        function highlightMatchText(text, query) {
+          if (!query || !text) return text
+          var idx = text.toLowerCase().indexOf(query.toLowerCase())
+          if (idx === -1) return text
+          var before = text.slice(0, idx)
+          var match = text.slice(idx, idx + query.length)
+          var after = text.slice(idx + query.length)
+          return before + '<mark class="col-cmd-mark">' + match + '</mark>' + after
+        }
+
+        function calculateScore(item, q) {
+          var origTitle = (item._origTitle || '').toLowerCase()
+          var origSub = (item._origSub || '').toLowerCase()
+          var kw = (item.getAttribute('data-keywords') || '').toLowerCase()
+          var badge = ((item.querySelector('.col-cmd-badge') || {}).textContent || '').toLowerCase()
+
+          var titleWords = origTitle.replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(Boolean)
+          var kwWords = kw.split(/\s+/)
+          var badgeWords = badge.split(/\s+/)
+
+          // 1. Acronym match (e.g. "ati" -> "Advanced Typing Instructor", "rpg" -> "Quest Master RPG")
+          var acronym = titleWords.map(function (w) { return w[0] }).join('')
+          var isAcronym = acronym === q || acronym.startsWith(q)
+
+          // 2. Word prefix match
+          var titleWordStart = titleWords.some(function (w) { return w.startsWith(q) })
+          var kwWordStart = kwWords.some(function (w) { return w.startsWith(q) })
+          var badgeWordStart = badgeWords.some(function (w) { return w.startsWith(q) })
+          var exactKw = kwWords.some(function (w) { return w === q })
+
+          // 3. Substring match (only if query is 4+ chars)
+          var titleSub = q.length >= 4 && origTitle.indexOf(q) !== -1
+          var subWords = origSub.replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(Boolean)
+          var subWordStart = subWords.some(function (w) { return w.startsWith(q) })
+          var subSub = q.length >= 4 && origSub.indexOf(q) !== -1
+
+          var score = 0
+          if (origTitle === q) score += 100
+          else if (origTitle.startsWith(q)) score += 90
+          else if (exactKw) score += 85
+          else if (isAcronym) score += 80
+          else if (titleWordStart) score += 70
+          else if (badgeWordStart) score += 50
+          else if (kwWordStart) score += 40
+          else if (titleSub) score += 30
+          else if (subWordStart) score += 20
+          else if (subSub) score += 10
+
+          return score
+        }
+
+        window.openColCmdPalette = function () {
+          palette.style.display = 'flex'
+          palette.removeAttribute('aria-hidden')
+          requestAnimationFrame(function () {
+            palette.classList.add('is-open')
+            input.value = ''
+            currentCategory = 'all'
+            if (filterPills.length) {
+              filterPills.forEach(function (p) {
+                p.classList.toggle('is-active', p.getAttribute('data-cat') === 'all')
+              })
+            }
+            filterItems('')
+            input.focus()
+          })
+        }
+
+        window.closeColCmdPalette = function () {
+          palette.classList.remove('is-open')
+          palette.setAttribute('aria-hidden', 'true')
+          setTimeout(function () {
+            if (!palette.classList.contains('is-open')) {
+              palette.style.display = 'none'
+            }
+          }, 220)
+        }
+
+        window.toggleColCmdPalette = function () {
+          if (palette.classList.contains('is-open')) {
+            window.closeColCmdPalette()
+          } else {
+            window.openColCmdPalette()
+          }
+        }
+
+        function filterItems(query) {
+          var q = (query || '').toLowerCase().trim()
+          if (clearBtn) clearBtn.style.display = q ? 'flex' : 'none'
+
+          var matchCount = 0
+          var groups = list.querySelectorAll('.col-cmd-group-label')
+
+          items.forEach(function (item) {
+            var itemCat = item.getAttribute('data-category') || ''
+            var catMatch = currentCategory === 'all' || itemCat === currentCategory
+
+            var origTitle = item._origTitle || ''
+            var origSub = item._origSub || ''
+
+            var score = q ? calculateScore(item, q) : 1
+            var textMatch = !q || score > 0
+            var matches = catMatch && textMatch
+
+            item.style.display = matches ? 'flex' : 'none'
+            item.style.order = q && matches ? -score : ''
+
+            // Apply search term highlighting if matched
+            var tEl = item.querySelector('.col-cmd-title')
+            var sEl = item.querySelector('.col-cmd-sub')
+            if (tEl) {
+              tEl.innerHTML = q && matches ? highlightMatchText(origTitle, q) : origTitle
+            }
+            if (sEl) {
+              sEl.innerHTML = q && matches ? highlightMatchText(origSub, q) : origSub
+            }
+
+            item._score = score
+            if (matches) matchCount++
+          })
+
+          // Order and group visibility
+          if (q) {
+            groups.forEach(function (g) { g.style.display = 'none' })
+          } else {
+            items.forEach(function (it) { it.style.order = '' })
+            groups.forEach(function (g) {
+              var grpCat = g.getAttribute('data-group')
+              var showGrp = currentCategory === 'all' || currentCategory === grpCat
+              g.style.display = showGrp ? 'flex' : 'none'
+            })
+          }
+
+          // Empty state
+          if (emptyEl) {
+            if (matchCount === 0) {
+              emptyEl.style.display = 'flex'
+              if (emptySubEl) {
+                emptySubEl.textContent = q ? 'No applications matched "' + q + '". Try searching for ATI, Solar, Vision, or 3D.' : 'No suites in this category.'
+              }
+            } else {
+              emptyEl.style.display = 'none'
+            }
+          }
+
+          if (countEl) {
+            countEl.textContent = matchCount === 1 ? '1 application found' : matchCount + ' of 16 applications'
+          }
+
+          var visible = getVisibleItems()
+          if (visible.length > 0) {
+            highlightItem(0)
+          } else {
+            activeIdx = -1
+          }
+        }
+
+        // Category Filter Pills Click
+        if (filterContainer) {
+          filterContainer.addEventListener('click', function (e) {
+            var pill = e.target.closest('.col-cmd-pill')
+            if (!pill) return
+            filterPills.forEach(function (p) { p.classList.remove('is-active') })
+            pill.classList.add('is-active')
+            currentCategory = pill.getAttribute('data-cat') || 'all'
+            filterItems(input.value)
+          })
+        }
+
+        // Clear button
+        if (clearBtn) {
+          clearBtn.addEventListener('click', function () {
+            input.value = ''
+            filterItems('')
+            input.focus()
+          })
+        }
+
+        // Reset button in empty state
+        if (resetBtn) {
+          resetBtn.addEventListener('click', function () {
+            input.value = ''
+            currentCategory = 'all'
+            if (filterPills.length) {
+              filterPills.forEach(function (p) {
+                p.classList.toggle('is-active', p.getAttribute('data-cat') === 'all')
+              })
+            }
+            filterItems('')
+            input.focus()
+          })
+        }
+
+        input.addEventListener('input', function () {
+          filterItems(input.value)
+        })
+
+        input.addEventListener('keydown', function (e) {
+          var visible = getVisibleItems()
+          if (e.key === 'ArrowDown') {
+            e.preventDefault()
+            if (visible.length === 0) return
+            var next = (activeIdx + 1) % visible.length
+            highlightItem(next)
+          } else if (e.key === 'ArrowUp') {
+            e.preventDefault()
+            if (visible.length === 0) return
+            var prev = (activeIdx - 1 + visible.length) % visible.length
+            highlightItem(prev)
+          } else if (e.key === 'Enter') {
+            e.preventDefault()
+            if (activeIdx >= 0 && activeIdx < visible.length) {
+              visible[activeIdx].click()
+            }
+          }
+        })
+
+        window.addEventListener('keydown', function (e) {
+          if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+            e.preventDefault()
+            window.toggleColCmdPalette()
+          } else if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+            e.preventDefault()
+            window.openColCmdPalette()
+          } else if (e.key === 'Escape' && palette.classList.contains('is-open')) {
+            e.preventDefault()
+            window.closeColCmdPalette()
+          }
+        })
+      })()
+    </script>
 
     <script>
       ;(function () {
@@ -5013,11 +6970,21 @@
 
         // 6. Desktop Specular Spotlight + Silky 60FPS Hardware-Accelerated 3D Card Tilt
         if (window.innerWidth >= 768 && !window.matchMedia('(pointer: coarse)').matches) {
+          var isScrollingTimer = null
+          window.addEventListener('scroll', function () {
+            window.__isScrollingPage = true
+            if (isScrollingTimer) clearTimeout(isScrollingTimer)
+            isScrollingTimer = setTimeout(function () {
+              window.__isScrollingPage = false
+            }, 100)
+          }, { passive: true })
+
           document.querySelectorAll('.pc, .vp-card').forEach(function (card) {
             var rafId = null, ex = 0, ey = 0, rect = null
             var isProjectCard = card.classList.contains('pc')
 
             card.addEventListener('mouseenter', function () {
+              if (window.__isScrollingPage) return
               rect = card.getBoundingClientRect()
               if (isProjectCard) {
                 card.classList.add('is-tilting')
@@ -5026,6 +6993,7 @@
             }, { passive: true })
 
             card.addEventListener('mousemove', function (e) {
+              if (window.__isScrollingPage) return
               ex = e.clientX
               ey = e.clientY
               if (rafId) return
@@ -5069,15 +7037,46 @@
             }, { passive: true })
           })
 
-          // Desktop Keyboard Shortcuts: Ctrl+K / Cmd+K Quick Cycle & Liquid Glass Toggle
+          // 6c. Symmetrical Category Filter Navigation Wiring
+          var catFilterNav = document.getElementById('catFilterNav')
+          if (catFilterNav) {
+            var catPills = catFilterNav.querySelectorAll('.cat-pill')
+            catFilterNav.addEventListener('click', function (e) {
+              var btn = e.target.closest('.cat-pill')
+              if (!btn) return
+              catPills.forEach(function (p) {
+                p.classList.remove('is-active', 'act')
+                p.setAttribute('aria-selected', 'false')
+              })
+              btn.classList.add('is-active')
+              btn.setAttribute('aria-selected', 'true')
+              var targetId = btn.getAttribute('data-target')
+              if (targetId === 'all') targetId = 'projects'
+              var targetEl = document.getElementById(targetId)
+              if (targetEl) {
+                targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              }
+            })
+          }
+
+          // 6d. Hero Orbital Stage Viewport-Gating (60 FPS CPU/GPU Saver)
+          var heroStage = document.getElementById('heroOrbitalStage')
+          if (heroStage && 'IntersectionObserver' in window) {
+            var heroIo = new IntersectionObserver(function (entries) {
+              entries.forEach(function (entry) {
+                heroStage.classList.toggle('is-paused', !entry.isIntersecting)
+              })
+            }, { threshold: 0.05 })
+            heroIo.observe(heroStage)
+          }
+
+          // Desktop Keyboard Shortcuts: Ctrl+K / Cmd+K Quick Launcher & Liquid Glass Toggle
           document.addEventListener('keydown', function (e) {
             if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
               e.preventDefault()
-              var keys = ['core', 'Solar', 'ATI', 'Gesture', 'Traffic', 'QR', 'RPG', 'Career', 'Terra3D', 'CivicLogic', 'Cereal', 'CastFlow']
-              var curKey = window.__currentInspectorNodeKey || null
-              var curIdx = curKey ? keys.findIndex(function (k) { return k.toLowerCase() === curKey.toLowerCase(); }) : -1
-              var nextIdx = (curIdx + 1) % keys.length
-              window.openNodeInspector(keys[nextIdx])
+              if (typeof window.toggleColCmdPalette === 'function') {
+                window.toggleColCmdPalette()
+              }
             } else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'l') {
               e.preventDefault()
               if (typeof window.toggleAppleLiquidGlass === 'function') {

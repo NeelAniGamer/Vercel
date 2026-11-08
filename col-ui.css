@@ -62,6 +62,231 @@ body {
 }
 
 /* ─────────────────────────────────────────────────────────────────
+   GLOBAL THEMED SCROLLBAR (Windows 10/11, Linux & Modern Browsers)
+   Eliminates the glaring white Windows OS scrollbar on dark mode.
+   ───────────────────────────────────────────────────────────────── */
+:root,
+html {
+  color-scheme: dark;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.22) var(--void, #070a14);
+  scroll-behavior: smooth;
+  scroll-padding-top: 86px;
+}
+
+html.lm,
+body.lm {
+  color-scheme: light;
+  scrollbar-color: #94a3b8 var(--void, #f3f2eb);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--void, #070a14);
+}
+
+html.lm ::-webkit-scrollbar-track,
+body.lm ::-webkit-scrollbar-track {
+  background: var(--void, #f3f2eb);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  border: 2px solid var(--void, #070a14);
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--signal, #f2b84b);
+}
+
+html.lm ::-webkit-scrollbar-thumb,
+body.lm ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border: 2px solid var(--void, #f3f2eb);
+}
+
+html.lm ::-webkit-scrollbar-thumb:hover,
+body.lm ::-webkit-scrollbar-thumb:hover {
+  background: #b8720a;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   GLOBAL SCROLL MARGINS & CENTERING (Prevents TopNav Overlap)
+   ───────────────────────────────────────────────────────────────── */
+section[id],
+.section[id],
+.arch-section,
+.vp-section,
+.ps,
+#projects,
+#productivity,
+#educational,
+#mobile,
+#atlas,
+#architecture,
+#heroSection {
+  scroll-margin-top: 88px !important;
+}
+
+/* Perfect Horizontal Container Centering Across All Viewports */
+.arch-section,
+.vp-section,
+.ps {
+  max-width: min(94vw, 1560px) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.arch-header,
+.sh {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.arch-grid,
+.vp-grid,
+.pgrid {
+  justify-content: center !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   60 FPS SCROLL PERFORMANCE & OFF-SCREEN CONTAINMENT
+   ───────────────────────────────────────────────────────────────── */
+.ps,
+.arch-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 700px;
+}
+
+.pc,
+.arch-card,
+.vp-card {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+#heroOrbitalStage.is-paused .hos-ring,
+#heroOrbitalStage.is-paused .hos-core-pulse,
+.col-ambient-bg.col-perf-pause .col-ambient-orb {
+  animation-play-state: paused !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CATEGORY FILTER BAR (Centered Symmetrical Capsule, Zero Glitch)
+   ═══════════════════════════════════════════════════════════════════════════ */
+.cat-filter-nav {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 54px auto 36px;
+  padding: 0 20px;
+  position: relative;
+  z-index: 20;
+}
+
+.cat-filter-track {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(14, 20, 36, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 1.5px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  box-shadow: 
+    0 12px 32px -4px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.cat-filter-track::-webkit-scrollbar { display: none; }
+
+.cat-pill {
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 7px 16px;
+  font-family: var(--mono, monospace);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--dim, #94a3b8);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.cat-pill:hover {
+  color: var(--ink, #f8fafc);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.cat-pill.is-active,
+.cat-pill.act {
+  background: rgba(242, 184, 75, 0.18) !important;
+  border-color: rgba(242, 184, 75, 0.55) !important;
+  color: #ffd166 !important;
+  box-shadow: 0 0 14px rgba(242, 184, 75, 0.28) !important;
+}
+
+.cat-pill-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.cat-pill-dot.gold { background: #f2b84b; box-shadow: 0 0 8px rgba(242, 184, 75, 0.6); }
+.cat-pill-dot.emerald { background: #34d399; box-shadow: 0 0 8px rgba(52, 211, 153, 0.6); }
+.cat-pill-dot.cyan { background: #38bdf8; box-shadow: 0 0 8px rgba(56, 189, 248, 0.6); }
+.cat-pill-dot.purple { background: #c084fc; box-shadow: 0 0 8px rgba(192, 132, 252, 0.6); }
+.cat-pill-dot.rose { background: #fb7185; box-shadow: 0 0 8px rgba(251, 113, 133, 0.6); }
+
+/* Light Mode Filter Bar */
+body.lm .cat-filter-track {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+  border-top: 1.5px solid #ffffff !important;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06), inset 0 1px 0 #ffffff !important;
+}
+body.lm .cat-pill {
+  color: #475569 !important;
+}
+body.lm .cat-pill:hover {
+  color: #0f172a !important;
+  background: #f1f5f9 !important;
+}
+body.lm .cat-pill.is-active,
+body.lm .cat-pill.act {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+  border-color: #d97706 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(217, 119, 6, 0.35) !important;
+}
+body.lm .cat-pill.is-active .cat-pill-dot,
+body.lm .cat-pill.act .cat-pill-dot {
+  background: #ffffff !important;
+  box-shadow: 0 0 6px #ffffff !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────
    GLOBAL TITLE CASE TYPING STYLE
    Transforms all site text to the user's Title Case typing style
    (Capitalizing The First Letter Of Every Word).
@@ -723,28 +948,306 @@ body.lm .hvigb {
   background: linear-gradient(to top, var(--void), transparent) !important;
 }
 
-/* Adapt project cards to hardcore light mode */
-body.lm .pc,
-body.lm .vp-card {
+/* ═══════════════════════════════════════════════════════════════════════════
+   MASTER LIGHT MODE (Crystalline Daylight Quartz System)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* 1. Master Daylight Quartz Top Navigation */
+body.lm .top-nav {
+  background: rgba(255, 255, 255, 0.88) !important;
+  backdrop-filter: blur(24px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08) !important;
+  border-top: 1.5px solid rgba(255, 255, 255, 0.95) !important;
+  box-shadow:
+    0 4px 6px -1px rgba(15, 23, 42, 0.02),
+    0 20px 40px -8px rgba(15, 23, 42, 0.07),
+    inset 0 1px 0 #ffffff !important;
+}
+body.lm .nav-cmd-trigger {
+  background: rgba(241, 245, 249, 0.85) !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+  color: #334155 !important;
+  box-shadow: inset 0 1px 0 #ffffff, 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+}
+body.lm .nav-cmd-trigger:hover {
   background: #ffffff !important;
-  border-color: rgba(0, 0, 0, 0.08) !important;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03) !important;
+  border-color: rgba(217, 119, 6, 0.4) !important;
+  color: #0f172a !important;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.15), inset 0 1px 0 #ffffff !important;
 }
-body.lm .pc:hover,
-body.lm .vp-card:hover {
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1) !important;
-  border-color: rgba(0, 0, 0, 0.15) !important;
-}
-body.lm .sf {
-  background: #f3f2eb !important;
-  border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
+body.lm .nav-cmd-trigger kbd {
+  background: #ffffff !important;
+  border: 1px solid rgba(15, 23, 42, 0.14) !important;
+  color: #0f172a !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06), inset 0 1px 0 #ffffff !important;
 }
 
-/* Adapt top nav to light mode */
-body.lm .top-nav {
-  background: rgba(243, 242, 235, 0.96) !important;
-  backdrop-filter: blur(12px) !important;
-  border-bottom-color: rgba(0, 0, 0, 0.1) !important;
+/* 2. Hero Quick Launcher Pill in Light Mode */
+body.lm .hero-cmd-pill {
+  background: rgba(255, 255, 255, 0.88) !important;
+  backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+  border-top: 1.5px solid #ffffff !important;
+  color: #334155 !important;
+  box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.08), inset 0 1px 0 #ffffff !important;
+}
+body.lm .hero-cmd-pill:hover {
+  background: #ffffff !important;
+  border-color: rgba(217, 119, 6, 0.45) !important;
+  color: #0f172a !important;
+  box-shadow: 0 8px 24px -4px rgba(217, 119, 6, 0.2), inset 0 1px 0 #ffffff !important;
+  transform: translateY(-2px);
+}
+body.lm .hero-cmd-pill .hcp-kbd {
+  background: #f1f5f9 !important;
+  border: 1px solid rgba(15, 23, 42, 0.14) !important;
+  color: #0f172a !important;
+  box-shadow: inset 0 1px 0 #ffffff !important;
+}
+
+/* 3. Hero Telemetry Stat Pod in Light Mode */
+body.lm .hero-telemetry-badge,
+body.lm .h-stat-pod {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(15, 23, 42, 0.09) !important;
+  border-top: 1.5px solid #ffffff !important;
+  box-shadow: 0 8px 30px -4px rgba(15, 23, 42, 0.07), inset 0 1px 0 #ffffff !important;
+  color: #475569 !important;
+}
+body.lm .hero-telemetry-badge b,
+body.lm .h-stat-pod b {
+  color: #0f172a !important;
+}
+
+/* 4. Master Product Cards in Light Mode (.pc) — Dual Bevel & Specular Glint */
+body.lm .pc {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.94) 100%) !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+  border-top: 1.5px solid #ffffff !important;
+  box-shadow:
+    0 2px 4px rgba(15, 23, 42, 0.02),
+    0 14px 34px -6px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 0 #ffffff,
+    inset 0 0 0 1px rgba(255, 255, 255, 0.7) !important;
+  transition:
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.3s ease,
+    box-shadow 0.3s ease !important;
+}
+body.lm .pc:hover {
+  box-shadow:
+    0 4px 8px rgba(15, 23, 42, 0.03),
+    0 24px 52px -10px rgba(15, 23, 42, 0.14),
+    inset 0 1px 0 0 #ffffff,
+    inset 0 0 0 1px rgba(255, 255, 255, 0.9) !important;
+}
+/* Cursor-tracking pearlescent light glint */
+body.lm .pc::after {
+  background: radial-gradient(
+    circle 320px at var(--card-mx, -9999px) var(--card-my, -9999px),
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(217, 119, 6, 0.06) 45%,
+    transparent 70%
+  ) !important;
+}
+body.lm .pc .pv {
+  border-bottom: 1px solid rgba(15, 23, 42, 0.07) !important;
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%) !important;
+  box-shadow: inset 0 2px 4px rgba(15, 23, 42, 0.03) !important;
+}
+body.lm .pc-body,
+body.lm .pb {
+  background: transparent !important;
+}
+body.lm .pname {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+body.lm .pdesc {
+  color: #475569 !important;
+  line-height: 1.65 !important;
+}
+body.lm .plink {
+  color: #b45309 !important;
+  font-weight: 700 !important;
+}
+body.lm .pc:hover .plink {
+  color: #92400e !important;
+}
+body.lm .ptags .tag {
+  background: #f1f5f9 !important;
+  border: 1px solid rgba(15, 23, 42, 0.09) !important;
+  color: #334155 !important;
+  box-shadow: inset 0 1px 0 #ffffff !important;
+}
+body.lm .pc:hover .ptags .tag {
+  background: #e2e8f0 !important;
+  border-color: rgba(15, 23, 42, 0.18) !important;
+  color: #0f172a !important;
+}
+
+/* 5. Master Architecture Cards in Light Mode (.arch-card) */
+body.lm .arch-section {
+  background: linear-gradient(180deg, transparent 0%, rgba(241, 245, 249, 0.5) 50%, transparent 100%);
+}
+body.lm .arch-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 250, 252, 0.94) 100%) !important;
+  border: 1px solid rgba(15, 23, 42, 0.09) !important;
+  border-top: 1.5px solid #ffffff !important;
+  box-shadow:
+    0 2px 4px rgba(15, 23, 42, 0.02),
+    0 20px 42px -8px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 #ffffff,
+    inset 0 0 0 1px rgba(255, 255, 255, 0.7) !important;
+}
+body.lm .arch-card:hover {
+  border-color: rgba(217, 119, 6, 0.35) !important;
+  box-shadow:
+    0 6px 12px rgba(15, 23, 42, 0.03),
+    0 28px 56px -12px rgba(217, 119, 6, 0.16),
+    inset 0 1px 0 #ffffff !important;
+}
+body.lm .arch-card-title {
+  color: #0f172a !important;
+}
+body.lm .arch-card-desc {
+  color: #475569 !important;
+}
+body.lm .arch-metric-display,
+body.lm .arch-metric-pod {
+  background: linear-gradient(135deg, rgba(241, 245, 249, 0.92) 0%, rgba(255, 255, 255, 0.98) 100%) !important;
+  border: 1px solid rgba(15, 23, 42, 0.09) !important;
+  box-shadow:
+    inset 0 1px 2px rgba(15, 23, 42, 0.03),
+    0 2px 6px rgba(15, 23, 42, 0.04),
+    0 1px 0 #ffffff !important;
+}
+body.lm .arch-metric-num {
+  color: #0f172a !important;
+  text-shadow: 0 1px 2px rgba(15, 23, 42, 0.08) !important;
+}
+body.lm .arch-metric-label {
+  color: #64748b !important;
+}
+body.lm .arch-metric-callout {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+
+/* 6. Value Proposition Cards in Light Mode (.vp-card) */
+body.lm .vp-card {
+  background: linear-gradient(180deg, #ffffff 0%, rgba(248, 250, 252, 0.92) 100%) !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+  border-top: 1.5px solid #ffffff !important;
+  box-shadow:
+    0 2px 4px rgba(15, 23, 42, 0.02),
+    0 16px 36px -6px rgba(15, 23, 42, 0.07),
+    inset 0 1px 0 #ffffff !important;
+}
+body.lm .vp-card:hover {
+  border-color: rgba(15, 23, 42, 0.16) !important;
+  box-shadow:
+    0 4px 8px rgba(15, 23, 42, 0.03),
+    0 24px 48px -10px rgba(15, 23, 42, 0.12),
+    inset 0 1px 0 #ffffff !important;
+  transform: translateY(-6px);
+}
+body.lm .vp-title {
+  color: #0f172a !important;
+}
+body.lm .vp-desc {
+  color: #475569 !important;
+}
+body.lm .vp-icon {
+  filter: drop-shadow(0 4px 12px rgba(217, 119, 6, 0.25)) !important;
+  color: #d97706 !important;
+}
+
+/* 7. Sticky Category Filter Nav in Light Mode */
+body.lm .col-filter-nav,
+body.lm .cat-nav,
+body.lm .filter-bar {
+  background: rgba(255, 255, 255, 0.88) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(15, 23, 42, 0.09) !important;
+  border-top: 1.5px solid #ffffff !important;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.07), inset 0 1px 0 #ffffff !important;
+}
+body.lm .cat-pill,
+body.lm .filter-pill {
+  color: #475569 !important;
+}
+body.lm .cat-pill:hover,
+body.lm .filter-pill:hover {
+  color: #0f172a !important;
+  background: rgba(241, 245, 249, 0.8) !important;
+}
+body.lm .cat-pill.is-active,
+body.lm .filter-pill.is-active {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 3px 10px rgba(217, 119, 6, 0.35) !important;
+}
+
+/* 8. Master Site Footer in Light Mode */
+body.lm .site-footer,
+body.lm .sf {
+  background: linear-gradient(180deg, rgba(248, 250, 252, 0.96) 0%, rgba(241, 245, 249, 0.98) 100%) !important;
+  border-top: 1.5px solid rgba(15, 23, 42, 0.08) !important;
+  box-shadow: inset 0 1px 0 #ffffff, 0 -10px 40px -10px rgba(15, 23, 42, 0.04) !important;
+}
+body.lm .sf-brand-name {
+  color: #0f172a !important;
+}
+body.lm .sf-tagline {
+  color: #475569 !important;
+}
+body.lm .sf-group-title {
+  color: #0f172a !important;
+}
+body.lm .sf-links a {
+  color: #475569 !important;
+}
+body.lm .sf-links a:hover {
+  color: #0f172a !important;
+}
+body.lm .sf-status-pill {
+  background: rgba(16, 185, 129, 0.1) !important;
+  border: 1px solid rgba(16, 185, 129, 0.25) !important;
+  color: #047857 !important;
+}
+body.lm .sf-cmd-btn {
+  background: #ffffff !important;
+  border: 1px solid rgba(15, 23, 42, 0.12) !important;
+  color: #334155 !important;
+  box-shadow: inset 0 1px 0 #ffffff, 0 1px 3px rgba(15, 23, 42, 0.04) !important;
+}
+body.lm .sf-cmd-btn:hover {
+  background: #f8fafc !important;
+  border-color: rgba(217, 119, 6, 0.4) !important;
+  color: #0f172a !important;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.15), inset 0 1px 0 #ffffff !important;
+}
+body.lm .sf-cmd-btn kbd {
+  background: #f1f5f9 !important;
+  border-color: rgba(15, 23, 42, 0.14) !important;
+  color: #0f172a !important;
+}
+body.lm .sf-bottom {
+  border-top-color: rgba(15, 23, 42, 0.08) !important;
+  color: #64748b !important;
+}
+
+/* 9. Eliminate native outline on search modal */
+#colCmdInput,
+#colCmdInput:focus,
+#colCmdInput:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-appearance: none !important;
 }
 body.lm .nav-brand {
   color: #0f172a !important;
