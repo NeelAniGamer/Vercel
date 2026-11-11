@@ -6,7 +6,6 @@ Disallow: /admin
 Disallow: /dashboard
 Disallow: /q
 Disallow: /q.html
-Disallow: /qr-editor
 Disallow: /verify
 Disallow: /engine
 Disallow: /Database_Logic

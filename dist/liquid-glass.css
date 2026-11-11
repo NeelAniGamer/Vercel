@@ -25,14 +25,14 @@
   --glass-blur-thin: 16px;
   --glass-blur-regular: 30px;
   --glass-blur-thick: 38px;
-  --glass-saturate: 220%;
-  --glass-brightness: 1.18;
-  --glass-contrast: 105%;
+  --glass-saturate: 130%;
+  --glass-brightness: 1.05;
+  --glass-contrast: 102%;
 
   /* Crystalline Dark Transmission Materials (High Transmittance, Pure Silica Clarity) */
-  --glass-mat-thin: linear-gradient(135deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.035) 100%), rgba(14, 20, 36, 0.22);
-  --glass-mat-regular: linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 45%, rgba(255, 255, 255, 0.01) 100%), rgba(12, 18, 34, 0.26);
-  --glass-mat-thick: linear-gradient(145deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 40%, rgba(255, 255, 255, 0.008) 100%), rgba(14, 22, 38, 0.22);
+  --glass-mat-thin: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.03) 100%), rgba(11, 17, 30, 0.55);
+  --glass-mat-regular: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.03) 45%, rgba(12, 18, 32, 0.65) 100%), rgba(9, 14, 26, 0.60);
+  --glass-mat-thick: linear-gradient(145deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.03) 40%, rgba(10, 15, 28, 0.75) 100%), rgba(8, 12, 24, 0.65);
 
   /* Apple Precision Zenith Bevels & Refraction Rim Highlights */
   --glass-rim-subtle: 1px solid rgba(255, 255, 255, 0.2);
@@ -88,72 +88,72 @@ body.light-mode .apple-liquid-backdrop {
 .apple-orb-amber {
   width: 520px;
   height: 520px;
-  background: radial-gradient(circle, rgba(242, 184, 75, 0.3) 0%, rgba(242, 184, 75, 0.1) 55%, transparent 75%);
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.24) 0%, rgba(217, 119, 6, 0.08) 50%, transparent 72%);
   top: -2%;
   left: 10%;
   animation-duration: 20s;
 }
 
-/* 2. Electric Cyan Caustic — Upper Right Flank across Flagships */
+/* 2. Deep Celestial Sapphire Caustic — Upper Right Flank across Flagships (Replaced neon cyan) */
 .apple-orb-cyan {
   width: 560px;
   height: 560px;
-  background: radial-gradient(circle, rgba(0, 240, 255, 0.26) 0%, rgba(56, 189, 248, 0.09) 55%, transparent 75%);
+  background: radial-gradient(circle, rgba(29, 78, 216, 0.18) 0%, rgba(30, 58, 138, 0.06) 50%, transparent 72%);
   top: 22%;
   right: -8%;
   animation-duration: 26s;
   animation-direction: alternate-reverse;
 }
 
-/* 3. Deep Liquid Violet — Mid Left across Value Propositions & Productivity */
+/* 3. Burnished Bronze & Solar Ochre Caustic — Mid Left (Replaced synthetic purple) */
 .apple-orb-purple {
   width: 540px;
   height: 540px;
-  background: radial-gradient(circle, rgba(168, 85, 247, 0.26) 0%, rgba(139, 92, 246, 0.09) 55%, transparent 75%);
+  background: radial-gradient(circle, rgba(217, 119, 6, 0.18) 0%, rgba(180, 83, 9, 0.05) 50%, transparent 72%);
   top: 48%;
   left: -8%;
   animation-duration: 24s;
 }
 
-/* 4. Emerald Mint Caustic — Lower Right across Educational & Mobile */
+/* 4. Auroral Emerald Mint Caustic — Lower Right across Educational & Mobile */
 .apple-orb-emerald {
   width: 480px;
   height: 480px;
-  background: radial-gradient(circle, rgba(52, 211, 153, 0.24) 0%, rgba(16, 185, 129, 0.08) 55%, transparent 75%);
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.16) 0%, rgba(5, 150, 105, 0.05) 50%, transparent 72%);
   top: 68%;
   right: 2%;
   animation-duration: 23s;
   animation-direction: alternate-reverse;
 }
 
-/* 5. Rose Quartz Caustic — Bottom across Architecture & Atlas */
+/* 5. Radiant Solar Champagne Caustic — Bottom across Architecture & Atlas (Replaced rose quartz pink) */
 .apple-orb-rose {
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(244, 63, 94, 0.24) 0%, rgba(251, 113, 133, 0.08) 55%, transparent 75%);
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.18) 0%, rgba(245, 158, 11, 0.05) 50%, transparent 72%);
   bottom: 2%;
   left: 15%;
   animation-duration: 21s;
 }
 
-/* 6. Azure Core Depth — Center Atmospheric Glow */
+/* 6. Celestial Twilight Core — Center Atmospheric Glow (Replaced azure-to-indigo) */
 .apple-orb-center {
   width: 640px;
   height: 640px;
-  background: radial-gradient(circle, rgba(56, 189, 248, 0.18) 0%, rgba(99, 102, 241, 0.07) 50%, transparent 75%);
+  background: radial-gradient(circle, rgba(30, 41, 59, 0.22) 0%, rgba(15, 23, 42, 0.08) 50%, transparent 75%);
   top: 38%;
   left: 32%;
   animation-duration: 28s;
   animation-direction: alternate-reverse;
 }
 
-/* Light Mode Pure Daylight Pastels */
-body.lm .apple-orb-amber { background: radial-gradient(circle, rgba(253, 230, 138, 0.45) 0%, rgba(253, 230, 138, 0.15) 60%, transparent 75%); }
-body.lm .apple-orb-cyan { background: radial-gradient(circle, rgba(186, 230, 253, 0.45) 0%, rgba(186, 230, 253, 0.15) 60%, transparent 75%); }
-body.lm .apple-orb-purple { background: radial-gradient(circle, rgba(221, 214, 254, 0.45) 0%, rgba(221, 214, 254, 0.15) 60%, transparent 75%); }
-body.lm .apple-orb-emerald { background: radial-gradient(circle, rgba(167, 243, 208, 0.42) 0%, rgba(167, 243, 208, 0.15) 60%, transparent 75%); }
-body.lm .apple-orb-rose { background: radial-gradient(circle, rgba(251, 207, 232, 0.42) 0%, rgba(251, 207, 232, 0.15) 60%, transparent 75%); }
-body.lm .apple-orb-center { background: radial-gradient(circle, rgba(199, 210, 254, 0.35) 0%, rgba(199, 210, 254, 0.1) 55%, transparent 75%); }
+/* Light Mode Pure Daylight Pastels (Warm Amber, Dew Sage, Crisp Slate) */
+body.lm .apple-orb-amber { background: radial-gradient(circle, rgba(254, 243, 199, 0.5) 0%, rgba(253, 230, 138, 0.18) 60%, transparent 75%); }
+body.lm .apple-orb-cyan { background: radial-gradient(circle, rgba(224, 231, 255, 0.4) 0%, rgba(219, 234, 254, 0.15) 60%, transparent 75%); }
+body.lm .apple-orb-purple { background: radial-gradient(circle, rgba(254, 240, 138, 0.4) 0%, rgba(253, 230, 138, 0.15) 60%, transparent 75%); }
+body.lm .apple-orb-emerald { background: radial-gradient(circle, rgba(209, 250, 229, 0.45) 0%, rgba(167, 243, 208, 0.15) 60%, transparent 75%); }
+body.lm .apple-orb-rose { background: radial-gradient(circle, rgba(254, 243, 199, 0.42) 0%, rgba(253, 230, 138, 0.15) 60%, transparent 75%); }
+body.lm .apple-orb-center { background: radial-gradient(circle, rgba(241, 245, 249, 0.4) 0%, rgba(226, 232, 240, 0.15) 55%, transparent 75%); }
 
 @keyframes appleFloatCaustic {
   0% { transform: translate3d(0, 0, 0) scale(1); }
@@ -185,7 +185,6 @@ body.lm .apple-orb-center { background: radial-gradient(circle, rgba(199, 210, 2
 .apple-glass .c-badge,
 .apple-glass .tech-tag,
 .apple-glass .dock-chip,
-.apple-glass .hey,
 .apple-glass .card-tags span,
 .apple-glass .badge,
 .apple-glass .status-pill,
@@ -198,7 +197,6 @@ body.lm .apple-orb-center { background: radial-gradient(circle, rgba(199, 210, 2
 .is-iphone .c-badge,
 .is-iphone .tech-tag,
 .is-iphone .dock-chip,
-.is-iphone .hey,
 .is-iphone .card-tags span,
 .is-iphone .badge,
 .is-iphone .status-pill,
@@ -251,12 +249,10 @@ body.lm .apple-orb-center { background: radial-gradient(circle, rgba(199, 210, 2
 
 /* ── 4. Tier 2: Apple Regular Fluid Glass (Navigation & Floating Controls) ─ */
 .apple-glass .liquid-glass,
-.apple-glass .top-nav,
 .apple-glass .orrery-dock,
 .apple-glass .hud-group,
 .apple-glass .projects-quick-filter,
 .is-iphone .liquid-glass,
-.is-iphone .top-nav,
 .is-iphone .orrery-dock,
 .is-iphone .hud-group,
 .is-iphone .projects-quick-filter {
@@ -313,6 +309,7 @@ body.lm .apple-orb-center { background: radial-gradient(circle, rgba(199, 210, 2
 @media (min-width: 901px) {
   .apple-glass .top-nav {
     position: fixed !important;
+    overflow: visible !important;
     top: 14px !important;
     left: 24px !important;
     right: 24px !important;
@@ -320,20 +317,50 @@ body.lm .apple-orb-center { background: radial-gradient(circle, rgba(199, 210, 2
     max-width: min(96vw, 1540px) !important;
     margin: 0 auto !important;
     border-radius: 999px !important;
-    padding: 8px 32px 8px 22px !important;
+    padding: 6px 14px 6px 18px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
-    gap: 14px !important;
+    gap: 10px !important;
     box-sizing: border-box !important;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.12) 0%,
+      rgba(255, 255, 255, 0.03) 22%,
+      rgba(12, 17, 32, 0.88) 68%,
+      rgba(6, 9, 18, 0.96) 100%
+    ) !important;
+    backdrop-filter: blur(24px) saturate(130%) brightness(1.05) contrast(102%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(130%) brightness(1.05) contrast(102%) !important;
     border: 1px solid rgba(255, 255, 255, 0.22) !important;
     border-top: 1.5px solid rgba(255, 255, 255, 0.78) !important;
     box-shadow:
       0 20px 48px -10px rgba(0, 0, 0, 0.45),
       0 2px 6px rgba(0, 0, 0, 0.2),
+      0 0 24px -4px rgba(245, 158, 11, 0.08),
       inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.75),
       inset 0 0 0 1px rgba(255, 255, 255, 0.12),
       inset 0 -1px 1px 0 rgba(0, 0, 0, 0.2) !important;
+  }
+
+  .apple-glass .top-nav.s {
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.14) 0%,
+      rgba(255, 255, 255, 0.035) 22%,
+      rgba(13, 19, 36, 0.84) 68%,
+      rgba(6, 9, 18, 0.95) 100%
+    ) !important;
+    backdrop-filter: blur(26px) saturate(125%) brightness(1.04) contrast(102%) !important;
+    -webkit-backdrop-filter: blur(26px) saturate(125%) brightness(1.04) contrast(102%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.20) !important;
+    border-top: 1.5px solid rgba(255, 255, 255, 0.72) !important;
+    box-shadow:
+      0 20px 48px -10px rgba(0, 0, 0, 0.65),
+      0 2px 6px rgba(0, 0, 0, 0.25),
+      0 0 24px -4px rgba(245, 158, 11, 0.10),
+      inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.65),
+      inset 0 -1px 1px 0 rgba(0, 0, 0, 0.35) !important;
   }
 
   .apple-glass .top-nav .nav-links,
@@ -343,6 +370,37 @@ body.lm .apple-orb-center { background: radial-gradient(circle, rgba(199, 210, 2
     box-shadow: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .apple-glass .top-nav .nav-link > svg,
+  .apple-glass .top-nav .dropdown-btn > svg:first-child {
+    display: none !important;
+  }
+
+  .apple-glass .top-nav .nav-link,
+  .apple-glass .top-nav .dropdown-btn {
+    padding: 6px 10px !important;
+    font-size: 0.84rem !important;
+    font-weight: 500 !important;
+    white-space: nowrap !important;
+  }
+
+  .apple-glass .top-nav .nav-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .apple-glass .top-nav .nav-dl-btn {
+    padding: 7px 16px !important;
+    font-size: 0.84rem !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
   }
 }
 
@@ -360,21 +418,29 @@ body.lm .apple-orb-center { background: radial-gradient(circle, rgba(199, 210, 2
     padding-top: max(12px, env(safe-area-inset-top, 12px)) !important;
     padding-bottom: 12px !important;
     border-radius: 28px !important;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.12) 0%,
+      rgba(255, 255, 255, 0.03) 22%,
+      rgba(12, 17, 32, 0.88) 68%,
+      rgba(6, 9, 18, 0.96) 100%
+    ) !important;
+    backdrop-filter: blur(24px) saturate(130%) brightness(1.05) contrast(102%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(130%) brightness(1.05) contrast(102%) !important;
   }
 }
 
-/* Top Nav Ambient Specular Sheen Glint Sweep */
+/* Top Nav Ambient Specular Sheen Glint (Static Accent) */
 .apple-glass .top-nav::after,
 .is-iphone .top-nav::after {
   content: '';
   position: absolute;
   top: 0;
-  left: -100%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.22) 50%, transparent 100%);
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.35) 50%, transparent 100%);
   pointer-events: none;
-  animation: appleSheenSweep 9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   z-index: 1;
 }
 
@@ -449,7 +515,6 @@ body.lm .apple-orb-center { background: radial-gradient(circle, rgba(199, 210, 2
 .apple-glass .pc,
 .apple-glass .feat,
 .apple-glass .vp-card,
-.apple-glass .fc,
 .apple-glass .sc-card,
 .apple-glass .stat-card,
 .apple-glass .feature-card,
@@ -461,12 +526,10 @@ body.lm .apple-orb-center { background: radial-gradient(circle, rgba(199, 210, 2
 .apple-glass .card,
 .apple-glass .box,
 .apple-glass .panel,
-.apple-glass .stage-hint,
 .apple-glass .arch-card,
 .is-iphone .pc,
 .is-iphone .feat,
 .is-iphone .vp-card,
-.is-iphone .fc,
 .is-iphone .sc-card,
 .is-iphone .stat-card,
 .is-iphone .feature-card,
@@ -478,7 +541,6 @@ body.lm .apple-orb-center { background: radial-gradient(circle, rgba(199, 210, 2
 .is-iphone .card,
 .is-iphone .box,
 .is-iphone .panel,
-.is-iphone .stage-hint,
 .is-iphone .arch-card {
   background: var(--glass-mat-thick) !important;
   backdrop-filter: blur(var(--glass-blur-regular)) saturate(var(--glass-saturate)) contrast(var(--glass-contrast)) brightness(var(--glass-brightness)) !important;
@@ -629,9 +691,7 @@ body.lm .apple-orb-center { background: radial-gradient(circle, rgba(199, 210, 2
 }
 
 /* ── 8. Apple Search & Filter Glass Controls ────────────────────────────── */
-.apple-glass .sf,
 .apple-glass .search-box,
-.is-iphone .sf,
 .is-iphone .search-box {
   background: rgba(255, 255, 255, 0.09) !important;
   backdrop-filter: blur(24px) saturate(190%) !important;
@@ -644,9 +704,7 @@ body.lm .apple-orb-center { background: radial-gradient(circle, rgba(199, 210, 2
     inset 0 1px 1px rgba(255, 255, 255, 0.4) !important;
 }
 
-.apple-glass .sf input,
 .apple-glass .search-box input,
-.is-iphone .sf input,
 .is-iphone .search-box input {
   background: transparent !important;
   color: #ffffff !important;
@@ -668,12 +726,12 @@ body.lm .apple-orb-center { background: radial-gradient(circle, rgba(199, 210, 2
 
 .apple-glass .dropdown-content-inner,
 .is-iphone .dropdown-content-inner {
-  background: rgba(14, 20, 36, 0.82) !important;
+  background: rgba(10, 14, 26, 0.96) !important;
   backdrop-filter: blur(28px) saturate(210%) !important;
   -webkit-backdrop-filter: blur(28px) saturate(210%) !important;
   border: 1px solid rgba(255, 255, 255, 0.22) !important;
   border-top: 1.5px solid rgba(255, 255, 255, 0.6) !important;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.45) !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), inset 0 1px 1px rgba(255, 255, 255, 0.45) !important;
   border-radius: 22px !important;
 }
 
@@ -754,12 +812,12 @@ body.light-mode .apple-orb-amber {
 
 body.lm .apple-orb-cyan,
 body.light-mode .apple-orb-cyan {
-  background: radial-gradient(circle, rgba(56, 189, 248, 0.38) 0%, rgba(14, 165, 233, 0.16) 50%, transparent 75%) !important;
+  background: radial-gradient(circle, rgba(224, 231, 255, 0.38) 0%, rgba(191, 219, 254, 0.16) 50%, transparent 75%) !important;
 }
 
 body.lm .apple-orb-purple,
 body.light-mode .apple-orb-purple {
-  background: radial-gradient(circle, rgba(192, 132, 252, 0.38) 0%, rgba(168, 85, 247, 0.16) 50%, transparent 75%) !important;
+  background: radial-gradient(circle, rgba(254, 240, 138, 0.40) 0%, rgba(251, 191, 36, 0.16) 50%, transparent 75%) !important;
 }
 
 body.lm .apple-orb-emerald,
@@ -769,12 +827,12 @@ body.light-mode .apple-orb-emerald {
 
 body.lm .apple-orb-rose,
 body.light-mode .apple-orb-rose {
-  background: radial-gradient(circle, rgba(251, 113, 133, 0.38) 0%, rgba(244, 63, 94, 0.15) 50%, transparent 75%) !important;
+  background: radial-gradient(circle, rgba(254, 243, 199, 0.42) 0%, rgba(245, 158, 11, 0.15) 50%, transparent 75%) !important;
 }
 
 body.lm .apple-orb-center,
 body.light-mode .apple-orb-center {
-  background: radial-gradient(circle, rgba(147, 197, 253, 0.3) 0%, rgba(99, 102, 241, 0.1) 50%, transparent 75%) !important;
+  background: radial-gradient(circle, rgba(226, 232, 240, 0.35) 0%, rgba(203, 213, 225, 0.12) 50%, transparent 75%) !important;
 }
 
 /* 2. Top Navigation Floating Pill in Light Mode */
@@ -782,9 +840,9 @@ html.lm.apple-glass .top-nav,
 html.lm .top-nav,
 body.lm .top-nav,
 body.light-mode .top-nav {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0.68) 100%) !important;
-  backdrop-filter: blur(28px) saturate(190%) contrast(102%) brightness(1.06) !important;
-  -webkit-backdrop-filter: blur(28px) saturate(190%) contrast(102%) brightness(1.06) !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(248, 250, 252, 0.82) 100%) !important;
+  backdrop-filter: blur(24px) saturate(130%) contrast(102%) brightness(1.04) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(130%) contrast(102%) brightness(1.04) !important;
   border: 1px solid rgba(255, 255, 255, 0.9) !important;
   border-top: 1.5px solid #ffffff !important;
   box-shadow:
@@ -818,9 +876,7 @@ body.light-mode .nav-brand {
   color: #0f172a !important;
 }
 
-body.lm .top-nav .sf,
 body.lm .nav-search-btn,
-body.light-mode .top-nav .sf,
 body.light-mode .nav-search-btn {
   background: rgba(255, 255, 255, 0.8) !important;
   border: 1px solid rgba(15, 23, 42, 0.12) !important;
@@ -884,7 +940,6 @@ body.light-mode .col-bottom-bar button.act {
 html.lm.apple-glass .pc,
 html.lm.apple-glass .feat,
 html.lm.apple-glass .vp-card,
-html.lm.apple-glass .fc,
 html.lm.apple-glass .sc-card,
 html.lm.apple-glass .stat-card,
 html.lm.apple-glass .feature-card,
@@ -894,7 +949,6 @@ html.lm.apple-glass .arch-card,
 html.lm .pc,
 html.lm .feat,
 html.lm .vp-card,
-html.lm .fc,
 html.lm .sc-card,
 html.lm .stat-card,
 html.lm .feature-card,
@@ -904,7 +958,6 @@ html.lm .arch-card,
 body.lm .pc,
 body.lm .feat,
 body.lm .vp-card,
-body.lm .fc,
 body.lm .sc-card,
 body.lm .stat-card,
 body.lm .feature-card,
@@ -914,7 +967,6 @@ body.lm .arch-card,
 body.light-mode .pc,
 body.light-mode .feat,
 body.light-mode .vp-card,
-body.light-mode .fc,
 body.light-mode .sc-card,
 body.light-mode .stat-card,
 body.light-mode .feature-card,
@@ -1045,7 +1097,6 @@ html.lm.apple-glass .c-tag,
 html.lm.apple-glass .c-badge,
 html.lm.apple-glass .tech-tag,
 html.lm.apple-glass .dock-chip,
-html.lm.apple-glass .hey,
 html.lm.apple-glass .pq-btn,
 html.lm.apple-glass .vp-badge,
 html.lm.apple-glass .arch-badge,
@@ -1053,7 +1104,6 @@ html.lm .c-tag,
 html.lm .c-badge,
 html.lm .tech-tag,
 html.lm .dock-chip,
-html.lm .hey,
 html.lm .pq-btn,
 html.lm .vp-badge,
 html.lm .arch-badge,
@@ -1061,7 +1111,6 @@ body.lm .c-tag,
 body.lm .c-badge,
 body.lm .tech-tag,
 body.lm .dock-chip,
-body.lm .hey,
 body.lm .pq-btn,
 body.lm .vp-badge,
 body.lm .arch-badge,
@@ -1070,7 +1119,6 @@ body.light-mode .c-tag,
 body.light-mode .c-badge,
 body.light-mode .tech-tag,
 body.light-mode .dock-chip,
-body.light-mode .hey,
 body.light-mode .pq-btn,
 body.light-mode .vp-badge,
 body.light-mode .arch-badge,
@@ -1207,8 +1255,8 @@ body.light-mode .ni-btn {
 body.lm .col-mobile-drawer .cmd-panel,
 body.light-mode .col-mobile-drawer .cmd-panel {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.8) 100%) !important;
-  backdrop-filter: blur(34px) saturate(215%) contrast(105%) brightness(1.08) !important;
-  -webkit-backdrop-filter: blur(34px) saturate(215%) contrast(105%) brightness(1.08) !important;
+  backdrop-filter: blur(34px) saturate(130%) contrast(102%) brightness(1.04) !important;
+  -webkit-backdrop-filter: blur(34px) saturate(130%) contrast(102%) brightness(1.04) !important;
   border-left: 1px solid rgba(15, 23, 42, 0.1) !important;
   box-shadow: -15px 0 50px rgba(15, 23, 42, 0.12) !important;
 }
@@ -1220,8 +1268,8 @@ body.light-mode .cmd-nav-group,
 body.light-mode .cmd-setting-card,
 body.light-mode .cmd-tile {
   background: rgba(255, 255, 255, 0.85) !important;
-  backdrop-filter: blur(20px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  backdrop-filter: blur(20px) saturate(125%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(125%) !important;
   border: 1px solid rgba(15, 23, 42, 0.1) !important;
   border-top-color: #ffffff !important;
   box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05), inset 0 1px 1px #ffffff !important;
@@ -1248,3 +1296,68 @@ body.light-mode .col-mobile-drawer button {
     animation: none !important;
   }
 }
+
+
+/* ── Apple Liquid Glass Site Footer ─────────────────────────────────────── */
+.apple-glass footer.sf,
+.apple-glass .site-footer,
+.is-iphone footer.sf,
+.is-iphone .site-footer,
+footer.sf,
+.site-footer {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 64px 0 0 0 !important;
+  border-radius: 0 !important;
+  border: none !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.10) !important;
+  background: rgba(6, 9, 18, 0.96) !important;
+  backdrop-filter: blur(24px) saturate(125%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(125%) !important;
+  box-shadow: 0 -16px 40px rgba(0, 0, 0, 0.45) !important;
+  padding: 40px 32px 32px !important;
+  box-sizing: border-box !important;
+}
+
+body.lm.apple-glass footer.sf,
+body.lm.apple-glass .site-footer,
+body.lm .site-footer {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 64px 0 0 0 !important;
+  border-radius: 0 !important;
+  border: none !important;
+  border-top: 1px solid rgba(15, 23, 42, 0.08) !important;
+  background: rgba(248, 250, 252, 0.98) !important;
+  backdrop-filter: blur(24px) saturate(125%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(125%) !important;
+  box-shadow: 0 -12px 32px rgba(15, 23, 42, 0.04) !important;
+  padding: 40px 32px 32px !important;
+  box-sizing: border-box !important;
+}
+
+/* Eyebrow header text: pure editorial text, strictly no background/glass pill */
+.hey, .apple-glass .hey, .is-iphone .hey, html.lm .hey, body.lm .hey, body.light-mode .hey {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+}
+
+/* Stage hint banner: keep strictly position absolute */
+.stage-hint, .apple-glass .stage-hint, .is-iphone .stage-hint {
+  position: absolute !important;
+}
+
+
+/* ── Top Nav Overflow Visible for Dropdown Compatibility ── */
+.apple-glass .top-nav,
+.is-iphone .top-nav,
+.top-nav {
+  overflow: visible !important;
+}
+
+.sf-pull-tab { display: none !important; width: 0 !important; height: 0 !important; margin: 0 !important; padding: 0 !important; }

@@ -3,26 +3,28 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 /**
  * Synthesizes a subtle, realistic glass crystal chime using Web Audio API
  */
-export function playGlassTone(frequency = 920, duration = 0.28) {
+let sharedAudioCtx = null;
+export function playGlassTone(frequency = 920, duration = 0.22) {
   try {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     if (!AudioCtx) return;
-    const ctx = new AudioCtx();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
+    if (!sharedAudioCtx) sharedAudioCtx = new AudioCtx();
+    if (sharedAudioCtx.state === 'suspended') sharedAudioCtx.resume();
+    const osc = sharedAudioCtx.createOscillator();
+    const gain = sharedAudioCtx.createGain();
 
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(frequency, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(frequency * 1.8, ctx.currentTime + duration * 0.4);
+    osc.frequency.setValueAtTime(frequency, sharedAudioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(frequency * 1.5, sharedAudioCtx.currentTime + duration * 0.4);
 
-    gain.gain.setValueAtTime(0.14, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+    gain.gain.setValueAtTime(0.08, sharedAudioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, sharedAudioCtx.currentTime + duration);
 
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(sharedAudioCtx.destination);
 
     osc.start();
-    osc.stop(ctx.currentTime + duration);
+    osc.stop(sharedAudioCtx.currentTime + duration);
   } catch (err) {
     // AudioContext blocked or not supported
   }

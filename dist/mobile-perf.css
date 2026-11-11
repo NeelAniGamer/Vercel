@@ -149,12 +149,18 @@ html,
 }
 
 /* Off-screen layout & paint bypass (slashes composite/draw time by up to 75%) */
-.ps,
-.pgrid,
-.sf,
+.ps {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 920px;
+}
+.arch-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 560px;
+}
 .bento-grid,
 .career-grid,
-.about-section {
+.about-section,
+.vp-section {
   content-visibility: auto;
   contain-intrinsic-size: 1px 700px;
 }

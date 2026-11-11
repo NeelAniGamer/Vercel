@@ -1511,6 +1511,8 @@
       var Storage = {
         get: function (key) {
           try {
+            var ck = window.ColCookie ? window.ColCookie.get(key) : null
+            if (ck !== null) return ck
             return localStorage.getItem(key)
           } catch (e) {
             return null
@@ -1518,6 +1520,7 @@
         },
         set: function (key, val) {
           try {
+            if (window.ColCookie) { window.ColCookie.set(key, val, 365) }
             localStorage.setItem(key, val)
           } catch (e) {}
         }
@@ -2863,6 +2866,7 @@
           <a href="making">Making</a>
           <a href="privacy">Privacy</a>
           <a href="terms">Terms</a>
+          <a href="feedback">Contact Us</a>
           <a href="feedback">Feedback</a>
           <a href="download">Downloads</a>
         </div>

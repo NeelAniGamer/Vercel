@@ -67,58 +67,79 @@ body {
 }
 
 /* ─────────────────────────────────────────────────────────────────
-   GLOBAL THEMED SCROLLBAR (Windows 10/11, Linux & Modern Browsers)
+   GLOBAL THEMED SCROLLBAR (Universal Windows 10/11, Edge, Chrome, Safari, Firefox)
    Eliminates the glaring white Windows OS scrollbar on dark mode.
    ───────────────────────────────────────────────────────────────── */
 :root,
-html {
-  color-scheme: dark;
+html,
+body,
+* {
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.22) var(--void, #070a14);
-  scroll-behavior: smooth;
-  scroll-padding-top: 86px;
 }
 
 html.lm,
-body.lm {
-  color-scheme: light;
+body.lm,
+html.lm *,
+body.lm * {
   scrollbar-color: #94a3b8 var(--void, #f3f2eb);
 }
 
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 9px;
+  height: 9px;
+  background-color: transparent;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--void, #070a14);
+  background: var(--void, #070a14) !important;
 }
 
 html.lm ::-webkit-scrollbar-track,
 body.lm ::-webkit-scrollbar-track {
-  background: var(--void, #f3f2eb);
+  background: var(--void, #f3f2eb) !important;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.22) !important;
   border-radius: 999px;
-  border: 2px solid var(--void, #070a14);
+  border: 2px solid var(--void, #070a14) !important;
   transition: background 0.2s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--signal, #f2b84b);
+  background: var(--signal, #f2b84b) !important;
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--void, #070a14) !important;
 }
 
 html.lm ::-webkit-scrollbar-thumb,
 body.lm ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border: 2px solid var(--void, #f3f2eb);
+  background: #cbd5e1 !important;
+  border: 2px solid var(--void, #f3f2eb) !important;
 }
 
 html.lm ::-webkit-scrollbar-thumb:hover,
 body.lm ::-webkit-scrollbar-thumb:hover {
-  background: #b8720a;
+  background: #b8720a !important;
+}
+
+/* Floating Top Nav Dissolve Shield (Prevents scrolled content from leaking above navbar capsule) */
+.top-nav-shield {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 28px;
+  background: linear-gradient(to bottom, var(--void, #070a14) 70%, transparent 100%);
+  z-index: 999;
+  pointer-events: none;
+  transition: background 0.5s var(--ease);
+}
+html.lm .top-nav-shield {
+  background: linear-gradient(to bottom, var(--void, #fafaf9) 70%, transparent 100%);
 }
 
 /* ─────────────────────────────────────────────────────────────────
@@ -135,8 +156,120 @@ section[id],
 #mobile,
 #atlas,
 #architecture,
-#heroSection {
-  scroll-margin-top: 88px !important;
+#heroSection,
+.studio-marquee-section {
+  scroll-margin-top: 110px !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   UNIVERSAL CATEGORY FILTER NAVIGATION BAR (VisionOS Glass Capsule)
+   Shared across Home and Project Pages with small tweaks.
+   ───────────────────────────────────────────────────────────────── */
+.cat-filter-nav {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+  max-width: 1100px !important;
+  margin: 44px auto 32px !important;
+  padding: 0 16px !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+.cat-filter-track {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  flex-wrap: wrap !important;
+  padding: 6px 12px !important;
+  border-radius: 999px !important;
+  background: rgba(14, 20, 36, 0.78) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  border-top: 1.5px solid rgba(255, 255, 255, 0.55) !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45), inset 0 1px 1.5px rgba(255, 255, 255, 0.25) !important;
+  box-sizing: border-box !important;
+}
+
+.cat-pill {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 8px 18px !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  color: var(--dim, #8891aa) !important;
+  font-family: var(--mono, 'Space Mono', monospace) !important;
+  font-size: 0.78rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  user-select: none !important;
+  white-space: nowrap !important;
+  box-sizing: border-box !important;
+}
+
+.cat-pill:hover {
+  color: var(--ink, #ffffff) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  transform: translateY(-1px) !important;
+}
+
+.cat-pill.is-active,
+.cat-pill.active {
+  background: linear-gradient(135deg, rgba(242, 184, 75, 0.96) 0%, rgba(224, 145, 14, 0.9) 100%) !important;
+  color: #070a14 !important;
+  font-weight: 700 !important;
+  border-color: rgba(255, 255, 255, 0.7) !important;
+  border-top: 1.2px solid #ffffff !important;
+  box-shadow: 0 4px 18px rgba(242, 184, 75, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.8) !important;
+  transform: translateY(0) !important;
+}
+
+.cat-pill-dot {
+  width: 7px !important;
+  height: 7px !important;
+  border-radius: 50% !important;
+  display: inline-block !important;
+  flex-shrink: 0 !important;
+}
+
+.cat-pill-dot.gold { background: #f2b84b !important; box-shadow: 0 0 8px #f2b84b !important; }
+.cat-pill-dot.purple { background: #c084fc !important; box-shadow: 0 0 8px #c084fc !important; }
+.cat-pill-dot.cyan { background: #38bdf8 !important; box-shadow: 0 0 8px #38bdf8 !important; }
+.cat-pill-dot.emerald { background: #34d399 !important; box-shadow: 0 0 8px #34d399 !important; }
+.cat-pill-dot.rose { background: #fb7185 !important; box-shadow: 0 0 8px #fb7185 !important; }
+
+/* Light Mode Overrides for Category Filter */
+body.lm .cat-filter-track,
+html.lm .cat-filter-track {
+  background: rgba(255, 255, 255, 0.88) !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+  border-top-color: #ffffff !important;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08) !important;
+}
+
+body.lm .cat-pill,
+html.lm .cat-pill {
+  color: #475569 !important;
+}
+
+body.lm .cat-pill:hover,
+html.lm .cat-pill:hover {
+  color: #0f172a !important;
+  background: rgba(0, 0, 0, 0.05) !important;
+}
+
+body.lm .cat-pill.is-active,
+html.lm .cat-pill.is-active {
+  background: linear-gradient(135deg, #b45309 0%, #d97706 100%) !important;
+  color: #ffffff !important;
 }
 
 /* Perfect Horizontal Container Centering Across All Viewports */
@@ -163,17 +296,25 @@ section[id],
 /* ─────────────────────────────────────────────────────────────────
    60 FPS SCROLL PERFORMANCE & OFF-SCREEN CONTAINMENT
    ───────────────────────────────────────────────────────────────── */
-.ps,
+.ps {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 920px;
+}
 .arch-section {
   content-visibility: auto;
-  contain-intrinsic-size: 1px 700px;
+  contain-intrinsic-size: auto 560px;
 }
 
 .pc,
 .arch-card,
 .vp-card {
-  will-change: transform;
   transform: translateZ(0);
+}
+.pc.is-tilting,
+.pc:hover,
+.arch-card:hover,
+.vp-card:hover {
+  will-change: transform;
 }
 
 #heroOrbitalStage.is-paused .hos-ring,
@@ -296,17 +437,35 @@ body.lm .cat-pill.act .cat-pill-dot {
    Transforms all site text to the user's Title Case typing style
    (Capitalizing The First Letter Of Every Word).
    ───────────────────────────────────────────────────────────────── */
-body,
+/* Navigation, headings, badges, and action buttons retain clean title presentation */
 h1, h2, h3, h4, h5, h6,
-p, a, button, span, label, li, dt, dd,
-blockquote, figcaption, th, td,
 .nav-link, .nav-links a, .dropdown-btn,
-.bbar-item, .bbar-item span, .btn-p, .btn-g,
-.hey, .hlede, .sdesc, .pdesc, .stat-label, .meta, .badge,
+.bbar-item span, .btn-p, .btn-g,
+.stat-label, .badge,
 .tag, .dock-name, .dock-label, .ni-title, .ni-badge,
 .hero h1, .section h2, .footer-col h4, .brand-name,
-.fb, .fl a, .footer-links a, .eyebrow, .card-title, .card-desc {
-  text-transform: capitalize !important;
+.eyebrow, .card-title {
+  text-transform: none;
+}
+
+/* Body prose, paragraphs, leads, descriptions, and technical copy render in natural human sentence case */
+body,
+p,
+.hlede,
+.pdesc,
+.sdesc,
+.arch-desc,
+.vp-desc,
+.ssb,
+.col-cmd-sub,
+.card-desc,
+blockquote,
+figcaption,
+li,
+dt,
+dd,
+article p {
+  text-transform: none !important;
 }
 
 code,
@@ -661,11 +820,17 @@ body.lm .brand-logo {
 .dropdown-btn.act {
   color: var(--primary, #38bdf8);
 }
-.dropdown-btn span {
+.dropdown-btn > span:not(.darr) {
+  display: inline-block;
+  transform: none !important;
+  font-size: inherit;
+}
+.dropdown-btn .darr {
   font-size: 0.7rem;
+  display: inline-block;
   transition: transform 0.3s ease;
 }
-.dropdown.active .dropdown-btn span {
+.dropdown.active .dropdown-btn .darr {
   transform: rotate(180deg);
 }
 .dropdown-content {
@@ -688,7 +853,7 @@ body.lm .brand-logo {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(15, 23, 42, 0.90) 100%);
   backdrop-filter: blur(24px) saturate(190%) contrast(105%);
   -webkit-backdrop-filter: blur(24px) saturate(190%) contrast(105%);
-  border-radius: 16px;
+  border-radius: 20px !important;
   border: 1px solid rgba(255, 255, 255, 0.20);
   border-top: 1.5px solid rgba(255, 255, 255, 0.60);
   border-bottom: 1px solid rgba(255, 255, 255, 0.10);
@@ -699,7 +864,7 @@ body.lm .brand-logo {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  padding: 10px 0;
+  padding: 8px !important;
 }
 .dropdown.active .dropdown-content {
   opacity: 1;
@@ -708,6 +873,7 @@ body.lm .brand-logo {
   transform: translateX(-50%) translateY(0);
 }
 .dropdown-content a {
+  border-radius: 12px !important;
   color: var(--text-muted, #cbd5e1);
   padding: 10px 16px;
   text-decoration: none;
@@ -1462,6 +1628,7 @@ body.lm .dropdown-content-inner {
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05) !important;
 }
 body.lm .dropdown-content a {
+  border-radius: 12px !important;
   color: #64748b !important;
 }
 body.lm .dropdown-content a:hover {
@@ -1632,7 +1799,7 @@ body.lm .nav-login-btn:hover {
   cursor: pointer;
   width: 40px;
   height: 40px;
-  border-radius: 8px;
+  border-radius: 9999px !important;
   color: var(--text-main, #f8fafc);
 }
 .mmb svg {
@@ -1643,7 +1810,7 @@ body.lm .nav-login-btn:hover {
 .mobile-bottom-nav {
   display: none;
 }
-@media (max-width: 1100px) {
+@media (max-width: 1024px) {
   .top-nav {
     top: 0 !important;
     left: 0 !important;
@@ -1654,9 +1821,9 @@ body.lm .nav-login-btn:hover {
     padding: 10px 18px !important;
     border: 1px solid transparent !important;
     border-bottom: 1px solid var(--border-light, rgba(255, 255, 255, 0.1)) !important;
-    background: var(--nav-bg, rgba(7, 10, 20, 0.88)) !important;
-    backdrop-filter: blur(16px) saturate(160%) !important;
-    -webkit-backdrop-filter: blur(16px) saturate(160%) !important;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.03) 22%, rgba(12, 17, 32, 0.88) 68%, rgba(6, 9, 18, 0.96) 100%) !important;
+    backdrop-filter: blur(24px) saturate(130%) contrast(102%) brightness(1.05) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(130%) contrast(102%) brightness(1.05) !important;
     will-change: transform, box-shadow;
     transform: translateZ(0);
     transition:
@@ -1679,17 +1846,17 @@ body.lm .nav-login-btn:hover {
     right: 0 !important;
     border-radius: 999px !important;
     padding: 10px 18px !important;
-    border: 1px solid rgba(255, 255, 255, 0.22) !important;
-    border-top: 1.5px solid rgba(255, 255, 255, 0.70) !important;
+    border: 1px solid rgba(255, 255, 255, 0.20) !important;
+    border-top: 1.5px solid rgba(255, 255, 255, 0.72) !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.04) 28%, rgba(14, 20, 34, 0.65) 72%, rgba(7, 10, 20, 0.85) 100%) !important;
-    backdrop-filter: blur(20px) saturate(190%) contrast(105%) brightness(1.08) !important;
-    -webkit-backdrop-filter: blur(20px) saturate(190%) contrast(105%) brightness(1.08) !important;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.035) 22%, rgba(13, 19, 36, 0.84) 68%, rgba(6, 9, 18, 0.95) 100%) !important;
+    backdrop-filter: blur(26px) saturate(125%) contrast(102%) brightness(1.04) !important;
+    -webkit-backdrop-filter: blur(26px) saturate(125%) contrast(102%) brightness(1.04) !important;
     box-shadow:
       0 18px 40px -8px rgba(0, 0, 0, 0.65),
       0 4px 14px -2px rgba(0, 0, 0, 0.35),
-      0 0 24px -4px rgba(242, 184, 75, 0.12),
-      inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.55),
+      0 0 24px -4px rgba(245, 158, 11, 0.10),
+      inset 0 1.5px 2px 0 rgba(255, 255, 255, 0.65),
       inset 0 -1px 2px 0 rgba(0, 0, 0, 0.35),
       inset 0 0 0 1px rgba(255, 255, 255, 0.10) !important;
   }
@@ -2001,7 +2168,7 @@ body.lm .site-footer {
   height: 550px;
   top: -100px;
   left: 10%;
-  background: radial-gradient(circle, rgba(94, 212, 245, 0.55), rgba(94, 212, 245, 0));
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.32), rgba(245, 158, 11, 0));
   animation-duration: 25s;
 }
 
@@ -2010,7 +2177,7 @@ body.lm .site-footer {
   height: 650px;
   top: 30%;
   right: 5%;
-  background: radial-gradient(circle, rgba(184, 155, 255, 0.45), rgba(184, 155, 255, 0));
+  background: radial-gradient(circle, rgba(30, 58, 138, 0.28), rgba(30, 58, 138, 0));
   animation-duration: 28s;
   animation-delay: -7s;
 }
@@ -2020,7 +2187,7 @@ body.lm .site-footer {
   height: 500px;
   bottom: 5%;
   left: 20%;
-  background: radial-gradient(circle, rgba(0, 240, 204, 0.4), rgba(0, 240, 204, 0));
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.24), rgba(16, 185, 129, 0));
   animation-duration: 20s;
   animation-delay: -14s;
 }
@@ -2105,7 +2272,7 @@ body.lm .col-ambient-spotlight {
   width: 38px !important;
   height: 38px !important;
   min-width: 38px;
-  border-radius: 10px !important;
+  border-radius: 12px !important;
   object-fit: contain;
   background: transparent !important;
   box-shadow: none !important;
@@ -2130,58 +2297,79 @@ body.lm .top-nav .brand-logo {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 14px !important;
+  gap: 6px !important;
   flex-wrap: nowrap !important;
   min-width: max-content;
 }
 
 .top-nav .nav-links .nav-link,
 .top-nav .nav-links .dropdown-btn {
-  display: flex !important;
+  display: inline-flex !important;
   align-items: center !important;
   gap: 6px !important;
-  padding: 0 !important;
-  border-radius: 0 !important;
+  padding: 6px 14px !important;
+  border-radius: 9999px !important;
   background: transparent !important;
   color: var(--text-muted, var(--dim)) !important;
   font-family: var(--sans) !important;
-  font-size: 0.95rem !important;
+  font-size: 0.92rem !important;
   font-weight: 600 !important;
   line-height: 1.2;
   white-space: nowrap;
+  position: relative;
+  transition: color 0.22s ease, background 0.22s ease, transform 0.2s ease, box-shadow 0.22s ease !important;
 }
 
 .top-nav .nav-links .nav-link svg,
-.top-nav .nav-links .dropdown-btn svg {
-  width: 18px !important;
-  height: 18px !important;
-  flex: 0 0 auto;
+.top-nav .nav-links .dropdown-btn svg:not(.darr) {
+  display: none !important;
+}
+
+.top-nav .nav-links > .nav-link:hover,
+.top-nav .nav-links .dropdown-btn:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: var(--page-theme, var(--ink, #ffffff)) !important;
+}
+
+.top-nav .nav-links > .nav-link.act,
+.top-nav .nav-links > .nav-link.active,
+.top-nav .nav-links .dropdown-btn.act,
+.top-nav .nav-links .dropdown.active .dropdown-btn {
+  background: rgba(242, 184, 75, 0.12) !important;
+  color: var(--signal, #f2b84b) !important;
+}
+
+body.lm .top-nav .nav-links > .nav-link:hover,
+body.lm .top-nav .nav-links .dropdown-btn:hover {
+  background: rgba(0, 0, 0, 0.05) !important;
+}
+
+body.lm .top-nav .nav-links > .nav-link.act,
+body.lm .top-nav .nav-links > .nav-link.active,
+body.lm .top-nav .nav-links .dropdown-btn.act,
+body.lm .top-nav .nav-links .dropdown.active .dropdown-btn {
+  background: rgba(194, 120, 3, 0.1) !important;
 }
 
 .top-nav .nav-links > .nav-link::after {
   content: '';
   position: absolute;
-  left: 0;
-  bottom: -7px;
-  width: 0;
-  height: 2px;
-  border-radius: 2px;
-  background: var(--page-theme);
-  transition: width 0.3s var(--ease);
-}
-
-.top-nav .nav-links > .nav-link:hover,
-.top-nav .nav-links > .nav-link.act,
-.top-nav .nav-links .dropdown-btn:hover,
-.top-nav .nav-links .dropdown-btn.act,
-.top-nav .nav-links .dropdown-content a.act {
-  color: var(--page-theme) !important;
-  background: transparent !important;
+  left: 14px !important;
+  right: 14px !important;
+  width: auto !important;
+  bottom: 2px !important;
+  height: 2px !important;
+  border-radius: 9999px !important;
+  background: var(--page-theme, var(--signal, #f2b84b)) !important;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.25s var(--ease);
 }
 
 .top-nav .nav-links > .nav-link:hover::after,
-.top-nav .nav-links > .nav-link.act::after {
-  width: 100%;
+.top-nav .nav-links > .nav-link.act::after,
+.top-nav .nav-links > .nav-link.active::after {
+  transform: scaleX(1) !important;
 }
 
 .top-nav .nav-actions {
@@ -2230,7 +2418,7 @@ body.lm .top-nav .brand-logo {
   padding: 9px 20px !important;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1024px) {
   .top-nav {
     position: fixed !important;
     top: 15px !important;
@@ -2336,7 +2524,7 @@ body.nav-lock .bmc-floating-badge {
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0;
+  opacity: 0.75;
   transition: opacity 0.2s ease;
   box-shadow: 0 2px 6px rgba(0,0,0,0.35);
 }
@@ -2351,7 +2539,7 @@ body.nav-lock .bmc-floating-badge {
   display: block;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1024px) {
   .bmc-floating-badge {
     bottom: calc(76px + env(safe-area-inset-bottom, 0px));
     right: 14px;
@@ -2452,6 +2640,8 @@ body.lm .col-bottom-bar .bbar-item.act svg {
 body:has(.mo.open) .bmc-floating-badge,
 body:has(.col-auth-mo.open) .bmc-floating-badge,
 body:has(#colAppPopup.open) .bmc-floating-badge,
+.col-cmd-modal.is-open ~ .bmc-floating-badge,
+body:has(.col-cmd-modal.is-open) .bmc-floating-badge,
 body.modal-lock .bmc-floating-badge {
   opacity: 0 !important;
   pointer-events: none !important;
@@ -2465,6 +2655,7 @@ body.modal-lock .bmc-floating-badge {
 /* 1. Desktop Dropdown Alignment & Accessible Hover/Focus-Within */
 @media (min-width: 901px) {
   .dropdown-content a {
+  border-radius: 12px !important;
     justify-content: flex-start !important;
     gap: 12px !important;
   }
@@ -2484,9 +2675,7 @@ body.modal-lock .bmc-floating-badge {
   body.lm .dropdown:focus-within .dropdown-btn {
     color: var(--signal, #c27803) !important;
   }
-  .dropdown:hover .dropdown-btn span,
   .dropdown:hover .dropdown-btn .darr,
-  .dropdown:focus-within .dropdown-btn span,
   .dropdown:focus-within .dropdown-btn .darr {
     transform: rotate(180deg) !important;
   }
@@ -2504,11 +2693,23 @@ body.modal-lock .bmc-floating-badge {
     max-width: min(96vw, 1540px) !important;
     padding: 8px 32px 8px 22px !important;
     border-radius: 999px !important;
-    border: 1px solid transparent !important;
-    background: transparent !important;
-    /* Remove direct backdrop-filter so it doesn't double-stack with ::before */
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
+    border: 1px solid rgba(255, 255, 255, 0.16) !important;
+    border-top: 1.5px solid rgba(255, 255, 255, 0.65) !important;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.12) 0%,
+      rgba(255, 255, 255, 0.03) 22%,
+      rgba(12, 17, 32, 0.88) 68%,
+      rgba(6, 9, 18, 0.96) 100%
+    ) !important;
+    backdrop-filter: blur(24px) saturate(130%) brightness(1.05) contrast(102%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(130%) brightness(1.05) contrast(102%) !important;
+    box-shadow:
+      0 20px 48px -10px rgba(0, 0, 0, 0.45),
+      0 2px 6px rgba(0, 0, 0, 0.2),
+      0 0 24px -4px rgba(245, 158, 11, 0.08),
+      inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.65),
+      inset 0 -1px 1px 0 rgba(0, 0, 0, 0.25) !important;
     will-change: transform;
     transform: translate3d(0, 0, 0);
     transition:
@@ -2517,18 +2718,9 @@ body.modal-lock .bmc-floating-badge {
       box-shadow 0.32s cubic-bezier(0.16, 1, 0.3, 1) !important;
   }
 
-  /* Single compositor-isolated blur layer */
+  /* Single compositor-isolated blur layer fallback */
   .top-nav::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: var(--nav-bg, rgba(7, 10, 20, 0.86));
-    backdrop-filter: blur(12px) saturate(140%);
-    -webkit-backdrop-filter: blur(12px) saturate(140%);
-    z-index: -1;
-    pointer-events: none;
-    transition: background 0.25s ease;
+    display: none !important;
   }
 
   /* Remove infinite sheen animation that forces continuous repainting */
@@ -2539,19 +2731,27 @@ body.modal-lock .bmc-floating-badge {
   /* Pill state uses GPU transform (translate3d) instead of animating width/top */
   .top-nav.s {
     transform: translate3d(0, 12px, 0) scale(0.985) !important;
-    border: 1px solid rgba(255, 255, 255, 0.22) !important;
-    border-top: 1.5px solid rgba(255, 255, 255, 0.65) !important;
-    box-shadow:
-      0 20px 40px -12px rgba(0, 0, 0, 0.65),
-      inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.45) !important;
-  }
-
-  .top-nav.s::before {
     background: linear-gradient(
       180deg,
       rgba(255, 255, 255, 0.14) 0%,
-      rgba(14, 20, 34, 0.78) 100%
-    );
+      rgba(255, 255, 255, 0.035) 22%,
+      rgba(13, 19, 36, 0.84) 68%,
+      rgba(6, 9, 18, 0.95) 100%
+    ) !important;
+    backdrop-filter: blur(26px) saturate(125%) brightness(1.04) contrast(102%) !important;
+    -webkit-backdrop-filter: blur(26px) saturate(125%) brightness(1.04) contrast(102%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.20) !important;
+    border-top: 1.5px solid rgba(255, 255, 255, 0.72) !important;
+    box-shadow:
+      0 20px 48px -10px rgba(0, 0, 0, 0.65),
+      0 2px 6px rgba(0, 0, 0, 0.25),
+      0 0 24px -4px rgba(245, 158, 11, 0.10),
+      inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.65),
+      inset 0 -1px 1px 0 rgba(0, 0, 0, 0.35) !important;
+  }
+
+  .top-nav.s::before {
+    display: none !important;
   }
 
   .top-nav.s .brand-logo {
@@ -2622,4 +2822,208 @@ body.lm .col-skeleton {
 @keyframes colSkeletonShimmer {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
+}
+
+/* Symmetrical Category Filter & Single-Line Capsule Track */
+.cat-filter-track {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-wrap: nowrap !important;
+  overflow-x: auto !important;
+  scrollbar-width: none !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+.cat-filter-track::-webkit-scrollbar {
+  display: none !important;
+}
+
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PREMIUM SMOOTH ROUNDED OUTLINES & PILL ACCENTS (WCAG AAA FOCUS ACCESSIBILITY)
+   ═══════════════════════════════════════════════════════════════════════════ */
+:focus-visible {
+  outline: 2px solid var(--signal, #f2b84b) !important;
+  outline-offset: 3px !important;
+  border-radius: inherit;
+}
+
+.top-nav .nav-links .nav-link:focus-visible,
+.top-nav .nav-links .dropdown-btn:focus-visible,
+.nav-link:focus-visible,
+.dropdown-btn:focus-visible,
+.nav-cmd-trigger:focus-visible,
+.nav-login-btn:focus-visible,
+.nav-dl-btn:focus-visible,
+.nav-user-profile:focus-visible,
+.hz-toggle:focus-visible,
+.mmb:focus-visible,
+.btn-p:focus-visible,
+.btn-g:focus-visible,
+.btn-hero:focus-visible,
+.pill-btn:focus-visible,
+.ofc-pill:focus-visible,
+.bbar-item:focus-visible {
+  outline: 2px solid var(--signal, #f2b84b) !important;
+  outline-offset: 3px !important;
+  border-radius: 9999px !important;
+}
+
+.dropdown-content a:focus-visible,
+.col-cmd-item:focus-visible {
+  outline: 2px solid var(--signal, #f2b84b) !important;
+  outline-offset: 2px !important;
+  border-radius: 12px !important;
+}
+
+/* Enhanced rounding for command palette and skeletons */
+.col-cmd-box {
+  border-radius: 24px !important;
+}
+.col-cmd-input {
+  border-radius: 14px !important;
+}
+.col-cmd-item {
+  border-radius: 14px !important;
+}
+.col-cmd-badge {
+  border-radius: 9999px !important;
+}
+.col-skeleton {
+  border-radius: 9999px !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HIGH-CONTRAST, HIGH-VISIBILITY PROJECT BADGES & TAGS (WCAG AAA)
+   ═══════════════════════════════════════════════════════════════════════════ */
+.badge {
+  font-family: var(--mono) !important;
+  font-size: 0.74rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: none !important;
+  padding: 6px 14px !important;
+  border-radius: 9999px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  line-height: 1.2 !important;
+  z-index: 10 !important;
+  position: absolute !important;
+  top: 14px !important;
+  right: 14px !important;
+}
+
+/* Co-Flagship (Solar System 3D) - Luminous High-Contrast Warm Amber Gold */
+.badge.bflag,
+.badge.bflag-co,
+.pc[href="solar"] .badge,
+.apple-glass .badge.bflag-co,
+.apple-glass .badge.bflag,
+.is-iphone .badge.bflag-co,
+.is-iphone .badge.bflag {
+  background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+  color: #040810 !important;
+  font-weight: 800 !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 0 4px 20px rgba(245, 158, 11, 0.55), inset 0 1px 1.5px rgba(255, 255, 255, 0.6) !important;
+  text-shadow: none !important;
+}
+
+/* Primary Flagship (ATI 1.4) - Luminous High-Contrast Electric Cyan */
+.badge.bflag-prime,
+.badge.bflag.bflag-prime,
+.pc[href="ati"] .badge,
+.apple-glass .badge.bflag-prime,
+.is-iphone .badge.bflag-prime {
+  background: linear-gradient(135deg, #00f0ff, #0284c7) !important;
+  color: #040810 !important;
+  font-weight: 800 !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 0 4px 20px rgba(0, 240, 255, 0.55), inset 0 1px 1.5px rgba(255, 255, 255, 0.6) !important;
+  text-shadow: none !important;
+}
+
+/* Quest RPG (Canvas 2D Engine) - Luminous Emerald Glass */
+.badge.bflag-rpg,
+.pc[href="rpg"] .badge,
+.apple-glass .pc[href="rpg"] .badge,
+.is-iphone .pc[href="rpg"] .badge {
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.55), inset 0 1px 1.5px rgba(255, 255, 255, 0.6) !important;
+  text-shadow: none !important;
+}
+body.lm .badge.bflag-rpg,
+body.lm .pc[href="rpg"] .badge {
+  background: linear-gradient(135deg, #059669, #047857) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(5, 150, 105, 0.35), inset 0 1px 1.5px rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Other Project Category Badges (.badge.bp) - High-Vibrancy Neon Tint Glass */
+.badge.bp,
+.apple-glass .badge.bp,
+.is-iphone .badge.bp {
+  font-weight: 800 !important;
+  border-radius: 9999px !important;
+  padding: 5px 13px !important;
+  font-size: 0.72rem !important;
+  letter-spacing: 0.08em !important;
+}
+
+/* Bottom Card Tags (.ptags .tag) - High Contrast & Rounded Pills */
+.ptags {
+  display: flex !important;
+  gap: 8px !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+}
+
+.tag,
+.ptags .tag,
+.apple-glass .ptags .tag,
+.is-iphone .ptags .tag {
+  font-family: var(--mono) !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: none !important;
+  color: #f1f5f9 !important;
+  padding: 5px 12px !important;
+  border-radius: 9999px !important;
+  background: rgba(255, 255, 255, 0.09) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25) !important;
+  transition: all 0.22s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  line-height: 1.2 !important;
+}
+
+.pc:hover .tag,
+.pc:hover .ptags .tag,
+.apple-glass .pc:hover .ptags .tag,
+.is-iphone .pc:hover .ptags .tag {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.16) !important;
+  border-color: rgba(242, 184, 75, 0.55) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* Light mode for tags and badges */
+body.lm .tag,
+body.lm .ptags .tag {
+  color: #0f172a !important;
+  background: rgba(0, 0, 0, 0.07) !important;
+  border: 1px solid rgba(0, 0, 0, 0.16) !important;
+}
+body.lm .pc:hover .tag,
+body.lm .pc:hover .ptags .tag {
+  color: #000000 !important;
+  background: rgba(0, 0, 0, 0.12) !important;
+  border-color: rgba(194, 120, 3, 0.6) !important;
 }

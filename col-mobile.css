@@ -82,9 +82,9 @@ code {
 }
 
 /* ─────────────────────────────────────────────────────────────────
-   2. MOBILE NAVIGATION & DRAWER (<= 1100px)
+   2. MOBILE NAVIGATION & DRAWER (<= 1024px)
    ───────────────────────────────────────────────────────────────── */
-@media (max-width: 1100px) {
+@media (max-width: 1024px) {
   /* Hamburger button */
   .mmb {
     display: flex !important;
@@ -378,10 +378,10 @@ code {
     stroke-width: 2 !important;
   }
   .cmd-accordion.active .cmd-accordion-btn svg {
-    stroke: var(--teal, #00f0cc) !important;
+    stroke: var(--signal) !important;
   }
   .cmd-accordion.active .cmd-accordion-btn {
-    color: var(--teal, #00f0cc) !important;
+    color: var(--signal) !important;
   }
   .cmd-acc-arrow {
     margin-left: auto !important;
@@ -391,7 +391,7 @@ code {
   }
   .cmd-accordion.active .cmd-acc-arrow {
     transform: rotate(180deg) !important;
-    color: var(--teal, #00f0cc) !important;
+    color: var(--signal) !important;
   }
   .cmd-accordion-list {
     max-height: 0 !important;
@@ -620,7 +620,7 @@ code {
   }
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1024px) {
 
   /* ─────────────────────────────────────────────────────────────────
      3. MOBILE FLOATING BOTTOM THUMB BAR (PERSISTENT ON SCROLL)
@@ -801,14 +801,13 @@ code {
   }
   .hcta,
   .hero-cta {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
+    display: flex !important;
+    flex-direction: column !important;
     gap: 10px !important;
     width: 100% !important;
     margin-top: 18px !important;
   }
   .hcta .btn-p {
-    grid-column: 1 / -1 !important;
     width: 100% !important;
     min-height: 48px !important;
     padding: 12px 20px !important;
@@ -817,26 +816,58 @@ code {
     justify-content: center !important;
     white-space: nowrap !important;
   }
-  .hcta .btn-g:not(.mobile-dl) {
+  .hcta .btn-g {
     width: 100% !important;
     min-height: 46px !important;
-    padding: 10px 10px !important;
-    font-size: 0.84rem !important;
+    padding: 12px 16px !important;
+    font-size: 0.88rem !important;
     border-radius: 24px !important;
     justify-content: center !important;
     text-align: center !important;
     white-space: nowrap !important;
   }
-  .hcta .mobile-dl,
-  .btn-download,
-  .btn-demo {
-    grid-column: 1 / -1 !important;
+  .hcta .hero-cmd-pill {
     width: 100% !important;
     min-height: 48px !important;
-    padding: 12px 16px !important;
-    font-size: 0.9rem !important;
-    border-radius: 24px !important;
+    height: 48px !important;
+    padding: 0 16px !important;
+    display: inline-flex !important;
+    align-items: center !important;
     justify-content: center !important;
+    gap: 8px !important;
+    border-radius: 24px !important;
+    box-sizing: border-box !important;
+    background: rgba(14, 20, 36, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  }
+  .hcta .hero-cmd-pill svg {
+    width: 16px !important;
+    height: 16px !important;
+    min-width: 16px !important;
+    min-height: 16px !important;
+    max-width: 16px !important;
+    max-height: 16px !important;
+    flex-shrink: 0 !important;
+    stroke: var(--signal, #f2b84b) !important;
+  }
+  .hcta .hero-cmd-pill .hcp-label {
+    font-size: 0.86rem !important;
+    color: var(--ink, #ffffff) !important;
+    white-space: nowrap !important;
+  }
+  .hcta .hero-cmd-pill .hcp-kbd {
+    font-size: 0.65rem !important;
+    padding: 2px 6px !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    border-radius: 5px !important;
+  }
+  .hero {
+    padding-bottom: 96px !important;
+  }
+  .bmc-floating-badge {
+    bottom: 82px !important;
+    right: 14px !important;
   }
   .sci,
   .scl,
@@ -867,9 +898,9 @@ code {
     gap: 12px !important;
   }
 
-  /* Footer on mobile */
-  .sf {
-    padding: 32px 20px max(24px, env(safe-area-inset-bottom, 0px)) !important;
+  /* Footer on mobile - provide generous 120px clearance for both the floating mobile nav bar and the Buy Me A Coffee badge */
+  .sf, .site-footer {
+    padding: 32px 20px calc(120px + env(safe-area-inset-bottom, 0px)) !important;
   }
   .fi {
     flex-direction: column !important;

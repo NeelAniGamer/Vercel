@@ -28,14 +28,23 @@
 
   function getDailyBonusData() {
     try {
+      const fromCookie = window.ColCookie ? window.ColCookie.get(STORAGE_KEYS.DAILY_BONUS) : null;
+      if (fromCookie && typeof fromCookie === 'object') {return fromCookie;}
       const raw = localStorage.getItem(STORAGE_KEYS.DAILY_BONUS);
-      if (raw) {return JSON.parse(raw);}
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (window.ColCookie) { try { window.ColCookie.set(STORAGE_KEYS.DAILY_BONUS, parsed, 365); } catch (_ck) {} }
+        return parsed;
+      }
     } catch (e) {}
     return { lastClaim: 0, streak: 0 };
   }
 
   function saveDailyBonusData(data) {
-    try { localStorage.setItem(STORAGE_KEYS.DAILY_BONUS, JSON.stringify(data)); } catch (e) {}
+    try {
+      if (window.ColCookie) { try { window.ColCookie.set(STORAGE_KEYS.DAILY_BONUS, data, 365); } catch (_ck) {} }
+      localStorage.setItem(STORAGE_KEYS.DAILY_BONUS, JSON.stringify(data));
+    } catch (e) {}
   }
 
 
@@ -205,6 +214,12 @@
     };
 
     try {
+      if (window.ColCookie) {
+        try {
+          window.ColCookie.set(STORAGE_KEYS.LAST_PAGE, state, 30);
+          window.ColCookie.set(STORAGE_KEYS.SESSION_TIMESTAMP, timestamp.toString(), 30);
+        } catch (_ck) {}
+      }
       localStorage.setItem(STORAGE_KEYS.LAST_PAGE, JSON.stringify(state));
       localStorage.setItem(STORAGE_KEYS.SESSION_TIMESTAMP, timestamp.toString());
     } catch (e) {
@@ -214,11 +229,14 @@
 
   function loadSessionState() {
     try {
-      const raw = localStorage.getItem(STORAGE_KEYS.LAST_PAGE);
-      if (!raw) {return null;}
-      const state = JSON.parse(raw);
+      let state = window.ColCookie ? window.ColCookie.get(STORAGE_KEYS.LAST_PAGE) : null;
+      if (!state) {
+        const raw = localStorage.getItem(STORAGE_KEYS.LAST_PAGE);
+        if (raw) state = JSON.parse(raw);
+      }
+      if (!state) {return null;}
 
-      const sessionTime = parseInt(localStorage.getItem(STORAGE_KEYS.SESSION_TIMESTAMP) || '0', 10);
+      const sessionTime = parseInt((window.ColCookie ? window.ColCookie.get(STORAGE_KEYS.SESSION_TIMESTAMP) : null) || localStorage.getItem(STORAGE_KEYS.SESSION_TIMESTAMP) || '0', 10);
       const now = Date.now();
       const MAX_SESSION_AGE = 7 * 24 * 60 * 60 * 1000;
 
@@ -237,6 +255,7 @@
   function clearSessionState() {
     Object.values(STORAGE_KEYS).forEach(key => {
       if (key !== STORAGE_KEYS.USER_PROFILE && key !== STORAGE_KEYS.GAME_PROGRESS) {
+        if (window.ColCookie) { try { window.ColCookie.remove(key); } catch (_ck) {} }
         localStorage.removeItem(key);
       }
     });

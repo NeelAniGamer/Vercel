@@ -285,13 +285,19 @@
       .dropdown-btn.act {
         color: var(--primary);
       }
-      .dropdown-btn span {
-        font-size: 0.7rem;
-        transition: transform 0.3s ease;
-      }
-      .dropdown.active .dropdown-btn span {
-        transform: rotate(180deg);
-      }
+      .dropdown-btn > span:not(.darr) {
+  display: inline-block;
+  transform: none !important;
+  font-size: inherit;
+}
+.dropdown-btn .darr {
+  font-size: 0.7rem;
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+.dropdown.active .dropdown-btn .darr {
+  transform: rotate(180deg);
+}
       .dropdown-content {
         display: flex;
         flex-direction: column;
@@ -2517,6 +2523,7 @@
           <a href="making">Making</a>
           <a href="privacy">Privacy</a>
           <a href="terms">Terms</a>
+          <a href="feedback">Contact Us</a>
           <a href="feedback">Feedback</a>
           <a href="download">Downloads</a>
         </div>

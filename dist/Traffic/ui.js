@@ -18,6 +18,20 @@ window.save = async function () {
     if (sObj) {
       localStorage.setItem('mth4', JSON.stringify(sObj))
       localStorage.setItem('traffic_save', JSON.stringify(sObj))
+      if (window.ColCookie) {
+        try {
+          const stats = {
+            xp: sObj.xp || 0,
+            coins: sObj.coins || 0,
+            stars: sObj.stars || 0,
+            streak: sObj.streak || 0,
+            vehicle: sObj.vehicle || 'Car',
+            currentLevel: sObj.currentLevel || sObj.level || 1,
+            updatedAt: Date.now()
+          }
+          window.ColCookie.set('traffic_stats', stats, 365)
+        } catch (_ck) {}
+      }
       if (window.supabaseClient && window.colUser) {
         window.supabaseClient.auth.updateUser({ data: { progress: sObj } }).catch(() => {})
       }
@@ -944,7 +958,13 @@ var ui = window.ui = Object.assign(window.ui || {}, {
     save()
     
 
-    const localUser = (() => { try { return JSON.parse(localStorage.getItem('traffic_local_user') || '{}') || {}; } catch (e) { return {}; } })()
+    const localUser = (() => {
+      try {
+        return (window.ColUserData ? window.ColUserData.getUser() : null) ||
+               (window.ColCookie ? window.ColCookie.get('traffic_local_user') : null) ||
+               JSON.parse(localStorage.getItem('traffic_local_user') || '{}') || {};
+      } catch (e) { return {}; }
+    })()
     const safeTrafficProfile = {
       id: String(localUser.id || 'local_' + Date.now()),
       name: String(localUser.name || n || ''),
@@ -958,6 +978,11 @@ var ui = window.ui = Object.assign(window.ui || {}, {
     // safeTrafficProfile, so the heuristic match on the `username` property is a false positive.
     // codeql[js/clear-text-storage-of-sensitive-data]
     localStorage.setItem('traffic_local_user', JSON.stringify(safeTrafficProfile))
+    if (window.ColUserData) {
+      try { window.ColUserData.setLocalUser(safeTrafficProfile); } catch (_ck) {}
+    } else if (window.ColCookie) {
+      try { window.ColCookie.set('traffic_local_user', safeTrafficProfile, 365); } catch (_ck) {}
+    }
     
 
     if (window.supabaseClient && window.colUser) {

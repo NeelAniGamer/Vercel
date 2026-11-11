@@ -549,11 +549,14 @@
       window.openMobileDrawer = openDrawer
       window.closeMobileDrawer = closeDrawer
 
-      mmb.addEventListener('click', function () {
-        const d = getOrCreateMobileDrawer()
-        if (d.classList.contains('active')) {closeDrawer()}
-        else {openDrawer()}
-      })
+      if (mmb && !mmb.dataset.mmbBound) {
+        mmb.dataset.mmbBound = 'true'
+        mmb.addEventListener('click', function () {
+          const d = getOrCreateMobileDrawer()
+          if (d.classList.contains('active')) {closeDrawer()}
+          else {openDrawer()}
+        })
+      }
 
       // Android Native App detection
       if (/ClassOfLearnersApp/i.test(navigator.userAgent)) {
@@ -1035,10 +1038,326 @@ function initBmcBadge() {
 }
 initBmcBadge()
 
+// Universal Cookie & Data Management Subsystem
+;(function (global) {
+  if (global.ColCookie && global.ColUserData) return
+
+  var ColCookie = {
+    set: function (name, value, days, options) {
+      if (!name) return false
+      options = options || {}
+      var d = typeof days === 'number' ? days : 365
+      var expires = ''
+      if (d !== 0) {
+        var date = new Date()
+        date.setTime(date.getTime() + (d * 24 * 60 * 60 * 1000))
+        expires = '; expires=' + date.toUTCString()
+      }
+      var isSecure = (options.secure !== undefined ? options.secure : (location.protocol === 'https:')) ? '; Secure' : ''
+      var sameSite = options.sameSite ? '; SameSite=' + options.sameSite : '; SameSite=Lax'
+      var path = options.path ? '; path=' + options.path : '; path=/'
+
+      var rawVal
+      try {
+        rawVal = typeof value === 'object' && value !== null ? JSON.stringify(value) : String(value)
+      } catch (e) {
+        rawVal = String(value)
+      }
+
+      var cookieStr = encodeURIComponent(name) + '=' + encodeURIComponent(rawVal) + expires + path + sameSite + isSecure
+      try {
+        document.cookie = cookieStr
+        try {
+          if (typeof localStorage !== 'undefined') {
+            localStorage.setItem('col_ck_' + name, rawVal)
+          }
+        } catch (_ls) {}
+        return true
+      } catch (e) {
+        try {
+          if (typeof localStorage !== 'undefined') {
+            localStorage.setItem('col_ck_' + name, rawVal)
+            return true
+          }
+        } catch (_err) {}
+        return false
+      }
+    },
+
+    get: function (name, fallback) {
+      if (fallback === undefined) fallback = null
+      if (!name) return fallback
+      try {
+        var prefix = encodeURIComponent(name) + '='
+        var cookies = (document.cookie || '').split(';')
+        for (var i = 0; i < cookies.length; i++) {
+          var c = cookies[i].trim()
+          if (c.indexOf(prefix) === 0) {
+            var raw = decodeURIComponent(c.substring(prefix.length))
+            try {
+              return JSON.parse(raw)
+            } catch (_) {
+              return raw
+            }
+          }
+        }
+      } catch (e) {}
+
+      try {
+        if (typeof localStorage !== 'undefined') {
+          var lsVal = localStorage.getItem('col_ck_' + name)
+          if (lsVal !== null) {
+            try {
+              return JSON.parse(lsVal)
+            } catch (_) {
+              return lsVal
+            }
+          }
+        }
+      } catch (_ls) {}
+
+      return fallback
+    },
+
+    has: function (name) {
+      return this.get(name) !== null
+    },
+
+    remove: function (name, path) {
+      if (!name) return
+      path = path || '/'
+      try {
+        document.cookie = encodeURIComponent(name) + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=' + path + '; SameSite=Lax'
+      } catch (e) {}
+      try {
+        if (typeof localStorage !== 'undefined') {
+          localStorage.removeItem('col_ck_' + name)
+        }
+      } catch (_ls) {}
+    },
+
+    getAll: function () {
+      var map = {}
+      try {
+        var cookies = (document.cookie || '').split(';')
+        for (var i = 0; i < cookies.length; i++) {
+          var c = cookies[i].trim()
+          if (!c) continue
+          var eq = c.indexOf('=')
+          if (eq > 0) {
+            var k = decodeURIComponent(c.substring(0, eq))
+            var v = decodeURIComponent(c.substring(eq + 1))
+            try {
+              map[k] = JSON.parse(v)
+            } catch (_) {
+              map[k] = v
+            }
+          }
+        }
+      } catch (e) {}
+      return map
+    }
+  }
+
+  var ColUserData = {
+    getUser: function () {
+      var online = ColCookie.get('col_user')
+      if (online && (online.name || online.username || online.email)) return online
+      var local = ColCookie.get('col_local_user')
+      if (local && (local.name || local.username)) return local
+      try {
+        if (typeof localStorage !== 'undefined') {
+          var raw = localStorage.getItem('col_active_local_user') || localStorage.getItem('traffic_local_user')
+          if (raw) return JSON.parse(raw)
+        }
+      } catch (e) {}
+      return null
+    },
+
+    setUser: function (user) {
+      if (!user) return
+      var safe = {
+        id: user.id || null,
+        name: user.name || user.full_name || user.displayName || 'Learner',
+        username: user.username || null,
+        email: user.email ? String(user.email).toLowerCase() : null,
+        picture: user.picture || user.avatar_url || null,
+        role: user.role || 'learner',
+        lastActive: Date.now()
+      }
+      ColCookie.set('col_user', safe, 365)
+      ColCookie.set('col_user_hint', safe.name, 365)
+      try {
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('col_user', JSON.stringify(safe))
+        }
+      } catch (e) {}
+    },
+
+    setLocalUser: function (localUser) {
+      if (!localUser) return
+      var safe = {
+        id: localUser.id || ('local_' + Date.now()),
+        name: localUser.name || localUser.username || 'Guest Learner',
+        username: localUser.username || null,
+        vehicle: localUser.vehicle || 'Car',
+        age: localUser.age || 18,
+        language: localUser.language || 'en',
+        picture: localUser.picture || null,
+        isLocal: true,
+        lastActive: Date.now()
+      }
+      ColCookie.set('col_local_user', safe, 365)
+    },
+
+    clearUser: function () {
+      ColCookie.remove('col_user')
+      ColCookie.remove('col_user_hint')
+      try {
+        if (typeof localStorage !== 'undefined') {
+          localStorage.removeItem('col_user')
+        }
+      } catch (e) {}
+    },
+
+    clearLocalUser: function () {
+      ColCookie.remove('col_local_user')
+    },
+
+    getPref: function (key, defaultVal) {
+      if (defaultVal === undefined) defaultVal = null
+      var prefs = ColCookie.get('col_prefs') || {}
+      if (typeof prefs === 'object' && prefs !== null && key in prefs) {
+        return prefs[key]
+      }
+      var single = ColCookie.get('col_pref_' + key)
+      if (single !== null) return single
+      try {
+        if (typeof localStorage !== 'undefined') {
+          var ls = localStorage.getItem('col_pref_' + key)
+          if (ls !== null) return ls
+        }
+      } catch (e) {}
+      return defaultVal
+    },
+
+    setPref: function (key, value) {
+      if (!key) return
+      var prefs = ColCookie.get('col_prefs') || {}
+      if (typeof prefs !== 'object' || prefs === null) prefs = {}
+      prefs[key] = value
+      ColCookie.set('col_prefs', prefs, 365)
+      ColCookie.set('col_pref_' + key, value, 365)
+      try {
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('col_pref_' + key, typeof value === 'object' ? JSON.stringify(value) : String(value))
+        }
+      } catch (e) {}
+    },
+
+    getAllPrefs: function () {
+      var prefs = ColCookie.get('col_prefs') || {}
+      return typeof prefs === 'object' && prefs !== null ? prefs : {}
+    },
+
+    recordVisit: function () {
+      try {
+        var path = window.location.pathname || '/'
+        var title = document.title || 'Class Of Learners'
+        if (path.indexOf('login') !== -1 || path.indexOf('404') !== -1) return
+        var info = {
+          path: path,
+          title: title.split('—')[0].split('|')[0].trim(),
+          time: Date.now()
+        }
+        ColCookie.set('col_last_visit', info, 30)
+      } catch (e) {}
+    },
+
+    getLastVisit: function () {
+      return ColCookie.get('col_last_visit', null)
+    },
+
+    exportData: function () {
+      var data = {
+        exportedAt: new Date().toISOString(),
+        user: this.getUser(),
+        theme: ColCookie.get('theme') || 'dark',
+        preferences: this.getAllPrefs(),
+        lastVisit: this.getLastVisit()
+      }
+      return JSON.stringify(data, null, 2)
+    },
+
+    importData: function (source) {
+      try {
+        var data = typeof source === 'string' ? JSON.parse(source) : source
+        if (!data || typeof data !== 'object') return false
+        if (data.theme) {
+          ColCookie.set('theme', data.theme, 365)
+          if (typeof window.safeThemeSet === 'function') {
+            window.safeThemeSet(data.theme)
+          }
+        }
+        if (data.preferences && typeof data.preferences === 'object') {
+          for (var k in data.preferences) {
+            if (Object.prototype.hasOwnProperty.call(data.preferences, k)) {
+              this.setPref(k, data.preferences[k])
+            }
+          }
+        }
+        if (data.user && typeof data.user === 'object') {
+          this.setUser(data.user)
+        }
+        return true
+      } catch (e) {
+        console.warn('[ColUserData] Import failed:', e)
+        return false
+      }
+    },
+
+    clearAllData: function () {
+      ColCookie.remove('theme')
+      ColCookie.remove('col_user')
+      ColCookie.remove('col_user_hint')
+      ColCookie.remove('col_local_user')
+      ColCookie.remove('col_prefs')
+      ColCookie.remove('col_last_visit')
+      ColCookie.remove('liquid_glass')
+      ColCookie.remove('force_iphone')
+      try {
+        if (typeof localStorage !== 'undefined') {
+          localStorage.removeItem('col_user')
+          localStorage.removeItem('col_active_local_user')
+          localStorage.removeItem('traffic_local_user')
+        }
+      } catch (e) {}
+    }
+  }
+
+  global.ColCookie = ColCookie
+  global.ColUserData = ColUserData
+  global.ColStorage = ColCookie
+})(typeof window !== 'undefined' ? window : this)
+
+// Automatically record lesson/page visit for seamless resume
+if (window.ColUserData) {
+  try { window.ColUserData.recordVisit() } catch (e) {}
+}
+
 // Global canonical theme helpers for all pages
 window.safeThemeGet = function () {
   try {
-    return localStorage.getItem('theme')
+    var fromCookie = window.ColCookie ? window.ColCookie.get('theme') : null
+    if (fromCookie === 'light' || fromCookie === 'dark') {
+      try { localStorage.setItem('theme', fromCookie) } catch (_) {}
+      return fromCookie
+    }
+    var fromLs = localStorage.getItem('theme')
+    if (fromLs && window.ColCookie) {
+      window.ColCookie.set('theme', fromLs, 365)
+    }
+    return fromLs
   } catch (e) {
     return null
   }
@@ -1046,6 +1365,9 @@ window.safeThemeGet = function () {
 
 window.safeThemeSet = function (val) {
   try {
+    if (window.ColCookie) {
+      window.ColCookie.set('theme', val, 365)
+    }
     localStorage.setItem('theme', val)
   } catch (e) {}
 }
@@ -1064,7 +1386,7 @@ window.hzSync = function () {
   const tsck = document.getElementById('tsck')
   if (tsck) {tsck.checked = isLight}
   const meta = document.getElementById('themeMeta') || document.querySelector('meta[name="theme-color"]')
-  if (meta) {meta.setAttribute('content', isLight ? '#fafaf9' : '#070a14')}
+  if (meta) {meta.setAttribute('content', isLight ? '#F4F1EA' : '#121316')}
 }
 
 window.hzToggle = function () {
@@ -1121,31 +1443,20 @@ window.toggleTheme = function (el) {
   }
 })()
 
-// Silky 60 FPS Scroll Lock (Suppresses hover hit-testing & layout thrashing during scroll)
+// Smooth Scroll Performance: Passive window scroll flag without DOM tree invalidation
 ;(function () {
   let scrollTimeout = null
   window.addEventListener(
     'scroll',
     function () {
-      if (document.body && !document.body.classList.contains('is-scrolling')) {
-        document.body.classList.add('is-scrolling')
-      }
+      window.__isWindowScrolling = true
       clearTimeout(scrollTimeout)
       scrollTimeout = setTimeout(function () {
-        if (document.body) document.body.classList.remove('is-scrolling')
-      }, 100)
+        window.__isWindowScrolling = false
+      }, 80)
     },
     { passive: true }
   )
 })()
-
-// Auto-initialize Universal Navigation if col-nav.js is loaded
-if (typeof window.initColNavbar === 'function') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', window.initColNavbar)
-  } else {
-    window.initColNavbar()
-  }
-}
 
 

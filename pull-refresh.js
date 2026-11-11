@@ -33,9 +33,10 @@
     var forceIPhone = false
     var glassPref = null
     try {
-      glassPref = localStorage.getItem('liquid_glass')
+      glassPref = (window.ColCookie ? window.ColCookie.get('liquid_glass') : null) || localStorage.getItem('liquid_glass')
       forceIPhone =
         window.location.search.indexOf('iphone=1') !== -1 ||
+        (window.ColCookie ? window.ColCookie.get('force_iphone') === 'true' : false) ||
         localStorage.getItem('force_iphone') === 'true'
     } catch (e) {}
 
@@ -70,6 +71,10 @@
     var isCurrentlyOn = document.documentElement.classList.contains('apple-glass') || document.documentElement.classList.contains('is-iphone')
     var willEnable = typeof force === 'boolean' ? force : !isCurrentlyOn
     try {
+      if (window.ColCookie) {
+        window.ColCookie.set('force_iphone', willEnable ? 'true' : 'false', 365)
+        window.ColCookie.set('liquid_glass', willEnable ? 'true' : 'false', 365)
+      }
       localStorage.setItem('force_iphone', willEnable ? 'true' : 'false')
       localStorage.setItem('liquid_glass', willEnable ? 'true' : 'false')
     } catch (e) {}

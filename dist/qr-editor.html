@@ -107,7 +107,8 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<style>
+<link rel="stylesheet" href="col-ui.css?v=20260923-nav3">
+    <style>
 /* ---- EXACT UI THEME ---- */
 :root {
   --bg: #030712; --panel: rgba(17, 24, 39, 0.6); --panel-hover: rgba(31, 41, 55, 0.8);
@@ -612,7 +613,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   
   
 
-<link rel="stylesheet" href="col-ui.css?v=20260923-nav3">
 <script defer src="col-ui.js"></script>
 <script defer src="col-auth.js"></script>
 
@@ -1526,8 +1526,8 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 <script>
 // &mdash;&mdash;&mdash; SAFE LOCAL STORAGE &mdash;&mdash;&mdash;
 var Storage = {
-  get: function(key) { try { return localStorage.getItem(key); } catch(e) { return null; } },
-  set: function(key, val) { try { localStorage.setItem(key, val); return true; } catch(e) { return false; } }
+  get: function(key) { try { var ck = window.ColCookie ? window.ColCookie.get(key) : null; if (ck !== null) return ck; return localStorage.getItem(key); } catch(e) { return null; } },
+  set: function(key, val) { try { if (window.ColCookie) { window.ColCookie.set(key, val, 365); } localStorage.setItem(key, val); return true; } catch(e) { return false; } }
 };
 
 let qrInst=null, currentStep=1, selType='url', selFrame='none';
@@ -3166,7 +3166,8 @@ function updateScannability() {
             <a href="making">Making</a>
             <a href="privacy">Privacy</a>
             <a href="terms">Terms</a>
-            <a href="feedback">Feedback</a>
+            <a href="feedback">Contact Us</a>
+          <a href="feedback">Feedback</a>
             <a href="download">Downloads</a>
         </div>
         <div class="fc">&copy; 2026 Neel, Ansh, Aarush &amp; Yash Raj.</div>

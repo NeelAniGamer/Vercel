@@ -304,12 +304,16 @@
 
     // Mobile Hamburger trigger
     var mmb = navEl.querySelector('#mmb');
-    if (mmb) {
+    if (mmb && !mmb.dataset.mmbBound) {
+      mmb.dataset.mmbBound = 'true';
       mmb.addEventListener('click', function (e) {
         e.preventDefault();
         e.stopPropagation();
-        if (typeof window.openMobileDrawer === 'function') {
-          window.openMobileDrawer();
+        var drawer = document.getElementById('colMobileDrawer');
+        if (drawer && drawer.classList.contains('active')) {
+          if (typeof window.closeMobileDrawer === 'function') window.closeMobileDrawer();
+        } else {
+          if (typeof window.openMobileDrawer === 'function') window.openMobileDrawer();
         }
       });
     }
@@ -343,6 +347,9 @@
   function initColNavbar(customOptions) {
     var placeholder = document.getElementById('colNav');
     var existingNav = document.getElementById('topNav') || document.querySelector('.top-nav');
+    if (existingNav && existingNav.getAttribute('data-nav-ready') === 'true' && !customOptions) {
+      return existingNav;
+    }
     var target = placeholder || existingNav;
 
     if (!target) {
@@ -393,6 +400,7 @@
     navElement.innerHTML = renderNavbarHTML(config);
 
     wireNavbarInteractivity(navElement);
+    navElement.setAttribute('data-nav-ready', 'true');
 
     return navElement;
   }

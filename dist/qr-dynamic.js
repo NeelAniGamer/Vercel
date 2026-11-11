@@ -222,7 +222,10 @@
             changed = true;
           }
         });
-        if (changed) {localStorage.setItem('qrs_min', JSON.stringify(list));}
+        if (changed) {
+          localStorage.setItem('qrs_min', JSON.stringify(list));
+          if (typeof ColCookie !== 'undefined') { try { ColCookie.set('qrs_min', list, 365); } catch (_ck) {} }
+        }
       } catch (e) {}
     },
 
@@ -352,8 +355,14 @@
 
     visitorId: function () {
       try {
-        let v = localStorage.getItem('col_vid');
-        if (!v) { v = Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem('col_vid', v); }
+        let v = (typeof ColCookie !== 'undefined' ? ColCookie.get('col_vid') : null) || localStorage.getItem('col_vid');
+        if (!v) {
+          v = Math.random().toString(36).slice(2) + Date.now().toString(36);
+          if (typeof ColCookie !== 'undefined') ColCookie.set('col_vid', v, 365);
+          localStorage.setItem('col_vid', v);
+        } else if (typeof ColCookie !== 'undefined' && !ColCookie.has('col_vid')) {
+          ColCookie.set('col_vid', v, 365);
+        }
         return v;
       } catch (e) { return 'anon'; }
     },

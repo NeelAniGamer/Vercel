@@ -1,7 +1,7 @@
       // State Management
       let allCareers = [];
-      let favoriteList = JSON.parse(localStorage.getItem('fs_favorites') || '[]');
-      let compareList = JSON.parse(localStorage.getItem('fs_compare') || '[]');
+      let favoriteList = (typeof ColCookie !== 'undefined' ? ColCookie.get('fs_favorites') : null) || JSON.parse(localStorage.getItem('fs_favorites') || '[]');
+      let compareList = (typeof ColCookie !== 'undefined' ? ColCookie.get('fs_compare') : null) || JSON.parse(localStorage.getItem('fs_compare') || '[]');
       let activeSource = 'all'; // 'all', 'flagship', 'growth', 'ai', 'high_earning'
       let currentCat = 'all';
       let currentStream = 'all';
@@ -89,6 +89,7 @@
         } else {
           favoriteList.splice(idx, 1);
         }
+        if (typeof ColCookie !== 'undefined') { try { ColCookie.set('fs_favorites', favoriteList, 365); } catch(_ck) {} }
         localStorage.setItem('fs_favorites', JSON.stringify(favoriteList));
         updateNavCounts();
         renderCards();
@@ -129,6 +130,7 @@
         } else {
           compareList.splice(idx, 1);
         }
+        if (typeof ColCookie !== 'undefined') { try { ColCookie.set('fs_compare', compareList, 365); } catch(_ck) {} }
         localStorage.setItem('fs_compare', JSON.stringify(compareList));
         updateCompareDrawer();
         renderCards();

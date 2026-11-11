@@ -6949,7 +6949,7 @@
         // is deliberately NOT a sign-in signal: window.colUser is the only
         // authority for "signed in".
         const hasSession = !!window.colUser;
-        const hasSetup = localStorage.getItem('trafficSetupComplete') === 'true';
+        const hasSetup = (window.ColCookie ? window.ColCookie.get('trafficSetupComplete') === 'true' : false) || localStorage.getItem('trafficSetupComplete') === 'true';
         btn.textContent = (hasSession || hasSetup) ? 'Start Academy' : 'Get Started';
       }
 
@@ -6961,7 +6961,7 @@
         const hasSession = !!window.colUser;
         const localUser = (function() {
           try {
-            return JSON.parse(localStorage.getItem('traffic_local_user') || 'null');
+            return (window.ColUserData ? window.ColUserData.getUser() : null) || (window.ColCookie ? window.ColCookie.get('traffic_local_user') : null) || JSON.parse(localStorage.getItem('traffic_local_user') || 'null');
           } catch(e) { return null; }
         })();
 
@@ -7232,10 +7232,10 @@ function _onbComplete() {
         const vehDot = document.querySelector('.onb-dot[data-vehicle].selected');
         if (vehDot) {
           const vehicle = vehDot.dataset.vehicle;
-          localStorage.setItem('preferredVehicle', vehicle);
+          localStorage.setItem('preferredVehicle', vehicle); if (window.ColCookie) { try { window.ColCookie.set('preferredVehicle', vehicle, 365); } catch(_ck) {} }
         }
         
-        localStorage.setItem('onboardingComplete', '1')
+        localStorage.setItem('onboardingComplete', '1'); if (window.ColCookie) { try { window.ColCookie.set('onboardingComplete', '1', 365); } catch(_ck) {} }
         var ov = document.getElementById('onb-overlay')
         if (ov) { ov.classList.add('hidden'); setTimeout(function () { ov.style.display = 'none' }, 400) }
         if (typeof ui !== 'undefined' && ui && ui.init) ui.init()

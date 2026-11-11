@@ -305,12 +305,11 @@
           entry = DYNAMIC_QR.getByCode(code);
         }
 
-        // 3. Fallback: qrs_min in localStorage
+        // 3. Fallback: qrs_min in Cookie or localStorage
         if (!entry) {
           try {
-            const raw = localStorage.getItem('qrs_min');
-            if (raw) {
-              const list = JSON.parse(raw);
+            const list = (typeof ColCookie !== 'undefined' ? ColCookie.get('qrs_min') : null) || (localStorage.getItem('qrs_min') ? JSON.parse(localStorage.getItem('qrs_min')) : null);
+            if (list && Array.isArray(list)) {
               entry = list.find(q => q.shortCode === code || String(q.id) === String(code));
             }
           } catch(e) {}

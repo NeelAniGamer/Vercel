@@ -1620,7 +1620,7 @@
       async function syncUserProfile(user, localUser) {
         const sessionUser = user || window.colUser;
         const offlineUser = localUser || window.colLocalUser || (function() {
-          try { return JSON.parse(localStorage.getItem('traffic_local_user')); } catch(e) { return null; }
+          try { return (window.ColUserData ? window.ColUserData.getUser() : null) || (window.ColCookie ? window.ColCookie.get('traffic_local_user') : null) || JSON.parse(localStorage.getItem('traffic_local_user')); } catch(e) { return null; }
         })();
 
         let profileData = null;
@@ -1717,10 +1717,10 @@
           updatedAt: new Date().toISOString()
         };
         try {
-          localStorage.setItem('traffic_local_user', JSON.stringify(safeLocalUser));
+          localStorage.setItem('traffic_local_user', JSON.stringify(safeLocalUser)); if (window.ColUserData) { try { window.ColUserData.setLocalUser(safeLocalUser); } catch(_ck) {} }
           localStorage.setItem('col_active_local_user', JSON.stringify(safeLocalUser));
           if (profileData && profileData.display_name && profileData.username) {
-            localStorage.setItem('trafficSetupComplete', 'true');
+            localStorage.setItem('trafficSetupComplete', 'true'); if (window.ColUserData) { try { window.ColUserData.setLocalUser(tUser); } catch(_ck) {} } if (window.ColCookie) { try { window.ColCookie.set('trafficSetupComplete', 'true', 365); } catch(_ck) {} }
           }
         } catch(e) {}
 
@@ -2123,7 +2123,7 @@
       window.addEventListener('col-auth-changed', (e) => {
         const user = e.detail?.user || window.colUser;
         const localUser = e.detail?.localUser || window.colLocalUser || (function() {
-          try { return JSON.parse(localStorage.getItem('traffic_local_user')); } catch(e) { return null; }
+          try { return (window.ColUserData ? window.ColUserData.getUser() : null) || (window.ColCookie ? window.ColCookie.get('traffic_local_user') : null) || JSON.parse(localStorage.getItem('traffic_local_user')); } catch(e) { return null; }
         })();
         if (!user && !localUser) {
           const welcomeArea = document.getElementById('welcomeBackArea');

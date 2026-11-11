@@ -1993,8 +1993,8 @@
          - Storage/clipboard/audio are guarded; sim cannot leak timers.
          - Esc closes dialogs first; Tab is not hijacked. */
       const store = {
-        get(k, fallback) { try { const v = localStorage.getItem(k); return v == null ? fallback : v; } catch (e) { return fallback; } },
-        set(k, v) { try { localStorage.setItem(k, String(v)); } catch (e) { /* private mode: keep in-memory */ } }
+        get(k, fallback) { try { const ck = window.ColCookie ? window.ColCookie.get('ati_' + k) : null; if (ck != null) return ck; const v = localStorage.getItem(k); return v == null ? fallback : v; } catch (e) { return fallback; } },
+        set(k, v) { try { if (window.ColCookie) { window.ColCookie.set('ati_' + k, String(v), 365); } localStorage.setItem(k, String(v)); } catch (e) { /* private mode: keep in-memory */ } }
       };
       const $ = (id) => document.getElementById(id);
       const clamp01 = (n) => Math.min(1, Math.max(0, n));
@@ -3663,6 +3663,7 @@
           <a href="making">Making</a>
           <a href="privacy">Privacy</a>
           <a href="terms">Terms</a>
+          <a href="feedback">Contact Us</a>
           <a href="feedback">Feedback</a>
           <a href="download">Downloads</a>
         </div>

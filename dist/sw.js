@@ -1,5 +1,5 @@
-const CACHE_NAME = 'col-cache-v15'
-const SW_VERSION = '2026-11-06-v4'
+const CACHE_NAME = 'col-cache-v18'
+const SW_VERSION = '2026-11-10-v1'
 const OFFLINE_FALLBACK = '/home'
 const urlsToCache = [
   '/home',

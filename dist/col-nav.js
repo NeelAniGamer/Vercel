@@ -99,7 +99,7 @@
     {
       name: 'Terra3D Atlas',
       url: 'Terra3D/',
-      icon: '<circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />'
+      icon: '<circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />'
     },
     {
       name: 'Career Compass',
@@ -109,7 +109,7 @@
     {
       name: 'Database Logic DB',
       url: 'Database_Logic',
-      icon: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /><line x1="9" y1="7" x2="16" y2="7"/><line x1="9" y1="11" x2="14" y2="11" />'
+      icon: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /><line x1="9" y1="7" x2="16" y2="7" /><line x1="9" y1="11" x2="14" y2="11" />'
     },
     {
       name: 'CastFlow Studio',
@@ -304,12 +304,16 @@
 
     // Mobile Hamburger trigger
     var mmb = navEl.querySelector('#mmb');
-    if (mmb) {
+    if (mmb && !mmb.dataset.mmbBound) {
+      mmb.dataset.mmbBound = 'true';
       mmb.addEventListener('click', function (e) {
         e.preventDefault();
         e.stopPropagation();
-        if (typeof window.openMobileDrawer === 'function') {
-          window.openMobileDrawer();
+        var drawer = document.getElementById('colMobileDrawer');
+        if (drawer && drawer.classList.contains('active')) {
+          if (typeof window.closeMobileDrawer === 'function') window.closeMobileDrawer();
+        } else {
+          if (typeof window.openMobileDrawer === 'function') window.openMobileDrawer();
         }
       });
     }
@@ -343,9 +347,13 @@
   function initColNavbar(customOptions) {
     var placeholder = document.getElementById('colNav');
     var existingNav = document.getElementById('topNav') || document.querySelector('.top-nav');
+    if (existingNav && existingNav.getAttribute('data-nav-ready') === 'true' && !customOptions) {
+      return existingNav;
+    }
     var target = placeholder || existingNav;
 
     if (!target) {
+      // Create new nav at start of body if not found
       target = document.createElement('nav');
       target.className = 'top-nav';
       target.id = 'topNav';
@@ -392,13 +400,16 @@
     navElement.innerHTML = renderNavbarHTML(config);
 
     wireNavbarInteractivity(navElement);
+    navElement.setAttribute('data-nav-ready', 'true');
 
     return navElement;
   }
 
+  // Public API
   window.initColNavbar = initColNavbar;
   window.renderColNavbar = renderNavbarHTML;
 
+  // Auto-initialize on load
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () {
       initColNavbar();
