@@ -1361,3 +1361,67 @@ body.lm .site-footer {
 }
 
 .sf-pull-tab { display: none !important; width: 0 !important; height: 0 !important; margin: 0 !important; padding: 0 !important; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SCROLL JANK OPTIMIZATION & 120 FPS COMPOSITOR ISOLATION OVERRIDE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* 1. Eliminate duplicate backdrop-filter layer on Top Nav */
+.top-nav::before {
+  display: none !important;
+}
+
+/* 2. Replace expensive live backdrop-blur on scrolling cards with high-transmittance
+      crystalline gradients + specular borders (keeps exact VisionOS look at 120 FPS) */
+.apple-glass .pc,
+.apple-glass .vp-card,
+.apple-glass .arch-card,
+.is-iphone .pc,
+.is-iphone .vp-card,
+.is-iphone .arch-card {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: linear-gradient(
+    165deg,
+    rgba(22, 30, 52, 0.86) 0%,
+    rgba(12, 17, 32, 0.92) 55%,
+    rgba(8, 12, 24, 0.96) 100%
+  ) !important;
+}
+
+body.lm.apple-glass .pc,
+body.lm.apple-glass .vp-card,
+body.lm.apple-glass .arch-card {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.96) 0%,
+    rgba(248, 250, 252, 0.92) 100%
+  ) !important;
+}
+
+/* 3. Keep real backdrop-filter ONLY on fixed HUDs, Modals, and Command Palette */
+.top-nav,
+.orrery-dock,
+.node-inspector,
+.col-cmd-modal,
+.col-bottom-bar {
+  backdrop-filter: blur(18px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(160%) !important;
+}
+
+/* 4. Replace filter:blur(85px) orbs with pre-feathered radial gradients */
+.apple-glass-orb {
+  filter: none !important;
+  -webkit-filter: none !important;
+  opacity: 0.75;
+}
+
+/* 5. Remove layout-recalc hitching on section boundaries */
+.ps,
+.arch-section {
+  content-visibility: visible !important;
+  contain: layout style !important;
+}
+

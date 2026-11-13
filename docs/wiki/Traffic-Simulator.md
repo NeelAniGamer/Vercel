@@ -9,7 +9,7 @@
 | Page | Path | Purpose |
 |---|---|---|
 | **Free Roam** | `Traffic/Driving.html` | Open-world sandbox with traffic, day/night cycle, and pedestrian mode |
-| **Academy** | `Traffic/Academy.html` | Structured 56-level syllabus, task validation, quizzes, and certificates |
+| **Academy** | `Traffic/Academy.html` | Structured 57-level syllabus, task validation, quizzes, and certificates |
 | **Dashboard** | `Traffic/TrafficDashboard.html` | Player stats, earned badges, wallet rewards, and leaderboards |
 | **Setup** | `Traffic/TrafficSetup.html` | Pre-game vehicle customizer and graphic quality presets |
 
@@ -39,6 +39,11 @@
 ---
 
 ## Level Format (`Traffic/levels/`)
+
+`Traffic/level-catalog.js` is the generated source of truth for level identity
+and the total count: **57 entries — 54 numbered lessons plus 3 free-roam/bonus
+entries**. It is loaded by `TrafficDashboard.html`, which does not pull in the
+level files themselves. Regenerate it with `node Traffic/tools/gen-level-catalog.js`.
 
 Levels register into `window.LVS` and define road geometry, NPC behavior, traffic lights, and objectives:
 

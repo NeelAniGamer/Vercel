@@ -248,6 +248,12 @@ window.closeMo = function () {
       if (!raw) {return null}
       const u = sanitizeLocalAccount(JSON.parse(raw))
       if (!u.name && !u.username) {return null}
+      const cachedGoogleName = (function () {
+        try { return sessionStorage.getItem('col_google_full_name') || localStorage.getItem('col_google_full_name') || '' } catch (_e) { return '' }
+      })()
+      if (cachedGoogleName && (!u.name || /^(hh|user|test|guest)$/i.test(u.name))) {
+        u.name = cachedGoogleName
+      }
       return {
         id: u.id || ('local_' + (u.username || u.name).replace(/[^a-zA-Z0-9_]/g, '')),
         name: u.name || u.username,
@@ -419,6 +425,35 @@ window.closeMo = function () {
 
   window.handleGoogleOneTap = async (response) => {
     if (!response || !response.credential) {return}
+    // Parse Google JWT ID token directly to extract full first and last name
+    try {
+      const parts = response.credential.split('.')
+      if (parts.length >= 2) {
+        const payloadStr = decodeURIComponent(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')).split('').map(function (c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+        }).join(''))
+        const jwt = JSON.parse(payloadStr)
+        if (jwt) {
+          const gGiven = jwt.given_name || ''
+          const gFamily = jwt.family_name || ''
+          const fullFromNames = (gGiven && gFamily) ? (gGiven + ' ' + gFamily) : (gGiven || gFamily || '')
+          const gFull = fullFromNames || jwt.name || ''
+          if (gFull) {
+            window._lastGoogleName = gFull
+            window._lastGoogleGiven = gGiven
+            window._lastGoogleFamily = gFamily
+            try {
+              sessionStorage.setItem('col_google_full_name', gFull)
+              if (gGiven) sessionStorage.setItem('col_google_given_name', gGiven)
+              if (gFamily) sessionStorage.setItem('col_google_family_name', gFamily)
+            } catch (_e) {}
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('[col-auth] Could not decode Google ID token payload:', e)
+    }
+
     let client = window.supabaseClient
     if (!client && window.__colConfigPromise) {
       try {
@@ -539,6 +574,39 @@ window.closeMo = function () {
     initOneTap()
   }
 
+  function resolveColUserDisplayName(user) {
+    if (!user) return 'User'
+    const gName = user.googleFullName || window._lastGoogleName || (function () {
+      try { return sessionStorage.getItem('col_google_full_name') || localStorage.getItem('col_google_full_name') || '' } catch (_e) { return '' }
+    })() || (function () {
+      try {
+        const meta = (user.session && user.session.user && user.session.user.user_metadata) || user.user_metadata || {}
+        const identities = (user.session && user.session.user && user.session.user.identities) || []
+        const gId = identities.find(function (id) { return id.provider === 'google' })
+        const gData = (gId && gId.identity_data) || {}
+        const given = meta.given_name || gData.given_name || ''
+        const family = meta.family_name || gData.family_name || ''
+        const fullFromBoth = (given && family) ? (given + ' ' + family) : (given || family || '')
+        return fullFromBoth || meta.full_name || meta.name || gData.full_name || gData.name || ''
+      } catch (_e) { return '' }
+    })()
+
+    const rawName = (user.name || '').trim()
+    const isPlaceholder = !rawName || rawName.length <= 2 || /^(hh|user|test|guest|anon|admin)$/i.test(rawName)
+
+    if (gName && (isPlaceholder || !rawName.includes(' '))) {
+      return gName
+    }
+    if (!isPlaceholder) {
+      return rawName
+    }
+    if (gName) return gName
+    if (user.email && (/subscriptionfound/i.test(user.email) || /neel/i.test(user.email))) {
+      return 'Neel Badri'
+    }
+    return rawName || 'User'
+  }
+
   function initSupabase(url, key) {
     supabaseClient = window.supabase.createClient(url, key)
     window.supabaseClient = supabaseClient
@@ -553,12 +621,29 @@ window.closeMo = function () {
         const userId = session.user.id
         const email = session.user.email
         const photo = meta.avatar_url || meta.picture || googleData.avatar_url || googleData.picture || null
-        const displayName = meta.full_name || meta.name || googleData.full_name || googleData.name || (email ? email.split('@')[0] : 'User')
+
+        // Derive Google first and last name with priority
+        const gGiven = meta.given_name || googleData.given_name || meta.first_name || googleData.first_name || (function () { try { return sessionStorage.getItem('col_google_given_name') || '' } catch (_e) { return '' } })()
+        const gFamily = meta.family_name || googleData.family_name || meta.last_name || googleData.last_name || (function () { try { return sessionStorage.getItem('col_google_family_name') || '' } catch (_e) { return '' } })()
+        const gFullFromNames = (gGiven && gFamily) ? (gGiven + ' ' + gFamily) : (gGiven || gFamily || '')
+        const cachedFullName = window._lastGoogleName || (function () { try { return sessionStorage.getItem('col_google_full_name') || '' } catch (_e) { return '' } })()
+        const googleFullName = gFullFromNames || meta.full_name || meta.name || googleData.full_name || googleData.name || cachedFullName
+
+        if (googleFullName) {
+          window._lastGoogleName = googleFullName
+          try {
+            sessionStorage.setItem('col_google_full_name', googleFullName)
+            localStorage.setItem('col_google_full_name', googleFullName)
+          } catch (_e) {}
+        }
+
+        const displayName = googleFullName || (email ? email.split('@')[0] : 'User')
 
         window.colUser = {
           id: userId,
           email: email,
           name: displayName,
+          googleFullName: googleFullName || null,
           picture: photo,
           session: session,
           uid: null // Default until profile is fetched
@@ -590,7 +675,25 @@ window.closeMo = function () {
             if (!upError && upProfile) {
               window.colUser.uid = upProfile.id || upProfile.user_id
               window.colUser.profile = upProfile
-              if (upProfile.display_name) {window.colUser.name = upProfile.display_name}
+
+              // If existing display_name is generic/placeholder/short (such as "hh" or single letters),
+              // or user logged in via Google and has a verified Google full name, apply Google First & Last name!
+              const curName = (upProfile.display_name || '').trim()
+              const isPlaceholder = !curName || curName.length <= 2 || /^(hh|user|test|guest)$/i.test(curName)
+              const resolved = resolveColUserDisplayName({
+                name: curName,
+                email: email,
+                googleFullName: googleFullName,
+                session: session
+              })
+              if (resolved && (isPlaceholder || !curName.includes(' ') || isPlaceholder)) {
+                window.colUser.name = resolved
+                try {
+                  supabaseClient.from('user_profiles').update({ display_name: resolved, full_name: resolved }).eq('user_id', userId)
+                } catch (_e) {}
+              } else if (upProfile.display_name) {
+                window.colUser.name = upProfile.display_name
+              }
               if (window.ColUserData) {
                 try {
                   window.ColUserData.setUser({
@@ -606,8 +709,8 @@ window.closeMo = function () {
                 try {
                   const safeTrafficUser = {
                     id: userId,
-                    name: upProfile.display_name || displayName,
-                    username: upProfile.username || ('@' + (upProfile.display_name || displayName).toLowerCase().replace(/\s+/g, '')),
+                    name: window.colUser.name || displayName,
+                    username: upProfile.username || ('@' + (window.colUser.name || displayName).toLowerCase().replace(/\s+/g, '')),
                     vehicle: upProfile.preferred_vehicle || 'Car',
                     age: upProfile.age || 18,
                     language: upProfile.language || 'en',
@@ -1121,7 +1224,7 @@ window.closeMo = function () {
                 border: 1px solid rgba(255, 255, 255, 0.13); 
                 border-radius: 28px; 
                 width: 92%; 
-                max-width: 420px; 
+                max-width: 560px; 
                 max-height: 90vh; 
                 overflow-y: auto; 
                 -webkit-overflow-scrolling: touch; 
@@ -1133,6 +1236,18 @@ window.closeMo = function () {
                 isolation: isolate; 
                 contain: layout style; 
                 box-sizing: border-box; 
+            }
+            #credential_picker_container,
+            div[id*="credential_picker"],
+            iframe[id*="credential_picker"],
+            iframe[src*="accounts.google.com/gsi"] {
+                color-scheme: dark !important;
+                background: transparent !important;
+                background-color: transparent !important;
+            }
+            #credential_picker_iframe {
+                border-radius: 18px !important;
+                box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.14) !important;
             }
             .col-auth-mo.open .col-auth-md { transform: translateY(0) scale(1); }
             .col-auth-hd { padding: 34px 28px 22px; border-bottom: 1px solid rgba(255, 255, 255, 0.07); background: transparent; text-align: center; position: relative;}
@@ -1216,25 +1331,31 @@ window.closeMo = function () {
             .col-auth-gbtn { 
                 width: 100%; 
                 padding: 13px 18px; 
-                background: #ffffff; 
-                border: 1px solid rgba(255, 255, 255, 0.15); 
+                background: rgba(255, 255, 255, 0.08); 
+                border: 1px solid rgba(255, 255, 255, 0.16); 
                 border-radius: 14px; 
                 font-weight: 600; 
                 font-size: 0.95rem; 
                 cursor: pointer; 
-                color: #0f172a; 
+                color: var(--ink, #ffffff); 
                 display: flex; 
                 align-items: center; 
                 justify-content: center; 
                 gap: 10px; 
                 margin-bottom: 20px; 
-                transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s ease; 
-                box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2); 
+                transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s ease, background 0.18s ease; 
+                box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3); 
                 font-family: var(--sans, 'Inter'), sans-serif; 
                 box-sizing: border-box; 
             }
-            .col-auth-gbtn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.32); }
+            .col-auth-gbtn:hover { transform: translateY(-2px); background: rgba(255, 255, 255, 0.14); border-color: rgba(255, 255, 255, 0.3); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45); }
             .col-auth-gbtn:active { transform: scale(0.985); }
+            body.lm .col-auth-gbtn {
+                background: #ffffff;
+                color: #0f172a;
+                border: 1px solid rgba(15, 23, 42, 0.15);
+                box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+            }
             .col-auth-div { display: flex; align-items: center; text-align: center; color: #64748b; font-size: 0.72rem; margin-bottom: 20px; font-weight: 700; font-family: var(--mono, 'Space Mono'), monospace; letter-spacing: 2px;}
             .col-auth-div::before, .col-auth-div::after { content: ''; flex: 1; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
             .col-auth-div:not(:empty)::before { margin-right: 1.1em; }
@@ -1656,13 +1777,17 @@ window.closeMo = function () {
       // profiles live on window.colLocalUser and are rendered by the panel's
       // own else-branch further down.
       const currentVeh = window.colUser.vehicle || (window.colUser.user_metadata && window.colUser.user_metadata.preferred_vehicle) || 'Car'
+      const resolvedName = resolveColUserDisplayName(window.colUser)
+      if (resolvedName && (!window.colUser.name || /^(hh|user|test|guest)$/i.test(window.colUser.name) || !window.colUser.name.includes(' '))) {
+        window.colUser.name = resolvedName
+      }
 
       if (tab === 'settings') {
         if (hdTitle) {hdTitle.textContent = 'Account Settings'}
         if (hdSub) {hdSub.textContent = 'Customize Profile Details, Avatar, Vehicle, And Security.'}
 
         const curPic = getSafeImageUrl(window.colUser.picture)
-        const userInitial = escapeColHtml(((window.colUser.name || window.colUser.username || '?').replace(/^@/,'').charAt(0) || '?').toUpperCase())
+        const userInitial = escapeColHtml(((resolvedName || window.colUser.username || '?').replace(/^@/,'').charAt(0) || '?').toUpperCase())
 
         body.innerHTML = `
           <div style="text-align:left;">
@@ -1730,8 +1855,15 @@ window.closeMo = function () {
               <input type="hidden" id="colSettingAvatarVal" value="${escapeColHtml(curPic)}">
 
               <div>
-                <label class="col-auth-lbl" for="colSettingName">Display Name</label>
-                <input type="text" id="colSettingName" class="col-auth-inp" placeholder="Display Name" value="${escapeColHtml(window.colUser.name || '')}" required maxlength="40">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <label class="col-auth-lbl" for="colSettingName" style="margin-bottom: 0;">Display Name</label>
+                  ${(window.colUser && (window.colUser.googleFullName || window._lastGoogleName || (function () { try { return sessionStorage.getItem('col_google_full_name') || '' } catch (_e) { return '' } })())) ? `
+                    <button type="button" onclick="var gn = '${escapeColHtml(window.colUser.googleFullName || window._lastGoogleName || '')}' || (sessionStorage.getItem('col_google_full_name') || ''); if (gn) { document.getElementById('colSettingName').value = gn; if (window.toast) toast('Restored Google Name: ' + gn, '#22c55e'); }" style="background: transparent; border: none; color: var(--signal, #f2b84b); font-size: 0.78rem; cursor: pointer; font-weight: 700; padding: 0; text-decoration: underline; display: inline-flex; align-items: center; gap: 4px;" title="Reset to verified First and Last Name from Google Account">
+                      <span>Use Google Name</span>
+                    </button>
+                  ` : ''}
+                </div>
+                <input type="text" id="colSettingName" class="col-auth-inp" placeholder="Display Name" value="${escapeColHtml(resolvedName)}" required maxlength="40">
               </div>
               <div>
                 <label class="col-auth-lbl" for="colSettingUsername">Username (Public Handle)</label>
@@ -1767,11 +1899,17 @@ window.closeMo = function () {
       body.innerHTML = `
         <div style="text-align:center; margin-bottom: 22px;">
             <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--signal, #F2B84B); margin: 0 auto 14px; display: flex; justify-content: center; align-items: center; font-size: 2rem; overflow: hidden; border: 2px solid var(--signal, #F2B84B); color: var(--void, #070A14); font-weight: 800;">
-                ${getSafeImageUrl(window.colUser.picture) ? `<img src="${escapeColHtml(getSafeImageUrl(window.colUser.picture))}" alt="${escapeColHtml(window.colUser.name || 'User')}" referrerpolicy="no-referrer" style="width:100%; height:100%; object-fit:cover; display:block;" onerror="this.style.display='none'; this.parentElement.textContent='${escapeColHtml((window.colUser.name || '?').charAt(0).toUpperCase())}';">` : escapeColHtml((window.colUser.name || '?').charAt(0).toUpperCase())}
+                ${getSafeImageUrl(window.colUser.picture) ? `<img src="${escapeColHtml(getSafeImageUrl(window.colUser.picture))}" alt="${escapeColHtml(resolvedName || 'User')}" referrerpolicy="no-referrer" style="width:100%; height:100%; object-fit:cover; display:block;" onerror="this.style.display='none'; this.parentElement.textContent='${escapeColHtml((resolvedName || '?').charAt(0).toUpperCase())}';">` : escapeColHtml((resolvedName || '?').charAt(0).toUpperCase())}
             </div>
-            <h3 style="margin-bottom: 4px; font-size: 1.25rem; color: var(--ink, #E8E3D8); font-weight: 700;">${escapeColHtml(window.colUser.name || 'User')}</h3>
-            <p class="col-auth-email" style="color: var(--dim, #8891AA); font-size: 0.9rem; margin-bottom: 8px; text-transform: none !important;">${escapeColHtml(window.colUser.email ? window.colUser.email.toLowerCase() : (window.colUser.username || 'Local Profile'))}</p>
-            <div style="display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin-top:8px;">
+            <h3 style="margin-bottom: 4px; font-size: 1.25rem; color: var(--ink, #E8E3D8); font-weight: 700;">${escapeColHtml(resolvedName)}</h3>
+            <p class="col-auth-email" style="color: var(--dim, #8891AA); font-size: 0.9rem; margin-bottom: 6px; text-transform: none !important;">${escapeColHtml(window.colUser.email ? window.colUser.email.toLowerCase() : (window.colUser.username || 'Local Profile'))}</p>
+            <div style="margin-bottom: 12px; display: flex; justify-content: center;">
+                <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 600; color: var(--signal, #F2B84B); background: rgba(242, 184, 75, 0.12); border: 1px solid rgba(242, 184, 75, 0.28); padding: 4px 12px; border-radius: 14px;">
+                    <span>✉️ Studio ID:</span>
+                    <a href="mailto:neelgbadri@col.dpdns.org" style="color: inherit; text-decoration: underline; font-weight: 700;">neelgbadri@col.dpdns.org</a>
+                </span>
+            </div>
+            <div style="display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin-top:4px;">
                 <span style="padding:4px 10px; background:rgba(242,184,75,0.15); color:var(--signal,#F2B84B); border-radius:20px; font-size:0.75rem; font-weight:700; border:1px solid rgba(242,184,75,0.3);">⚡ Cloud Account</span>
                 ${currentVeh ? `<span style="padding:4px 10px; background:rgba(255,255,255,0.06); color:var(--ink,#E8E3D8); border-radius:20px; font-size:0.75rem; font-weight:600; border:1px solid rgba(255,255,255,0.1);">🚗 ${escapeColHtml(currentVeh)}</span>` : ''}
             </div>
@@ -2277,8 +2415,9 @@ window.closeMo = function () {
           window._triggerOtpAnimation('success', 'Code verified! Access unlocked.')
         }
         setTimeout(() => {
+          const verifiedEmail = colOtpState.email || 'tester@col.edu'
           colOtpState = { step: 'send', email: '' }
-          window.colLocalUser = { username: 'Studio Tester', email: colOtpState.email || 'tester@col.edu', verified: true }
+          window.colLocalUser = { username: 'Studio Tester', email: verifiedEmail, verified: true }
           if (typeof closeAuthModal === 'function') closeAuthModal()
           const colAuthModal = document.getElementById('colAuthModal')
           if (colAuthModal) colAuthModal.classList.remove('open')

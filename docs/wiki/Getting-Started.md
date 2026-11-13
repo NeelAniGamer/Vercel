@@ -31,12 +31,44 @@ npm run build
 
 This automatically executes:
 1. **Level Validator**: Verifies maintained level configs (`level1`, `level5`, `level_custom`).
-2. **Static Assembly**: Clears and recreates `dist/` using the deny-list filter.
-3. **React Compilation**: Uses esbuild to bundle `react-src/GamePage.tsx` into `dist/Traffic/simulator-bundle.js`.
-4. **Postbuild Gates**:
-   - `node scripts/production-check.js` &mdash; Checks file counts and output size.
-   - `node scripts/seo-check.js` &mdash; Audits OpenGraph, canonicals, and metadata.
-   - `node scripts/security-check.js` &mdash; Guards live-session credentials and Electron flags.
+2. **Career Data Validator**: Confirms `careers-data.js` holds 441 unique career records.
+3. **Static Assembly**: Clears and recreates `dist/` using the deny-list filter.
+4. **React Compilation**: Uses esbuild to bundle `react-src/GamePage.tsx` into `dist/Traffic/simulator-bundle.js`.
+5. **Postbuild Gates**:
+   - `node scripts/production-check.js` &mdash; Checks required outputs, forbidden paths, and local references.
+   - `node scripts/seo-check.js` &mdash; Audits sitemap parity, canonicals, Open Graph, Twitter cards, and JSON-LD.
+   - `node scripts/security-check.js` &mdash; Guards live-session credentials, QR verifiers, and Electron flags.
+
+---
+
+## Serving Locally
+
+```bash
+node local_server.js
+```
+
+Open [http://localhost:3000/home](http://localhost:3000/home). The server is
+clean-URL aware, so `/Traffic/Driving` and `/Terra3D/` resolve the same way they
+do in production. It is excluded from the deploy artifact.
+
+---
+
+## Content And Reference Checks
+
+These scripts keep published copy and internal references honest. All of them
+are dev-only and excluded from the deploy artifact.
+
+| Command | Purpose |
+|---|---|
+| `node scripts/audit-pages.js` | Resolves every internal `src`/`href` against the built tree and reports incomplete head metadata |
+| `node scripts/refresh-page-meta.js` | Inserts any missing head tags using the table inside the script (idempotent) |
+| `node scripts/refresh-page-meta.js --check` | Reports missing metadata without writing anything |
+| `node scripts/fact-check.js` | Prints the career, country, level, and module counts behind the published copy |
+| `node scripts/fact-terra3d.js` | Resolves Terra3D's country aliases and prints the canonical count |
+| `node scripts/fact-codepaths.js` | Counts hand-written source lines |
+
+Published counts are generated, not hand-written. Change the data, re-run the
+fact scripts, then update the copy.
 
 ---
 

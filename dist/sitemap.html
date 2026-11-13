@@ -101,9 +101,43 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
-    <link rel="stylesheet" href="col-mobile.css" />
     <link rel="stylesheet" href="liquid-glass.css" />
-    <link rel="stylesheet" href="mobile-perf.css" />
+    <!-- Conditional Mobile Assets: Loaded ONLY on mobile/tablet or when screen <= 1024px. Prevents downloading mobile styles and touch scripts on PC desktop. -->
+    <script>
+      ;(function () {
+        var isM = (window.innerWidth <= 1024) ||
+          (window.matchMedia && window.matchMedia('(max-width: 1024px), (pointer: coarse)').matches) ||
+          /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+          location.search.indexOf('iphone=1') !== -1;
+        function load(href, asScript) {
+          var sel = asScript ? 'script[src*="' + href + '"]' : 'link[href*="' + href + '"]';
+          if (document.querySelector(sel)) return;
+          var el = document.createElement(asScript ? 'script' : 'link');
+          if (asScript) { el.src = href; el.defer = true; }
+          else { el.rel = 'stylesheet'; el.href = href; }
+          document.head.appendChild(el);
+        }
+        if (isM) {
+          load('/col-mobile.css');
+          load('/mobile-perf.css');
+          load('/pull-refresh.js', true);
+        } else if (window.matchMedia) {
+          var mql = window.matchMedia('(max-width: 1024px)');
+          var onR = function (e) {
+            if (e.matches) {
+              load('/col-mobile.css');
+              load('/mobile-perf.css');
+              load('/pull-refresh.js', true);
+              if (mql.removeEventListener) mql.removeEventListener('change', onR);
+              else if (mql.removeListener) mql.removeListener(onR);
+            }
+          };
+          if (mql.addEventListener) mql.addEventListener('change', onR);
+          else if (mql.addListener) mql.addListener(onR);
+        }
+      })()
+    </script>
+    <noscript><link rel="stylesheet" href="/col-mobile.css" media="(max-width: 1024px)" /></noscript>
     <style>
       :root {
         --void: #070a14;
@@ -1243,7 +1277,6 @@
     </style>
 
     <script defer src="col-router.js"></script>
-    <script defer src="pull-refresh.js"></script>
     <script defer src="col-ui.js"></script>
     <script defer src="col-auth.js"></script>
     <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
@@ -1259,122 +1292,135 @@
         } catch (e) {}
       })()
     </script>
-    <div class="loader" id="loader">
-      <div class="lid"><span>CoL</span> &middot; Sitemap</div>
-      <div class="lbar"></div>
+        <div class="loader col-skeleton-screen" id="loader" role="status" aria-label="Loading Directory & Sitemap">
+      <div class="sk-ambient-glow" aria-hidden="true"></div>
+      <div class="sk-ambient-glow-left" aria-hidden="true"></div>
+
+      <!-- Top Nav Skeleton -->
+      <header class="sk-nav" aria-hidden="true">
+        <div class="sk-nav-brand">
+          <div class="sk-circle sk-brand-logo sk-shimmer"></div>
+          <div class="sk-pill sk-brand-text sk-shimmer"></div>
+        </div>
+        <div class="sk-nav-links">
+          <div class="sk-pill sk-shimmer" style="width: 54px; height: 14px;"></div>
+          <div class="sk-pill sk-shimmer" style="width: 58px; height: 14px;"></div>
+          <div class="sk-pill sk-shimmer" style="width: 62px; height: 14px;"></div>
+          <div class="sk-pill sk-shimmer" style="width: 82px; height: 14px;"></div>
+          <div class="sk-pill sk-shimmer" style="width: 66px; height: 14px;"></div>
+          <div class="sk-pill sk-shimmer" style="width: 76px; height: 14px;"></div>
+        </div>
+        <div class="sk-nav-actions">
+          <div class="sk-circle sk-nav-theme sk-shimmer"></div>
+          <div class="sk-pill sk-nav-btn sk-shimmer" style="width: 78px;"></div>
+          <div class="sk-pill sk-nav-cta sk-shimmer" style="width: 124px;"></div>
+        </div>
+      </header>
+
+      <!-- Directory Hero Skeleton -->
+      <div class="sk-editorial-wrap" aria-hidden="true">
+        <div class="sk-editorial-hero" style="max-width: 840px;">
+          <div class="sk-eyebrow-row">
+            <span class="sk-eyebrow-dash"></span>
+            <div class="sk-pill sk-eyebrow-pill sk-shimmer" style="width: 160px;"></div>
+          </div>
+          <div class="sk-title-group" style="align-items: center; width: 100%;">
+            <div class="sk-title-bar sk-title-1 sk-shimmer" style="width: 80%; max-width: 660px;"></div>
+            <div class="sk-title-bar sk-title-2 sk-shimmer" style="width: 56%; max-width: 440px;"></div>
+          </div>
+        </div>
+
+        <!-- 4-Column Directory Skeleton -->
+        <div class="sk-grid sk-grid-4">
+          <div class="sk-card">
+            <div class="sk-pill sk-shimmer" style="width: 110px; height: 18px;"></div>
+            <div class="sk-lede-line sk-shimmer" style="width: 85%;"></div>
+            <div class="sk-lede-line sk-shimmer" style="width: 75%;"></div>
+            <div class="sk-lede-line sk-shimmer" style="width: 90%;"></div>
+            <div class="sk-lede-line sk-shimmer" style="width: 70%;"></div>
+          </div>
+          <div class="sk-card">
+            <div class="sk-pill sk-shimmer" style="width: 120px; height: 18px;"></div>
+            <div class="sk-lede-line sk-shimmer" style="width: 80%;"></div>
+            <div class="sk-lede-line sk-shimmer" style="width: 85%;"></div>
+            <div class="sk-lede-line sk-shimmer" style="width: 70%;"></div>
+            <div class="sk-lede-line sk-shimmer" style="width: 90%;"></div>
+          </div>
+          <div class="sk-card">
+            <div class="sk-card-media sk-shimmer" style="height: 120px;"></div>
+            <div class="sk-pill sk-shimmer" style="width: 130px; height: 18px;"></div>
+            <div class="sk-lede-line sk-shimmer" style="width: 85%;"></div>
+            <div class="sk-lede-line sk-shimmer" style="width: 75%;"></div>
+          </div>
+          <div class="sk-card">
+            <div class="sk-pill sk-shimmer" style="width: 100px; height: 18px;"></div>
+            <div class="sk-lede-line sk-shimmer" style="width: 90%;"></div>
+            <div class="sk-lede-line sk-shimmer" style="width: 80%;"></div>
+            <div class="sk-lede-line sk-shimmer" style="width: 70%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Status Dock -->
+      <footer class="sk-status-dock" aria-hidden="true">
+        <div class="sk-status-pill">
+          <span class="sk-pulse-live"></span>
+          <span class="sk-status-text"><span>CoL</span> &middot; Platform Directory</span>
+          <div class="sk-progress-bar">
+            <div class="sk-progress-fill"></div>
+          </div>
+        </div>
+      </footer>
     </div>
 
-    <nav class="top-nav" id="topNav">
-      <a href="/" class="nav-brand"
-        ><img loading="lazy" src="Class.png" alt="Class Of Learners" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" /><span class="brand-name"
-          >Class Of Learners</span
-        ></a
-      >
+        <div class="top-nav-shield" aria-hidden="true"></div>
+    <nav class="top-nav" id="topNav" data-page="sitemap">
+      <a href="/" class="nav-brand"><img src="Class.png" alt="Class Of Learners" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" /><span class="brand-name">Class Of Learners</span></a>
       <div class="nav-links" id="navLinks">
-        <a href="/" class="nav-link"
-          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-            <polyline points="9 22 9 12 15 12 15 22" /></svg
-          >Home</a
-        >
-        <a href="about" class="nav-link"
-          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10" />
-            <path d="M12 16v-4" />
-            <path d="M12 8h.01" /></svg
-          >About</a
-        >
-        <a href="school" class="nav-link"
-          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" />
-            <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" /></svg
-          >School</a
-        >
-        <a href="sneh-asha" class="nav-link"
-          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" /></svg
-          >Sneh Asha</a
-        >
-        <a href="making" class="nav-link"
-          ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg
-          >Making</a
-        >
+        <a href="/" class="nav-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>Home</a>
+        <a href="about" class="nav-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>About</a>
+        <a href="school" class="nav-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" /><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" /></svg>School</a>
+        <a href="sneh-asha" class="nav-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" /></svg>Sneh Asha</a>
+        <a href="making" class="nav-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>Making</a>
         <div class="dropdown" id="projDD">
-          <button class="dropdown-btn" aria-haspopup="true" aria-expanded="false">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
-              <line x1="8" y1="21" x2="16" y2="21" />
-              <line x1="12" y1="17" x2="12" y2="21" /></svg
-            >Projects <span class="darr">&#9660;</span>
+          <button class="dropdown-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>Projects <span class="darr">&#9660;</span>
           </button>
           <div class="dropdown-content">
             <div class="dropdown-content-inner">
-              <a href="ati"
-                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="4 7 4 4 20 4 20 7" />
-                  <line x1="9" y1="20" x2="15" y2="20" />
-                  <line x1="12" y1="4" x2="12" y2="20" /></svg
-                >Typing Instructor</a
-              ><a href="solar"
-                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="5" />
-                  <line x1="12" y1="1" x2="12" y2="3" />
-                  <line x1="12" y1="21" x2="12" y2="23" />
-                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-                  <line x1="1" y1="12" x2="3" y2="12" />
-                  <line x1="21" y1="12" x2="23" y2="12" />
-                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" /></svg
-                >Solar Engine</a
-              ><a href="gesture"
-                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M18 8h1a4 4 0 010 8h-1" />
-                  <path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z" />
-                  <line x1="6" y1="1" x2="6" y2="4" />
-                  <line x1="10" y1="1" x2="10" y2="4" />
-                  <line x1="14" y1="1" x2="14" y2="4" /></svg
-                >Perceptus Flow</a
-              ><a href="rpg"
-                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg
-                >RPG Game</a
-              ><a href="qr"
-                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="2" y="2" width="8" height="8" rx="1" />
-                  <rect x="14" y="2" width="8" height="8" rx="1" />
-                  <rect x="2" y="14" width="8" height="8" rx="1" />
-                  <rect x="14" y="14" width="4" height="4" />
-                  <rect x="20" y="14" width="2" height="2" />
-                  <rect x="14" y="20" width="2" height="2" />
-                  <rect x="20" y="20" width="2" height="2" /></svg
-                >QR Studio Matrix</a
-              ><a href="Terra3D/"
-                ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="2" y1="12" x2="22" y2="12" />
-                  <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" /></svg
-                >Terra3D Atlas</a
-              >
+              <a href="ati"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7" /><line x1="9" y1="20" x2="15" y2="20" /><line x1="12" y1="4" x2="12" y2="20" /></svg>Typing Instructor</a>
+              <a href="solar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5" /><line x1="12" y1="12" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" /></svg>Solar Engine</a>
+              <a href="gesture"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 010 8h-1" /><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z" /><line x1="6" y1="1" x2="6" y2="4" /><line x1="10" y1="1" x2="10" y2="4" /><line x1="14" y1="1" x2="14" y2="4" /></svg>Perceptus Flow</a>
+              <a href="rpg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg>RPG Game</a>
+              <a href="qr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="8" height="8" rx="1" /><rect x="14" y="2" width="8" height="8" rx="1" /><rect x="2" y="14" width="8" height="8" rx="1" /><rect x="14" y="14" width="4" height="4" /><rect x="20" y="14" width="2" height="2" /><rect x="14" y="20" width="2" height="2" /><rect x="20" y="20" width="2" height="2" /></svg>QR Studio Matrix</a>
+              <a href="Terra3D/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" /></svg>Terra3D Atlas</a>
+              <a href="Career"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" /></svg>Career Compass</a>
+              <a href="Database_Logic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /><line x1="9" y1="7" x2="16" y2="7" /><line x1="9" y1="11" x2="14" y2="11" /></svg>Database Logic DB</a>
+              <a href="CastFlow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>CastFlow Studio</a>
+              <a href="cereal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" /><path d="M19 10v2a7 7 0 0 1-14 0v-2" /><line x1="12" y1="19" x2="12" y2="23" /><line x1="8" y1="23" x2="16" y2="23" /></svg>Cereal AI App</a>
             </div>
           </div>
         </div>
       </div>
       <div class="nav-actions">
-        <div class="hz-toggle" onclick="hzToggle()"><div class="hz-clouds"></div><div class="hz-stars"></div><div class="hz-orb"></div></div>
-        <button class="nav-login-btn" id="navLoginBtn" onclick="openLogin()">
+        <button type="button" class="nav-cmd-trigger no-cap" onclick="if(window.openColCmdPalette)window.openColCmdPalette();else window.location.href='/?search=true'" title="Press Ctrl+K or / to search all 16 applications" aria-label="Search site (Ctrl K)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <span>Search</span>
+          <kbd class="col-os-key">Ctrl K</kbd>
+        </button>
+        <div class="hz-toggle" onclick="hzToggle()" title="Toggle Appearance"><div class="hz-clouds"></div><div class="hz-stars"></div><div class="hz-orb"></div></div>
+        <button class="nav-login-btn" id="navLoginBtn" onclick="if(window.openGlobalLogin)window.openGlobalLogin();else if(window.openLogin)window.openLogin();" type="button">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
             <circle cx="12" cy="7" r="4" /></svg
           >Sign In
         </button>
-        <div class="nav-user-profile" id="navUserProfile" onclick="openLogin()">
+        <div class="nav-user-profile" id="navUserProfile" onclick="if(window.openGlobalLogin)window.openGlobalLogin();else if(window.openLogin)window.openLogin();">
           <div class="nav-user-avatar" id="navUserAv">?</div>
           <span class="nun" id="navUserName">User</span>
         </div>
         <a href="download" class="nav-dl-btn desktop-dl">Downloads Hub</a>
-        <button class="mmb" id="mmb" aria-label="Toggle menu">
+        <button class="mmb" id="mmb" aria-label="Toggle menu" type="button">
           <svg viewBox="0 0 24 24" fill="none"><path d="M3 6H21M3 12H21M3 18H21" stroke-width="1.5" stroke-linecap="round" /></svg>
         </button>
       </div>
@@ -1648,15 +1694,27 @@
     <script>
       // 1. Fast Loader Dismissal (150ms after DOMContentLoaded)
       function removeLoader() {
-        var l = document.getElementById('loader')
-        if (l && !l.classList.contains('gone')) l.classList.add('gone')
+        if (/[?&]skeleton(=|&|$)/i.test(window.location.search)) {
+          console.info('[CoL] Skeleton debug active (?skeleton).');
+          return;
+        }
+        var l = document.getElementById('loader');
+        if (l && !l.classList.contains('gone')) {
+          l.classList.add('gone');
+          setTimeout(function () {
+            if (l.classList.contains('gone')) l.style.display = 'none';
+          }, 360);
+        }
+        if (document.body) document.body.classList.add('hero-ready');
       }
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function () {
-          setTimeout(removeLoader, 150)
-        })
+          if (document.body) document.body.classList.add('hero-ready');
+          setTimeout(removeLoader, 160);
+        });
       } else {
-        setTimeout(removeLoader, 150)
+        if (document.body) document.body.classList.add('hero-ready');
+        setTimeout(removeLoader, 160);
       }
       window.addEventListener('load', removeLoader, { once: true })
 

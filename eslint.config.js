@@ -22,6 +22,8 @@ export default [
       'Traffic/dist/**',
       'Traffic/dist-web/**',
       'Traffic/dist-electron/**',
+      // Hashed Vite bundles emitted into the asset folder.
+      'Traffic/assets/**',
       'Terra3D/dist/**',
       // Local agent skill libraries. Untracked, not shipped, not ours to fix.
       '.agents/**',

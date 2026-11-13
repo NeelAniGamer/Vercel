@@ -629,15 +629,15 @@
       });
 
       // Air rush sweep
-      var wn = c.createBufferSource();
+      wn = c.createBufferSource();
       wn.buffer = noise();
-      var wbp = c.createBiquadFilter();
+      wbp = c.createBiquadFilter();
       wbp.type = 'bandpass';
       wbp.frequency.setValueAtTime(220, t);
       wbp.frequency.exponentialRampToValueAtTime(1200, t + 0.6);
       wbp.frequency.exponentialRampToValueAtTime(300, t + 1.8);
       wbp.Q.value = 1.6;
-      var wg = c.createGain();
+      wg = c.createGain();
       wg.gain.setValueAtTime(0.0001, t);
       wg.gain.exponentialRampToValueAtTime(0.22 * g, t + 0.4);
       wg.gain.exponentialRampToValueAtTime(0.0001, t + 1.9);

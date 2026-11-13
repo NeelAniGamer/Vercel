@@ -14,7 +14,42 @@
 
     <link rel="stylesheet" href="col-ui.css?v=1782446126.5715783" />
     <link rel="stylesheet" href="liquid-glass.css" />
-    <link rel="stylesheet" href="mobile-perf.css" />
+    <!-- Conditional Mobile Assets: Loaded ONLY on mobile/tablet or when screen <= 1024px. Prevents downloading mobile styles and touch scripts on PC desktop. -->
+    <script>
+      ;(function () {
+        var isM = (window.innerWidth <= 1024) ||
+          (window.matchMedia && window.matchMedia('(max-width: 1024px), (pointer: coarse)').matches) ||
+          /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+          location.search.indexOf('iphone=1') !== -1;
+        function load(href, asScript) {
+          var sel = asScript ? 'script[src*="' + href + '"]' : 'link[href*="' + href + '"]';
+          if (document.querySelector(sel)) return;
+          var el = document.createElement(asScript ? 'script' : 'link');
+          if (asScript) { el.src = href; el.defer = true; }
+          else { el.rel = 'stylesheet'; el.href = href; }
+          document.head.appendChild(el);
+        }
+        if (isM) {
+          load('/col-mobile.css');
+          load('/mobile-perf.css');
+          load('/pull-refresh.js', true);
+        } else if (window.matchMedia) {
+          var mql = window.matchMedia('(max-width: 1024px)');
+          var onR = function (e) {
+            if (e.matches) {
+              load('/col-mobile.css');
+              load('/mobile-perf.css');
+              load('/pull-refresh.js', true);
+              if (mql.removeEventListener) mql.removeEventListener('change', onR);
+              else if (mql.removeListener) mql.removeListener(onR);
+            }
+          };
+          if (mql.addEventListener) mql.addEventListener('change', onR);
+          else if (mql.addListener) mql.addListener(onR);
+        }
+      })()
+    </script>
+    <noscript><link rel="stylesheet" href="/col-mobile.css" media="(max-width: 1024px)" /></noscript>
     <style>
       /* ADMIN THEME VARIABLES */
       :root {
@@ -795,12 +830,23 @@
 
     <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/admin" />
     <script defer src="col-router.js"></script>
-    <script defer src="pull-refresh.js"></script>
     <script defer src="col-ui.js"></script>
     <script defer src="col-auth.js"></script>
     <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
     <link rel="manifest" href="manifest.json" />
     <link rel="icon" type="image/png" href="Icon.png" />
+  
+    <meta property="og:title" content="Admin Command Center | Class Of Learners" />
+    <meta property="og:description" content="Internal admin command center for Class Of Learners — manage dynamic QR codes, published apps, and site status." />
+    <meta property="og:url" content="https://advancedlogiclabs.dpdns.org/admin" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://advancedlogiclabs.dpdns.org/og/home.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Admin Command Center | Class Of Learners" />
+    <meta name="twitter:description" content="Internal admin command center for Class Of Learners — manage dynamic QR codes, published apps, and site status." />
+    <meta name="twitter:image" content="https://advancedlogiclabs.dpdns.org/og/home.jpg" />
   </head>
   <body>
     <script>
@@ -1178,7 +1224,7 @@
         closeConfirm();
       });
 
-      const ADMIN_EMAILS = ["subscriptionfound@gmail.com", "neelgbadri@gmail.com"];
+      const ADMIN_EMAILS = ["subscriptionfound@gmail.com", "neelgbadri@gmail.com", "neelgbadri@col.dpdns.org"];
 
       function verifyAdminPasskey() {
         const inp = document.getElementById('adminPassInput');

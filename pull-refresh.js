@@ -13,6 +13,10 @@
       document.addEventListener('DOMContentLoaded', mountLiquidBackdrop)
       return
     }
+    var oldAmbient = document.querySelector('.col-ambient-bg')
+    if (oldAmbient && oldAmbient.parentNode) {
+      oldAmbient.parentNode.removeChild(oldAmbient)
+    }
     var backdrop = document.createElement('div')
     backdrop.id = 'apple-liquid-backdrop'
     backdrop.className = 'apple-liquid-backdrop'
@@ -68,23 +72,23 @@
   }
 
   window.toggleAppleLiquidGlass = function (force) {
-    var isCurrentlyOn = document.documentElement.classList.contains('apple-glass') || document.documentElement.classList.contains('is-iphone')
+    var isCurrentlyOn = document.documentElement.classList.contains('apple-glass')
     var willEnable = typeof force === 'boolean' ? force : !isCurrentlyOn
     try {
       if (window.ColCookie) {
-        window.ColCookie.set('force_iphone', willEnable ? 'true' : 'false', 365)
         window.ColCookie.set('liquid_glass', willEnable ? 'true' : 'false', 365)
       }
-      localStorage.setItem('force_iphone', willEnable ? 'true' : 'false')
       localStorage.setItem('liquid_glass', willEnable ? 'true' : 'false')
     } catch (e) {}
     if (willEnable) {
-      document.documentElement.classList.add('apple-glass', 'is-iphone')
+      document.documentElement.classList.add('apple-glass')
       mountLiquidBackdrop()
     } else {
-      document.documentElement.classList.remove('apple-glass', 'is-iphone')
-      var el = document.getElementById('apple-liquid-backdrop')
-      if (el && el.parentNode) el.parentNode.removeChild(el)
+      document.documentElement.classList.remove('apple-glass')
+      if (!document.documentElement.classList.contains('is-iphone')) {
+        var el = document.getElementById('apple-liquid-backdrop')
+        if (el && el.parentNode) el.parentNode.removeChild(el)
+      }
     }
     return willEnable
   }

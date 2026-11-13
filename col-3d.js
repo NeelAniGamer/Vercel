@@ -52,16 +52,16 @@
     var path = (window.location.pathname.split('/').pop() || 'home').replace('.html', '').toLowerCase()
     if (path === '' || path === 'index') {path = 'home'}
 
+    // SKIP Three.js entirely on mobile viewports (<= 640px) where 3D canvases are CSS display: none !important
+    // Massive perf win: avoids running render loops for invisible WebGL canvases on phones.
+    if (window.innerWidth <= 640) {
+      return;
+    }
+
     var isMobile = window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches
 
-    // SKIP Three.js entirely on mobile — massive perf win.
-    // The 3D orrery is hidden via CSS on mobile anyway, so no need to
-    // parse/compile/execute the ~600KB Three.js library + scene setup.
-    // Mobile and desktop both access the full 3D scene with GPU hardware acceleration
-    if (isMobile) {
-      // Ensure canvas is hardware accelerated on touch devices
-      canvas.style.touchAction = 'none';
-    }
+    // Default touch-action allows natural vertical scrolling on touch screens/tablets
+    canvas.style.touchAction = 'pan-y';
 
     // Low-power mode: heavy page OR modest hardware → leaner scene budget
     var isLowPower = false
@@ -190,7 +190,7 @@
         }
       }
     }
-    window.addEventListener('wheel', handleWheel, { passive: false })
+    canvas.addEventListener('wheel', handleWheel, { passive: false })
 
     // Touch Gestures (Drag Orbit & Pinch Zoom)
     var touchDistStart = 0
@@ -269,10 +269,12 @@
 
     // ─── Resize (debounced; also handles orientation change) ───
     var _resizeT = null
+    var maxScroll = (document.documentElement.scrollHeight - window.innerHeight) || 1
     function onResize() {
       camera.aspect = window.innerWidth / window.innerHeight
       camera.updateProjectionMatrix()
       renderer.setSize(window.innerWidth, window.innerHeight)
+      maxScroll = (document.documentElement.scrollHeight - window.innerHeight) || 1
     }
     window.addEventListener('resize', function () {
       clearTimeout(_resizeT)
@@ -393,6 +395,9 @@
       },
       setStageMode: function (enabled) {
         stageMode = enabled
+        if (canvas) {
+          canvas.style.touchAction = enabled ? 'none' : 'pan-y'
+        }
       },
       isStageMode: function () {
         return stageMode
@@ -974,8 +979,14 @@
         applyTheme()
         new MutationObserver(applyTheme).observe(document.body, { attributes: true, attributeFilter: ['class'] })
 
+        var _targetScaleVec = new THREE.Vector3()
+
         // ─── Main Animation Loop for Home Scene ───
-        return function (t) {
+        return function (t, dt) {
+          if (typeof dt === 'undefined') {
+            dt = 0.016
+          }
+          var dtFactor = dt * 60
           var targetX = stageMode ? 0 : (window.innerWidth >= 1024 ? 15 : 0);
           var targetY = stageMode ? 0 : (window.innerWidth >= 1024 ? 0 : -6);
           root.position.x += (targetX - root.position.x) * 0.08;
@@ -1021,7 +1032,7 @@
           var speedFactor = autoOrbit ? orbitSpeedMult : 0
 
           nodeObjects.forEach(function (n, idx) {
-            n.angle += n.data.speed * 0.01 * speedFactor
+            n.angle += n.data.speed * 0.01 * speedFactor * dtFactor
             n.group.position.x = Math.cos(n.angle) * n.data.radius
             n.group.position.z = Math.sin(n.angle) * n.data.radius
             n.group.position.y = n.data.y + Math.sin(t * 0.5 + n.data.radius) * 0.35
@@ -1089,28 +1100,29 @@
           })
           beamGeo.attributes.position.needsUpdate = true
 
-          // 4. Drag inertia & auto orbit
+          // 4. Drag inertia & auto orbit (Frame-rate independent physics)
           if (!mouseDown && !focusTargetNode) {
-            dragVelX *= 0.93
-            dragVelY *= 0.93
-            cameraTarget.rotY += dragVelX + (autoOrbit ? 0.0003 * orbitSpeedMult : 0)
+            var dragDamp = Math.pow(0.013, dt)
+            dragVelX *= dragDamp
+            dragVelY *= dragDamp
+            cameraTarget.rotY += dragVelX + (autoOrbit ? 0.0003 * orbitSpeedMult * dtFactor : 0)
             cameraTarget.rotX = Math.max(-0.6, Math.min(0.6, cameraTarget.rotX + dragVelY))
           }
           if (!focusTargetNode) {
             cameraTarget.rotX += (_pmy * 0.12 - cameraTarget.rotX) * 0.008
           }
 
-          // 5. Card hover scaling
+          // 5. Card hover scaling (Zero-allocation lerp)
           var hover = window.__col3d.hover
           nodeObjects.forEach(function (n) {
             if (n.planet !== currentHovered) {
               var targetScale = 1 + hover * 0.18
-              n.planet.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.05)
+              _targetScaleVec.set(targetScale, targetScale, targetScale)
+              n.planet.scale.lerp(_targetScaleVec, 0.05)
             }
           })
 
-          // 6. Camera zoom: respect baseZoom, scroll progression, and stage mode
-          var maxScroll = (document.documentElement.scrollHeight - window.innerHeight) || 1
+          // 6. Camera zoom: respect baseZoom, scroll progression, and stage mode (using cached maxScroll)
           var scrollProgress = Math.max(0, Math.min(1, window.scrollY / maxScroll))
           var targetZoom = baseZoom + (stageMode ? 0 : scrollProgress * 20)
           cameraTarget.z = targetZoom
@@ -1206,11 +1218,9 @@
         var connMat = new THREE.LineBasicMaterial({ color: pal().dim, transparent: true, opacity: 0.1 })
         trackTheme(connMat, 'dim')
         var connPts = [
-          members[0].pos, members[1].pos, members[0].pos, members[2].pos,
-          members[0].pos, members[3].pos, members[0].pos, members[4].pos,
-          members[0].pos, members[5].pos, members[1].pos, members[3].pos,
-          members[2].pos, members[4].pos, members[3].pos, members[5].pos,
-          members[4].pos, members[5].pos
+          members[0].pos, members[1].pos,
+          members[1].pos, members[2].pos,
+          members[2].pos, members[0].pos
         ]
         var connGeo = new THREE.BufferGeometry().setFromPoints(connPts)
         root.add(new THREE.LineSegments(connGeo, connMat))
@@ -1457,7 +1467,9 @@
           // Markers flow toward camera
           markers.forEach(function (m) {
             m.position.z += 0.12 + hover * 0.08
-            if (m.position.z > 8) {m.position.z = -m.userData.baseZ - markerCount * 2}
+            if (m.position.z > 8) {
+              m.position.z -= markerCount * 7
+            }
             var a = Math.max(0, 1 - Math.abs(m.position.z + 5) / 70)
             m.material.opacity = a * 0.25
           })
@@ -1684,8 +1696,9 @@
       mouseX = _pmx
       mouseY = _pmy
       _hoverCurrent += (_hoverTarget - _hoverCurrent) * 0.05
+      var dt = Math.min(clock.getDelta(), 0.05)
       var t = clock.getElapsedTime()
-      if (updateFn) {updateFn(t)}
+      if (updateFn) {updateFn(t, dt)}
       renderer.render(scene, camera)
     }
     animate(0)

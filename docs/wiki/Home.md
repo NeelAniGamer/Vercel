@@ -6,15 +6,18 @@
 
 ## 🏗️ What Is This Project?
 
-**Class Of Learners** is an interactive web and desktop education platform hosted on Vercel. Built by students, its flagship feature is a **3D Traffic Driving Simulator** (Three.js) that teaches Indian road safety and traffic laws through interactive gameplay &mdash; featuring 56 levels, NPC traffic AI, pedestrian mode, certificate generation, and an academy curriculum.
+**Class Of Learners** is an interactive web and desktop education platform hosted on Vercel. Built by students, its flagship feature is a **3D Traffic Driving Simulator** (Three.js) that teaches Indian road safety and traffic laws through interactive gameplay &mdash; featuring 57 levels, NPC traffic AI, pedestrian mode, certificate generation, and an academy curriculum.
 
 ### Additional Platform Modules:
 - **Advanced Typing Instructor (ATI)** &mdash; Desktop typing tutor & competitive typing tournament game.
-- **Terra3D** &mdash; Interactive 3D World Atlas & Country Knowledge Engine.
+- **Terra3D** &mdash; Interactive 3D World Atlas & Country Knowledge Engine (178 countries).
 - **Perceptus / GestureUI** &mdash; Webcam-based touchless hand gesture desktop control.
 - **CastFlow** &mdash; Phone-to-screen mirroring PWA utility.
 - **Solar System Engine** &mdash; Interactive 3D planetary physics visualization.
-- **FutureScape Career Guide** &mdash; Comprehensive student career and education discovery engine.
+- **FutureScape Career Guide** &mdash; 441-path career and education discovery engine.
+- **CivicLogic** &mdash; 50-module Motor Vehicles Act database and RTO challan simulator.
+- **Database Logic** &mdash; Relational query modelling of statutory rules.
+- **Cereal AI** &mdash; On-device lecture recording with Gemini 2.5 Flash note extraction.
 
 ---
 
@@ -25,9 +28,9 @@
 | **Overview** | [[Home]] | Landing overview, tech stack, and module directory |
 | **System** | [[Architecture]] | System architecture, component relationships, and data flow |
 | **Setup** | [[Getting Started|Getting-Started]] | Local setup, installation, commands, and dev workflow |
-| **Simulations** | [[Traffic Simulator|Traffic-Simulator]] | 3D Three.js game engine, 56 levels, AI traffic, and vehicles |
+| **Simulations** | [[Traffic Simulator|Traffic-Simulator]] | 3D Three.js game engine, 57 levels, AI traffic, and vehicles |
 | **Simulations** | [[Terra3D]] | 3D interactive globe with country data and demographics |
-| **Routing** | [[Pages And Routes|Pages-And-Routes]] | Complete inventory of 28+ HTML pages and Vercel routing rules |
+| **Routing** | [[Pages And Routes|Pages-And-Routes]] | Complete inventory of 31 root pages and Vercel routing rules |
 | **Client Core** | [[Shared Infrastructure|Shared-Infrastructure]] | Global authentication, shared navigation UI, and runtime routing |
 | **Security** | [[Authentication]] | Supabase auth flows, custom email templates, and session security |
 | **DevOps** | [[Build And Deployment|Build-And-Deployment]] | `build.js` pipeline, deny-list filters, and Vercel production deployment |
@@ -40,10 +43,10 @@
 
 | Resource | Link |
 |---|---|
-| **Live Production Site** | [classoflearners.vercel.app](https://classoflearners.vercel.app) |
+| **Live Production Site** | [advancedlogiclabs.dpdns.org](https://advancedlogiclabs.dpdns.org/) |
 | **GitHub Repository** | [github.com/NeelAniGamer/Vercel](https://github.com/NeelAniGamer/Vercel) |
-| **Traffic Free Roam** | [Driving.html](https://classoflearners.vercel.app/Traffic/Driving) |
-| **Traffic Academy** | [Academy.html](https://classoflearners.vercel.app/Traffic/Academy) |
+| **Traffic Free Roam** | [Driving.html](https://advancedlogiclabs.dpdns.org/Traffic/Driving) |
+| **Traffic Academy** | [Academy.html](https://advancedlogiclabs.dpdns.org/Traffic/Academy) |
 
 ---
 
@@ -51,7 +54,7 @@
 
 | Domain | Technology |
 |---|---|
-| **3D Rendering** | Three.js (r128 via CDN) |
+| **3D Rendering** | Three.js `0.187` (root), `0.186` (Traffic), `0.170` (Terra3D), plus vendored builds in `assets/js/` and `Traffic/libs/` |
 | **Frontend** | Vanilla JavaScript, HTML5, CSS3, React 19 (bundled via esbuild) |
 | **Backend & Auth** | Supabase (Google OAuth2, Magic Link, OTP tokens) |
 | **Hosting & Edge** | Vercel (static distribution from committed `dist/`) |

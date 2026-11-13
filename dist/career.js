@@ -791,7 +791,7 @@
       // Note: switchDetailTab is defined once, further down, next to the rest of
       // the modal plumbing. Only the later definition is live.
 
-      // Comprehensive Data Enrichment Helper for all 436 careers
+      // Comprehensive Data Enrichment Helper for all 441 careers
       function getCareerEnrichment(c) {
         const cat = (c.cat || '').toLowerCase();
         const id = (c.id || '').toLowerCase();
@@ -1421,7 +1421,7 @@
 
         // Section: Getting Your First Break
         // Keyed off the career's real entry level. It used to tell every one of
-        // the 436 careers to apply in "penultimate college year", which is
+        // the 441 careers to apply in "penultimate college year", which is
         // actively wrong for the 156 that need no degree at all.
         const BREAK = {
           nodegree: {
@@ -1999,7 +1999,9 @@
       // URL State Sync
       function updateUrlState() {
         try {
+          const currentParams = new URLSearchParams(window.location.search);
           const params = new URLSearchParams();
+          if (currentParams.has('skeleton')) params.set('skeleton', currentParams.get('skeleton'));
           if (searchQuery) params.set('q', searchQuery);
           if (currentCat && currentCat !== 'all') params.set('domain', currentCat);
           if (currentDegree && currentDegree !== 'all') params.set('degree', currentDegree);

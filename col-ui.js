@@ -129,11 +129,28 @@
   }
   initColOS();
 
+  // Global Liquid Glass Toggle Fallback (ensures desktop PC toggle works even when pull-refresh.js is not loaded)
+  if (typeof window.toggleAppleLiquidGlass !== 'function') {
+    window.toggleAppleLiquidGlass = function (force) {
+      var isCurrentlyOn = document.documentElement.classList.contains('apple-glass');
+      var willEnable = typeof force === 'boolean' ? force : !isCurrentlyOn;
+      try {
+        if (window.ColCookie) window.ColCookie.set('liquid_glass', willEnable ? 'true' : 'false', 365);
+        localStorage.setItem('liquid_glass', willEnable ? 'true' : 'false');
+      } catch (e) {}
+      document.documentElement.classList.toggle('apple-glass', willEnable);
+      return willEnable;
+    };
+  }
+
   // 0. Ambient Visual System Auto-Injector (Aurora Mesh & Cyber Grid)
   // Full-fidelity 3-orb ambient mesh + cyber spotlight across all devices.
   // Hardware-accelerated GPU layers run at full unthrottled refresh rates.
   function initAmbientVisuals() {
     if (document.querySelector('.col-ambient-bg')) {return;}
+    if (document.getElementById('apple-liquid-backdrop') || document.documentElement.classList.contains('apple-glass') || document.documentElement.classList.contains('is-iphone')) {
+      return;
+    }
     const bg = document.createElement('div');
     bg.className = 'col-ambient-bg';
     bg.setAttribute('aria-hidden', 'true');
@@ -208,6 +225,9 @@
     document.addEventListener(
       'mousemove',
       function (e) {
+        if (!document.body.classList.contains('has-mouse')) {
+          document.body.classList.add('has-mouse')
+        }
         mx = e.clientX
         my = e.clientY
         if (!cursorRaf) {
@@ -319,7 +339,7 @@
           '<div class="cmd-panel">' +
             '<div class="cmd-header">' +
               '<div class="cmd-brand">' +
-                '<img src="Class.png" alt="Class Of Learners" class="cmd-logo" width="36" height="36" />' +
+                '<img src="/Class.png" alt="Class Of Learners" class="cmd-logo" width="36" height="36" />' +
                 '<div class="cmd-brand-text">' +
                   '<span class="cmd-brand-name">Class Of Learners</span>' +
                   '<span class="cmd-brand-badge">v1.4</span>' +
@@ -782,7 +802,7 @@ function initBottomBar() {
     // 1100px matches the CSS breakpoint that hides the desktop .nav-links and
     // shows the thumb bar. Using 900px left a 901–1100px dead zone where the
     // desktop nav was hidden AND the bottom bar was removed.
-    if (window.innerWidth > 1100) {
+    if (window.innerWidth > 1024) {
       const existing = document.querySelector('.col-bottom-bar')
       if (existing) {existing.remove()}
       document.body.classList.remove('nav-lock')
@@ -1458,5 +1478,229 @@ window.toggleTheme = function (el) {
     { passive: true }
   )
 })()
+
+// Universal CoL Skeleton Screen Lifecycle & Global Controls
+;(function () {
+  var isDebugSkeleton = false
+  try {
+    isDebugSkeleton = /[?&]skeleton(=|&|$)/i.test(window.location.search)
+  } catch (e) {}
+
+  window.showSkeleton = function () {
+    var l = document.getElementById('loader') || document.querySelector('.col-skeleton-screen')
+    if (l) {
+      l.style.display = 'flex'
+      l.offsetHeight // force reflow
+      l.classList.remove('gone')
+      l.style.opacity = '1'
+      l.style.visibility = 'visible'
+      l.style.transform = 'none'
+      l.style.pointerEvents = 'all'
+    }
+  }
+
+  window.hideSkeleton = function () {
+    var l = document.getElementById('loader') || document.querySelector('.col-skeleton-screen')
+    if (l) {
+      l.classList.add('gone')
+      setTimeout(function () {
+        if (l.classList.contains('gone')) l.style.display = 'none'
+      }, 360)
+    }
+  }
+
+  window.toggleSkeleton = function () {
+    var l = document.getElementById('loader') || document.querySelector('.col-skeleton-screen')
+    if (l && l.classList.contains('gone')) {
+      window.showSkeleton()
+    } else {
+      window.hideSkeleton()
+    }
+  }
+
+  function handleAutoDismiss() {
+    if (isDebugSkeleton && !navigator.webdriver) {
+      console.info('[CoL] Skeleton screen debug active (?skeleton). Call window.hideSkeleton() to dismiss.')
+      return
+    }
+    var l = document.getElementById('loader') || document.querySelector('.col-skeleton-screen')
+    if (l && !l.classList.contains('gone')) {
+      if (navigator.webdriver) {
+        l.style.display = 'none'
+        l.classList.add('gone')
+      } else {
+        l.classList.add('gone')
+        setTimeout(function () {
+          if (l.classList.contains('gone')) l.style.display = 'none'
+        }, 360)
+      }
+    }
+    if (document.body) document.body.classList.add('hero-ready')
+  }
+
+  if (navigator.webdriver) {
+    handleAutoDismiss()
+  } else if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () {
+      setTimeout(handleAutoDismiss, 160)
+    })
+  } else {
+    setTimeout(handleAutoDismiss, 160)
+  }
+  window.addEventListener('load', handleAutoDismiss, { once: true })
+})()
+
+// ==========================================================================
+// CoL Universal Cookie & Privacy Banner Subsystem
+// ==========================================================================
+;(function () {
+  var CONSENT_KEY = 'col_cookie_consent'
+
+  function closeBanner() {
+    var banner = document.getElementById('colCookieBanner')
+    if (banner) {
+      banner.classList.remove('open')
+      setTimeout(function () {
+        if (!banner.classList.contains('open')) {
+          banner.style.display = 'none'
+        }
+      }, 380)
+    }
+  }
+
+  function injectBanner() {
+    if (document.getElementById('colCookieBanner')) return
+    var el = document.createElement('div')
+    el.id = 'colCookieBanner'
+    el.className = 'col-cookie-banner'
+    el.setAttribute('role', 'region')
+    el.setAttribute('aria-label', 'Cookie and Privacy Preferences')
+    el.innerHTML = [
+      '<div class="col-cookie-content">',
+      '  <div class="col-cookie-header">',
+      '    <div class="col-cookie-badge">',
+      '      <span class="col-cookie-dot"></span>',
+      '      <span>Privacy &amp; Data Preferences</span>',
+      '    </div>',
+      '    <button type="button" class="col-cookie-close" onclick="colDismissCookieBanner()" aria-label="Dismiss cookie notice">&times;</button>',
+      '  </div>',
+      '  <div class="col-cookie-body">',
+      '    <p class="col-cookie-text">',
+      '      Class Of Learners uses essential local cookies and session storage to preserve your typing curriculum, simulation state, and secure account authentication. Optional performance telemetry helps us optimize real-time physics engines.',
+      '    </p>',
+      '  </div>',
+      '  <div class="col-cookie-actions">',
+      '    <button type="button" class="col-cookie-btn col-cookie-accept" onclick="colAcceptAllCookies()">Accept All</button>',
+      '    <button type="button" class="col-cookie-btn col-cookie-essential" onclick="colAcceptEssentialCookies()">Essential Only</button>',
+      '    <a href="/privacy.html#cookies" class="col-cookie-link">Learn More</a>',
+      '  </div>',
+      '</div>'
+    ].join('\n')
+    document.body.appendChild(el)
+  }
+
+  window.showCookieBanner = function () {
+    var banner = document.getElementById('colCookieBanner')
+    if (!banner) {
+      injectBanner()
+      banner = document.getElementById('colCookieBanner')
+    }
+    if (banner) {
+      banner.style.display = 'block'
+      banner.offsetHeight
+      banner.classList.add('open')
+    }
+  }
+
+  window.colAcceptAllCookies = function () {
+    try {
+      localStorage.setItem(CONSENT_KEY, 'all')
+      localStorage.setItem(CONSENT_KEY + '_time', new Date().toISOString())
+      if (window.ColCookie) {
+        window.ColCookie.set(CONSENT_KEY, 'all', 365)
+      }
+    } catch (_e) {}
+    closeBanner()
+    if (window.toast) {
+      window.toast('All cookie preferences accepted and saved.', '#10b981')
+    }
+  }
+
+  window.colAcceptEssentialCookies = function () {
+    try {
+      localStorage.setItem(CONSENT_KEY, 'essential')
+      localStorage.setItem(CONSENT_KEY + '_time', new Date().toISOString())
+      if (window.ColCookie) {
+        window.ColCookie.set(CONSENT_KEY, 'essential', 365)
+      }
+    } catch (_e) {}
+    closeBanner()
+    if (window.toast) {
+      window.toast('Essential cookie preferences active.', '#f59e0b')
+    }
+  }
+
+  window.colDismissCookieBanner = function () {
+    window.colAcceptEssentialCookies()
+  }
+
+  function initCookieBanner() {
+    try {
+      var saved = localStorage.getItem(CONSENT_KEY)
+      if (saved) return
+    } catch (_e) {}
+
+    setTimeout(function () {
+      if (document.body) {
+        window.showCookieBanner()
+      }
+    }, 700)
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCookieBanner)
+  } else {
+    initCookieBanner()
+  }
+})()
+
+// ==========================================================================
+// Universal CoL Command Palette Launcher Trigger (Ctrl+K / Cmd+K)
+// ==========================================================================
+if (typeof window.openColCmdPalette !== 'function') {
+  window.openColCmdPalette = function () {
+    var p = document.getElementById('colCmdPalette')
+    if (p) {
+      p.style.display = 'flex'
+      p.removeAttribute('aria-hidden')
+      requestAnimationFrame(function () {
+        p.classList.add('is-open')
+        var inp = p.querySelector('.col-cmd-input') || p.querySelector('input')
+        if (inp) {
+          inp.value = ''
+          inp.focus()
+        }
+      })
+    } else {
+      window.location.href = '/?search=true'
+    }
+  }
+}
+
+document.addEventListener('keydown', function (e) {
+  if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) {
+    // If not typing inside an editable field or textarea
+    var tag = (e.target && e.target.tagName ? e.target.tagName.toLowerCase() : '')
+    if (tag !== 'input' && tag !== 'textarea' && !e.target.isContentEditable) {
+      e.preventDefault()
+      if (typeof window.openColCmdPalette === 'function') {
+        window.openColCmdPalette()
+      }
+    }
+  }
+})
+
+
+
 
 

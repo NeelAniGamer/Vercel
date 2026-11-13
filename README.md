@@ -7,18 +7,15 @@
 **Interactive engineering projects built by students from Mumbai.**
 
 [![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-000000?style=for-the-badge&logo=vercel)](https://advancedlogiclabs.dpdns.org/)
-[![Static Build](https://img.shields.io/badge/Static%20HTML%20%2B%20Reproducible%20Build-333333?style=for-the-badge)](#getting-started)
-[![Three.js](https://img.shields.io/badge/Three.js-0.185-000000?style=for-the-badge&logo=three.js)](#technology)
+[![Static Build](https://img.shields.io/badge/Static%20HTML%20%2B%20Reproducible%20Build-333333?style=for-the-badge)](#build-and-deployment)
+[![Three.js](https://img.shields.io/badge/Three.js-0.187-000000?style=for-the-badge&logo=three.js)](#technology)
 [![Supabase](https://img.shields.io/badge/Supabase-Auth%20%26%20Data-3ECF8E?style=for-the-badge&logo=supabase)](#technology)
 [![PWA](https://img.shields.io/badge/PWA-Installable-5A0FC8?style=for-the-badge&logo=pwa)](#pwa-and-android-apk)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](#license)
-[![GitHub Sponsors](https://img.shields.io/badge/Sponsor-GitHub%20Sponsors-ea4aaa?style=for-the-badge&logo=githubsponsors)](https://github.com/sponsors/NeelAniGamer)
-[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Donate-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black)](https://www.buymeacoffee.com/NeelAniGamer)
-[![Patreon](https://img.shields.io/badge/Patreon-Support-FF424D?style=for-the-badge&logo=patreon)](https://patreon.com/AdvancedLogicLabs)
 
 <br />
 
-**[Production Website](https://advancedlogiclabs.dpdns.org/)** · **[Architecture](#architecture)** · **[Projects](#projects)** · **[Getting Started](#getting-started)**
+**[Production Site](https://advancedlogiclabs.dpdns.org/)** · **[Projects](#projects)** · **[Architecture](#architecture)** · **[Getting Started](#getting-started)** · **[Agent Notes](AGENTS.md)**
 
 </div>
 
@@ -33,6 +30,7 @@
 - [Architecture](#architecture)
 - [Getting Started](#getting-started)
 - [Commands](#commands)
+- [Verification](#verification)
 - [Build and Deployment](#build-and-deployment)
 - [Quality and Verification](#quality-and-verification)
 - [Security](#security)
@@ -47,20 +45,34 @@ Class Of Learners is a student-built digital engineering studio and a multi-proj
 
 The public runtime is a collection of static HTML, CSS, and JavaScript applications. A reproducible root build filters the deployable tree, validates the maintained Traffic level set, bundles the React/TypeScript simulator entry with esbuild, and produces the committed `dist/` artifact consumed by Vercel.
 
-> **Documentation note:** This README follows the current executable configuration. Older planning documents such as `PROJECTS.md` and `Traffic/CODEBASE.md` may describe superseded counts, entrypoints, or build assumptions.
-
 ### At a Glance
 
-| Area                    | Details                                                                   |
-| ----------------------- | ------------------------------------------------------------------------- |
-| **Production**          | [advancedlogiclabs.dpdns.org](https://advancedlogiclabs.dpdns.org/)       |
-| **Hosting**             | Vercel; `vercel.json` selects `dist/` as the output directory             |
-| **Runtime**             | Static HTML5, CSS, vanilla JavaScript, WebGL, and browser APIs            |
-| **React bundle**        | `react-src/GamePage.tsx` → `dist/Traffic/simulator-bundle.js` via esbuild |
-| **Authentication**      | Supabase Google/email authentication with live-session identity           |
-| **Offline layer**       | Service worker, installable PWA, and self-hosted `COL.apk`                |
-| **Primary sub-app**     | `Traffic/` — Mumbai Traffic Hero driving and road-safety experiences      |
-| **Deployment artifact** | Approximately 620 MB because runtime 3D model packs are retained          |
+| Area                    | Details                                                                                 |
+| ----------------------- | --------------------------------------------------------------------------------------- |
+| **Production**          | [advancedlogiclabs.dpdns.org](https://advancedlogiclabs.dpdns.org/)                     |
+| **Hosting**             | Vercel; `vercel.json` selects `dist/` as the output directory                           |
+| **Runtime**             | Static HTML5, CSS, vanilla JavaScript, WebGL, and browser APIs                          |
+| **React bundle**        | `react-src/GamePage.tsx` → `dist/Traffic/simulator-bundle.js` via esbuild               |
+| **Authentication**      | Supabase Google/email authentication with live-session identity                         |
+| **Offline layer**       | Service worker, installable PWA, and self-hosted `COL.apk`                              |
+| **Primary sub-app**     | `Traffic/` — Mumbai Traffic Hero driving and road-safety experiences                    |
+| **Deployment artifact** | ~279 MB (586 files, 41 HTML pages) because runtime 3D model packs are retained           |
+
+### Verified Facts
+
+These numbers are generated from the repository itself. The scripts that produce them live in `scripts/` and are listed under [Commands](#commands).
+
+| Claim                     | Value                                      | Source                                            |
+| ------------------------- | ------------------------------------------ | ------------------------------------------------- |
+| Projects and apps         | 16                                         | `home.html` JSON-LD `ItemList`                    |
+| Indexable pages           | 19                                         | `sitemap.xml`                                     |
+| Traffic levels            | 57 (54 numbered + 3 bonus)                 | `Traffic/level-catalog.js`                        |
+| Career pathways           | 441                                        | `careers-data.js`                                |
+| Terra3D countries         | 178 unique (194 records, 16 aliases)       | `Terra3D/countryData.js`                          |
+| Civic law modules         | 50                                         | `civiclogic.html` / `Database_Logic.html`          |
+| ATI levels                | 200                                        | `ati.html`                                        |
+| Hand-written source lines | ~239,000                                    | `scripts/fact-codepaths.js`                       |
+| Team                      | 3 co-founders + 3 contributors              | `about.html`                                      |
 
 ## Projects
 
@@ -72,27 +84,32 @@ The public runtime is a collection of static HTML, CSS, and JavaScript applicati
 | **Mumbai Traffic Academy** | [`/Traffic/Academy`](https://advancedlogiclabs.dpdns.org/Traffic/Academy)                                       | Road-safety lessons, level briefings, quizzes, syllabus progress, and certificates  |
 | **Traffic Dashboard**      | [`/Traffic/TrafficDashboard`](https://advancedlogiclabs.dpdns.org/Traffic/TrafficDashboard)                     | Leaderboards, learner telemetry, badges, wallet data, and certificates              |
 | **Solar System 3D**        | [`/solar`](https://advancedlogiclabs.dpdns.org/solar)                                                           | Interactive planetary visualization and orbital telemetry                           |
-| **Terra3D**                | [`/Terra3D/`](https://advancedlogiclabs.dpdns.org/Terra3D/)                                                     | Geospatial globe and country knowledge experience                                   |
+| **Terra3D**                | [`/Terra3D/`](https://advancedlogiclabs.dpdns.org/Terra3D/)                                                     | Geospatial globe and 178-country knowledge experience                               |
 | **Gesture Control**        | [`/gesture`](https://advancedlogiclabs.dpdns.org/gesture)                                                       | Webcam hand tracking and touchless browser interaction                              |
 | **ATI**                    | [`/ati`](https://advancedlogiclabs.dpdns.org/ati)                                                               | Typing instruction, velocity telemetry, and keyboard exercises                      |
 | **QR Matrix Studio**       | [`/qr`](https://advancedlogiclabs.dpdns.org/qr) · [`/qr-editor`](https://advancedlogiclabs.dpdns.org/qr-editor) | QR generation, styling, and visual customization                                    |
-| **RPG Engine**             | [`/rpg`](https://advancedlogiclabs.dpdns.org/rpg)                                                               | Canvas-based tilemap exploration and sprite animation                               |
-| **Studio Pages**           | `/school` · `/sneh-asha` · `/download`                                                                          | Foundation, outreach, and distribution experiences                                  |
+| **Career Compass**         | [`/Career`](https://advancedlogiclabs.dpdns.org/Career)                                                         | 441 career pathways, 6,400+ job titles, degree roadmaps, and salary bands          |
+| **CivicLogic**             | [`/civiclogic`](https://advancedlogiclabs.dpdns.org/civiclogic)                                                 | 50-module Motor Vehicles Act database and RTO challan simulator                     |
+| **Database Logic**         | [`/Database_Logic`](https://advancedlogiclabs.dpdns.org/Database_Logic)                                       | Relational query modelling of statutory rules                                        |
+| **CastFlow**               | [`/CastFlow`](https://advancedlogiclabs.dpdns.org/CastFlow)                                                     | Low-latency wireless screen casting to Android TV and tablets                       |
+| **Cereal AI**              | [`/cereal`](https://advancedlogiclabs.dpdns.org/cereal)                                                         | Background lecture recording with Gemini 2.5 Flash notes and calendar tasks         |
+| **RPG Engine**             | [`/rpg`](https://advancedlogiclabs.dpdns.org/rpg)                                                               | Canvas-based dungeon crawler with combat, loot, and a chiptune score                |
+| **Studio Pages**           | `/about` · `/school` · `/sneh-asha` · `/making` · `/download`                                                  | Foundation, outreach, build story, and distribution experiences                      |
 
-The root application also includes the studio landing page, team and career pages, feedback and verification tools, legal pages, visual sitemap, and supporting engineering notes. Vercel clean URLs map routes such as `/home`, `/Traffic/Driving`, and `/Terra3D/` to their HTML entrypoints.
+Legal pages (`/privacy`, `/terms`), the feedback portal (`/feedback`), the learner dashboard (`/dashboard`), the admin console (`/admin`), the certificate verifier (`/verify`), and the visual sitemap (`/sitemap`) complete the public surface. Vercel clean URLs map routes such as `/home`, `/Traffic/Driving`, and `/Terra3D/` to their HTML entrypoints.
 
 ## Technology
 
 | Layer                    | Technology                                                                                               |
 | ------------------------ | -------------------------------------------------------------------------------------------------------- |
 | **Web runtime**          | HTML5, CSS, vanilla JavaScript, Canvas, WebGL                                                            |
-| **3D**                   | Three.js r128 in legacy pages; package-local Three.js versions for the React, Traffic, and Terra3D tools |
+| **3D**                   | `three@0.187` at the root, `0.186` in Traffic, `0.170` in Terra3D, plus vendored builds in `assets/js/` and `Traffic/libs/` |
 | **React layer**          | React 19, TypeScript, esbuild                                                                            |
-| **Traffic tooling**      | Vite, TypeScript, Electron, electron-builder, Rapier dependency in the separate TypeScript port          |
+| **Traffic tooling**      | Vite, TypeScript, Electron, electron-builder                                                            |
 | **Data and identity**    | Supabase Auth, Postgres-backed data, RLS-protected queries, and RPC functions                            |
 | **Hosting**              | Vercel static deployment with security headers and clean URLs                                            |
 | **Offline/distribution** | Service worker, web app manifest, Android APK, and version metadata                                      |
-| **Quality/security**     | Prettier, GitHub code scanning, DevSkim, Defender for DevOps, Dependabot, and `scripts/security-check.js`   |
+| **Quality/security**     | Prettier, ESLint, GitHub code scanning, DevSkim, Defender for DevOps, Dependabot, and `scripts/security-check.js` |
 | **Assets**               | Procedural scenes, GLB/model packs, textures, skins, and compressed public media                         |
 
 ## Design System
@@ -110,6 +127,8 @@ The shared visual language is defined in `col-ui.css` and reused across the stud
 
 UI changes should remain mobile-first at 360px, use title case for player-facing text, prefer `transform`/`opacity` animation, cap device pixel ratio, avoid full-viewport `background-position` animation, and lazy-load below-fold content. Keep the palette high-contrast without sacrificing the dark obsidian identity.
 
+The theme is stored in `localStorage.theme` (`'light'` or `'dark'`) and toggles the `lm` class on **both** `<html>` and `<body>`; the stylesheets key off both, so one without the other produces a half-themed page.
+
 ## Architecture
 
 ### Repository Map
@@ -123,12 +142,12 @@ UI changes should remain mobile-first at 360px, use title case for player-facing
 | `react-src/`                                                   | React/TypeScript simulator components bundled by the root build                      | Source                              |
 | `Traffic/`                                                     | Main browser Traffic application and its own package                                 | Source plus separate tooling        |
 | `Traffic/src/`                                                 | TypeScript port included by the Traffic typecheck but not the active Vite page entry | Experimental/unwired runtime        |
-| `Traffic/dist-web/`, `Traffic/dist/`, `Traffic/dist-electron/` | Vite and Electron output directories                                                 | Generated; excluded from root build |
 | `Terra3D/`                                                     | Standalone Vite/Three.js globe package                                               | Separate package                    |
 | `traffic-ts/`                                                  | TypeScript reference library without a package manifest or owning build              | Reference only                      |
 | `dist/`                                                        | Filtered, committed production output served by Vercel                               | Generated artifact                  |
 | `build.js`                                                     | Root static-copy, validation, and esbuild pipeline                                   | Build source of truth               |
-| `scripts/`                                                     | Production and security verification                                                 | Development-only                    |
+| `scripts/`                                                     | Production, SEO, and security verification plus content generators                  | Development-only                    |
+| `docs/wiki/`                                                   | Architecture, routes, authentication, and deployment documentation                   | Documentation                       |
 | `.github/`                                                     | Code-scanning config, DevSkim and Defender workflows, and Dependabot configuration   | CI/configuration                    |
 
 ### Root Build Flow
@@ -139,6 +158,7 @@ Vercel
   ├─ npm ci
   ├─ npm run build
   │    ├─ validate maintained Traffic levels
+  │    ├─ validate career data
   │    ├─ remove and recreate dist/
   │    ├─ copy the filtered runtime tree
   │    ├─ copy Traffic/public assets
@@ -146,6 +166,7 @@ Vercel
   │
   └─ postbuild
        ├─ production artifact check
+       ├─ SEO check (sitemap ↔ page metadata parity)
        └─ security regression check
 ```
 
@@ -155,7 +176,8 @@ Vercel
 
 - `Traffic/Driving.html` loads the level registry, `game_core.js`, the full `ui.js`, and `start.js`. The boot path waits for the `Game` class and starts the simulation.
 - `Traffic/Academy.html` loads the level/course/UI stack and initializes the Academy interface; it does not load the driving `Game` or `start.js` boot path.
-- Level files register entries in `window.LVS`; the current registry contains 57 objects: 54 numbered levels, two custom entries, and one free-roam entry. The selected entry is merged into the runtime map configuration before scene construction.
+- `Traffic/level-catalog.js` is the generated source of truth for level identity: 57 entries — 54 numbered lessons plus 3 free-roam/bonus entries. Regenerate it with `node Traffic/tools/gen-level-catalog.js`.
+- Level files register entries in `window.LVS`; the selected entry is merged into the runtime map configuration before scene construction.
 - Task completion is implemented in `game_core.js`; the validator is intended to mirror its task types and target vocabulary, but the full report currently exposes legacy mismatches. Review both when changing objectives.
 - The intended identity boundary is the live Supabase session. Local profiles support offline setup but must not be presented as a signed-in account.
 - Progress, quiz, civic, badge, and completion updates are split across `game_core.js`, `ui.js`, task/mission modules, and the Supabase synchronization layer. Preserve those idempotency and ownership boundaries when changing scoring.
@@ -173,7 +195,7 @@ Vercel
 
 ### Prerequisites
 
-- Node.js 20 or newer for the installed Playwright toolchain.
+- Node.js 20 or newer.
 - npm.
 - A modern browser with WebGL for the 3D experiences.
 - Optional: a Supabase project/account when testing authenticated data flows.
@@ -191,7 +213,7 @@ npm ci
 The repository includes a small clean-URL-aware server:
 
 ```bash
-node serve.js
+node local_server.js
 ```
 
 Open:
@@ -200,7 +222,7 @@ Open:
 - Traffic Driving: [http://localhost:3000/Traffic/Driving.html](http://localhost:3000/Traffic/Driving.html)
 - Traffic Academy: [http://localhost:3000/Traffic/Academy.html](http://localhost:3000/Traffic/Academy.html)
 
-`serve.js` is a local development server and is intentionally excluded from the production artifact.
+`local_server.js` is a local development server and is intentionally excluded from the production artifact.
 
 ### Build and Preview the Production Tree
 
@@ -229,24 +251,41 @@ npm install
 npm run dev
 ```
 
-Terra3D has no committed lockfile. Its Vite build writes to `Terra3D/dist`, which currently contains desktop/PyInstaller output; do not run that build casually.
+Terra3D has no committed lockfile. Its Vite build writes to `Terra3D/dist`, which is excluded from the deploy artifact — do not run that build casually.
 
 ## Commands
 
 ### Root Commands
 
-| Command                                                                    | Purpose                                                         | Notes                                                       |
-| -------------------------------------------------------------------------- | --------------------------------------------------------------- | ----------------------------------------------------------- |
-| `npm ci`                                                                   | Install the root lockfile                                       | Vercel uses the same install command                        |
-| `npm run build`                                                            | Run the complete filtered production build                      | Runs `postbuild` checks automatically                       |
-| `npm run verify:production`                                                | Check an existing `dist/` and run the security regression check | Does not rebuild the artifact                               |
-| `npm run security:check`                                                   | Run the standalone source/configuration security check          | Not a complete security test                                |
-| `npm run security:audit`                                                   | Run npm's dependency audit                                      | Review findings rather than treating it as a release gate   |
-| `node Traffic/tools/validate-levels.js --scope=level1,level5,level_custom` | Run the maintained level check used by the build                | Scoped errors determine the exit code                       |
-| `node Traffic/tools/validate-levels.js`                                    | Print the complete level report                                 | Expected to expose the current legacy backlog               |
-| `node --check <file>`                                                      | Parse-check a JavaScript file                                   | Use a temporary `.mjs` copy for module syntax when required |
+| Command                                            | Purpose                                                       | Notes                                                 |
+| -------------------------------------------------- | ------------------------------------------------------------- | ----------------------------------------------------- |
+| `npm ci`                                           | Install the root lockfile                                     | Vercel uses the same install command                  |
+| `npm run build`                                    | Run the complete filtered production build                    | Runs `postbuild` checks automatically                   |
+| `npm run verify:production`                        | Check an existing `dist/` and run the security regression check | Does not rebuild the artifact                        |
+| `npm run seo:check`                                | Validate sitemap ↔ page metadata parity                       | Fails on missing or duplicated head tags              |
+| `npm run security:check`                           | Run the standalone source/configuration security check        | Not a complete security test                          |
+| `npm run security:audit`                           | Run npm's dependency audit                                    | Review findings rather than treating it as a release gate |
+| `npm run lint`                                     | Lint first-party JavaScript                                   | Currently reports 0 errors and ~3,600 style warnings  |
+| `npm run typecheck`                                | Typecheck `react-src/`                                        | `tsc --noEmit` over the React layer                  |
+| `npm test`                                         | Run the smoke test and the startup-stub check                 | Both pass against the current tree                   |
+| `npm run format` / `npm run format:check`          | Format the tree with Prettier                                 | `semi: false`, `singleQuote`, print width 200        |
+| `node Traffic/tools/validate-levels.js --scope=level1,level5,level_custom` | Run the maintained level check used by the build | Scoped errors determine the exit code                 |
+| `node Traffic/tools/validate-levels.js`            | Print the complete level report                               | Expected to expose the current legacy backlog         |
 
-The root `lint`, `typecheck`, `test`, and `test:smoke` scripts do not currently have a maintained root ESLint configuration, `tsconfig.json`, Playwright configuration, or test directory. The smoke script also requests an undefined `chromium` project. Do not present those commands as passing release gates until their inputs are restored.
+### Content and Reference Scripts
+
+These run from the repository root and are excluded from the deploy artifact.
+
+| Command                                | Purpose                                                              |
+| -------------------------------------- | -------------------------------------------------------------------- |
+| `node scripts/audit-pages.js`          | Audit every page's head metadata and resolve every internal reference |
+| `node scripts/refresh-page-meta.js`    | Insert missing head tags using the table in the script (idempotent)  |
+| `node scripts/refresh-page-meta.js --check` | Report pages with missing metadata without writing             |
+| `node scripts/fact-check.js`           | Print the career, country, level, and module counts behind the copy |
+| `node scripts/fact-terra3d.js`         | Resolve Terra3D's country aliases and print the canonical count      |
+| `node scripts/fact-codepaths.js`       | Count hand-written source lines                                      |
+
+Run `scripts/audit-pages.js` after adding, moving, or deleting a page or asset. It resolves every `src`/`href` against the built tree, which catches the class of breakage the production checker only warns about.
 
 ### Traffic Commands
 
@@ -261,8 +300,8 @@ Run these from `Traffic/`:
 | `npm run build:electron`    | Typecheck, build, and package Electron | Preferred checked desktop build      |
 | `npm run electron:portable` | Build a portable Electron package      | Skips the TypeScript check           |
 | `npm run preview`           | Preview the Vite output                | Use after a web build                |
-
-From `Traffic/`, `npm run test:smoke` currently points to a missing `pw_test.js`; it is not a working test command.
+| `npm test`                  | Run the vitest suite in `Traffic/tests/` | Engine and legacy regression suites |
+| `npm run test:smoke`        | Run the Playwright smoke check         | Requires the Playwright toolchain    |
 
 ## Build and Deployment
 
@@ -274,8 +313,10 @@ From `Traffic/`, `npm run test:smoke` currently points to a missing `pw_test.js`
 - Build: `npm run build`
 - Output: `dist/`
 - Clean URLs: enabled
-- Rewrites: `/` → `/home` and `/perceptus` → `/gesture`
+- Rewrites: `/` → `/home`, `/cast` → `/CastFlow`, `/perceptus` → `/gesture`, `/friday` and `/col-game` → `/download`, `/civiclogic` and `/database_logic` → `/Database_Logic`
+- Redirects: `/index.html` → `/home`, `/index` → `/home`, `/how-it-was-made` → `/making`, `/engine` → `/solar`
 - Security headers: HSTS, clickjacking protection, MIME sniffing protection, referrer policy, permissions policy, and report-only CSP
+- `X-Robots-Tag: noindex` for internal routes (`/admin`, `/dashboard`, `/q`, `/qr`, `/rpg`, `/ati-demo`, `/ati-lite`, `/engine`, `/Database_Logic`, `/verify`, `/feedback`, `/sitemap`, `/Traffic/*` internal pages)
 - Cache policy: long-lived static assets, revalidated HTML, and no-cache service/configuration files
 
 Vercel serves the filtered output, not the repository root. GitHub provides code scanning plus DevSkim and Defender for DevOps scans; they are not a general build-and-test pipeline.
@@ -285,10 +326,11 @@ Vercel serves the filtered output, not the repository root. GitHub provides code
 1. Run `npm ci` from the repository root.
 2. Run `npm run build` and review the generated `dist/` diff.
 3. Run `npm run verify:production` when checking an existing artifact.
-4. Run `npm run security:audit` and review high/critical dependency findings.
-5. Manually smoke-test `/home`, `/Traffic/Driving`, `/Traffic/Academy`, and `/Traffic/TrafficDashboard`.
-6. Confirm no `.env*`, database, credential, local-agent, or desktop-only files entered `dist/`.
-7. Review the 620 MB artifact and model-pack changes before deployment.
+4. Run `node scripts/audit-pages.js` and confirm no page references a missing file.
+5. Run `npm run security:audit` and review high/critical dependency findings.
+6. Manually smoke-test `/home`, `/Traffic/Driving`, `/Traffic/Academy`, `/Traffic/TrafficDashboard`, `/Career`, and `/cereal`.
+7. Confirm no `.env*`, database, credential, local-agent, or desktop-only files entered `dist/`.
+8. Review the ~279 MB artifact and model-pack changes before deployment.
 
 `.vercelignore` controls source upload while `build.js` controls the generated output. Keep both exclusion lists aligned when adding a new sensitive or non-runtime path.
 
@@ -296,14 +338,18 @@ Vercel serves the filtered output, not the repository root. GitHub provides code
 
 ### Automated Checks
 
-| Check                         | Scope                                                                                      |
-| ----------------------------- | ------------------------------------------------------------------------------------------ |
-| Root build validation         | Maintained `level1`, `level5`, and `level_custom` scope                                    |
-| `scripts/production-check.js` | Required output files, forbidden paths, local references, and size warning                 |
-| `scripts/security-check.js`   | Live-session identity rules, QR verifier storage, Electron flags, and scanning configuration |
-| CodeQL                        | Maintained JavaScript/TypeScript and Python source                                         |
-| DevSkim                       | Security-pattern scanning                                                                  |
-| Dependabot                    | Root npm, Traffic npm, and GitHub Actions updates                                          |
+| Check                          | Scope                                                                                     |
+| ------------------------------ | ------------------------------------------------------------------------------------------ |
+| Root build validation          | Maintained `level1`, `level5`, and `level_custom` scope                                     |
+| `scripts/production-check.js`  | Required output files, forbidden paths, local references, and size warning                  |
+| `scripts/seo-check.js`         | Sitemap ↔ page parity: title, description, canonical, Open Graph, Twitter card, JSON-LD, H1 |
+| `scripts/security-check.js`    | Live-session identity rules, QR verifier storage, Electron flags, and scanning configuration |
+| `scripts/audit-pages.js`       | Head metadata completeness and internal reference resolution across every page             |
+| `npm test`                     | Traffic smoke test and startup-stub verification                                            |
+| `npm run lint` / `npm run typecheck` | Static analysis over first-party JavaScript and the React layer                       |
+| CodeQL                         | Maintained JavaScript/TypeScript and Python source                                          |
+| DevSkim                        | Security-pattern scanning                                                                   |
+| Dependabot                     | Root npm, Traffic npm, and GitHub Actions updates                                           |
 
 Generated `dist/`, model packs, local agent directories, vendored libraries, and desktop output are excluded from source scanning. Fix maintained source rather than suppressing generated copies.
 
@@ -314,26 +360,40 @@ analyses uploading the same language category for one ref make the analyze step
 fail. Disable the unused Go, Java/Kotlin, and C/C++ languages in the code-scanning
 settings, since the application has no source in those languages.
 
+### The SEO Contract
+
+`scripts/seo-check.js` is strict and runs on every build. A page listed in `sitemap.xml` must have:
+
+- exactly one `<title>` (15–60 characters) and one meta description (70–165 characters)
+- exactly one canonical link equal to its route, and an `og:url` matching it
+- a complete Open Graph set (`og:title`, `og:description`, `og:url`, `og:type`, `og:image`) and a complete Twitter card set
+- an existing absolute `og:image` URL, a document `lang`, and exactly one viewport tag
+- no `noindex` directive
+- at least one `<h1>` that is not a placeholder
+
+New public pages must be added to `sitemap.xml` **and** carry those tags. Pages that must stay out of the sitemap belong in `nonIndexableRoutes` in `scripts/seo-check.js`.
+
 ### Manual Verification
 
-There is no maintained root browser-test gate. For HTML or script-load changes:
+For HTML or script-load changes:
 
 1. Compare blocking and `defer` tags in the affected page.
 2. Run `node --check` on changed scripts.
-3. Use `node serve.js` and open both `Traffic/Driving.html` and `Traffic/Academy.html`.
-4. Run the scoped level validator.
-5. Use the unscoped validator to inspect the broader backlog; it is expected to report legacy target failures outside the maintained build scope.
+3. Run `node scripts/audit-pages.js` and resolve any missing reference.
+4. Use `node local_server.js` and open both `Traffic/Driving.html` and `Traffic/Academy.html`.
+5. Run the scoped level validator.
+6. Use the unscoped validator to inspect the broader backlog; it is expected to report legacy target failures outside the maintained build scope.
 
 ### Maintainer Notes
 
-- Keep the 54 numbered Traffic levels and the custom/free-roam entries loadable.
+- Keep the 54 numbered Traffic levels and the 3 bonus entries loadable; `Traffic/level-catalog.js` records the authoritative total.
 - `Traffic/src/` is not the active browser entrypoint; do not infer runtime wiring from its presence.
 - Traffic task types and validator target tables must be reviewed together when adding objectives.
 - School/crossing fields (`schoolX`, `schoolZ`, `zebraZ`, `flasherZ`) are authoritative for current task consumers, but legacy and specialized renderers still contain fallback geometry.
 - Run saves are level-scoped (`traffic_run_<levelId>`) and expire after 30 minutes; shared browser profiles should not be treated as isolated run identities.
 - Completion currently saves wallet state before writing `S.comp`; verify persistence order when changing the completion flow so exiting through the reward screen cannot lose the completion record.
 - Dense leaderboard rows and podium placement are separate code paths; test tied scores explicitly before treating podium colors as rank-correct.
-- The full level report, `npm run lint`, root `npm run typecheck`, and root Playwright scripts currently describe known repository gaps rather than green release checks.
+- Published counts are generated, not hand-written. Change the data, then re-run `scripts/fact-*.js` and update the copy.
 
 ## Security
 
@@ -362,6 +422,7 @@ Never commit Supabase service-role keys, access tokens, passwords, private datab
 7. Run the focused verification commands relevant to the change.
 8. Rebuild root `dist/` when changing files that feed the Vercel artifact; never edit generated output by hand.
 9. Do not add secrets, local databases, dependency trees, or large unreviewed model packs.
+10. Update the published counts and copy from the generated facts rather than editing them by hand.
 
 ## PWA and Android APK
 
@@ -371,11 +432,19 @@ Never commit Supabase service-role keys, access tokens, passwords, private datab
 
 ## Team
 
-Class Of Learners is built by three high school co-founders in Mumbai:
+Class Of Learners is a student engineering studio in Mumbai with three co-founders and three contributors.
 
-- **Neel Badri** — Co-Founder · Lead Developer & Architecture
-- **Aarush Vangari** — Co-Founder · UI/UX Design & Physics Engine
-- **Ansh Patil** — Co-Founder · QA & Systems
+**Co-founders**
+
+- **Neel Badri** — Co-Founder · Systems Architecture & Core Algorithms
+- **Aarush Vangari** — Co-Founder · Visual Identity, Interaction Design & 3D Graphics
+- **Ansh Patil** — Co-Founder · Systems QA & Release Integrity
+
+**Contributors**
+
+- **Yashraj Jadhav** — Contributor & Idea Development
+- **Aaryaman Jadhav** — Contributor (Terra3D World Atlas)
+- **Third contributor** — named on the team page at `/about`
 
 ## License
 

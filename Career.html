@@ -90,12 +90,116 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="manifest" href="manifest.json" />
     <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
-    <link rel="stylesheet" href="col-mobile.css" />
     <link rel="stylesheet" href="liquid-glass.css" />
-    <link rel="stylesheet" href="mobile-perf.css" />
+    <!-- Conditional Mobile Assets: Loaded ONLY on mobile/tablet or when screen <= 1024px. Prevents downloading mobile styles and touch scripts on PC desktop. -->
+    <script>
+      ;(function () {
+        var isM = (window.innerWidth <= 1024) ||
+          (window.matchMedia && window.matchMedia('(max-width: 1024px), (pointer: coarse)').matches) ||
+          /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+          location.search.indexOf('iphone=1') !== -1;
+        function load(href, asScript) {
+          var sel = asScript ? 'script[src*="' + href + '"]' : 'link[href*="' + href + '"]';
+          if (document.querySelector(sel)) return;
+          var el = document.createElement(asScript ? 'script' : 'link');
+          if (asScript) { el.src = href; el.defer = true; }
+          else { el.rel = 'stylesheet'; el.href = href; }
+          document.head.appendChild(el);
+        }
+        if (isM) {
+          load('/col-mobile.css');
+          load('/mobile-perf.css');
+          load('/pull-refresh.js', true);
+        } else if (window.matchMedia) {
+          var mql = window.matchMedia('(max-width: 1024px)');
+          var onR = function (e) {
+            if (e.matches) {
+              load('/col-mobile.css');
+              load('/mobile-perf.css');
+              load('/pull-refresh.js', true);
+              if (mql.removeEventListener) mql.removeEventListener('change', onR);
+              else if (mql.removeListener) mql.removeListener(onR);
+            }
+          };
+          if (mql.addEventListener) mql.addEventListener('change', onR);
+          else if (mql.addListener) mql.addListener(onR);
+        }
+      })()
+    </script>
+    <noscript><link rel="stylesheet" href="/col-mobile.css" media="(max-width: 1024px)" /></noscript>
     <link rel="stylesheet" href="career.css" />
   </head>
   <body>
+    <div class="loader col-skeleton-screen" id="loader" role="status" aria-label="Loading Career Compass AI">
+      <div class="sk-ambient-glow" aria-hidden="true"></div>
+      <div class="sk-ambient-glow-left" aria-hidden="true"></div>
+
+      <!-- Top Nav Skeleton -->
+      <header class="sk-nav" aria-hidden="true">
+        <div class="sk-nav-brand">
+          <div class="sk-circle sk-brand-logo sk-shimmer"></div>
+          <div class="sk-pill sk-brand-text sk-shimmer"></div>
+        </div>
+        <div class="sk-nav-links">
+          <div class="sk-pill sk-shimmer" style="width: 54px; height: 14px;"></div>
+          <div class="sk-pill sk-shimmer" style="width: 58px; height: 14px;"></div>
+          <div class="sk-pill sk-shimmer" style="width: 62px; height: 14px;"></div>
+          <div class="sk-pill sk-shimmer" style="width: 82px; height: 14px;"></div>
+          <div class="sk-pill sk-shimmer" style="width: 66px; height: 14px;"></div>
+          <div class="sk-pill sk-shimmer" style="width: 76px; height: 14px;"></div>
+        </div>
+        <div class="sk-nav-actions">
+          <div class="sk-circle sk-nav-theme sk-shimmer"></div>
+          <div class="sk-pill sk-nav-btn sk-shimmer" style="width: 78px;"></div>
+          <div class="sk-pill sk-nav-cta sk-shimmer" style="width: 124px;"></div>
+        </div>
+      </header>
+
+      <!-- Career Compass AI Skeleton -->
+      <div class="sk-editorial-wrap" aria-hidden="true" style="padding-top: 36px;">
+        <div class="sk-editorial-hero" style="max-width: 860px; margin-bottom: 28px;">
+          <div class="sk-eyebrow-row">
+            <span class="sk-eyebrow-dash"></span>
+            <div class="sk-pill sk-eyebrow-pill sk-shimmer" style="width: 200px;"></div>
+          </div>
+          <div class="sk-title-group" style="align-items: center; width: 100%;">
+            <div class="sk-title-bar sk-title-1 sk-shimmer" style="width: 80%; max-width: 680px;"></div>
+            <div class="sk-title-bar sk-title-2 sk-shimmer" style="width: 56%; max-width: 460px;"></div>
+          </div>
+          <div class="sk-box sk-shimmer" style="width: 100%; max-width: 640px; height: 50px; border-radius: 25px; margin-top: 20px;"></div>
+        </div>
+
+        <!-- 3 Career Cards Grid Skeleton -->
+        <div class="sk-grid sk-grid-3">
+          <div class="sk-card">
+            <div class="sk-pill sk-shimmer" style="width: 120px; height: 20px;"></div>
+            <div class="sk-lede-line sk-shimmer" style="width: 90%;"></div>
+            <div class="sk-lede-line sk-shimmer" style="width: 75%;"></div>
+          </div>
+          <div class="sk-card">
+            <div class="sk-pill sk-shimmer" style="width: 130px; height: 20px;"></div>
+            <div class="sk-lede-line sk-shimmer" style="width: 90%;"></div>
+            <div class="sk-lede-line sk-shimmer" style="width: 75%;"></div>
+          </div>
+          <div class="sk-card">
+            <div class="sk-pill sk-shimmer" style="width: 140px; height: 20px;"></div>
+            <div class="sk-lede-line sk-shimmer" style="width: 90%;"></div>
+            <div class="sk-lede-line sk-shimmer" style="width: 75%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Status Dock -->
+      <footer class="sk-status-dock" aria-hidden="true">
+        <div class="sk-status-pill">
+          <span class="sk-pulse-live"></span>
+          <span class="sk-status-text"><span>CoL</span> &middot; Career Compass AI</span>
+          <div class="sk-progress-bar">
+            <div class="sk-progress-fill"></div>
+          </div>
+        </div>
+      </footer>
+    </div>
     <div class="app">
       <!-- Top Navbar -->
       <nav class="navbar" id="navbar">
@@ -850,7 +954,6 @@
     <!-- App Engine Logic -->
     <script src="career.js"></script>
     <script defer src="col-router.js"></script>
-    <script defer src="pull-refresh.js"></script>
     <script defer src="col-ui.js"></script>
     <script defer src="col-auth.js"></script>
   </body>

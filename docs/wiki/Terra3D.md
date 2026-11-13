@@ -15,7 +15,7 @@ Terra3D allows users to interact with a realistic 3D Earth model in real-time. S
 - **3D Engine**: Three.js (^0.170.0)
 - **Bundler**: Vite (^6.0.0)
 - **Desktop Packaging**: Python + PyInstaller (`Terra3D.exe`)
-- **Geodata**: Custom embedded GeoJSON dataset (`countryData.js`, 426 KB)
+- **Geodata**: Custom embedded dataset (`countryData.js`, ~415 KB) — 194 country records covering **178 unique nations** (16 of the records are aliases such as `Swaziland` / `Eswatini`) plus two lunar easter eggs. `node scripts/fact-terra3d.js` prints the canonical count.
 
 ---
 
@@ -35,4 +35,5 @@ Terra3D allows users to interact with a realistic 3D Earth model in real-time. S
 ## Development Notes
 
 - Terra3D is standalone and intentionally uncoupled from the root lockfile. Always use `npm install` rather than `npm ci` when working within `Terra3D/`.
-- Its Vite build writes to `Terra3D/dist` (desktop build target). Root Vercel deployments do not build Terra3D; they serve the pre-built web assets.
+- Its Vite build writes to `Terra3D/dist`, which is excluded from the deploy artifact. The production site serves `Terra3D/index.html`, `main.js`, `countryData.js`, and `style.css` directly, so do not run that build casually.
+- The globe geometry is fetched from the `world-atlas@2` 110m dataset on jsDelivr; `countryData.js` supplies the per-country detail records layered on top.

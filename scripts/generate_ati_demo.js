@@ -1914,7 +1914,7 @@ const htmlContent = `<!doctype html>
           { k: 'Caps', f: 'lp', cls: 'caps' }, { k: 'a', f: 'lp' }, { k: 's', f: 'lr' },
           { k: 'd', f: 'lm' }, { k: 'f', f: 'li' }, { k: 'g', f: 'li' },
           { k: 'h', f: 'ri' }, { k: 'j', f: 'ri' }, { k: 'k', f: 'rm' },
-          { k: 'l', f: 'rr' }, { k: ';', alt: ':', f: 'rp' }, { k: \"'\", alt: '\"', f: 'rp' },
+          { k: 'l', f: 'rr' }, { k: ';', alt: ':', f: 'rp' }, { k: "'", alt: '"', f: 'rp' },
           { k: 'Enter', f: 'rp', cls: 'enter' }
         ],
         [
@@ -1984,7 +1984,7 @@ const htmlContent = `<!doctype html>
           const ch = line[i];
 
           // String
-          if (ch === '\"' || ch === \"'\" || ch === '\`') {
+          if (ch === '"' || ch === "'" || ch === '\`') {
             const quote = ch;
             let str = quote;
             i++;
@@ -2246,7 +2246,7 @@ const htmlContent = `<!doctype html>
           const shiftMap = {
             '~': '\`', '!': '1', '@': '2', '#': '3', '$': '4', '%': '5',
             '^': '6', '&': '7', '*': '8', '(': '9', ')': '0', '_': '-',
-            '+': '=', '{': '[', '}': ']', '|': '\\\\', ':': ';', '\"': \"'\",
+            '+': '=', '{': '[', '}': ']', '|': '\\\\', ':': ';', '"': "'",
             '<': ',', '>': '.', '?': '/'
           };
           if (shiftMap[expectedChar]) {
@@ -2480,9 +2480,9 @@ const htmlContent = `<!doctype html>
 
         // Multiplier badges on streak
         const streakLbl = document.getElementById('telStreakLbl');
-        if (currentStreak >= 50) streakLbl.innerHTML = 'Nitro Streak <span style=\"color: var(--rose); font-weight: 800;\">&times;3.0</span>';
-        else if (currentStreak >= 25) streakLbl.innerHTML = 'Nitro Streak <span style=\"color: var(--signal); font-weight: 800;\">&times;2.0</span>';
-        else if (currentStreak >= 10) streakLbl.innerHTML = 'Nitro Streak <span style=\"color: var(--ion); font-weight: 800;\">&times;1.5</span>';
+        if (currentStreak >= 50) streakLbl.innerHTML = 'Nitro Streak <span style="color: var(--rose); font-weight: 800;">&times;3.0</span>';
+        else if (currentStreak >= 25) streakLbl.innerHTML = 'Nitro Streak <span style="color: var(--signal); font-weight: 800;">&times;2.0</span>';
+        else if (currentStreak >= 10) streakLbl.innerHTML = 'Nitro Streak <span style="color: var(--ion); font-weight: 800;">&times;1.5</span>';
         else streakLbl.textContent = 'Combo Streak';
 
         // Sparkline sample every 1 sec
@@ -2559,7 +2559,7 @@ const htmlContent = `<!doctype html>
         clearTimeout(simTimeout);
 
         const simBtn = document.getElementById('btnAutoSim');
-        simBtn.innerHTML = '<svg width=\"13\" height=\"13\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><polygon points=\"13 2 3 14 12 14 11 22 21 10 12 10 13 2\"/></svg><span>Run Auto-Test</span>';
+        simBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span>Run Auto-Test</span>';
         simBtn.classList.remove('running');
 
         const elapsedMin = Math.max(0.001, elapsedTotalSec / 60);
@@ -2664,7 +2664,7 @@ const htmlContent = `<!doctype html>
         document.getElementById('terminal').className = 'terminal';
 
         const simBtn = document.getElementById('btnAutoSim');
-        simBtn.innerHTML = '<svg width=\"13\" height=\"13\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><polygon points=\"13 2 3 14 12 14 11 22 21 10 12 10 13 2\"/></svg><span>Run Auto-Test</span>';
+        simBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span>Run Auto-Test</span>';
         simBtn.classList.remove('running');
 
         // Setup timer or word display
@@ -2804,7 +2804,7 @@ const htmlContent = `<!doctype html>
           clearTimeout(simTimeout);
           isSimulating = false;
           const simBtn = document.getElementById('btnAutoSim');
-          simBtn.innerHTML = '<svg width=\"13\" height=\"13\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><polygon points=\"13 2 3 14 12 14 11 22 21 10 12 10 13 2\"/></svg><span>Run Auto-Test</span>';
+          simBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span>Run Auto-Test</span>';
           simBtn.classList.remove('running');
           return;
         }
@@ -2812,7 +2812,7 @@ const htmlContent = `<!doctype html>
         resetGame();
         isSimulating = true;
         const simBtn = document.getElementById('btnAutoSim');
-        simBtn.innerHTML = '<svg width=\"13\" height=\"13\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"6\" y=\"6\" width=\"12\" height=\"12\" rx=\"2\"/></svg><span>Stop Simulation</span>';
+        simBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="6" width="12" height="12" rx="2"/></svg><span>Stop Simulation</span>';
         simBtn.classList.add('running');
 
         const speedWpm = parseInt(document.getElementById('simSpeedSelect').value, 10) || 75;

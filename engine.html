@@ -29,8 +29,42 @@
     <script defer src="col-router.js"></script>
     <link rel="stylesheet" href="col-ui.css?v=1782446126.5715783" />
     <link rel="stylesheet" href="liquid-glass.css" />
-    <link rel="stylesheet" href="mobile-perf.css" />
-    <script defer src="pull-refresh.js"></script>
+    <!-- Conditional Mobile Assets: Loaded ONLY on mobile/tablet or when screen <= 1024px. Prevents downloading mobile styles and touch scripts on PC desktop. -->
+    <script>
+      ;(function () {
+        var isM = (window.innerWidth <= 1024) ||
+          (window.matchMedia && window.matchMedia('(max-width: 1024px), (pointer: coarse)').matches) ||
+          /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+          location.search.indexOf('iphone=1') !== -1;
+        function load(href, asScript) {
+          var sel = asScript ? 'script[src*="' + href + '"]' : 'link[href*="' + href + '"]';
+          if (document.querySelector(sel)) return;
+          var el = document.createElement(asScript ? 'script' : 'link');
+          if (asScript) { el.src = href; el.defer = true; }
+          else { el.rel = 'stylesheet'; el.href = href; }
+          document.head.appendChild(el);
+        }
+        if (isM) {
+          load('/col-mobile.css');
+          load('/mobile-perf.css');
+          load('/pull-refresh.js', true);
+        } else if (window.matchMedia) {
+          var mql = window.matchMedia('(max-width: 1024px)');
+          var onR = function (e) {
+            if (e.matches) {
+              load('/col-mobile.css');
+              load('/mobile-perf.css');
+              load('/pull-refresh.js', true);
+              if (mql.removeEventListener) mql.removeEventListener('change', onR);
+              else if (mql.removeListener) mql.removeListener(onR);
+            }
+          };
+          if (mql.addEventListener) mql.addEventListener('change', onR);
+          else if (mql.addListener) mql.addListener(onR);
+        }
+      })()
+    </script>
+    <noscript><link rel="stylesheet" href="/col-mobile.css" media="(max-width: 1024px)" /></noscript>
     <script defer src="col-ui.js"></script>
     <script defer src="col-auth.js"></script>
     <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
@@ -38,6 +72,19 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       <link rel="icon" type="image/png" href="Icon.png" />
+  
+    <meta name="robots" content="noindex, nofollow" />
+    <meta property="og:title" content="Solar System Visualization Engine v3.3" />
+    <meta property="og:description" content="The interactive solar system engine — Keplerian orbital mechanics, live telemetry, and planetary-scale rendering." />
+    <meta property="og:url" content="https://advancedlogiclabs.dpdns.org/solar" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://advancedlogiclabs.dpdns.org/og/solar.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Solar System Visualization Engine v3.3" />
+    <meta name="twitter:description" content="The interactive solar system engine — Keplerian orbital mechanics, live telemetry, and planetary-scale rendering." />
+    <meta name="twitter:image" content="https://advancedlogiclabs.dpdns.org/og/solar.jpg" />
   </head>
   <body>
     <div class="cd" id="cDot"></div>

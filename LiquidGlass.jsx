@@ -114,6 +114,7 @@ export function AppleLiquidGlass({
   ...props
 }) {
   const cardRef = useRef(null);
+  const snapTimerRef = useRef(null);
   const [isPressing, setIsPressing] = useState(false);
   const [transformState, setTransformState] = useState({
     x: 0,
@@ -133,6 +134,14 @@ export function AppleLiquidGlass({
     vx: 0,
     vy: 0,
   });
+
+  useEffect(() => {
+    return () => {
+      if (snapTimerRef.current) {
+        clearTimeout(snapTimerRef.current);
+      }
+    };
+  }, []);
 
   // Track cursor / pointer to update dynamic specular glint coordinates
   const handlePointerMove = useCallback((e) => {
@@ -182,6 +191,15 @@ export function AppleLiquidGlass({
 
   const handlePointerDown = (e) => {
     if (!draggable) return;
+    if (snapTimerRef.current) {
+      clearTimeout(snapTimerRef.current);
+      snapTimerRef.current = null;
+    }
+    if (e.currentTarget && e.currentTarget.setPointerCapture) {
+      try {
+        e.currentTarget.setPointerCapture(e.pointerId);
+      } catch (_) {}
+    }
     setIsPressing(true);
     dragRef.current.active = true;
     dragRef.current.startX = e.clientX - dragRef.current.currentX;
@@ -198,8 +216,13 @@ export function AppleLiquidGlass({
     }));
   };
 
-  const handlePointerUp = () => {
+  const handlePointerUp = (e) => {
     if (!dragRef.current.active) return;
+    if (e && e.currentTarget && e.currentTarget.releasePointerCapture) {
+      try {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      } catch (_) {}
+    }
     setIsPressing(false);
     dragRef.current.active = false;
 
@@ -218,7 +241,10 @@ export function AppleLiquidGlass({
     if (onBounce) onBounce();
 
     // Settle back to rest state after spring oscillation
-    setTimeout(() => {
+    if (snapTimerRef.current) {
+      clearTimeout(snapTimerRef.current);
+    }
+    snapTimerRef.current = setTimeout(() => {
       setTransformState({
         x: 0,
         y: 0,
@@ -229,10 +255,11 @@ export function AppleLiquidGlass({
       });
       dragRef.current.currentX = 0;
       dragRef.current.currentY = 0;
+      snapTimerRef.current = null;
     }, 450);
   };
 
-  const handlePointerLeave = () => {
+  const handlePointerLeave = (e) => {
     if (!dragRef.current.active) {
       setTransformState({
         x: 0,
@@ -243,7 +270,7 @@ export function AppleLiquidGlass({
         rotateY: 0,
       });
     } else {
-      handlePointerUp();
+      handlePointerUp(e);
     }
   };
 

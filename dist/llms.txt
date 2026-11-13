@@ -1,42 +1,38 @@
-# Class Of Learners
+# Class Of Learners (CoL)
+> Class Of Learners is an independent, student-founded software engineering studio based in Mumbai, India (est. 2024). Built by three co-founders and three student contributors, the studio creates free, local-first, privacy-preserving interactive learning applications, 3D physics simulations, and AI utilities with zero ads or paywalls.
 
-> Class Of Learners is an independent student software studio based in Mumbai, Maharashtra, India. The studio builds interactive learning software, real-time 3D web simulations, touch typing engines, browser utilities, and accessibility experiments. All applications are 100% free, client-side capable, open, and free of paywalls or invasive tracking.
+## Core Facts
+- **Location**: Mumbai, Maharashtra, India
+- **Founded**: 2024
+- **Team**: 3 co-founders (Neel Badri, Aarush Vangari, Ansh Patil) and 3 contributors
+- **Projects and apps**: 16
+- **Indexable pages**: 19
+- **Pricing & Privacy**: 100% free, offline-capable, on-device processing with zero third-party ad trackers.
+- **Website**: https://advancedlogiclabs.dpdns.org/
 
-## Entity Overview
+## Flagship & Production Applications
+- [Advanced Typing Instructor 1.4](https://advancedlogiclabs.dpdns.org/ati): Touch-typing and developer syntax tutor (Python, C++, JS) with 200+ levels, real-time error heatmaps, and mechanical switch audio.
+- [Solar System Engine V3.3](https://advancedlogiclabs.dpdns.org/solar): 64-bit desktop Keplerian orbital mechanics simulator with real-time telemetry.
+- [Perceptus Flow](https://advancedlogiclabs.dpdns.org/gesture): 60 FPS webcam-based spatial hand-tracking co-pilot using MediaPipe (21 skeletal joints).
+- [Mumbai Traffic Driving Academy](https://advancedlogiclabs.dpdns.org/Traffic/Driving): 3D WebGL driving simulator modeled on Mumbai intersections, traffic signals, and RTO maneuvers — 57 levels.
+- [Mumbai Traffic Rules Academy](https://advancedlogiclabs.dpdns.org/Traffic/Academy): 57-level road-safety syllabus with quizzes, progress tracking, and certificates.
+- [Terra3D World Atlas](https://advancedlogiclabs.dpdns.org/Terra3D/): Interactive 3D WebGL Earth globe covering 178 countries with Rayleigh atmospheric shaders.
+- [The Career Compass](https://advancedlogiclabs.dpdns.org/Career): 8-dimensional psychometric career guidance tool mapping 441 Indian and global career paths and 6,400+ job titles.
+- [CivicLogic](https://advancedlogiclabs.dpdns.org/civiclogic): 50-module civic engineering knowledge base with Motor Vehicles Act jurisprudence and an RTO challan calculator.
+- [Database Logic & Query Engine](https://advancedlogiclabs.dpdns.org/Database_Logic): 50-module interactive relational database and Indian Motor Vehicles Act (MVA 2019) simulator.
+- [Cereal AI Assistant](https://advancedlogiclabs.dpdns.org/cereal): Native Android lecture transcription and task extraction app powered by Gemini 2.5 Flash.
+- [CastFlow Studio](https://advancedlogiclabs.dpdns.org/CastFlow): Low-latency wireless screen mirroring and desktop casting over local Wi-Fi via WebRTC/DLNA.
+- [QR Studio Matrix](https://advancedlogiclabs.dpdns.org/qr-editor): Vector SVG QR code generator with custom dot matrices and scan analytics.
+- [Quest Master RPG](https://advancedlogiclabs.dpdns.org/rpg): 2D HTML5 Canvas retro dungeon crawler with procedural floors and WebAudio chiptune synthesis.
 
-- **Organization**: Class Of Learners (Educational Technology Studio)
-- **Founding Location**: Mumbai, Maharashtra, India
-- **Origin**: CBSE Bhavani Shankar School student engineering initiative
-- **Core Focus**: Learning by doing, accessible STEM tools, digital inclusion (Sneh Asha), and browser-native computing
-- **Canonical Website**: https://advancedlogiclabs.dpdns.org/
-- **Production Mirrors**: https://col.dpdns.org/
-
-## Primary Pages
-
+## Primary Pages & Resources
 - [Studio Hub](https://advancedlogiclabs.dpdns.org/): Central interactive showcase of learning projects, student engineering tools, and 3D web applications.
 - [About Us](https://advancedlogiclabs.dpdns.org/about): Team background, educational philosophy, student-led structure, and mission.
-- [CBSE Bhavani Shankar School](https://advancedlogiclabs.dpdns.org/school): The foundational school environment and academic community in Mumbai that inspired Class Of Learners.
-- [The Making](https://advancedlogiclabs.dpdns.org/making): Deep dive into the studio's technical architecture, Three.js 3D rendering pipeline, procedural generation, and local AI workflows.
-- [Sneh Asha](https://advancedlogiclabs.dpdns.org/sneh-asha): Social impact and digital divide initiative delivering lightweight educational software for low-resource environments.
-
-## Interactive Learning Products
-
-- [Mumbai Traffic Academy](https://advancedlogiclabs.dpdns.org/Traffic/Academy): Interactive traffic education with 57 progressive rule levels, quizzes, road sign mastery, and downloadable completion certificates.
-- [Mumbai Traffic Driving Simulator](https://advancedlogiclabs.dpdns.org/Traffic/Driving): High-performance 3D urban driving simulator built with Three.js to practice defensive driving and Mumbai traffic laws.
-- [Solar Engine 3D](https://advancedlogiclabs.dpdns.org/solar): Real-time WebGL celestial simulator featuring accurate planetary orbits, physical scales, planetary composition metrics, and space exploration.
-- [Advanced Typing Instructor (ATI)](https://advancedlogiclabs.dpdns.org/ati): Adaptive touch-typing coach with 200 skill levels, real-time WPM/accuracy tracking, code syntax modules (JS, Python, C++, HTML), and multiplayer typing races.
-- [Terra3D](https://advancedlogiclabs.dpdns.org/Terra3D/): Interactive 3D planetary globe for exploring continents, country metrics, geopolitical boundaries, and geographic landmarks.
-
-## Productivity & Utility Tools
-
-- [Perceptus Flow](https://advancedlogiclabs.dpdns.org/gesture): Touchless computer navigation using standard webcams and MediaPipe computer vision. Supports air-pointing, three-finger clicking, two-finger scrolling, and virtual air-drawing with 100% local client-side processing.
-- [QR Editor](https://advancedlogiclabs.dpdns.org/qr-editor): Professional static and dynamic QR code designer. Features custom linear/radial gradients, embedded logo images, customizable corner markers, scan analytics, password-protected redirects, and SVG/PNG vector downloads with zero limits.
-- [CastFlow](https://advancedlogiclabs.dpdns.org/CastFlow): High-efficiency browser tool for wireless screen casting, multi-window desktop mode (DeX-style UI), and local network file sharing.
-- [FutureScape Career Guide](https://advancedlogiclabs.dpdns.org/Career): Interactive career mapping platform covering 440+ professions, entrance exams, compensation tiers, and AI displacement resilience analysis.
+- [The Making](https://advancedlogiclabs.dpdns.org/making): Technical architecture, Three.js 3D rendering pipeline, procedural generation, and local AI workflows.
+- [Bhavani Shankar School](https://advancedlogiclabs.dpdns.org/school): Classroom roots and the institutional context behind the studio.
+- [Sneh Asha](https://advancedlogiclabs.dpdns.org/sneh-asha): The Technology For Good educational initiative.
 - [Software Downloads](https://advancedlogiclabs.dpdns.org/download): Desktop binaries (Windows .exe, Linux .deb and .tar.gz), Android APK packages, and PWA installs.
-
-## Legal & Compliance
-
-- [Privacy Policy](https://advancedlogiclabs.dpdns.org/privacy): Transparent data handling policies, client-side first architecture, and user rights.
+- [Privacy Policy](https://advancedlogiclabs.dpdns.org/privacy): Transparent data handling policies, client-side first architecture, and zero third-party telemetry.
 - [Terms Of Service](https://advancedlogiclabs.dpdns.org/terms): Licensing, acceptable usage terms, and open educational guidelines.
-- [Studio Feedback](https://advancedlogiclabs.dpdns.org/feedback): User feedback, feature requests, and bug reports.
+- [Feedback](https://advancedlogiclabs.dpdns.org/feedback): User feedback, community submissions, and bug reports.
+- [Sitemap](https://advancedlogiclabs.dpdns.org/sitemap.xml): Machine-readable index of every indexable route.

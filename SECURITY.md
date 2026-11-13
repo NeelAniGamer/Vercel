@@ -6,19 +6,24 @@ hosted on the production Vercel site.
 
 ## Supported Versions
 
-Security fixes are provided for the current production release and the previous
-release line while it remains actively maintained. The version labels below are
-used for release tracking in this repository.
+The public web surface is deployed continuously and is always served from the
+current production revision, so security fixes reach it immediately. Individually
+versioned native releases are supported on the following lines:
 
-| Version | Supported |
-| ------- | --------- |
-| 5.1.x (current production line) | :white_check_mark: |
-| 5.0.x (previous release line) | :x: |
-| 4.0.x (security-only support) | :white_check_mark: |
-| < 4.0 | :x: |
+| Artifact                                   | Version line            | Supported |
+| ------------------------------------------ | ----------------------- | --------- |
+| Class Of Learners web studio (`/`)          | continuous production    | :white_check_mark: |
+| Advanced Typing Instructor — web (`/ati`)   | 1.4.x                    | :white_check_mark: |
+| Advanced Typing Instructor — Windows build  | 3.2.x                    | :white_check_mark: |
+| Class Of Learners Android app (`COL.apk`)   | 2.0.x                    | :white_check_mark: |
+| Perceptus Flow desktop build                | 2.5.x                    | :white_check_mark: |
+| Solar System Engine                         | 3.3.x                    | :white_check_mark: |
+| CastFlow Android app                        | 1.1.x                    | :white_check_mark: |
+| Traffic Academy                             | current level catalog   | :white_check_mark: |
+| Superseded release lines                    | < the line above        | :x: |
 
-The `Cyberpunk/` archive and local desktop builds are not part of the supported
-public production surface.
+Local desktop builds and unreleased prototype archives are not part of the
+supported public production surface.
 
 ## Reporting a Vulnerability
 
@@ -60,6 +65,7 @@ fix or mitigation is available.
 - Supabase Row-Level Security or privileged RPC weaknesses.
 - Deployment misconfiguration that exposes non-public files or administrative data.
 - Privacy leaks involving account identity or user-generated content.
+- Weakness in the QR passcode verifier or in any stored credential path.
 
 ## Out of Scope
 
@@ -72,24 +78,76 @@ fix or mitigation is available.
   through this project.
 - Findings that require a user to deliberately expose their own credentials or
   private local files.
+- Missing security headers on routes that only serve cached static assets.
 
 ## Security Controls
 
-- Production builds use an allowlisted Vercel output directory and exclude local
-  agent configuration, environment files, databases, dependencies, and Cyberpunk
-  archive code.
-- Security headers and cache rules are defined in `vercel.json`.
+These are the controls actually enforced in this repository and by the deployment
+configuration. The first group is verified automatically on every build.
+
+### Enforced by the build
+
+- `build.js` is **deny-list** based: it recreates `dist/` from the source tree and
+  excludes environment files, databases, local agent state, dependency trees,
+  source-only directories, archives, and selected large model paths. Because the
+  filter is a deny-list, new files ship by default — review before committing.
+- `scripts/production-check.js` fails the build when required outputs are missing,
+  forbidden paths appear in `dist/`, or a source file that should not ship is
+  present.
+- `scripts/seo-check.js` fails the build when a page listed in `sitemap.xml` is
+  missing required metadata, when a page references a route that does not exist,
+  or when two pages claim the same title or description.
+- `scripts/security-check.js` fails the build when a security invariant regresses:
+  `SECURITY.md` must exist; `col-auth.js` must not persist a live session to
+  `localStorage`; QR passcodes must use salted PBKDF2 verifiers and never store
+  plaintext passwords; the Traffic objective list must stay in step with the
+  engine; and the repository must not contain a second CodeQL workflow.
+- `scripts/audit-pages.js` resolves every internal `src`/`href` against the built
+  tree and reports pages with incomplete head metadata.
+- `.vercelignore` controls what is uploaded to the Vercel build, independently of
+  what `build.js` emits.
+
+### Enforced by the deployment
+
+- Security headers and cache rules are defined in `vercel.json`: HSTS,
+  `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, a referrer policy, a
+  permissions policy, and a report-only Content-Security-Policy.
+- `X-Robots-Tag: noindex` is applied to internal routes (`/admin`, `/dashboard`,
+  `/q`, `/qr`, `/rpg`, `/verify`, `/feedback`, `/sitemap`, and the internal
+  `/Traffic/*` pages).
+- Clean URLs are enabled and every public route resolves to a static file.
+
+### Enforced by the code
+
 - Authentication identity is resolved from the live Supabase session; stale local
   profiles must not be presented as signed-in accounts. Local credentials and
   QR passcodes are never stored as plaintext.
 - Supabase access is protected by Row-Level Security and security-definer function
   reviews.
 - Service-worker caching excludes configuration, analytics, and dynamic endpoints.
-- `npm run verify:production` checks the generated output for unsafe files, missing
-  local routes, and security regressions.
-- GitHub code scanning analyzes maintained JavaScript/TypeScript and Python source
-  using `.github/codeql/codeql-config.yml`; generated and local-agent paths are
-  excluded.
+- The Electron desktop shell runs with `contextIsolation` enabled, Node integration
+  disabled, sandboxing on, and web security left intact. These flags are asserted
+  by `scripts/security-check.js`.
+- `config.json` is publishable configuration and must never contain secrets;
+  secrets belong in environment variables that never enter the repository or the
+  build artifact.
+
+### Continuous analysis
+
+- GitHub code scanning (CodeQL) analyzes maintained JavaScript/TypeScript and
+  Python source using `.github/codeql/codeql-config.yml`; generated output,
+  vendored libraries, and local agent directories are excluded.
+- DevSkim pattern scanning, Defender for DevOps, and Dependabot cover dependency
+  and secret hygiene across the root and the nested `Traffic/` package.
+
+## Data We Handle
+
+The production site stores the minimum needed to run the tools. Progression data
+(level completion, certificates, badges, wallet) is tied to the live Supabase
+account; local profiles exist only to support offline setup and are never shown as
+a signed-in identity. Camera frames in the gesture tool, audio in Cereal, and
+keystrokes in ATI are processed on-device and are not uploaded by the web build.
+See `privacy.html` for the published policy.
 
 ## Safe Harbor
 

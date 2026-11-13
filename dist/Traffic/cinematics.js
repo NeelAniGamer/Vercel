@@ -1383,7 +1383,7 @@
       var uniformGroup = new THREE.Group();
       uniformGroup.name = 'police-uniform-torso';
 
-      var khakiMat = new THREE.MeshStandardMaterial({ color: 0x8a6234, roughness: 0.78 });
+      khakiMat = new THREE.MeshStandardMaterial({ color: 0x8a6234, roughness: 0.78 });
       var dutyBeltMat = new THREE.MeshStandardMaterial({ color: 0x18181b, roughness: 0.5 });
       var goldBrassMat = new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.85, roughness: 0.25 });
 
