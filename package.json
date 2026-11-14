@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
-    "@vercel/speed-insights": "^2.0.0",
+    "@vercel/speed-insights": "^2.1.0",
     "acorn": "^8.19.0",
     "animejs": "^4.5.0",
     "motion": "^14.13.0",
