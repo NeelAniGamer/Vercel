@@ -34,12 +34,12 @@
     "electron-updater": "^6.8.11",
     "typescript": "^7.0.2",
     "vite": "^8.3.7",
-    "vitest": "^5.0.5"
+    "vitest": "^5.1.0"
   },
   "dependencies": {
     "@dimforge/rapier3d-compat": "^0.21.0",
     "howler": "^2.2.4",
-    "sarvamai": "^1.1.12",
+    "sarvamai": "^1.1.18",
     "three": "^0.187.0",
     "zustand": "^5.1.0"
   },
