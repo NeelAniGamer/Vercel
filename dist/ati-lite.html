@@ -772,7 +772,7 @@
   </head>
   <body>
     <!-- Navigation Bar -->
-        <div class="top-nav-shield" aria-hidden="true"></div>
+            <div class="top-nav-shield" aria-hidden="true"></div>
     <nav class="top-nav" id="topNav" data-page="projects">
       <a href="/" class="nav-brand"><img src="Class.png" alt="Class Of Learners" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" /><span class="brand-name">Class Of Learners</span></a>
       <div class="nav-links" id="navLinks">
@@ -1019,18 +1019,36 @@
     </div>
 
     <!-- Footer -->
-    <footer class="sf">
+        <footer class="sf site-footer" style="content-visibility:auto; contain-intrinsic-size: auto 200px">
       <div class="fi">
-        <div class="fb"><span>CoL</span> &middot; Class Of Learners</div>
-        <div class="fl">
+        <div class="sf-primary-row">
+          <div class="fb sf-brand-wrap">
+            <span class="sf-brand-name">Class Of Learners <span class="sf-brand-dot">&bull;</span> CoL</span>
+            <span class="sf-status-pill"><span class="m-dot m-emerald"></span> All Systems Operational</span>
+          </div>
+          <div class="sf-btn-wrap">
+            <button type="button" class="sf-cmd-btn no-cap" onclick="if(window.openColCmdPalette)window.openColCmdPalette();else window.location.href='/?search=true'" title="Press Ctrl+K or / to search all 16 applications">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <span>Quick Launcher</span>
+              <kbd class="col-os-key">Ctrl K</kbd>
+            </button>
+          </div>
+        </div>
+
+        <nav class="sf-nav-links" aria-label="Footer Navigation">
+          <a href="about">About</a>
           <a href="making">Making</a>
+          <a href="download">Downloads</a>
+          <a href="mailto:neelgbadri@col.dpdns.org">Contact Us</a>
+          <a href="feedback">Feedback</a>
           <a href="privacy">Privacy</a>
           <a href="terms">Terms</a>
-          <a href="feedback">Contact Us</a>
-          <a href="feedback">Feedback</a>
-          <a href="download">Downloads</a>
+        </nav>
+
+        <div class="sf-secondary-row">
+          <div class="sf-founders-text">&copy; 2026 Class Of Learners. Built with pride by Neel, Ansh, &amp; Aarush in Mumbai, India.</div>
+          <div class="sf-meta">Independent Native Software Engineering &bull; Pure First Principles</div>
         </div>
-        <div class="fc">&copy; 2026 Neel, Ansh, &amp; Aarush (Co‑Founders). ATI Engine v3.2.</div>
       </div>
     </footer>
 
