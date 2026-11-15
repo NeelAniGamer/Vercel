@@ -14,7 +14,7 @@ const excludedDirectories = new Set([
   '.superpowers', '.vercel', 'android', '.gradle', 'react-src', 'tests',
   'build', 'dist', 'dist-electron', 'dist-web', 'docs', 'electron',
   'recordings', 'screenshots', 'scripts', 'scratch', 'supabase', 'Cyberpunk', 'output',
-  'tools', 'shots', 'research', 'FBX format', 'OBJ format', 'traffic-ts'
+  'tools', 'shots', 'research', 'FBX format', 'OBJ format', 'traffic-ts', 'skills'
 ]);
 
 const excludedFiles = new Set([
@@ -143,7 +143,11 @@ const deadModelFiles = new Set(
 function shouldExclude(name, isDirectory, relativePath = '') {
   const normalizedPath = relativePath.replace(/\\/g, '/');
   if (excludedPaths.has(normalizedPath)) {return true;}
-  if (isDirectory) {return excludedDirectories.has(name) || name.startsWith('dist-');}
+  if (isDirectory) {
+    if (name.startsWith('.') && name !== '.well-known') {return true;}
+    if (name === 'skills' || name.startsWith('dist-')) {return true;}
+    return excludedDirectories.has(name);
+  }
   if (deadModelFiles.has(normalizedPath)) {return true;}
   return excludedFiles.has(name) || excludedFilePatterns.some((pattern) => pattern.test(name));
 }
@@ -188,7 +192,7 @@ function copyTrafficPublicAssets() {
 
 function assertSafeOutput(dir) {
   const forbidden = [];
-  const forbiddenDirectories = new Set(['node_modules', '.opencode', '.freebuff', '.vercel']);
+  const forbiddenDirectories = new Set(['node_modules', '.opencode', '.freebuff', '.vercel', 'skills']);
   const forbiddenFilePattern = /^(?:\.env(?:\..*)?|.*\.(?:db|sqlite|sqlite3))$/i;
 
   function walk(current) {
@@ -196,12 +200,12 @@ function assertSafeOutput(dir) {
       const entryPath = path.join(current, entry.name);
       const relativePath = path.relative(dir, entryPath);
       if (entry.isDirectory()) {
-        if (forbiddenDirectories.has(entry.name)) {
+        if (forbiddenDirectories.has(entry.name) || (entry.name.startsWith('.') && entry.name !== '.well-known')) {
           forbidden.push(relativePath);
         } else {
           walk(entryPath);
         }
-      } else if (forbiddenFilePattern.test(entry.name)) {
+      } else if (forbiddenFilePattern.test(entry.name) || entry.name.toLowerCase() === 'skill.md') {
         forbidden.push(relativePath);
       }
     }

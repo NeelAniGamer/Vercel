@@ -84,8 +84,8 @@ if (!fs.existsSync(distRoot)) {
     if (!fs.existsSync(path.join(distRoot, relativePath))) {addError(`Missing required output: ${relativePath}`)}
   }
 
-  const forbiddenDirectoryNames = new Set(['node_modules', '.opencode', '.freebuff', '.vercel', 'Cyberpunk', 'scripts', 'scratch'])
-  const forbiddenFilePattern = /^(?:\.env(?:\..*)?|.*\.(?:db|sqlite|sqlite3))$/i
+  const forbiddenDirectoryNames = new Set(['node_modules', '.opencode', '.freebuff', '.vercel', 'Cyberpunk', 'scripts', 'scratch', 'skills'])
+  const forbiddenFilePattern = /^(?:\.env(?:\..*)?|.*\.(?:db|sqlite|sqlite3)|.*skill.*)$/i
   const forbiddenOutputPattern = /^(?:vite\.config\.(?:ts|mts|cts|js|mjs|cjs)|.*\.(?:exe|msi|dmg|appimage|pkg))$/i
   const htmlFiles = []
   let fileCount = 0
@@ -96,7 +96,9 @@ if (!fs.existsSync(distRoot)) {
     totalBytes += fs.statSync(filePath).size
     const relativePath = path.relative(distRoot, filePath)
     const segments = relativePath.split(path.sep)
-    if (segments.some((segment) => forbiddenDirectoryNames.has(segment))) {addError(`Forbidden directory in output: ${relativePath}`)}
+    if (segments.some((segment) => forbiddenDirectoryNames.has(segment) || (segment.startsWith('.') && segment !== '.well-known'))) {
+      addError(`Forbidden directory in output: ${relativePath}`)
+    }
     if (forbiddenFilePattern.test(path.basename(filePath))) {addError(`Forbidden file in output: ${relativePath}`)}
     if (forbiddenOutputPattern.test(path.basename(filePath))) {addError(`Source or binary artifact in output: ${relativePath}`)}
     if (filePath.endsWith('.html')) {htmlFiles.push(filePath)}

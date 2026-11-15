@@ -30,3 +30,6 @@ paths-ignore:
   - '**/node_modules/**'
   - '**/*.min.js'
   - '**/vendor/**'
+  - 'scripts/**'
+  - 'Traffic/assets/**'
+  - 'android/**'

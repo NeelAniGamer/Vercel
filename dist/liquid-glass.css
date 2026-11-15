@@ -643,6 +643,7 @@ body.lm .apple-orb-center { background: radial-gradient(circle, rgba(241, 245, 2
   color: #070a14 !important;
   font-weight: 700 !important;
   letter-spacing: -0.01em !important;
+  white-space: nowrap !important;
   transition: transform 0.45s var(--apple-spring), box-shadow 0.35s ease, filter 0.2s ease !important;
 }
 
@@ -663,6 +664,7 @@ body.lm .apple-orb-center { background: radial-gradient(circle, rgba(241, 245, 2
     0 8px 25px rgba(0, 0, 0, 0.2),
     inset 0 1px 1px rgba(255, 255, 255, 0.55) !important;
   border-radius: 26px !important;
+  white-space: nowrap !important;
   color: #ffffff !important;
   transition: transform 0.45s var(--apple-spring), box-shadow 0.35s ease !important;
 }

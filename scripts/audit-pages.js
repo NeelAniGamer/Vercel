@@ -65,9 +65,9 @@ function capture(html, re) {
 
 function textOf(html) {
   return html
-    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, ' ')
-    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, ' ')
-    .replace(/<[^>]+>/g, ' ')
+    .split('<')
+    .map((chunk, idx) => (idx === 0 ? chunk : chunk.substring(chunk.indexOf('>') + 1)))
+    .join(' ')
     .replace(/&mdash;/g, '—')
     .replace(/&nbsp;/g, ' ')
     .replace(/&amp;/g, '&')

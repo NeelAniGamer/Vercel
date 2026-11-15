@@ -366,9 +366,19 @@
         content-visibility: visible !important;
         contain: layout style !important;
       }
-      .pc-cover-link {
+      .pc-cover-link,
+      .pc-cover-link:focus,
+      .pc-cover-link:focus-visible {
         color: inherit;
         text-decoration: none;
+        outline: none !important;
+        box-shadow: none !important;
+        border: none !important;
+      }
+      .pc:focus-within {
+        outline: 2px solid var(--signal, #f2b84b) !important;
+        outline-offset: 4px !important;
+        border-radius: 16px !important;
       }
       .pc-cover-link::after {
         content: "";
@@ -1429,11 +1439,15 @@
         font-weight: 700;
         font-size: 0.93rem;
         letter-spacing: 0.02em;
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+        line-height: 1 !important;
         transition:
           transform 0.3s var(--ease),
           box-shadow 0.3s;
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 10px;
       }
       .btn-p:hover {
@@ -1447,12 +1461,16 @@
         border-radius: 30px;
         font-weight: 600;
         font-size: 0.93rem;
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+        line-height: 1 !important;
         transition:
           border-color 0.3s,
           color 0.3s,
           transform 0.3s var(--ease);
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 10px;
       }
       .btn-g:hover {
@@ -3211,24 +3229,28 @@
           line-height: 1.65 !important;
         }
         .hcta {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 10px;
+          display: flex !important;
+          flex-direction: column !important;
+          gap: 10px !important;
+          width: 100% !important;
+        }
+        .hcta .btn-p,
+        .hcta .btn-g,
+        .hcta .hero-cmd-pill {
+          width: 100% !important;
+          min-height: 48px !important;
+          height: 48px !important;
+          justify-content: center !important;
+          white-space: nowrap !important;
+          box-sizing: border-box !important;
         }
         .hcta .btn-p {
-          grid-column: 1 / -1;
-          justify-content: center;
-          width: 100% !important;
-          min-height: 46px;
           padding: 12px 20px !important;
-          font-size: 0.88rem !important;
+          font-size: 0.90rem !important;
         }
         .hcta .btn-g:not(.mobile-dl) {
-          justify-content: center;
-          width: 100% !important;
-          min-height: 46px;
-          padding: 10px 10px !important;
-          font-size: 0.84rem !important;
+          padding: 12px 20px !important;
+          font-size: 0.88rem !important;
           text-align: center;
         }
         .hcta .mobile-dl {
@@ -3830,8 +3852,9 @@
         100% { transform: translateY(-5px); }
       }
       .ce-eq-bar {
+        transform-box: fill-box !important;
+        transform-origin: center !important;
         animation: ceEqBounce 1.4s ease-in-out infinite alternate;
-        transform-origin: bottom;
       }
       .ce-eq-bar.b1 { animation-delay: 0.1s; }
       .ce-eq-bar.b2 { animation-delay: 0.4s; }
@@ -3842,8 +3865,8 @@
       .ce-eq-bar.b7 { animation-delay: 0.25s; }
       .ce-eq-bar.b8 { animation-delay: 0.45s; }
       @keyframes ceEqBounce {
-        0% { transform: scaleY(0.4); opacity: 0.6; }
-        100% { transform: scaleY(1.15); opacity: 1; }
+        0% { transform: scaleY(0.35); opacity: 0.55; }
+        100% { transform: scaleY(1.2); opacity: 1; }
       }
       .ce-hud-chip {
         position: absolute;
@@ -4374,30 +4397,39 @@
         }
         .hcta {
           display: flex !important;
-          flex-wrap: nowrap !important;
+          flex-direction: row !important;
+          flex-wrap: wrap !important;
           align-items: center !important;
           gap: 12px !important;
           margin-top: 28px !important;
         }
-        @media (max-width: 1100px) {
-          .hcta {
-            flex-wrap: wrap !important;
-          }
-        }
         .hstats {
           margin-top: 24px !important;
         }
-        .btn-p {
+        .btn-p,
+        .btn-g {
           height: 48px !important;
+          padding: 0 24px !important;
+          border-radius: 999px !important;
           box-sizing: border-box !important;
+          white-space: nowrap !important;
+          flex-shrink: 0 !important;
+          line-height: 1 !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          gap: 8px !important;
         }
         .hero-cmd-pill {
           display: inline-flex !important;
           align-items: center !important;
           gap: 8px !important;
           height: 48px !important;
-          padding: 0 16px !important;
+          padding: 0 18px !important;
           border-radius: 999px !important;
+          white-space: nowrap !important;
+          flex-shrink: 0 !important;
+          box-sizing: border-box !important;
           background: rgba(14, 20, 36, 0.72) !important;
           border: 1px solid rgba(255, 255, 255, 0.12) !important;
           border-top: 1.5px solid rgba(255, 255, 255, 0.25) !important;
@@ -4410,7 +4442,6 @@
           cursor: pointer !important;
           box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
           transition: all 0.25s ease !important;
-          box-sizing: border-box !important;
         }
         .hero-cmd-pill:hover {
           background: rgba(24, 34, 60, 0.9) !important;
@@ -4768,8 +4799,11 @@
           position: absolute;
           display: flex;
           flex-direction: column;
-          gap: 4px;
-          padding: 8px 14px;
+          justify-content: center;
+          gap: 6px;
+          padding: 10px 16px;
+          min-height: 48px;
+          box-sizing: border-box;
           background: rgba(8, 12, 24, 0.88);
           backdrop-filter: blur(18px) saturate(190%);
           -webkit-backdrop-filter: blur(18px) saturate(190%);
@@ -4808,19 +4842,23 @@
           box-shadow: 0 0 24px rgba(242, 184, 75, 0.38), inset 0 0 16px rgba(242, 184, 75, 0.15);
         }
         .ohf-bl {
-          bottom: 0; left: 0;
+          bottom: 8px; left: 8px;
           border: 1px solid rgba(16, 185, 129, 0.5);
           box-shadow: 0 0 16px rgba(16, 185, 129, 0.22), inset 0 0 12px rgba(16, 185, 129, 0.08);
+          max-width: 175px;
+          padding: 8px 12px;
         }
         .ohf-bl:hover {
           border-color: rgba(16, 185, 129, 0.85);
           box-shadow: 0 0 24px rgba(16, 185, 129, 0.38), inset 0 0 16px rgba(16, 185, 129, 0.15);
         }
         .ohf-br {
-          bottom: 0; right: 0;
+          bottom: 8px; right: 8px;
           align-items: flex-end;
           border: 1px solid rgba(192, 132, 252, 0.5);
           box-shadow: 0 0 16px rgba(192, 132, 252, 0.22), inset 0 0 12px rgba(192, 132, 252, 0.08);
+          max-width: 175px;
+          padding: 8px 12px;
         }
         .ohf-br:hover {
           border-color: rgba(192, 132, 252, 0.85);
@@ -4835,6 +4873,7 @@
           display: inline-flex;
           align-items: center;
           gap: 6px;
+          line-height: 1.2;
         }
         .ohf-tl .ohf-tag { color: #00f0ff; }
         .ohf-tr .ohf-tag { color: #f2b84b; }
@@ -4846,6 +4885,8 @@
           color: #94a3b8;
           letter-spacing: 0.08em;
           white-space: nowrap;
+          line-height: 1.35;
+          padding-bottom: 2px;
         }
         .ohf-sub b {
           color: #ffffff;
@@ -5127,17 +5168,20 @@
           position: absolute;
           top: 50%;
           left: 50%;
-          transform: translate(-50%, -50%) rotate(var(--angle, 0deg)) translateY(calc(-1 * var(--radius, 140px))) rotate(calc(-1 * (var(--angle, 0deg) + var(--orbit-rot, 0deg))));
+          transform: translate(-50%, -50%) rotate(var(--angle, 0deg)) translateY(calc(-1 * var(--radius, 192px))) rotate(calc(-1 * (var(--angle, 0deg) + var(--orbit-rot, 0deg))));
           display: inline-flex;
           align-items: center;
-          gap: 8px;
+          gap: 7px;
+          height: 38px;
+          box-sizing: border-box;
+          white-space: nowrap;
           background: linear-gradient(150deg, rgba(16, 24, 44, 0.94) 0%, rgba(7, 11, 22, 0.98) 100%);
           backdrop-filter: blur(18px) saturate(190%);
           -webkit-backdrop-filter: blur(18px) saturate(190%);
           border: 1.2px solid rgba(var(--node-rgb, 255, 255, 255), 0.55);
           border-top: 1.5px solid rgba(255, 255, 255, 0.85);
           border-radius: 999px;
-          padding: 5px 10px 5px 6px;
+          padding: 4px 8px 4px 5px;
           box-shadow:
             0 10px 28px -3px rgba(0, 0, 0, 0.85),
             0 0 18px -2px rgba(var(--node-rgb, 255, 255, 255), 0.42),
@@ -5179,7 +5223,7 @@
           transition: border-color 0.3s ease;
         }
         .orrery-node:hover {
-          transform: translate(-50%, -50%) rotate(var(--angle, 0deg)) translateY(calc(-1 * var(--radius, 140px) - 3px)) rotate(calc(-1 * (var(--angle, 0deg) + var(--orbit-rot, 0deg)))) scale(1.05) !important;
+          transform: translate(-50%, -50%) rotate(var(--angle, 0deg)) translateY(calc(-1 * var(--radius, 192px) - 3px)) rotate(calc(-1 * (var(--angle, 0deg) + var(--orbit-rot, 0deg)))) scale(1.05) !important;
           background: linear-gradient(150deg, rgba(24, 36, 68, 0.96) 0%, rgba(10, 16, 32, 0.99) 100%) !important;
           border-color: rgba(var(--node-rgb, 255, 255, 255), 0.9) !important;
           border-top-color: #ffffff !important;
@@ -5228,6 +5272,10 @@
           color: var(--node-color);
           transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
+        .on-icon svg {
+          width: 14px;
+          height: 14px;
+        }
         .orrery-node:hover .on-icon {
           transform: scale(1.08) rotate(-6deg);
           box-shadow: inset 0 0 14px rgba(var(--node-rgb, 255, 255, 255), 0.55), 0 0 16px rgba(var(--node-rgb, 255, 255, 255), 0.75);
@@ -5250,17 +5298,18 @@
           display: flex;
           flex-direction: column;
           align-items: flex-start;
-          gap: 2px;
+          gap: 1.5px;
           text-align: left;
         }
         .on-title-row {
           display: inline-flex;
           align-items: center;
           gap: 5px;
+          line-height: 1.1;
         }
         .on-title {
           font-family: var(--sans);
-          font-size: 0.73rem;
+          font-size: 0.74rem;
           font-weight: 750;
           color: #ffffff;
           letter-spacing: -0.01em;
@@ -5270,15 +5319,16 @@
         }
         .on-orbit-tag {
           font-family: var(--mono);
-          font-size: 0.46rem;
-          font-weight: 700;
-          letter-spacing: 0.06em;
-          padding: 1px 4px;
+          font-size: 0.48rem;
+          font-weight: 750;
+          letter-spacing: 0.08em;
+          padding: 1.5px 5px;
           border-radius: 3px;
           background: rgba(var(--node-rgb, 255, 255, 255), 0.16);
-          border: 1px solid rgba(var(--node-rgb, 255, 255, 255), 0.42);
+          border: 1px solid rgba(var(--node-rgb, 255, 255, 255), 0.45);
           color: var(--node-color);
           text-transform: uppercase;
+          line-height: 1.1;
         }
         .on-prime-badge {
           background: linear-gradient(135deg, rgba(0, 240, 255, 0.32) 0%, rgba(59, 130, 246, 0.28) 100%);
@@ -5287,26 +5337,27 @@
           font-family: var(--mono);
           font-size: 0.48rem;
           font-weight: 800;
-          padding: 1px 5px;
+          padding: 1.5px 5px;
           border-radius: 3px;
           letter-spacing: 0.08em;
           text-transform: uppercase;
           box-shadow: 0 0 10px rgba(0, 240, 255, 0.45);
+          line-height: 1.1;
         }
         .on-sub-row {
           display: inline-flex;
           align-items: center;
           gap: 5px;
+          line-height: 1;
         }
         .on-sub {
           font-family: var(--mono);
           font-size: 0.52rem;
           font-weight: 600;
-          color: #94a3b8;
-          letter-spacing: 0.07em;
-          text-transform: uppercase;
+          color: var(--dim, #8c94b0);
+          letter-spacing: 0.04em;
           white-space: nowrap;
-          line-height: 1.1;
+          text-transform: uppercase;
         }
         .on-sig-bars {
           display: inline-flex;
@@ -5315,36 +5366,39 @@
           height: 7px;
         }
         .on-sig-bars i {
-          display: block;
-          width: 2px;
+          width: 1.5px;
+          height: 3px;
           background: var(--node-color);
           border-radius: 1px;
           opacity: 0.8;
         }
-        .on-sig-bars i:nth-child(1) { height: 3px; }
         .on-sig-bars i:nth-child(2) { height: 5px; }
         .on-sig-bars i:nth-child(3) { height: 7px; }
         .on-arrow {
           width: 20px;
           height: 20px;
           border-radius: 50%;
-          background: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(var(--node-rgb, 255, 255, 255), 0.32);
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 0.72rem;
-          opacity: 0.8;
-          color: var(--node-color);
-          margin-left: 2px;
+          flex-shrink: 0;
+          background: rgba(255, 255, 255, 0.06);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          color: var(--dim, #8c94b0);
+          opacity: 0.7;
           transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .on-arrow svg {
+          width: 10px;
+          height: 10px;
         }
         .orrery-node:hover .on-arrow {
           opacity: 1;
+          color: #ffffff;
           background: var(--node-color);
-          color: #070a14;
-          transform: translate(2px, -2px);
+          border-color: var(--node-color);
           box-shadow: 0 0 10px var(--node-color);
+          transform: translate(1px, -1px);
         }
         .orrery-node.is-dimmed {
           opacity: 0.14;
@@ -5357,24 +5411,23 @@
           box-shadow: 0 0 34px var(--node-color), 0 0 64px var(--node-color);
         }
 
-
         /* ── Category Filter Capsule (Bottom of Orrery) ── */
         .orrery-filter-capsule {
           position: absolute;
-          bottom: -24px;
+          bottom: 8px;
           left: 50%;
           transform: translateX(-50%);
           display: inline-flex;
           align-items: center;
-          gap: 6px;
-          padding: 5px 10px;
-          background: rgba(10, 14, 26, 0.9);
+          gap: 4px;
+          padding: 3px 6px;
+          background: rgba(10, 14, 26, 0.94);
           backdrop-filter: blur(20px) saturate(180%);
           -webkit-backdrop-filter: blur(20px) saturate(180%);
-          border: 1px solid rgba(255, 255, 255, 0.14);
-          border-top: 1.5px solid rgba(255, 255, 255, 0.34);
+          border: 1px solid rgba(255, 255, 255, 0.16);
+          border-top: 1.5px solid rgba(255, 255, 255, 0.4);
           border-radius: 999px;
-          box-shadow: 0 14px 36px rgba(0, 0, 0, 0.7), 0 0 24px rgba(0, 240, 255, 0.1);
+          box-shadow: 0 14px 36px rgba(0, 0, 0, 0.75), 0 0 24px rgba(0, 240, 255, 0.12);
           pointer-events: auto;
           z-index: 30;
           white-space: nowrap;
@@ -5382,19 +5435,18 @@
         .ofc-pill {
           display: inline-flex;
           align-items: center;
-          gap: 6px;
+          gap: 5px;
           font-family: var(--mono);
-          font-size: 0.61rem;
+          font-size: 0.58rem;
           font-weight: 700;
-          letter-spacing: 0.08em;
+          letter-spacing: 0.05em;
           color: var(--dim, #8c94b0);
           background: transparent;
           border: 1px solid transparent;
-          padding: 4.5px 11px;
+          padding: 3.5px 8px;
           border-radius: 999px;
           cursor: pointer;
           transition: all 0.2s ease;
-          text-transform: uppercase;
         }
         .ofc-pill:hover {
           color: var(--ink, #ffffff);
@@ -5407,42 +5459,13 @@
           box-shadow: 0 0 14px rgba(242, 184, 75, 0.28);
         }
         .ofc-pill .m-dot {
-          width: 5px;
-          height: 5px;
+          width: 6px;
+          height: 6px;
         }
 
         /* ── Telemetry Status Ticker ── */
         .orrery-telemetry-ticker {
-          position: absolute;
-          bottom: -52px;
-          left: 50%;
-          transform: translateX(-50%);
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          padding: 3px 12px;
-          border-radius: 999px;
-          background: rgba(8, 12, 24, 0.6);
-          border: 1px solid rgba(255, 255, 255, 0.07);
-          font-family: var(--mono);
-          font-size: 0.58rem;
-          color: var(--dim, #8c94b0);
-          letter-spacing: 0.08em;
-          white-space: nowrap;
-          pointer-events: none;
-          z-index: 30;
-          text-transform: uppercase;
-        }
-        .ott-label {
-          color: #f2b84b;
-          font-weight: 800;
-        }
-        .ott-coords {
-          color: #00f0ff;
-          font-weight: 700;
-        }
-        .ott-sep {
-          opacity: 0.4;
+          display: none !important;
         }
 
         /* ── Light Mode: Gilded Brass & Sapphire Astrolabe ── */
@@ -5490,11 +5513,41 @@
           color: #334155;
         }
         body.lm .orrery-filter-capsule {
-          background: rgba(255, 255, 255, 0.96);
-          border-color: rgba(15, 23, 42, 0.12);
-          box-shadow: 0 10px 28px rgba(15, 23, 42, 0.1);
+          position: absolute;
+          bottom: 8px;
+          left: 50%;
+          transform: translateX(-50%);
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          padding: 3px 6px;
+          background: rgba(10, 14, 26, 0.94);
+          backdrop-filter: blur(20px) saturate(180%);
+          -webkit-backdrop-filter: blur(20px) saturate(180%);
+          border: 1px solid rgba(255, 255, 255, 0.16);
+          border-top: 1.5px solid rgba(255, 255, 255, 0.4);
+          border-radius: 999px;
+          box-shadow: 0 14px 36px rgba(0, 0, 0, 0.75), 0 0 24px rgba(0, 240, 255, 0.12);
+          pointer-events: auto;
+          z-index: 30;
+          white-space: nowrap;
         }
-        body.lm .ofc-pill { color: #64748b; }
+        body.lm .ofc-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          font-family: var(--mono);
+          font-size: 0.58rem;
+          font-weight: 700;
+          letter-spacing: 0.05em;
+          color: var(--dim, #8c94b0);
+          background: transparent;
+          border: 1px solid transparent;
+          padding: 3.5px 8px;
+          border-radius: 999px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
         body.lm .ofc-pill.is-active {
           color: #0f172a;
           background: rgba(217, 119, 6, 0.14);
@@ -6841,11 +6894,11 @@
             </div>
           </div>
           <div class="ohf-corner ohf-bl">
-            <span class="ohf-tag">KEPLER // EPHEMERIS</span>
-            <span class="ohf-sub" id="orreryHudRotation">PLANE &Delta;&theta;: <span id="orreryLiveDelta"><b>+000.0&deg;</b></span> &middot; 60FPS</span>
+            <span class="ohf-tag"><span class="m-dot m-emerald"></span>KEPLER // EPHEMERIS</span>
+            <span class="ohf-sub" id="orreryHudRotation">&Delta;&theta;: <span id="orreryLiveDelta"><b>+000.0&deg;</b></span> &middot; <span id="orreryCursorPolar">R: 3.50 AU &middot; &theta;: 000&deg;</span></span>
           </div>
           <div class="ohf-corner ohf-br">
-            <span class="ohf-tag">HQ // MUMBAI FOUNDRY</span>
+            <span class="ohf-tag"><span class="m-dot m-purple"></span>HQ // MUMBAI FOUNDRY</span>
             <span class="ohf-sub">19.0760&deg; N, 72.8777&deg; E &middot; <b>16 LABS</b></span>
           </div>
         </div>
@@ -6867,9 +6920,9 @@
               </feMerge>
             </filter>
             <!-- Curved Text Paths for Orbital Ring Designations -->
-            <path id="orgTextPathR3" d="M -278,0 A 278,278 0 1,1 278,0 A 278,278 0 1,1 -278,0" />
-            <path id="orgTextPathR2" d="M -212,0 A 212,212 0 1,1 212,0 A 212,212 0 1,1 -212,0" />
-            <path id="orgTextPathR1" d="M -148,0 A 148,148 0 1,1 148,0 A 148,148 0 1,1 -148,0" />
+            <path id="orgTextPathR3" d="M -304,0 A 304,304 0 1,1 304,0 A 304,304 0 1,1 -304,0" />
+            <path id="orgTextPathR2" d="M -244,0 A 244,244 0 1,1 244,0 A 244,244 0 1,1 -244,0" />
+            <path id="orgTextPathR1" d="M -192,0 A 192,192 0 1,1 192,0 A 192,192 0 1,1 -192,0" />
           </defs>
 
           <!-- Atmospheric Radial Backdrop -->
@@ -6889,20 +6942,20 @@
 
           <!-- 30° & 60° Sector Radials -->
           <g class="org-axis-sector">
-            <line x1="-290" y1="-167" x2="290" y2="167" />
-            <line x1="-167" y1="-290" x2="167" y2="290" />
-            <line x1="-290" y1="167" x2="290" y2="-167" />
-            <line x1="-167" y1="290" x2="167" y2="-290" />
+            <line x1="-304" y1="-175" x2="304" y2="175" />
+            <line x1="-175" y1="-304" x2="175" y2="304" />
+            <line x1="-304" y1="175" x2="304" y2="-175" />
+            <line x1="-175" y1="304" x2="175" y2="-304" />
           </g>
 
           <!-- Hohmann Transfer Ellipses & Animated Telemetry Packets -->
           <g transform="rotate(-28)">
-            <ellipse cx="0" cy="0" rx="278" ry="185" class="org-ecliptic" />
-            <ellipse cx="0" cy="0" rx="278" ry="185" class="org-ecliptic-packet" />
+            <ellipse cx="0" cy="0" rx="304" ry="198" class="org-ecliptic" />
+            <ellipse cx="0" cy="0" rx="304" ry="198" class="org-ecliptic-packet" />
           </g>
           <g transform="rotate(34)">
-            <ellipse cx="0" cy="0" rx="212" ry="148" class="org-ecliptic" />
-            <ellipse cx="0" cy="0" rx="212" ry="148" class="org-ecliptic-packet cyan" />
+            <ellipse cx="0" cy="0" rx="244" ry="165" class="org-ecliptic" />
+            <ellipse cx="0" cy="0" rx="244" ry="165" class="org-ecliptic-packet cyan" />
           </g>
 
           <!-- Primary Orthogonal Crosshairs -->
@@ -6911,18 +6964,18 @@
 
           <!-- Precision Rangefinder Graduation Ticks Along Axes -->
           <g class="org-axis-notch">
-            <line x1="-278" y1="-5" x2="-278" y2="5" />
-            <line x1="-212" y1="-5" x2="-212" y2="5" />
-            <line x1="-148" y1="-5" x2="-148" y2="5" />
-            <line x1="148" y1="-5" x2="148" y2="5" />
-            <line x1="212" y1="-5" x2="212" y2="5" />
-            <line x1="278" y1="-5" x2="278" y2="5" />
-            <line x1="-5" y1="-278" x2="5" y2="-278" />
-            <line x1="-5" y1="-212" x2="5" y2="-212" />
-            <line x1="-5" y1="-148" x2="5" y2="-148" />
-            <line x1="-5" y1="148" x2="5" y2="148" />
-            <line x1="-5" y1="212" x2="5" y2="212" />
-            <line x1="-5" y1="278" x2="5" y2="278" />
+            <line x1="-304" y1="-5" x2="-304" y2="5" />
+            <line x1="-244" y1="-5" x2="-244" y2="5" />
+            <line x1="-192" y1="-5" x2="-192" y2="5" />
+            <line x1="192" y1="-5" x2="192" y2="5" />
+            <line x1="244" y1="-5" x2="244" y2="5" />
+            <line x1="304" y1="-5" x2="304" y2="5" />
+            <line x1="-5" y1="-304" x2="5" y2="-304" />
+            <line x1="-5" y1="-244" x2="5" y2="-244" />
+            <line x1="-5" y1="-192" x2="5" y2="-192" />
+            <line x1="-5" y1="192" x2="5" y2="192" />
+            <line x1="-5" y1="244" x2="5" y2="244" />
+            <line x1="-5" y1="304" x2="5" y2="304" />
           </g>
           <g class="org-axis-subnotch">
             <line x1="-245" y1="-3" x2="-245" y2="3" />
@@ -6960,21 +7013,21 @@
           <text x="-305" y="-176" class="org-coord-lbl">300&deg;</text>
           <text x="-176" y="-305" class="org-coord-lbl">330&deg;</text>
 
-          <!-- Dual-Layer Orbital Track Rings (R3=278, R2=212, R1=148) -->
-          <circle cx="0" cy="0" r="278" class="org-ring-halo" />
-          <circle cx="0" cy="0" r="278" class="org-ring" />
+          <!-- Dual-Layer Orbital Track Rings (R3=304, R2=244, R1=192) -->
+          <circle cx="0" cy="0" r="304" class="org-ring-halo" />
+          <circle cx="0" cy="0" r="304" class="org-ring" />
           <text dy="-5" class="org-curved-lbl">
             <textPath href="#orgTextPathR3" startOffset="14%">ORBITAL RING 03 // 2.4 AU &middot; DEEP SPACE SECTOR</textPath>
           </text>
 
-          <circle cx="0" cy="0" r="212" class="org-ring-halo" />
-          <circle cx="0" cy="0" r="212" class="org-ring" />
+          <circle cx="0" cy="0" r="244" class="org-ring-halo" />
+          <circle cx="0" cy="0" r="244" class="org-ring" />
           <text dy="-5" class="org-curved-lbl">
             <textPath href="#orgTextPathR2" startOffset="62%">ORBITAL RING 02 // 1.8 AU &middot; SYNCHRONOUS</textPath>
           </text>
 
-          <circle cx="0" cy="0" r="148" class="org-ring-halo" />
-          <circle cx="0" cy="0" r="148" class="org-ring" />
+          <circle cx="0" cy="0" r="192" class="org-ring-halo" />
+          <circle cx="0" cy="0" r="192" class="org-ring" />
           <text dy="-5" class="org-curved-lbl">
             <textPath href="#orgTextPathR1" startOffset="36%">RING 01 // 1.4 AU &middot; INNER CORE</textPath>
           </text>
@@ -7004,10 +7057,10 @@
           </g>
 
           <!-- Glowing Orbital Sector Trajectory Arcs -->
-          <path d="M -148 0 A 148 148 0 0 1 0 -148" class="org-arc org-arc-gold" filter="url(#orgFilterGlow)" />
-          <path d="M 0 -212 A 212 212 0 0 1 212 0" class="org-arc org-arc-cyan" filter="url(#orgFilterGlow)" />
-          <path d="M -196 196 A 278 278 0 0 1 -278 0" class="org-arc org-arc-purple" filter="url(#orgFilterGlow)" />
-          <path d="M 0 278 A 278 278 0 0 1 196 196" class="org-arc org-arc-emerald" filter="url(#orgFilterGlow)" opacity="0.75" />
+          <path d="M -192 0 A 192 192 0 0 1 0 -192" class="org-arc org-arc-gold" filter="url(#orgFilterGlow)" />
+          <path d="M 0 -244 A 244 244 0 0 1 244 0" class="org-arc org-arc-cyan" filter="url(#orgFilterGlow)" />
+          <path d="M -215 215 A 304 304 0 0 1 -304 0" class="org-arc org-arc-purple" filter="url(#orgFilterGlow)" />
+          <path d="M 0 304 A 304 304 0 0 1 215 215" class="org-arc org-arc-emerald" filter="url(#orgFilterGlow)" opacity="0.75" />
 
           <!-- Dynamic Hover Laser Tether & Target-Lock Reticle -->
           <line id="orreryLaserGlow" x1="0" y1="0" x2="0" y2="0" class="orrery-laser-glow" />
@@ -7065,67 +7118,67 @@
 
         <!-- Draggable Orbiting Plane -->
         <div class="orrery-orbit-plane" id="orreryOrbitPlane">
-          <!-- 1. Solar 3D (R3, 358deg) -->
-          <button type="button" class="orrery-node orrery-cat-3d" data-cat="3d" data-node-title="SOLAR 3D" style="--angle: 358deg; --radius: 278px; --node-color: #f59e0b; --node-rgb: 245, 158, 11;" onclick="window.openNodeInspector('Solar')" aria-label="Inspect Solar 3D">
+          <!-- 1. Solar 3D (R3, 0deg) -->
+          <button type="button" class="orrery-node orrery-cat-3d" data-cat="3d" data-node-title="SOLAR 3D" style="--angle: 0deg; --radius: 310px; --node-color: #f59e0b; --node-rgb: 245, 158, 11;" onclick="window.openNodeInspector('Solar')" aria-label="Inspect Solar 3D">
             <span class="on-icon">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(30 12 12)"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(30 12 12)"/><circle cx="12" cy="12" r="3"/></svg>
             </span>
             <div class="on-info">
               <div class="on-title-row">
                 <span class="on-status-pip"></span>
                 <span class="on-title">Solar 3D</span>
-                <span class="on-orbit-tag">R3&middot;358&deg;</span>
+                <span class="on-orbit-tag">R3&middot;000&deg;</span>
               </div>
               <div class="on-sub-row">
                 <span class="on-sub">KEPLER &middot; 64-BIT</span>
                 <span class="on-sig-bars" aria-hidden="true"><i></i><i></i><i></i></span>
               </div>
             </div>
-            <span class="on-arrow"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+            <span class="on-arrow"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
           </button>
 
           <!-- 2. Terra3D (R2, 32deg) -->
-          <button type="button" class="orrery-node orrery-cat-3d" data-cat="3d" data-node-title="TERRA 3D" style="--angle: 32deg; --radius: 212px; --node-color: #10b981; --node-rgb: 16, 185, 129;" onclick="window.openNodeInspector('Terra3D')" aria-label="Inspect Terra3D">
+          <button type="button" class="orrery-node orrery-cat-3d" data-cat="3d" data-node-title="TERRA 3D" style="--angle: 34deg; --radius: 250px; --node-color: #10b981; --node-rgb: 16, 185, 129;" onclick="window.openNodeInspector('Terra3D')" aria-label="Inspect Terra3D">
             <span class="on-icon">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20M2 12h20"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20M2 12h20"/></svg>
             </span>
             <div class="on-info">
               <div class="on-title-row">
                 <span class="on-status-pip"></span>
                 <span class="on-title">Terra3D</span>
-                <span class="on-orbit-tag">R2&middot;032&deg;</span>
+                <span class="on-orbit-tag">R2&middot;034&deg;</span>
               </div>
               <div class="on-sub-row">
                 <span class="on-sub">ATLAS &middot; SHADERS</span>
                 <span class="on-sig-bars" aria-hidden="true"><i></i><i></i><i></i></span>
               </div>
             </div>
-            <span class="on-arrow"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+            <span class="on-arrow"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
           </button>
 
-          <!-- 3. Career AI (R3, 66deg) -->
-          <button type="button" class="orrery-node orrery-cat-ai" data-cat="ai" data-node-title="CAREER AI" style="--angle: 66deg; --radius: 278px; --node-color: #a855f7; --node-rgb: 168, 85, 247;" onclick="window.openNodeInspector('Career')" aria-label="Inspect Career AI">
+          <!-- 3. Career Compass (R3, 68deg) -->
+          <button type="button" class="orrery-node orrery-cat-ai" data-cat="ai" data-node-title="CAREER COMPASS" style="--angle: 68deg; --radius: 310px; --node-color: #a855f7; --node-rgb: 168, 85, 247;" onclick="window.openNodeInspector('Career')" aria-label="Inspect Career Compass">
             <span class="on-icon">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
             </span>
             <div class="on-info">
               <div class="on-title-row">
                 <span class="on-status-pip"></span>
                 <span class="on-title">Career AI</span>
-                <span class="on-orbit-tag">R3&middot;066&deg;</span>
+                <span class="on-orbit-tag">R3&middot;068&deg;</span>
               </div>
               <div class="on-sub-row">
-                <span class="on-sub">8D VECTOR &middot; 436</span>
+                <span class="on-sub">8D VECTOR &middot; 441P</span>
                 <span class="on-sig-bars" aria-hidden="true"><i></i><i></i><i></i></span>
               </div>
             </div>
-            <span class="on-arrow"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+            <span class="on-arrow"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
           </button>
 
           <!-- 4. ATI 1.4 PRIME Flagship (R1, 90deg) -->
-          <button type="button" class="orrery-node orrery-cat-core is-prime" data-cat="core" data-node-title="ATI 1.4 PRIME" style="--angle: 90deg; --radius: 148px; --node-color: #00f0ff; --node-rgb: 0, 240, 255;" onclick="window.openNodeInspector('ATI')" aria-label="Inspect ATI 1.4">
+          <button type="button" class="orrery-node orrery-cat-core is-prime" data-cat="core" data-node-title="ATI 1.4 PRIME" style="--angle: 90deg; --radius: 200px; --node-color: #00f0ff; --node-rgb: 0, 240, 255;" onclick="window.openNodeInspector('ATI')" aria-label="Inspect ATI 1.4">
             <span class="on-icon">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
             </span>
             <div class="on-info">
               <div class="on-title-row">
@@ -7138,51 +7191,51 @@
                 <span class="on-sig-bars" aria-hidden="true"><i></i><i></i><i></i></span>
               </div>
             </div>
-            <span class="on-arrow"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+            <span class="on-arrow"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
           </button>
 
-          <!-- 5. Traffic Sim (R3, 118deg) -->
-          <button type="button" class="orrery-node orrery-cat-3d" data-cat="3d" data-node-title="TRAFFIC SIM" style="--angle: 118deg; --radius: 278px; --node-color: #f59e0b; --node-rgb: 245, 158, 11;" onclick="window.openNodeInspector('Traffic')" aria-label="Inspect Traffic Sim">
+          <!-- 5. Traffic Sim (R3, 110deg) -->
+          <button type="button" class="orrery-node orrery-cat-3d" data-cat="3d" data-node-title="TRAFFIC SIM" style="--angle: 110deg; --radius: 310px; --node-color: #f59e0b; --node-rgb: 245, 158, 11;" onclick="window.openNodeInspector('Traffic')" aria-label="Inspect Traffic Sim">
             <span class="on-icon">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
             </span>
             <div class="on-info">
               <div class="on-title-row">
                 <span class="on-status-pip"></span>
                 <span class="on-title">Traffic Sim</span>
-                <span class="on-orbit-tag">R3&middot;118&deg;</span>
+                <span class="on-orbit-tag">R3&middot;110&deg;</span>
               </div>
               <div class="on-sub-row">
                 <span class="on-sub">MUMBAI &middot; LIDAR</span>
                 <span class="on-sig-bars" aria-hidden="true"><i></i><i></i><i></i></span>
               </div>
             </div>
-            <span class="on-arrow"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+            <span class="on-arrow"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
           </button>
 
-          <!-- 6. Perceptus (R2, 152deg) -->
-          <button type="button" class="orrery-node orrery-cat-ai" data-cat="ai" data-node-title="PERCEPTUS" style="--angle: 152deg; --radius: 212px; --node-color: #c084fc; --node-rgb: 192, 132, 252;" onclick="window.openNodeInspector('Perceptus')" aria-label="Inspect Perceptus">
+          <!-- 6. Perceptus (R2, 148deg) -->
+          <button type="button" class="orrery-node orrery-cat-ai" data-cat="ai" data-node-title="PERCEPTUS" style="--angle: 148deg; --radius: 250px; --node-color: #c084fc; --node-rgb: 192, 132, 252;" onclick="window.openNodeInspector('Perceptus')" aria-label="Inspect Perceptus">
             <span class="on-icon">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             </span>
             <div class="on-info">
               <div class="on-title-row">
                 <span class="on-status-pip"></span>
                 <span class="on-title">Perceptus</span>
-                <span class="on-orbit-tag">R2&middot;152&deg;</span>
+                <span class="on-orbit-tag">R2&middot;148&deg;</span>
               </div>
               <div class="on-sub-row">
                 <span class="on-sub">VISION &middot; 60FPS</span>
                 <span class="on-sig-bars" aria-hidden="true"><i></i><i></i><i></i></span>
               </div>
             </div>
-            <span class="on-arrow"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+            <span class="on-arrow"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
           </button>
 
           <!-- 7. QR Studio (R3, 182deg) -->
-          <button type="button" class="orrery-node orrery-cat-core" data-cat="core" data-node-title="QR STUDIO" style="--angle: 182deg; --radius: 278px; --node-color: #00f0ff; --node-rgb: 0, 240, 255;" onclick="window.openNodeInspector('QR')" aria-label="Inspect QR Studio">
+          <button type="button" class="orrery-node orrery-cat-core" data-cat="core" data-node-title="QR STUDIO" style="--angle: 182deg; --radius: 310px; --node-color: #00f0ff; --node-rgb: 0, 240, 255;" onclick="window.openNodeInspector('QR')" aria-label="Inspect QR Studio">
             <span class="on-icon">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
             </span>
             <div class="on-info">
               <div class="on-title-row">
@@ -7191,17 +7244,17 @@
                 <span class="on-orbit-tag">R3&middot;182&deg;</span>
               </div>
               <div class="on-sub-row">
-                <span class="on-sub">REED-SOLOMON &middot; VECTOR</span>
+                <span class="on-sub">REED-SOLOMON</span>
                 <span class="on-sig-bars" aria-hidden="true"><i></i><i></i><i></i></span>
               </div>
             </div>
-            <span class="on-arrow"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+            <span class="on-arrow"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
           </button>
 
           <!-- 8. Quest RPG (R3, 224deg) -->
-          <button type="button" class="orrery-node orrery-cat-3d" data-cat="3d" data-node-title="QUEST RPG" style="--angle: 224deg; --radius: 278px; --node-color: #10b981; --node-rgb: 16, 185, 129;" onclick="window.openNodeInspector('Game')" aria-label="Inspect Quest RPG">
+          <button type="button" class="orrery-node orrery-cat-3d" data-cat="3d" data-node-title="QUEST RPG" style="--angle: 224deg; --radius: 310px; --node-color: #10b981; --node-rgb: 16, 185, 129;" onclick="window.openNodeInspector('Game')" aria-label="Inspect Quest RPG">
             <span class="on-icon">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/></svg>
             </span>
             <div class="on-info">
               <div class="on-title-row">
@@ -7214,13 +7267,13 @@
                 <span class="on-sig-bars" aria-hidden="true"><i></i><i></i><i></i></span>
               </div>
             </div>
-            <span class="on-arrow"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+            <span class="on-arrow"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
           </button>
 
           <!-- 9. CastFlow (R2, 260deg) -->
-          <button type="button" class="orrery-node orrery-cat-core" data-cat="core" data-node-title="CASTFLOW" style="--angle: 260deg; --radius: 212px; --node-color: #38bdf8; --node-rgb: 56, 189, 248;" onclick="window.openNodeInspector('CastFlow')" aria-label="Inspect CastFlow">
+          <button type="button" class="orrery-node orrery-cat-core" data-cat="core" data-node-title="CASTFLOW" style="--angle: 260deg; --radius: 250px; --node-color: #38bdf8; --node-rgb: 56, 189, 248;" onclick="window.openNodeInspector('CastFlow')" aria-label="Inspect CastFlow">
             <span class="on-icon">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
             </span>
             <div class="on-info">
               <div class="on-title-row">
@@ -7233,59 +7286,52 @@
                 <span class="on-sig-bars" aria-hidden="true"><i></i><i></i><i></i></span>
               </div>
             </div>
-            <span class="on-arrow"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+            <span class="on-arrow"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
           </button>
 
-          <!-- 10. Database (R3, 292deg) -->
-          <button type="button" class="orrery-node orrery-cat-core" data-cat="core" data-node-title="DATABASE LOGIC" style="--angle: 292deg; --radius: 278px; --node-color: #3b82f6; --node-rgb: 59, 130, 246;" onclick="window.openNodeInspector('Database_Logic')" aria-label="Inspect Database Logic">
+          <!-- 10. Database Logic (R3, 285deg) -->
+          <button type="button" class="orrery-node orrery-cat-core" data-cat="core" data-node-title="DATABASE LOGIC" style="--angle: 284deg; --radius: 310px; --node-color: #3b82f6; --node-rgb: 59, 130, 246;" onclick="window.openNodeInspector('Database_Logic')" aria-label="Inspect Database Logic">
             <span class="on-icon">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
             </span>
             <div class="on-info">
               <div class="on-title-row">
                 <span class="on-status-pip"></span>
                 <span class="on-title">Database</span>
-                <span class="on-orbit-tag">R3&middot;292&deg;</span>
+                <span class="on-orbit-tag">R3&middot;284&deg;</span>
               </div>
               <div class="on-sub-row">
                 <span class="on-sub">50-MOD &middot; SQL/NOSQL</span>
                 <span class="on-sig-bars" aria-hidden="true"><i></i><i></i><i></i></span>
               </div>
             </div>
-            <span class="on-arrow"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+            <span class="on-arrow"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
           </button>
 
-          <!-- 11. Cereal AI (R1, 325deg) -->
-          <button type="button" class="orrery-node orrery-cat-ai" data-cat="ai" data-node-title="CEREAL AI" style="--angle: 325deg; --radius: 148px; --node-color: #c084fc; --node-rgb: 192, 132, 252;" onclick="window.openNodeInspector('Cereal')" aria-label="Inspect Cereal AI">
+          <!-- 11. Cereal AI (R1, 328deg) -->
+          <button type="button" class="orrery-node orrery-cat-ai" data-cat="ai" data-node-title="CEREAL AI" style="--angle: 330deg; --radius: 200px; --node-color: #ec4899; --node-rgb: 236, 72, 153;" onclick="window.openNodeInspector('Cereal')" aria-label="Inspect Cereal AI">
             <span class="on-icon">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
             </span>
             <div class="on-info">
               <div class="on-title-row">
                 <span class="on-status-pip"></span>
                 <span class="on-title">Cereal AI</span>
-                <span class="on-orbit-tag">R1&middot;325&deg;</span>
+                <span class="on-orbit-tag">R1&middot;330&deg;</span>
               </div>
               <div class="on-sub-row">
                 <span class="on-sub">GEMINI &middot; VOICE</span>
                 <span class="on-sig-bars" aria-hidden="true"><i></i><i></i><i></i></span>
               </div>
             </div>
-            <span class="on-arrow"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
+            <span class="on-arrow"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></span>
           </button>
-        </div>
+</div>
         <div class="orrery-filter-capsule" role="toolbar" aria-label="Filter Orrery Nodes">
           <button type="button" class="ofc-pill is-active" data-orrery-filter="all"><span class="m-dot m-gold"></span>All (11)</button>
           <button type="button" class="ofc-pill" data-orrery-filter="core"><span class="m-dot m-cyan"></span>Core</button>
           <button type="button" class="ofc-pill" data-orrery-filter="ai"><span class="m-dot m-purple"></span>AI &amp; Vision</button>
           <button type="button" class="ofc-pill" data-orrery-filter="3d"><span class="m-dot m-emerald"></span>3D &amp; Sim</button>
-        </div>
-        <div class="orrery-telemetry-ticker" aria-hidden="true">
-          <span class="ott-label">EPHEMERIS</span>
-          <span class="ott-sep">&bull;</span>
-          <span>DRAG RING TO ROTATE</span>
-          <span class="ott-sep">&bull;</span>
-          <span class="ott-coords" id="orreryCursorPolar">R: 000 AU &middot; &theta;: 000&deg;</span>
         </div>
       </div>
 
@@ -8015,14 +8061,29 @@
                 <!-- SVG Continents & Graticule Overlay -->
                 <svg class="t3-globe-svg" viewBox="0 0 120 120" fill="none">
                   <!-- Latitude & Longitude Graticule Lines -->
-                  <ellipse cx="60" cy="60" rx="46" ry="16" stroke="rgba(0, 240, 204, 0.25)" stroke-width="0.8" />
-                  <ellipse cx="60" cy="60" rx="46" ry="32" stroke="rgba(0, 240, 204, 0.25)" stroke-width="0.8" />
+                  <ellipse cx="60" cy="60" rx="46" ry="16" stroke="rgba(0, 240, 204, 0.22)" stroke-width="0.75" />
+                  <ellipse cx="60" cy="60" rx="46" ry="32" stroke="rgba(0, 240, 204, 0.22)" stroke-width="0.75" />
+                  <ellipse cx="60" cy="60" rx="18" ry="46" stroke="rgba(0, 240, 204, 0.18)" stroke-width="0.75" />
+                  <ellipse cx="60" cy="60" rx="34" ry="46" stroke="rgba(0, 240, 204, 0.18)" stroke-width="0.75" />
                   <line x1="14" y1="60" x2="106" y2="60" stroke="rgba(0, 240, 204, 0.35)" stroke-width="0.8" />
                   <line x1="60" y1="14" x2="60" y2="106" stroke="rgba(0, 240, 204, 0.35)" stroke-width="0.8" />
-                  <!-- Stylized Continent Outlines (India, Eurasia, Americas) -->
-                  <path d="M58 48 Q64 54 62 62 Q58 68 56 62 Z" fill="rgba(0, 240, 204, 0.45)" stroke="#00f0cc" stroke-width="0.8" />
-                  <path d="M46 36 Q58 34 68 40 Q74 46 66 50 Q52 48 46 36 Z" fill="rgba(0, 240, 204, 0.3)" />
-                  <path d="M28 42 Q36 40 38 48 Q32 58 26 52 Z" fill="rgba(0, 240, 204, 0.25)" />
+                  <!-- High-Fidelity Stylized Continents -->
+                  <!-- Eurasia & East Asia -->
+                  <path d="M48 30 C54 28, 68 28, 76 34 C82 38, 86 46, 80 50 C74 54, 70 48, 64 48 C60 48, 56 44, 52 46 C48 48, 44 42, 48 30 Z" fill="rgba(0, 240, 204, 0.38)" stroke="rgba(0, 240, 204, 0.7)" stroke-width="0.75" />
+                  <!-- Indian Subcontinent & Bay of Bengal -->
+                  <path d="M58 48 C62 48, 66 52, 65 58 C64 64, 60 70, 58 68 C56 65, 54 58, 56 52 C57 50, 57 48, 58 48 Z" fill="rgba(0, 240, 204, 0.55)" stroke="#00f0cc" stroke-width="0.9" />
+                  <!-- Africa & Arabian Peninsula -->
+                  <path d="M42 46 C46 44, 52 46, 54 52 C56 58, 52 64, 48 72 C44 76, 40 70, 38 64 C36 58, 38 52, 42 46 Z" fill="rgba(0, 240, 204, 0.32)" stroke="rgba(0, 240, 204, 0.6)" stroke-width="0.75" />
+                  <!-- Americas Western Horizon Limb -->
+                  <path d="M20 28 C24 28, 28 32, 26 40 C24 44, 21 46, 19 42 C18 36, 18 30, 20 28 Z" fill="rgba(0, 240, 204, 0.28)" />
+                  <path d="M25 50 C29 52, 31 58, 29 66 C27 72, 23 74, 23 68 C23 60, 23 54, 25 50 Z" fill="rgba(0, 240, 204, 0.28)" />
+                  <!-- Australia & Oceania -->
+                  <path d="M76 68 C82 66, 88 70, 86 78 C84 82, 78 82, 75 78 C74 74, 74 70, 76 68 Z" fill="rgba(0, 240, 204, 0.35)" stroke="rgba(0, 240, 204, 0.65)" stroke-width="0.75" />
+                  <!-- Atmospheric Horizon Limb Ring -->
+                  <circle cx="60" cy="60" r="46" stroke="rgba(0, 240, 204, 0.65)" stroke-width="1.2" fill="none" />
+                  <!-- Mumbai Radar Telemetry Beacon -->
+                  <circle cx="58" cy="57" r="1.8" fill="#f2b84b" />
+                  <circle cx="58" cy="57" r="4" stroke="#f2b84b" stroke-width="0.6" stroke-dasharray="1 1.5" />
                 </svg>
               </div>
             </div>
@@ -8683,14 +8744,26 @@
           }
         }
 
-        function highlightMatchText(text, query) {
-          if (!query || !text) return text
-          var idx = text.toLowerCase().indexOf(query.toLowerCase())
-          if (idx === -1) return text
-          var before = text.slice(0, idx)
-          var match = text.slice(idx, idx + query.length)
-          var after = text.slice(idx + query.length)
-          return before + '<mark class="col-cmd-mark">' + match + '</mark>' + after
+        function renderHighlighted(el, text, query) {
+          if (!el) return
+          el.textContent = ''
+          if (!text) return
+          var q = (query || '').toLowerCase().trim()
+          var idx = q ? text.toLowerCase().indexOf(q) : -1
+          if (idx === -1) {
+            el.textContent = text
+            return
+          }
+          if (idx > 0) {
+            el.appendChild(document.createTextNode(text.slice(0, idx)))
+          }
+          var mark = document.createElement('mark')
+          mark.className = 'col-cmd-mark'
+          mark.textContent = text.slice(idx, idx + q.length)
+          el.appendChild(mark)
+          if (idx + q.length < text.length) {
+            el.appendChild(document.createTextNode(text.slice(idx + q.length)))
+          }
         }
 
         function calculateScore(item, q) {
@@ -8793,12 +8866,8 @@
             // Apply search term highlighting if matched
             var tEl = item.querySelector('.col-cmd-title')
             var sEl = item.querySelector('.col-cmd-sub')
-            if (tEl) {
-              tEl.innerHTML = q && matches ? highlightMatchText(origTitle, q) : origTitle
-            }
-            if (sEl) {
-              sEl.innerHTML = q && matches ? highlightMatchText(origSub, q) : origSub
-            }
+            renderHighlighted(tEl, origTitle, q && matches ? q : '')
+            renderHighlighted(sEl, origSub, q && matches ? q : '')
 
             item._score = score
             if (matches) matchCount++
@@ -9169,6 +9238,15 @@
             }
           }
 
+          function setLiveLockNode(title, color) {
+            if (!liveLock) return;
+            liveLock.textContent = '';
+            var b = document.createElement('b');
+            if (color) b.style.color = color;
+            b.textContent = title || 'STANDBY';
+            liveLock.appendChild(b);
+          }
+
           nodeRegistry.forEach(function (item) {
             item.el.addEventListener('mouseenter', function () {
               lockedNodeItem = item;
@@ -9177,7 +9255,7 @@
               if (laserLine) laserLine.classList.add('is-locked');
               if (laserGlow) laserGlow.classList.add('is-locked');
               if (targetReticle) targetReticle.classList.add('is-locked');
-              if (liveLock) liveLock.innerHTML = '<b style="color:' + item.color + '">' + item.title + '</b>';
+              setLiveLockNode(item.title, item.color);
             });
             item.el.addEventListener('mouseleave', function () {
               if (lockedNodeItem === item) {
@@ -9246,7 +9324,7 @@
             driftBtn.addEventListener('click', function (e) {
               e.stopPropagation();
               rotSpeed = rotSpeed === 0 ? 5.5 : 0; // 5.5 deg/sec smooth drift
-              driftBtn.innerHTML = rotSpeed ? '&#10227; DRIFT: ON' : '&#10227; DRIFT: OFF';
+              driftBtn.textContent = rotSpeed ? '\u27F3 DRIFT: ON' : '\u27F3 DRIFT: OFF';
               driftBtn.classList.toggle('is-active', rotSpeed > 0);
             });
           }
@@ -9299,16 +9377,16 @@
                 beamLockedNode.el.classList.add('is-radar-ping');
                 lastPingNode = beamLockedNode;
               }
-              if (!lockedNodeItem && liveLock) {
-                liveLock.innerHTML = '<b style="color:' + beamLockedNode.color + '">' + beamLockedNode.title + '</b>';
+              if (!lockedNodeItem) {
+                setLiveLockNode(beamLockedNode.title, beamLockedNode.color);
               }
             } else {
               if (lastPingNode) {
                 lastPingNode.el.classList.remove('is-radar-ping');
                 lastPingNode = null;
               }
-              if (!lockedNodeItem && liveLock) {
-                liveLock.innerHTML = '<b>STANDBY</b>';
+              if (!lockedNodeItem) {
+                setLiveLockNode('STANDBY');
               }
             }
 
@@ -9332,7 +9410,10 @@
             }
 
             if (liveDelta) {
-              liveDelta.innerHTML = '<b>' + (orbitRot >= 0 ? '+' : '') + orbitRot.toFixed(1) + '°</b>';
+              liveDelta.textContent = '';
+              var bDelta = document.createElement('b');
+              bDelta.textContent = (orbitRot >= 0 ? '+' : '') + orbitRot.toFixed(1) + '°';
+              liveDelta.appendChild(bDelta);
             }
 
             orreryRafId = requestAnimationFrame(orreryLoop);
@@ -9622,8 +9703,8 @@
             cta: 'Explore Terra 3D'
           },
           Career: {
-            name: 'FutureScape: Career Compass',
-            badge: 'Psychometrics & 436 Careers',
+            name: 'The Career Compass',
+            badge: 'Psychometrics & 441 Careers',
             key: 'plasma',
             page: 'Career',
             icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>',

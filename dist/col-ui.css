@@ -4092,6 +4092,17 @@ body.lm .col-cookie-essential {
 .pc-cover-link {
   color: inherit;
   text-decoration: none;
+  outline: none !important;
+}
+.pc-cover-link:focus,
+.pc-cover-link:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+.pc:has(.pc-cover-link:focus-visible) {
+  outline: 2px solid var(--signal, #f2b84b) !important;
+  outline-offset: 4px !important;
+  border-radius: 16px !important;
 }
 
 .pc-cover-link::after {
