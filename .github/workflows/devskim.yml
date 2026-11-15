@@ -32,7 +32,9 @@ jobs:
             **/.git/**,**/node_modules/**,**/.agents/**,**/.agent/**,**/.codex/**,
             **/.opencode/**,**/.superpowers/**,**/dist/**,**/dist-web/**,
             **/dist-electron/**,**/Models/**,**/textures/**,**/skins/**,
-            **/Cyberpunk/**,**/traffic-ts/**,**/vendor/**,**/*.min.js
+            **/Cyberpunk/**,**/traffic-ts/**,**/vendor/**,**/*.min.js,
+            **/*.bundle.js,**/Traffic/assets/**,**/Traffic/libs/**,scripts/**,
+            android/**,skills-lock.json
 
       - name: Upload DevSkim scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v4

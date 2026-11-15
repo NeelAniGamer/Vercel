@@ -20,7 +20,7 @@ const excludedDirectories = new Set([
 const excludedFiles = new Set([
   'AGENTS.md', 'README.md', 'PLAN.md', 'PROJECTS.md', 'findings.md',
   'progress.md', 'task_plan.md', 'app.json', 'SECURITY.md', '.gitignore', '.prettierignore',
-  '.prettierrc', '.vercelignore', 'build.js', 'build_scenes.js', 'generate_video_reel.py',
+  '.prettierrc', '.vercelignore', '.eslintignore', 'build.js', 'build_scenes.js', 'generate_video_reel.py',
   'render_production_videos.py', 'perceptus_agent.py', 'local_server.js',
   'serve.js', 'server.js', 'package.json', 'package-lock.json', 'tsconfig.json',
   'opencode.json', 'skills-lock.json', 'eslint.config.js', 'AdvancedTypingInstructor.exe', 'AdvancedTypingInstructor_Setup.exe',

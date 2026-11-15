@@ -101,6 +101,8 @@ task_plan.md
 app.json
 opencode.json
 skills-lock.json
+skills
+skills/**
 eslint.config.js
 **/eslint.config.js
 .trajectory
