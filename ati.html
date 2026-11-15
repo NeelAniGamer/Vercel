@@ -1805,7 +1805,7 @@
          ========================================================================== */
       .floating-dock {
         position: fixed;
-        bottom: 24px;
+        bottom: 78px; /* elevated above #bmc-floating-badge */
         right: 24px;
         background: rgba(21, 26, 23, 0.94);
         border: 1px solid rgba(217, 138, 102, 0.35);
@@ -1819,6 +1819,10 @@
         backdrop-filter: blur(14px);
         font-family: var(--font-mono);
         font-size: 0.76rem;
+        transition: bottom 0.25s ease;
+      }
+      @media (max-width: 768px) {
+        .floating-dock { bottom: 16px; right: 16px; }
       }
       .dock-btn {
         background: none;
