@@ -25,6 +25,11 @@ temp_rec/
 # excluded from the deploy artifact by build.js and .vercelignore.
 /.agents/
 /Traffic/.agents/
+skills/
+skills-lock.json
+.*/**/skills/
+.*/**/references/
+.*/**/scripts/
 *.sqlite
 *.sqlite3
 *.db
