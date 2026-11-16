@@ -94,7 +94,7 @@ function normalizeRoute(value) {
 }
 
 function routeToFile(route) {
-  if (route === '/') return path.join(distRoot, 'home.html')
+  if (route === '/') return path.join(distRoot, 'index.html')
   const relative = route.replace(/^\/+/, '')
   const direct = path.join(distRoot, relative)
   if (fs.existsSync(direct) && fs.statSync(direct).isFile()) return direct
