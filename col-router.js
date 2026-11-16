@@ -16,7 +16,7 @@
     const config = await window.__colConfigPromise
     if (!config) {return}
 
-    const rawPage = window.location.pathname.split('/').filter(Boolean).pop() || 'home'
+    const rawPage = window.location.pathname.split('/').filter(Boolean).pop() || 'index'
     const page = rawPage.replace(/\.html$/i, '').toLowerCase()
     const status = config.pages && (config.pages[rawPage] || config.pages[page])
 

@@ -94,7 +94,7 @@
       ]
     },
     {
-      "source": "/:page(home|about|school|sneh-asha|making|ati|solar|gesture|rpg|qr|download|Career|CastFlow|cereal|Terra3D|verify|Database_Logic|feedback|index)",
+      "source": "/:page(home|about|school|sneh-asha|making|ati|solar|gesture|rpg|qr|download|Career|CastFlow|cereal|Terra3D|verify|Database_Logic|feedback|index|index1)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -151,7 +151,7 @@
   "rewrites": [
     {
       "source": "/",
-      "destination": "/home"
+      "destination": "/index"
     },
     {
       "source": "/cast",
@@ -184,6 +184,14 @@
     {
       "source": "/database_logic",
       "destination": "/Database_Logic"
+    },
+    {
+      "source": "/index-og",
+      "destination": "/index1"
+    },
+    {
+      "source": "/hub",
+      "destination": "/index"
     }
   ],
   "redirects": [

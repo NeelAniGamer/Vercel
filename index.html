@@ -3,9 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="description" content="Class Of Learners Studio Hub — Explore interactive learning projects including Typing Instructor, Solar Engine, Perceptus Flow, QR Studio Matrix, and RPG Game." />
-    <meta name="author" content="Class Of Learners Studio" />
+    <meta name="description" content="Explore Class Of Learners interactive engineering projects including Typing Instructor, Solar Engine, Gesture Vision AI, Mumbai Traffic, and Terra3D." />
+    <meta name="author" content="Class Of Learners Studio (Neel, Ansh, Aarush)" />
     <meta name="theme-color" content="#070A14" id="themeMeta" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Class Of Learners" />
@@ -16,13 +17,29 @@
     <meta property="og:url" content="https://advancedlogiclabs.dpdns.org/" />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://advancedlogiclabs.dpdns.org/Class.png" />
+    
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Class Of Learners | Studio Hub" />
+    <meta name="twitter:description" content="A focused portfolio of advanced programming logic, machine vision, and deep-space physics engines. Designed in Mumbai for the world." />
+    <meta name="twitter:image" content="https://advancedlogiclabs.dpdns.org/Class.png" />
 
+    <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/" />
     <title>Class Of Learners | Studio Hub</title>
 
     <link rel="icon" type="image/png" href="Class.png" />
     <link rel="apple-touch-icon" href="Class.png" />
     <link rel="manifest" href="manifest.json" />
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Class Of Learners",
+      "alternateName": "CoL Studio Hub",
+      "url": "https://advancedlogiclabs.dpdns.org/",
+      "description": "A focused portfolio of advanced programming logic, machine vision, and deep-space physics engines. Designed in Mumbai for the world."
+    }
+    </script>
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
@@ -49,25 +66,29 @@
         --google-blue: var(--ion, #5ed4f5);
         --card-bg: var(--panel, #111827);
         --border-light: var(--line, rgba(255, 255, 255, 0.08));
-        --nav-bg: var(--nav, rgba(7, 10, 20, 0.75));
+        --nav-bg: var(--nav, rgba(7, 10, 20, 0.85));
       }
 
       html.lm,
       body.lm {
-        --bg-color: var(--void, #fafaf9);
-        --text-main: var(--ink, #0f172a);
-        --text-muted: var(--dim, #475569);
+        --bg-color: var(--void, #f8f7f4);
+        --text-main: var(--ink, #12141c);
+        --text-muted: var(--dim, #5a6275);
         --google-blue: var(--ion, #0284c7);
         --card-bg: var(--panel, #ffffff);
         --border-light: var(--line, rgba(15, 23, 42, 0.08));
-        --nav-bg: var(--nav, rgba(255, 255, 255, 0.88));
+        --nav-bg: var(--nav, rgba(255, 255, 255, 0.92));
       }
 
       * {
         box-sizing: border-box;
         margin: 0;
         padding: 0;
-        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        font-family:
+          'Inter',
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
       }
 
       body {
@@ -78,26 +99,156 @@
         align-items: center;
         min-height: 100vh;
         overflow-x: hidden;
-        transition: background-color 0.3s, color 0.3s;
+        transition:
+          background-color 0.3s,
+          color 0.3s;
+        text-transform: capitalize;
       }
 
-      code, pre, .tech-tag, kbd, .brand, [style*="monospace"], .term-dot {
+      code,
+      pre,
+      .tech-tag,
+      kbd,
+      .brand,
+      [style*='monospace'],
+      .term-dot,
+      .no-cap {
         text-transform: none;
+      }
+
+      /* ==========================================================================
+         REACTIVE NAVBAR: FULL TOP BAR AT TOP, FLOATING PILL WHEN SCROLLING
+         ========================================================================== */
+      .top-nav {
+        position: sticky;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        backdrop-filter: blur(20px) saturate(140%);
+        -webkit-backdrop-filter: blur(20px) saturate(140%);
+        transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                    max-width 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                    top 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                    border-radius 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                    padding 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                    box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                    background 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                    border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      }
+
+      /* 1. At Top of Page: Full Width Top Bar */
+      .top-nav,
+      .top-nav:not(.s):not(.nav-pill) {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        top: 0 !important;
+        border-radius: 0 !important;
+        border-left: none !important;
+        border-right: none !important;
+        border-top: none !important;
+        border-bottom: 1px solid var(--border-light) !important;
+        padding: 16px 44px !important;
+        box-shadow: none !important;
+        transform: translate3d(0, 0, 0) !important;
+        background: var(--nav-bg) !important;
+      }
+
+      body.lm .top-nav:not(.s):not(.nav-pill) {
+        border-bottom: 1px solid rgba(15, 23, 42, 0.08) !important;
+        background: var(--nav-bg) !important;
+      }
+
+      /* 2. When Scrolled: Floating Dynamic Pill */
+      .top-nav.s,
+      .top-nav.nav-pill {
+        position: fixed !important;
+        top: 14px !important;
+        left: 0 !important;
+        right: 0 !important;
+        margin: 0 auto !important;
+        width: min(1180px, 92%) !important;
+        max-width: 1180px !important;
+        border-radius: 9999px !important;
+        padding: 8px 26px !important;
+        border: 1px solid rgba(255, 255, 255, 0.18) !important;
+        border-top: 1.5px solid rgba(255, 255, 255, 0.65) !important;
+        box-shadow: 0 16px 42px -8px rgba(0, 0, 0, 0.5), 0 0 24px -4px rgba(94, 212, 245, 0.12) !important;
+        transform: translate3d(0, 0, 0) !important;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.12) 0%,
+          rgba(255, 255, 255, 0.035) 22%,
+          rgba(12, 17, 32, 0.90) 68%,
+          rgba(6, 9, 18, 0.98) 100%
+        ) !important;
+      }
+
+      body.lm .top-nav.s,
+      body.lm .top-nav.nav-pill {
+        border: 1px solid rgba(15, 23, 42, 0.12) !important;
+        border-top: 1.5px solid #ffffff !important;
+        box-shadow: 0 14px 34px -6px rgba(15, 23, 42, 0.14), inset 0 1px 1.5px #ffffff !important;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.96) 0%,
+          rgba(255, 255, 255, 0.82) 40%,
+          rgba(240, 237, 228, 0.92) 100%
+        ) !important;
+      }
+
+      @media (max-width: 768px) {
+        .top-nav:not(.s):not(.nav-pill) {
+          padding: 12px 18px !important;
+        }
+        .top-nav.s,
+        .top-nav.nav-pill {
+          width: calc(100% - 24px) !important;
+          border-radius: 22px !important;
+          top: 10px !important;
+          padding: 8px 16px !important;
+        }
       }
 
       .hero {
         text-align: center;
-        padding: 80px 20px 50px;
-        max-width: 900px;
-        width: 100%;
-        position: relative;
-        z-index: 10;
+        padding: 80px 20px 40px;
+        max-width: 1000px;
+      }
+
+      .hero-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 16px;
+        border-radius: 9999px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        background: rgba(94, 212, 245, 0.1);
+        border: 1px solid rgba(94, 212, 245, 0.25);
+        color: var(--google-blue);
+        margin-bottom: 24px;
+      }
+
+      .hero-pill .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #10b981;
+        box-shadow: 0 0 8px #10b981;
       }
 
       .hero h1 {
-        font-size: 3.8rem;
+        font-size: 3.5rem;
         font-weight: 800;
-        letter-spacing: -2px;
+        letter-spacing: -1.5px;
         margin-bottom: 20px;
         line-height: 1.1;
         background: linear-gradient(135deg, var(--text-main) 30%, var(--google-blue) 100%);
@@ -110,15 +261,52 @@
         font-size: 1.25rem;
         color: var(--text-muted);
         line-height: 1.6;
-        max-width: 700px;
+        max-width: 760px;
         margin: 0 auto;
         transition: color 0.3s;
       }
 
+      /* Filter bar */
+      .hub-filters {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 40px;
+        z-index: 10;
+        position: relative;
+      }
+
+      .hub-pill {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border-light);
+        color: var(--text-muted);
+        padding: 8px 18px;
+        border-radius: 9999px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .hub-pill:hover,
+      .hub-pill.active {
+        background: var(--google-blue);
+        color: #070a14;
+        border-color: var(--google-blue);
+        font-weight: 700;
+      }
+
+      body.lm .hub-pill {
+        background: rgba(15, 23, 42, 0.04);
+      }
+
+      /* Grid of projects */
       .grid-container {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-        gap: 35px;
+        grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+        gap: 32px;
         max-width: 1300px;
         width: 90%;
         margin-bottom: 0;
@@ -141,13 +329,26 @@
       }
 
       .showcase-box:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35);
+        transform: translateY(-8px);
+        box-shadow: 0 24px 48px rgba(0, 0, 0, 0.35);
         border-color: var(--google-blue);
       }
 
+      .box-badge {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        z-index: 20;
+      }
+
       .box-visual {
-        height: 220px;
+        height: 200px;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -178,11 +379,11 @@
       }
 
       .showcase-box:hover .box-visual::after {
-        opacity: 0.4;
+        opacity: 0.35;
       }
 
       .box-content {
-        padding: 28px;
+        padding: 24px 26px 26px;
         display: flex;
         flex-direction: column;
         flex-grow: 1;
@@ -191,73 +392,61 @@
       }
 
       .box-content h2 {
-        font-size: 1.55rem;
+        font-size: 1.45rem;
         font-weight: 800;
-        margin-bottom: 12px;
+        margin-bottom: 10px;
         transition: color 0.3s;
+        letter-spacing: -0.4px;
       }
 
       .showcase-box:hover .box-content h2 {
         color: var(--google-blue);
       }
 
-      .showcase-box.gesture-box:hover .box-content h2 {
-        color: #00ffcc;
-      }
-
-      .showcase-box.rpg-box:hover .box-content h2 {
-        color: #a78bfa;
-      }
-
-      .showcase-box.qr-box:hover .box-content h2 {
-        color: #34d399;
-      }
-
       .box-content p {
-        font-size: 0.98rem;
         color: var(--text-muted);
-        line-height: 1.6;
+        line-height: 1.55;
+        font-size: 0.95rem;
+        margin-bottom: 16px;
+        flex-grow: 1;
         transition: color 0.3s;
       }
 
-      .prototype-badge {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        background: #00ffcc;
-        color: #000;
-        font-size: 0.75rem;
-        font-weight: 800;
-        padding: 6px 12px;
-        border-radius: 6px;
-        z-index: 20;
-        letter-spacing: 1px;
-        box-shadow: 0 4px 15px rgba(0, 255, 204, 0.4);
+      .box-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: auto;
+      }
+
+      .box-tags .tag {
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 9999px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border-light);
+        color: var(--text-muted);
+        letter-spacing: 0.3px;
         text-transform: uppercase;
       }
 
-      .coming-soon-badge {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        background: linear-gradient(135deg, #7c3aed, #a855f7);
-        color: #fff;
-        font-size: 0.75rem;
-        font-weight: 800;
-        padding: 6px 12px;
-        border-radius: 6px;
-        z-index: 20;
-        letter-spacing: 1px;
-        box-shadow: 0 4px 15px rgba(139, 92, 246, 0.5);
-        text-transform: uppercase;
-        animation: pulseBadge 2.5s ease-in-out infinite;
+      body.lm .box-tags .tag {
+        background: rgba(15, 23, 42, 0.04);
       }
 
-      @keyframes pulseBadge {
-        0%, 100% { box-shadow: 0 4px 15px rgba(139, 92, 246, 0.5); }
-        50% { box-shadow: 0 4px 25px rgba(139, 92, 246, 0.9); }
+      /* CSS ART STYLES */
+      .art-center-icon {
+        font-size: 4.2rem;
+        z-index: 2;
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       }
 
+      .showcase-box:hover .art-center-icon {
+        transform: scale(1.15) translateY(-4px);
+      }
+
+      /* 1. Gesture AI Art */
       .css-art-bg {
         width: 100%;
         height: 100%;
@@ -267,7 +456,6 @@
         justify-content: center;
         align-items: center;
       }
-
       .css-art-grid {
         position: absolute;
         inset: 0;
@@ -275,18 +463,6 @@
         background: repeating-linear-gradient(0deg, transparent, transparent 19px, #00ffcc 19px, #00ffcc 20px),
                     repeating-linear-gradient(90deg, transparent, transparent 19px, #00ffcc 19px, #00ffcc 20px);
       }
-
-      .css-art-hand {
-        font-size: 5rem;
-        z-index: 2;
-        filter: drop-shadow(0 0 20px rgba(0, 255, 204, 0.6));
-        transition: transform 0.4s;
-      }
-
-      .showcase-box:hover .css-art-hand {
-        transform: scale(1.1) translateY(-5px);
-      }
-
       .scan-line {
         position: absolute;
         top: 0;
@@ -299,7 +475,6 @@
         z-index: 5;
         opacity: 0.8;
       }
-
       @keyframes scan {
         0% { top: -10%; opacity: 0; }
         10% { opacity: 1; }
@@ -307,81 +482,7 @@
         100% { top: 110%; opacity: 0; }
       }
 
-      .rpg-art-bg {
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(180deg, #0a0514 0%, #150c2a 60%, #0d0a1a 100%);
-        position: relative;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        overflow: hidden;
-      }
-
-      .rpg-stars {
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(1px 1px at 20% 30%, rgba(167, 139, 250, 0.8) 0%, transparent 100%),
-                    radial-gradient(1px 1px at 80% 10%, rgba(255, 255, 255, 0.7) 0%, transparent 100%),
-                    radial-gradient(1px 1px at 50% 60%, rgba(196, 181, 253, 0.6) 0%, transparent 100%),
-                    radial-gradient(1px 1px at 70% 80%, rgba(255, 255, 255, 0.5) 0%, transparent 100%),
-                    radial-gradient(1px 1px at 10% 80%, rgba(167, 139, 250, 0.7) 0%, transparent 100%),
-                    radial-gradient(1px 1px at 90% 50%, rgba(255, 255, 255, 0.6) 0%, transparent 100%),
-                    radial-gradient(1px 1px at 35% 20%, rgba(196, 181, 253, 0.9) 0%, transparent 100%),
-                    radial-gradient(2px 2px at 60% 40%, rgba(250, 204, 21, 0.5) 0%, transparent 100%);
-        background-size: 8px 8px;
-      }
-
-      .rpg-glow {
-        position: absolute;
-        bottom: -20px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 200px;
-        height: 80px;
-        background: radial-gradient(ellipse, rgba(139, 92, 246, 0.4) 0%, transparent 70%);
-      }
-
-      .rpg-icon {
-        font-size: 4.5rem;
-        z-index: 2;
-        filter: drop-shadow(0 0 20px rgba(167, 139, 250, 0.8));
-        transition: transform 0.4s;
-      }
-
-      .showcase-box:hover .rpg-icon {
-        transform: scale(1.15) translateY(-8px) rotate(5deg);
-        filter: drop-shadow(0 0 30px rgba(167, 139, 250, 1));
-      }
-
-      .rpg-runes {
-        position: absolute;
-        bottom: 15px;
-        left: 50%;
-        transform: translateX(-50%);
-        display: flex;
-        gap: 12px;
-        z-index: 3;
-      }
-
-      .rpg-rune {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: rgba(167, 139, 250, 0.6);
-        animation: runeGlow 1.5s ease-in-out infinite alternate;
-      }
-
-      .rpg-rune:nth-child(2) { animation-delay: 0.3s; background: rgba(250, 204, 21, 0.7); }
-      .rpg-rune:nth-child(3) { animation-delay: 0.6s; background: rgba(196, 181, 253, 0.6); }
-      .rpg-rune:nth-child(4) { animation-delay: 0.9s; background: rgba(250, 204, 21, 0.7); }
-      .rpg-rune:nth-child(5) { animation-delay: 1.2s; background: rgba(167, 139, 250, 0.6); }
-
-      @keyframes runeGlow {
-        from { opacity: 0.3; transform: scale(1); }
-        to { opacity: 1; transform: scale(1.4); box-shadow: 0 0 8px currentColor; }
-      }
-
+      /* 2. QR Art */
       .qr-art-bg {
         width: 100%;
         height: 100%;
@@ -390,39 +491,20 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        overflow: hidden;
       }
-
       .qr-grid-art {
         display: grid;
-        grid-template-columns: repeat(9, 1fr);
+        grid-template-columns: repeat(9, 12px);
+        grid-template-rows: repeat(9, 12px);
         gap: 3px;
         width: 130px;
         height: 130px;
         z-index: 2;
         transition: transform 0.4s;
       }
-
-      .showcase-box:hover .qr-grid-art {
-        transform: scale(1.1);
-      }
-
-      .qr-cell {
-        border-radius: 2px;
-        background: rgba(52, 211, 153, 0.15);
-        transition: background 0.3s;
-      }
-
-      .qr-cell.on {
-        background: #34d399;
-        box-shadow: 0 0 4px rgba(52, 211, 153, 0.5);
-      }
-
-      .showcase-box:hover .qr-cell.on {
-        background: #6ee7b7;
-        box-shadow: 0 0 8px rgba(52, 211, 153, 0.8);
-      }
-
+      .showcase-box:hover .qr-grid-art { transform: scale(1.1); }
+      .qr-cell { border-radius: 2px; background: rgba(52, 211, 153, 0.15); transition: background 0.3s; }
+      .qr-cell.on { background: #34d399; box-shadow: 0 0 4px rgba(52, 211, 153, 0.5); }
       .qr-scan-v {
         position: absolute;
         top: 0;
@@ -434,35 +516,279 @@
         animation: qrScan 2s ease-in-out infinite;
         opacity: 0.6;
       }
-
       @keyframes qrScan {
         0% { transform: translateX(-80px); }
         50% { transform: translateX(80px); }
         100% { transform: translateX(-80px); }
       }
-
       .qr-glow {
         position: absolute;
         inset: 0;
         background: radial-gradient(ellipse at center, rgba(52, 211, 153, 0.08) 0%, transparent 70%);
       }
 
+      /* 3. RPG Art */
+      .rpg-art-bg {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(180deg, #0a0514 0%, #150c2a 60%, #0d0a1a 100%);
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+      }
+      .rpg-stars {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(1px 1px at 20% 30%, rgba(167, 139, 250, 0.8) 0%, transparent 100%),
+                    radial-gradient(1px 1px at 80% 10%, rgba(255, 255, 255, 0.7) 0%, transparent 100%),
+                    radial-gradient(1px 1px at 50% 60%, rgba(196, 181, 253, 0.6) 0%, transparent 100%);
+      }
+      .rpg-glow {
+        position: absolute;
+        bottom: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 200px;
+        height: 80px;
+        background: radial-gradient(ellipse, rgba(139, 92, 246, 0.4) 0%, transparent 70%);
+      }
+
+      /* 4. Traffic Driving Art */
+      .traffic-art-bg {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(180deg, #090c15 0%, #171c2b 60%, #07090f 100%);
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+      }
+      .road-perspective {
+        position: absolute;
+        bottom: 0;
+        width: 140px;
+        height: 100%;
+        background: #111420;
+        clip-path: polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%);
+        border-left: 2px solid rgba(245, 158, 11, 0.4);
+        border-right: 2px solid rgba(245, 158, 11, 0.4);
+      }
+      .road-line {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 0;
+        width: 3px;
+        height: 100%;
+        background: repeating-linear-gradient(to bottom, #f59e0b 0, #f59e0b 20px, transparent 20px, transparent 40px);
+        animation: roadMove 1s linear infinite;
+      }
+      @keyframes roadMove {
+        from { background-position: 0 0; }
+        to { background-position: 0 40px; }
+      }
+
+      /* 5. Terra3D Art */
+      .terra-art-bg {
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at center, #0d2836 0%, #061019 70%, #02060a 100%);
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .terra-ring {
+        position: absolute;
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        border: 1px dashed rgba(20, 184, 166, 0.4);
+        animation: spinGlobe 12s linear infinite;
+      }
+      @keyframes spinGlobe {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      /* 6. Career Compass Art */
+      .career-art-bg {
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at center, #131738 0%, #080a1c 70%, #050612 100%);
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .compass-reticle {
+        position: absolute;
+        width: 130px;
+        height: 130px;
+        border-radius: 50%;
+        border: 1.5px solid rgba(99, 102, 241, 0.35);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .compass-axis {
+        position: absolute;
+        width: 100%;
+        height: 1px;
+        background: rgba(99, 102, 241, 0.3);
+      }
+      .compass-axis.v { transform: rotate(90deg); }
+
+      /* 7. Database Logic Art */
+      .db-art-bg {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #071328 0%, #0a1b38 60%, #030814 100%);
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .db-nodes {
+        position: absolute;
+        display: flex;
+        gap: 20px;
+        align-items: center;
+      }
+      .db-node-cylinder {
+        width: 32px;
+        height: 48px;
+        border-radius: 6px;
+        border: 1.5px solid rgba(37, 99, 235, 0.5);
+        background: rgba(37, 99, 235, 0.1);
+      }
+
+      /* 8. CastFlow Art */
+      .cast-art-bg {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #081a2e 0%, #04101d 100%);
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .cast-wave {
+        position: absolute;
+        border-radius: 50%;
+        border: 1.5px solid rgba(56, 189, 248, 0.4);
+        animation: wavePulse 2.4s ease-out infinite;
+      }
+      .cast-wave:nth-child(1) { width: 60px; height: 60px; animation-delay: 0s; }
+      .cast-wave:nth-child(2) { width: 110px; height: 110px; animation-delay: 0.8s; }
+      .cast-wave:nth-child(3) { width: 160px; height: 160px; animation-delay: 1.6s; }
+      @keyframes wavePulse {
+        0% { transform: scale(0.6); opacity: 1; }
+        100% { transform: scale(1.3); opacity: 0; }
+      }
+
+      /* 9. Cereal AI Art */
+      .cereal-art-bg {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(180deg, #1f0b18 0%, #12050e 100%);
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+      }
+      .freq-bar {
+        width: 4px;
+        background: #f472b6;
+        border-radius: 4px;
+        animation: freqJump 1.2s ease-in-out infinite alternate;
+      }
+      .freq-bar:nth-child(1) { height: 28px; animation-delay: 0.1s; }
+      .freq-bar:nth-child(2) { height: 46px; animation-delay: 0.3s; }
+      .freq-bar:nth-child(3) { height: 68px; animation-delay: 0.5s; }
+      .freq-bar:nth-child(4) { height: 38px; animation-delay: 0.2s; }
+      .freq-bar:nth-child(5) { height: 52px; animation-delay: 0.4s; }
+      @keyframes freqJump {
+        0% { transform: scaleY(0.4); }
+        100% { transform: scaleY(1.2); }
+      }
+
+      /* 10. Friday OS Art */
+      .friday-art-bg {
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at center, #1b0e2b 0%, #0b0512 80%);
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .arc-reactor {
+        position: absolute;
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 2px dashed rgba(168, 85, 247, 0.5);
+        animation: spinGlobe 8s linear infinite;
+      }
+
+      /* 11. Space Station Art */
+      .space-art-bg {
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at center, #1a0e05 0%, #0a0502 80%);
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      /* 12. Sneh Asha Art */
+      .sneh-art-bg {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #1c1408 0%, #0f0b04 100%);
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      /* 13. Downloads Hub Art */
+      .dl-art-bg {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #09131e 0%, #03080e 100%);
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
       @media (max-width: 768px) {
         .hero { padding: 50px 20px 30px; }
         .hero h1 { font-size: 2.4rem; }
         .grid-container { grid-template-columns: 1fr; width: 95%; }
+        .hub-filters { gap: 6px; }
+        .hub-pill { font-size: 0.78rem; padding: 6px 14px; }
       }
     </style>
   </head>
   <body>
-    <!-- Top Navigation component wired to col-nav.js -->
+    <!-- Top Navigation wired to col-nav.js with scroll-pill transformation -->
     <nav class="top-nav" id="topNav" data-page="home" role="navigation" aria-label="Main Navigation">
       <a href="/" class="nav-brand">
         <img src="Class.png" alt="Class Of Learners Logo" class="brand-logo" width="40" height="40" onerror="this.style.display='none'">
         <span>Class Of Learners</span>
       </a>
       <div class="nav-links">
-        <a href="/" class="nav-link act" aria-current="page">Home</a>
+        <a href="/" class="nav-link act" aria-current="page">Studio Hub</a>
+        <a href="home" class="nav-link">Orrery Home</a>
+        <a href="index1" class="nav-link">Classic Hub</a>
         <a href="about" class="nav-link">About</a>
         <a href="school" class="nav-link">School</a>
         <a href="sneh-asha" class="nav-link">Sneh Asha</a>
@@ -481,44 +807,218 @@
     </nav>
 
     <header class="hero">
+      <div class="hero-pill">
+        <span class="dot"></span> 15 Production Applications &bull; CoL Studio
+      </div>
       <h1>Engineering The Future Of Interactive Learning.</h1>
-      <p>A Focused Portfolio Of Advanced Programming Logic, Machine Vision, And Deep-Space Physics Engines. Designed In Mumbai For The World.</p>
+      <p>A focused portfolio of advanced programming logic, machine vision, and deep-space physics engines. Designed in Mumbai for the world.</p>
     </header>
 
-    <main class="grid-container" style="padding-bottom: 80px;">
-      <a href="ati" class="showcase-box">
-        <div class="box-visual"><img src="ati-1.webp" alt="Advanced Typing Instructor" onerror="this.style.display='none'"></div>
+    <!-- Category Filter Controls -->
+    <div class="hub-filters" role="tablist" aria-label="Project Categories">
+      <button type="button" class="hub-pill active" onclick="filterHub('all', this)">All Projects (15)</button>
+      <button type="button" class="hub-pill" onclick="filterHub('flagship', this)">Flagships</button>
+      <button type="button" class="hub-pill" onclick="filterHub('ai', this)">AI &amp; Vision</button>
+      <button type="button" class="hub-pill" onclick="filterHub('sim', this)">3D &amp; Simulators</button>
+      <button type="button" class="hub-pill" onclick="filterHub('mobility', this)">Mobility &amp; Systems</button>
+      <button type="button" class="hub-pill" onclick="filterHub('community', this)">Community &amp; Downloads</button>
+    </div>
+
+    <main class="grid-container" id="hubGrid" style="padding-bottom: 80px;">
+      <!-- 1. ATI 1.4 -->
+      <a href="ati" class="showcase-box" data-cat="flagship" style="border-color: rgba(242, 184, 75, 0.35);">
+        <div class="box-badge" style="background: rgba(242, 184, 75, 0.15); color: #f2b84b; border: 1px solid rgba(242, 184, 75, 0.4);">Flagship</div>
+        <div class="box-visual">
+          <img src="ati-1.webp" alt="Advanced Typing Instructor" onerror="this.style.display='none'">
+        </div>
         <div class="box-content">
-          <h2>Advanced Typing Instructor</h2>
-          <p>Master Python, C++, And JS Syntaxes. Featuring Heatmaps, Virtual Mechanical Keyboards, And Progression Mechanics.</p>
+          <h2>Advanced Typing Instructor 1.4</h2>
+          <p>Master touch typing and coding syntax in Python, C++, and JavaScript. Features 200 progressive levels, error heatmaps, mechanical switch audio clicks, and multiplayer races.</p>
+          <div class="box-tags">
+            <span class="tag">Flagship</span>
+            <span class="tag">Windows &bull; Web &bull; APK</span>
+            <span class="tag">200 Levels</span>
+          </div>
         </div>
       </a>
 
-      <a href="solar" class="showcase-box">
-        <div class="box-visual"><img src="solar.webp" alt="Solar System Engine" onerror="this.style.display='none'"></div>
+      <!-- 2. Solar Engine -->
+      <a href="solar" class="showcase-box" data-cat="flagship sim" style="border-color: rgba(56, 189, 248, 0.35);">
+        <div class="box-badge" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4);">Astrophysics</div>
+        <div class="box-visual">
+          <img src="solar.webp" alt="Solar System Engine" onerror="this.style.display='none'">
+        </div>
         <div class="box-content">
           <h2>Solar System Engine V3.3</h2>
-          <p>Deep-Space Telemetry And Accurate Orbital Mechanics Simulated Entirely In A Standalone 64-Bit Application.</p>
+          <p>Deep-space telemetry and accurate Keplerian orbital mechanics simulated in a standalone 64-bit application with real-time solar illumination and planetary physics.</p>
+          <div class="box-tags">
+            <span class="tag">64-Bit Simulation</span>
+            <span class="tag">Keplerian Orbits</span>
+            <span class="tag">Astrophysics</span>
+          </div>
         </div>
       </a>
 
-      <a href="gesture" class="showcase-box gesture-box" style="border-color: rgba(0,255,204,0.3);">
-        <div class="prototype-badge">Prototype</div>
-        <div class="box-visual" style="background: #0a0d14;">
+      <!-- 3. Gesture AI -->
+      <a href="gesture" class="showcase-box" data-cat="ai" style="border-color: rgba(0, 255, 204, 0.35);">
+        <div class="box-badge" style="background: rgba(0, 255, 204, 0.15); color: #00ffcc; border: 1px solid rgba(0, 255, 204, 0.4);">Vision AI</div>
+        <div class="box-visual">
           <div class="css-art-bg">
             <div class="css-art-grid"></div>
             <div class="scan-line"></div>
-            <div class="css-art-hand">🖐️</div>
+            <div class="art-center-icon">🖐️</div>
           </div>
         </div>
         <div class="box-content">
-          <h2>Gesture Controller</h2>
-          <p>Machine Vision Hand-Tracking. Control Your PC, Draw, Type, And Manage Windows Using Real-Time Webcam Gestures.</p>
+          <h2>Spatial Vision AI (GestureUI)</h2>
+          <p>Machine vision hand-tracking co-pilot. Control your PC, air-draw, type, and manage windows using 21-joint skeletal tracking at 60 FPS through any standard webcam.</p>
+          <div class="box-tags">
+            <span class="tag">MediaPipe 60 FPS</span>
+            <span class="tag">Touchless Mouse</span>
+            <span class="tag">Webcam AI</span>
+          </div>
         </div>
       </a>
 
-      <a href="qr" class="showcase-box qr-box" style="border-color: rgba(52,211,153,0.3);">
-        <div class="box-visual" style="background: #050f05;">
+      <!-- 4. Mumbai Traffic Driving Academy -->
+      <a href="Traffic/Driving" class="showcase-box" data-cat="sim" style="border-color: rgba(245, 158, 11, 0.35);">
+        <div class="box-badge" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.4);">Simulator</div>
+        <div class="box-visual">
+          <div class="traffic-art-bg">
+            <div class="road-perspective">
+              <div class="road-line"></div>
+            </div>
+            <div class="art-center-icon">🚗</div>
+          </div>
+        </div>
+        <div class="box-content">
+          <h2>Mumbai Traffic Driving Academy</h2>
+          <p>Practice driving test maneuvers, lane discipline, and intersection rules across 57 levels in a full 3D Mumbai road environment with dynamic physics.</p>
+          <div class="box-tags">
+            <span class="tag">3D WebGL</span>
+            <span class="tag">57 Levels</span>
+            <span class="tag">RTO Maneuvers</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- 5. Terra3D World Atlas -->
+      <a href="Terra3D/" class="showcase-box" data-cat="sim" style="border-color: rgba(20, 184, 166, 0.35);">
+        <div class="box-badge" style="background: rgba(20, 184, 166, 0.15); color: #14b8a6; border: 1px solid rgba(20, 184, 166, 0.4);">WebGL 3D</div>
+        <div class="box-visual">
+          <div class="terra-art-bg">
+            <div class="terra-ring"></div>
+            <div class="art-center-icon">🌍</div>
+          </div>
+        </div>
+        <div class="box-content">
+          <h2>Terra3D World Atlas</h2>
+          <p>Interactive 3D Earth globe running smoothly in WebGL. Inspect 178 countries with demographic facts, geography, and real-time day/night solar illumination.</p>
+          <div class="box-tags">
+            <span class="tag">WebGL 3D</span>
+            <span class="tag">178 Nations</span>
+            <span class="tag">Day / Night Terminator</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- 6. Career Compass -->
+      <a href="Career" class="showcase-box" data-cat="ai" style="border-color: rgba(99, 102, 241, 0.35);">
+        <div class="box-badge" style="background: rgba(99, 102, 241, 0.15); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.4);">Guidance</div>
+        <div class="box-visual">
+          <div class="career-art-bg">
+            <div class="compass-reticle">
+              <div class="compass-axis"></div>
+              <div class="compass-axis v"></div>
+            </div>
+            <div class="art-center-icon">🧭</div>
+          </div>
+        </div>
+        <div class="box-content">
+          <h2>The Career Compass</h2>
+          <p>Interactive decision engine navigating 441 career pathways mapped by educational requirements, market compensation trends, and personalized skill assessments.</p>
+          <div class="box-tags">
+            <span class="tag">441 Pathways</span>
+            <span class="tag">Degree Roadmaps</span>
+            <span class="tag">Aptitude Radar</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- 7. Database Logic & Query Engine -->
+      <a href="Database_Logic" class="showcase-box" data-cat="mobility" style="border-color: rgba(37, 99, 235, 0.35);">
+        <div class="box-badge" style="background: rgba(37, 99, 235, 0.15); color: #60a5fa; border: 1px solid rgba(37, 99, 235, 0.4);">Database</div>
+        <div class="box-visual">
+          <div class="db-art-bg">
+            <div class="db-nodes">
+              <div class="db-node-cylinder"></div>
+              <div class="db-node-cylinder"></div>
+              <div class="db-node-cylinder"></div>
+            </div>
+            <div class="art-center-icon">🗄️</div>
+          </div>
+        </div>
+        <div class="box-content">
+          <h2>Database Logic &amp; Query Engine</h2>
+          <p>Interactive statutory guide modeling 50 civic traffic regulations under the Motor Vehicles Act using relational schema logic and penalty calculation.</p>
+          <div class="box-tags">
+            <span class="tag">Civic MVA Rules</span>
+            <span class="tag">SQL Engine</span>
+            <span class="tag">Statutory Models</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- 8. CastFlow Studio -->
+      <a href="CastFlow" class="showcase-box" data-cat="mobility" style="border-color: rgba(14, 165, 233, 0.35);">
+        <div class="box-badge" style="background: rgba(14, 165, 233, 0.15); color: #38bdf8; border: 1px solid rgba(14, 165, 233, 0.4);">WebRTC</div>
+        <div class="box-visual">
+          <div class="cast-art-bg">
+            <div class="cast-wave"></div>
+            <div class="cast-wave"></div>
+            <div class="cast-wave"></div>
+            <div class="art-center-icon">📺</div>
+          </div>
+        </div>
+        <div class="box-content">
+          <h2>CastFlow Studio</h2>
+          <p>Low-latency wireless screen streaming suite. Mirror laptop displays to smart TVs, tablets, and secondary screens with remote touch control and DeX desktop mode.</p>
+          <div class="box-tags">
+            <span class="tag">Ultra-Low Latency</span>
+            <span class="tag">Android DeX</span>
+            <span class="tag">Dual Screen</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- 9. Cereal AI Assistant -->
+      <a href="cereal" class="showcase-box" data-cat="ai" style="border-color: rgba(244, 114, 182, 0.35);">
+        <div class="box-badge" style="background: rgba(244, 114, 182, 0.15); color: #f472b6; border: 1px solid rgba(244, 114, 182, 0.4);">Android AI</div>
+        <div class="box-visual">
+          <div class="cereal-art-bg">
+            <div class="freq-bar"></div>
+            <div class="freq-bar"></div>
+            <div class="freq-bar"></div>
+            <div class="freq-bar"></div>
+            <div class="freq-bar"></div>
+            <div class="art-center-icon">🎙️</div>
+          </div>
+        </div>
+        <div class="box-content">
+          <h2>Cereal AI Meeting Assistant</h2>
+          <p>Intelligent companion for lectures and meetings. Records audio, transcribes discussions, extracts bullet summaries, and schedules Google Tasks via Gemini Flash.</p>
+          <div class="box-tags">
+            <span class="tag">Gemini Flash</span>
+            <span class="tag">Audio STT</span>
+            <span class="tag">Android Companion</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- 10. QR Studio Matrix -->
+      <a href="qr" class="showcase-box" data-cat="mobility" style="border-color: rgba(52, 211, 153, 0.35);">
+        <div class="box-badge" style="background: rgba(52, 211, 153, 0.15); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.4);">Vector Studio</div>
+        <div class="box-visual">
           <div class="qr-art-bg">
             <div class="qr-glow"></div>
             <div class="qr-scan-v"></div>
@@ -526,30 +1026,112 @@
           </div>
         </div>
         <div class="box-content">
-          <h2>QR Code Generator</h2>
-          <p>Generate Custom, Scannable QR Codes Instantly. Type Any URL Or Text And Download Your QR Code In Seconds.</p>
+          <h2>Matrix QR Dynamic Studio</h2>
+          <p>Generate custom, vector-sharp QR codes with scannable dot patterns, logo embeddings, and instant SVG/PNG exports with scan analytics.</p>
+          <div class="box-tags">
+            <span class="tag">Vector SVG</span>
+            <span class="tag">Dynamic Matrix</span>
+            <span class="tag">Scan Analytics</span>
+          </div>
         </div>
       </a>
 
-      <a href="rpg" class="showcase-box rpg-box" style="border-color: rgba(139,92,246,0.3);">
-        <div class="coming-soon-badge">Coming Soon</div>
-        <div class="box-visual" style="background: #0a0514;">
+      <!-- 11. Quest Master RPG -->
+      <a href="rpg" class="showcase-box" data-cat="sim" style="border-color: rgba(139, 92, 246, 0.35);">
+        <div class="box-badge" style="background: rgba(139, 92, 246, 0.15); color: #c084fc; border: 1px solid rgba(139, 92, 246, 0.4);">Coming Soon</div>
+        <div class="box-visual">
           <div class="rpg-art-bg">
             <div class="rpg-stars"></div>
             <div class="rpg-glow"></div>
-            <div class="rpg-icon">⚔️</div>
-            <div class="rpg-runes">
-              <div class="rpg-rune"></div>
-              <div class="rpg-rune"></div>
-              <div class="rpg-rune"></div>
-              <div class="rpg-rune"></div>
-              <div class="rpg-rune"></div>
-            </div>
+            <div class="art-center-icon">⚔️</div>
           </div>
         </div>
         <div class="box-content">
-          <h2>RPG Game</h2>
-          <p>An Epic Role-Playing Adventure With Battles, Levels, And Deep Story. Currently In Active Development By Class Of Learners.</p>
+          <h2>Quest Master RPG</h2>
+          <p>Retro 2D dungeon crawler with procedural floors, real-time sword and spell combat, loot progression, and an original 8-bit chiptune sound engine.</p>
+          <div class="box-tags">
+            <span class="tag">2D Dungeon Crawler</span>
+            <span class="tag">Canvas Engine</span>
+            <span class="tag">Chiptune Audio</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- 12. F.R.I.D.A.Y. OS Desktop -->
+      <a href="download" class="showcase-box" data-cat="ai" style="border-color: rgba(168, 85, 247, 0.35);">
+        <div class="box-badge" style="background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4);">Windows PC</div>
+        <div class="box-visual">
+          <div class="friday-art-bg">
+            <div class="arc-reactor"></div>
+            <div class="art-center-icon">⚡</div>
+          </div>
+        </div>
+        <div class="box-content">
+          <h2>F.R.I.D.A.Y. OS Desktop</h2>
+          <p>Offline intelligent desktop assistant engineered with local LLM orchestration, voice control synthesis, and direct Windows system automation.</p>
+          <div class="box-tags">
+            <span class="tag">Local LLM</span>
+            <span class="tag">Voice Synthesis</span>
+            <span class="tag">Desktop Automation</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- 13. Space Station Survival 2D -->
+      <a href="download" class="showcase-box" data-cat="sim" style="border-color: rgba(249, 115, 22, 0.35);">
+        <div class="box-badge" style="background: rgba(249, 115, 22, 0.15); color: #fb923c; border: 1px solid rgba(249, 115, 22, 0.4);">Physics</div>
+        <div class="box-visual">
+          <div class="space-art-bg">
+            <div class="art-center-icon">🚀</div>
+          </div>
+        </div>
+        <div class="box-content">
+          <h2>Space Station Survival 2D</h2>
+          <p>Zero-G orbital mechanics simulator and station repair game built in retro 2D Canvas with realistic Newtonian inertia and conservation of momentum.</p>
+          <div class="box-tags">
+            <span class="tag">Newtonian Physics</span>
+            <span class="tag">Zero-G Canvas</span>
+            <span class="tag">Orbital Mechanics</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- 14. Sneh Asha Platform -->
+      <a href="sneh-asha" class="showcase-box" data-cat="community" style="border-color: rgba(234, 179, 8, 0.35);">
+        <div class="box-badge" style="background: rgba(234, 179, 8, 0.15); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.4);">Community</div>
+        <div class="box-visual">
+          <div class="sneh-art-bg">
+            <img src="sneh-logo.webp" alt="Sneh Asha Logo" style="width: auto; height: 120px; object-fit: contain; z-index: 2;" onerror="this.style.display='none'">
+            <div class="art-center-icon">🤝</div>
+          </div>
+        </div>
+        <div class="box-content">
+          <h2>Sneh Asha Platform</h2>
+          <p>Grassroots community portal connecting student innovation, outreach initiatives, and educational resource sharing across Mumbai communities.</p>
+          <div class="box-tags">
+            <span class="tag">Student Outreach</span>
+            <span class="tag">Community Impact</span>
+            <span class="tag">Mumbai Hub</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- 15. Central Downloads Hub -->
+      <a href="download" class="showcase-box" data-cat="community" style="border-color: rgba(14, 165, 233, 0.35);">
+        <div class="box-badge" style="background: rgba(14, 165, 233, 0.15); color: #38bdf8; border: 1px solid rgba(14, 165, 233, 0.4);">Binaries</div>
+        <div class="box-visual">
+          <div class="dl-art-bg">
+            <div class="art-center-icon">📦</div>
+          </div>
+        </div>
+        <div class="box-content">
+          <h2>Central Downloads Hub</h2>
+          <p>Official repository for standalone 64-bit Windows installers (.exe), Android APK packages, integrity checksums, and update notes.</p>
+          <div class="box-tags">
+            <span class="tag">Windows EXE</span>
+            <span class="tag">Android APK</span>
+            <span class="tag">SHA-256 Checksums</span>
+          </div>
         </div>
       </a>
     </main>
@@ -572,6 +1154,9 @@
         </div>
 
         <nav class="sf-nav-links" aria-label="Footer Navigation">
+          <a href="/">Studio Hub (Main)</a>
+          <a href="home">Orrery Home</a>
+          <a href="index1">Classic Hub</a>
           <a href="about">About</a>
           <a href="school">School</a>
           <a href="sneh-asha">Sneh Asha</a>
@@ -582,21 +1167,48 @@
           <a href="feedback">Feedback</a>
         </nav>
 
-        <div class="sf-secondary-row">
-          <div class="sf-founders-text">&copy; 2026 Class Of Learners. Built with pride by Neel, Ansh, &amp; Aarush in Mumbai, India.</div>
-          <div class="sf-meta">Independent Native Software Engineering &bull; Pure First Principles</div>
+        <div class="fc">
+          &copy; 2026 Class Of Learners. Developed by Neel, Ansh, and Aarush. All systems normal.
         </div>
       </div>
     </footer>
 
-    <!-- Core Systems Integration -->
+    <!-- Core Scripts -->
     <script defer src="col-router.js"></script>
-    <script defer src="col-nav.js"></script>
     <script defer src="col-ui.js"></script>
     <script defer src="col-auth.js"></script>
 
-    <!-- QR Art Animation -->
+    <!-- Dynamic Scroll Navbar Transformation, Filter Tabs & QR Matrix -->
     <script>
+      (function() {
+        function syncTopNavScroll() {
+          var nav = document.getElementById('topNav') || document.querySelector('.top-nav');
+          if (!nav) return;
+          var scrolled = window.scrollY > 28;
+          nav.classList.toggle('nav-pill', scrolled);
+          nav.classList.toggle('s', scrolled);
+        }
+        window.addEventListener('scroll', syncTopNavScroll, { passive: true });
+        window.addEventListener('DOMContentLoaded', syncTopNavScroll);
+        window.addEventListener('load', syncTopNavScroll);
+      })();
+
+      function filterHub(cat, btn) {
+        var pills = document.querySelectorAll('.hub-pill');
+        pills.forEach(function(p) { p.classList.remove('active'); });
+        if (btn) btn.classList.add('active');
+
+        var cards = document.querySelectorAll('#hubGrid .showcase-box');
+        cards.forEach(function(card) {
+          if (cat === 'all') {
+            card.style.display = 'flex';
+          } else {
+            var itemCats = (card.getAttribute('data-cat') || '').split(' ');
+            card.style.display = itemCats.indexOf(cat) !== -1 ? 'flex' : 'none';
+          }
+        });
+      }
+
       function initQrArt() {
         var qrArt = document.getElementById('qrArt');
         if (!qrArt) return;
