@@ -6674,7 +6674,66 @@
         box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05) !important;
       }
       body.lm .col-cmd-status-count { color: #475569 !important; }
-    </style>
+    
+      /* =========================================================
+         HIGH-PERFORMANCE HARDWARE ACCELERATION & VIEWPORT CULLING
+         ========================================================= */
+      .ps,
+      #projects,
+      .vp-grid,
+      .vp-section,
+      .founders-section,
+      .marquee-band,
+      .sf.site-footer {
+        content-visibility: auto;
+        contain-intrinsic-size: auto 600px;
+      }
+
+      .pc {
+        content-visibility: auto;
+        contain-intrinsic-size: auto 550px;
+        contain: layout style;
+        transform: translateZ(0);
+        will-change: transform;
+      }
+
+      /* Freeze offscreen animations completely when card is not in viewport */
+      .pc:not(.in-view) *,
+      .pc:not(.in-view) *::before,
+      .pc:not(.in-view) *::after {
+        animation-play-state: paused !important;
+      }
+
+      /* Relieve GPU compositor from offscreen blur buffer allocation */
+      .pf-hud-chip,
+      .qr-hud-chip,
+      .rpg-hud-chip,
+      .c-hud-chip,
+      .db-hud-chip,
+      .tr-hud-chip,
+      .cf-hud-chip,
+      .ce-hud-chip,
+      .t3-hud-chip {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background: rgba(8, 14, 26, 0.94) !important;
+      }
+
+      .vp-card {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background: linear-gradient(180deg, rgba(16, 22, 38, 0.95) 0%, rgba(10, 14, 26, 0.98) 100%) !important;
+      }
+
+      /* Isolate animated stages to dedicated GPU compositor layers */
+      .hero-orbital-stage,
+      .pv,
+      .qm2,
+      .c-stage,
+      .t3-globe {
+        transform: translateZ(0);
+      }
+</style>
     <script defer src="col-router.js"></script>
     <script defer src="col-ui.js"></script>
     <script defer src="col-auth.js"></script>
