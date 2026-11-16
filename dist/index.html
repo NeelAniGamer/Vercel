@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="Class Of Learners Studio Hub — Explore interactive learning projects including Typing Instructor, Solar Engine, Perceptus Flow, QR Studio Matrix, and RPG Game." />
+    <meta name="author" content="Class Of Learners Studio" />
+    <meta name="theme-color" content="#070A14" id="themeMeta" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Class Of Learners" />
+    
+    <meta property="og:site_name" content="Class Of Learners" />
+    <meta property="og:title" content="Class Of Learners | Studio Hub" />
+    <meta property="og:description" content="A focused portfolio of advanced programming logic, machine vision, and deep-space physics engines. Designed in Mumbai for the world." />
+    <meta property="og:url" content="https://advancedlogiclabs.dpdns.org/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://advancedlogiclabs.dpdns.org/Class.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <title>Class Of Learners | Studio Hub</title>
+
+    <link rel="icon" type="image/png" href="Class.png" />
+    <link rel="apple-touch-icon" href="Class.png" />
+    <link rel="manifest" href="manifest.json" />
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+    <!-- Anti-flash theme initialization -->
+    <script>
+      ;(function () {
+        try {
+          if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.add('lm')
+          }
+        } catch (e) {}
+      })()
+    </script>
+
+    <!-- Shared Class Of Learners Design System -->
+    <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
+
+    <style>
+      :root {
+        --bg-color: var(--void, #070a14);
+        --text-main: var(--ink, #e8e3d8);
+        --text-muted: var(--dim, #8891aa);
+        --google-blue: var(--ion, #5ed4f5);
+        --card-bg: var(--panel, #111827);
+        --border-light: var(--line, rgba(255, 255, 255, 0.08));
+        --nav-bg: var(--nav, rgba(7, 10, 20, 0.75));
+      }
+
+      html.lm,
+      body.lm {
+        --bg-color: var(--void, #fafaf9);
+        --text-main: var(--ink, #0f172a);
+        --text-muted: var(--dim, #475569);
+        --google-blue: var(--ion, #0284c7);
+        --card-bg: var(--panel, #ffffff);
+        --border-light: var(--line, rgba(15, 23, 42, 0.08));
+        --nav-bg: var(--nav, rgba(255, 255, 255, 0.88));
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      }
+
+      body {
+        background-color: var(--bg-color);
+        color: var(--text-main);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        overflow-x: hidden;
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      code, pre, .tech-tag, kbd, .brand, [style*="monospace"], .term-dot {
+        text-transform: none;
+      }
+
+      .hero {
+        text-align: center;
+        padding: 80px 20px 50px;
+        max-width: 900px;
+        width: 100%;
+        position: relative;
+        z-index: 10;
+      }
+
+      .hero h1 {
+        font-size: 3.8rem;
+        font-weight: 800;
+        letter-spacing: -2px;
+        margin-bottom: 20px;
+        line-height: 1.1;
+        background: linear-gradient(135deg, var(--text-main) 30%, var(--google-blue) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        transition: all 0.3s;
+      }
+
+      .hero p {
+        font-size: 1.25rem;
+        color: var(--text-muted);
+        line-height: 1.6;
+        max-width: 700px;
+        margin: 0 auto;
+        transition: color 0.3s;
+      }
+
+      .grid-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 35px;
+        max-width: 1300px;
+        width: 90%;
+        margin-bottom: 0;
+        position: relative;
+        z-index: 10;
+      }
+
+      .showcase-box {
+        background: var(--card-bg);
+        border-radius: 24px;
+        overflow: hidden;
+        border: 1px solid var(--border-light);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+        text-decoration: none;
+        color: var(--text-main);
+        display: flex;
+        flex-direction: column;
+        position: relative;
+      }
+
+      .showcase-box:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35);
+        border-color: var(--google-blue);
+      }
+
+      .box-visual {
+        height: 220px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+        background: #000;
+      }
+
+      .box-visual img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.88;
+        transition: transform 0.6s ease, opacity 0.3s ease;
+      }
+
+      .showcase-box:hover .box-visual img {
+        transform: scale(1.08);
+        opacity: 1;
+      }
+
+      .box-visual::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(7, 10, 20, 0.95) 0%, rgba(7, 10, 20, 0.25) 50%, transparent 100%);
+        transition: opacity 0.4s ease;
+      }
+
+      .showcase-box:hover .box-visual::after {
+        opacity: 0.4;
+      }
+
+      .box-content {
+        padding: 28px;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        z-index: 10;
+        position: relative;
+      }
+
+      .box-content h2 {
+        font-size: 1.55rem;
+        font-weight: 800;
+        margin-bottom: 12px;
+        transition: color 0.3s;
+      }
+
+      .showcase-box:hover .box-content h2 {
+        color: var(--google-blue);
+      }
+
+      .showcase-box.gesture-box:hover .box-content h2 {
+        color: #00ffcc;
+      }
+
+      .showcase-box.rpg-box:hover .box-content h2 {
+        color: #a78bfa;
+      }
+
+      .showcase-box.qr-box:hover .box-content h2 {
+        color: #34d399;
+      }
+
+      .box-content p {
+        font-size: 0.98rem;
+        color: var(--text-muted);
+        line-height: 1.6;
+        transition: color 0.3s;
+      }
+
+      .prototype-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: #00ffcc;
+        color: #000;
+        font-size: 0.75rem;
+        font-weight: 800;
+        padding: 6px 12px;
+        border-radius: 6px;
+        z-index: 20;
+        letter-spacing: 1px;
+        box-shadow: 0 4px 15px rgba(0, 255, 204, 0.4);
+        text-transform: uppercase;
+      }
+
+      .coming-soon-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: linear-gradient(135deg, #7c3aed, #a855f7);
+        color: #fff;
+        font-size: 0.75rem;
+        font-weight: 800;
+        padding: 6px 12px;
+        border-radius: 6px;
+        z-index: 20;
+        letter-spacing: 1px;
+        box-shadow: 0 4px 15px rgba(139, 92, 246, 0.5);
+        text-transform: uppercase;
+        animation: pulseBadge 2.5s ease-in-out infinite;
+      }
+
+      @keyframes pulseBadge {
+        0%, 100% { box-shadow: 0 4px 15px rgba(139, 92, 246, 0.5); }
+        50% { box-shadow: 0 4px 25px rgba(139, 92, 246, 0.9); }
+      }
+
+      .css-art-bg {
+        width: 100%;
+        height: 100%;
+        background: #0a0d14;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .css-art-grid {
+        position: absolute;
+        inset: 0;
+        opacity: 0.3;
+        background: repeating-linear-gradient(0deg, transparent, transparent 19px, #00ffcc 19px, #00ffcc 20px),
+                    repeating-linear-gradient(90deg, transparent, transparent 19px, #00ffcc 19px, #00ffcc 20px);
+      }
+
+      .css-art-hand {
+        font-size: 5rem;
+        z-index: 2;
+        filter: drop-shadow(0 0 20px rgba(0, 255, 204, 0.6));
+        transition: transform 0.4s;
+      }
+
+      .showcase-box:hover .css-art-hand {
+        transform: scale(1.1) translateY(-5px);
+      }
+
+      .scan-line {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: #00ffcc;
+        box-shadow: 0 0 15px #00ffcc, 0 0 30px #00ffcc;
+        animation: scan 2.5s linear infinite;
+        z-index: 5;
+        opacity: 0.8;
+      }
+
+      @keyframes scan {
+        0% { top: -10%; opacity: 0; }
+        10% { opacity: 1; }
+        90% { opacity: 1; }
+        100% { top: 110%; opacity: 0; }
+      }
+
+      .rpg-art-bg {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(180deg, #0a0514 0%, #150c2a 60%, #0d0a1a 100%);
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+      }
+
+      .rpg-stars {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(1px 1px at 20% 30%, rgba(167, 139, 250, 0.8) 0%, transparent 100%),
+                    radial-gradient(1px 1px at 80% 10%, rgba(255, 255, 255, 0.7) 0%, transparent 100%),
+                    radial-gradient(1px 1px at 50% 60%, rgba(196, 181, 253, 0.6) 0%, transparent 100%),
+                    radial-gradient(1px 1px at 70% 80%, rgba(255, 255, 255, 0.5) 0%, transparent 100%),
+                    radial-gradient(1px 1px at 10% 80%, rgba(167, 139, 250, 0.7) 0%, transparent 100%),
+                    radial-gradient(1px 1px at 90% 50%, rgba(255, 255, 255, 0.6) 0%, transparent 100%),
+                    radial-gradient(1px 1px at 35% 20%, rgba(196, 181, 253, 0.9) 0%, transparent 100%),
+                    radial-gradient(2px 2px at 60% 40%, rgba(250, 204, 21, 0.5) 0%, transparent 100%);
+        background-size: 8px 8px;
+      }
+
+      .rpg-glow {
+        position: absolute;
+        bottom: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 200px;
+        height: 80px;
+        background: radial-gradient(ellipse, rgba(139, 92, 246, 0.4) 0%, transparent 70%);
+      }
+
+      .rpg-icon {
+        font-size: 4.5rem;
+        z-index: 2;
+        filter: drop-shadow(0 0 20px rgba(167, 139, 250, 0.8));
+        transition: transform 0.4s;
+      }
+
+      .showcase-box:hover .rpg-icon {
+        transform: scale(1.15) translateY(-8px) rotate(5deg);
+        filter: drop-shadow(0 0 30px rgba(167, 139, 250, 1));
+      }
+
+      .rpg-runes {
+        position: absolute;
+        bottom: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 12px;
+        z-index: 3;
+      }
+
+      .rpg-rune {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgba(167, 139, 250, 0.6);
+        animation: runeGlow 1.5s ease-in-out infinite alternate;
+      }
+
+      .rpg-rune:nth-child(2) { animation-delay: 0.3s; background: rgba(250, 204, 21, 0.7); }
+      .rpg-rune:nth-child(3) { animation-delay: 0.6s; background: rgba(196, 181, 253, 0.6); }
+      .rpg-rune:nth-child(4) { animation-delay: 0.9s; background: rgba(250, 204, 21, 0.7); }
+      .rpg-rune:nth-child(5) { animation-delay: 1.2s; background: rgba(167, 139, 250, 0.6); }
+
+      @keyframes runeGlow {
+        from { opacity: 0.3; transform: scale(1); }
+        to { opacity: 1; transform: scale(1.4); box-shadow: 0 0 8px currentColor; }
+      }
+
+      .qr-art-bg {
+        width: 100%;
+        height: 100%;
+        background: #050f05;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+      }
+
+      .qr-grid-art {
+        display: grid;
+        grid-template-columns: repeat(9, 1fr);
+        gap: 3px;
+        width: 130px;
+        height: 130px;
+        z-index: 2;
+        transition: transform 0.4s;
+      }
+
+      .showcase-box:hover .qr-grid-art {
+        transform: scale(1.1);
+      }
+
+      .qr-cell {
+        border-radius: 2px;
+        background: rgba(52, 211, 153, 0.15);
+        transition: background 0.3s;
+      }
+
+      .qr-cell.on {
+        background: #34d399;
+        box-shadow: 0 0 4px rgba(52, 211, 153, 0.5);
+      }
+
+      .showcase-box:hover .qr-cell.on {
+        background: #6ee7b7;
+        box-shadow: 0 0 8px rgba(52, 211, 153, 0.8);
+      }
+
+      .qr-scan-v {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 2px;
+        height: 100%;
+        background: linear-gradient(to bottom, transparent, rgba(52, 211, 153, 0.8), transparent);
+        animation: qrScan 2s ease-in-out infinite;
+        opacity: 0.6;
+      }
+
+      @keyframes qrScan {
+        0% { transform: translateX(-80px); }
+        50% { transform: translateX(80px); }
+        100% { transform: translateX(-80px); }
+      }
+
+      .qr-glow {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse at center, rgba(52, 211, 153, 0.08) 0%, transparent 70%);
+      }
+
+      @media (max-width: 768px) {
+        .hero { padding: 50px 20px 30px; }
+        .hero h1 { font-size: 2.4rem; }
+        .grid-container { grid-template-columns: 1fr; width: 95%; }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Top Navigation component wired to col-nav.js -->
+    <nav class="top-nav" id="topNav" data-page="home" role="navigation" aria-label="Main Navigation">
+      <a href="/" class="nav-brand">
+        <img src="Class.png" alt="Class Of Learners Logo" class="brand-logo" width="40" height="40" onerror="this.style.display='none'">
+        <span>Class Of Learners</span>
+      </a>
+      <div class="nav-links">
+        <a href="/" class="nav-link act" aria-current="page">Home</a>
+        <a href="about" class="nav-link">About</a>
+        <a href="school" class="nav-link">School</a>
+        <a href="sneh-asha" class="nav-link">Sneh Asha</a>
+        <a href="making" class="nav-link">Making</a>
+        <a href="download" class="nav-link">Downloads</a>
+      </div>
+      <div class="nav-actions">
+        <button type="button" class="nav-login-btn" id="navLoginBtn" onclick="if(window.openLogin)window.openLogin()">
+          Sign In
+        </button>
+        <div class="nav-user-profile" id="navUserProfile" style="display:none;" onclick="if(window.openLogin)window.openLogin()">
+          <div class="nav-user-avatar" id="navUserAv">?</div>
+          <span id="navUserName">User</span>
+        </div>
+      </div>
+    </nav>
+
+    <header class="hero">
+      <h1>Engineering The Future Of Interactive Learning.</h1>
+      <p>A Focused Portfolio Of Advanced Programming Logic, Machine Vision, And Deep-Space Physics Engines. Designed In Mumbai For The World.</p>
+    </header>
+
+    <main class="grid-container" style="padding-bottom: 80px;">
+      <a href="ati" class="showcase-box">
+        <div class="box-visual"><img src="ati-1.webp" alt="Advanced Typing Instructor" onerror="this.style.display='none'"></div>
+        <div class="box-content">
+          <h2>Advanced Typing Instructor</h2>
+          <p>Master Python, C++, And JS Syntaxes. Featuring Heatmaps, Virtual Mechanical Keyboards, And Progression Mechanics.</p>
+        </div>
+      </a>
+
+      <a href="solar" class="showcase-box">
+        <div class="box-visual"><img src="solar.webp" alt="Solar System Engine" onerror="this.style.display='none'"></div>
+        <div class="box-content">
+          <h2>Solar System Engine V3.3</h2>
+          <p>Deep-Space Telemetry And Accurate Orbital Mechanics Simulated Entirely In A Standalone 64-Bit Application.</p>
+        </div>
+      </a>
+
+      <a href="gesture" class="showcase-box gesture-box" style="border-color: rgba(0,255,204,0.3);">
+        <div class="prototype-badge">Prototype</div>
+        <div class="box-visual" style="background: #0a0d14;">
+          <div class="css-art-bg">
+            <div class="css-art-grid"></div>
+            <div class="scan-line"></div>
+            <div class="css-art-hand">🖐️</div>
+          </div>
+        </div>
+        <div class="box-content">
+          <h2>Gesture Controller</h2>
+          <p>Machine Vision Hand-Tracking. Control Your PC, Draw, Type, And Manage Windows Using Real-Time Webcam Gestures.</p>
+        </div>
+      </a>
+
+      <a href="qr" class="showcase-box qr-box" style="border-color: rgba(52,211,153,0.3);">
+        <div class="box-visual" style="background: #050f05;">
+          <div class="qr-art-bg">
+            <div class="qr-glow"></div>
+            <div class="qr-scan-v"></div>
+            <div class="qr-grid-art" id="qrArt"></div>
+          </div>
+        </div>
+        <div class="box-content">
+          <h2>QR Code Generator</h2>
+          <p>Generate Custom, Scannable QR Codes Instantly. Type Any URL Or Text And Download Your QR Code In Seconds.</p>
+        </div>
+      </a>
+
+      <a href="rpg" class="showcase-box rpg-box" style="border-color: rgba(139,92,246,0.3);">
+        <div class="coming-soon-badge">Coming Soon</div>
+        <div class="box-visual" style="background: #0a0514;">
+          <div class="rpg-art-bg">
+            <div class="rpg-stars"></div>
+            <div class="rpg-glow"></div>
+            <div class="rpg-icon">⚔️</div>
+            <div class="rpg-runes">
+              <div class="rpg-rune"></div>
+              <div class="rpg-rune"></div>
+              <div class="rpg-rune"></div>
+              <div class="rpg-rune"></div>
+              <div class="rpg-rune"></div>
+            </div>
+          </div>
+        </div>
+        <div class="box-content">
+          <h2>RPG Game</h2>
+          <p>An Epic Role-Playing Adventure With Battles, Levels, And Deep Story. Currently In Active Development By Class Of Learners.</p>
+        </div>
+      </a>
+    </main>
+
+    <!-- Unified Class Of Learners Footer -->
+    <footer class="sf site-footer" style="content-visibility:auto; contain-intrinsic-size: auto 200px">
+      <div class="fi">
+        <div class="sf-primary-row">
+          <div class="fb sf-brand-wrap">
+            <span class="sf-brand-name">Class Of Learners <span class="sf-brand-dot">&bull;</span> CoL</span>
+            <span class="sf-status-pill"><span class="m-dot m-emerald"></span> All Systems Operational</span>
+          </div>
+          <div class="sf-btn-wrap">
+            <button type="button" class="sf-cmd-btn no-cap" onclick="if(window.openColCmdPalette)window.openColCmdPalette();else window.location.href='/?search=true'" title="Press Ctrl+K or / to search all applications">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <span>Quick Launcher</span>
+              <kbd class="col-os-key">Ctrl K</kbd>
+            </button>
+          </div>
+        </div>
+
+        <nav class="sf-nav-links" aria-label="Footer Navigation">
+          <a href="about">About</a>
+          <a href="school">School</a>
+          <a href="sneh-asha">Sneh Asha</a>
+          <a href="making">Making</a>
+          <a href="download">Downloads</a>
+          <a href="privacy">Privacy</a>
+          <a href="terms">Terms</a>
+          <a href="feedback">Feedback</a>
+        </nav>
+
+        <div class="sf-secondary-row">
+          <div class="sf-founders-text">&copy; 2026 Class Of Learners. Built with pride by Neel, Ansh, &amp; Aarush in Mumbai, India.</div>
+          <div class="sf-meta">Independent Native Software Engineering &bull; Pure First Principles</div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Core Systems Integration -->
+    <script defer src="col-router.js"></script>
+    <script defer src="col-nav.js"></script>
+    <script defer src="col-ui.js"></script>
+    <script defer src="col-auth.js"></script>
+
+    <!-- QR Art Animation -->
+    <script>
+      function initQrArt() {
+        var qrArt = document.getElementById('qrArt');
+        if (!qrArt) return;
+        qrArt.innerHTML = '';
+        for (var i = 0; i < 81; i++) {
+          var cell = document.createElement('div');
+          cell.className = 'qr-cell' + (Math.random() > 0.55 ? ' on' : '');
+          qrArt.appendChild(cell);
+        }
+      }
+      setInterval(initQrArt, 2000);
+      window.addEventListener('load', initQrArt);
+    </script>
+  </body>
+</html>
