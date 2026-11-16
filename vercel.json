@@ -94,7 +94,7 @@
       ]
     },
     {
-      "source": "/:page(home|about|school|sneh-asha|making|ati|solar|gesture|rpg|qr|download|Career|CastFlow|cereal|Terra3D|verify|Database_Logic|feedback)",
+      "source": "/:page(home|about|school|sneh-asha|making|ati|solar|gesture|rpg|qr|download|Career|CastFlow|cereal|Terra3D|verify|Database_Logic|feedback|index)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -187,16 +187,6 @@
     }
   ],
   "redirects": [
-    {
-      "source": "/index.html",
-      "destination": "/home",
-      "permanent": true
-    },
-    {
-      "source": "/index",
-      "destination": "/home",
-      "permanent": true
-    },
     {
       "source": "/how-it-was-made",
       "destination": "/making",
