@@ -303,7 +303,6 @@
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" /></noscript>
     <!-- col-ui.css loaded FIRST so --void/--ink/--signal custom properties are defined before inline styles consume them -->
     <link rel="stylesheet" href="col-ui.css?v=20261109-orrery" />
-    <link rel="stylesheet" href="liquid-glass.css?v=20261109-orrery" />
     <!-- Conditional Mobile Assets: Loaded ONLY on mobile/tablet or when screen <= 1024px. Prevents downloading mobile styles and touch scripts on PC desktop. -->
     <script>
       ;(function () {
@@ -311,6 +310,9 @@
           (window.matchMedia && window.matchMedia('(max-width: 1024px), (pointer: coarse)').matches) ||
           /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
           location.search.indexOf('iphone=1') !== -1;
+        var hasGlass = location.search.indexOf('glass=1') !== -1 ||
+          location.search.indexOf('iphone=1') !== -1 ||
+          localStorage.getItem('liquid_glass') === 'true';
         function load(href, asScript) {
           var sel = asScript ? 'script[src*="' + href + '"]' : 'link[href*="' + href + '"]';
           if (document.querySelector(sel)) return;
@@ -318,6 +320,9 @@
           if (asScript) { el.src = href; el.defer = true; }
           else { el.rel = 'stylesheet'; el.href = href; }
           document.head.appendChild(el);
+        }
+        if (hasGlass) {
+          load('liquid-glass.css?v=20261109-orrery');
         }
         if (isM) {
           load('/col-mobile.css');
@@ -363,8 +368,9 @@
       /* 60/120 FPS High-Refresh Scroll Optimization & Virtualization */
       .ps,
       .arch-section {
-        content-visibility: visible !important;
-        contain: layout style !important;
+        content-visibility: auto;
+        contain-intrinsic-size: auto 700px;
+        contain: layout style;
       }
       .pc-cover-link,
       .pc-cover-link:focus,
@@ -455,22 +461,7 @@
         }
       }
       .loader {
-        position: fixed;
-        inset: 0;
-        z-index: 10000;
-        background: var(--void);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 24px;
-        transition:
-          opacity 0.26s cubic-bezier(0.22, 1, 0.36, 1),
-          visibility 0.26s;
-      }
-      .loader.gone {
-        opacity: 0;
-        visibility: hidden;
+        display: none !important;
       }
       .lid {
         font-family: var(--mono);
@@ -4932,6 +4923,7 @@
           height: 120px;
           border-radius: 50%;
           border: 1.5px solid rgba(0, 240, 255, 0.5);
+          box-shadow: 0 0 10px rgba(0, 240, 255, 0.35);
           transform: translate(-50%, -50%);
           pointer-events: none;
           z-index: 2;
@@ -4941,8 +4933,8 @@
           animation-delay: 2.25s;
         }
         @keyframes orrerySonar {
-          0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.85; box-shadow: 0 0 18px rgba(0, 240, 255, 0.4); }
-          100% { transform: translate(-50%, -50%) scale(5.8); opacity: 0; box-shadow: 0 0 0 rgba(0, 240, 255, 0); }
+          0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.85; }
+          100% { transform: translate(-50%, -50%) scale(5.8); opacity: 0; }
         }
 
         /* ── Active Luminous Radar Sweep Cone ── */
@@ -5052,6 +5044,7 @@
           inset: -14px;
           border-radius: 50%;
           border: 1px solid rgba(242, 184, 75, 0.45);
+          box-shadow: 0 0 8px rgba(242, 184, 75, 0.35);
           animation: coreRipplePulse 3.6s cubic-bezier(0.2, 0.8, 0.4, 1) infinite;
           pointer-events: none;
         }
@@ -5060,8 +5053,8 @@
           border-color: rgba(0, 240, 255, 0.45);
         }
         @keyframes coreRipplePulse {
-          0% { transform: scale(0.9); opacity: 0.8; box-shadow: 0 0 12px rgba(242, 184, 75, 0.4); }
-          100% { transform: scale(1.48); opacity: 0; box-shadow: 0 0 0 rgba(242, 184, 75, 0); }
+          0% { transform: scale(0.9); opacity: 0.8; }
+          100% { transform: scale(1.48); opacity: 0; }
         }
         .orrery-core-btn {
           position: relative;
@@ -5676,11 +5669,11 @@
         width: 100%;
         overflow: hidden;
         padding: 14px 0;
-        background: rgba(10, 16, 32, 0.72);
+        background: rgba(10, 16, 32, 0.96);
         border-top: 1px solid var(--line);
         border-bottom: 1px solid var(--line);
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
+        content-visibility: auto;
+        contain-intrinsic-size: auto 54px;
         mask-image: linear-gradient(90deg, transparent 0%, black 10%, black 90%, transparent 100%);
         -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 10%, black 90%, transparent 100%);
         position: relative;
@@ -5741,7 +5734,7 @@
         margin: 0 4px;
       }
       body.lm .studio-marquee-section {
-        background: rgba(245, 245, 247, 0.85);
+        background: rgba(245, 245, 247, 0.98);
         border-color: rgba(15, 23, 42, 0.1);
       }
       body.lm .m-item {
@@ -6694,6 +6687,9 @@
         contain-intrinsic-size: auto 550px;
         contain: layout style;
         transform: translateZ(0);
+        will-change: auto;
+      }
+      .pc.is-tilting {
         will-change: transform;
       }
 
@@ -6701,6 +6697,14 @@
       .pc:not(.in-view) *,
       .pc:not(.in-view) *::before,
       .pc:not(.in-view) *::after {
+        animation-play-state: paused !important;
+      }
+
+      /* Scroll-Freeze: Freeze animations during active page scrolling for 120 FPS compositor throughput */
+      body.is-scrolling .pc *,
+      body.is-scrolling .pc *::before,
+      body.is-scrolling .pc *::after,
+      body.is-scrolling .studio-marquee-section * {
         animation-play-state: paused !important;
       }
 
@@ -6725,6 +6729,40 @@
         background: linear-gradient(180deg, rgba(16, 22, 38, 0.95) 0%, rgba(10, 14, 26, 0.98) 100%) !important;
       }
 
+      /* Lightweight solid backgrounds for static cards & footer — avoids fullscreen GPU blur buffers */
+      .arch-card {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background: rgba(14, 20, 36, 0.94) !important;
+      }
+      .sf.site-footer {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background: rgba(7, 10, 20, 0.98) !important;
+      }
+      .ohf-corner {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background: rgba(12, 18, 34, 0.92) !important;
+      }
+      .orrery-node {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background: rgba(14, 22, 42, 0.95) !important;
+      }
+      .orrery-filter-capsule,
+      .orrery-dock {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background: rgba(10, 16, 32, 0.95) !important;
+      }
+
+      /* GPU drop-shadow for Orrery orbital arcs — replaces expensive SVG feGaussianBlur */
+      .org-arc {
+        stroke-width: 2.2px;
+        filter: drop-shadow(0 0 5px currentColor);
+      }
+
       /* Isolate animated stages to dedicated GPU compositor layers */
       .hero-orbital-stage,
       .pv,
@@ -6739,7 +6777,7 @@
     <script defer src="col-auth.js"></script>
     <link rel="manifest" href="manifest.json" />
   </head>
-  <body>
+  <body class="hero-ready">
     <script>
       ;(function () {
         try {
@@ -6747,11 +6785,6 @@
         } catch (e) {}
       })()
     </script>
-    <div class="loader" id="loader">
-      <div class="lid"><span>CoL</span> &middot; Studio Hub</div>
-      <div class="lbar"></div>
-    </div>
-    <noscript><style>#loader{display:none!important}</style></noscript>
     <div class="cd" id="cDot"></div>
     <div class="cr" id="cRing"></div>
 
@@ -7027,11 +7060,11 @@
             <circle cx="-34.4" cy="-83.1" r="2" fill="#00f0ff" />
           </g>
 
-          <!-- Glowing Orbital Sector Trajectory Arcs -->
-          <path d="M -192 0 A 192 192 0 0 1 0 -192" class="org-arc org-arc-gold" filter="url(#orgFilterGlow)" />
-          <path d="M 0 -244 A 244 244 0 0 1 244 0" class="org-arc org-arc-cyan" filter="url(#orgFilterGlow)" />
-          <path d="M -215 215 A 304 304 0 0 1 -304 0" class="org-arc org-arc-purple" filter="url(#orgFilterGlow)" />
-          <path d="M 0 304 A 304 304 0 0 1 215 215" class="org-arc org-arc-emerald" filter="url(#orgFilterGlow)" opacity="0.75" />
+          <!-- Glowing Orbital Sector Trajectory Arcs (Hardware drop-shadow via CSS) -->
+          <path d="M -192 0 A 192 192 0 0 1 0 -192" class="org-arc org-arc-gold" />
+          <path d="M 0 -244 A 244 244 0 0 1 244 0" class="org-arc org-arc-cyan" />
+          <path d="M -215 215 A 304 304 0 0 1 -304 0" class="org-arc org-arc-purple" />
+          <path d="M 0 304 A 304 304 0 0 1 215 215" class="org-arc org-arc-emerald" opacity="0.75" />
 
           <!-- Dynamic Hover Laser Tether & Target-Lock Reticle -->
           <line id="orreryLaserGlow" x1="0" y1="0" x2="0" y2="0" class="orrery-laser-glow" />
@@ -8966,30 +8999,8 @@
 
     <script>
       ;(function () {
-        // 1. Fast Loader Dismissal (150ms after DOMContentLoaded, not 1300ms after window.load)
-        function removeLoader() {
-          var l = document.getElementById('loader')
-          if (l && !l.classList.contains('gone')) {
-            if (navigator.webdriver) {
-              l.style.display = 'none'
-            }
-            l.classList.add('gone')
-          }
-          if (document.body) document.body.classList.add('hero-ready')
-        }
-        if (navigator.webdriver) {
-          removeLoader()
-        } else if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', function () {
-            if (document.body) document.body.classList.add('hero-ready')
-            setTimeout(removeLoader, 120)
-          })
-        } else {
-          if (document.body) document.body.classList.add('hero-ready')
-          setTimeout(removeLoader, 120)
-        }
-        // Safety fallback — fires if DOMContentLoaded somehow misses
-        window.addEventListener('load', removeLoader, { once: true })
+        // 1. Instant First Paint: Hero ready immediately without artificial splash screen delay
+        if (document.body) document.body.classList.add('hero-ready')
 
         // 2. Unified Theme Controller — syncs BOTH <html> and <body> (Bug B fix)
         function applyTheme(isLight) {
@@ -9065,17 +9076,20 @@
           revealIo.observe(el)
         })
 
+        // 5b. Active Scroll Animation Freeze for 120 FPS Compositor Throughput
+        var isScrollingTimer = null
+        window.addEventListener('scroll', function () {
+          window.__isScrollingPage = true
+          document.body.classList.add('is-scrolling')
+          if (isScrollingTimer) clearTimeout(isScrollingTimer)
+          isScrollingTimer = setTimeout(function () {
+            window.__isScrollingPage = false
+            document.body.classList.remove('is-scrolling')
+          }, 90)
+        }, { passive: true })
+
         // 6. Desktop Specular Spotlight + Silky 60FPS Hardware-Accelerated 3D Card Tilt
         if (window.innerWidth >= 768 && !window.matchMedia('(pointer: coarse)').matches) {
-          var isScrollingTimer = null
-          window.addEventListener('scroll', function () {
-            window.__isScrollingPage = true
-            if (isScrollingTimer) clearTimeout(isScrollingTimer)
-            isScrollingTimer = setTimeout(function () {
-              window.__isScrollingPage = false
-            }, 80)
-          }, { passive: true })
-
           document.querySelectorAll('.pc, .vp-card').forEach(function (card) {
             var rafId = null, ex = 0, ey = 0, rect = null
             var isProjectCard = card.classList.contains('pc')
@@ -9153,11 +9167,7 @@
           var driftBtn = document.getElementById('orreryDriftBtn');
           var zeroBtn = document.getElementById('orreryZeroBtn');
 
-          // Override CSS sweep animation so JS controls the exact angle (0° = North / 12 o'clock)
-          if (sweepEl) {
-            sweepEl.style.animation = 'none';
-          }
-
+          // Radar sweep cone runs via hardware CSS keyframes (orrerySweep) at 0% CPU
           var orbitRot = 0;
           var sweepAngle = 0; // 0 to 360 deg clockwise from North
           var rotSpeed = 0;   // deg per second when DRIFT is ON
@@ -9213,11 +9223,14 @@
 
           function setLiveLockNode(title, color) {
             if (!liveLock) return;
-            liveLock.textContent = '';
-            var b = document.createElement('b');
-            if (color) b.style.color = color;
-            b.textContent = title || 'STANDBY';
-            liveLock.appendChild(b);
+            var b = liveLock.querySelector('b');
+            if (!b) {
+              liveLock.innerHTML = '<b>' + (title || 'STANDBY') + '</b>';
+              b = liveLock.querySelector('b');
+            } else {
+              b.textContent = title || 'STANDBY';
+            }
+            if (b) b.style.color = color || '';
           }
 
           nodeRegistry.forEach(function (item) {
@@ -9277,12 +9290,14 @@
             dragVel = 0;
             lastAngle = getPointerAngle(e);
             stage.setPointerCapture(e.pointerId);
+            wakeOrreryLoop();
           });
 
           stage.addEventListener('pointerup', function (e) {
             if (!isDragging) return;
             isDragging = false;
             try { stage.releasePointerCapture(e.pointerId); } catch (_) {}
+            wakeOrreryLoop();
           });
 
           // Shift + Wheel over Orrery rotates the orbital plane smoothly without hijacking normal page scroll
@@ -9291,6 +9306,7 @@
             e.preventDefault();
             isSpringResetting = false;
             dragVel = Math.max(-6, Math.min(6, e.deltaY * 0.04));
+            wakeOrreryLoop();
           }, { passive: false });
 
           if (driftBtn) {
@@ -9299,6 +9315,7 @@
               rotSpeed = rotSpeed === 0 ? 5.5 : 0; // 5.5 deg/sec smooth drift
               driftBtn.textContent = rotSpeed ? '\u27F3 DRIFT: ON' : '\u27F3 DRIFT: OFF';
               driftBtn.classList.toggle('is-active', rotSpeed > 0);
+              wakeOrreryLoop();
             });
           }
 
@@ -9308,9 +9325,11 @@
               orbitRot = ((orbitRot + 180) % 360 + 360) % 360 - 180;
               isSpringResetting = true;
               dragVel = 0;
+              wakeOrreryLoop();
             });
           }
 
+          // Zero-CPU Idle Controller: Runs on rAF ONLY when rotating/dragging/drifting
           function orreryLoop(now) {
             if (!isVisible || document.hidden) {
               orreryRafId = null;
@@ -9320,50 +9339,9 @@
             var dt = Math.min((now - lastFrameTime) / 1000, 0.05);
             lastFrameTime = now;
 
-            // 1. Advance radar sweep at 40 deg/sec (9s per full 360° revolution) and sync CSS transform directly
-            sweepAngle = (sweepAngle + 40 * dt) % 360;
-            if (sweepEl) {
-              sweepEl.style.transform = 'translate(-50%, -50%) rotate(' + sweepAngle.toFixed(2) + 'deg)';
-            }
-            var sweepDegInt = Math.floor(sweepAngle);
-            if (liveSweep) {
-              liveSweep.textContent = String(sweepDegInt).padStart(3, '0') + '°';
-            }
+            var needsNextFrame = false;
 
-            // 2. Exact phase-locked node radar ping detection
-            var beamLockedNode = null;
-            for (var i = 0; i < nodeRegistry.length; i++) {
-              var item = nodeRegistry[i];
-              if (item.el.classList.contains('is-dimmed')) continue;
-              var effectiveAngle = ((item.angle + orbitRot) % 360 + 360) % 360;
-              var diff = Math.abs(sweepAngle - effectiveAngle);
-              if (diff > 180) diff = 360 - diff;
-              if (diff < 7) {
-                beamLockedNode = item;
-                break;
-              }
-            }
-
-            if (beamLockedNode) {
-              if (lastPingNode !== beamLockedNode) {
-                if (lastPingNode) lastPingNode.el.classList.remove('is-radar-ping');
-                beamLockedNode.el.classList.add('is-radar-ping');
-                lastPingNode = beamLockedNode;
-              }
-              if (!lockedNodeItem) {
-                setLiveLockNode(beamLockedNode.title, beamLockedNode.color);
-              }
-            } else {
-              if (lastPingNode) {
-                lastPingNode.el.classList.remove('is-radar-ping');
-                lastPingNode = null;
-              }
-              if (!lockedNodeItem) {
-                setLiveLockNode('STANDBY');
-              }
-            }
-
-            // 3. Frame-rate independent spring & inertia integration
+            // Frame-rate independent spring & inertia integration
             if (isSpringResetting) {
               orbitRot *= Math.pow(0.0015, dt);
               if (Math.abs(orbitRot) < 0.08) {
@@ -9371,25 +9349,36 @@
                 isSpringResetting = false;
               }
               applyRot();
-            } else if (!isDragging) {
+              needsNextFrame = isSpringResetting;
+            } else if (isDragging) {
+              needsNextFrame = true;
+            } else {
               if (Math.abs(dragVel) > 0.03) {
                 orbitRot = (orbitRot + dragVel * (dt * 60)) % 360;
                 dragVel *= Math.pow(0.008, dt);
                 applyRot();
+                needsNextFrame = true;
               } else if (rotSpeed !== 0 && !isHovered) {
                 orbitRot = (orbitRot + rotSpeed * dt) % 360;
                 applyRot();
+                needsNextFrame = true;
               }
             }
 
-            if (liveDelta) {
-              liveDelta.textContent = '';
-              var bDelta = document.createElement('b');
-              bDelta.textContent = (orbitRot >= 0 ? '+' : '') + orbitRot.toFixed(1) + '°';
-              liveDelta.appendChild(bDelta);
+            if (liveDelta && (needsNextFrame || isDragging)) {
+              var bDelta = liveDelta.querySelector('b');
+              if (!bDelta) {
+                liveDelta.innerHTML = '<b>' + (orbitRot >= 0 ? '+' : '') + orbitRot.toFixed(1) + '°</b>';
+              } else {
+                bDelta.textContent = (orbitRot >= 0 ? '+' : '') + orbitRot.toFixed(1) + '°';
+              }
             }
 
-            orreryRafId = requestAnimationFrame(orreryLoop);
+            if (needsNextFrame) {
+              orreryRafId = requestAnimationFrame(orreryLoop);
+            } else {
+              orreryRafId = null;
+            }
           }
 
           function wakeOrreryLoop() {
@@ -9399,20 +9388,28 @@
             }
           }
 
-          wakeOrreryLoop();
+          // Initial position sync (zero continuous background loop while idle)
+          applyRot();
+          if (liveDelta) liveDelta.innerHTML = '<b>+0.0°</b>';
+          if (liveLock) setLiveLockNode('STANDBY');
+          if (liveSweep) liveSweep.textContent = '360°';
 
           if ('IntersectionObserver' in window) {
             new IntersectionObserver(function (entries) {
               entries.forEach(function (entry) {
                 isVisible = entry.isIntersecting;
                 stage.classList.toggle('is-paused', !isVisible);
-                if (isVisible) wakeOrreryLoop();
+                if (isVisible && (rotSpeed !== 0 || isSpringResetting || Math.abs(dragVel) > 0.03)) {
+                  wakeOrreryLoop();
+                }
               });
-            }, { threshold: 0.02 }).observe(stage);
+            }, { threshold: 0, rootMargin: '0px' }).observe(stage);
           }
 
           document.addEventListener('visibilitychange', function () {
-            if (!document.hidden) wakeOrreryLoop();
+            if (!document.hidden && (rotSpeed !== 0 || isSpringResetting || Math.abs(dragVel) > 0.03)) {
+              wakeOrreryLoop();
+            }
           });
 
           // Category filter pills
