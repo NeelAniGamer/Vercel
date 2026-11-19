@@ -37,18 +37,18 @@
         } catch (e) {}
       })()
     </script>
-    <meta name="description" content="Explore 436 career pathways and 5,900+ real job titles, with degree roadmaps, entrance exams, salary bands, and plain-language notes on AI exposure." />
+    <meta name="description" content="Explore 441 career pathways and 5,900+ real job titles, with degree roadmaps, entrance exams, salary bands, and plain-language notes on AI exposure." />
     <meta name="keywords" content="all careers in the world, 20000 careers, career guidance, career pathways India, stream selection after 10th, career options after 12th, IIT JEE preparation guide, NEET career path, USMLE guide, CLAT preparation, CAT exam, salary guide, AI career assessment, student career planner, engineering career guide, medical career guide, free career counseling">
     <meta property="og:site_name" content="Class Of Learners" />
     <meta property="og:title" content="FutureScape | World Career &amp; Education Guide" />
-    <meta property="og:description" content="Explore 436 career pathways and 5,900+ real job titles, with degree roadmaps, entrance exams, salary bands, and plain-language notes on AI exposure." />
+    <meta property="og:description" content="Explore 441 career pathways and 5,900+ real job titles, with degree roadmaps, entrance exams, salary bands, and plain-language notes on AI exposure." />
     <meta property="og:url" content="https://advancedlogiclabs.dpdns.org/Career" />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://advancedlogiclabs.dpdns.org/og/default.jpg" />
     <meta property="og:image:alt" content="FutureScape World Career and Education Guide" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="FutureScape | World Career &amp; Education Guide" />
-    <meta name="twitter:description" content="Explore 436 career pathways and 5,900+ real job titles, with degree roadmaps, entrance exams, salary bands, and plain-language notes on AI exposure." />
+    <meta name="twitter:description" content="Explore 441 career pathways and 5,900+ real job titles, with degree roadmaps, entrance exams, salary bands, and plain-language notes on AI exposure." />
     <meta name="twitter:image" content="https://advancedlogiclabs.dpdns.org/og/default.jpg" />
     <meta name="twitter:image:alt" content="FutureScape World Career and Education Guide" />
     <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
@@ -61,7 +61,7 @@
         "@type": "WebApplication",
         "name": "FutureScape World Career & Education Guide",
         "url": "https://advancedlogiclabs.dpdns.org/Career",
-        "description": "An interactive career encyclopedia with 436 career pathways and 5,900+ real job titles, each with degree roadmaps, entrance exams, salary bands, and a plain-language read on AI exposure.",
+        "description": "An interactive career encyclopedia with 441 career pathways and 5,900+ real job titles, each with degree roadmaps, entrance exams, salary bands, and a plain-language read on AI exposure.",
         "applicationCategory": "EducationalApplication",
         "operatingSystem": "Web browser",
         "browserRequirements": "Requires JavaScript.",
@@ -77,7 +77,7 @@
       "@context": "https://schema.org",
       "@type": "FAQPage",
       "mainEntity": [
-        {"@type": "Question", "name": "What career options are available across the world?", "acceptedAnswer": {"@type": "Answer", "text": "FutureScape covers 436 career pathways, each written out in full, and indexes more than 5,900 job titles across Technology, Healthcare, Engineering, Space, Business, Law, Creative Arts, Science & DeepTech, Sustainability, Skilled Trades, Education, and Public Safety."}},
+        {"@type": "Question", "name": "What career options are available across the world?", "acceptedAnswer": {"@type": "Answer", "text": "FutureScape covers 441 career pathways, each written out in full, and indexes more than 5,900 job titles across Technology, Healthcare, Engineering, Space, Business, Law, Creative Arts, Science & DeepTech, Sustainability, Skilled Trades, Education, and Public Safety."}},
         {"@type": "Question", "name": "How does FutureScape help students choose a high school stream?", "acceptedAnswer": {"@type": "Answer", "text": "FutureScape provides stream-specific filters for Science PCM, Science PCB, Commerce, Arts/Humanities, and Vocational routes, along with an interactive 60-Second Career Compass assessment that matches individual interests to actionable degrees and entrance exams."}},
         {"@type": "Question", "name": "Is FutureScape free to use?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, FutureScape is completely free and accessible directly in your browser with no sign-ups or downloads required."}}
       ]
@@ -140,7 +140,7 @@
   --font: 'Instrument Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --r1: 10px;
   --r2: 14px;
-  --wrap: 1240px;
+  --wrap: 1520px;
   --nav-h: 60px;
 }
 html.lm {
@@ -337,7 +337,7 @@ body.modal-open { overflow: hidden; }
 .reset-filters-btn { height: 32px; padding: 0 10px; border: 0; background: none; color: var(--text); font: 700 14px var(--font); text-decoration: underline; text-underline-offset: 3px; }
 
 /* ---------- career cards ---------- */
-.career-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(286px, 1fr)); gap: 16px; }
+.career-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 16px; }
 .career-card {
   position: relative; display: flex; flex-direction: column; gap: 12px; min-width: 0;
   padding: 18px 18px 16px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface);
@@ -365,7 +365,7 @@ body.modal-open { overflow: hidden; }
 .card-title { font: 700 21px/1.15 var(--font-display); letter-spacing: -.02em; }
 .card-tagline { margin-top: -6px; color: var(--muted); font-size: 15px; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .matched-alias-pill { align-self: flex-start; padding: 2px 10px; border-radius: 10px; background: var(--surface-2); color: var(--muted); font: 400 13px var(--font); }
-.card-route { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) max-content; gap: 0; margin-top: 4px; }
+.card-route { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.35fr); gap: 0; margin-top: 4px; }
 .route-stop { position: relative; min-width: 0; padding-top: 20px; padding-right: 8px; }
 .route-stop::before {
   content: ""; position: absolute; top: 0; left: 0; width: 12px; height: 12px; border-radius: 50%;
@@ -375,9 +375,8 @@ body.modal-open { overflow: hidden; }
 .route-stop:last-child { padding-right: 0; }
 .route-stop::after { content: ""; position: absolute; top: 5px; left: 16px; right: 4px; height: 2px; background: var(--route); opacity: .5; }
 .route-stop:last-child::after { display: none; }
-.route-label { display: block; font: 400 12px/1.3 var(--font); color: var(--faint); }
+.route-label { display: block; font: 400 12px/1.3 var(--font); color: var(--faint); white-space: nowrap; }
 .route-val { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; font: 700 14px/1.3 var(--font); color: var(--text); font-variant-numeric: tabular-nums; }
-.route-stop:last-child .route-val { display: block; white-space: nowrap; }
 .card-facts { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 12px; border-top: 1px solid var(--line); font: 400 13px var(--font); color: var(--muted); }
 .fact-growth { display: inline-flex; align-items: center; gap: 6px; font-variant-numeric: tabular-nums; }
 .fact-growth::before { content: ""; border: 5px solid transparent; border-bottom: 7px solid var(--good); border-top: 0; }
@@ -395,9 +394,49 @@ body.modal-open { overflow: hidden; }
 .btn-cmp { height: 42px; padding: 0 14px; border-radius: var(--r1); border: 1px solid var(--line-strong); background: transparent; color: var(--text); font: 700 14px var(--font); }
 .btn-cmp:hover { background: var(--tint); }
 .btn-cmp.active { background: var(--surface-2); border-color: var(--text); }
-.show-more-wrap { display: flex; justify-content: center; padding: 32px 0 8px; grid-column: 1 / -1; }
-.show-more-btn { height: 48px; padding: 0 24px; border-radius: var(--r2); border: 1px solid var(--line-strong); background: var(--surface); color: var(--text); font: 700 15px var(--font); }
-.show-more-btn:hover { border-color: var(--text); }
+.career-grid.is-loading { opacity: .55; pointer-events: none; transition: opacity .15s ease; }
+.career-skeleton {
+  min-height: 280px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface);
+  padding: 18px; display: flex; flex-direction: column; gap: 14px;
+}
+.skel-line {
+  height: 14px; border-radius: 7px; background: var(--surface-2);
+  animation: skel-pulse 1.3s ease-in-out infinite;
+}
+@keyframes skel-pulse { 0%, 100% { opacity: .45; } 50% { opacity: .9; } }
+.results-bar-right { margin-left: auto; display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.page-size-wrap { display: inline-flex; align-items: center; gap: 8px; font: 400 13px var(--font); color: var(--muted); }
+.page-size-select {
+  height: 34px; padding: 0 28px 0 10px; border-radius: 9px; border: 1px solid var(--line-strong);
+  background-color: var(--surface); color: var(--text); font: 700 13px var(--font);
+  -webkit-appearance: none; appearance: none; cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a8594' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 8px center;
+}
+.page-size-select:hover { border-color: var(--muted); }
+.page-size-select option { background: var(--surface); color: var(--text); }
+.pagination-bar {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px;
+  margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--line);
+}
+.pagination-bar[hidden] { display: none; }
+.pagination-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.page-btn {
+  min-width: 40px; height: 40px; padding: 0 12px; border-radius: var(--r1);
+  border: 1px solid var(--line-strong); background: var(--surface); color: var(--text);
+  font: 700 14px var(--font); font-variant-numeric: tabular-nums;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.page-btn:hover:not(:disabled) { border-color: var(--text); background: var(--tint); }
+.page-btn.active { background: var(--ink); color: var(--on-ink); border-color: var(--ink); cursor: default; }
+.page-btn:disabled { opacity: .4; cursor: not-allowed; }
+.page-ellipsis {
+  min-width: 28px; height: 40px; display: inline-flex; align-items: center; justify-content: center;
+  color: var(--faint); font: 700 14px var(--font); user-select: none;
+}
+.pagination-meta { display: inline-flex; align-items: center; gap: 12px; color: var(--muted); font: 400 14px var(--font); font-variant-numeric: tabular-nums; }
+.page-jump-wrap { display: inline-flex; align-items: center; gap: 6px; font: 400 13px var(--font); color: var(--muted); }
 
 /* ---------- compare drawer ---------- */
 .compare-drawer {
@@ -619,6 +658,13 @@ body.modal-open { overflow: hidden; }
   .filters-toolbar.open { display: grid; }
   .career-grid { gap: 12px; }
   .career-card { padding: 16px 16px 14px; }
+  .results-bar-right { width: 100%; justify-content: space-between; margin-left: 0; }
+  .pagination-bar { flex-direction: column; align-items: stretch; gap: 12px; }
+  .pagination-controls { justify-content: center; gap: 4px; }
+  .pagination-meta { justify-content: space-between; }
+  .page-btn { min-width: 36px; height: 44px; padding: 0 9px; font-size: 13px; }
+  .page-btn-label { display: none; }
+  .page-ellipsis { min-width: 18px; }
   .compare-drawer { bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }
   .modal-overlay { padding: 12px; }
   .modal-card { max-height: calc(100dvh - 24px); border-radius: 18px; }
@@ -647,12 +693,204 @@ body.modal-open { overflow: hidden; }
   .hero h1 .u { background-size: 100% .11em; }
 }
 @media print {
-  body { background: #fff !important; color: #000 !important; }
-  .navbar, .controls-section, .hero, .site-footer, .compare-drawer, .btn-explore, .btn-cmp, .btn-fav, .show-more-wrap, .dossier-top-nav, .dossier-tab-bar, .dossier-end-actions, .col-bottom-bar { display: none !important; }
-  .modal-overlay { position: static !important; opacity: 1 !important; padding: 0 !important; background: #fff !important; }
-  .dossier-tab-pane { display: block !important; margin-bottom: 20px; }
-  .dossier-doc-container { padding: 0; max-width: none; }
-  * { color: #000 !important; border-color: #ccc !important; background: transparent !important; }
+  @page { margin: 14mm 14mm 16mm; }
+  :root {
+    color-scheme: light;
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --surface-2: #f3f4f6;
+    --line: #d4d8df;
+    --line-strong: #9ca3af;
+    --text: #111827;
+    --muted: #4b5563;
+    --faint: #6b7280;
+    --ink: #111827;
+    --on-ink: #ffffff;
+    --tint: #f9fafb;
+  }
+  html, body {
+    background: #fff !important;
+    color: #111827 !important;
+    overflow: visible !important;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+  }
+  /* Hide all site-injected floating widgets (ambient bg, cookie banner, BMC badge, bottom bar, toasts) */
+  body > :not(.app),
+  .navbar,
+  .site-footer,
+  .compare-drawer,
+  .col-bottom-bar,
+  .bmc-floating-badge,
+  .fs-toast,
+  .btn-explore,
+  .btn-cmp,
+  .btn-fav,
+  .pagination-bar,
+  .results-bar-right,
+  .dossier-top-nav,
+  .dossier-tab-bar,
+  .dossier-end-actions,
+  .modal-close,
+  .modal-header .nav-btn,
+  .modal-footer,
+  .slider-track-wrap,
+  input[type="range"] {
+    display: none !important;
+  }
+
+  /* Never print closed modals! */
+  .modal-overlay:not(.open) {
+    display: none !important;
+  }
+
+  /* When a modal (Career Blueprint / Comparison) is open, print ONLY that modal */
+  body.modal-open .app > :not(.modal-overlay.open) {
+    display: none !important;
+  }
+  .modal-overlay.open {
+    position: static !important;
+    inset: auto !important;
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    overflow: visible !important;
+    padding: 0 !important;
+    background: #fff !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  .modal-overlay.open .modal-card {
+    position: static !important;
+    max-width: none !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    width: 100% !important;
+    overflow: visible !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    transform: none !important;
+    background: #fff !important;
+  }
+  .modal-overlay.open .modal-header {
+    padding: 0 0 12px !important;
+    border-bottom: 1px solid #d4d8df !important;
+  }
+  .modal-overlay.open .modal-body {
+    max-height: none !important;
+    overflow: visible !important;
+    padding: 14px 0 0 !important;
+  }
+  .dossier-doc-container {
+    padding: 0 !important;
+    max-width: none !important;
+  }
+  .dossier-tab-pane {
+    display: block !important;
+    margin-bottom: 22px !important;
+  }
+  .dossier-hero-title { font-size: 28pt !important; line-height: 1.08 !important; }
+  .dossier-hero-tagline { font-size: 11.5pt !important; color: #444 !important; }
+  .dossier-hero-metrics-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    margin-top: 16px !important;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .dossier-hero-metric-card { padding: 10px 10px 10px 0 !important; }
+  .dossier-hero-metric-card + .dossier-hero-metric-card { padding-left: 12px !important; }
+  .dossier-hero-metric-card .value { font-size: 14pt !important; }
+  .dossier-panes-wrap { padding-top: 16px !important; }
+  .dossier-section { margin-bottom: 18px !important; }
+  .dossier-section-title { font-size: 14pt !important; margin-bottom: 8px !important; }
+  .dossier-prose, .dossier-section p { max-width: none !important; font-size: 10.5pt !important; line-height: 1.55 !important; }
+  .dossier-tradeoffs { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 12px !important; }
+  .dossier-env-grid, .dossier-facts { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 10px !important; }
+
+  /* When printing the main Career directory (no modal open) */
+  body:not(.modal-open) .hero {
+    display: block !important;
+    padding: 0 0 14px !important;
+    max-width: none !important;
+    border-bottom: 1px solid #d4d8df !important;
+  }
+  body:not(.modal-open) .hero h1 { font-size: 24pt !important; }
+  body:not(.modal-open) .hero-sub { font-size: 10.5pt !important; margin-top: 6px !important; max-width: none !important; }
+  body:not(.modal-open) .search-box-wrap,
+  body:not(.modal-open) .hero-chips,
+  body:not(.modal-open) .hero-actions,
+  body:not(.modal-open) .hero-route,
+  body:not(.modal-open) .hero-metric-strip,
+  body:not(.modal-open) .controls-head,
+  body:not(.modal-open) .filters-toolbar {
+    display: none !important;
+  }
+  body:not(.modal-open) .controls-section {
+    padding: 14px 0 0 !important;
+    max-width: none !important;
+  }
+  body:not(.modal-open) .career-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+    content-visibility: visible !important;
+  }
+  body:not(.modal-open) .career-card {
+    padding: 12px !important;
+    gap: 8px !important;
+    border: 1px solid #d4d8df !important;
+    border-radius: 10px !important;
+    contain: none !important;
+  }
+
+  /* Clean pagination & break rules across all printable blocks */
+  h1, h2, h3, h4, .dossier-section-title {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+  .dossier-env-card,
+  .dossier-fact,
+  .dossier-roadmap-step,
+  .dossier-timeline-item,
+  .dossier-tradeoff-col,
+  .dossier-avoid-box,
+  .dossier-project-item,
+  .dossier-callout,
+  .detail-box,
+  .career-card,
+  .cmp-table tr,
+  .dossier-salary-table tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Crisp print palette */
+  .app, .app * {
+    color: #111827 !important;
+    border-color: #d4d8df !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  .dossier-hero-metric-card .value,
+  .dossier-section-title,
+  .dossier-roadmap-phase,
+  .dossier-timeline-time {
+    color: #111827 !important;
+  }
+  .dossier-hero-tagline,
+  .dossier-hero-metric-card .label,
+  .dossier-hero-metric-card .sub,
+  .dossier-roadmap-desc,
+  .dossier-timeline-desc,
+  .env-label,
+  .fact-label,
+  .route-label,
+  .card-tagline,
+  .results-count {
+    color: #4b5563 !important;
+  }
 }
 
 </style>
@@ -679,7 +917,7 @@ body.modal-open { overflow: hidden; }
       <section class="hero">
       <div class="hero-main">
         <h1>Find a career<br /><span class="u">worth committing to.</span></h1>
-        <p class="hero-sub">436 careers written out properly: what the work actually involves, which degree gets you there, the entrance exams, real salary bands, and how exposed the job is to AI. <span class="more">Every occupation in the U.S. Bureau of Labor Statistics handbook is covered, along with 5,900+ real job titles you can search by name.</span></p>
+        <p class="hero-sub">441 careers written out properly: what the work actually involves, which degree gets you there, the entrance exams, real salary bands, and how exposed the job is to AI. <span class="more">Every occupation in the U.S. Bureau of Labor Statistics handbook is covered, along with 5,900+ real job titles you can search by name.</span></p>
         <div class="search-box-wrap" role="search">
           <span class="search-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></span>
           <input type="text" class="search-input" id="search-input" placeholder="Search a career, job title, degree or exam" aria-label="Search careers, job titles, degrees, entrance exams or skills" autocomplete="off" />
@@ -707,7 +945,7 @@ body.modal-open { overflow: hidden; }
         </ol>
       </aside>
       <div class="hero-metric-strip">
-        <div class="metric-pill"><strong id="stat-careers">436</strong>Detailed roadmaps</div>
+        <div class="metric-pill"><strong id="stat-careers">441</strong>Detailed roadmaps</div>
         <div class="metric-pill"><strong>5,900+</strong>Real job titles</div>
         <div class="metric-pill"><strong>343</strong>Official BLS occupations</div>
         <div class="metric-pill"><strong>100%</strong>Free and open access</div>
@@ -730,7 +968,7 @@ body.modal-open { overflow: hidden; }
           <div class="filter-select-wrap">
             <label class="filter-select-label" for="domain-select">Domain</label>
             <select class="styled-select" id="domain-select" onchange="setCategory(this.value)">
-              <option value="all">All Domains (436)</option>
+              <option value="all">All Domains (441)</option>
               <option value="tech">Technology &amp; AI</option>
               <option value="health">Healthcare &amp; Medicine</option>
               <option value="eng">Engineering &amp; Robotics</option>
@@ -749,7 +987,7 @@ body.modal-open { overflow: hidden; }
           <div class="filter-select-wrap">
             <label class="filter-select-label" for="degree-select">Degree / Major</label>
             <select class="styled-select" id="degree-select" onchange="setDegree(this.value)">
-              <option value="all">Any Degree (436)</option>
+              <option value="all">Any Degree (441)</option>
               <option value="engineering">Engineering (B.Tech / B.E.)</option>
               <option value="computing">Computing &amp; IT (BCA / CS)</option>
               <option value="health">Medicine &amp; Health (MBBS / BDS / Nursing)</option>
@@ -767,7 +1005,7 @@ body.modal-open { overflow: hidden; }
           <div class="filter-select-wrap">
             <label class="filter-select-label" for="interest-select">Interest</label>
             <select class="styled-select" id="interest-select" onchange="setInterest(this.value)">
-              <option value="all">Any Interest (436)</option>
+              <option value="all">Any Interest (441)</option>
               <option value="tech">Computers &amp; Technology</option>
               <option value="health">Medicine &amp; Health</option>
               <option value="numbers">Numbers &amp; Finance</option>
@@ -824,12 +1062,26 @@ body.modal-open { overflow: hidden; }
 
         <!-- Active Filter Tags Tray & Live Counter -->
         <div class="active-filters-bar" id="active-filters-bar">
-          <div class="results-count" id="results-count">Showing 36 of 436 careers</div>
+          <div class="results-count" id="results-count">Loading careers…</div>
           <div class="active-chips" id="active-chips"></div>
+          <div class="results-bar-right">
+            <label class="page-size-wrap" for="page-size-select">
+              <span>Per page</span>
+              <select class="page-size-select" id="page-size-select" onchange="setPageSize(this.value)" aria-label="Careers per page">
+                <option value="12">12</option>
+                <option value="24" selected>24</option>
+                <option value="36">36</option>
+                <option value="48">48</option>
+              </select>
+            </label>
+          </div>
         </div>
 
         <!-- Career Cards Grid -->
         <div class="career-grid" id="career-grid"></div>
+
+        <!-- Numbered Pagination -->
+        <nav class="pagination-bar" id="career-pagination" aria-label="Career pages" hidden></nav>
       </section>
 
       <!-- Comparison Drawer -->
@@ -1386,20 +1638,19 @@ body.modal-open { overflow: hidden; }
       </footer>
     </div>
 
-    <!-- Career Data -->
-    <script src="careers-data.js"></script>
-<!-- Career Compass scoring. Kept out of the inline block so the same file can
-     be required by scripts/compass_scoring.js, which calibrates it against the
-     dataset without a browser. -->
-<script src="compass-scoring.js"></script>
+    <!-- Career Compass scoring. Kept out of the inline block so the same file can
+         be required by scripts/compass_scoring.js, which calibrates it against the
+         dataset without a browser. -->
+    <script src="compass-scoring.js"></script>
 
     <!-- App Engine Logic -->
     <script>
       // State Management
       let allCareers = [];
+      let totalCareersCount = 441;
       let favoriteList = JSON.parse(localStorage.getItem('fs_favorites') || '[]');
       let compareList = JSON.parse(localStorage.getItem('fs_compare') || '[]');
-      let activeSource = 'all'; // 'all', 'flagship', 'growth', 'ai', 'high_earning'
+      let activeSource = 'all'; // 'all', 'flagship', 'growth', 'ai', 'high_earning', 'shortlist'
       let currentCat = 'all';
       let currentStream = 'all';
       let currentEdu = 'all';
@@ -1407,7 +1658,23 @@ body.modal-open { overflow: hidden; }
       let currentInterest = 'all';
       let currentSort = 'match';
       let searchQuery = '';
-      let renderLimit = 36;
+      const VALID_PAGE_SIZES = [12, 24, 36, 48];
+      let pageSize = (function () {
+        try {
+          const saved = parseInt(localStorage.getItem('fs_page_size') || '24', 10);
+          if (VALID_PAGE_SIZES.includes(saved)) return saved;
+        } catch (e) {}
+        return 24;
+      })();
+      let currentPage = (function () {
+        try {
+          const p = parseInt(new URLSearchParams(window.location.search).get('page') || '1', 10);
+          return Number.isFinite(p) && p >= 1 ? p : 1;
+        } catch (e) { return 1; }
+      })();
+      let totalMatches = 0;
+      let totalPages = 1;
+      let renderRequestSeq = 0;
       let compassScores = {};
       let activeDetailCareer = null;
       // Why each career scored what it did, for the results panel. Populated by
@@ -1418,14 +1685,224 @@ body.modal-open { overflow: hidden; }
       // answer the student never gave.
       let compassAnswers = { stream: 'pcm', degrees: [], interests: [], edu: 'bachelor', field: '', diversify: true };
 
-      // Initialize Career Data
-      function initData() {
-        if (window.CAREERS_ALL && window.CAREERS_ALL.length) {
-          allCareers = window.CAREERS_ALL;
-        } else if (window.CAREERS_FLAGSHIP && window.CAREERS_FLAGSHIP.length) {
-          allCareers = window.CAREERS_FLAGSHIP;
+      // ── Supabase Careers Database Client (with seamless offline fallback) ──
+      const careerCardCache = new Map();
+      const careerDetailCache = new Map();
+      const pageQueryCache = new Map();
+      let compassIndexCache = null;
+      let facetsCache = null;
+      let useLocalFallback = false;
+      let localFallbackPromise = null;
+
+      const CAREERS_DB = {
+        _cfgPromise: null,
+        getConfig() {
+          if (this._cfgPromise) return this._cfgPromise;
+          const fallback = {
+            url: 'https://hvukxajztizsuhfubjws.supabase.co',
+            key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2dWt4YWp6dGl6c3VoZnViandzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4Mzc1MTAsImV4cCI6MjA5NjQxMzUxMH0.KqQRkmhuB_rFlzQ2N3NhSQrftmVZgGE3NUuVHYh3aYE'
+          };
+          this._cfgPromise = (async () => {
+            try {
+              window.__colConfigPromise = window.__colConfigPromise ||
+                fetch('/config.json', { signal: AbortSignal.timeout ? AbortSignal.timeout(6000) : undefined })
+                  .then(r => (r.ok ? r.json() : null))
+                  .catch(() => null);
+              const cfg = await window.__colConfigPromise;
+              if (cfg && cfg.auth && cfg.auth.url && cfg.auth.key) return cfg.auth;
+            } catch (e) {}
+            return fallback;
+          })();
+          return this._cfgPromise;
+        },
+        async rpc(name, body) {
+          const cfg = await this.getConfig();
+          const res = await fetch(cfg.url + '/rest/v1/rpc/' + name, {
+            method: 'POST',
+            headers: {
+              apikey: cfg.key,
+              Authorization: 'Bearer ' + cfg.key,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body || {}),
+            signal: AbortSignal.timeout ? AbortSignal.timeout(10000) : undefined
+          });
+          if (!res.ok) throw new Error('RPC ' + name + ' HTTP ' + res.status);
+          return res.json();
+        },
+        async ensureLocalFallback() {
+          if (allCareers.length) return allCareers;
+          if (window.CAREERS_ALL && window.CAREERS_ALL.length) {
+            allCareers = window.CAREERS_ALL;
+            allCareers.forEach(c => {
+              careerCardCache.set(c.id, c);
+              careerDetailCache.set(c.id, c);
+            });
+            totalCareersCount = allCareers.length;
+            return allCareers;
+          }
+          if (!localFallbackPromise) {
+            localFallbackPromise = new Promise((resolve, reject) => {
+              const s = document.createElement('script');
+              s.src = 'careers-data.js';
+              s.onload = () => {
+                allCareers = window.CAREERS_ALL || window.CAREERS_FLAGSHIP || [];
+                allCareers.forEach(c => {
+                  careerCardCache.set(c.id, c);
+                  careerDetailCache.set(c.id, c);
+                });
+                totalCareersCount = allCareers.length || 441;
+                resolve(allCareers);
+              };
+              s.onerror = () => reject(new Error('Failed to load offline careers-data.js'));
+              document.head.appendChild(s);
+            });
+          }
+          return localFallbackPromise;
+        },
+        async getFacets() {
+          if (facetsCache) return facetsCache;
+          if (!useLocalFallback) {
+            try {
+              const data = await this.rpc('get_career_facets', {});
+              if (data && typeof data.total === 'number' && data.total > 0) {
+                facetsCache = data;
+                totalCareersCount = data.total;
+                return data;
+              }
+            } catch (e) {
+              console.warn('[FutureScape] DB facets unavailable, falling back to local dataset:', e);
+              useLocalFallback = true;
+            }
+          }
+          await this.ensureLocalFallback();
+          facetsCache = computeLocalFacets(allCareers);
+          return facetsCache;
+        },
+        async queryPage(params) {
+          const cacheKey = JSON.stringify(params);
+          if (pageQueryCache.has(cacheKey)) return pageQueryCache.get(cacheKey);
+          if (!useLocalFallback) {
+            try {
+              const data = await this.rpc('query_careers', {
+                p_mode: params.mode,
+                p_cat: params.cat,
+                p_stream: params.stream,
+                p_edu: params.edu,
+                p_degree: params.degree,
+                p_interest: params.interest,
+                p_search: params.search,
+                p_sort: params.sort,
+                p_ids: params.ids,
+                p_page: params.page,
+                p_page_size: params.pageSize
+              });
+              if (data && Array.isArray(data.items)) {
+                data.items.forEach(item => careerCardCache.set(item.id, item));
+                if (pageQueryCache.size > 60) pageQueryCache.clear();
+                pageQueryCache.set(cacheKey, data);
+                return data;
+              }
+            } catch (e) {
+              console.warn('[FutureScape] DB query unavailable, falling back to local dataset:', e);
+              useLocalFallback = true;
+            }
+          }
+          await this.ensureLocalFallback();
+          return queryLocalPool(allCareers, params);
+        },
+        async getDetail(id) {
+          if (careerDetailCache.has(id)) return careerDetailCache.get(id);
+          if (!useLocalFallback) {
+            try {
+              const data = await this.rpc('get_career_detail', { p_id: id });
+              if (data && data.id) {
+                careerDetailCache.set(data.id, data);
+                careerCardCache.set(data.id, data);
+                return data;
+              }
+            } catch (e) {
+              console.warn('[FutureScape] DB detail unavailable, falling back to local dataset:', e);
+              useLocalFallback = true;
+            }
+          }
+          await this.ensureLocalFallback();
+          return allCareers.find(c => c.id === id) || null;
+        },
+        async getByIds(ids) {
+          if (!ids || !ids.length) return [];
+          const missing = ids.filter(id => !careerDetailCache.has(id));
+          if (missing.length && !useLocalFallback) {
+            try {
+              const rows = await this.rpc('get_careers_by_ids', { p_ids: missing });
+              if (Array.isArray(rows)) {
+                rows.forEach(c => {
+                  careerDetailCache.set(c.id, c);
+                  careerCardCache.set(c.id, c);
+                });
+              }
+            } catch (e) {
+              console.warn('[FutureScape] DB batch fetch unavailable, falling back to local dataset:', e);
+              useLocalFallback = true;
+            }
+          }
+          if (useLocalFallback) await this.ensureLocalFallback();
+          return ids.map(id => careerDetailCache.get(id) || allCareers.find(c => c.id === id)).filter(Boolean);
+        },
+        async getCompassIndex() {
+          if (compassIndexCache) return compassIndexCache;
+          if (!useLocalFallback) {
+            try {
+              const rows = await this.rpc('get_careers_compass_index', {});
+              if (Array.isArray(rows) && rows.length) {
+                compassIndexCache = rows;
+                rows.forEach(c => { if (!careerCardCache.has(c.id)) careerCardCache.set(c.id, c); });
+                return compassIndexCache;
+              }
+            } catch (e) {
+              console.warn('[FutureScape] DB compass index unavailable, falling back to local dataset:', e);
+              useLocalFallback = true;
+            }
+          }
+          await this.ensureLocalFallback();
+          compassIndexCache = allCareers;
+          return compassIndexCache;
         }
-        document.getElementById('stat-careers').textContent = allCareers.length || 416;
+      };
+
+      function computeLocalFacets(list) {
+        const pctOf = c => { const m = (c.growth || '').match(/(-?\d+)%/); return m ? parseInt(m[1], 10) : 0; };
+        const maxPay = c => Math.max(...((c.salary || '').match(/\$(\d+)K/g) || ['$0K']).map(s => parseInt(s.replace(/\D/g, ''), 10)));
+        const domains = {}, degrees = {}, interests = {};
+        list.forEach(c => {
+          if (c.cat) domains[c.cat] = (domains[c.cat] || 0) + 1;
+          (c.degrees || []).forEach(d => { degrees[d] = (degrees[d] || 0) + 1; });
+          (c.interests || []).forEach(i => { interests[i] = (interests[i] || 0) + 1; });
+        });
+        return {
+          total: list.length,
+          modes: {
+            all: list.length,
+            flagship: list.filter(c => !c.id.startsWith('ooh-') && !c.compact).length,
+            growth: list.filter(c => pctOf(c) >= 10).length,
+            ai: list.filter(c => c.aiTag === 'protected' || c.aiTag === 'people').length,
+            high_earning: list.filter(c => maxPay(c) >= 150).length
+          },
+          domains,
+          degrees,
+          interests
+        };
+      }
+
+      // Initialize Career Data & UI state
+      async function initData() {
+        const psSelect = document.getElementById('page-size-select');
+        if (psSelect) psSelect.value = String(pageSize);
+        const facets = await CAREERS_DB.getFacets();
+        const statEl = document.getElementById('stat-careers');
+        if (statEl && facets && facets.total) statEl.textContent = facets.total;
+        updateSelectCounts(facets);
+        updateModeCounts(facets);
       }
 
       // Theme Management
@@ -1482,6 +1959,7 @@ body.modal-open { overflow: hidden; }
         currentStream = 'all';
         currentEdu = 'all';
         activeSource = 'shortlist';
+        currentPage = 1;
         updateFilterUI();
         renderCards(true);
         document.getElementById('explore').scrollIntoView({ behavior: 'smooth' });
@@ -1505,7 +1983,7 @@ body.modal-open { overflow: hidden; }
         renderCards();
       }
 
-      function updateCompareDrawer() {
+      async function updateCompareDrawer() {
         const drawer = document.getElementById('compare-drawer');
         const list = document.getElementById('compare-items-list');
         list.innerHTML = '<span style="color:var(--text-secondary); font-size:14px; font-weight:600;">Compare (' + compareList.length + '/4):</span>';
@@ -1515,12 +1993,17 @@ body.modal-open { overflow: hidden; }
           return;
         }
 
+        const missing = compareList.filter(id => !findCareer(id));
+        if (missing.length) {
+          await CAREERS_DB.getByIds(missing);
+        }
+
         compareList.forEach(id => {
           const c = findCareer(id);
           if (!c) return;
           const tag = document.createElement('div');
           tag.className = 'cmp-tag';
-          tag.innerHTML = '<span>' + c.title + '</span><span class="cmp-tag-remove" onclick="toggleCompare(\'' + c.id + '\')">✕</span>';
+          tag.innerHTML = '<span>' + escHtml(c.title) + '</span><span class="cmp-tag-remove" onclick="toggleCompare(\'' + c.id + '\')">✕</span>';
           list.appendChild(tag);
         });
 
@@ -1534,14 +2017,23 @@ body.modal-open { overflow: hidden; }
         renderCards();
       }
 
-      function openComparisonModal() {
+      async function openComparisonModal() {
         if (compareList.length === 0) {
           fsToast('Please select at least 1 career to view the comparison table.');
           return;
         }
         const modal = document.getElementById('compare-modal');
         const body = document.getElementById('compare-modal-body');
-        const items = compareList.map(id => findCareer(id)).filter(Boolean);
+        body.innerHTML = '<div style="padding:36px 0; text-align:center; color:var(--muted);">Loading comparison data…</div>';
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        document.body.classList.add('modal-open');
+
+        const items = await CAREERS_DB.getByIds(compareList);
+        if (!items.length) {
+          body.innerHTML = '<div style="padding:36px 0; text-align:center; color:var(--muted);">Could not load selected careers.</div>';
+          return;
+        }
 
         let html = '<div style="overflow-x:auto;"><table class="cmp-table"><thead><tr><th>Attribute</th>';
         items.forEach(c => {
@@ -1554,18 +2046,15 @@ body.modal-open { overflow: hidden; }
         html += '<tr><td><strong>Entry Education</strong></td>' + items.map(c => '<td>' + (EDU_LABELS[c.edu] || c.edu || 'Not listed') + '</td>').join('') + '</tr>';
         html += '<tr><td><strong>Salary Range</strong></td>' + items.map(c => '<td style="color:var(--accent-green); font-weight:700;">' + c.salary + '</td>').join('') + '</tr>';
         html += '<tr><td><strong>10-Year Outlook</strong></td>' + items.map(c => '<td style="color:var(--accent); font-weight:700;">' + c.growth + ' (' + c.demand + ' Demand)</td>').join('') + '</tr>';
-        html += '<tr><td><strong>AI &amp; Automation</strong></td>' + items.map(c => '<td>' + c.aiImpact.split('—')[0].trim() + '</td>').join('') + '</tr>';
-        html += '<tr><td><strong>Key Entrance Exams</strong></td>' + items.map(c => '<td>' + c.education.entranceExams + '</td>').join('') + '</tr>';
-        html += '<tr><td><strong>Recommended Degrees</strong></td>' + items.map(c => '<td><ul style="padding-left:16px;">' + c.education.undergradDegrees.map(d => '<li>' + d + '</li>').join('') + '</ul></td>').join('') + '</tr>';
-        html += '<tr><td><strong>Top Industry Certifications</strong></td>' + items.map(c => '<td><ul style="padding-left:16px;">' + c.education.certifications.map(crt => '<li>' + crt + '</li>').join('') + '</ul></td>').join('') + '</tr>';
-        html += '<tr><td><strong>Core Hard Skills</strong></td>' + items.map(c => '<td>' + c.skills.hardSkills.slice(0, 5).join(', ') + '</td>').join('') + '</tr>';
-        html += '<tr><td><strong>Work Environment</strong></td>' + items.map(c => '<td>' + c.decisionFit.workStyle + '</td>').join('') + '</tr>';
+        html += '<tr><td><strong>AI &amp; Automation</strong></td>' + items.map(c => '<td>' + parseAiImpact(c).tier + '</td>').join('') + '</tr>';
+        html += '<tr><td><strong>Key Entrance Exams</strong></td>' + items.map(c => '<td>' + ((c.education && c.education.entranceExams) || '—') + '</td>').join('') + '</tr>';
+        html += '<tr><td><strong>Recommended Degrees</strong></td>' + items.map(c => '<td><ul style="padding-left:16px;">' + ((c.education && c.education.undergradDegrees) || []).map(d => '<li>' + d + '</li>').join('') + '</ul></td>').join('') + '</tr>';
+        html += '<tr><td><strong>Top Industry Certifications</strong></td>' + items.map(c => '<td><ul style="padding-left:16px;">' + ((c.education && c.education.certifications) || []).map(crt => '<li>' + crt + '</li>').join('') + '</ul></td>').join('') + '</tr>';
+        html += '<tr><td><strong>Core Hard Skills</strong></td>' + items.map(c => '<td>' + ((c.skills && c.skills.hardSkills) || []).slice(0, 5).join(', ') + '</td>').join('') + '</tr>';
+        html += '<tr><td><strong>Work Environment</strong></td>' + items.map(c => '<td>' + ((c.decisionFit && c.decisionFit.workStyle) || '—') + '</td>').join('') + '</tr>';
 
         html += '</tbody></table></div>';
         body.innerHTML = html;
-        modal.classList.add('open');
-        document.body.style.overflow = 'hidden';
-        document.body.classList.add('modal-open');
       }
 
       function closeComparisonModal() {
@@ -1574,9 +2063,32 @@ body.modal-open { overflow: hidden; }
         document.body.classList.remove('modal-open');
       }
 
-      // Career Lookup
+      // Career Lookup (checks detail cache, card cache, then local fallback)
+      function parseAiImpact(c) {
+        const raw = (c && c.aiImpact ? String(c.aiImpact) : '').trim();
+        const dashIdx = raw.indexOf('—');
+        const tierMap = {
+          protected: 'Protected',
+          people: 'People-led',
+          creative: 'Creative',
+          automation: 'AI-Exposed',
+          augmented: 'Augmented',
+          exposed: 'Exposed'
+        };
+        if (dashIdx > 0 && dashIdx <= 60) {
+          return {
+            tier: raw.slice(0, dashIdx).trim(),
+            desc: raw.slice(dashIdx + 1).trim() || raw
+          };
+        }
+        return {
+          tier: tierMap[c && c.aiTag] || 'Mixed',
+          desc: raw || 'Automation exposure varies by role and specialization.'
+        };
+      }
+
       function findCareer(id) {
-        return allCareers.find(c => c.id === id);
+        return careerDetailCache.get(id) || careerCardCache.get(id) || allCareers.find(c => c.id === id);
       }
 
       // Modern SVG Vector Icon Generator
@@ -1761,6 +2273,7 @@ body.modal-open { overflow: hidden; }
       // Search & Filters
       function clearSearch() {
         searchQuery = '';
+        currentPage = 1;
         const input = document.getElementById('search-input');
         input.value = '';
         document.getElementById('search-clear-btn').style.display = 'none';
@@ -1787,18 +2300,17 @@ body.modal-open { overflow: hidden; }
         renderActiveFiltersTray();
       }
 
-      function updateSelectCounts() {
-        const count = (key, val) => allCareers.filter(c => {
-          const v = c[key];
-          return Array.isArray(v) ? v.includes(val) : v === val;
-        }).length;
+      function updateSelectCounts(facets) {
+        const f = facets || facetsCache;
+        if (!f) return;
+        const totalAll = f.total || totalCareersCount;
 
         // Degree select options
         const degSelect = document.getElementById('degree-select');
         if (degSelect) {
           Array.from(degSelect.options).forEach(opt => {
             const base = opt.textContent.replace(/\s*\(\d+\)$/, '');
-            const total = opt.value === 'all' ? allCareers.length : count('degrees', opt.value);
+            const total = opt.value === 'all' ? totalAll : ((f.degrees && f.degrees[opt.value]) || 0);
             opt.textContent = base + ' (' + total + ')';
           });
         }
@@ -1808,7 +2320,7 @@ body.modal-open { overflow: hidden; }
         if (intSelect) {
           Array.from(intSelect.options).forEach(opt => {
             const base = opt.textContent.replace(/\s*\(\d+\)$/, '');
-            const total = opt.value === 'all' ? allCareers.length : count('interests', opt.value);
+            const total = opt.value === 'all' ? totalAll : ((f.interests && f.interests[opt.value]) || 0);
             opt.textContent = base + ' (' + total + ')';
           });
         }
@@ -1818,7 +2330,7 @@ body.modal-open { overflow: hidden; }
         if (domSelect) {
           Array.from(domSelect.options).forEach(opt => {
             const base = opt.textContent.replace(/\s*\(\d+\)$/, '');
-            const total = opt.value === 'all' ? allCareers.length : count('cat', opt.value);
+            const total = opt.value === 'all' ? totalAll : ((f.domains && f.domains[opt.value]) || 0);
             opt.textContent = base + ' (' + total + ')';
           });
         }
@@ -1917,6 +2429,7 @@ body.modal-open { overflow: hidden; }
         currentInterest = 'all';
         currentSort = 'match';
         searchQuery = '';
+        currentPage = 1;
         const searchInput = document.getElementById('search-input');
         if (searchInput) searchInput.value = '';
         const clearBtn = document.getElementById('search-clear-btn');
@@ -1929,105 +2442,123 @@ body.modal-open { overflow: hidden; }
 
       function setActiveSource(mode) {
         activeSource = mode;
+        currentPage = 1;
         updateFilterUI();
         renderCards();
       }
       function setCategory(cat) {
         currentCat = cat;
+        currentPage = 1;
         updateFilterUI();
         renderCards();
       }
       function setStream(stream) {
         currentStream = stream;
+        currentPage = 1;
         updateFilterUI();
         renderCards();
       }
       function setEdu(edu) {
         currentEdu = edu;
+        currentPage = 1;
         updateFilterUI();
         renderCards();
       }
       function setDegree(degree) {
         currentDegree = degree;
+        currentPage = 1;
         updateFilterUI();
         renderCards();
       }
       function setInterest(interest) {
         currentInterest = interest;
+        currentPage = 1;
         updateFilterUI();
         renderCards();
       }
       function changeSort(val) {
         currentSort = val;
+        currentPage = 1;
         renderCards();
       }
+      function setPageSize(val) {
+        const parsed = parseInt(val, 10);
+        if (!VALID_PAGE_SIZES.includes(parsed)) return;
+        pageSize = parsed;
+        currentPage = 1;
+        try { localStorage.setItem('fs_page_size', String(pageSize)); } catch (e) {}
+        renderCards();
+      }
+      function goToPage(page, shouldScroll = true) {
+        const clamped = Math.max(1, Math.min(totalPages || 1, parseInt(page, 10) || 1));
+        if (clamped === currentPage) return;
+        currentPage = clamped;
+        renderCards();
+        if (shouldScroll) {
+          const ex = document.getElementById('explore');
+          if (ex) ex.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+      function syncPageUrl(page) {
+        try {
+          const url = new URL(window.location.href);
+          if (page > 1) url.searchParams.set('page', String(page));
+          else url.searchParams.delete('page');
+          window.history.replaceState(null, '', url.pathname + url.search + url.hash);
+        } catch (e) {}
+      }
 
-      // Render Cards Engine
-      function renderCards(onlyFavorites = false) {
-        const grid = document.getElementById('career-grid');
-        const countLabel = document.getElementById('results-count');
-        grid.innerHTML = '';
-
-        const isShortlistMode = (activeSource === 'shortlist' || onlyFavorites);
-
-        // Filter Pool
-        let pool = allCareers;
-        if (activeSource === 'flagship') {
-          pool = allCareers.filter(c => !c.id.startsWith('ooh-') && !c.compact);
-        } else if (activeSource === 'growth') {
-          pool = allCareers.filter(c => {
-            const m = c.growth.match(/(\d+)%/);
+      // Local filtering/sorting/pagination (used for Compass fit-ranking and offline fallback)
+      function queryLocalPool(sourcePool, params) {
+        let pool = sourcePool || [];
+        if (params.mode === 'flagship') {
+          pool = pool.filter(c => !c.id.startsWith('ooh-') && !c.compact);
+        } else if (params.mode === 'growth') {
+          pool = pool.filter(c => {
+            const m = (c.growth || '').match(/(-?\d+)%/);
             return m && parseInt(m[1], 10) >= 10;
           });
-        } else if (activeSource === 'ai') {
-          pool = allCareers.filter(c => c.aiTag === 'protected' || c.aiTag === 'people');
-        } else if (activeSource === 'high_earning') {
-          pool = allCareers.filter(c => {
-            const nums = (c.salary.match(/\$(\d+)K/g) || []).map(s => parseInt(s.replace(/\D/g, ''), 10));
+        } else if (params.mode === 'ai') {
+          pool = pool.filter(c => c.aiTag === 'protected' || c.aiTag === 'people');
+        } else if (params.mode === 'high_earning') {
+          pool = pool.filter(c => {
+            const nums = ((c.salary || '').match(/\$(\d+)K/g) || []).map(s => parseInt(s.replace(/\D/g, ''), 10));
             return nums.some(n => n >= 150);
           });
+        } else if (params.mode === 'shortlist') {
+          const idSet = new Set(params.ids || []);
+          pool = pool.filter(c => idSet.has(c.id));
         }
 
         const filtered = [];
+        const q = (params.search || '').toLowerCase().trim();
 
         pool.forEach(c => {
-          if (isShortlistMode && !favoriteList.includes(c.id)) return;
-          if (currentCat !== 'all' && c.cat !== currentCat) return;
+          if (params.cat !== 'all' && c.cat !== params.cat) return;
+          if (params.stream !== 'all') {
+            const sLower = (c.stream || '').toLowerCase();
+            if (params.stream === 'pcm' && !sLower.includes('pcm') && !sLower.includes('math')) return;
+            if (params.stream === 'pcb' && !sLower.includes('pcb') && !sLower.includes('bio')) return;
+            if (params.stream === 'commerce' && !sLower.includes('commerce') && !sLower.includes('math') && !sLower.includes('any')) return;
+            if (params.stream === 'arts' && !sLower.includes('arts') && !sLower.includes('humanities') && !sLower.includes('any')) return;
+            if (params.stream === 'any' && !sLower.includes('any')) return;
+          }
+          if (params.edu !== 'all' && c.edu !== params.edu) return;
+          if (params.degree !== 'all' && !(c.degrees || []).includes(params.degree)) return;
+          if (params.interest !== 'all' && !(c.interests || []).includes(params.interest)) return;
 
-          // Stream Eligibility
-          if (currentStream !== 'all') {
-            const sLower = c.stream.toLowerCase();
-            if (currentStream === 'pcm' && !sLower.includes('pcm') && !sLower.includes('math')) return;
-            if (currentStream === 'pcb' && !sLower.includes('pcb') && !sLower.includes('bio')) return;
-            if (currentStream === 'commerce' && !sLower.includes('commerce') && !sLower.includes('math') && !sLower.includes('any')) return;
-            if (currentStream === 'arts' && !sLower.includes('arts') && !sLower.includes('humanities') && !sLower.includes('any')) return;
-            if (currentStream === 'any' && !sLower.includes('any')) return;
-          }          // Education Level (BLS entry requirement)
-          if (currentEdu !== 'all' && c.edu !== currentEdu) return;
-
-          // Degree background
-          if (currentDegree !== 'all' && !(c.degrees || []).includes(currentDegree)) return;
-
-          // Interest
-          if (currentInterest !== 'all' && !(c.interests || []).includes(currentInterest)) return;
-
-          // Search Query with Alias Matching
           let matchedAlias = null;
-          if (searchQuery) {
-            const q = searchQuery.toLowerCase().trim();
-            const titleMatch = c.title.toLowerCase().includes(q);
-            const descMatch = c.desc.toLowerCase().includes(q) || c.overview.toLowerCase().includes(q);
-            const skillMatch = c.skills.hardSkills.some(s => s.toLowerCase().includes(q));
-            const examMatch = c.education.entranceExams.toLowerCase().includes(q);
+          if (q) {
+            const titleMatch = (c.title || '').toLowerCase().includes(q);
+            const descMatch = (c.desc || '').toLowerCase().includes(q) || (c.overview || '').toLowerCase().includes(q);
+            const skillMatch = ((c.skills && c.skills.hardSkills) || []).some(s => s.toLowerCase().includes(q));
+            const examMatch = ((c.education && c.education.entranceExams) || '').toLowerCase().includes(q);
 
             if (!titleMatch && !descMatch && !skillMatch && !examMatch) {
-              // Check aliases
               const found = (c.aka || []).find(a => a.toLowerCase().includes(q));
               if (found) {
                 matchedAlias = found;
               } else {
-                // Degree names and interest labels are searchable too, so that
-                // "MBBS" or "wildlife" still lands on the right pathway.
                 const tagsText = (c.degrees || []).map(d => DEGREE_LABELS[d] || d)
                   .concat((c.interests || []).map(i => INTEREST_LABELS[i] || i))
                   .concat([EDU_LABELS[c.edu] || '']).join(' ').toLowerCase();
@@ -2036,44 +2567,218 @@ body.modal-open { overflow: hidden; }
             }
           }
 
-          filtered.push({ career: c, matchedAlias: matchedAlias });
+          filtered.push(Object.assign({}, c, { matchedAlias: matchedAlias }));
         });
 
-        // Sorting
         filtered.sort((a, b) => {
-          if (compassScores[a.career.id] || compassScores[b.career.id]) {
-            return (compassScores[b.career.id] || 0) - (compassScores[a.career.id] || 0);
+          if (params.useCompass && (compassScores[a.id] || compassScores[b.id])) {
+            return (compassScores[b.id] || 0) - (compassScores[a.id] || 0);
           }
-          if (currentSort === 'alpha') {
-            return a.career.title.localeCompare(b.career.title);
+          if (params.sort === 'alpha') {
+            return a.title.localeCompare(b.title);
           }
-          if (currentSort === 'salary') {
-            const numA = parseInt((a.career.salary.match(/\$(\d+)/) || [0,0])[1], 10);
-            const numB = parseInt((b.career.salary.match(/\$(\d+)/) || [0,0])[1], 10);
+          if (params.sort === 'salary') {
+            const numA = parseInt(((a.salary || '').match(/\$(\d+)/) || [0, 0])[1], 10);
+            const numB = parseInt(((b.salary || '').match(/\$(\d+)/) || [0, 0])[1], 10);
             return numB - numA;
           }
-          if (currentSort === 'growth') {
-            const numA = parseInt((a.career.growth.match(/(\d+)%/) || [0,0])[1], 10);
-            const numB = parseInt((b.career.growth.match(/(\d+)%/) || [0,0])[1], 10);
+          if (params.sort === 'growth') {
+            const numA = parseInt(((a.growth || '').match(/(-?\d+)%/) || [0, 0])[1], 10);
+            const numB = parseInt(((b.growth || '').match(/(-?\d+)%/) || [0, 0])[1], 10);
             return numB - numA;
           }
           return 0;
         });
 
-        // Visible Slice
-        const visible = filtered.slice(0, renderLimit);
+        const total = filtered.length;
+        const tPages = Math.max(1, Math.ceil(total / params.pageSize));
+        const safePage = Math.max(1, Math.min(params.page, tPages));
+        const start = (safePage - 1) * params.pageSize;
+        return {
+          total,
+          page: safePage,
+          page_size: params.pageSize,
+          total_pages: tPages,
+          items: filtered.slice(start, start + params.pageSize)
+        };
+      }
 
-        countLabel.textContent = isShortlistMode
-          ? 'Shortlist: ' + filtered.length + ' saved careers'
-          : 'Showing ' + Math.min(visible.length, filtered.length) + ' of ' + filtered.length + (filtered.length === 1 ? ' career' : ' careers');
+      function renderSkeletonCards(grid, count) {
+        if (grid.children.length > 0) {
+          grid.classList.add('is-loading');
+          return;
+        }
+        let html = '';
+        for (let i = 0; i < count; i++) {
+          html += '<div class="career-skeleton" aria-hidden="true">'
+            + '<div class="skel-line" style="width:45%; height:20px;"></div>'
+            + '<div class="skel-line" style="width:85%; height:24px;"></div>'
+            + '<div class="skel-line" style="width:70%;"></div>'
+            + '<div class="skel-line" style="width:100%; height:44px; margin-top:8px;"></div>'
+            + '<div class="skel-line" style="width:100%; height:40px; margin-top:auto;"></div>'
+            + '</div>';
+        }
+        grid.innerHTML = html;
+      }
 
-        if (filtered.length === 0) {
+      // Render Numbered Pagination Bar (1, 2, 3 ... N)
+      function renderPagination(page, pages, total) {
+        const nav = document.getElementById('career-pagination');
+        if (!nav) return;
+        if (total === 0 || pages <= 1) {
+          nav.hidden = true;
+          nav.innerHTML = '';
+          return;
+        }
+        nav.hidden = false;
+        nav.innerHTML = '';
+
+        const controls = document.createElement('div');
+        controls.className = 'pagination-controls';
+
+        // Prev button
+        const prevBtn = document.createElement('button');
+        prevBtn.type = 'button';
+        prevBtn.className = 'page-btn';
+        prevBtn.innerHTML = '<span aria-hidden="true">←</span><span class="page-btn-label"> Prev</span>';
+        prevBtn.disabled = page <= 1;
+        prevBtn.setAttribute('aria-label', 'Previous page');
+        prevBtn.addEventListener('click', () => goToPage(page - 1));
+        controls.appendChild(prevBtn);
+
+        // Build compact page list with smart ellipsis
+        const isCompact = window.innerWidth <= 600;
+        const delta = isCompact ? 1 : 2;
+        const range = [];
+        for (let p = 1; p <= pages; p++) {
+          if (p === 1 || p === pages || (p >= page - delta && p <= page + delta)) {
+            range.push(p);
+          }
+        }
+        let last = 0;
+        range.forEach(p => {
+          if (last && p - last > 1) {
+            const dots = document.createElement('span');
+            dots.className = 'page-ellipsis';
+            dots.textContent = '…';
+            dots.setAttribute('aria-hidden', 'true');
+            controls.appendChild(dots);
+          }
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'page-btn' + (p === page ? ' active' : '');
+          btn.textContent = String(p);
+          btn.setAttribute('aria-label', 'Page ' + p);
+          if (p === page) btn.setAttribute('aria-current', 'page');
+          else btn.addEventListener('click', () => goToPage(p));
+          controls.appendChild(btn);
+          last = p;
+        });
+
+        // Next button
+        const nextBtn = document.createElement('button');
+        nextBtn.type = 'button';
+        nextBtn.className = 'page-btn';
+        nextBtn.innerHTML = '<span class="page-btn-label">Next </span><span aria-hidden="true">→</span>';
+        nextBtn.disabled = page >= pages;
+        nextBtn.setAttribute('aria-label', 'Next page');
+        nextBtn.addEventListener('click', () => goToPage(page + 1));
+        controls.appendChild(nextBtn);
+
+        // Right metadata + quick jump dropdown
+        const meta = document.createElement('div');
+        meta.className = 'pagination-meta';
+
+        const status = document.createElement('span');
+        status.textContent = 'Page ' + page + ' of ' + pages;
+        meta.appendChild(status);
+
+        const jumpLabel = document.createElement('label');
+        jumpLabel.className = 'page-jump-wrap';
+        const jumpTxt = document.createElement('span');
+        jumpTxt.textContent = 'Jump to';
+        const jumpSelect = document.createElement('select');
+        jumpSelect.className = 'page-size-select';
+        jumpSelect.setAttribute('aria-label', 'Jump to page');
+        for (let p = 1; p <= pages; p++) {
+          const opt = document.createElement('option');
+          opt.value = String(p);
+          opt.textContent = 'Page ' + p;
+          if (p === page) opt.selected = true;
+          jumpSelect.appendChild(opt);
+        }
+        jumpSelect.addEventListener('change', e => goToPage(e.target.value));
+        jumpLabel.appendChild(jumpTxt);
+        jumpLabel.appendChild(jumpSelect);
+        meta.appendChild(jumpLabel);
+
+        nav.appendChild(controls);
+        nav.appendChild(meta);
+      }
+
+      // Render Cards Engine (Database-Backed Paginated Query)
+      async function renderCards(onlyFavorites = false) {
+        const reqSeq = ++renderRequestSeq;
+        const grid = document.getElementById('career-grid');
+        const countLabel = document.getElementById('results-count');
+        const isShortlistMode = (activeSource === 'shortlist' || onlyFavorites);
+        const mode = isShortlistMode ? 'shortlist' : activeSource;
+        const hasCompass = Object.keys(compassScores).length > 0 && currentSort === 'match';
+
+        const params = {
+          mode,
+          cat: currentCat,
+          stream: currentStream,
+          edu: currentEdu,
+          degree: currentDegree,
+          interest: currentInterest,
+          search: searchQuery,
+          sort: currentSort,
+          ids: isShortlistMode ? favoriteList : null,
+          page: currentPage,
+          pageSize,
+          useCompass: hasCompass
+        };
+
+        renderSkeletonCards(grid, Math.min(pageSize, 8));
+
+        let result;
+        if (hasCompass && (compassIndexCache || allCareers.length)) {
+          result = queryLocalPool(compassIndexCache || allCareers, params);
+        } else {
+          result = await CAREERS_DB.queryPage(params);
+        }
+
+        if (reqSeq !== renderRequestSeq) return; // stale response
+        grid.classList.remove('is-loading');
+        grid.innerHTML = '';
+
+        const items = (result && result.items) || [];
+        totalMatches = (result && typeof result.total === 'number') ? result.total : items.length;
+        totalPages = (result && result.total_pages) || 1;
+        currentPage = (result && result.page) || 1;
+        syncPageUrl(currentPage);
+
+        const startIdx = totalMatches === 0 ? 0 : ((currentPage - 1) * pageSize) + 1;
+        const endIdx = Math.min(currentPage * pageSize, totalMatches);
+
+        if (isShortlistMode) {
+          countLabel.textContent = totalMatches === 0
+            ? 'Shortlist: 0 saved careers'
+            : 'Shortlist: ' + startIdx + '–' + endIdx + ' of ' + totalMatches + ' saved careers' + (totalPages > 1 ? ' · Page ' + currentPage + ' of ' + totalPages : '');
+        } else {
+          countLabel.textContent = totalMatches === 0
+            ? 'Showing 0 careers'
+            : 'Showing ' + startIdx + '–' + endIdx + ' of ' + totalMatches + (totalMatches === 1 ? ' career' : ' careers') + (totalPages > 1 ? ' · Page ' + currentPage + ' of ' + totalPages : '');
+        }
+
+        if (totalMatches === 0) {
           grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:60px 20px; color:var(--text-dim);"><div style="margin-bottom:16px;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><h3 style="color:var(--text); font-size:18px; margin-bottom:8px;">Nothing Matches Those Filters</h3><p>Try a wider search, or put the filters back to All.</p><button class="nav-btn primary" style="margin-top:16px;" onclick="resetAllFilters()">Reset All Filters</button></div>';
+          renderPagination(1, 1, 0);
           return;
         }
 
-        visible.forEach(item => {
-          const c = item.career;
+        items.forEach(c => {
           const card = document.createElement('div');
           card.className = 'career-card cat-' + c.cat;
           card.onclick = () => openDetail(c.id);
@@ -2097,15 +2802,15 @@ body.modal-open { overflow: hidden; }
           }
           inner += '</div>';
           inner += '<button class="btn-fav ' + (isFav ? 'active' : '') + '" aria-label="' + (isFav ? 'Remove from shortlist' : 'Save to shortlist') + '" title="' + (isFav ? 'Remove from shortlist' : 'Save to shortlist') + '">' + (isFav ? '\u2605' : '\u2606') + '</button></div>';
-          if (item.matchedAlias) {
-            inner += '<div class="matched-alias-pill">Matches title: <strong>' + item.matchedAlias + '</strong></div>';
+          if (c.matchedAlias) {
+            inner += '<div class="matched-alias-pill">Matches title: <strong>' + escHtml(c.matchedAlias) + '</strong></div>';
           }
           inner += '<h3 class="card-title">' + c.title + '</h3>';
           inner += '<p class="card-tagline">' + c.tagline + '</p>';
           inner += '<div class="card-route">'
             + '<div class="route-stop"><span class="route-label">Stream</span><span class="route-val" title="' + escHtml(c.stream || '') + '">' + (c.stream || 'Any') + '</span></div>'
             + '<div class="route-stop"><span class="route-label">Entry</span><span class="route-val">' + fsEduShort(c.edu) + '</span></div>'
-            + '<div class="route-stop"><span class="route-label">Pay</span><span class="route-val">' + c.salary.split('\u00b7')[0].trim() + '</span></div>'
+            + '<div class="route-stop"><span class="route-label">Pay</span><span class="route-val">' + (c.salary || '').split('\u00b7')[0].trim() + '</span></div>'
             + '</div>';
           inner += '<div class="card-facts"><span class="fact-growth' + (growthDown ? ' down' : '') + '" title="Projected growth">' + growthTxt + '</span>'
             + '<span class="fact-ai" title="AI resilience: ' + aiTxt + '"><span class="ai-meter l' + aiLvl + '"><i></i><i></i><i></i></span>' + aiTxt + '</span></div>';
@@ -2122,17 +2827,7 @@ body.modal-open { overflow: hidden; }
           grid.appendChild(card);
         });
 
-        if (filtered.length > visible.length) {
-          const moreWrap = document.createElement('div');
-          moreWrap.className = 'show-more-wrap';
-          moreWrap.innerHTML = '<button class="show-more-btn" onclick="showMoreCards()">Show More (' + (filtered.length - visible.length) + ' Remaining)</button>';
-          grid.appendChild(moreWrap);
-        }
-      }
-
-      function showMoreCards() {
-        renderLimit += 36;
-        renderCards();
+        renderPagination(currentPage, totalPages, totalMatches);
       }
 
       // Detail Dossier View & Tabbed Architecture
@@ -2458,20 +3153,32 @@ body.modal-open { overflow: hidden; }
         };
       }
 
-      function openDetail(id) {
-        const c = findCareer(id);
-        if (!c) return;
+      async function openDetail(id) {
+        const modal = document.getElementById('detail-modal');
+        const card = document.getElementById('modal-card');
+        let c = careerDetailCache.get(id) || allCareers.find(x => x.id === id);
+        if (!c) {
+          card.innerHTML = '<div class="dossier-top-nav"><div class="dossier-nav-left"><button class="btn-back-careers" onclick="closeDetail()">← Back</button></div><button class="modal-close" onclick="closeDetail()" aria-label="Close modal">✕</button></div><div class="dossier-doc-container" style="padding-top:80px; text-align:center; color:var(--muted);">Loading full career guide…</div>';
+          modal.classList.add('open');
+          modal.scrollTop = 0;
+          document.body.style.overflow = 'hidden';
+          document.body.classList.add('modal-open');
+          c = await CAREERS_DB.getDetail(id);
+          if (!c) {
+            closeDetail();
+            fsToast('Could not load this career guide right now.');
+            return;
+          }
+        }
         activeDetailCareer = c;
         activeDetailTab = 'overview';
 
-        const modal = document.getElementById('detail-modal');
-        const card = document.getElementById('modal-card');
         const isFav = favoriteList.includes(c.id);
         const isCmp = compareList.includes(c.id);
 
-        const aiParts = c.aiImpact.split('—');
-        const aiTag = aiParts[0].trim();
-        const aiDesc = aiParts.length > 1 ? aiParts[1].trim() : c.aiImpact;
+        const aiParsed = parseAiImpact(c);
+        const aiTag = aiParsed.tier;
+        const aiDesc = aiParsed.desc;
 
         const data = getCareerEnrichment(c);
         const growthNum = (c.growth || '').split('(')[0].trim();
@@ -3179,8 +3886,13 @@ body.modal-open { overflow: hidden; }
         }
       }
 
-      function runCompassMatch() {
-        const results = COMPASS.runCompass(allCareers, compassAnswers);
+      async function runCompassMatch() {
+        const wrap = document.getElementById('compass-results');
+        if (wrap) wrap.innerHTML = '<div style="padding:28px 0; text-align:center; color:var(--muted);">Scoring all careers for your profile…</div>';
+        goToCompassStep(6);
+
+        const catalog = await CAREERS_DB.getCompassIndex();
+        const results = COMPASS.runCompass(catalog, compassAnswers);
 
         compassScores = {};
         results.forEach(r => { compassScores[r.id] = r.fit; });
@@ -3190,20 +3902,21 @@ body.modal-open { overflow: hidden; }
         // Put the ranking into effect behind the results panel.
         activeSource = 'all';
         currentSort = 'match';
+        currentPage = 1;
         const sortSel = document.getElementById('sort-select');
         if (sortSel) sortSel.value = 'match';
         updateFilterUI();
         renderCards();
 
-        renderCompassResults(results);
-        goToCompassStep(6);
+        renderCompassResults(results, catalog);
       }
 
-      function renderCompassResults(results) {
+      function renderCompassResults(results, catalog) {
+        const list = catalog || compassIndexCache || allCareers;
         const wrap = document.getElementById('compass-results');
         const top = results.slice(0, 12);
         wrap.innerHTML = top.map((r, i) => {
-          const c = allCareers.find(x => x.id === r.id);
+          const c = list.find(x => x.id === r.id);
           if (!c) return '';
           const band = r.fit >= 80 ? '' : (r.fit >= 55 ? 'mid' : 'low');
           // Positive reasons first, then the honest negatives. Showing only the
@@ -3240,10 +3953,10 @@ body.modal-open { overflow: hidden; }
           const spread = new Set(top.map(r => r.catName)).size;
           note.textContent = 'You told us you are not sure about the field, so the list leads with the strongest single option from each area your answers actually reach - ' +
             spread + ' of the ' + COMPASS.FIELDS.length + ' here, because the degrees and interests you picked rule the rest out. ' +
-            'Widen question 2 or 3 to see more areas. All ' + allCareers.length + ' careers stay in the list below, ranked by fit.';
+            'Widen question 2 or 3 to see more areas. All ' + list.length + ' careers stay in the list below, ranked by fit.';
         } else {
           note.textContent = 'This ranking comes from ' + answered.join(', ') + '. Your field choice is the strongest filter, so careers outside it sit lower even when the degree and interests match. ' +
-            'The percentages are relative to your own best option, not a measure of how good a career is. All ' + allCareers.length + ' careers stay in the list below - change your answers if the field feels wrong.';
+            'The percentages are relative to your own best option, not a measure of how good a career is. All ' + list.length + ' careers stay in the list below - change your answers if the field feels wrong.';
         }
       }
       function escHtml(s) {
@@ -3271,14 +3984,17 @@ body.modal-open { overflow: hidden; }
       // setActiveSource. There are no pill buttons to bind, so nothing to
       // listen for here.
 
-      // Search input listener
+      // Search input listener (debounced for smooth database querying)
       const searchInput = document.getElementById('search-input');
       const searchClearBtn = document.getElementById('search-clear-btn');
+      let searchDebounceTimer = null;
       searchInput.addEventListener('input', e => {
         searchQuery = e.target.value;
+        currentPage = 1;
         searchClearBtn.style.display = searchQuery ? 'block' : 'none';
         renderActiveFiltersTray();
-        renderCards();
+        clearTimeout(searchDebounceTimer);
+        searchDebounceTimer = setTimeout(() => renderCards(), 160);
       });
 
       function scrollToExplore(e) {
@@ -3321,17 +4037,11 @@ body.modal-open { overflow: hidden; }
         }
       }
 
-      // Label the quick-view buttons with live counts.
-      function updateModeCounts() {
-        const pctOf = c => { const m = c.growth.match(/(\d+)%/); return m ? parseInt(m[1], 10) : 0; };
-        const maxPay = c => Math.max(...(c.salary.match(/\$(\d+)K/g) || ['$0K']).map(s => parseInt(s.replace(/\D/g, ''), 10)));
-        const counts = {
-          all: allCareers.length,
-          flagship: allCareers.filter(c => !c.id.startsWith('ooh-') && !c.compact).length,
-          growth: allCareers.filter(c => pctOf(c) >= 10).length,
-          ai: allCareers.filter(c => c.aiTag === 'protected' || c.aiTag === 'people').length,
-          high_earning: allCareers.filter(c => maxPay(c) >= 150).length
-        };
+      // Label the quick-view buttons with live counts from the database facets.
+      function updateModeCounts(facets) {
+        const f = facets || facetsCache;
+        if (!f || !f.modes) return;
+        const counts = f.modes;
         const labels = {
           all: 'All Pathways',
           flagship: 'Deep Master Guides',
@@ -3342,7 +4052,7 @@ body.modal-open { overflow: hidden; }
         // The segmented bar renders .seg-btn (not the old .pill-btn/.mode-btn).
         document.querySelectorAll('#view-mode-bar .seg-btn').forEach(btn => {
           const key = btn.dataset.mode;
-          if (labels[key]) btn.innerHTML = labels[key] + '<span class="seg-count">' + counts[key] + '</span>';
+          if (labels[key]) btn.innerHTML = labels[key] + '<span class="seg-count">' + (counts[key] || 0) + '</span>';
         });
       }
 
@@ -3391,12 +4101,10 @@ body.modal-open { overflow: hidden; }
         }
       })();
 
-      // Initialize App
-      initData();
+      // Initialize App (load facets and first page concurrently from Supabase)
       initTheme();
       updateNavCounts();
-      updateSelectCounts();
-      updateModeCounts();
+      initData();
       renderCards();
       checkHashLink();
     </script>
