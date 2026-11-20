@@ -649,7 +649,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 <script defer src="col-ui.js"></script>
 <script defer src="col-auth.js"></script>
 
-  </head>
+  <link rel="stylesheet" href="qr-skin.css" />
+<script defer src="qr-compose.js"></script>
+<script defer src="qr-editor-ext.js"></script>
+</head>
 <body>
 
 <h1 class="sr-only">QR Editor &mdash; Create Custom QR Codes In Your Browser</h1>
@@ -994,6 +997,30 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
           </div>
         </div>
 
+        <div class="ds" id="dsLy">
+          <button class="dsh" onclick="toggleDS('dsLy')" aria-expanded="false" aria-controls="dsLyb">
+            <div class="dsh-l"><div class="dsi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"></rect><rect x="8" y="8" width="8" height="8" rx="1"></rect></svg></div><div><div class="dst">Layout &amp; Frame Studio</div><div class="dss">Colour, line weight, corners, spacing, label and photo background. What you set here is exactly what you download.</div></div></div>
+            <span class="dschev" aria-hidden="true">▼</span>
+          </button>
+          <div class="dsb" id="dsLyb">
+            <div class="ly-grid">
+              <div><label class="ly-l" for="lyColorH">Frame colour</label><div class="ly-row"><input type="color" id="lyColor" value="#1b1a17"><input class="fi" type="text" id="lyColorH" value="#1b1a17" maxlength="7" style="padding:8px 10px"></div></div>
+              <div><label class="ly-l" for="lyCardBg">Card colour</label><div class="ly-row"><input type="color" id="lyCardBg" value="#ffffff"><label class="ly-ck"><input type="checkbox" id="lyCardT"> Transparent</label></div></div>
+              <div><label class="ly-l" for="lyWidth">Line weight <b id="lyWidthV"></b></label><input type="range" id="lyWidth" min="0" max="8" step="0.1" style="width:100%"></div>
+              <div><label class="ly-l" for="lyRadius">Corner roundness <b id="lyRadiusV"></b></label><input type="range" id="lyRadius" min="0" max="50" step="1" style="width:100%"></div>
+              <div class="full"><label class="ly-l" for="lyPad">Space around the code <b id="lyPadV"></b></label><input type="range" id="lyPad" min="0" max="25" step="0.5" style="width:100%"></div>
+              <div class="full ly-row" style="flex-wrap:wrap;gap:18px"><label class="ly-ck"><input type="checkbox" id="lyDash"> Dashed line</label><label class="ly-ck"><input type="checkbox" id="lyShadow"> Drop shadow</label><label class="ly-ck"><input type="checkbox" id="lyGlow"> Glow</label></div>
+              <div class="full"><label class="ly-l" for="lyLblText">Label text</label><input class="fi" type="text" id="lyLblText" maxlength="40" placeholder="e.g. SCAN TO ORDER" style="padding:10px 12px"></div>
+              <div><label class="ly-l" for="lyLblPos">Label position</label><select class="fi" id="lyLblPos" style="padding:9px"><option value="bottom">Below the code</option><option value="top">Above the code</option></select></div>
+              <div><label class="ly-l" for="lyLblSize">Label size <b id="lyLblSizeV"></b></label><input type="range" id="lyLblSize" min="60" max="180" step="5" style="width:100%"></div>
+              <div><label class="ly-l" for="lyLblColor">Label text colour</label><input type="color" id="lyLblColor" value="#ffffff" style="width:44px;height:36px;padding:2px;border-radius:8px;border:1px solid var(--border);background:var(--bg)"></div>
+              <div><label class="ly-l" for="lyLblBg">Label bar</label><div class="ly-row"><input type="color" id="lyLblBg" value="#1b1a17"><label class="ly-ck"><input type="checkbox" id="lyLblBar"> Filled bar</label></div></div>
+              <div class="full"><label class="ly-l" for="lyBgOp">Background photo opacity <b id="lyBgOpV"></b></label><input type="range" id="lyBgOp" min="10" max="100" step="5" style="width:100%"></div>
+            </div>
+            <button class="ly-btn" type="button" id="lyReset" style="margin-top:14px">Reset to frame defaults</button>
+          </div>
+        </div>
+
         <div class="ds" id="dsD">
           <button class="dsh" onclick="toggleDS('dsD')" aria-expanded="false" aria-controls="dsDb">
             <div class="dsh-l"><div class="dsi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><path d="M7 7h10"></path><path d="M7 11h10"></path><path d="M7 15h10"></path></svg></div><div><div class="dst">QR Code Style</div><div class="dss">Customize the central area of the QR code by combining shapes and colors.</div></div></div>
@@ -1162,6 +1189,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
         <option value="4000">4000px (300 DPI Print)</option>
       </select>
     </div>
+    <button class="ly-btn main" type="button" id="exportOpts" style="margin-bottom:8px">Export options: format, size, JPG, PDF&hellip;</button>
     <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 8px;">
       <button class="dl-svg" onclick="dlQR('copy')" title="Copy directly to clipboard" style="padding:10px; font-size:0.8rem; display:flex; align-items:center; justify-content:center; gap:6px;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
@@ -2435,6 +2463,7 @@ function saveQR(silent = false){
       if(svg){ const s=new XMLSerializer().serializeToString(svg); img='data:image/svg+xml;base64,'+btoa(s); }
     }
     document.body.removeChild(tmp);
+    try{ if(window.QRX&&QRX.thumb){ const _t=await QRX.thumb(finalOpts); if(_t) img=_t; } }catch(_e){}
     const to=DYN.concat(STA).filter(x=>x.id===selType)[0]||{name:'QR',icon:''};
     
     const urlParams = new URLSearchParams(window.location.search);
@@ -2492,6 +2521,7 @@ function saveQR(silent = false){
         shortUrl: shortUrl,
         advSettings: advSettings,
         frame: selFrame,
+        design: (window.QRX&&QRX.getDesign)?QRX.getDesign():null,
         fields: _fields()
     };
     
@@ -2547,7 +2577,7 @@ function saveQR(silent = false){
         } catch(e) { console.error('Cloud Sync failed', e); }
     }
     
-    if(!silent) window.location.href = 'qr.html';
+    if(!silent){ if(window.QRX&&QRX.afterSave) QRX.afterSave(entry); else window.location.href = 'qr.html'; }
   }, 350); 
 }
 
@@ -2958,6 +2988,7 @@ function loadEditData() {
     if(a.expiry){ const d = new Date(a.expiry); set('advExpiry', new Date(d - d.getTimezoneOffset()*6e4).toISOString().slice(0,16)); }
     if(a.passwordProtected){ const po = document.getElementById('advPwdOn'); if(po) po.checked = true; const pw = document.getElementById('advPwd'); if(pw) pw.placeholder = 'Re-enter the passcode to keep protection'; _pwdToggle(); }
     if(q.frame) setFr(q.frame);
+    window.__editEntry = q; if(window.QRX&&QRX.restore) QRX.restore(q);
     setTimeout(() => { if(qrInst) qrInst.update(opts); lu(); updateInfo(); }, 100);
 }
 </script>

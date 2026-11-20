@@ -67,7 +67,7 @@ These numbers are generated from the repository itself. The scripts that produce
 | Projects and apps         | 16                                         | `home.html` JSON-LD `ItemList`                    |
 | Indexable pages           | 19                                         | `sitemap.xml`                                     |
 | Traffic levels            | 57 (54 numbered + 3 bonus)                 | `Traffic/level-catalog.js`                        |
-| Career pathways           | 441                                        | `careers-data.js`                                |
+| Career pathways           | 480                                        | `careers-data.js`                                |
 | Terra3D countries         | 178 unique (194 records, 16 aliases)       | `Terra3D/countryData.js`                          |
 | Civic law modules         | 50                                         | `civiclogic.html` / `Database_Logic.html`          |
 | ATI levels                | 200                                        | `ati.html`                                        |
@@ -88,7 +88,7 @@ These numbers are generated from the repository itself. The scripts that produce
 | **Gesture Control**        | [`/gesture`](https://advancedlogiclabs.dpdns.org/gesture)                                                       | Webcam hand tracking and touchless browser interaction                              |
 | **ATI**                    | [`/ati`](https://advancedlogiclabs.dpdns.org/ati)                                                               | Typing instruction, velocity telemetry, and keyboard exercises                      |
 | **QR Matrix Studio**       | [`/qr`](https://advancedlogiclabs.dpdns.org/qr) · [`/qr-editor`](https://advancedlogiclabs.dpdns.org/qr-editor) | QR generation, styling, and visual customization                                    |
-| **Career Compass**         | [`/Career`](https://advancedlogiclabs.dpdns.org/Career)                                                         | 441 career pathways, 6,400+ job titles, degree roadmaps, and salary bands          |
+| **Career Compass**         | [`/Career`](https://advancedlogiclabs.dpdns.org/Career)                                                         | 480 career pathways, 6,400+ job titles, degree roadmaps, and salary bands          |
 | **CivicLogic**             | [`/civiclogic`](https://advancedlogiclabs.dpdns.org/civiclogic)                                                 | 50-module Motor Vehicles Act database and RTO challan simulator                     |
 | **Database Logic**         | [`/Database_Logic`](https://advancedlogiclabs.dpdns.org/Database_Logic)                                       | Relational query modelling of statutory rules                                        |
 | **CastFlow**               | [`/CastFlow`](https://advancedlogiclabs.dpdns.org/CastFlow)                                                     | Low-latency wireless screen casting to Android TV and tablets                       |

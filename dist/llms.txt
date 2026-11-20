@@ -17,7 +17,7 @@
 - [Mumbai Traffic Driving Academy](https://advancedlogiclabs.dpdns.org/Traffic/Driving): 3D WebGL driving simulator modeled on Mumbai intersections, traffic signals, and RTO maneuvers — 57 levels.
 - [Mumbai Traffic Rules Academy](https://advancedlogiclabs.dpdns.org/Traffic/Academy): 57-level road-safety syllabus with quizzes, progress tracking, and certificates.
 - [Terra3D World Atlas](https://advancedlogiclabs.dpdns.org/Terra3D/): Interactive 3D WebGL Earth globe covering 178 countries with Rayleigh atmospheric shaders.
-- [The Career Compass](https://advancedlogiclabs.dpdns.org/Career): 8-dimensional psychometric career guidance tool mapping 441 Indian and global career paths and 6,400+ job titles.
+- [The Career Compass](https://advancedlogiclabs.dpdns.org/Career): 8-dimensional psychometric career guidance tool mapping 480 Indian and global career paths and 6,400+ job titles.
 - [CivicLogic](https://advancedlogiclabs.dpdns.org/civiclogic): 50-module civic engineering knowledge base with Motor Vehicles Act jurisprudence and an RTO challan calculator.
 - [Database Logic & Query Engine](https://advancedlogiclabs.dpdns.org/Database_Logic): 50-module interactive relational database and Indian Motor Vehicles Act (MVA 2019) simulator.
 - [Cereal AI Assistant](https://advancedlogiclabs.dpdns.org/cereal): Native Android lecture transcription and task extraction app powered by Gemini 2.5 Flash.

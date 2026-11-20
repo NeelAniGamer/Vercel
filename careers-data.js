@@ -68074,6 +68074,5007 @@ window.CAREERS_ALL = [
       "outdoors"
     ],
     "compact": false
+  },
+  {
+    "id": "legislator-public-representative",
+    "cat": "law",
+    "catName": "Law & Public Safety",
+    "icon": "🏛️",
+    "title": "Legislator, Politician & Public Representative",
+    "tagline": "Shape the laws, policies, and public budget of a society",
+    "desc": "Draft legislation, debate national policies, advocate for citizens, and steer public resources as an elected representative or cabinet leader.",
+    "stream": "Humanities / Commerce / Open to Any Stream",
+    "salary": "Entry: $174K / ₹15-35 LPA · Mid: $195K / ₹25-45 LPA · Lead: $225K+ / Ministerial Perks",
+    "regionalSalary": {
+      "in": "₹15–₹40 LPA (Salary + constituency development fund + official accommodation & staff)",
+      "us": "$174,000 (US Congress / Senate base) · State Governors/Reps: $45,000–$225,000",
+      "uk": "£91,346 (Member of Parliament) · Ministers: £145,000–£165,000",
+      "me": "Appointed Federal National Council / Shura Consultative Assembly packages",
+      "global": "$85,000 – $210,000 equivalent across parliamentary democracies"
+    },
+    "growth": "Electoral Mandate (High impact)",
+    "demand": "High Public Influence",
+    "aiImpact": "Human-Centric — AI drafts legislative briefs and models policy outcomes, but moral authority, public trust, and coalition-building cannot be automated.",
+    "overview": "Being an elected representative is a high-stakes, 24/7 public vocation. You bridge citizen grievances with statutory law, debate bills in parliamentary committees, scrutinize multi-billion-dollar state budgets, and build coalitions across party lines. It requires the emotional stamina to handle intense public debate, deep empathy for ordinary families, and a thorough grasp of constitutional mechanisms.",
+    "education": {
+      "highSchoolPrereqs": "Political Science, History, Economics, Sociology, Public Speaking, English.",
+      "entranceExams": "No formal exam required for elected office. Common educational tracks: CLAT / LSAT (Law), UPSC Civil Services (Policy), or CAT/GMAT (Public Administration).",
+      "undergradDegrees": [
+        "B.A. in Political Science, International Relations & Public Policy",
+        "B.A. LL.B. (Integrated Law)",
+        "B.S. in Economics & Governance"
+      ],
+      "postgradDegrees": [
+        "Master of Public Policy (MPP) / Master of Public Administration (MPA)",
+        "Master of Laws (LL.M.) in Constitutional Law",
+        "MBA in Public Management & Strategic Policy"
+      ],
+      "certifications": [
+        "Harvard Kennedy School Executive Leadership in Public Policy",
+        "Oxford Blavatnik School of Government Public Leadership",
+        "Legislative Drafting Certification (National Law Universities / ILI)"
+      ],
+      "topInstitutes": [
+        "National Law School of India University (NLSIU Bangalore)",
+        "St. Stephen's College / JNU / Hindu College (Delhi)",
+        "Harvard Kennedy School (USA)",
+        "London School of Economics & Oxford Blavatnik (UK)",
+        "Sciences Po (France)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–3: Grassroots community organizing, student council or political fellowship, policy think-tank research, assisting senior lawmakers with constituency casework.",
+      "phase2": "Years 3–7: Municipal election run, district committee appointment, leading civil advocacy campaigns, developing a clear public legislative voice.",
+      "phase3": "Years 8+: State assembly (MLA) or National Parliament (MP / Senator), committee chair, cabinet ministerial portfolio, party leadership."
+    },
+    "skills": {
+      "hardSkills": [
+        "Constitutional Law & Statutory Drafting",
+        "Public Finance & Fiscal Budgeting",
+        "Policy Impact Assessment",
+        "Crisis Communications",
+        "Media & Debate Rhetoric"
+      ],
+      "softSkills": [
+        "Moral Courage",
+        "Coalition Building & Negotiation",
+        "Active Listening",
+        "High Emotional Resilience",
+        "Public Empathy"
+      ]
+    },
+    "roles": [
+      "Member of Parliament (MP)",
+      "State Legislative Assembly Member (MLA)",
+      "City Mayor & Council Member",
+      "Political Campaign Strategist",
+      "Legislative Chief of Staff",
+      "Ministerial Policy Advisor"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Charismatic communicator",
+        "Resilient under relentless public criticism",
+        "Passionate about civic equity and institution-building",
+        "Patient with complex bureaucracy"
+      ],
+      "workStyle": "High-pressure, continuous public engagement, unpredictable travel, intense legislative debate sessions.",
+      "pros": [
+        "Direct power to improve millions of human lives",
+        "Historic influence on national policy",
+        "Profound sense of public service"
+      ],
+      "cons": [
+        "Complete lack of personal privacy",
+        "Uncertainty of periodic electoral cycles",
+        "Constant political attacks and scrutiny"
+      ]
+    },
+    "reflectionQuestions": [
+      "Can I stand firm on ethical principles even when political pressure from allies urges compromise?",
+      "Do I genuinely care about grassroots citizens whose daily realities are completely different from my own?"
+    ],
+    "resources": [
+      "PRS Legislative Research (prsindia.org) — Indian Parliament Tracker",
+      "Harvard Kennedy School Review — Emerging Public Policy",
+      "Constitution of India / US / UK Parliamentary Hansard archives"
+    ],
+    "aka": [
+      "Politician",
+      "Member of Parliament",
+      "Elected Representative",
+      "Senator",
+      "Cabinet Minister",
+      "Congressperson"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "law",
+      "people",
+      "social",
+      "words"
+    ],
+    "degrees": [
+      "law",
+      "arts",
+      "management"
+    ],
+    "aiTag": "human",
+    "regions": [
+      "in",
+      "us",
+      "uk",
+      "global"
+    ]
+  },
+  {
+    "id": "paralegal-legal-ops",
+    "cat": "law",
+    "catName": "Law & Public Safety",
+    "icon": "⚖️",
+    "title": "Paralegal, Legal Operations & eDiscovery Specialist",
+    "tagline": "The engine room of modern law firms and corporate legal departments",
+    "desc": "Manage evidentiary documents, optimize contract lifecycles, conduct deep judicial research, and orchestrate legal AI tools.",
+    "stream": "Humanities / Commerce / Open to All Streams",
+    "salary": "Entry: $55K / ₹4-7 LPA · Mid: $85K / ₹10-18 LPA · Lead: $130K+ / ₹28 LPA+",
+    "regionalSalary": {
+      "in": "Entry: ₹4–7 LPA · Senior Legal Ops Lead: ₹15–28 LPA in Tier-1 Law Firms & MNCs",
+      "us": "Entry: $55,000 · Senior Corporate Paralegal / eDiscovery Director: $110,000–$145,000",
+      "uk": "Entry: £28,000 · Senior Legal Operations Specialist: £65,000–£92,000",
+      "me": "Entry: AED 140K · Corporate Legal Manager: AED 280K–AED 420K",
+      "global": "$55K – $130K equivalent with strong remote global legal support options"
+    },
+    "growth": "14% (Faster than average)",
+    "demand": "High",
+    "aiImpact": "Hybrid — Modern paralegals use AI for contract redlining and document retrieval, dramatically expanding their strategic value.",
+    "overview": "Legal Operations specialists and senior paralegals manage the digital infrastructure of corporate litigation and M&A transactions. You manage high-stakes eDiscovery pipelines, coordinate legal tech vendors, verify statutory citations, and draft legal motions under lawyer supervision. This is an exceptional career for detail-oriented minds who love the law without needing a courtroom bar license.",
+    "education": {
+      "highSchoolPrereqs": "English, History, Political Science, Legal Studies, Computer Science.",
+      "entranceExams": "State Paralegal exams, NALA CLA/CP Exam, Law School Admission Tests or direct university diploma entry.",
+      "undergradDegrees": [
+        "B.A. / B.S. in Paralegal Studies or Legal Operations",
+        "LL.B. (3-Year or 5-Year Law Degree)",
+        "B.Com / B.A. with Diploma in Corporate Law & Cyber Law"
+      ],
+      "postgradDegrees": [
+        "Post-Graduate Diploma in Intellectual Property / Cyber Law",
+        "Master of Legal Studies (MLS)",
+        "LL.M. in Corporate Compliance"
+      ],
+      "certifications": [
+        "NALA Certified Paralegal (CP) Credential",
+        "Relativity Certified Administrator (RCA) for eDiscovery",
+        "CLOC (Corporate Legal Operations Consortium) Core Competency"
+      ],
+      "topInstitutes": [
+        "Indian Law Institute (ILI New Delhi)",
+        "Symbiosis Law School (Pune)",
+        "Georgetown University Paralegal Program (USA)",
+        "King's College London Legal Operations Courses (UK)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Document review, case citation verification, preparing discovery binders, mastering legal databases like SCC Online, LexisNexis, Westlaw.",
+      "phase2": "Years 2–5: Leading complex cross-border eDiscovery projects, managing contract lifecycle management (CLM) platforms, drafting motions.",
+      "phase3": "Years 5+: Director of Legal Operations, Head of eDiscovery, Senior Corporate Compliance Lead for multinational enterprise."
+    },
+    "skills": {
+      "hardSkills": [
+        "eDiscovery Architecture (Relativity)",
+        "Contract Lifecycle Management (CLM)",
+        "Statutory Citation & Brief Drafting",
+        "Legal Risk Auditing",
+        "Data Privacy (DPDP / GDPR)"
+      ],
+      "softSkills": [
+        "Meticulous Attention to Detail",
+        "Confidentiality & Discretion",
+        "Logical Deductive Reasoning",
+        "Calm Under Litigious Pressure"
+      ]
+    },
+    "roles": [
+      "Senior Litigation Paralegal",
+      "Legal Operations Manager",
+      "eDiscovery Project Specialist",
+      "Judicial Law Clerk",
+      "Corporate Contract Administrator",
+      "Compliance Officer"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Ultra-organized",
+        "Detail-obsessed",
+        "Intrigued by legal strategy without wanting courtroom litigation",
+        "Tech-savvy"
+      ],
+      "workStyle": "Structured office/hybrid work, meticulous document verification, collaboration with trial attorneys.",
+      "pros": [
+        "High demand across every corporate sector",
+        "Accelerated path to senior legal leadership without bar exam requirements",
+        "Immense transferable skills"
+      ],
+      "cons": [
+        "Strict court filing deadlines",
+        "Heavy reading load during active trial discovery",
+        "Requires extreme precision where a single missing document matters"
+      ]
+    },
+    "reflectionQuestions": [
+      "Do I enjoy finding the missing needle in a haystack of thousands of legal clauses and emails?",
+      "Can I maintain laser focus on compliance documents for extended periods?"
+    ],
+    "resources": [
+      "Corporate Legal Operations Consortium (CLOC.org)",
+      "NALA — The Paralegal Association",
+      "Relativity Academic eDiscovery Learning Portal"
+    ],
+    "aka": [
+      "Legal Operations Manager",
+      "eDiscovery Analyst",
+      "Senior Paralegal",
+      "Legal Researcher",
+      "Judicial Clerk"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "law",
+      "tech",
+      "words"
+    ],
+    "degrees": [
+      "law",
+      "arts",
+      "commerce"
+    ],
+    "aiTag": "hybrid",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk"
+    ]
+  },
+  {
+    "id": "archaeology-anthropology",
+    "cat": "science",
+    "catName": "Science & DeepTech",
+    "icon": "🏺",
+    "title": "Archaeologist & Cultural Anthropologist",
+    "tagline": "Unearth human history and decode cultural patterns across millennia",
+    "desc": "Lead field excavations, use LiDAR and satellite ground-penetrating radar to discover ancient sites, and preserve intangible heritage.",
+    "stream": "Humanities / Science / Interdisciplinary",
+    "salary": "Entry: $48K / ₹4.5-8 LPA · Mid: $75K / ₹10-18 LPA · Lead: $120K+ / ₹26 LPA+",
+    "regionalSalary": {
+      "in": "Entry: ₹4.5–8 LPA (ASI / State Heritage Depts) · Professor / Project Director: ₹16–28 LPA",
+      "us": "Entry: $52,000 · Senior Field Director / Museum Curator: $88,000–$128,000",
+      "uk": "Entry: £26,000 · Heritage Consultant / Principal Archaeologist: £52,000–£78,000",
+      "me": "Antiquities Authority & UNESCO Site Directors: AED 190K–AED 380K",
+      "global": "$48K – $120K with international UNESCO and academic research fellowships"
+    },
+    "growth": "7% (Stable)",
+    "demand": "Specialized",
+    "aiImpact": "Augmented — AI scans satellite multispectral imaging and ground radar, but physical excavation and cultural interpretation remain profoundly human.",
+    "overview": "Archaeology combines rugged outdoor discovery with cutting-edge material science. Today's archaeologists deploy drone photogrammetry, satellite LiDAR, radiocarbon dating, and ancient DNA (aDNA) sequencing to resurrect forgotten civilizations. You split your life between adventurous field expeditions—surveying ancient Indus Valley mounds, Mayan ruins, or submerged maritime ports—and high-tech lab analysis preserving tangible heritage for future generations.",
+    "education": {
+      "highSchoolPrereqs": "History, Geography, Biology, Chemistry, English, Anthropology.",
+      "entranceExams": "CUET (India Central Universities), GRE (USA), UGC NET/JRF (for Archaeological Survey of India / Lectureship).",
+      "undergradDegrees": [
+        "B.A. in Ancient Indian History, Culture & Archaeology (AIHC)",
+        "B.S. / B.A. in Anthropology & Archaeological Sciences",
+        "B.A. in Classical Civilizations & Heritage Management"
+      ],
+      "postgradDegrees": [
+        "M.A. / M.Sc. in Archaeology & Heritage Preservation",
+        "Post-Graduate Diploma in Archaeology (Institute of Archaeology, ASI New Delhi)",
+        "Ph.D. in Bioarchaeology, Geoarchaeology, or Underwater Archaeology"
+      ],
+      "certifications": [
+        "LiDAR & GIS for Cultural Resource Management (ESRI)",
+        "Scientific Archaeological Diving Certification (CMAS/PADI) for Maritime Archaeology",
+        "Museum Conservation & Artifact Restoration Fellowship"
+      ],
+      "topInstitutes": [
+        "Deccan College Post-Graduate and Research Institute (Pune)",
+        "Institute of Archaeology, Archaeological Survey of India (New Delhi)",
+        "University of Oxford / University of Cambridge (UK)",
+        "University of Pennsylvania Museum of Archaeology & Anthropology (USA)",
+        "Durham University Archaeology Dept (UK)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–3: Field school excavation assistant, pottery classification, GIS spatial mapping, trench documentation.",
+      "phase2": "Years 3–7: Field trench supervisor, published research on material culture, managing heritage impact assessments for greenfield construction.",
+      "phase3": "Years 8+: Principal Excavator, Director of National Museum / Heritage Trust, UNESCO World Heritage site lead consultant."
+    },
+    "skills": {
+      "hardSkills": [
+        "Field Excavation & Stratigraphy",
+        "Satellite LiDAR & GIS Mapping",
+        "Ceramic & Lithic Typology",
+        "Radiocarbon & Luminescence Dating",
+        "Osteoarchaeological Analysis"
+      ],
+      "softSkills": [
+        "Physical Grit & Adaptability",
+        "Cross-Cultural Respect",
+        "Patience with Delicate Artefacts",
+        "Interdisciplinary Synthesis"
+      ]
+    },
+    "roles": [
+      "Field Archaeologist",
+      "Cultural Resource Management (CRM) Consultant",
+      "Museum Curator & Conservator",
+      "Underwater / Maritime Archaeologist",
+      "Bioarchaeologist",
+      "Heritage Tourism Director"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Insatiably curious about deep human history",
+        "Loves outdoor field expeditions",
+        "Methodical, patient researcher",
+        "Values heritage over quick commercial wealth"
+      ],
+      "workStyle": "Rotations between rugged remote field excavations and climate-controlled academic labs.",
+      "pros": [
+        "The thrill of touching artifacts that haven't been seen for 3,000 years",
+        "Global travel and deep cultural immersion",
+        "Work that literally rewrites world history textbooks"
+      ],
+      "cons": [
+        "Physical strain in extreme heat/dust/weather",
+        "Grant funding competition",
+        "Seasonal employment cycles in early career"
+      ]
+    },
+    "reflectionQuestions": [
+      "Can I spend weeks in a remote field camp carefully cleaning a single pottery trench with a dental pick and brush?",
+      "Do I want to build a career connecting humanity's past with its future?"
+    ],
+    "resources": [
+      "Archaeological Survey of India (asi.nic.in)",
+      "Archaeological Institute of America (AIA)",
+      "Antiquity Journal & UNESCO World Heritage Database"
+    ],
+    "aka": [
+      "Archaeologist",
+      "Cultural Anthropologist",
+      "Heritage Conservator",
+      "Excavator",
+      "Curator"
+    ],
+    "edu": "master",
+    "interests": [
+      "science",
+      "outdoors",
+      "social"
+    ],
+    "degrees": [
+      "science",
+      "arts"
+    ],
+    "aiTag": "human",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk",
+      "me"
+    ]
+  },
+  {
+    "id": "paleontology-evolutionary-bio",
+    "cat": "science",
+    "catName": "Science & DeepTech",
+    "icon": "🦖",
+    "title": "Paleontologist & Evolutionary Biologist",
+    "tagline": "Reconstruct prehistoric life and decode the fossil record of Earth",
+    "desc": "Discover dinosaur fossils, analyze ancient microfossils to understand climate shifts, and model evolutionary genetics.",
+    "stream": "Science (PCB / PCM / Geology)",
+    "salary": "Entry: $54K / ₹5-9 LPA · Mid: $82K / ₹12-22 LPA · Lead: $135K+ / ₹32 LPA+",
+    "regionalSalary": {
+      "in": "Entry: ₹5–9 LPA (Geological Survey of India / Birbal Sahni Institute) · Senior Scientist: ₹18–32 LPA",
+      "us": "Entry: $58,000 · University Research Professor / Museum Curator: $92,000–$145,000",
+      "uk": "Entry: £30,000 · Natural History Museum Scientist / Senior Lecturer: £58,000–£84,000",
+      "me": "Geological Survey & Desert Fossil Park Research Director: AED 210K–AED 390K",
+      "global": "$54K – $135K with international scientific expeditions and academic appointments"
+    },
+    "growth": "6% (Steady)",
+    "demand": "Specialized",
+    "aiImpact": "Augmented — Computer vision and 3D micro-CT scanners automate fossil reconstruction, allowing paleontologists to focus on evolutionary theories.",
+    "overview": "Paleontology is the ultimate detective story of Earth's 4-billion-year biological journey. Far beyond digging up T-Rex bones, paleontologists study microscopic foraminifera to reconstruct past climate collapses, apply synchrotron radiation to scan prehistoric brains, and link extinct genomes to modern species. Their work guides modern conservation biology and illuminates how life survives planetary extinction events.",
+    "education": {
+      "highSchoolPrereqs": "Biology, Chemistry, Physics, Geology, Mathematics.",
+      "entranceExams": "JEE / CUET (India), GRE (USA), GATE (Geology/Life Sciences), CSIR NET-JRF (India).",
+      "undergradDegrees": [
+        "B.Sc. in Geology / Earth Sciences",
+        "B.S. in Evolutionary Biology & Ecology",
+        "Integrated M.Sc. in Geological Sciences"
+      ],
+      "postgradDegrees": [
+        "M.Sc. in Applied Geology / Paleontology",
+        "Ph.D. in Vertebrate Paleontology, Micropaleontology, or Paleoclimatology"
+      ],
+      "certifications": [
+        "Micro-CT & 3D Fossil Rendering (Avizo / Blender)",
+        "Geological Field Mapping & Sedimentary Stratigraphy"
+      ],
+      "topInstitutes": [
+        "Birbal Sahni Institute of Palaeosciences (BSIP Lucknow)",
+        "Wadia Institute of Himalayan Geology (Dehradun)",
+        "University of Chicago Dept of Geophysical Sciences (USA)",
+        "Natural History Museum & Imperial College London (UK)",
+        "University of California, Berkeley (USA)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–3: Field geology surveying, sediment logging, fossil preparation using air abrasives, microfossil identification.",
+      "phase2": "Years 3–7: Leading fossil quarry excavations, publishing peer-reviewed phylogenetic papers, conducting isotopic geochemical dating.",
+      "phase3": "Years 8+: Lead Curator of Paleontology, University Department Chair, National Geographic explorer, principal science advisor."
+    },
+    "skills": {
+      "hardSkills": [
+        "Fossil Extraction & Preparation",
+        "Sedimentary Stratigraphy",
+        "Phylogenetic Comparative Methods",
+        "Synchrotron & Micro-CT Scanning",
+        "Stable Isotope Geochemistry"
+      ],
+      "softSkills": [
+        "Extreme Patience",
+        "Pattern Recognition",
+        "Scientific Storytelling",
+        "Fieldwork Stamina"
+      ]
+    },
+    "roles": [
+      "Vertebrate Paleontologist",
+      "Micropaleontologist",
+      "Evolutionary Biologist",
+      "Fossil Preparator",
+      "Museum Science Curator",
+      "Biostratigrapher for Energy/Climate"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Fascinated by prehistoric ecosystems",
+        "Hands-on investigator who enjoys rocks and biology",
+        "Deeply analytical and patient"
+      ],
+      "workStyle": "Remote backcountry fossil digs, delicate prep lab work, and academic paper writing.",
+      "pros": [
+        "Discovering species no human has ever laid eyes on",
+        "Profound connection with Earth's history",
+        "Inspiring public audiences and young minds"
+      ],
+      "cons": [
+        "Very limited faculty vacancies",
+        "Requires long Ph.D. and postdoctoral training",
+        "Physically demanding field logistics in deserts/badlands"
+      ]
+    },
+    "reflectionQuestions": [
+      "Am I willing to spend days carefully freeing a tiny fragile tooth from sandstone without cracking it?",
+      "Do I find evolutionary mechanisms and prehistoric worlds deeply captivating?"
+    ],
+    "resources": [
+      "Society of Vertebrate Paleontology (vertpaleo.org)",
+      "Palaeontological Association (palass.org)",
+      "Birbal Sahni Institute of Palaeosciences"
+    ],
+    "aka": [
+      "Paleontologist",
+      "Evolutionary Biologist",
+      "Fossil Scientist",
+      "Biostratigrapher"
+    ],
+    "edu": "doctorate",
+    "interests": [
+      "science",
+      "outdoors",
+      "social"
+    ],
+    "degrees": [
+      "science"
+    ],
+    "aiTag": "human",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk"
+    ]
+  },
+  {
+    "id": "sociology-demography-research",
+    "cat": "service",
+    "catName": "Human Care & Services",
+    "icon": "📊",
+    "title": "Sociologist, Demographer & Public Opinion Researcher",
+    "tagline": "Decode demographic shifts, social trends, and public sentiment",
+    "desc": "Analyze population dynamics, design national social surveys, predict voting and migration patterns, and advise governments on social policy.",
+    "stream": "Humanities / Commerce / Science (Math & Stats)",
+    "salary": "Entry: $56K / ₹5-9 LPA · Mid: $86K / ₹12-22 LPA · Lead: $140K+ / ₹32 LPA+",
+    "regionalSalary": {
+      "in": "Entry: ₹5–9 LPA · Lead Demographer / Director (NITI Aayog/Pew/UN): ₹18–35 LPA",
+      "us": "Entry: $62,000 · Senior Demographer / Polling Director: $98,000–$155,000",
+      "uk": "Entry: £32,000 · Principal Social Researcher (ONS / YouGov): £58,000–£88,000",
+      "me": "National Statistics Centre & Smart City Demography: AED 220K–AED 410K",
+      "global": "$56K – $140K with international development bodies (UNFPA, World Bank)"
+    },
+    "growth": "9% (Faster than average)",
+    "demand": "High Analytical Need",
+    "aiImpact": "Hybrid — AI processes mass social media signals and census microdata, but interpreting cultural context and polling bias requires human insight.",
+    "overview": "Sociologists and Demographers are the cartographers of human society. They uncover how aging populations, urban migration, religious dynamics, and economic inequalities shape the future of countries. Whether advising the UN on fertility shifts, designing election polling models for national news networks, or conducting workplace culture studies for Fortune 500 tech firms, they provide the quantitative backbone for major public and private decisions.",
+    "education": {
+      "highSchoolPrereqs": "Sociology, Mathematics/Statistics, Economics, Political Science, English.",
+      "entranceExams": "CUET (India), GRE (USA), UGC NET in Sociology/Demography, TISS NET / Tata Institute.",
+      "undergradDegrees": [
+        "B.A. in Sociology & Social Anthropology",
+        "B.S. in Demography & Population Studies",
+        "B.S. in Applied Statistics & Social Data Science"
+      ],
+      "postgradDegrees": [
+        "M.A. / M.Sc. in Population Studies (IIPS Mumbai)",
+        "Master of Social Research Methods & Applied Statistics",
+        "Ph.D. in Demography, Quantitative Sociology, or Public Opinion"
+      ],
+      "certifications": [
+        "Advanced Survey Sampling & Weighting Methodology",
+        "Statistical Modeling in R, Stata, and Python",
+        "Geographic Information Systems (GIS) Spatial Demography"
+      ],
+      "topInstitutes": [
+        "International Institute for Population Sciences (IIPS Mumbai)",
+        "Delhi School of Economics / JNU (New Delhi)",
+        "Tata Institute of Social Sciences (TISS Mumbai)",
+        "University of Michigan Population Studies Center (USA)",
+        "London School of Economics (LSE, UK)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–3: Survey questionnaire design, cleaning field enumerator datasets, regression modeling, drafting demographic indicator reports.",
+      "phase2": "Years 3–7: Leading sample design for nationwide surveys, presenting policy recommendations to ministry officials, directing public opinion polls.",
+      "phase3": "Years 8+: Chief Demographer, Partner at global research firm (Pew, Ipsos, Gallup), Director of Census & Population Policy."
+    },
+    "skills": {
+      "hardSkills": [
+        "Demographic Life Tables & Cohort Analysis",
+        "Survey Sampling & Polling Methodology",
+        "R, Stata & SPSS Statistical Computing",
+        "Census Microdata Analysis",
+        "Spatial GIS Mapping"
+      ],
+      "softSkills": [
+        "Objective Neutrality",
+        "Cross-Cultural Empathy",
+        "Complex Data Storytelling",
+        "Ethical Research Conduct"
+      ]
+    },
+    "roles": [
+      "Demographic Research Analyst",
+      "Public Opinion Pollster",
+      "Social Policy Consultant",
+      "Quantitative Sociologist",
+      "Census Statistician",
+      "Workplace People Analytics Lead"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Enjoys exploring statistical data about human behavior",
+        "Curious about why societies change",
+        "Committed to scientific objectivity"
+      ],
+      "workStyle": "Data modeling, statistical analysis, report writing, presentation to policymakers and media.",
+      "pros": [
+        "Work directly informs healthcare, housing, and social legislation",
+        "High intellectual freedom",
+        "Growing demand in tech for user/people analytics"
+      ],
+      "cons": [
+        "Navigating political pressure when poll results displease powerful groups",
+        "Complex survey weighting challenges in diverse populations",
+        "Sedentary computational work"
+      ]
+    },
+    "reflectionQuestions": [
+      "Do I enjoy finding the big human stories hidden inside national census spreadsheets?",
+      "Can I remain intellectually honest and unbiased regardless of personal political leanings?"
+    ],
+    "resources": [
+      "International Institute for Population Sciences (iipsindia.ac.in)",
+      "Pew Research Center (pewresearch.org)",
+      "Population Association of America (PAA)"
+    ],
+    "aka": [
+      "Sociologist",
+      "Demographer",
+      "Pollster",
+      "Public Opinion Researcher",
+      "Social Data Scientist"
+    ],
+    "edu": "master",
+    "interests": [
+      "numbers",
+      "people",
+      "social",
+      "words"
+    ],
+    "degrees": [
+      "arts",
+      "science",
+      "economics"
+    ],
+    "aiTag": "hybrid",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk",
+      "me"
+    ]
+  },
+  {
+    "id": "ecommerce-quickcommerce-lead",
+    "cat": "biz",
+    "catName": "Business & Finance",
+    "icon": "⚡",
+    "title": "E-Commerce & Quick-Commerce Category Manager",
+    "tagline": "Master the 10-minute digital storefront, supply chain, and retail P&L",
+    "desc": "Manage multi-million dollar merchandise portfolios, dark-store fulfillment velocity, brand partnerships, and algorithmic pricing across digital marketplaces.",
+    "stream": "Commerce / Engineering / Management",
+    "salary": "Entry: $85K / ₹9-15 LPA · Mid: $135K / ₹22-42 LPA · Lead: $210K+ / ₹65 LPA+",
+    "regionalSalary": {
+      "in": "Entry: ₹9–15 LPA · Category Director / Head of Dark Stores (Zepto/Blinkit/Flipkart): ₹35–70 LPA",
+      "us": "Entry: $85,000 · Senior Marketplace Director (Amazon/Walmart/Instacart): $145,000–$225,000",
+      "uk": "Entry: £42,000 · Principal E-Commerce Lead: £75,000–£120,000",
+      "me": "Noon / Talabat / Amazon MENA Category Lead: AED 240K–AED 480K (Tax-Free)",
+      "global": "$85K – $210K across high-velocity D2C and marketplace platforms"
+    },
+    "growth": "28% (Explosive in Quick-Commerce)",
+    "demand": "Very High",
+    "aiImpact": "Augmented — AI handles dynamic demand forecasting and micro-pricing, while humans negotiate brand exclusivity and architect hyper-local merchandising.",
+    "overview": "The Category Manager owns the complete P&L of a retail vertical (like electronics, gourmet foods, or beauty) on modern digital apps. In the era of 10-minute delivery and D2C marketplaces, you analyze hourly SKU sell-through rates, manage dark-store replenishment, negotiate margin terms with multinational FMCG brands, and design festival sales campaigns. It is the premier training ground for future startup founders and retail CEOs.",
+    "education": {
+      "highSchoolPrereqs": "Mathematics, Accountancy, Economics, Business Studies, Computer Science.",
+      "entranceExams": "CAT / XAT / NMAT (India MBA), GMAT / GRE (International Business Schools).",
+      "undergradDegrees": [
+        "B.Com (Honours) / BBA in Retail & Supply Chain",
+        "B.Tech in Any Discipline + Minor in Business",
+        "B.S. in Economics & Data Analytics"
+      ],
+      "postgradDegrees": [
+        "MBA in Marketing, Operations & Supply Chain (IIMs / Top B-Schools)",
+        "Master of Science in Supply Chain & Logistics Analytics"
+      ],
+      "certifications": [
+        "Certified Supply Chain Professional (CSCP - ASCM)",
+        "Google & Amazon Marketplace Retail Analytics Certification",
+        "SQL & PowerBI for Enterprise Commercial Dashboards"
+      ],
+      "topInstitutes": [
+        "IIM Ahmedabad / IIM Calcutta / IIM Bangalore (India)",
+        "SPJIMR & XLRI Jamshedpur (India)",
+        "Kellogg School of Management (Northwestern USA)",
+        "INSEAD (France/Singapore)",
+        "London Business School (UK)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Assistant Category Manager, daily vendor onboarding, monitoring SKU stock-out rates, running banner promotional experiments.",
+      "phase2": "Years 2–5: Category Lead, full P&L accountability, negotiating margin terms with top FMCG brands, orchestrating billion-dollar festive sale seasons.",
+      "phase3": "Years 5+: Vice President of Retail, Chief Commercial Officer (CCO), Founder of venture-backed D2C brand."
+    },
+    "skills": {
+      "hardSkills": [
+        "P&L Commercial Financial Modeling",
+        "Inventory Turn & Fill Rate Optimization",
+        "Vendor Contract Negotiation",
+        "Algorithmic Dynamic Pricing",
+        "SQL & Retail Cohort Analytics"
+      ],
+      "softSkills": [
+        "Decisive Commercial Hustle",
+        "High Stress Resilience during Sales Surges",
+        "Persuasive Negotiation",
+        "Hyper-Fast Execution"
+      ]
+    },
+    "roles": [
+      "Category Manager",
+      "Quick-Commerce Dark-Store Planner",
+      "D2C Brand Growth Lead",
+      "Marketplace Operations Director",
+      "Merchandise Assortment Head",
+      "E-Commerce P&L Owner"
+    ],
+    "decisionFit": {
+      "traits": [
+        "High commercial energy",
+        "Obsessed with numbers and customer shopping trends",
+        "Thrives in fast-paced startup cultures",
+        "Natural deal-maker"
+      ],
+      "workStyle": "High-velocity corporate office, dashboard monitoring, frequent vendor negotiations, peak-season crunch.",
+      "pros": [
+        "Massive commercial visibility and ownership of hundreds of crores in revenue",
+        "One of the fastest routes to executive leadership",
+        "Generous equity and performance bonuses"
+      ],
+      "cons": [
+        "Intense operational pressure during Diwali / Black Friday / festive spikes",
+        "Tight margin battles with aggressive competitors",
+        "Continuous daily target tracking"
+      ]
+    },
+    "reflectionQuestions": [
+      "Do I get excited looking at why one product flies off digital shelves while another sits unsold?",
+      "Can I handle the intensity of running a business whose sales refresh every single minute?"
+    ],
+    "resources": [
+      "National Retail Federation (NRF.com)",
+      "Blinkit / Zepto Tech & Supply Chain Blogs",
+      "Harvard Business Review — The New Rules of Retail & Quick-Commerce"
+    ],
+    "aka": [
+      "Category Manager",
+      "Quick-Commerce Head",
+      "Marketplace Lead",
+      "Retail Merchandiser",
+      "D2C Business Lead"
+    ],
+    "edu": "master",
+    "interests": [
+      "business",
+      "numbers",
+      "tech"
+    ],
+    "degrees": [
+      "management",
+      "commerce",
+      "engineering"
+    ],
+    "aiTag": "hybrid",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk",
+      "me"
+    ]
+  },
+  {
+    "id": "business-analyst-process-ops",
+    "cat": "biz",
+    "catName": "Business & Finance",
+    "icon": "📈",
+    "title": "Business Analyst & Enterprise Process Specialist",
+    "tagline": "Translate complex business problems into clear technical solutions",
+    "desc": "Bridge corporate stakeholders with software engineers, map end-to-end enterprise workflows, and drive data-backed process automation.",
+    "stream": "Any Stream (Commerce / Engineering / Mathematics)",
+    "salary": "Entry: $75K / ₹6-11 LPA · Mid: $115K / ₹16-30 LPA · Lead: $170K+ / ₹48 LPA+",
+    "regionalSalary": {
+      "in": "Entry: ₹6–11 LPA · Lead Business Architect: ₹22–48 LPA",
+      "us": "Entry: $78,000 · Senior Enterprise Agile BA: $120,000–$168,000",
+      "uk": "Entry: £38,000 · Lead Business Systems Analyst: £70,000–£105,000",
+      "me": "Entry: AED 180K · Digital Transformation Specialist: AED 320K–AED 520K",
+      "global": "$75K – $170K with high global remote and consulting mobility"
+    },
+    "growth": "15% (Much faster than average)",
+    "demand": "Very High",
+    "aiImpact": "Hybrid — AI auto-generates user stories and process flowcharts, but aligning disagreeing executive stakeholders requires human diplomacy.",
+    "overview": "Business Analysts are the translators of the enterprise world. When a bank needs to launch a new mobile lending feature or a healthcare giant needs to streamline patient records, the BA figures out what the business actually needs, writes clear technical specifications, models the database requirements, and ensures the engineering team builds the right product on schedule.",
+    "education": {
+      "highSchoolPrereqs": "Mathematics, Economics, Computer Science, Business Studies, English.",
+      "entranceExams": "CAT / XAT (India), GMAT / GRE (Global), university placement entrance tests.",
+      "undergradDegrees": [
+        "B.Tech / B.E. in Any Engineering Discipline",
+        "BCA / B.S. in Information Systems & Business Analytics",
+        "B.Com / BBA in Finance & Operations"
+      ],
+      "postgradDegrees": [
+        "MBA in Business Analytics, Systems & Operations",
+        "M.S. in Management Information Systems (MIS)"
+      ],
+      "certifications": [
+        "CBAP (Certified Business Analysis Professional — IIBA)",
+        "PMI-PBA (Professional in Business Analysis)",
+        "Certified Scrum Product Owner (CSPO) / Agile Analysis Certification"
+      ],
+      "topInstitutes": [
+        "IIMs / IIT Department of Management Studies (India)",
+        "BITS Pilani / Delhi University (India)",
+        "Carnegie Mellon Heinz College (USA)",
+        "Warwick Business School (UK)",
+        "NUS Business School (Singapore)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Junior BA, gathering requirements from business users, creating BPMN process diagrams, writing user stories in Jira, SQL data validation.",
+      "phase2": "Years 2–5: Senior Business Analyst, leading agile squads, designing complex enterprise system integrations, managing UAT sign-offs.",
+      "phase3": "Years 5+: Principal Business Architect, Director of Product Operations, VP of Digital Transformation."
+    },
+    "skills": {
+      "hardSkills": [
+        "BPMN Process Modeling",
+        "Agile User Stories & Acceptance Criteria",
+        "SQL Querying & Data Mapping",
+        "Jira & Confluence Administration",
+        "Enterprise ERP / CRM Workflows"
+      ],
+      "softSkills": [
+        "Stakeholder Diplomacy",
+        "Active Listening",
+        "Problem Deconstruction",
+        "Clear Written & Verbal Communication"
+      ]
+    },
+    "roles": [
+      "Business Systems Analyst",
+      "Product Owner",
+      "Enterprise Process Consultant",
+      "Agile Functional Lead",
+      "Digital Transformation Analyst",
+      "Operations Architect"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Loves solving organizational puzzles",
+        "Great at explaining tech to non-tech people",
+        "Organized, structured thinker",
+        "Diplomatic listener"
+      ],
+      "workStyle": "Cross-functional collaborative meetings, diagramming workflows, collaborating with software architects and senior leadership.",
+      "pros": [
+        "Massive transferability across banking, healthcare, retail, and tech",
+        "Direct bridge into high-paying Product Management roles",
+        "Consistent corporate stability"
+      ],
+      "cons": [
+        "Caught between conflicting demands of business heads and developer deadlines",
+        "Scope creep management",
+        "Frequent stakeholder meetings"
+      ]
+    },
+    "reflectionQuestions": [
+      "Can I listen to five people with contradictory opinions and extract a single clear plan?",
+      "Do I enjoy understanding how every moving part of a massive business connects together?"
+    ],
+    "resources": [
+      "International Institute of Business Analysis (IIBA.org)",
+      "BABOK Guide (Business Analysis Body of Knowledge)",
+      "Bridging the Gap (business analyst training community)"
+    ],
+    "aka": [
+      "Business Analyst",
+      "Functional Consultant",
+      "Systems Analyst",
+      "Process Engineer",
+      "Product Owner"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "business",
+      "tech",
+      "numbers",
+      "people"
+    ],
+    "degrees": [
+      "management",
+      "engineering",
+      "commerce",
+      "computing"
+    ],
+    "aiTag": "hybrid",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk",
+      "me"
+    ]
+  },
+  {
+    "id": "army-officer-defense-commander",
+    "cat": "safety",
+    "catName": "Law & Public Safety",
+    "icon": "🪖",
+    "title": "Army Officer & Defense Commander (Land Forces)",
+    "tagline": "Lead soldiers, defend national sovereignty, and master tactical warfare",
+    "desc": "Lead infantry, armored, engineering, or cyber combat units, orchestrate battlefield logistics, and command sovereign defense operations.",
+    "stream": "Open to Any Stream (PCM for Technical / Engineering Branches)",
+    "salary": "Entry: $65K / ₹12-18 LPA · Mid: $110K / ₹22-35 LPA · Lead: $190K+ / ₹45 LPA+ (Rank Benefits)",
+    "regionalSalary": {
+      "in": "Lieutenant to Major General: ₹12–₹35 LPA (Basic + MSP + Field/High-Altitude Allowance + cantonment quarters, healthcare, canteens & pension)",
+      "us": "2nd Lieutenant (O-1) to Colonel/General (O-6+): $68,000–$215,000 + BAH housing & tax advantages",
+      "uk": "British Army Officer (Second Lieutenant to Brigadier): £37,000–£125,000",
+      "me": "UAE / Gulf Armed Forces Officer Corps: AED 280K–AED 650K + comprehensive sovereign benefits",
+      "global": "Sovereign officer pay scales + UN Peacekeeping deployment stipends ($55K–$180K)"
+    },
+    "growth": "Rank & Merit Based",
+    "demand": "Critical National Security",
+    "aiImpact": "Human-Centric — AI assists with battlefield sensor fusion and drone coordination, but lethal command decisions, tactical courage, and ethical leadership must remain human.",
+    "overview": "An Army Officer holds a commission granted by the Head of State. You are responsible for the lives, training, and operational readiness of hundreds of troops under extreme pressure—from high-altitude Himalayan glaciated borders to mechanized desert formations and UN Peacekeeping missions abroad. Beyond combat tactics, modern officers master electronic warfare, drone swarm defense, satellite tactical comms, and humanitarian disaster relief.",
+    "education": {
+      "highSchoolPrereqs": "Physics, Chemistry, Mathematics (for Technical / Artillery / Corps of Signals); Any stream for Infantry / Armored.",
+      "entranceExams": "NDA (National Defence Academy, India), CDS (Combined Defence Services), AFCAT, West Point USMA (USA), Sandhurst RMAS (UK).",
+      "undergradDegrees": [
+        "B.Sc. / B.A. / B.Tech from National Defence Academy (NDA Khadakwasla / JNU degree)",
+        "B.S. in Military Strategy & Systems Engineering (West Point / Annapolis)",
+        "B.Tech in Mechanical, Electronics or Civil Engineering (for Army Corps of Engineers)"
+      ],
+      "postgradDegrees": [
+        "Master of Military Science & Strategic Defense Studies (Defence Services Staff College - DSSC Wellington)",
+        "National Defence College (NDC) Strategy Master's"
+      ],
+      "certifications": [
+        "Commando / Special Forces Dagger Course",
+        "High Altitude Warfare School (HAWS Gulmarg)",
+        "Combat Freefall & Airborne Paratrooper Wings"
+      ],
+      "topInstitutes": [
+        "National Defence Academy (NDA Pune)",
+        "Indian Military Academy (IMA Dehradun) / Officers Training Academy (OTA Chennai)",
+        "United States Military Academy (West Point, USA)",
+        "Royal Military Academy Sandhurst (RMAS, UK)",
+        "Defence Services Staff College (DSSC Wellington, India)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–3: Lieutenant to Captain, Platoon Commander (30 soldiers), frontline high-altitude or counter-insurgency border posting, hands-on tactical leadership.",
+      "phase2": "Years 3–8: Major to Lieutenant Colonel, Company Commander (120+ troops), Battalion Operations Officer, Staff College selection, specialized combat school instructor.",
+      "phase3": "Years 8+: Colonel commanding a Battalion / Regiment (800+ soldiers), Brigadier commanding a Brigade, General Officer Commanding (GOC) a Division or Corps."
+    },
+    "skills": {
+      "hardSkills": [
+        "Combined Arms Tactical Maneuver",
+        "Military Topography & Battle Mapping",
+        "Drone Countermeasures & C4ISR",
+        "Ballistics & Weapon Systems Employment",
+        "Combat First Aid & Casualty Evacuation"
+      ],
+      "softSkills": [
+        "Unshakable Courage Under Fire",
+        "Leader-First Loyalty to Troops",
+        "High Situational Decisiveness",
+        "Physical & Mental Hardiness"
+      ]
+    },
+    "roles": [
+      "Infantry Combat Commander",
+      "Armored Regimental Officer",
+      "Military Intelligence Officer",
+      "Corps of Signals / Cyber Warfare Officer",
+      "Army Aviation Helicopter Pilot",
+      "Special Forces Operator"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Selfless sense of duty and patriotism",
+        "Thrives in physically rugged outdoor environments",
+        "Natural leader who puts team before self",
+        "Disciplined and mission-driven"
+      ],
+      "workStyle": "Field combat postings, rigorous daily physical fitness, military discipline, tactical command centers, frequent nation-wide relocations.",
+      "pros": [
+        "Highest social honor, dignity, and national pride",
+        "Deep camaraderie with fellow officers and jawans that lasts for life",
+        "Exceptional leadership training respected worldwide"
+      ],
+      "cons": [
+        "Physical risk to life and limb in combat",
+        "Prolonged separation from family in non-family border postings",
+        "Strict military hierarchy and discipline"
+      ]
+    },
+    "reflectionQuestions": [
+      "Am I willing to place the safety and welfare of my troops and country above my own comfort and life?",
+      "Can I remain calm and make life-and-death tactical decisions while exhausted and under fire?"
+    ],
+    "resources": [
+      "Join Indian Army Official Portal (joinindianarmy.nic.in)",
+      "U.S. Army Officer Career Pathways (goarmy.com)",
+      "Royal Military Academy Sandhurst Leadership Doctrine"
+    ],
+    "aka": [
+      "Military Officer",
+      "Army Officer",
+      "Infantry Commander",
+      "Defense Commander",
+      "Commissioned Officer"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "law",
+      "machines",
+      "outdoors",
+      "people"
+    ],
+    "degrees": [
+      "engineering",
+      "science",
+      "arts"
+    ],
+    "aiTag": "human",
+    "regions": [
+      "in",
+      "us",
+      "uk",
+      "global"
+    ]
+  },
+  {
+    "id": "firefighter-smokejumper-rescue",
+    "cat": "safety",
+    "catName": "Law & Public Safety",
+    "icon": "🚒",
+    "title": "Firefighter, Wildfire Smokejumper & Technical Rescue Specialist",
+    "tagline": "Run into danger when everyone else runs out",
+    "desc": "Extinguish structural infernos, parachute into remote wilderness wildfires, and execute high-angle and urban search & rescue operations.",
+    "stream": "Open to Any Stream (Physical Fitness & Vocational / Diploma)",
+    "salary": "Entry: $55K / ₹4-8 LPA · Mid: $85K / ₹9-16 LPA · Lead: $135K+ / ₹26 LPA+",
+    "regionalSalary": {
+      "in": "Entry: ₹4–8 LPA (Municipal Fire Service / NDRF / CISF Airport Fire Wings) · Chief Fire Officer: ₹15–26 LPA",
+      "us": "Entry: $55,000 · Wildfire Smokejumper / Battalion Chief: $92,000–$145,000",
+      "uk": "Entry: £32,000 · Watch Manager / Station Commander: £52,000–£78,000",
+      "me": "Civil Defence & Industrial Petrochemical Fire Rescue: AED 160K–AED 340K",
+      "global": "$55K – $135K with specialized offshore, aviation, and disaster response certifications"
+    },
+    "growth": "8% (Essential Public Service)",
+    "demand": "Very High",
+    "aiImpact": "Human-Centric — Thermal imaging drones and robotic nozzle tracks assist, but entering collapsing burning structures is 100% human bravery and physical execution.",
+    "overview": "Firefighters and rescue specialists are society's first line of defense during physical emergencies. From fighting multi-alarm skyscraper fires and cutting survivors out of highway vehicle wrecks to parachuting into backcountry wilderness fires as a Smokejumper or wading into monsoon floodwaters with the NDRF, this profession demands elite physical fitness, psychological calm, and paramedic precision.",
+    "education": {
+      "highSchoolPrereqs": "Physical Education, Physics, Chemistry, Biology, First Aid.",
+      "entranceExams": "State Fire Service Physical Efficiency Test (PET), NFPA Firefighter I/II exams, National Fire Service College Entrance (NFSC Nagpur), CPAT (Candidate Physical Ability Test, USA).",
+      "undergradDegrees": [
+        "B.E. / B.Tech in Fire & Safety Engineering (NFSC Nagpur)",
+        "B.S. in Fire Science & Emergency Management",
+        "Diploma in Industrial Fire & Rescue"
+      ],
+      "postgradDegrees": [
+        "M.Tech in Industrial Safety & Environmental Hazard Management",
+        "Executive Master of Emergency & Disaster Management"
+      ],
+      "certifications": [
+        "Emergency Medical Technician (EMT-Paramedic) Certification",
+        "NFPA 1001 Standard for Fire Fighter Professional Qualifications",
+        "Confined Space, Trench & High-Angle Rope Rescue (Rope Technician)",
+        "HAZMAT (Hazardous Materials) Technician"
+      ],
+      "topInstitutes": [
+        "National Fire Service College (NFSC Nagpur, Ministry of Home Affairs India)",
+        "Delhi Fire Service Training Centre",
+        "Texas A&M Engineering Extension Service (TEEX Fire School, USA)",
+        "Fire Service College (Moreton-in-Marsh, UK)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–3: Probationary Firefighter / EMT, firehouse watch duties, mastering SCBA gear, hose deployment, vehicle extrication, paramedic calls.",
+      "phase2": "Years 3–8: Senior Firefighter / Rescue Specialist, Driver Engineer (pumper/ladder operator), Hazmat lead, wildfire crew boss.",
+      "phase3": "Years 8+: Station Officer / Captain, Battalion Chief, Chief Fire Officer overseeing municipal emergency readiness."
+    },
+    "skills": {
+      "hardSkills": [
+        "Structural Fire Suppression Tactics",
+        "Self-Contained Breathing Apparatus (SCBA)",
+        "Hydraulic Extrication Tools (Jaws of Life)",
+        "Wildfire Line Digging & Smokejumping",
+        "Advanced EMT Paramedic Trauma Care"
+      ],
+      "softSkills": [
+        "Rapid Decision-Making in Zero Visibility",
+        "Team Brother/Sisterhood",
+        "Mental Resilience Post-Trauma",
+        "Calm Under Extreme Sensory Chaos"
+      ]
+    },
+    "roles": [
+      "Municipal Structural Firefighter",
+      "Wildfire Smokejumper / Hotshot",
+      "Industrial Petrochemical Fire Engineer",
+      "Airport Rescue & Firefighting (ARFF) Specialist",
+      "Urban Search & Rescue (NDRF) Diver",
+      "Paramedic Firefighter"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Heroic protector instinct",
+        "Exceptional physical strength and cardiovascular stamina",
+        "Thrives in active team environments, hates desk jobs",
+        "Cool-headed under terror"
+      ],
+      "workStyle": "24-hour firehouse shift rotations (24 on / 48 off), immediate alarms, intense physical rescue calls, equipment maintenance.",
+      "pros": [
+        "Universally loved and respected by every community",
+        "High camaraderie and tight family atmosphere at firehouses",
+        "Adrenaline-fueled work where you literally save human lives every week"
+      ],
+      "cons": [
+        "Exposure to toxic smoke carcinogens, heat, and physical danger",
+        "Sleep disruption during 24-hour shifts",
+        "Emotional toll of witnessing trauma and fatal accidents"
+      ]
+    },
+    "reflectionQuestions": [
+      "Can I run up 20 flights of stairs wearing 35 kg of gear into pitch-black smoke to pull out a stranger?",
+      "Do I thrive in a hands-on, physically demanding brother/sisterhood that lives and works together?"
+    ],
+    "resources": [
+      "National Fire Protection Association (NFPA.org)",
+      "National Disaster Response Force (NDRF India - ndrf.gov.in)",
+      "International Association of Fire Fighters (IAFF)"
+    ],
+    "aka": [
+      "Firefighter",
+      "Smokejumper",
+      "Fireman",
+      "Rescue Technician",
+      "Fire Officer",
+      "Paramedic Firefighter"
+    ],
+    "edu": "diploma",
+    "interests": [
+      "law",
+      "machines",
+      "outdoors",
+      "health"
+    ],
+    "degrees": [
+      "vocational",
+      "engineering",
+      "any"
+    ],
+    "aiTag": "human",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk",
+      "me"
+    ]
+  },
+  {
+    "id": "bomb-disposal-eod-technician",
+    "cat": "safety",
+    "catName": "Law & Public Safety",
+    "icon": "💣",
+    "title": "Bomb Disposal (EOD) & Explosive Ordnance Specialist",
+    "tagline": "The ultimate test of precision, nerve, and chemistry under pressure",
+    "desc": "Render safe improvised explosive devices (IEDs), unexploded military ordnance, and chemical/biological threats using robotics and manual defusal.",
+    "stream": "Science / Engineering / Military / Police",
+    "salary": "Entry: $75K / ₹9-15 LPA · Mid: $115K / ₹16-28 LPA · Lead: $165K+ / ₹42 LPA+ (Hazard Perks)",
+    "regionalSalary": {
+      "in": "Military / NSG / State Police Bomb Squad: ₹9–₹25 LPA + High-Risk Hazard Allowance + specialized quarters & insurance",
+      "us": "Military EOD / FBI Hazardous Devices School Graduate: $82,000–$165,000 + special duty hazard pay",
+      "uk": "British Army Ammunition Technical Officer (ATO) / Police EOD: £45,000–£105,000",
+      "me": "National Security EOD & Minefield Clearance Demining: AED 240K–AED 480K (Tax-Free)",
+      "global": "$75K – $165K with international humanitarian demining NGOs (HALO Trust, UNMAS)"
+    },
+    "growth": "High Specialized Need",
+    "demand": "Extreme Precision",
+    "aiImpact": "Augmented — Remotely operated tracked robots and X-ray scanners do preliminary inspection, but delicate manual render-safe procedures require human hands and nerve.",
+    "overview": "Explosive Ordnance Disposal (EOD) operators are the world's most disciplined surgical tacticians. Whether responding to an improvised explosive device (IED) in a crowded metro station, defusing unexploded World War air bombs unearthed on construction sites, or operating bomb-defusal robots in VIP motorcade security, one single millimeter of movement can be the difference between survival and catastrophe.",
+    "education": {
+      "highSchoolPrereqs": "Physics, Chemistry, Mathematics, Electronics, Mechanical Comprehension.",
+      "entranceExams": "Selection through Military (Army/Navy/Air Force), National Security Guard (NSG), Central Armed Police Forces (CRPF/CISF), or FBI Hazardous Devices School (USA).",
+      "undergradDegrees": [
+        "B.Sc. / B.Tech in Electronics, Mechanical or Chemical Engineering",
+        "Military Science & Ordnance Engineering (College of Military Engineering, Pune)",
+        "B.S. in Explosives Engineering / Forensic Investigation"
+      ],
+      "postgradDegrees": [
+        "Advanced Explosives Chemistry & Blast Mitigation Studies",
+        "M.Tech in Defense Technology (DIAT Pune)"
+      ],
+      "certifications": [
+        "Master EOD Badge / Senior Explosive Technician (Naval EOD School Eglin / NSG Manesar)",
+        "Improvised Explosive Device Disposal (IEDD) Advanced Specialist",
+        "CBRN (Chemical, Biological, Radiological & Nuclear) Detection & Neutralization"
+      ],
+      "topInstitutes": [
+        "College of Military Engineering (CME Pune, India)",
+        "National Security Guard (NSG) Training Centre (Manesar, India)",
+        "Naval School Explosive Ordnance Disposal (NAVSCOLEOD, Eglin AFB USA)",
+        "Army School of Ammunition (Kineton, UK)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–3: Basic military/police service, passing grueling psychological and physical EOD selection, mastering detonator electronics, X-ray interpretation, robotic platforms.",
+      "phase2": "Years 3–8: Certified EOD Team Leader, deploying on live bomb calls, executing IED render-safe procedures, forensic post-blast investigation.",
+      "phase3": "Years 8+: Chief Bomb Technician, Commander of Regional Explosive Squad, UN Mine Action Service (UNMAS) international demining program director."
+    },
+    "skills": {
+      "hardSkills": [
+        "Portable X-Ray Interpretation",
+        "Detonator & Fuzing Circuit Neutralization",
+        "Bomb Suit & Disruption Water-Cannon Operation",
+        "Talon / PackBot EOD Robotic Piloting",
+        "Post-Blast Forensic Reconstruction"
+      ],
+      "softSkills": [
+        "Ice-Cold Nerve & Heart-Rate Control",
+        "Sub-Millimeter Physical Motor Precision",
+        "Meticulous Protocol Adherence",
+        "Mental Compartmentalization"
+      ]
+    },
+    "roles": [
+      "Bomb Disposal Officer",
+      "Military EOD Team Commander",
+      "FBI / Police Bomb Technician",
+      "Humanitarian Demining Specialist",
+      "CBRNE First Responder",
+      "Forensic Blast Investigator"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Unshakable calm under terrifying pressure",
+        "Methodical, meticulous problem-solver",
+        "Fascinated by electronics and chemistry",
+        "Zero tolerance for carelessness"
+      ],
+      "workStyle": "On-call emergency response, donning 40 kg bomb suits, operating remote tracked robots, high-stakes tactical deployments.",
+      "pros": [
+        "Exceptional brotherhood and professional prestige",
+        "Direct, unequivocal hero's work protecting innocent citizens from mass terror",
+        "World-class specialized forensic and electronics expertise"
+      ],
+      "cons": [
+        "Extreme occupational mortal hazard",
+        "Heavy physical strain inside blast suits",
+        "Psychological intensity of knowing there is zero margin for error"
+      ]
+    },
+    "reflectionQuestions": [
+      "Can I keep my hands completely steady and think with clinical logic when looking directly at an active explosive trigger?",
+      "Do I possess the rare combination of deep mechanical curiosity and absolute mental calm?"
+    ],
+    "resources": [
+      "National Security Guard (nsg.gov.in)",
+      "International Association of Bomb Technicians and Investigators (IABTI.org)",
+      "United Nations Mine Action Service (UNMAS.org)"
+    ],
+    "aka": [
+      "EOD Technician",
+      "Bomb Disposal Specialist",
+      "Bomb Squad Technician",
+      "Explosives Engineer",
+      "Mine Clearance Specialist"
+    ],
+    "edu": "diploma",
+    "interests": [
+      "law",
+      "machines",
+      "science"
+    ],
+    "degrees": [
+      "engineering",
+      "science",
+      "vocational"
+    ],
+    "aiTag": "human",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk",
+      "me"
+    ]
+  },
+  {
+    "id": "manga-webtoon-comic-artist",
+    "cat": "creative",
+    "catName": "Creative Arts & Design",
+    "icon": "🎨",
+    "title": "Manga, Webtoon & Graphic Novel Artist",
+    "tagline": "Illustrate visual epics that captivate millions of global readers",
+    "desc": "Pencil, ink, color, and story-script vertical digital webtoons, serialization manga, and graphic novels for global entertainment publishers.",
+    "stream": "Arts & Design / Open to Any Creative Talent",
+    "salary": "Entry: $42K / ₹3-6 LPA · Mid: $75K / ₹10-22 LPA · Lead: $160K+ / ₹45 LPA+ (Royalties)",
+    "regionalSalary": {
+      "in": "Entry: ₹3–6 LPA · Lead Comic Artist / Studio Director (Amar Chitra Katha/Graphic India): ₹12–35 LPA",
+      "us": "Entry: $45,000 · Marvel/DC/Image Penciler or Top Webtoon Original: $85,000–$220,000+",
+      "uk": "Entry: £26,000 · Graphic Novelist / Senior Illustrator: £48,000–£82,000",
+      "me": "Arabic Anime & Manga Publishing Studios (Riyadh/Dubai): AED 160K–AED 320K",
+      "global": "$42K – $160K+ with global Webtoon / Tapas revenue shares and merchandise licensing"
+    },
+    "growth": "18% (Explosive Webtoon & Anime Boom)",
+    "demand": "High Visual Storytelling Demand",
+    "aiImpact": "Hybrid — AI assists with background perspective fills and flat coloring, but authentic character charisma, visual pacing, and emotional panel composition remain uniquely human.",
+    "overview": "Manga and Webtoon artists are visual directors on paper. With the meteoric global explosion of vertical webtoons, anime adaptations, and graphic novels, creators build entire universes with pen tablets. You master dynamic anatomy, emotional facial expressions, dramatic panel layouts, and serialized cliffhangers that keep hundreds of thousands of digital readers eagerly awaiting your next weekly chapter.",
+    "education": {
+      "highSchoolPrereqs": "Fine Arts, Illustration, English Literature, Graphic Design, History.",
+      "entranceExams": "NID DAT (India), UCEED / CEED (IITs), Kyoto Seika Manga Entrance, CalArts Portfolio Review.",
+      "undergradDegrees": [
+        "B.Des / B.F.A. in Illustration, Visual Communication & Animation",
+        "Bachelor of Fine Arts in Comic Art & Sequential Storytelling",
+        "Diploma in Digital Manga & Concept Art"
+      ],
+      "postgradDegrees": [
+        "M.Des in Narrative Design & Sequential Art",
+        "Master of Fine Arts (MFA) in Graphic Novels & Illustration"
+      ],
+      "certifications": [
+        "Clip Studio Paint Master Certification",
+        "Digital Inking & Dynamic Anatomy for Sequential Artists"
+      ],
+      "topInstitutes": [
+        "National Institute of Design (NID Ahmedabad, India)",
+        "Industrial Design Centre (IDC - IIT Bombay)",
+        "Kyoto Seika University Faculty of Manga (Japan)",
+        "School of Visual Arts (SVA New York, USA)",
+        "Angoulême European School of Visual Arts (ÉESI, France)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Building a striking digital portfolio, inking backgrounds for senior artists, releasing self-published indie comics on Webtoon Canvas / Tapas.",
+      "phase2": "Years 2–5: Signed Webtoon Original / Serialized Manga artist, hitting weekly deadlines, managing color assistants, building a loyal fan following.",
+      "phase3": "Years 5+: Studio founder, original IP owner with anime / live-action television adaptation rights, masterclass instructor."
+    },
+    "skills": {
+      "hardSkills": [
+        "Clip Studio Paint & Photoshop Mastery",
+        "Sequential Panel Layout & Pacing",
+        "Dynamic Human Anatomy & Drapery",
+        "Digital Inking & Atmospheric Lighting",
+        "Visual Scriptwriting & Storyboarding"
+      ],
+      "softSkills": [
+        "Disciplined Deadline Stamina",
+        "Visual Empathy",
+        "Receptive to Editorial Critiques",
+        "Deep Storytelling Passion"
+      ]
+    },
+    "roles": [
+      "Webtoon Original Creator",
+      "Mangaka (Manga Author)",
+      "Comic Book Penciler & Inker",
+      "Graphic Novelist",
+      "Concept Storyboard Artist",
+      "Comic Colorist & Letterer"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Obsessed with drawing every waking hour",
+        "Natural storyteller with vivid visual imagination",
+        "Disciplined to draw 40–60 panels every week",
+        "Loves comic and anime culture"
+      ],
+      "workStyle": "Remote studio or digital drawing tablet desk, solitary focused drawing marathons, weekly publisher deadlines.",
+      "pros": [
+        "Bringing your own original characters and fantasy worlds to life",
+        "Passionate global fanbase celebrating your work",
+        "Potential for massive royalty windfalls if adapted into anime/Netflix series"
+      ],
+      "cons": [
+        "Physical strain on drawing wrist, neck, and eyes",
+        "Relentless weekly serialization deadlines",
+        "Income can be unstable in early indie stages"
+      ]
+    },
+    "reflectionQuestions": [
+      "Can I sit at a drawing tablet for 8 hours a day drawing 50 detailed panels every week without losing passion?",
+      "Do I love visual storytelling enough to endure years of practicing anatomy and perspective?"
+    ],
+    "resources": [
+      "Clip Studio Paint Official Tips & Tutorials",
+      "Webtoon Creators Academy",
+      "Scott McCloud's 'Understanding Comics' & 'Making Comics'"
+    ],
+    "aka": [
+      "Mangaka",
+      "Webtoon Artist",
+      "Comic Book Artist",
+      "Graphic Novelist",
+      "Sequential Illustrator"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "creative",
+      "design",
+      "art",
+      "words"
+    ],
+    "degrees": [
+      "design",
+      "arts"
+    ],
+    "aiTag": "hybrid",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk"
+    ]
+  },
+  {
+    "id": "retail-buyer-fashion-merchandiser",
+    "cat": "creative",
+    "catName": "Creative Arts & Design",
+    "icon": "👗",
+    "title": "Retail Fashion Buyer & Luxury Merchandiser",
+    "tagline": "Curate the runway trends that fill the world's luxury wardrobes",
+    "desc": "Travel to international fashion weeks, forecast textile and apparel trends, negotiate supplier lines, and curate seasonal collections for luxury department stores and D2C brands.",
+    "stream": "Commerce / Design / Humanities",
+    "salary": "Entry: $62K / ₹6-10 LPA · Mid: $98K / ₹16-30 LPA · Lead: $165K+ / ₹55 LPA+",
+    "regionalSalary": {
+      "in": "Entry: ₹6–10 LPA · Senior Buying Head (Reliance Brands/Aditya Birla Fashion/Tata CLiQ Luxury): ₹22–55 LPA",
+      "us": "Entry: $65,000 · Senior Fashion Buyer (Saks/Nordstrom/Neiman Marcus): $110,000–$175,000",
+      "uk": "Entry: £32,000 · Luxury Fashion Buyer (Harrods/Selfridges/ASOS): £62,000–£105,000",
+      "me": "Chalhoub Group / Al Tayer Luxury Fashion Buyer (Dubai/Riyadh): AED 220K–AED 440K (Tax-Free)",
+      "global": "$62K – $165K with extensive travel to Milan, Paris, London, and New York fashion weeks"
+    },
+    "growth": "10% (Stable)",
+    "demand": "High Commercial Creative",
+    "aiImpact": "Augmented — AI forecasts size curves and consumer color trends, but predicting the next cultural aesthetic and negotiating luxury exclusivity requires human taste and instinct.",
+    "overview": "Fashion Buyers combine the discerning eye of an art curator with the financial ruthlessness of a hedge-fund manager. Sitting front-row at fashion weeks in Paris, Milan, and Mumbai, you decide which designer collections, luxury handbags, and streetwear silhouettes will stock store shelves six months from now. You manage eight-figure purchasing budgets, balance creative aesthetics with sell-through margins, and anticipate cultural shifts before they hit TikTok.",
+    "education": {
+      "highSchoolPrereqs": "Business Studies, Accountancy, Economics, Fashion Studies, Art, English.",
+      "entranceExams": "NIFT Entrance Exam (India), NID, UAL London Portfolio Review, FIT Entrance (New York).",
+      "undergradDegrees": [
+        "B.Des / B.F.Tech in Fashion Merchandising & Retail Management (NIFT)",
+        "B.S. in Fashion Business Management (FIT New York / LCF London)",
+        "B.Com / BBA in Luxury Brand Management & Retail"
+      ],
+      "postgradDegrees": [
+        "Master of Fashion Management (M.F.M. — NIFT)",
+        "Master of International Luxury Goods Management (SDA Bocconi / Institut Français de la Mode)"
+      ],
+      "certifications": [
+        "Retail Merchandising Math & OTB (Open-to-Buy) Planning Certification",
+        "Sustainable Apparel Coalition & Circular Textile Auditing"
+      ],
+      "topInstitutes": [
+        "National Institute of Fashion Technology (NIFT New Delhi / Mumbai)",
+        "London College of Fashion (LCF - UAL, UK)",
+        "Fashion Institute of Technology (FIT New York, USA)",
+        "Institut Français de la Mode (IFM Paris, France)",
+        "Polimoda (Florence, Italy)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Assistant Buyer, monitoring inventory sell-through reports, attending vendor sample showrooms, preparing markdown analysis.",
+      "phase2": "Years 2–6: Category Fashion Buyer, owning multi-crore seasonal budgets, traveling to international fashion weeks, curating capsule collections.",
+      "phase3": "Years 6+: Head of Buying & Merchandising, Chief Merchandising Officer (CMO), Luxury Brand General Manager."
+    },
+    "skills": {
+      "hardSkills": [
+        "Open-to-Buy (OTB) Financial Modeling",
+        "Textile & Garment Construction Literacy",
+        "Trend Forecasting & Color Palettes",
+        "Vendor Margin & Payment Terms Negotiation",
+        "Visual Merchandising & Floor Layout Strategy"
+      ],
+      "softSkills": [
+        "Impeccable Cultural Taste & Aesthetic Instinct",
+        "Commercial Nerve & Decisiveness",
+        "High Negotiation Poise",
+        "Relationship Building with Designers"
+      ]
+    },
+    "roles": [
+      "Luxury Fashion Buyer",
+      "Retail Merchandise Planner",
+      "Footwear & Accessories Buyer",
+      "D2C Apparel Brand Curator",
+      "Department Store Buying Director",
+      "Trend Forecaster (WGSN)"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Passionate about style and aesthetics",
+        "Sharp quantitative brain for retail margins",
+        "Enjoys travel and fast-paced negotiations",
+        "Confident in backing their taste with money"
+      ],
+      "workStyle": "Corporate fashion headquarters, international travel to trade fairs and showrooms, runway attendance, data analysis.",
+      "pros": [
+        "Front-row access to the global fashion industry",
+        "High commercial influence on what millions of people wear",
+        "Exciting international travel perks"
+      ],
+      "cons": [
+        "Financial accountability if inventory fails to sell and requires heavy markdowns",
+        "Extensive travel fatigue during market buying seasons",
+        "Pressure from fast-fashion competitive cycles"
+      ]
+    },
+    "reflectionQuestions": [
+      "Can I balance my personal aesthetic taste with what actual paying customers in different cities want to buy?",
+      "Do I feel comfortable placing a multi-crore financial bet on next winter's color trends?"
+    ],
+    "resources": [
+      "The Business of Fashion (BoF - businessoffashion.com)",
+      "WGSN Trend Forecasting Agency",
+      "Vogue Business & NIFT Research Journals"
+    ],
+    "aka": [
+      "Fashion Buyer",
+      "Luxury Merchandiser",
+      "Retail Buyer",
+      "Category Fashion Lead",
+      "Merchandise Planner"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "creative",
+      "design",
+      "business",
+      "numbers"
+    ],
+    "degrees": [
+      "design",
+      "management",
+      "commerce"
+    ],
+    "aiTag": "hybrid",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk",
+      "me"
+    ]
+  },
+  {
+    "id": "executive-ghostwriter-author",
+    "cat": "creative",
+    "catName": "Creative Arts & Design",
+    "icon": "✍️",
+    "title": "Executive Ghostwriter & Bestseller Collaborator",
+    "tagline": "Give voice to the ideas, memoirs, and vision of global leaders",
+    "desc": "Interview CEOs, celebrities, world leaders, and scientists to author bestselling non-fiction books, memoirs, and viral thought-leadership under their name.",
+    "stream": "Humanities / Literature / Journalism / Any Stream",
+    "salary": "Entry: $65K / ₹8-15 LPA · Mid: $120K / ₹20-45 LPA · Lead: $250K+ / ₹80 LPA+ (Per Book Fees)",
+    "regionalSalary": {
+      "in": "Entry: ₹8–15 LPA · Bestselling Celebrity Memoir Ghostwriter: ₹25–₹60+ Lakhs per book contract",
+      "us": "Entry: $65,000 · Top Tier Ghostwriter (Penguin Random House / HarperCollins): $75,000–$250,000 per book + bonuses",
+      "uk": "Entry: £35,000 · Lead Non-Fiction Ghostwriter: £55,000–£140,000 per project",
+      "me": "Royal / Sovereign Leadership Biographies & Memoirs: AED 250K–AED 550K per contract",
+      "global": "$65K – $250K+ with lucrative remote global publisher agreements"
+    },
+    "growth": "20% (High Demand for Executive Thought-Leadership)",
+    "demand": "High Precision Niche",
+    "aiImpact": "Human-Centric — AI can generate generic paragraphs, but capturing a subject's unique human cadence, vulnerable memories, and narrative voice requires deep human empathy and interview intimacy.",
+    "overview": "Most of the bestselling business books and celebrity autobiographies you read were not written by the person on the cover; they were crafted by a master ghostwriter. As an executive ghostwriter, you spend dozens of hours recording intimate interviews with visionaries, unpack their messy life stories, structure gripping narrative arcs, and deliver manuscript-ready prose in their authentic voice. It is one of the most lucrative and intellectually rewarding careers in professional writing.",
+    "education": {
+      "highSchoolPrereqs": "English Literature, Creative Writing, History, Psychology, Journalism.",
+      "entranceExams": "No formal exam required. Evaluated by writing clips, published essays, and sample voice-matching manuscripts.",
+      "undergradDegrees": [
+        "B.A. in English Literature / Creative Writing",
+        "B.A. in Journalism & Mass Communication",
+        "B.S. in Philosophy, Politics & Economics (PPE)"
+      ],
+      "postgradDegrees": [
+        "Master of Fine Arts (MFA) in Creative Non-Fiction",
+        "M.A. in Narrative Journalism / Publishing"
+      ],
+      "certifications": [
+        "Association of Ghostwriters Professional Certification",
+        "Investigative Interviewing & Narrative Structuring Workshops"
+      ],
+      "topInstitutes": [
+        "Iowa Writers' Workshop (University of Iowa, USA)",
+        "Columbia University Graduate School of Journalism (USA)",
+        "University of East Anglia Creative Writing (UK)",
+        "St. Xavier's College / Ashoka University (India)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–3: Investigative journalism or freelance writing, ghostwriting executive LinkedIn thought-leadership essays, book proposal drafting.",
+      "phase2": "Years 3–7: Collaborating on full-length published books with mid-tier publishing houses, building an elite literary agent network, commanding $40K–$80K per title.",
+      "phase3": "Years 7+: Top-tier collaborator for New York Times bestsellers, handling Fortune 500 CEOs and international heads of state, earning $150K–$300K per book."
+    },
+    "skills": {
+      "hardSkills": [
+        "Book-Length Narrative Architecture",
+        "Intimate Investigative Interviewing",
+        "Vocal Cadence Matching & Style Mimicry",
+        "Publishing Proposal Drafting & Querying",
+        "Deep Background Fact-Checking"
+      ],
+      "softSkills": [
+        "Profound Empathy & Discretion",
+        "Ego-Free Authorship (Comfortable without cover credit)",
+        "Active Empathetic Listening",
+        "Diplomatic Patience with Demanding Clients"
+      ]
+    },
+    "roles": [
+      "Celebrity Memoir Ghostwriter",
+      "CEO Thought-Leadership Collaborator",
+      "Book Proposal Specialist",
+      "Speech & Op-Ed Collaborator",
+      "Publishing Literary Packager"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Gifted writer with rapid output",
+        "Fascinated by other people's minds and experiences",
+        "Happy to earn high fees without needing personal fame on the cover",
+        "Exceptional conversational interviewer"
+      ],
+      "workStyle": "Remote home studio, intensive one-on-one interview retreats with prominent clients, focused long-form writing periods.",
+      "pros": [
+        "Among the highest-earning writing professions in the world",
+        "Fascinating front-row access to historic leaders, billionaires, and stars",
+        "Complete freedom of remote work"
+      ],
+      "cons": [
+        "Cannot publicly claim credit for books protected by strict NDAs",
+        "Navigating the egos and demanding schedules of prominent clients",
+        "Deadlines can be relentless during publisher submission cycles"
+      ]
+    },
+    "reflectionQuestions": [
+      "Can I write a magnificent 80,000-word book, see it hit the bestseller list, and be completely happy with someone else's name on the front?",
+      "Do I possess the interview empathy to make people feel safe enough to share their deepest life failures and secrets?"
+    ],
+    "resources": [
+      "Association of Ghostwriters (associationofghostwriters.org)",
+      "Gotham Writers Workshop — Non-Fiction & Ghostwriting",
+      "The Forest for the Trees: An Editor's Advice to Writers by Betsy Lerner"
+    ],
+    "aka": [
+      "Ghostwriter",
+      "Book Collaborator",
+      "Executive Writer",
+      "Memoirist",
+      "Speech & Book Collaborator"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "words",
+      "creative",
+      "people",
+      "social"
+    ],
+    "degrees": [
+      "arts",
+      "law",
+      "any"
+    ],
+    "aiTag": "human",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk",
+      "me"
+    ]
+  },
+  {
+    "id": "keynote-political-speechwriter",
+    "cat": "creative",
+    "catName": "Creative Arts & Design",
+    "icon": "🎙️",
+    "title": "Presidential, Political & Keynote Speechwriter",
+    "tagline": "Craft words that inspire nations, turn elections, and echo through history",
+    "desc": "Write historic addresses, parliamentary debates, United Nations remarks, and high-stakes corporate keynotes for prime ministers, presidents, and Fortune 50 CEOs.",
+    "stream": "Humanities / Literature / Political Science / Law",
+    "salary": "Entry: $70K / ₹8-15 LPA · Mid: $125K / ₹22-45 LPA · Lead: $220K+ / ₹75 LPA+",
+    "regionalSalary": {
+      "in": "Entry: ₹8–15 LPA · Chief Ministerial / Prime Minister's Office (PMO) Speechwriter: ₹25–50 LPA",
+      "us": "Entry: $75,000 · White House / US Senate Speechwriter / Fortune 10 Chief Speechwriter: $140,000–$240,000",
+      "uk": "Entry: £38,000 · 10 Downing Street / Foreign Office Speechwriter: £65,000–£120,000",
+      "me": "Government Communication Office & Royal Court Speechwriter: AED 260K–AED 540K (Tax-Free)",
+      "global": "$70K – $220K across high-profile diplomatic and multinational corporate circuits"
+    },
+    "growth": "12% (Stable High-Influence Niche)",
+    "demand": "High Precision Prestige",
+    "aiImpact": "Human-Centric — Rhythm, cadence, humor, emotional timing, and rhetorical vulnerability for live delivery require master human speechcraft.",
+    "overview": "Speechwriting is writing for the ear, not the eye. When a Prime Minister addresses the nation in a moment of war, or a CEO delivers an inspiring conference keynote to 10,000 people, every cadence, pause, metaphor, and rhetorical triad is engineered by a master speechwriter. You learn the psychological art of persuasive rhetoric, memorize the speaker's vocal breathing patterns, and produce calm, electrifying prose on 2-hour deadlines during global crises.",
+    "education": {
+      "highSchoolPrereqs": "English Literature, Political Science, History, Philosophy, Public Speaking, Rhetoric.",
+      "entranceExams": "No entrance exam. Entry is secured through political campaign writing, policy fellowships, or elite journalism clips.",
+      "undergradDegrees": [
+        "B.A. in Political Science, Philosophy & Rhetoric",
+        "B.A. in English Literature & Classical Rhetoric",
+        "B.A. / B.S. in International Relations & Public Diplomacy"
+      ],
+      "postgradDegrees": [
+        "Master of Public Policy (MPP) or Strategic Communications",
+        "M.A. in Classical Rhetoric & Political Discourse"
+      ],
+      "certifications": [
+        "Executive Speechwriters Guild Certification",
+        "Aristotelian & Modern Rhetorical Frameworks Mastery"
+      ],
+      "topInstitutes": [
+        "Georgetown University / American University (Washington DC)",
+        "Oxford University / Cambridge University (UK)",
+        "St. Stephen's College / Ashoka University (India)",
+        "Sciences Po (Paris, France)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–3: Drafting op-eds and talking points for local political candidates, writing press releases and executive remarks for corporate PR teams.",
+      "phase2": "Years 3–7: Cabinet Minister / US Senator speechwriter, crafting national policy addresses, managing live teleprompter revisions.",
+      "phase3": "Years 7+: Director of Speechwriting for the Prime Minister / President, Head of Executive Communications for global tech titan."
+    },
+    "skills": {
+      "hardSkills": [
+        "Classical Rhetorical Triads & Rhythm",
+        "Writing for Spoken Oral Cadence",
+        "Real-Time Crisis Speech Drafting",
+        "Teleprompter & Stage Blocking Coaching",
+        "Constitutional Policy Synthesis"
+      ],
+      "softSkills": [
+        "Immense Composure on 1-Hour Deadlines",
+        "Psychological Resonance with Audiences",
+        "Vocal Ear for Authenticity",
+        "Absolute Discretion"
+      ]
+    },
+    "roles": [
+      "Chief Speechwriter to the Head of State",
+      "Corporate Keynote Speechwriter",
+      "Diplomatic Speechwriter (UN / Foreign Ministry)",
+      "Political Campaign Rhetorician",
+      "Executive Communications Director"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Deeply moved by language, poetry, and persuasive oratory",
+        "Grace under intense emergency pressure",
+        "Understands human emotion and political subtext",
+        "Fast, decisive writer"
+      ],
+      "workStyle": "Corridors of government power, traveling on Air Force One / PM delegations, intense late-night revisions in hotel rooms.",
+      "pros": [
+        "Words you write will literally be quoted in history books and global headlines",
+        "Unparalleled proximity to the world's most powerful decision-makers",
+        "Enormous intellectual high from hearing your prose delivered to roaring audiences"
+      ],
+      "cons": [
+        "Brutal deadline pressure during breaking news and crises",
+        "Speeches can be cancelled or rewritten last minute due to political shifts",
+        "Complete anonymity in public"
+      ]
+    },
+    "reflectionQuestions": [
+      "Can I write a moving 10-minute speech from scratch in 90 minutes while alarms are blaring?",
+      "Do I understand how words sound when spoken aloud versus how they look on a printed page?"
+    ],
+    "resources": [
+      "Executive Communication Council & Speechwriters Guild",
+      "Ted Sorensen's 'Counselor: A Life at the Edge of History'",
+      "Hansard / Presidential Speech Archives (American Presidency Project)"
+    ],
+    "aka": [
+      "Speechwriter",
+      "Executive Speechwriter",
+      "Political Rhetorician",
+      "Head of Speechwriting",
+      "Keynote Writer"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "words",
+      "law",
+      "people",
+      "social"
+    ],
+    "degrees": [
+      "arts",
+      "law",
+      "management"
+    ],
+    "aiTag": "human",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk",
+      "me"
+    ]
+  },
+  {
+    "id": "lexicographer-knowledge-architect",
+    "cat": "edu",
+    "catName": "Education & Academia",
+    "icon": "📖",
+    "title": "Lexicographer & Knowledge-Graph Editor",
+    "tagline": "Define language itself and architect the semantic truth of civilization",
+    "desc": "Track linguistic evolution, craft authoritative dictionary definitions, and engineer semantic knowledge graphs for search engines and AI models.",
+    "stream": "Humanities / Linguistics / Computer Science",
+    "salary": "Entry: $52K / ₹5-9 LPA · Mid: $82K / ₹12-22 LPA · Lead: $135K+ / ₹32 LPA+",
+    "regionalSalary": {
+      "in": "Entry: ₹5–9 LPA · Senior Linguistic Editor / AI Knowledge Architect (Sahitya Akademi/Google): ₹15–35 LPA",
+      "us": "Entry: $55,000 · Senior Lexicographer (Merriam-Webster / Oxford / Apple Knowledge Graph): $92,000–$145,000",
+      "uk": "Entry: £28,000 · Senior Dictionary Editor (Oxford English Dictionary / Collins): £52,000–£82,000",
+      "me": "Arabic Lexicography & National Language Academy Fellow: AED 180K–AED 360K",
+      "global": "$52K – $135K with remote opportunities across AI language data and academic presses"
+    },
+    "growth": "8% (Transformed by AI Ontology & Knowledge Graphs)",
+    "demand": "High Precision Niche",
+    "aiImpact": "Hybrid — AI flags new slang and corpus frequencies, but human lexicographers must debate nuanced ethical definitions, historical etymology, and semantic truth.",
+    "overview": "Lexicographers don't make up rules about language; they act as the scientific record-keepers of how humanity actually speaks. Today's lexicographers work at the intersection of historical philology and modern AI knowledge engineering. You analyze billion-word language corpora to determine when a new slang word enters the Oxford English Dictionary, clarify nuanced definitions of complex legal terms, and construct semantic knowledge graphs that guide how search engines and LLMs understand factual reality.",
+    "education": {
+      "highSchoolPrereqs": "English, Linguistics, Foreign Languages (Sanskrit/Latin/German), Computer Science, History.",
+      "entranceExams": "CUET (India), GRE (USA), UGC NET in Linguistics / English Literature.",
+      "undergradDegrees": [
+        "B.A. in Linguistics & Computational Linguistics",
+        "B.A. in English Literature & Comparative Philology",
+        "B.S. in Cognitive Science & Human Language Technology"
+      ],
+      "postgradDegrees": [
+        "M.A. / M.Sc. in Lexicography & Corpus Linguistics (EMLex European Master)",
+        "Ph.D. in Etymology, Semantics, or Computational Lexicology"
+      ],
+      "certifications": [
+        "Corpus Query Workbench & Sketch Engine Certification",
+        "Knowledge Graph & RDF/OWL Semantic Web Engineering"
+      ],
+      "topInstitutes": [
+        "University of Oxford (OED Editorial Offices, UK)",
+        "Central Institute of Indian Languages (CIIL Mysore, India)",
+        "Jawaharlal Nehru University (Centre for Linguistics, JNU Delhi)",
+        "University of Edinburgh Dept of Linguistics (UK)",
+        "Harvard University Linguistics Dept (USA)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–3: Assistant editor, corpus frequency citation tracking, drafting draft definitions for regional dialects, entry verification.",
+      "phase2": "Years 3–7: Senior Dictionary Editor, supervising major thematic revisions (e.g. medical, tech, or gender terminology), developing ontology graphs for AI labs.",
+      "phase3": "Years 7+: Chief Editor of Oxford/Merriam-Webster Dictionary, Director of Semantic Knowledge Architecture at a frontier tech company."
+    },
+    "skills": {
+      "hardSkills": [
+        "Corpus Linguistics (Sketch Engine / AntConc)",
+        "Etymological Historical Tracing",
+        "Semantic Taxonomy & Ontology (OWL/RDF)",
+        "Precision Definitional Drafting",
+        "Phonetic Transcription (IPA)"
+      ],
+      "softSkills": [
+        "Scholarly Patience",
+        "Linguistic Open-Mindedness (No Grammar-Nazi snobbery)",
+        "Deep Intellectual Curiosity",
+        "Nuanced Semantic Precision"
+      ]
+    },
+    "roles": [
+      "Senior Lexicographer",
+      "Dictionary Editor",
+      "Computational Linguist",
+      "Knowledge Graph Ontologist",
+      "Terminology Standardization Specialist",
+      "Etymologist"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Fascinated by words, origins, and grammar evolution",
+        "Deeply scholarly and reflective",
+        "Enjoys debating the exact microscopic difference between two synonyms",
+        "Patient and methodical"
+      ],
+      "workStyle": "Quiet academic or library-style focused research, computer corpus exploration, collaborative editorial meetings.",
+      "pros": [
+        "Your definitions will be read by millions of people across centuries",
+        "Immense scholarly prestige among writers and thinkers",
+        "Rising demand in frontier AI for semantic ground truth"
+      ],
+      "cons": [
+        "Quiet, solitary intellectual work that requires extreme patience",
+        "Debates over controversial word meanings can spark intense public culture-war scrutiny",
+        "Traditional print dictionary roles are limited"
+      ]
+    },
+    "reflectionQuestions": [
+      "Can I spend two days crafting the perfect, unbiased 20-word definition of a contentious cultural word?",
+      "Do I find the history of how a Latin or Sanskrit root transformed into modern English fascinating?"
+    ],
+    "resources": [
+      "Dictionary Society of North America (DSNA)",
+      "Oxford English Dictionary (OED.com) Behind the Scenes",
+      "Sketch Engine Corpus Tool (sketchengine.eu)"
+    ],
+    "aka": [
+      "Lexicographer",
+      "Dictionary Editor",
+      "Etymologist",
+      "Semantic Ontologist",
+      "Linguist"
+    ],
+    "edu": "master",
+    "interests": [
+      "words",
+      "teaching",
+      "social",
+      "tech"
+    ],
+    "degrees": [
+      "arts",
+      "education",
+      "computing"
+    ],
+    "aiTag": "hybrid",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk"
+    ]
+  },
+  {
+    "id": "martial-arts-self-defense-master",
+    "cat": "service",
+    "catName": "Human Care & Services",
+    "icon": "🥋",
+    "title": "Martial Arts Master & Combat Defensive Instructor",
+    "tagline": "Forge physical discipline, inner mastery, and real-world defense",
+    "desc": "Instruct students in Brazilian Jiu-Jitsu, Karate, Muay Thai, Taekwondo, Krav Maga, or traditional arts (Kalaripayattu), fostering physical confidence and mental focus.",
+    "stream": "Open to Any Stream (Athletic & Traditional Apprenticeship)",
+    "salary": "Entry: $40K / ₹3-6 LPA · Mid: $75K / ₹8-18 LPA · Lead: $140K+ / ₹35 LPA+ (Dojo Owners)",
+    "regionalSalary": {
+      "in": "Entry: ₹3–6 LPA · Master Instructor / Academy Owner (BJJ / MMA / Kalaripayattu Gurukkal): ₹10–35 LPA",
+      "us": "Entry: $45,000 · BJJ Black Belt Academy Owner / Law Enforcement Defensive Tactics Lead: $85,000–$165,000",
+      "uk": "Entry: £26,000 · Dojo Chief Instructor / MMA Coach: £45,000–£85,000",
+      "me": "UAE Jiu-Jitsu National School Program & Armed Forces Instructor: AED 180K–AED 360K (Tax-Free)",
+      "global": "$40K – $140K with international seminar circuits and specialized security contracts"
+    },
+    "growth": "12% (Rising Focus on Fitness & Personal Safety)",
+    "demand": "Steady Evergreen Demand",
+    "aiImpact": "Human-Centric — Physical touch, pressure-testing combat resistance, muscle memory correction, and moral mentor-disciple bonds are 100% human.",
+    "overview": "A martial arts teacher does not merely teach people how to punch and grapple; they transform fear into confidence and aggression into disciplined calm. In 2026, whether running a world-class Brazilian Jiu-Jitsu academy, teaching life-saving self-defense to young women, coaching competitive MMA fighters, or training police swat teams in tactical close-quarters defense, you guide humans to master both their bodies and their minds.",
+    "education": {
+      "highSchoolPrereqs": "Physical Education, Biology, Kinesiology, Sports Science.",
+      "entranceExams": "Dan Black Belt grading examinations under international federations (IBJJF, WKF, WT, Krav Maga Global).",
+      "undergradDegrees": [
+        "B.P.Ed / B.Sc. in Physical Education & Sports Coaching",
+        "B.S. in Kinesiology & Exercise Physiology",
+        "Traditional Apprenticeship under a Recognized Grandmaster / Gurukkal"
+      ],
+      "postgradDegrees": [
+        "Master of Physical Education (M.P.Ed) in Combat Sports",
+        "Sports Psychology & Athletic Conditioning Certification"
+      ],
+      "certifications": [
+        "IBJJF Black Belt Instructor Certification",
+        "Tactical Defensive Tactics Instructor (Law Enforcement / Krav Maga)",
+        "CPR, First Aid & Sports Injury Traumatology"
+      ],
+      "topInstitutes": [
+        "Netaji Subhas National Institute of Sports (NSNIS Patiala, India)",
+        "Kodokan Judo Institute (Tokyo, Japan)",
+        "Kukkiwon World Taekwondo Headquarters (Seoul, South Korea)",
+        "American College of Sports Medicine (ACSM, USA)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–4: Dedicated training from white to purple/brown belt, assistant coaching children's classes, refereeing regional tournaments.",
+      "phase2": "Years 4–8: Earning Black Belt, head coach at established martial arts center, conducting corporate women's self-defense workshops.",
+      "phase3": "Years 8+: Founder of premier martial arts dojo franchise, coaching national champion athletes, international seminar master."
+    },
+    "skills": {
+      "hardSkills": [
+        "Biomechanical Leverage & Grappling Kinematics",
+        "Striking & Evasion Cadence",
+        "Law Enforcement Control Tactics",
+        "Pedagogical Curriculum Structuring",
+        "Sports Injury Prevention & First Aid"
+      ],
+      "softSkills": [
+        "Patient Mentorship",
+        "Moral Responsibility & Humility",
+        "Commanding Classroom Presence",
+        "Psychological De-escalation"
+      ]
+    },
+    "roles": [
+      "Head Martial Arts Instructor",
+      "BJJ / MMA Head Coach",
+      "Police Defensive Tactics Instructor",
+      "Women's Self-Defense Specialist",
+      "Traditional Arts Master (Kalaripayattu / Kung Fu)",
+      "Dojo Franchise Entrepreneur"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Deep physical discipline",
+        "Loves working hands-on with people of all ages",
+        "Protective, honorable, and humble nature",
+        "Values physical longevity and wellness"
+      ],
+      "workStyle": "Active physical dojo environment, evening and weekend classes, physical sparring, energetic group training.",
+      "pros": [
+        "Transforming vulnerable people into confident, empowered human beings",
+        "Lifelong personal physical fitness and vitality",
+        "Immense community respect and loyal student bonds"
+      ],
+      "cons": [
+        "Physical wear and tear on joints and cartilage over decades",
+        "Working evenings and weekends when students are off work",
+        "Commercial business pressures of managing gym rent and student retention"
+      ]
+    },
+    "reflectionQuestions": [
+      "Do I love teaching the foundational basics to a timid beginner just as much as sparring with an advanced athlete?",
+      "Can I embody patience, self-restraint, and moral honor every day on the mats?"
+    ],
+    "resources": [
+      "International Brazilian Jiu-Jitsu Federation (IBJJF.com)",
+      "World Karate Federation (WKF.net)",
+      "Krav Maga Global (krav-maga.com)"
+    ],
+    "aka": [
+      "Martial Arts Instructor",
+      "Sensei",
+      "BJJ Coach",
+      "Self-Defense Trainer",
+      "MMA Coach",
+      "Gurukkal"
+    ],
+    "edu": "nodegree",
+    "interests": [
+      "sport",
+      "health",
+      "people",
+      "law"
+    ],
+    "degrees": [
+      "vocational",
+      "education",
+      "any"
+    ],
+    "aiTag": "human",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk",
+      "me"
+    ]
+  },
+  {
+    "id": "sports-agent-athlete-manager",
+    "cat": "biz",
+    "catName": "Business & Finance",
+    "icon": "🏅",
+    "title": "Sports Agent & Athlete Commercial Negotiator",
+    "tagline": "Represent the world's elite athletes and negotiate multi-million dollar deals",
+    "desc": "Negotiate professional team contracts, endorsement deals, image rights, and post-retirement business ventures for cricketers, footballers, and Olympic athletes.",
+    "stream": "Commerce / Law / Business / Sports Management",
+    "salary": "Entry: $70K / ₹8-15 LPA · Mid: $135K / ₹22-50 LPA · Lead: $300K+ / ₹1 Cr+ (Commissions)",
+    "regionalSalary": {
+      "in": "Entry: ₹8–15 LPA · Senior Cricket/IPL Athlete Agent: ₹35L–₹1.5+ Cr (3–10% commission on commercial deals)",
+      "us": "Entry: $75,000 · Certified NFL/NBA/MLB Agent: $150,000–$650,000+ (Regulated commission caps)",
+      "uk": "Entry: £42,000 · FIFA Licensed Football Agent: £85,000–£350,000+",
+      "me": "Gulf Sports League & Saudi Pro League Talent Representative: AED 280K–AED 750K",
+      "global": "$70K – $300K+ tied directly to athlete contract value and endorsement volume"
+    },
+    "growth": "16% (Fueled by IPL, Premier League, NIL, and Global Sports Leagues)",
+    "demand": "High Stakes Commercial",
+    "aiImpact": "Augmented — AI models player market value and performance analytics, but closing blockbuster transfer negotiations and managing human athlete trust is deeply interpersonal.",
+    "overview": "Sports Agents are part legal eagle, part commercial dealmaker, and part personal confidant. When an IPL cricket star signs a ₹15-crore auction contract or an athlete inks a global sneaker deal, the sports agent is the mastermind behind the scenes. You protect your athlete from predatory brand deals, negotiate performance bonuses, manage crisis PR when scandals erupt, and secure their financial legacy long after they leave the playing field.",
+    "education": {
+      "highSchoolPrereqs": "Business Studies, Economics, Legal Studies, Physical Education, English.",
+      "entranceExams": "BCCI / FIFA Licensed Football Agent Exam, Bar Examination (for sports lawyers), CAT/GMAT for Sports Management MBAs.",
+      "undergradDegrees": [
+        "B.A. LL.B. (Sports Law & Contract Law)",
+        "BBA in Sports Management & Marketing",
+        "B.S. in Sports Business & Athletic Administration"
+      ],
+      "postgradDegrees": [
+        "Master of Sports Law (LL.M.)",
+        "MBA in Sports Management (IIM Rohtak / Loughborough / Columbia)"
+      ],
+      "certifications": [
+        "FIFA Football Agent License",
+        "BCCI Registered Player Agent Accreditation",
+        "Sports Contract Negotiation & Image Rights Licensing"
+      ],
+      "topInstitutes": [
+        "IIM Rohtak (Executive Post Graduate Programme in Sports Management, India)",
+        "National Sports University (Manipur, India)",
+        "Loughborough University School of Sport (UK)",
+        "Columbia University Sports Management (USA)",
+        "ISDE Law & Business School (Madrid, Spain)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–3: Junior talent scout at a major sports marketing agency (IMG, RISE, Baseline), coordinating brand shoot logistics, contract compliance tracking.",
+      "phase2": "Years 3–7: Certified Sports Agent representing a roster of top national athletes, negotiating IPL/ISL player contracts and brand endorsements.",
+      "phase3": "Years 7+: Managing Director of Sports Talent Agency, managing marquee global icons, structuring venture investment funds for athlete capital."
+    },
+    "skills": {
+      "hardSkills": [
+        "Sports Contract Drafting & Arbitration",
+        "Athlete Intellectual Property & Image Rights",
+        "Brand Endorsement Valuation",
+        "Salary Cap & Transfer Market Economics",
+        "Crisis Public Relations"
+      ],
+      "softSkills": [
+        "Persuasive Commercial Negotiation",
+        "Fierce Protective Loyalty to Clients",
+        "High Emotional Intelligence with Young Athletes",
+        "Discretion & Poise under Media Spotlight"
+      ]
+    },
+    "roles": [
+      "Professional Sports Agent",
+      "Athlete Commercial Manager",
+      "Sports Marketing Director",
+      "Player Contract Negotiator",
+      "Athletic Brand Partnerships Lead",
+      "Sports Lawyer"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Passionate sports enthusiast with shark-like commercial instincts",
+        "Charismatic relationship-builder",
+        "Protective mentor",
+        "Excels at high-stakes negotiation"
+      ],
+      "workStyle": "High-profile networking events, traveling with athletes to major tournaments and stadiums, round-the-clock phone availability.",
+      "pros": [
+        "Walking onto stadium turf and watching your clients triumph",
+        "High commission earnings on multi-crore athlete contracts",
+        "Exciting, glamorous sports industry lifestyle"
+      ],
+      "cons": [
+        "24/7 client demands and unpredictable personal emergencies",
+        "Risk of an athlete firing you after years of hard work",
+        "High stress during transfer windows and league auctions"
+      ]
+    },
+    "reflectionQuestions": [
+      "Can I advocate relentlessly for a young athlete's best financial interests against experienced corporate negotiators?",
+      "Do I have the patience to guide an emotional 20-year-old athlete through both championship glory and catastrophic injury?"
+    ],
+    "resources": [
+      "FIFA Agent Platform (fifa.com/legal/football-regulatory/agents)",
+      "Sports Business Journal (sportsbusinessjournal.com)",
+      "Association of Sports Agents"
+    ],
+    "aka": [
+      "Sports Agent",
+      "Athlete Manager",
+      "Player Agent",
+      "Sports Talent Representative",
+      "Sports Lawyer"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "sport",
+      "business",
+      "law",
+      "people"
+    ],
+    "degrees": [
+      "management",
+      "law",
+      "commerce"
+    ],
+    "aiTag": "hybrid",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk",
+      "me"
+    ]
+  },
+  {
+    "id": "cruise-ship-hotel-director",
+    "cat": "hosp",
+    "catName": "Hospitality & Tourism",
+    "icon": "🚢",
+    "title": "Cruise Ship Hotel Director & Maritime Hospitality Officer",
+    "tagline": "Run a 5-star floating city with 5,000 guests across the world's oceans",
+    "desc": "Direct hotel operations, fine dining kitchens, luxury accommodations, Broadway-scale entertainment, and guest services aboard mega cruise ships.",
+    "stream": "Hospitality / Commerce / Management",
+    "salary": "Entry: $55K / ₹8-14 LPA · Mid: $95K / ₹18-35 LPA · Lead: $165K+ / ₹55 LPA+ (Tax-Free)",
+    "regionalSalary": {
+      "in": "Entry: ₹8–14 LPA · Hotel General Manager at Sea: ₹25–55 LPA (100% Tax-Free + zero living expenses)",
+      "us": "Entry: $58,000 · Luxury Cruise Ship Hotel Director: $110,000–$185,000 (Room & board provided)",
+      "uk": "Entry: £32,000 · Maritime Hotel Services Lead: £65,000–£120,000",
+      "me": "Gulf Luxury Mega-Yacht & Superyacht Hospitality Director: AED 240K–AED 520K (Tax-Free)",
+      "global": "$55K – $165K tax-free maritime earnings with worldwide circumnavigation"
+    },
+    "growth": "14% (Post-Pandemic Cruise Travel Boom)",
+    "demand": "High Global Demand",
+    "aiImpact": "Human-Centric — AI manages cabin scheduling and galley inventory, but high-touch luxury guest hospitality and nautical safety leadership remain deeply human.",
+    "overview": "A modern mega-cruise ship is a luxury resort, culinary capital, and entertainment arena floating in the middle of the Atlantic or Mediterranean. As Hotel Director, you outrank everyone on board except the Captain. You oversee 1,500 hospitality crew members, coordinate 20 specialty restaurants, direct housekeeping across 3,000 guest staterooms, resolve VIP emergencies, and ensure flawless luxury standards while sailing between global ports.",
+    "education": {
+      "highSchoolPrereqs": "English, Hospitality Studies, Economics, Geography, Foreign Languages.",
+      "entranceExams": "NCHMCT JEE (India), International Hotel School Entrance, STCW Maritime Safety Mandatory Modules.",
+      "undergradDegrees": [
+        "B.Sc. in Hospitality & Hotel Administration (IHM)",
+        "Bachelor of International Hotel & Resort Management",
+        "BBA in Cruise Operations & Maritime Tourism"
+      ],
+      "postgradDegrees": [
+        "Master in International Hospitality & Luxury Brand Management",
+        "Executive Maritime Hotel Operations Diploma"
+      ],
+      "certifications": [
+        "STCW 95 / 2010 (Standards of Training, Certification and Watchkeeping)",
+        "USPH (United States Public Health) & Vessel Sanitation Inspections",
+        "Crowd Management & Crisis Leadership at Sea"
+      ],
+      "topInstitutes": [
+        "Institute of Hotel Management (IHM Pusa New Delhi / Mumbai, India)",
+        "EHL Hospitality Business School (Lausanne, Switzerland)",
+        "Glion Institute of Higher Education (Switzerland)",
+        "Cornell University School of Hotel Administration (USA)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–3: Guest Services Officer or Assistant F&B Manager aboard ship, mastering maritime safety protocols and international crew dynamics.",
+      "phase2": "Years 3–8: Food & Beverage Director or Guest Services Director, managing multi-million dollar galley budgets and passenger satisfaction scores.",
+      "phase3": "Years 8+: Cruise Hotel Director, leading complete hotel division of a mega-ship, or onshore Vice President of Fleet Hotel Operations."
+    },
+    "skills": {
+      "hardSkills": [
+        "Maritime Vessel Sanitation Standards (USPH)",
+        "Multi-Outlet Food & Beverage Logistics at Sea",
+        "Hotel Revenue & Onboard Spend Maximization",
+        "STCW Crisis & Crowd Management",
+        "Cross-Cultural Crew Leadership"
+      ],
+      "softSkills": [
+        "Exceptional Charm & Guest Empathy",
+        "Grace Under High-Pressure Maritime Emergencies",
+        "Stamina for 4-to-6 Month Sea Contracts",
+        "Decisive Organizational Command"
+      ]
+    },
+    "roles": [
+      "Cruise Ship Hotel Director",
+      "Food & Beverage Director at Sea",
+      "Guest Services Manager",
+      "Private Mega-Yacht Estate Director",
+      "Fleet Hospitality Operations Manager",
+      "Cruise Shore Excursion Director"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Loves the sea, travel, and adventure",
+        "Natural hospitality host with executive authority",
+        "Thrives living in dynamic, multicultural communities",
+        "Enjoys high-responsibility leadership"
+      ],
+      "workStyle": "4 to 6 months continuously living aboard the ship, followed by 2 months paid vacation. 7 days a week on-call during sea voyages.",
+      "pros": [
+        "Wake up in a different world port every morning (Caribbean, Alaska, Mediterranean)",
+        "Nearly 100% of earnings can be saved (zero rent, food, or utility bills onboard)",
+        "Prestige of leading an iconic luxury vessel"
+      ],
+      "cons": [
+        "Prolonged absence from family and friends on land",
+        "Rigorous public health and maritime safety inspections",
+        "Long working hours every day with no traditional weekends while on contract"
+      ]
+    },
+    "reflectionQuestions": [
+      "Can I thrive living on a ship for 5 months at a time, leading hundreds of crew members from 40 different nations?",
+      "Do I have the hospitality passion to ensure 4,000 vacationing guests experience the journey of a lifetime?"
+    ],
+    "resources": [
+      "Cruise Lines International Association (cruising.org)",
+      "Institute of Hospitality (instituteofhospitality.org)",
+      "Maritime and Coastguard Agency (MCA) STCW Guidelines"
+    ],
+    "aka": [
+      "Hotel Director",
+      "Cruise Director",
+      "Maritime Hotel Manager",
+      "Shipboard General Manager",
+      "Yacht Captain Hospitality Lead"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "food",
+      "people",
+      "transport",
+      "business"
+    ],
+    "degrees": [
+      "management",
+      "vocational",
+      "any"
+    ],
+    "aiTag": "human",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk",
+      "me"
+    ]
+  },
+  {
+    "id": "food-critic-michelin-inspector",
+    "cat": "hosp",
+    "catName": "Hospitality & Tourism",
+    "icon": "🍽️",
+    "title": "Food Critic, Travel Essayist & Restaurant Inspector",
+    "tagline": "Evaluate the culinary arts and shape the global gastronomic landscape",
+    "desc": "Dine anonymously at world-class restaurants, evaluate culinary technique and flavor architecture, and author authoritative reviews for guides and editorial publications.",
+    "stream": "Humanities / Culinary Arts / Journalism / English",
+    "salary": "Entry: $45K / ₹4-8 LPA · Mid: $75K / ₹10-22 LPA · Lead: $135K+ / ₹35 LPA+ (Dining Expensed)",
+    "regionalSalary": {
+      "in": "Entry: ₹4–8 LPA · Top Food Editor / National Culinary Columnist: ₹14–35 LPA + all dining expenses",
+      "us": "Entry: $48,000 · Chief Restaurant Critic (NYT / Eater / LA Times): $85,000–$145,000 + dining accounts",
+      "uk": "Entry: £26,000 · National Restaurant Critic (Guardian / Times): £45,000–£82,000",
+      "me": "Gastronomy & Luxury Dining Editor (Dubai/Doha Michelin Guides): AED 170K–AED 340K",
+      "global": "$45K – $135K with extensive travel dining stipends and book deals"
+    },
+    "growth": "8% (Transformed by Digital Newsletters & Creator Gastronomy)",
+    "demand": "Prestigious Creative Niche",
+    "aiImpact": "Human-Centric — Taste buds, olfactory sensory nuance, atmosphere perception, and human culinary passion cannot be replicated by algorithms.",
+    "overview": "A Food Critic is far more than someone who likes taking photos of food; they are culinary historians, sensory analysts, and master prose stylists. Whether reviewing Michelin three-star tasting menus in Tokyo and Paris, hunting down the best highway dhaba along the Grand Trunk Road, or operating as an anonymous full-time Michelin Guide inspector, you evaluate culinary balance, texture, ingredient provenance, and hospitality craft.",
+    "education": {
+      "highSchoolPrereqs": "English Literature, Culinary Arts, Chemistry (Sensory Science), History, French/Foreign Language.",
+      "entranceExams": "No formal entrance exam. Portfolio of published food essays, culinary institute diplomas, or sensory evaluation tests.",
+      "undergradDegrees": [
+        "B.A. in English Literature / Journalism",
+        "Bachelor of Culinary Arts & Gastronomy (Culinary Institute of America / IHM)",
+        "B.S. in Food Science & Sensory Evaluation"
+      ],
+      "postgradDegrees": [
+        "Master in Gastronomy & Food Studies (University of Gastronomic Sciences, Italy)",
+        "M.A. in Cultural Journalism"
+      ],
+      "certifications": [
+        "WSET Level 2/3 Wine & Spirits Award",
+        "Certified Sensory Panelist / Flavor Analysis Credential",
+        "Culinary Professional Certification (ACF)"
+      ],
+      "topInstitutes": [
+        "Culinary Institute of America (CIA Hyde Park, USA)",
+        "Le Cordon Bleu (Paris, France)",
+        "University of Gastronomic Sciences (Pollenzo, Italy)",
+        "Welcomgroup Graduate School of Hotel Administration (WGSHA Manipal, India)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–3: Editorial assistant at food magazine or lifestyle portal, running street-food blog, building encyclopedic palate across global cuisines.",
+      "phase2": "Years 3–7: Staff restaurant critic for major daily newspaper, judging culinary competitions, publishing narrative food essays.",
+      "phase3": "Years 7+: Lead Restaurant Critic, anonymous Michelin Guide Inspector, author of bestselling culinary travelogues, culinary documentary host."
+    },
+    "skills": {
+      "hardSkills": [
+        "Gastronomic Flavor Architecture & Palate Memory",
+        "Classical Culinary Technique Evaluation",
+        "Evocative Sensory Prose Writing",
+        "Wine Pairing & Sommelier Foundations",
+        "Ethical Anonymous Dining Protocol"
+      ],
+      "softSkills": [
+        "Complete Unbiased Integrity",
+        "Sensory Nuance & Articulation",
+        "Discretion (Protecting Anonymous Identity)",
+        "Emotional Cultural Respect"
+      ]
+    },
+    "roles": [
+      "Chief Restaurant Critic",
+      "Anonymous Michelin Guide Inspector",
+      "Culinary Travel Journalist",
+      "Gastronomic Author",
+      "Food Magazine Editor-in-Chief",
+      "Sensory Experience Consultant"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Refined, adventurous palate willing to taste anything",
+        "Gifted prose writer who can describe taste in vivid metaphors",
+        "Uncompromising ethical honesty",
+        "Passionate about culture and chefs"
+      ],
+      "workStyle": "Eating out 5 to 7 nights a week, writing detailed sensory notes late at night, traveling to regional culinary capitals.",
+      "pros": [
+        "Eating the most extraordinary food on the planet as your job",
+        "Profound influence on the fortunes and recognition of hard-working chefs",
+        "Generous dining and travel expense accounts"
+      ],
+      "cons": [
+        "Physical health toll of heavy dining, sodium, and constant eating out",
+        "Strict need for anonymity (cannot reveal face in public as an official inspector)",
+        "Emotional weight of writing negative reviews that impact livelihoods"
+      ]
+    },
+    "reflectionQuestions": [
+      "Can I articulate the difference between good olive oil and transcendent olive oil in three memorable sentences?",
+      "Can I remain completely objective and refuse to accept free meals or VIP treatment that compromises my integrity?"
+    ],
+    "resources": [
+      "James Beard Foundation Journalism Awards",
+      "Michelin Guide Behind the Scenes",
+      "Ruth Reichl's 'Garlic and Sapphires: The Secret Life of a Critic in Disguise'"
+    ],
+    "aka": [
+      "Food Critic",
+      "Restaurant Inspector",
+      "Food Writer",
+      "Gastronomy Journalist",
+      "Culinary Essayist"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "food",
+      "words",
+      "creative",
+      "transport"
+    ],
+    "degrees": [
+      "arts",
+      "vocational",
+      "any"
+    ],
+    "aiTag": "human",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk",
+      "me"
+    ]
+  },
+  {
+    "id": "tea-coffee-wine-estate-director",
+    "cat": "agri",
+    "catName": "Agriculture, Forestry & Food",
+    "icon": "☕",
+    "title": "Tea, Specialty Coffee & Wine Estate Manager (Viticulturist)",
+    "tagline": "Cultivate world-class terroir, single-origin crops, and heritage estates",
+    "desc": "Manage historic tea gardens in Darjeeling, high-altitude coffee plantations in Coorg, or vineyard terroir in Napa and Bordeaux, uniting soil science with artisanal craftsmanship.",
+    "stream": "Agriculture / Science / Horticulture / Management",
+    "salary": "Entry: $52K / ₹6-11 LPA · Mid: $88K / ₹15-28 LPA · Lead: $155K+ / ₹50 LPA+ (Bungalow Perks)",
+    "regionalSalary": {
+      "in": "Entry: ₹6–11 LPA · Senior Tea/Coffee Estate Manager (Assam/Darjeeling/Chikmagalur): ₹18–45 LPA + sprawling colonial bungalow, domestic staff & vehicle",
+      "us": "Entry: $55,000 · Napa Valley Vineyard & Winery Estate Director: $95,000–$185,000",
+      "uk": "English Sparkling Wine Vineyard Manager: £35,000–£75,000",
+      "me": "Specialty Roastery & High-End Agro-Trading Director: AED 210K–AED 420K",
+      "global": "$52K – $155K with heritage estate living perks across premier global terroirs"
+    },
+    "growth": "11% (Fueled by Specialty Coffee & Terroir Artisanship)",
+    "demand": "Timeless Prestige Craft",
+    "aiImpact": "Augmented — Drones track leaf moisture and microclimates, but judging fermentation aroma, plucking flush quality, and pruning terroir requires human touch.",
+    "overview": "Running a heritage plantation or vineyard is one of the most idyllic yet demanding executive jobs on Earth. Whether managing a 1,000-acre second-flush Darjeeling tea garden, a high-altitude shade-grown Arabica estate in the Western Ghats, or a premier vineyard in Bordeaux, you balance microclimate agronomy with factory processing, seasonal labor leadership, and direct-trade export relationships with luxury buyers in London, Tokyo, and New York.",
+    "education": {
+      "highSchoolPrereqs": "Biology, Chemistry, Agriculture, Geography, Business Studies.",
+      "entranceExams": "ICAR AIEEA (India Agriculture), National Tea Management Institute Entrance, UC Davis Viticulture Admission.",
+      "undergradDegrees": [
+        "B.Sc. (Hons) in Agriculture / Horticulture",
+        "B.S. in Viticulture & Enology (Wine Science)",
+        "B.Sc. in Plantation Management / Food Technology"
+      ],
+      "postgradDegrees": [
+        "M.Sc. in Tea Science & Plantation Management (Assam Agricultural University / Tocklai)",
+        "Master of Viticulture & Winemaking",
+        "MBA in Agribusiness Management (IIM Ahmedabad - FABM)"
+      ],
+      "certifications": [
+        "Q-Grader Certified Coffee Cupper (Coffee Quality Institute)",
+        "Certified Tea Sommelier / Professional Tea Taster",
+        "WSET Level 3/4 in Wine Terroir & Production"
+      ],
+      "topInstitutes": [
+        "Tocklai Tea Research Institute (Jorhat, Assam — world's oldest tea research station)",
+        "University of California, Davis (Department of Viticulture & Enology, USA)",
+        "Bordeaux Sciences Agro (France)",
+        "Assam Agricultural University / University of Agricultural Sciences (Bangalore, India)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–3: Assistant Estate Manager, rising at 5 AM for field muster, supervising seasonal plucking/harvesting crews, monitoring fermentation moisture.",
+      "phase2": "Years 3–8: Factory & Division Manager, mastering cup tasting and sensory blending, optimizing organic soil regeneration, executing international specialty auctions.",
+      "phase3": "Years 8+: Senior General Manager of historic tea/coffee company, managing multi-estate operations, pioneering luxury single-origin exports."
+    },
+    "skills": {
+      "hardSkills": [
+        "Terroir Soil Chemistry & Canopy Management",
+        "Fermentation & Oxidation Control",
+        "Sensory Cupping & Professional Tea Tasting",
+        "Plantation Labor Welfare & Fair Trade Compliance",
+        "Export Supply Chain Logistics"
+      ],
+      "softSkills": [
+        "Paternal/Maternal Community Leadership",
+        "Deep Connection with Nature & Climate",
+        "Sensory Refinement",
+        "Calm in Extreme Rural Isolation"
+      ]
+    },
+    "roles": [
+      "Tea Estate Superintendent",
+      "Coffee Plantation Director",
+      "Vineyard Manager & Viticulturist",
+      "Master Tea Taster & Blender",
+      "Q-Grader Specialty Coffee Sourcing Lead",
+      "Estate Agribusiness Executive"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Passionate about nature, agriculture, and artisanal taste",
+        "Loves living in scenic mountain valleys and misty plantations",
+        "Strong, compassionate community leader",
+        "Hands-on manager"
+      ],
+      "workStyle": "Early 5:30 AM mornings, walking lush plantation fields in rubber boots, visiting processing factories, cupping tasting sessions, serene country living.",
+      "pros": [
+        "Unmatched lifestyle: living in sprawling historic estate bungalows surrounded by pristine misty hills",
+        "Working with iconic natural products celebrated around the world",
+        "Close-knit estate community where generations of families work together"
+      ],
+      "cons": [
+        "Physical isolation from bustling modern metro cities",
+        "Vulnerability of crops to unseasonal monsoons, hail, and climate change",
+        "Managing large labor forces with complex seasonal demands"
+      ]
+    },
+    "reflectionQuestions": [
+      "Can I happily make my life in a beautiful, remote mountain plantation far away from shopping malls and nightlife?",
+      "Do I possess the sensory palate and scientific curiosity to turn soil, rainfall, and sunlight into extraordinary taste?"
+    ],
+    "resources": [
+      "Tocklai Tea Research Association (tocklai.org)",
+      "Specialty Coffee Association (SCA.coffee)",
+      "UC Davis Department of Viticulture and Enology"
+    ],
+    "aka": [
+      "Tea Planter",
+      "Estate Manager",
+      "Coffee Plantation Manager",
+      "Viticulturist",
+      "Vineyard Director"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "outdoors",
+      "science",
+      "business",
+      "food"
+    ],
+    "degrees": [
+      "science",
+      "management",
+      "vocational"
+    ],
+    "aiTag": "human",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk",
+      "me"
+    ]
+  },
+  {
+    "id": "humanitarian-aid-un-officer",
+    "cat": "service",
+    "catName": "Human Care & Services",
+    "icon": "🕊️",
+    "title": "Humanitarian Aid & UN International Development Officer",
+    "tagline": "Protect vulnerable refugees, deliver crisis relief, and build lasting peace",
+    "desc": "Coordinate emergency refugee camps, deliver life-saving food logistics, manage post-conflict reconstruction, and uphold human rights for UN agencies (UNHCR, WFP, UNICEF, Red Cross).",
+    "stream": "Humanities / Social Sciences / Law / Economics",
+    "salary": "Entry: $65K / ₹9-16 LPA · Mid: $115K / ₹22-45 LPA · Lead: $180K+ / ₹75 LPA+ (Tax-Free UN Scales)",
+    "regionalSalary": {
+      "in": "UN Country Office / International NGO (Oxfam/Doctors Without Borders): ₹12–₹35 LPA (Tax-exempt for international staff)",
+      "us": "UN Headquarters (New York) P2–P5 Professional Scales: $78,000–$165,000 net tax-free + post adjustment + hardship allowances",
+      "uk": "UN / Commonwealth Development Officer (Geneva/London): £55,000–£120,000",
+      "me": "UN Regional Crisis Response Hub (Amman/Dubai Humanitarian City): AED 280K–AED 580K (Tax-Free)",
+      "global": "$65K – $180K tax-free UN civil service scales with extensive hardship hazard pay"
+    },
+    "growth": "12% (Rising Global Humanitarian Crises)",
+    "demand": "High Global Mission Need",
+    "aiImpact": "Human-Centric — Satellite algorithms map refugee displacement, but physical human diplomacy, child protection, and negotiating safe corridors with armed factions are 100% human courage.",
+    "overview": "Humanitarian Aid Officers are the world's rapid responders to human suffering. When earthquakes strike, famine looms, or war displaces millions, you arrive with blue UN helmets or Red Cross flags. You coordinate cargo planes of emergency water purification tablets, negotiate humanitarian ceasefires with local warlords, establish schools inside sprawling refugee camps, and design sustainable economic programs that help war-torn communities rebuild.",
+    "education": {
+      "highSchoolPrereqs": "Political Science, History, Economics, Sociology, Geography, Foreign Languages (French/Arabic/Spanish).",
+      "entranceExams": "UN Young Professionals Programme (UN YPP) Exam, International Diplomatic Exams, Master's in International Development admission.",
+      "undergradDegrees": [
+        "B.A. in International Relations & Peace Studies",
+        "B.A. in Human Rights & Humanitarian Law",
+        "B.S. in Global Public Health or Development Economics"
+      ],
+      "postgradDegrees": [
+        "Master in International Affairs (MIA) / International Humanitarian Action (NOHA)",
+        "Master of Public Health (MPH) in Disaster Management"
+      ],
+      "certifications": [
+        "UN BSAFE Advanced Security in the Field Certification",
+        "SPHERE Standards in Humanitarian Response",
+        "Hostage & Crisis Survival in Conflict Zones (HEAT Training)"
+      ],
+      "topInstitutes": [
+        "Geneva Graduate Institute (IHEID, Switzerland)",
+        "School of International and Public Affairs (SIPA - Columbia University, USA)",
+        "Tata Institute of Social Sciences (TISS Mumbai, India)",
+        "London School of Economics & Political Science (LSE, UK)",
+        "Sciences Po Paris (France)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–3: UN Volunteer (UNV) or field associate in emergency zones, managing food distribution logs, conducting rapid needs assessments in refugee settlements.",
+      "phase2": "Years 3–8: Head of Sub-Office (P3 Level), managing multi-million-dollar emergency relief programs, coordinating with government ministries and international donors.",
+      "phase3": "Years 8+: UN Country Representative (P5/D1), Special Envoy to conflict zones, leading major international humanitarian operations."
+    },
+    "skills": {
+      "hardSkills": [
+        "Emergency Logistics & Supply Chain In Conflict",
+        "Humanitarian Protection & Refugee Law",
+        "SPHERE Humanitarian Guidelines",
+        "Disaster Rapid Assessment GIS",
+        "Donor Grant Proposal Writing"
+      ],
+      "softSkills": [
+        "Profound Moral Resilience",
+        "Cross-Cultural Diplomatic Tact",
+        "Calm Under Military / Conflict Threat",
+        "Deep Empathy without Burnout"
+      ]
+    },
+    "roles": [
+      "UN Protection Officer (UNHCR)",
+      "Humanitarian Affairs Officer (UN OCHA)",
+      "Emergency Food Logistics Specialist (WFP)",
+      "Disaster Response Director",
+      "Peacebuilding & Conflict Resolution Specialist",
+      "Child Rights Officer (UNICEF)"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Driven by a profound humanitarian conscience",
+        "Adventurous, fearless traveler",
+        "Willing to live in difficult hardship postings",
+        "Culturally humble and respectful"
+      ],
+      "workStyle": "Hardship field camps, conflict zones, refugee borders, rotating back to regional capitals or UN headquarters in Geneva/New York.",
+      "pros": [
+        "Work that directly saves thousands of innocent human lives",
+        "Tax-free international UN salary packages with excellent healthcare and pension",
+        "Unmatched global purpose and historic impact"
+      ],
+      "cons": [
+        "Physical danger from armed conflict, disease, and kidnapping",
+        "Emotional trauma from witnessing human suffering and mass displacement",
+        "Frequent disruption to personal and family life due to emergency transfers"
+      ]
+    },
+    "reflectionQuestions": [
+      "Am I willing to live in a basic tent camp with unpredictable electricity to help families who have lost everything?",
+      "Can I maintain hope, emotional stability, and professionalism when surrounded by tragedy?"
+    ],
+    "resources": [
+      "ReliefWeb (reliefweb.int) — Global Humanitarian Job Portal",
+      "United Nations Careers (careers.un.org)",
+      "SPHERE Standards Handbook (spherestandards.org)"
+    ],
+    "aka": [
+      "Humanitarian Officer",
+      "UN Development Specialist",
+      "Aid Worker",
+      "Refugee Protection Officer",
+      "Relief Coordinator"
+    ],
+    "edu": "master",
+    "interests": [
+      "social",
+      "people",
+      "law",
+      "outdoors"
+    ],
+    "degrees": [
+      "arts",
+      "law",
+      "economics"
+    ],
+    "aiTag": "human",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk",
+      "me"
+    ]
+  },
+  {
+    "id": "ngo-social-enterprise-director",
+    "cat": "biz",
+    "catName": "Business & Finance",
+    "icon": "🌱",
+    "title": "NGO & Social Enterprise Executive Director",
+    "tagline": "Channel capital, innovation, and passion into systemic social change",
+    "desc": "Lead nonprofit foundations, social impact startups, and philanthropic programs addressing rural poverty, clean water, education, and women's empowerment.",
+    "stream": "Open to Any Stream (Commerce / Management / Humanities)",
+    "salary": "Entry: $55K / ₹7-12 LPA · Mid: $95K / ₹18-35 LPA · Lead: $170K+ / ₹60 LPA+",
+    "regionalSalary": {
+      "in": "Entry: ₹7–12 LPA · Executive Director (Tata Trusts / Azim Premji / Pratham / GiveIndia): ₹22–65 LPA",
+      "us": "Entry: $60,000 · Foundation Executive Director / Social Enterprise CEO: $110,000–$225,000",
+      "uk": "Entry: £32,000 · Chief Executive of Major Charity: £65,000–£135,000",
+      "me": "Philanthropic Foundation & Impact Investment Director (Dubai Cares): AED 240K–AED 480K",
+      "global": "$55K – $170K with high leadership mobility between corporate CSR and nonprofits"
+    },
+    "growth": "15% (Surging ESG, CSR & Impact Investing)",
+    "demand": "High Executive Demand",
+    "aiImpact": "Augmented — AI optimizes donor targeting and monitors programmatic metrics, while vision, community trust, and moral storytelling remain human.",
+    "overview": "Leading a modern social enterprise or major NGO is as demanding as running a venture-backed tech company—with the added mandate of eliminating poverty or disease. You manage multi-crore operating budgets, navigate strict corporate CSR compliance, motivate grassroots field workers in remote villages, pitch global philanthropic donors, and measure verifiable social return on investment (SROI).",
+    "education": {
+      "highSchoolPrereqs": "Economics, Sociology, Business Studies, Political Science, English, Mathematics.",
+      "entranceExams": "TISS NET (TISS Mumbai), CAT/GMAT for Rural Management / Social Entrepreneurship programs, IRMA Entrance.",
+      "undergradDegrees": [
+        "B.A. in Social Work (BSW) / Development Studies",
+        "BBA / B.Com in Social Entrepreneurship & Public Management",
+        "B.Tech with focus on Sustainable Rural Technologies"
+      ],
+      "postgradDegrees": [
+        "Post Graduate Diploma in Rural Management (IRMA Anand)",
+        "M.A. in Social Entrepreneurship / Development Studies (TISS Mumbai)",
+        "MBA in Non-Profit & Public Leadership"
+      ],
+      "certifications": [
+        "Social Return on Investment (SROI) Practitioner",
+        "Corporate Social Responsibility (CSR) Statutory Compliance Certification"
+      ],
+      "topInstitutes": [
+        "Tata Institute of Social Sciences (TISS Mumbai, India)",
+        "Institute of Rural Management Anand (IRMA, Gujarat, India)",
+        "Harvard Kennedy School / Harvard Business School Social Enterprise (USA)",
+        "Oxford Saïd Business School (Skoll Centre for Social Entrepreneurship, UK)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–3: Field program officer, community mobilization, drafting donor grant reports, monitoring school or health clinic interventions.",
+      "phase2": "Years 3–7: Program Director, managing nationwide social initiatives, leading fundraising galas, securing multi-crore corporate CSR partnerships.",
+      "phase3": "Years 7+: Executive Director / CEO of premier national NGO or global philanthropic foundation, advising national policy commissions."
+    },
+    "skills": {
+      "hardSkills": [
+        "Nonprofit Financial Governance & CSR Law",
+        "Grant Fundraising & Philanthropic Pitching",
+        "Social Return on Investment (SROI) Measurement",
+        "Grassroots Community Mobilization",
+        "Board of Trustees Management"
+      ],
+      "softSkills": [
+        "Inspiring Public Storytelling",
+        "High Empathy with Grassroots Communities",
+        "Moral Leadership Integrity",
+        "Fundraising Persistence"
+      ]
+    },
+    "roles": [
+      "NGO Executive Director",
+      "Social Enterprise Founder / CEO",
+      "Head of Corporate CSR",
+      "Philanthropic Foundation Program Director",
+      "Social Impact Investment Manager",
+      "Development Consultant"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Visionary leader driven by social justice",
+        "Combines high business acumen with deep compassion",
+        "Comfortable switching between village mud huts and corporate boardrooms",
+        "Resilient fundraiser"
+      ],
+      "workStyle": "Frequent travel between urban donor headquarters and rural field project sites, board governance meetings, inspiring public speaking.",
+      "pros": [
+        "Work that creates lasting, measurable upliftment for thousands of disadvantaged families",
+        "Deep personal fulfillment knowing your career builds a better world",
+        "High executive leadership autonomy"
+      ],
+      "cons": [
+        "Constant stress of grant renewal cycles and donor funding dependence",
+        "Navigating complex bureaucratic regulations and foreign funding laws (FCRA)",
+        "Emotional burnout from combating entrenched systemic social problems"
+      ]
+    },
+    "reflectionQuestions": [
+      "Can I present a business case to corporate billionaires with the same authenticity as sitting with rural villagers listening to their daily struggles?",
+      "Do I want to measure my career's success by lives changed rather than just corporate profit?"
+    ],
+    "resources": [
+      "Bridgespan Group Social Impact Insights (bridgespan.org)",
+      "Stanford Social Innovation Review (SSIR.org)",
+      "GuideStar / GiveIndia NGO Portal"
+    ],
+    "aka": [
+      "NGO Director",
+      "Social Entrepreneur",
+      "Nonprofit CEO",
+      "CSR Head",
+      "Foundation Director"
+    ],
+    "edu": "master",
+    "interests": [
+      "social",
+      "business",
+      "people",
+      "teaching"
+    ],
+    "degrees": [
+      "management",
+      "arts",
+      "commerce"
+    ],
+    "aiTag": "hybrid",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk",
+      "me"
+    ]
+  },
+  {
+    "id": "institutional-chaplain-counselor",
+    "cat": "service",
+    "catName": "Human Care & Services",
+    "icon": "🕯️",
+    "title": "Institutional Chaplain & Multifaith Spiritual Counselor",
+    "tagline": "Provide compassion, meaning, and spiritual comfort in humanity's hardest moments",
+    "desc": "Offer emotional, ethical, and spiritual care to patients in trauma hospitals, soldiers in military combat zones, university students, and hospice care recipients of all faiths.",
+    "stream": "Humanities / Philosophy / Theology / Psychology",
+    "salary": "Entry: $48K / ₹4-7 LPA · Mid: $72K / ₹8-15 LPA · Lead: $110K+ / ₹22 LPA+",
+    "regionalSalary": {
+      "in": "Hospital / Hospice / Defense Chaplain: ₹4–₹16 LPA + accommodation & spiritual community allowances",
+      "us": "Board Certified Hospital / Military / University Chaplain: $58,000–$115,000",
+      "uk": "NHS Hospital / Armed Forces Chaplain (Band 6–8): £36,000–£68,000",
+      "me": "Multifaith Airport & Institutional Pastoral Care Director: AED 140K–AED 260K",
+      "global": "$48K – $110K across accredited clinical pastoral and healthcare networks"
+    },
+    "growth": "10% (Rising Focus on Palliative Care & Holistic Mental Health)",
+    "demand": "Steady Compassionate Need",
+    "aiImpact": "Human-Centric — Holding a dying person's hand, comforting grieving parents, and offering genuine spiritual presence cannot be automated.",
+    "overview": "An institutional chaplain does not proselytize or preach; they provide a calm, sacred, non-judgmental human presence in moments of profound crisis. Working in intensive care trauma units, military battlefields, prison rehabilitation centers, and hospices, chaplains support people of all religious backgrounds—and those with no religion at all—as they wrestle with grief, mortality, moral injury, and the search for meaning.",
+    "education": {
+      "highSchoolPrereqs": "Philosophy, Psychology, World Religions, History, Literature, Sociology.",
+      "entranceExams": "Clinical Pastoral Education (CPE) accreditation review, theological endorsement by recognized religious body.",
+      "undergradDegrees": [
+        "B.A. in Philosophy, World Religions & Ethics",
+        "B.A. in Psychology & Pastoral Care",
+        "Bachelor of Divinity (B.Div) / Vedic/Islamic/Buddhist Classical Studies"
+      ],
+      "postgradDegrees": [
+        "Master of Divinity (M.Div) or Master in Counseling Psychology",
+        "Clinical Pastoral Education (CPE) Residency (4 Units Accredited)"
+      ],
+      "certifications": [
+        "Board Certified Chaplain (BCC — Association of Professional Chaplains)",
+        "Grief & Bereavement Counseling Credential",
+        "Trauma & Moral Injury Clinical Certification"
+      ],
+      "topInstitutes": [
+        "United Theological College (UTC Bangalore, India)",
+        "Harvard Divinity School (USA)",
+        "Oxford Faculty of Theology and Religion (UK)",
+        "Emory University Candler School of Theology (USA)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–3: Clinical Pastoral Education (CPE) resident in a major city hospital, assisting on night-shift trauma calls, sitting with grieving families.",
+      "phase2": "Years 3–7: Staff Chaplain in oncology or pediatric hospice, counseling patients through end-of-life decisions, leading hospital bioethics committees.",
+      "phase3": "Years 7+: Director of Spiritual Care, Chief Military Chaplain, university dean of religious and spiritual life."
+    },
+    "skills": {
+      "hardSkills": [
+        "Clinical Pastoral Care Protocols",
+        "End-of-Life Palliative Counseling",
+        "Bioethics & Medical Proxy Decision Navigation",
+        "Grief & Traumatic Bereavement Support",
+        "Multifaith Liturgical Rituals"
+      ],
+      "softSkills": [
+        "Profound Compassionate Presence",
+        "Active Non-Judgmental Listening",
+        "Emotional Stamina Amidst Death",
+        "Deep Serenity & Humility"
+      ]
+    },
+    "roles": [
+      "Hospital ICU / Hospice Chaplain",
+      "Military Combat Chaplain",
+      "University Campus Chaplain",
+      "Prison Rehabilitation Counselor",
+      "Director of Spiritual Care",
+      "Bioethics Consultant"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Deeply empathetic and compassionate",
+        "Comfortable with grief, tears, and silence",
+        "Values spirituality and human connection over material status",
+        "Non-judgmental to all belief systems"
+      ],
+      "workStyle": "Hospital wards, quiet hospice bedside rooms, counseling offices, on-call emergency night rotations.",
+      "pros": [
+        "Profoundly meaningful vocation touching human souls at their most honest moments",
+        "Universally respected and welcomed by doctors, nurses, and families",
+        "Immense inner peace and spiritual grounding"
+      ],
+      "cons": [
+        "Daily exposure to death, pediatric loss, and acute human suffering",
+        "Secondary traumatic stress and compassion fatigue risk",
+        "Modest financial compensation compared to commercial fields"
+      ]
+    },
+    "reflectionQuestions": [
+      "Can I sit quietly in a hospital room with a grieving family without rushing to offer easy cliches or empty answers?",
+      "Do I possess the emotional grounding to support someone whose faith or worldviews are completely different from my own?"
+    ],
+    "resources": [
+      "Association of Professional Chaplains (professionalchaplains.org)",
+      "National Association of Catholic Chaplains (NACC)",
+      "Journal of Health Care Chaplaincy"
+    ],
+    "aka": [
+      "Hospital Chaplain",
+      "Spiritual Counselor",
+      "Military Chaplain",
+      "Pastoral Care Specialist",
+      "Hospice Counselor"
+    ],
+    "edu": "master",
+    "interests": [
+      "people",
+      "social",
+      "words"
+    ],
+    "degrees": [
+      "arts",
+      "education"
+    ],
+    "aiTag": "human",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk"
+    ]
+  },
+  {
+    "id": "celebrity-personal-stylist",
+    "cat": "service",
+    "catName": "Human Care & Services",
+    "icon": "👠",
+    "title": "Celebrity Personal Stylist & Executive Image Consultant",
+    "tagline": "Architect iconic visual identities for stars, royals, and CEOs",
+    "desc": "Curate red carpet ensembles, executive wardrobe revamps, editorial photo-shoot looks, and personal visual brand aesthetics for high-profile public figures.",
+    "stream": "Fashion / Arts / Humanities / Open to Any Creative Talent",
+    "salary": "Entry: $48K / ₹4-8 LPA · Mid: $85K / ₹12-25 LPA · Lead: $180K+ / ₹55 LPA+ (Day Rates)",
+    "regionalSalary": {
+      "in": "Entry: ₹4–8 LPA · Bollywood / Celebrity Stylist: ₹15L–₹60+ Lakhs (₹25K–₹1L+ per day rate)",
+      "us": "Entry: $52,000 · Hollywood Red Carpet / A-List Stylist: $95,000–$250,000+ ($1,500–$5,000/day)",
+      "uk": "Entry: £28,000 · VIP & Royalty Wardrobe Consultant: £52,000–£110,000",
+      "me": "Dubai / Riyadh Royal Family & Luxury Personal Shopper: AED 210K–AED 450K (Tax-Free)",
+      "global": "$48K – $180K+ with lucrative luxury fashion brand kickbacks and private client retainers"
+    },
+    "growth": "16% (Driven by Social Media, Red Carpets & Executive Personal Branding)",
+    "demand": "High Commercial Glamour",
+    "aiImpact": "Hybrid — AI visualizers suggest color palettes and body silhouette fits, but physically sourcing couture garments, fitting on live bodies, and building client trust is human.",
+    "overview": "Celebrity stylists are the image architects who define how the world perceives influential human beings. When an actor steps onto the Cannes or Met Gala red carpet, or a tech CEO prepares for an IPO keynote, the stylist has selected every stitch, jewelry piece, tailor tuck, and shoe. You maintain direct relationships with global luxury fashion houses (Gucci, Sabyasachi, Chanel), understand body architecture, and create signature looks that drive global viral headlines.",
+    "education": {
+      "highSchoolPrereqs": "Fashion Studies, Fine Arts, History, Photography, Graphic Design, English.",
+      "entranceExams": "NIFT Entrance (India), London College of Fashion Portfolio, Parsons School of Design Admission.",
+      "undergradDegrees": [
+        "B.Des in Fashion Styling & Image Design",
+        "B.A. in Fashion Communication & Journalism",
+        "Diploma in Celebrity Styling & Personal Shopping"
+      ],
+      "postgradDegrees": [
+        "Master in Fashion Styling & Creative Direction",
+        "Executive Certificate in Personal Branding & Image Consulting"
+      ],
+      "certifications": [
+        "Association of Image Consultants International (AICI) Certification",
+        "Luxury Brand Haute Couture Wardrobe Archiving"
+      ],
+      "topInstitutes": [
+        "National Institute of Fashion Technology (NIFT Mumbai / Delhi)",
+        "Central Saint Martins / London College of Fashion (UK)",
+        "Parsons School of Design (New York, USA)",
+        "Istituto Marangoni (Milan / Mumbai)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–3: Assisting a top celebrity stylist, carrying garment bags, taping shoe soles, running steam irons, tracking designer loan returns.",
+      "phase2": "Years 3–7: Independent stylist booking red carpets, magazine editorial covers, and music video shoots; building private designer borrowing privileges.",
+      "phase3": "Years 7+: A-list celebrity image director, launching personal fashion line or styling agency, commanding top commercial campaign rates."
+    },
+    "skills": {
+      "hardSkills": [
+        "Garment Fitting & Emergency Pinning/Tailoring",
+        "Couture Brand Pulls & Consignment PR",
+        "Color Analysis & Silhouette Geometry",
+        "High-Fashion History & Trend Archiving",
+        "Lighting & Photography Angle Styling"
+      ],
+      "softSkills": [
+        "Steely Discretion Around Famous Clients",
+        "Diplomatic Charm with Insecure Stars",
+        "Grace Under 30-Minute Dressing Deadlines",
+        "Endless Physical Energy"
+      ]
+    },
+    "roles": [
+      "Celebrity Red Carpet Stylist",
+      "Executive Image Consultant",
+      "Editorial Fashion Stylist",
+      "Costume Designer for Film & OTT",
+      "VIP Personal Shopper",
+      "Creative Director for Photoshoots"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Obsessed with fashion, fabrics, and aesthetics",
+        "Has high emotional intelligence and ego management",
+        "Calm when a couture zipper breaks 10 minutes before a live broadcast",
+        "Loves making people feel stunning"
+      ],
+      "workStyle": "Showrooms, fittings in luxury hotel suites, photo studios, red carpet greenrooms, irregular high-tempo hours.",
+      "pros": [
+        "Backstage access to the most glamorous red carpets, film sets, and runways in the world",
+        "Close personal friendships with creative stars and fashion royalty",
+        "High earning potential on daily commercial rates"
+      ],
+      "cons": [
+        "Physical grunt work: carrying heavy wardrobe trunks and garment racks through airports",
+        "Demanding client egos and emergency 2 AM wardrobe crises",
+        "Financial liability if rare luxury jewelry or loaned couture is damaged"
+      ]
+    },
+    "reflectionQuestions": [
+      "Can I put my personal ego aside and focus entirely on making my client feel confident and radiant?",
+      "Can I stay completely cool when a client changes their mind about an outfit 15 minutes before the red carpet?"
+    ],
+    "resources": [
+      "Association of Image Consultants International (aici.org)",
+      "Vogue Runway & Business of Fashion",
+      "The Fashion Stylist Handbook by Danielle Griffiths"
+    ],
+    "aka": [
+      "Fashion Stylist",
+      "Wardrobe Consultant",
+      "Image Consultant",
+      "Celebrity Stylist",
+      "Personal Shopper"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "creative",
+      "design",
+      "people"
+    ],
+    "degrees": [
+      "design",
+      "arts"
+    ],
+    "aiTag": "hybrid",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk",
+      "me"
+    ]
+  },
+  {
+    "id": "professional-organizer-declutter",
+    "cat": "service",
+    "catName": "Human Care & Services",
+    "icon": "✨",
+    "title": "Professional Space Organizer & Declutter Consultant",
+    "tagline": "Transform chaotic physical spaces into tranquil, functional sanctuaries",
+    "desc": "Design custom organizational systems, declutter luxury homes and corporate offices, coordinate estate relocations, and bring psychological peace through physical order.",
+    "stream": "Open to Any Stream (Interior Design / Psychology / Management)",
+    "salary": "Entry: $42K / ₹3.5-7 LPA · Mid: $72K / ₹8-18 LPA · Lead: $130K+ / ₹35 LPA+",
+    "regionalSalary": {
+      "in": "Entry: ₹3.5–7 LPA · High-End Luxury Home Organizer (Mumbai/Delhi/Bangalore): ₹10–35 LPA (₹15K–₹50K per room project)",
+      "us": "Entry: $48,000 · Certified Professional Organizer (NAPO): $75,000–$145,000 ($80–$200/hr)",
+      "uk": "Entry: £26,000 · Home Organization & Declutter Specialist (APDO): £42,000–£82,000",
+      "me": "Luxury Villa & Estate Spatial Organizer (Dubai/Abu Dhabi): AED 160K–AED 320K",
+      "global": "$42K – $130K with high private client word-of-mouth referrals"
+    },
+    "growth": "15% (Booming Urban Wellness & Minimalism Culture)",
+    "demand": "High Quality-of-Life Demand",
+    "aiImpact": "Human-Centric — AI can design closet shelf dimensions, but physically sorting through human sentimental memories, family clutter, and hands-on spatial execution is 100% human empathy.",
+    "overview": "Professional Organizers are part interior spatial designer and part life coach. In an era of consumer overwhelm, you help busy professionals, celebrities, and families reclaim their living spaces from clutter. You measure custom cabinetry, design beautiful pantry and closet systems (The Home Edit style), compassionately guide clients through parting with sentimental objects, and transform chaotic houses into serene, functional sanctuaries.",
+    "education": {
+      "highSchoolPrereqs": "Interior Design, Psychology, Art, Home Science, Business Management.",
+      "entranceExams": "No formal entrance exam. Certification through National Association of Productivity & Organizing Professionals (NAPO) or KonMari Consultant Program.",
+      "undergradDegrees": [
+        "B.Des in Interior Architecture & Spatial Design",
+        "B.A. in Psychology / Human Development",
+        "BBA / Diploma in Home Staging & Organization"
+      ],
+      "postgradDegrees": [
+        "Certificate in Productivity & Spatial Ergonomics",
+        "Master in Environmental Psychology & Interior Architecture"
+      ],
+      "certifications": [
+        "Certified Professional Organizer (CPO — BCPO/NAPO)",
+        "Certified KonMari Consultant (Marie Kondo Method)",
+        "Chronic Disorganization & Hoarding Specialist Credential"
+      ],
+      "topInstitutes": [
+        "National Association of Productivity & Organizing Professionals (NAPO, USA)",
+        "Association of Professional Declutterers & Organisers (APDO, UK)",
+        "National Institute of Design (NID Spatial Design, India)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Assisting senior organizers on residential projects, organizing pantries, closets, and garages; building a visual Instagram/TikTok transformation portfolio.",
+      "phase2": "Years 2–5: Running an independent organizing studio, taking full home declutter commissions, partnering with luxury interior designers and realtors.",
+      "phase3": "Years 5+: Managing a team of organizers, launching branded organizational storage products, authoring home lifestyle books."
+    },
+    "skills": {
+      "hardSkills": [
+        "Custom Closet & Cabinet Ergonomic Measurement",
+        "Spatial Inventory Categorization",
+        "Move-In & Estate Downsizing Logistics",
+        "Home Staging & Aesthetic Container Styling",
+        "Digital Document & Photos Organization"
+      ],
+      "softSkills": [
+        "Deep Non-Judgmental Empathy (Zero clutter-shaming)",
+        "Therapeutic Patience with Sentimental Grief",
+        "Physical Stamina for Multi-Hour Hands-On Sorting",
+        "Trustworthy Discretion in Private Homes"
+      ]
+    },
+    "roles": [
+      "Master Home Organizer",
+      "Luxury Closet & Wardrobe Designer",
+      "Estate Downsizing & Relocation Specialist",
+      "Corporate Office Productivity Consultant",
+      "KonMari Lifestyle Consultant",
+      "Home Stager"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Natural neat-freak who feels deep joy seeing messy things neatly arranged",
+        "Warm, compassionate listener who puts clients at ease",
+        "High energy and hands-on",
+        "Loves aesthetics and organization"
+      ],
+      "workStyle": "Hands-on work in clients' private homes, measuring closets, lifting storage bins, organizing shelves, flexible consulting schedule.",
+      "pros": [
+        "Immediate, jaw-dropping visual satisfaction at the end of every single work day",
+        "Clients literally cry tears of relief and gratitude when they see their calm homes",
+        "High hourly billing rates with low overhead costs"
+      ],
+      "cons": [
+        "Physical strain of bending, lifting, and sorting for 6–8 hours",
+        "Working in dusty, cluttered, or emotionally fraught home spaces",
+        "Managing clients who feel intense anxiety about parting with possessions"
+      ]
+    },
+    "reflectionQuestions": [
+      "Can I look at an overwhelmed client's cluttered room with complete kindness and zero judgment?",
+      "Do I feel genuine satisfaction spending hours measuring drawer dividers and categorizing items by color and function?"
+    ],
+    "resources": [
+      "National Association of Productivity and Organizing Professionals (NAPO.net)",
+      "KonMari Official Consultant Academy (konmari.com)",
+      "The Life-Changing Magic of Tidying Up by Marie Kondo"
+    ],
+    "aka": [
+      "Professional Organizer",
+      "Declutter Consultant",
+      "Home Space Designer",
+      "Closet Organizer",
+      "KonMari Consultant"
+    ],
+    "edu": "nodegree",
+    "interests": [
+      "design",
+      "people",
+      "creative"
+    ],
+    "degrees": [
+      "design",
+      "arts",
+      "any"
+    ],
+    "aiTag": "human",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk",
+      "me"
+    ]
+  },
+  {
+    "id": "wedding-officiant-celebrant",
+    "cat": "service",
+    "catName": "Human Care & Services",
+    "icon": "💍",
+    "title": "Wedding Officiant & Ceremonial Celebrant",
+    "tagline": "Unite human lives and officiate life's most sacred milestones",
+    "desc": "Craft customized ceremony scripts, guide couples through matrimonial vows, legally solemnize marriages, and officiate milestone life celebrations.",
+    "stream": "Humanities / Literature / Theater / Religious Studies / Open to All",
+    "salary": "Entry: $38K / ₹3-6 LPA · Mid: $68K / ₹8-18 LPA · Lead: $125K+ / ₹35 LPA+ (Per Ceremony Fees)",
+    "regionalSalary": {
+      "in": "Entry: ₹3–6 LPA · Luxury Destination Wedding Celebrant (Goa/Udaipur/Jaipur): ₹12–35 LPA (₹25K–₹1.5L per wedding weekend)",
+      "us": "Entry: $42,000 · High-Demand Wedding Officiant / Celebrant: $75,000–$140,000 ($500–$2,500 per ceremony)",
+      "uk": "Entry: £24,000 · Independent Humanist / Civil Celebrant: £42,000–£85,000",
+      "me": "Expat Civil & Destination Wedding Celebrant (Dubai / UAE Civil Family Courts): AED 150K–AED 300K",
+      "global": "$38K – $125K with lucrative destination wedding travel assignments"
+    },
+    "growth": "14% (Rise of Personalized, Secular, and Cross-Cultural Ceremonies)",
+    "demand": "High Joyful Demand",
+    "aiImpact": "Human-Centric — Speaking vows, holding emotional space for weeping families, and projecting vocal warmth and presence cannot be outsourced to a screen.",
+    "overview": "A Wedding Officiant stands at the altar of humanity's most joyful threshold. Today's couples increasingly seek personalized, cross-cultural, and secular wedding celebrations that reflect their unique love stories rather than rigid formulas. You interview couples about how they met, write bespoke ceremony scripts that balance humor, romance, and solemnity, manage nervous bridal parties at the altar, and legally solemnize marital unions under civil law.",
+    "education": {
+      "highSchoolPrereqs": "English Literature, Public Speaking, Drama/Theater, World Religions, History.",
+      "entranceExams": "State/Jurisdiction Marriage Officiant Registration, Humanist Celebrant accreditation, or traditional clergy ordainment.",
+      "undergradDegrees": [
+        "B.A. in English Literature / Creative Writing",
+        "B.A. in Theater Arts & Performance",
+        "B.A. in Religious Studies / Philosophy"
+      ],
+      "postgradDegrees": [
+        "Diploma in Celebrancy Studies & Ritual Crafting",
+        "Master of Fine Arts or Pastoral Studies"
+      ],
+      "certifications": [
+        "Humanists UK / Humanist International Celebrant Accreditation",
+        "Certified Life-Cycle Celebrant (Celebrant Foundation & Institute)",
+        "Civil Wedding Legal Solemnization License"
+      ],
+      "topInstitutes": [
+        "Celebrant Foundation & Institute (USA)",
+        "Humanists UK Celebrant Training Network",
+        "The Celebrant School (Australia / International)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Getting licensed/ordained, officiating weddings for friends and family, shadowing seasoned celebrants, writing wedding script portfolios.",
+      "phase2": "Years 2–6: Booking 40–80 weddings per year, partnering with luxury wedding planners and scenic venues, mastering cross-cultural and bilingual ceremonies.",
+      "phase3": "Years 6+: Marquee destination wedding celebrant officiating high-profile ceremonies worldwide, training apprentice officiants."
+    },
+    "skills": {
+      "hardSkills": [
+        "Bespoke Narrative Scriptwriting",
+        "Vocal Projection & Microphone Modulation",
+        "Marriage License Statutory Legal Filing",
+        "Ceremony Stage Blocking & Pacing",
+        "Public Crowd Calming & Focus"
+      ],
+      "softSkills": [
+        "Radiant Emotional Warmth",
+        "Calming Presence in Front of Stressed Families",
+        "Deep Romance & Humor Sensitivity",
+        "Reliability & Punctuality"
+      ]
+    },
+    "roles": [
+      "Destination Wedding Officiant",
+      "Humanist / Secular Celebrant",
+      "Traditional Ritual Officiant (Pandit/Priest/Imam)",
+      "Vow Renewal & Anniversary Celebrant",
+      "Memorial & Celebration of Life Officiant"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Charismatic public speaker with a warm vocal tone",
+        "Loves love stories, romance, and celebration",
+        "Radiates calm reassurance to nervous people",
+        "Enjoys performing in front of emotional crowds"
+      ],
+      "workStyle": "Weekend ceremonies at luxury resorts, gardens, beaches, and historic venues; mid-week meetings with couples to draft vow scripts.",
+      "pros": [
+        "Surrounded entirely by joy, love, champagne, and celebrating families every single weekend",
+        "Exceptional hourly return on investment (ceremonies last 30 minutes)",
+        "Tremendous emotional warmth and gratitude from couples"
+      ],
+      "cons": [
+        "Working almost exclusively on weekends and during peak wedding season",
+        "Only one chance to get it right (a flubbed ceremony ruins someone's once-in-a-lifetime moment)",
+        "Navigating emotional family tensions at rehearsal dinners"
+      ]
+    },
+    "reflectionQuestions": [
+      "Can I stand in front of 300 emotional guests, project warmth and confidence, and make a nervous couple feel completely at ease?",
+      "Do I love writing personal love stories that make people both laugh and shed happy tears?"
+    ],
+    "resources": [
+      "Celebrant Foundation & Institute (celebrantinstitute.org)",
+      "Humanists International (humanists.international)",
+      "American Marriage Ministries (theamm.org)"
+    ],
+    "aka": [
+      "Wedding Officiant",
+      "Marriage Celebrant",
+      "Civil Officiant",
+      "Ceremony Specialist",
+      "Humanist Celebrant"
+    ],
+    "edu": "nodegree",
+    "interests": [
+      "people",
+      "words",
+      "creative",
+      "social"
+    ],
+    "degrees": [
+      "arts",
+      "any"
+    ],
+    "aiTag": "human",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk",
+      "me"
+    ]
+  },
+  {
+    "id": "master-perfumer-fragrance-chemist",
+    "cat": "science",
+    "catName": "Science & DeepTech",
+    "icon": "✨",
+    "title": "Master Perfumer ('The Nose') & Fragrance Chemist",
+    "tagline": "Compose invisible symphonies of scent that stir human memory",
+    "desc": "Memorize thousands of natural and synthetic scent molecules, formulate luxury fine fragrances, and design olfactory signatures for iconic global houses.",
+    "stream": "Science (Chemistry / Biology)",
+    "salary": "Entry: $60K / ₹8-15 LPA · Mid: $115K / ₹20-45 LPA · Lead: $250K+ / ₹90 LPA+",
+    "regionalSalary": {
+      "in": "Entry: ₹8–15 LPA · Senior Perfumer / Kannauj Attar Master Blender: ₹22–₹65 LPA",
+      "us": "Entry: $65,000 · Senior Fine Fragrance Perfumer (IFF / Firmenich / Givaudan): $130,000–$275,000",
+      "uk": "Entry: £35,000 · Luxury Perfume House Nose (London/Grasse): £65,000–£145,000",
+      "me": "Master Oud, Amber & Oriental Perfumer (Dubai / Gulf Fragrance Houses): AED 280K–AED 650K (Tax-Free)",
+      "global": "$60K – $250K+ among the ~500 master perfumers in active practice globally"
+    },
+    "growth": "8% (Ultra-Elite Sensory Niche)",
+    "demand": "High Luxury Demand",
+    "aiImpact": "Augmented — AI models predict synthetic molecule stability and accord pairings, but olfactory balance, emotional nostalgia, and luxury sillage require a human Nose.",
+    "overview": "There are fewer master perfumers in the world than there are astronauts. Known simply as 'The Nose' (Le Nez), a perfumer is both an organic chemist and an olfactory poet. You memorize over 3,000 natural essences (Damascus rose, Kannauj sandalwood, Grasse jasmine, oud) and synthetic aromachemicals, compose intricate top, heart, and base notes that unfold over 12 hours on human skin, and engineer the signature scents of luxury houses like Chanel, Dior, and Tom Ford.",
+    "education": {
+      "highSchoolPrereqs": "Chemistry, Organic Chemistry, Biology, Physics, Mathematics, French/Foreign Language.",
+      "entranceExams": "ISIPCA Entrance Exam (Versailles, France), Givaudan / IFF Internal Perfumery School Competitive Olfactory Auditions.",
+      "undergradDegrees": [
+        "B.Sc. in Chemistry / Organic Chemistry",
+        "B.Tech in Chemical Engineering or Fragrance & Flavour Technology",
+        "Bachelor of Science in Biochemistry"
+      ],
+      "postgradDegrees": [
+        "European Fragrance and Cosmetics Master (ISIPCA Versailles / University of Côte d'Azur)",
+        "Post-Graduate Diploma in Perfumery and Flavour Technology (FFDC Kannauj, India)"
+      ],
+      "certifications": [
+        "Société Française des Parfumeurs (SFP) Professional Accreditation",
+        "IFRA (International Fragrance Association) Safety & Regulatory Standards"
+      ],
+      "topInstitutes": [
+        "ISIPCA (Institut Supérieur International du Parfum, Versailles, France)",
+        "Givaudan Perfumery School (Argenteuil, France)",
+        "Fragrance & Flavour Development Centre (FFDC Kannauj, India)",
+        "Grasse Institute of Perfumery (GIP, Grasse, France)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–3: Trainee Perfumer apprentice, smelling and memorizing 50 new raw materials every week, blind olfactory identification tests, compounding laboratory formulas.",
+      "phase2": "Years 3–8: Junior to Senior Perfumer at a major fragrance house (Givaudan, Firmenich, Symrise), winning commercial fragrance briefs for celebrity perfumes and luxury candles.",
+      "phase3": "Years 8+: Master Perfumer ('Nose'), creating iconic worldwide fine-fragrance blockbusters, founding an artisanal niche perfume house, formulating bespoke bespoke royal perfumes."
+    },
+    "skills": {
+      "hardSkills": [
+        "Organic Aromachemical Synthesis & Gas Chromatography-Mass Spectrometry (GC-MS)",
+        "Accord Balancing (Top/Heart/Base Evaporation Rates)",
+        "Natural Botanical Distillation (Attars, Enfleurage)",
+        "IFRA Allergen & Regulatory Compliance",
+        "Fragrance Stability in Cosmetic Formulations"
+      ],
+      "softSkills": [
+        "Extraordinary Olfactory Memory",
+        "Abstract Poetic Imagination",
+        "Patience over Hundreds of Iterations",
+        "Discipline to Protect Sensory Health (Avoiding spicy foods and nasal congestion)"
+      ]
+    },
+    "roles": [
+      "Fine Fragrance Master Perfumer",
+      "Fragrance Chemist",
+      "Artisanal Niche Perfume Founder",
+      "Oud & Oriental Accord Specialist",
+      "Sensory Cosmetic Evaluator",
+      "Flavorist & Aromachemical Researcher"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Possesses an unusually sensitive sense of smell",
+        "Passionate about organic chemistry and fragrance",
+        "Deeply creative yet scientifically rigorous",
+        "Patient with slow, iterative formulation"
+      ],
+      "workStyle": "Sensory organ lab desks lined with hundreds of glass scent vials, testing blotters (mouillettes), evaluating dry-down on skin over hours.",
+      "pros": [
+        "Part of an ultra-rare, internationally celebrated creative elite",
+        "Creating fragrances that people wear on their wedding days and remember for a lifetime",
+        "High compensation and executive prestige in global luxury luxury hubs"
+      ],
+      "cons": [
+        "Intense competition to enter top fragrance schools (only 15–20 students accepted per year worldwide)",
+        "Risk of head colds, allergies, or aging affecting your olfactory faculties",
+        "Corporate briefs can be rejected after months of work"
+      ]
+    },
+    "reflectionQuestions": [
+      "Can I smell a complex perfume and mentally deconstruct its four distinct ingredient layers?",
+      "Do I have the chemical aptitude and patience to formulate 200 variations of a single scent until it is perfect?"
+    ],
+    "resources": [
+      "International Fragrance Association (IFRA - ifrafragrance.org)",
+      "Société Française des Parfumeurs (parfumeurs-createurs.org)",
+      "Fragrance and Flavour Development Centre (ffdcindia.org)"
+    ],
+    "aka": [
+      "Perfumer",
+      "The Nose",
+      "Fragrance Chemist",
+      "Master Blender",
+      "Scent Designer",
+      "Le Nez"
+    ],
+    "edu": "master",
+    "interests": [
+      "science",
+      "creative",
+      "design"
+    ],
+    "degrees": [
+      "science",
+      "engineering"
+    ],
+    "aiTag": "human",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk",
+      "me"
+    ]
+  },
+  {
+    "id": "stage-magician-mentalist",
+    "cat": "creative",
+    "catName": "Creative Arts & Design",
+    "icon": "🎩",
+    "title": "Stage Illusionist, Close-Up Magician & Mentalist",
+    "tagline": "Bend reality, manipulate perception, and engineer jaw-dropping wonder",
+    "desc": "Perform sleight-of-hand miracles, grand stage illusions, psychological mentalism, and corporate keynote entertainment that defies logical explanation.",
+    "stream": "Theater / Psychology / Open to Any Disciplined Performer",
+    "salary": "Entry: $40K / ₹4-8 LPA · Mid: $85K / ₹12-25 LPA · Lead: $220K+ / ₹60 LPA+ (Per Show Fees)",
+    "regionalSalary": {
+      "in": "Entry: ₹4–8 LPA · Celebrity Corporate Mentalist / Stage Illusionist: ₹15L–₹65+ Lakhs (₹50K–₹3L per corporate show)",
+      "us": "Entry: $45,000 · Las Vegas Headliner / Touring Theater Mentalist: $95,000–$350,000+ ($2,500–$15,000 per keynote)",
+      "uk": "Entry: £25,000 · West End / Magic Circle Member: £48,000–£120,000",
+      "me": "Luxury Resort & Royal Event Mentalist (Dubai / Riyadh Seasons): AED 180K–AED 420K",
+      "global": "$40K – $220K+ with global theatrical tours and television specials"
+    },
+    "growth": "11% (Thriving Live Experience & Corporate Entertainment)",
+    "demand": "High Novelty Demand",
+    "aiImpact": "Human-Centric — Live sleight-of-hand inches away from a spectator's eyes and reading psychological body language micro-tells are fundamentally human.",
+    "overview": "Magic is the science of human misdirection and psychological perception. Modern illusionists and mentalists are sophisticated theatrical artists who blend sleight-of-hand mechanics, cognitive psychology, hypnosis, and theatrical engineering. Whether bending metal forks in a CEO's hand, guessing a stranger's childhood memory on stage, or engineering large-scale theatrical vanishes in Las Vegas, you remind cynical audiences of the childlike joy of impossibility.",
+    "education": {
+      "highSchoolPrereqs": "Drama/Theater Arts, Psychology, Physics (Mechanics), Public Speaking, History.",
+      "entranceExams": "Audition for The Magic Circle (London), Academy of Magical Arts (Magic Castle Hollywood), or FISM World Championships of Magic.",
+      "undergradDegrees": [
+        "B.A. in Theater Arts, Acting & Stagecraft",
+        "B.S. in Cognitive Psychology & Human Perception",
+        "Traditional Apprenticeship under a Master Illusionist"
+      ],
+      "postgradDegrees": [
+        "Master of Fine Arts (MFA) in Physical Theater or Creative Direction",
+        "Advanced Studies in Behavioral Psychology & Suggestion"
+      ],
+      "certifications": [
+        "Member of The Inner Magic Circle (M.I.M.C. with Gold Star)",
+        "Academy of Magical Arts (Magic Castle) Magician Member"
+      ],
+      "topInstitutes": [
+        "The Magic Circle Headquarters (London, UK)",
+        "The Magic Castle (Hollywood, California, USA)",
+        "Chavez Studio of Magic (USA)",
+        "FISM (International Federation of Magic Societies)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–3: Practicing classic card and coin sleights 4 hours daily, performing table-hopping close-up magic in restaurants, weddings, and college fests.",
+      "phase2": "Years 3–7: Headlining corporate annual galas, developing original mentalism and stage illusion acts, touring comedy clubs and fringe festivals.",
+      "phase3": "Years 7+: Resident headliner at a major casino or theater, starring in television specials, consulting as illusion director for Hollywood films."
+    },
+    "skills": {
+      "hardSkills": [
+        "Finger Dexterity & Classical Sleight of Hand",
+        "Psychological Misdirection & Timing",
+        "Mentalism, Cold Reading & Suggestion",
+        "Stagecraft, Lighting & Theatrical Mechanics",
+        "Public Audience Management & Humor"
+      ],
+      "softSkills": [
+        "Charismatic Showmanship",
+        "Hyper-Awareness of Spectator Body Language",
+        "Recovery Poise (Improvising instantly if a trick goes wrong)",
+        "Deep Understanding of Wonder"
+      ]
+    },
+    "roles": [
+      "Corporate Mentalist",
+      "Stage Illusionist",
+      "Close-Up Sleight of Hand Magician",
+      "Magic Consultant for Films & Theater",
+      "Theatrical Wonder Speaker",
+      "Escape Artist"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Obsessed with practice and manual dexterity",
+        "Loves commanding an audience's attention",
+        "Deeply curious about human psychology and belief",
+        "Natural performer"
+      ],
+      "workStyle": "Evening theater shows, corporate conferences, luxury private parties, thousands of hours of solitary practice in front of a mirror.",
+      "pros": [
+        "Giving adults the rare gift of genuine childlike wonder and astonishment",
+        "High single-evening performance fees for corporate events",
+        "Thrilling, unconventional lifestyle traveling the world"
+      ],
+      "cons": [
+        "Demands thousands of hours of repetitive finger practice to master a single move",
+        "Irregular gig economy income during early career stages",
+        "Constantly guarding trade secrets from internet spoilers"
+      ]
+    },
+    "reflectionQuestions": [
+      "Can I spend 6 months practicing a single 3-second coin palm until my hands perform it completely invisibly?",
+      "Do I have the stage charisma to make an audience fall in love with the performance rather than trying to figure out the trick?"
+    ],
+    "resources": [
+      "The Magic Circle (themagiccircle.co.uk)",
+      "Academy of Magical Arts (magiccastle.com)",
+      "Mark Wilson's Complete Course in Magic"
+    ],
+    "aka": [
+      "Magician",
+      "Illusionist",
+      "Mentalist",
+      "Sleight of Hand Artist",
+      "Magic Performer"
+    ],
+    "edu": "nodegree",
+    "interests": [
+      "creative",
+      "people",
+      "words"
+    ],
+    "degrees": [
+      "arts",
+      "any"
+    ],
+    "aiTag": "human",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk",
+      "me"
+    ]
+  },
+  {
+    "id": "museum-taxidermist-osteologist",
+    "cat": "science",
+    "catName": "Science & DeepTech",
+    "icon": "🦉",
+    "title": "Museum Taxidermist & Natural History Specimen Preparator",
+    "tagline": "Preserve the majesty of Earth's biodiversity for science and education",
+    "desc": "Prepare scientific mammal, bird, and reptile study skins, clean and articulate vertebrate skeletons, and sculpt lifelike dioramas for natural history museums and research universities.",
+    "stream": "Biology / Fine Arts / Anatomy / Sculpture",
+    "salary": "Entry: $42K / ₹3.5-6 LPA · Mid: $68K / ₹8-15 LPA · Lead: $115K+ / ₹25 LPA+",
+    "regionalSalary": {
+      "in": "Entry: ₹3.5–6 LPA · Senior Museum Conservator (National Museum of Natural History / Zoological Survey of India): ₹8–22 LPA (Strictly regulated wildlife laws)",
+      "us": "Entry: $45,000 · Smithsonian / Field Museum Chief Preparator: $72,000–$120,000",
+      "uk": "Entry: £24,000 · Natural History Museum London Senior Taxidermist: £42,000–£75,000",
+      "me": "Natural History Museum & Falconry Wildlife Hospital Conservator: AED 160K–AED 310K",
+      "global": "$42K – $115K with prestigious appointments at global research institutions"
+    },
+    "growth": "6% (Niche Museum Conservation)",
+    "demand": "Specialized Scientific Craft",
+    "aiImpact": "Human-Centric — Anatomical sculpting, delicate skin tanning, feather tracts alignment, and museum specimen preservation are entirely tactile human craft.",
+    "overview": "Museum Taxidermy is not hunting trophies; it is a vital, delicate intersection of comparative vertebrate anatomy, sculpture, and natural history conservation. When a rare snow leopard or condor dies of natural causes in a zoological preserve, the museum preparator ensures its skin, skeleton, and plumage are preserved for hundreds of years. Scientists study these specimens to measure how pollution, climate change, and habitat loss affect species morphology over centuries.",
+    "education": {
+      "highSchoolPrereqs": "Biology, Chemistry, Sculpture, Fine Arts, Zoology, Comparative Anatomy.",
+      "entranceExams": "State Wildlife Taxidermy licensing evaluations, museum portfolio reviews, biology diploma entrance.",
+      "undergradDegrees": [
+        "B.Sc. in Zoology / Animal Biology & Ecology",
+        "B.F.A. in Sculpture & Anatomical Modeling",
+        "Diploma in Wildlife Conservation & Museum Preparation"
+      ],
+      "postgradDegrees": [
+        "M.Sc. in Museum Studies & Natural Sciences Conservation",
+        "Master of Fine Arts (MFA) in Anatomical Sculpture"
+      ],
+      "certifications": [
+        "Certified Professional Taxidermist (National Taxidermists Association)",
+        "CITES Wildlife Legal Compliance & Specimen Permitting Certification",
+        "Dermestid Beetle Colony Osteological Cleaning Protocol"
+      ],
+      "topInstitutes": [
+        "Zoological Survey of India (ZSI Kolkata)",
+        "National Museum of Natural History (New Delhi)",
+        "Smithsonian National Museum of Natural History (Washington DC, USA)",
+        "Natural History Museum (London, UK)",
+        "American Museum of Natural History (New York, USA)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–3: Apprentice preparator, learning hide tanning, skinning techniques, preparing research study skins (flat skins for drawer archives), skeletal maceration.",
+      "phase2": "Years 3–7: Senior Museum Preparator, sculpting accurate anatomical mannequins out of high-density foam, mounting mammals and birds for public gallery dioramas.",
+      "phase3": "Years 7+: Chief Preparator of a national museum, directing major natural history exhibitions, conserving century-old historical specimens."
+    },
+    "skills": {
+      "hardSkills": [
+        "Vertebrate Comparative Anatomy & Muscle Modeling",
+        "Hide Tanning & Chemical Preservation",
+        "Skeletal Articulation & Bone Degreasing",
+        "Feather Tract Grooming & Glass Eye Setting",
+        "CITES Wildlife Legal Documentation"
+      ],
+      "softSkills": [
+        "Profound Reverence for Wildlife",
+        "High Tactile Patience & Attention to Micro-Details",
+        "Stomach for Biological Fluids and Odors",
+        "Sculptural Aesthetic Eye"
+      ]
+    },
+    "roles": [
+      "Museum Taxidermist",
+      "Vertebrate Osteologist (Skeleton Articulator)",
+      "Natural History Diorama Sculptor",
+      "Zoological Specimen Conservator",
+      "Forensic Wildlife Model Maker"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Deeply fascinated by animal anatomy and wildlife",
+        "Skilled with hands, scalpels, and sculptural clay",
+        "Unfazed by biological specimens and dissection",
+        "Patient artisan"
+      ],
+      "workStyle": "Museum wet-labs, dissection tables, woodworking and sculpting studios, surrounded by biological specimens.",
+      "pros": [
+        "Work that endures in public science museums for 200+ years",
+        "Unique blend of scientific biology and fine artistic sculpture",
+        "Direct contribution to biodiversity research and public education"
+      ],
+      "cons": [
+        "Exposure to chemical tanning agents, dust, and unpleasant biological odors",
+        "Strict legal permitting and paperwork under endangered species acts",
+        "Limited number of permanent museum positions globally"
+      ]
+    },
+    "reflectionQuestions": [
+      "Can I handle dissecting and preparing deceased animal specimens with scientific reverence and clinical detachment?",
+      "Do I possess the sculptural artistic eye to recreate an animal's exact living posture and muscular tension?"
+    ],
+    "resources": [
+      "National Taxidermists Association (taxidermy.net)",
+      "Zoological Survey of India (zsi.gov.in)",
+      "Society for the Preservation of Natural History Collections (spnhc.org)"
+    ],
+    "aka": [
+      "Taxidermist",
+      "Specimen Preparator",
+      "Osteologist",
+      "Museum Conservator",
+      "Zoological Taxidermist"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "science",
+      "creative",
+      "outdoors"
+    ],
+    "degrees": [
+      "science",
+      "design",
+      "arts"
+    ],
+    "aiTag": "human",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk"
+    ]
+  },
+  {
+    "id": "live-streamer-interactive-host",
+    "cat": "creative",
+    "catName": "Creative Arts & Design",
+    "icon": "🎮",
+    "title": "Live Streamer & Interactive Gaming Broadcaster",
+    "tagline": "Broadcast unscripted entertainment and cultivate vibrant digital communities",
+    "desc": "Host live interactive gaming, IRL travel, esports casting, and community broadcasts on Twitch, YouTube Live, and Kick, monetizing through subscriptions, brand sponsorships, and digital merchandise.",
+    "stream": "Open to Any Stream (Digital Media / Gaming / Communications)",
+    "salary": "Entry: $24K / ₹2-5 LPA · Mid: $75K / ₹8-25 LPA · Lead: $250K+ / ₹75 LPA+ (Power-Law)",
+    "regionalSalary": {
+      "in": "Entry: ₹2–5 LPA · Top Indian Gaming/Esports Streamer (Mortal/Scout/Dynamo level): ₹25L–₹1.5+ Cr",
+      "us": "Entry: $30,000 · Full-Time Partnered Twitch/YouTube Streamer: $80,000–$350,000+ (Top 0.1%: Millions)",
+      "uk": "Entry: £20,000 · Professional Gaming Broadcaster: £45,000–£120,000",
+      "me": "Gulf Esports & Gaming Influencer (Riyadh / Dubai Gaming Hubs): AED 160K–AED 420K",
+      "global": "$24K – $250K+ power-law earnings with global subscriber donations and creator equity"
+    },
+    "growth": "22% (Massive Expansion of Live Interactive Streaming)",
+    "demand": "High Creator Economy Demand",
+    "aiImpact": "Human-Centric — AI generates stream overlays and auto-clips highlights, but real-time humor, spontaneous emotional reactions, and genuine human banter with viewers are 100% human.",
+    "overview": "Live streaming is unscripted live television for the internet generation. Broadcasters stream for 4 to 8 hours daily—playing competitive games, reacting to cultural moments, coding live, or traveling cities with a portable camera rig. Unlike pre-recorded YouTube videos, streaming relies on real-time improvisational banter with live chat, building an intensely loyal subscriber community that feels like a shared digital living room.",
+    "education": {
+      "highSchoolPrereqs": "English, Computer Science, Mass Media, Theater, Psychology, Physical Education.",
+      "entranceExams": "No entrance exams. Entry is achieved through audience metrics, streaming consistency, and platform partnership agreements.",
+      "undergradDegrees": [
+        "B.A. in Digital Media Production & Broadcast Journalism",
+        "B.S. in Game Design & Interactive Entertainment",
+        "Open to Any Degree / Self-Taught Creator"
+      ],
+      "postgradDegrees": [
+        "Master in Digital Entertainment & Creator Economy Business"
+      ],
+      "certifications": [
+        "OBS Studio & StreamElements Broadcast Routing Mastery",
+        "Community Safety & Discord Ecosystem Moderation"
+      ],
+      "topInstitutes": [
+        "Self-taught creator ecosystem (Twitch Partner / YouTube Creator Academy)",
+        "Full Sail University (Digital Arts & Show Production, USA)",
+        "Whistling Woods International (Mumbai, India)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Consistent 4-day weekly stream schedule to 5–50 concurrent viewers, learning audio balance, dual-PC streaming setups, clipping viral moments for TikTok/Shorts.",
+      "phase2": "Years 2–5: Achieving Twitch Partner / YouTube Partner status (300–2,000 concurrent viewers), signing first gaming brand sponsorships, hiring video editors and chat moderators.",
+      "phase3": "Years 5+: Tier-1 Digital Broadcaster (5,000+ CCV), signing 7-figure platform exclusivity deals, launching creator-led consumer brands (beverages, peripherals, esports teams)."
+    },
+    "skills": {
+      "hardSkills": [
+        "OBS Studio / Streamlabs Audio & Video Routing",
+        "Dual-PC Capture Card Hardware Optimization",
+        "Microphone EQ & Noise Suppression (Shure/GoXLR)",
+        "Live Stream Analytics & Retention Tracking",
+        "Short-Form Clip Editing (Premiere / CapCut)"
+      ],
+      "softSkills": [
+        "Non-Stop Verbal Energy & Improvisational Banter",
+        "Mental Resilience to Internet Trolls & Toxic Chat",
+        "Community Empathy & parasocial boundary setting",
+        "Vocal & Physical Stamina for 6-Hour Sessions"
+      ]
+    },
+    "roles": [
+      "Partnered Twitch / Kick Streamer",
+      "YouTube Gaming Creator",
+      "IRL (In-Real-Life) Travel Broadcaster",
+      "Esports Tournament Caster",
+      "Virtual YouTuber (VTuber) Performer",
+      "Creator Community Manager"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Naturally extroverted or highly entertaining conversationalist",
+        "Passionate gamer or digital entertainer",
+        "Relentlessly consistent work ethic",
+        "Loves chatting with internet subcultures"
+      ],
+      "workStyle": "Dedicated home streaming studio with RGB lighting, multi-monitor setups, high-speed fiber internet, night/evening live broadcasts.",
+      "pros": [
+        "Direct, immediate connection with thousands of passionate fans in real time",
+        "Being your own boss, playing games and sharing your passions from your bedroom",
+        "Lucrative earnings through multiple streams (subs, bits, superchats, brand deals)"
+      ],
+      "cons": [
+        "High early burnout risk from feeling you must stream every single day without breaks",
+        "Extreme power-law income (thousands stream to 0 viewers before finding traction)",
+        "Exposure to public criticism, cyber-bullying, and loss of private life"
+      ]
+    },
+    "reflectionQuestions": [
+      "Can I talk enthusiastically and entertainingly to an empty room for 4 hours while chat is completely silent in the beginning?",
+      "Do I have the emotional thick skin to brush off harsh online anonymous criticism while staying positive?"
+    ],
+    "resources": [
+      "Twitch Creator Camp (twitch.tv/creatorcamp)",
+      "YouTube Creators Official Channel",
+      "StreamElements & Streamlabs Knowledge Bases"
+    ],
+    "aka": [
+      "Streamer",
+      "Twitch Partner",
+      "Gaming Broadcaster",
+      "Content Creator",
+      "VTuber",
+      "Esports Caster"
+    ],
+    "edu": "nodegree",
+    "interests": [
+      "creative",
+      "tech",
+      "people",
+      "sport"
+    ],
+    "degrees": [
+      "any",
+      "computing",
+      "arts"
+    ],
+    "aiTag": "human",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk",
+      "me"
+    ]
+  },
+  {
+    "id": "standup-comedian-humor-writer",
+    "cat": "creative",
+    "catName": "Creative Arts & Design",
+    "icon": "🎤",
+    "title": "Stand-Up Comedian & Television Comedy Writer",
+    "tagline": "Turn human absurdity and pain into universal laughter",
+    "desc": "Write sharp observational humor, perform live stand-up comedy specials, write for late-night television writers' rooms, and tour theatrical solo shows.",
+    "stream": "Open to Any Stream (Humanities / Theater / Self-Taught)",
+    "salary": "Entry: $25K / ₹2-6 LPA · Mid: $75K / ₹10-28 LPA · Lead: $220K+ / ₹85 LPA+ (Touring Specials)",
+    "regionalSalary": {
+      "in": "Entry: ₹2–6 LPA · Top Touring Indian Comedian (Zakir Khan / Biswa / Vir Das level): ₹35L–₹2+ Cr per nationwide tour",
+      "us": "Entry: $35,000 · Late-Night Staff Writer / Touring Headliner / Netflix Special: $95,000–$350,000+",
+      "uk": "Entry: £22,000 · Edinburgh Fringe Headliner / Panel Show Regular: £48,000–£135,000",
+      "me": "Dubai Comedy Festival & Stand-Up Club Circuit: AED 180K–AED 420K",
+      "global": "$25K – $220K+ with lucrative streaming platform stand-up special acquisitions"
+    },
+    "growth": "14% (Live Entertainment & OTT Comedy Specials)",
+    "demand": "High Cultural Impact",
+    "aiImpact": "Human-Centric — AI can write puns, but comedic timing, subverting cultural taboos, self-deprecating vulnerability, and live crowd psychology are uniquely human.",
+    "overview": "Stand-up comedy is the rawest art form on Earth: one human being, one microphone, and a room full of strangers waiting to see if you can make them laugh. As a comedian and comedy writer, you dissect the absurdity of family life, politics, dating, and human insecurity. You spend years testing jokes at smoky open mics, rewriting punchlines a hundred times, and developing an authentic voice until you can hold thousands of people in hysterical laughter in theaters worldwide.",
+    "education": {
+      "highSchoolPrereqs": "English Literature, Creative Writing, Theater, History, Psychology, Public Speaking.",
+      "entranceExams": "No entrance exams. Evaluated entirely by live stage time, open-mic reputation, and television packet submissions.",
+      "undergradDegrees": [
+        "B.A. in English Literature / Creative Writing",
+        "B.A. in Theater Arts & Improvisational Performance",
+        "Open to Any Degree / Dropout / Diverse Life Background"
+      ],
+      "postgradDegrees": [
+        "Master of Fine Arts (MFA) in Screenwriting or Dramatic Writing"
+      ],
+      "certifications": [
+        "Upright Citizens Brigade (UCB) Improv / Sketch Core Curriculum",
+        "Second City Comedy Writing Conservatory"
+      ],
+      "topInstitutes": [
+        "The Second City (Chicago, USA)",
+        "Upright Citizens Brigade Theatre (UCB New York / LA)",
+        "The Comedy Store (London / Los Angeles)",
+        "The Habitat / Canvas Laugh Club open-mic circuit (Mumbai, India)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–3: Hitting 5 open mics every week, eating rejection, bombing on stage, learning mic technique, discovering your authentic comedy persona.",
+      "phase2": "Years 3–7: Feature act touring regional clubs, releasing viral 5-minute clips on YouTube/Instagram, writing on comedy writers' rooms for web series.",
+      "phase3": "Years 7+: Headlining solo theater tours, recording an hour-long OTT comedy special (Netflix/Amazon Prime), creating original comedy series."
+    },
+    "skills": {
+      "hardSkills": [
+        "Punchline Economy & Setup Subversion",
+        "Live Microphone Rhythm & Modulation",
+        "Instant Crowd-Work & Heckler Handling",
+        "Scripted Sketch & Writers' Room Room-Punching",
+        "Physical Body Language Timing"
+      ],
+      "softSkills": [
+        "Fearless Vulnerability & Self-Awareness",
+        "Iron-Clad Resilience to Bombing on Stage",
+        "Sharp Observational Instinct",
+        "Deep Empathy with Human Flaws"
+      ]
+    },
+    "roles": [
+      "Touring Stand-Up Comedian",
+      "Late-Night TV Staff Writer",
+      "Comedy Series Creator / Showrunner",
+      "Improv Actor",
+      "Corporate Host / Roastmaster",
+      "Humor Columnist"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Naturally funny with an unconventional way of viewing the world",
+        "Resilient to public embarrassment",
+        "Loves writing and testing words",
+        "Obsessed with laughter"
+      ],
+      "workStyle": "Late nights in comedy clubs, traveling across cities on weekend tour dates, coffee shop writing sessions with other comics.",
+      "pros": [
+        "The indescribable ecstasy of an entire theater erupting in laughter at your thoughts",
+        "Speaking uncomfortable truths about society under the shield of humor",
+        "Complete creative autonomy over your own words"
+      ],
+      "cons": [
+        "Bombing on stage in front of silent audiences during your early years is emotionally agonizing",
+        "Unstable, low income during the first 3–5 years of open-mic grinding",
+        "Late-night lifestyle can be lonely and challenging for personal relationships"
+      ]
+    },
+    "reflectionQuestions": [
+      "Can I bomb terribly on stage on a Friday night, feel the embarrassment, and get right back up on another mic on Saturday?",
+      "Do I look at painful, difficult life experiences and immediately look for the funny truth hidden inside them?"
+    ],
+    "resources": [
+      "Jerry Seinfeld's 'Comedian' Documentary",
+      "Judy Carter's 'The Comedy Bible'",
+      "WTF with Marc Maron Podcast (interviews with master comics)"
+    ],
+    "aka": [
+      "Comedian",
+      "Stand-Up Comic",
+      "Comedy Writer",
+      "Humorist",
+      "Improv Performer"
+    ],
+    "edu": "nodegree",
+    "interests": [
+      "creative",
+      "words",
+      "people"
+    ],
+    "degrees": [
+      "any",
+      "arts"
+    ],
+    "aiTag": "human",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk",
+      "me"
+    ]
+  },
+  {
+    "id": "agentic-ai-multi-agent-architect",
+    "cat": "tech",
+    "catName": "Technology & AI",
+    "icon": "🤖",
+    "title": "Agentic AI & Multi-Agent Systems (MAS) Architect",
+    "tagline": "Orchestrate autonomous agent swarms that reason, code, and execute",
+    "desc": "Design decentralized swarms of autonomous AI agents that communicate via Model Context Protocol (MCP), call external tools, maintain persistent memory, and execute end-to-end enterprise workflows without human bottlenecks.",
+    "stream": "Science (PCM / Computer Science / Mathematics)",
+    "salary": "Entry: $130K / ₹22-38 LPA · Mid: $210K / ₹45-85 LPA · Lead: $360K+ / ₹1.4 Cr+ (High Equity)",
+    "regionalSalary": {
+      "in": "Entry: ₹22–38 LPA · Lead MAS Architect (Bengaluru/Hyderabad AI Labs): ₹65L–₹1.5+ Cr",
+      "us": "Entry: $140,000 · Principal Agentic Systems Architect (SF Bay Area/Seattle/NYC): $240,000–$480,000+ top equity",
+      "uk": "Entry: £75,000 · Lead Autonomous AI Engineer (London/Cambridge): £120,000–£230,000",
+      "me": "Frontier AI & Sovereign LLM Labs (Abu Dhabi TII / Dubai AI Campus): AED 420K–AED 920K (Tax-Free)",
+      "global": "$130K – $360K+ in the most aggressively funded engineering hiring tier on Earth"
+    },
+    "growth": "48% (Fastest Growing AI Role 2026+)",
+    "demand": "Extreme Frontier Need",
+    "aiImpact": "Building The AI — You define the cognitive routing architectures, guardrails, and tool-calling interfaces of agentic intelligence.",
+    "overview": "The world has shifted beyond simple chatbot prompting into Agentic AI: autonomous systems that don't just generate text, but take actions in the real world. As a Multi-Agent Systems Architect, you design swarms of specialized AI agents—a researcher agent, a coder agent, a verifier agent, and a deployment agent—that collaborate over the Model Context Protocol (MCP), use shell terminals, debug their own runtime errors, and autonomously execute complex multi-day business processes with built-in safety circuit-breakers.",
+    "education": {
+      "highSchoolPrereqs": "Advanced Mathematics (Calculus, Linear Algebra, Probability), Physics, Computer Science.",
+      "entranceExams": "JEE Advanced / BITSAT (India), SAT / GRE (USA), GATE in Computer Science & Data Science.",
+      "undergradDegrees": [
+        "B.Tech / B.S. in Computer Science & Artificial Intelligence",
+        "B.S. in Mathematics & Computational Data Science",
+        "B.Tech in Distributed Systems & Software Engineering"
+      ],
+      "postgradDegrees": [
+        "M.S. / Ph.D. in Autonomous Systems, Reinforcement Learning, or Multi-Agent Coordination",
+        "M.Tech in Artificial Intelligence (IIT Madras / CMU / Stanford)"
+      ],
+      "certifications": [
+        "Model Context Protocol (MCP) Core Architecture Credential",
+        "LangGraph / AutoGen / CrewAI Production Orchestration",
+        "AI Safety, Red-Teaming & Circuit-Breaker Engineering"
+      ],
+      "topInstitutes": [
+        "Carnegie Mellon University (CMU School of Computer Science, USA)",
+        "Stanford University AI Lab (SAIL, USA)",
+        "IIT Bombay / IIT Madras AI Labs (India)",
+        "University of Oxford / Cambridge University Computer Science (UK)",
+        "ETH Zurich Dept of Computer Science (Switzerland)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Mastering Python, async runtime pipelines, function calling APIs, building RAG systems with vector databases, deploying local small-language models (SLMs).",
+      "phase2": "Years 2–5: Architecting production multi-agent swarms with LangGraph/AutoGen, integrating MCP servers, designing self-healing runtime feedback loops.",
+      "phase3": "Years 5+: Chief AI Architect, designing autonomous enterprise operating systems, authoring foundational agent communication protocols, founding an autonomous AI venture."
+    },
+    "skills": {
+      "hardSkills": [
+        "Model Context Protocol (MCP) & Tool-Calling Standards",
+        "Multi-Agent Graph Orchestration (LangGraph / AutoGen)",
+        "Asynchronous Distributed Systems & State Machines",
+        "Dynamic Context-Window & Token Pruning Algorithms",
+        "Deterministic Evaluation & Guardrail Circuit-Breakers"
+      ],
+      "softSkills": [
+        "Systems-Level Architectural Vision",
+        "Obsession with Reliability & Edge-Case Failure Modes",
+        "Pragmatic Engineering over AI Hype",
+        "Ethical Vigilance around Autonomous Agency"
+      ]
+    },
+    "roles": [
+      "Multi-Agent Systems Architect",
+      "Agentic AI Infrastructure Engineer",
+      "Autonomous Workflow Engineer",
+      "AI Tool-Use & MCP Specialist",
+      "Cognitive Systems Orchestrator",
+      "AI Safety & Guardrail Architect"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Fascinated by emergent intelligence and distributed computing",
+        "Obsessed with building machines that solve problems without hand-holding",
+        "Deep mathematical and software foundation",
+        "Thrives on the bleeding edge"
+      ],
+      "workStyle": "High-velocity AI startup or frontier enterprise lab, designing code pipelines, testing autonomous failure rates, remote/hybrid flexibility.",
+      "pros": [
+        "Sitting at the absolute epicenter of the global AI transformation",
+        "Unmatched compensation, signing bonuses, and equity packages",
+        "Work that literally redefines the nature of software engineering itself"
+      ],
+      "cons": [
+        "Extremely fast-moving domain where frameworks become obsolete every 6 months",
+        "Debugging nondeterministic agent loops can be deeply frustrating",
+        "Heavy ethical responsibility regarding autonomous agent actions in finance and health"
+      ]
+    },
+    "reflectionQuestions": [
+      "Do I understand how to turn probabilistic language models into reliable, deterministic software systems?",
+      "Can I design safety guardrails that stop an autonomous agent from taking unintended, destructive actions?"
+    ],
+    "resources": [
+      "Model Context Protocol (modelcontextprotocol.io) Anthropic Standard",
+      "LangChain / LangGraph Multi-Agent Architecture Documentation",
+      "Andrew Ng's DeepLearning.AI — Agentic Workflows & Multi-Agent Design"
+    ],
+    "aka": [
+      "Agentic AI Engineer",
+      "Multi-Agent Architect",
+      "AI Agent Engineer",
+      "Autonomous Systems Architect",
+      "LLM Systems Engineer"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "tech",
+      "machines",
+      "numbers"
+    ],
+    "degrees": [
+      "computing",
+      "engineering",
+      "science"
+    ],
+    "aiTag": "automation",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk",
+      "me"
+    ]
+  },
+  {
+    "id": "vla-humanoid-robotics-scientist",
+    "cat": "eng",
+    "catName": "Engineering & Robotics",
+    "icon": "🦾",
+    "title": "Vision-Language-Action (VLA) Humanoid Robotics Scientist",
+    "tagline": "Give artificial intelligence physical bodies to walk and work beside us",
+    "desc": "Train multimodal foundation models that map camera vision and natural language instructions directly into physical motor actuator torques for bipedal humanoid robots.",
+    "stream": "Science (PCM / Robotics / Mechatronics)",
+    "salary": "Entry: $135K / ₹24-40 LPA · Mid: $220K / ₹48-90 LPA · Lead: $380K+ / ₹1.6 Cr+ (Top Tier)",
+    "regionalSalary": {
+      "in": "Entry: ₹24–40 LPA · Lead Humanoid Robotics Researcher (IISc / IIT Tech Hubs): ₹60L–₹1.5+ Cr",
+      "us": "Entry: $145,000 · Principal VLA Scientist (Tesla Optimus / Boston Dynamics / Figure AI): $250,000–$500,000+",
+      "uk": "Entry: £80,000 · Senior Embodied AI Researcher (Oxford / DeepMind Robotics): £130,000–£240,000",
+      "me": "Embodied AI & Mega-City Robotics (NEOM / Dubai Future Labs): AED 450K–AED 980K (Tax-Free)",
+      "global": "$135K – $380K+ at the forefront of the physical AI revolution"
+    },
+    "growth": "42% (Explosive Humanoid Industrial Deployment)",
+    "demand": "Extreme Frontier Need",
+    "aiImpact": "Building The AI — You build Embodied AI: the physical link between digital foundation models and the real kinetic world.",
+    "overview": "For decades, robots could only repeat pre-programmed coordinates inside factory cages. Vision-Language-Action (VLA) models have changed everything. As a VLA Humanoid Robotics Scientist, you train neural networks that see an unstructured human kitchen, hear 'fold this towel and put it in the top drawer,' and translate those visual photons and language tokens directly into joint torques and finger pressure in real time. You bridge physics simulation (NVIDIA Isaac) with zero-shot real-world deployment.",
+    "education": {
+      "highSchoolPrereqs": "Physics (Classical Mechanics & Kinematics), Chemistry, Mathematics (Linear Algebra, Calculus), Computer Science.",
+      "entranceExams": "JEE Advanced (IITs), GRE / SAT (USA), GATE in Robotics / Mechanical / Computer Science.",
+      "undergradDegrees": [
+        "B.Tech in Mechatronics, Robotics & Automation",
+        "B.S. in Electrical Engineering & Computer Science (EECS)",
+        "B.Tech in Mechanical Engineering with Minor in Machine Learning"
+      ],
+      "postgradDegrees": [
+        "M.S. / Ph.D. in Robotics, Kinematics & Embodied AI",
+        "M.Tech in Robotics & Autonomous Systems (IISc Bangalore / CMU / MIT)"
+      ],
+      "certifications": [
+        "NVIDIA Isaac Sim & Isaac Lab Robotics Developer Certification",
+        "ROS 2 (Robot Operating System) Advanced Architecture",
+        "Sim2Real Reinforcement Learning Mastery"
+      ],
+      "topInstitutes": [
+        "Carnegie Mellon University Robotics Institute (USA)",
+        "Massachusetts Institute of Technology (MIT CSAIL, USA)",
+        "Indian Institute of Science (IISc Bangalore — Centre for Cyber-Physical Systems)",
+        "Stanford Robotics Lab (USA)",
+        "ETH Zurich Robotic Systems Lab (Switzerland)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Mastering C++ and Python, forward and inverse kinematics, URDF robot modeling, training basic manipulation policies in simulation.",
+      "phase2": "Years 2–5: Developing Sim2Real domain randomization algorithms, deploying teleoperation rigs for data collection, fine-tuning VLA foundation models.",
+      "phase3": "Years 5+: Principal Scientist leading humanoid fleet deployment, authoring new physical AI architectures, pioneering dexterous bimanual manipulation."
+    },
+    "skills": {
+      "hardSkills": [
+        "Vision-Language-Action (VLA) Model Training",
+        "Sim2Real Reinforcement Learning (Isaac Gym / MuJoCo)",
+        "Forward & Inverse Kinematics / Dynamics (C++)",
+        "ROS 2 & Low-Latency CAN Bus Actuator Control",
+        "Tactile Sensor Array & Dexterous Hand Integration"
+      ],
+      "softSkills": [
+        "Physical Intuition for Mechanical Reality",
+        "Interdisciplinary Synthesis (Software + Hardware)",
+        "Patience with Hardware Breakages",
+        "Safety-First Engineering Mindset"
+      ]
+    },
+    "roles": [
+      "VLA Robotics Scientist",
+      "Humanoid Kinematics Engineer",
+      "Sim2Real Transfer Specialist",
+      "Dexterous Manipulation Researcher",
+      "Embodied AI Infrastructure Lead",
+      "Robotics Foundation Model Architect"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Loves seeing code physically move heavy metal and motors in the real world",
+        "Deep mathematical and physics foundation",
+        "Not afraid to get hands greasy in a machine shop",
+        "Pioneering mind"
+      ],
+      "workStyle": "Robotics hardware test-bays with safety tether rigs, high-end GPU clusters, fast iteration between simulation and physical humanoid prototypes.",
+      "pros": [
+        "Witnessing artificial intelligence stand up, walk, and manipulate tools in physical reality",
+        "Extremely rare, highly valued skillset in immense demand by auto, defense, and tech giants",
+        "Creating the defining technology of the 21st century"
+      ],
+      "cons": [
+        "Hardware breaks, gears strip, and batteries overheat (unlike pure software)",
+        "Expensive hardware compute requirements",
+        "Long testing cycles ensuring physical human safety near heavy humanoid robots"
+      ]
+    },
+    "reflectionQuestions": [
+      "Do I understand how mathematical matrix transformations translate into physical motor torques and balance?",
+      "Can I troubleshoot an issue that could be an electrical wire loose, a physics simulation glitch, or a neural network hallucination?"
+    ],
+    "resources": [
+      "NVIDIA Isaac Robotics Ecosystem & Documentation",
+      "Open-X Embodiment Collaboration Papers",
+      "Boston Dynamics & Figure AI Engineering Tech Talks"
+    ],
+    "aka": [
+      "Humanoid Robotics Engineer",
+      "Embodied AI Scientist",
+      "VLA Engineer",
+      "Robotics Research Scientist",
+      "Kinematics Engineer"
+    ],
+    "edu": "master",
+    "interests": [
+      "machines",
+      "tech",
+      "build",
+      "science"
+    ],
+    "degrees": [
+      "engineering",
+      "computing",
+      "science"
+    ],
+    "aiTag": "automation",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk",
+      "me"
+    ]
+  },
+  {
+    "id": "bci-neural-decoder-engineer",
+    "cat": "health",
+    "catName": "Healthcare & Medicine",
+    "icon": "🧠",
+    "title": "Brain-Computer Interface (BCI) Neural Decoder Engineer",
+    "tagline": "Bridge the human mind with computing to restore speech and mobility",
+    "desc": "Decode real-time electrophysiological brain signals (spike trains, ECoG, EEG) using deep learning to enable paralyzed individuals to speak, walk, and control devices with thought.",
+    "stream": "Science (PCB / PCM / Biomedical Engineering / Neuroscience)",
+    "salary": "Entry: $125K / ₹20-35 LPA · Mid: $195K / ₹42-80 LPA · Lead: $320K+ / ₹1.3 Cr+",
+    "regionalSalary": {
+      "in": "Entry: ₹20–35 LPA · Senior Neurotech Engineer (NIMHANS / IIT Madras Neuro-Labs): ₹45L–₹1.2 Cr",
+      "us": "Entry: $135,000 · Principal Neural Decoder Engineer (Neuralink / Synchron / Blackrock): $220,000–$420,000+",
+      "uk": "Entry: £72,000 · Senior BCI Scientist (Cambridge / UCL Neurological Institute): £110,000–£210,000",
+      "me": "Gulf Precision Medicine & Neuromodulation Center: AED 380K–AED 780K (Tax-Free)",
+      "global": "$125K – $320K+ at the clinical bleeding edge of neurotechnology"
+    },
+    "growth": "36% (Historic Clinical Trial Approvals)",
+    "demand": "High Scientific Precision",
+    "aiImpact": "Augmented — Modern transformer decoders translate noisy neural spikes into intended text and movement, revolutionizing human sensory restoration.",
+    "overview": "Brain-Computer Interfaces (BCIs) are no longer science fiction. Paralyzed clinical trial participants are playing digital chess, driving motorized wheelchairs, and speaking through synthetic voices using their thoughts. As a Neural Decoder Engineer, you process raw microvolt electrical signals from thousands of neural electrodes implanted in the motor and speech cortex, filter out physiological noise, and train real-time low-latency neural decoders that turn intention into instantaneous digital action.",
+    "education": {
+      "highSchoolPrereqs": "Biology, Physics, Mathematics, Chemistry, Computer Science.",
+      "entranceExams": "JEE Advanced (Biomedical/EE), NEET (Neuroscience tracks), GRE / MCAT, GATE Biomedical Engineering.",
+      "undergradDegrees": [
+        "B.Tech in Biomedical Engineering / Electrical Engineering & Signal Processing",
+        "B.S. in Computational Neuroscience & Neural Engineering",
+        "B.Tech in Computer Science with Minor in Cognitive Neuroscience"
+      ],
+      "postgradDegrees": [
+        "M.S. / Ph.D. in Neural Engineering, Bioelectronics, or Brain-Computer Interfaces",
+        "M.Tech in Medical Signal Processing (IIT Delhi / Johns Hopkins / EPFL)"
+      ],
+      "certifications": [
+        "Clinical BCI Regulatory Compliance & FDA IDE/PMA Medical Device Standards",
+        "Electrophysiological Signal Processing (FieldTrip / MNE-Python)"
+      ],
+      "topInstitutes": [
+        "Stanford Neural Prosthetic Systems Laboratory (USA)",
+        "Johns Hopkins Biomedical Engineering (USA)",
+        "IIT Madras / NIMHANS Bangalore (Centre for Brain Research, India)",
+        "EPFL Center for Neuroprosthetics (Switzerland)",
+        "University of California, San Francisco (UCSF Weill Institute for Neurosciences)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–3: Filtering neural spike trains and local field potentials (LFP), optimizing real-time FFT algorithms in C++ and Python, conducting non-invasive EEG experiments.",
+      "phase2": "Years 2–6: Designing recurrent neural networks and state-space decoders for intracortical microelectrode arrays, supporting live clinical human patient trials.",
+      "phase3": "Years 6+: Principal Neural Engineering Architect, leading clinical trial engineering teams, designing fully-implantable bidirectional neuromodulation systems."
+    },
+    "skills": {
+      "hardSkills": [
+        "Electrophysiological Signal Processing (Spike Sorting, Kalman Filters)",
+        "Real-Time Neural Decoding Architectures (PyTorch / C++)",
+        "Low-Power Embedded DSP for Neural Implants",
+        "FDA Class III Medical Device Safety Standards",
+        "Intracortical & ECoG Electrode Array Interfaces"
+      ],
+      "softSkills": [
+        "Profound Clinical Empathy with Paralyzed Patients",
+        "Extreme Precision and Rigor in Code Testing",
+        "Interdisciplinary Humility (Collaborating with neurosurgeons)",
+        "Bioethical Responsibility"
+      ]
+    },
+    "roles": [
+      "Neural Decoder Engineer",
+      "BCI Algorithm Scientist",
+      "Bioelectronics Systems Engineer",
+      "Clinical Neurotech Specialist",
+      "Neuromodulation Research Lead",
+      "Neural Prosthetics Architect"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Fascinated by how the human brain produces thought and movement",
+        "Gifted electrical signal and mathematical modeler",
+        "Driven by compassionate medical mission",
+        "Deeply ethical"
+      ],
+      "workStyle": "Clinical hospital neurology suites, bioengineering wet-and-dry electronics labs, collaborative trials with neurosurgeons and human patients.",
+      "pros": [
+        "Watching a locked-in paralyzed patient communicate with their family for the first time using your code",
+        "At the absolute frontier of human biology and high technology",
+        "Extraordinary scientific meaning and high global prestige"
+      ],
+      "cons": [
+        "Heavy clinical regulatory burden and lengthy trial timelines",
+        "Emotional gravity of working with severely impaired neurological patients",
+        "High complexity of biological brain signals and neural tissue scarring over time"
+      ]
+    },
+    "reflectionQuestions": [
+      "Can I write signal-processing algorithms where a software bug could directly affect a human patient's implanted medical device?",
+      "Do I want to dedicate my career to unlocking the human mind from physical paralysis?"
+    ],
+    "resources": [
+      "Brain-Computer Interface Society (bcisociety.org)",
+      "IEEE Brain & Neural Engineering Conferences",
+      "Nature Neuroscience & Journal of Neural Engineering"
+    ],
+    "aka": [
+      "BCI Engineer",
+      "Neural Decoder",
+      "Neurotech Engineer",
+      "Computational Neuroscientist",
+      "Bioelectronics Engineer"
+    ],
+    "edu": "master",
+    "interests": [
+      "health",
+      "science",
+      "tech",
+      "machines"
+    ],
+    "degrees": [
+      "engineering",
+      "health",
+      "science"
+    ],
+    "aiTag": "hybrid",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk",
+      "me"
+    ]
+  },
+  {
+    "id": "post-quantum-cryptography-architect",
+    "cat": "tech",
+    "catName": "Technology & AI",
+    "icon": "🔐",
+    "title": "Post-Quantum Cryptography (PQC) & Algorithmic Resilience Architect",
+    "tagline": "Protect global banking, defense, and civilian data from the quantum threat",
+    "desc": "Upgrade global financial networks, sovereign communications, and cloud infrastructure from vulnerable RSA/ECC encryption to NIST-standardized quantum-resistant lattice algorithms.",
+    "stream": "Science (PCM / Mathematics / Cryptography / Computer Science)",
+    "salary": "Entry: $120K / ₹18-32 LPA · Mid: $185K / ₹38-70 LPA · Lead: $310K+ / ₹1.2 Cr+",
+    "regionalSalary": {
+      "in": "Entry: ₹18–32 LPA · Senior Sovereign Cryptographer (DRDO / RBI / FinTech Security): ₹42L–₹1.1 Cr",
+      "us": "Entry: $130,000 · Principal PQC Migration Architect (AWS / Google / NSA / Wall St): $210,000–$420,000+",
+      "uk": "Entry: £70,000 · National Quantum Resilience Lead (GCHQ / Bank of England): £105,000–£195,000",
+      "me": "National Cybersecurity Authority & Sovereign Cloud Cryptography: AED 360K–AED 720K (Tax-Free)",
+      "global": "$120K – $310K+ as global regulatory mandates require complete PQC migration"
+    },
+    "growth": "38% (NIST Post-Quantum Cryptography Mandates)",
+    "demand": "Critical Global Infrastructure",
+    "aiImpact": "Hybrid — AI analyzes protocol vulnerabilities, but mathematical proof verification, lattice geometry, and cryptographic protocol architecture are human math genius.",
+    "overview": "When quantum computers scale to fault-tolerance, Shor's Algorithm will crack the RSA and elliptic-curve cryptography securing every bank account, nuclear launch code, hospital record, and encrypted message on Earth. Post-Quantum Cryptography Architects are the digital defense shield. You implement NIST-standardized mathematical algorithms (CRYSTALS-Kyber, Dilithium, SPHINCS+) based on lattice-based math that cannot be solved even by quantum computers, upgrading trillions of dollars in global cyber infrastructure.",
+    "education": {
+      "highSchoolPrereqs": "Mathematics (Advanced Calculus, Number Theory, Discrete Math), Physics, Computer Science.",
+      "entranceExams": "JEE Advanced (CS/Maths), GATE in CS & Information Technology, GRE in Mathematics/Computer Science.",
+      "undergradDegrees": [
+        "B.S. / B.Tech in Pure Mathematics & Computing",
+        "B.Tech in Computer Science & Information Security",
+        "B.S. in Theoretical Computer Science & Cryptography"
+      ],
+      "postgradDegrees": [
+        "M.S. / Ph.D. in Cryptography, Lattice-Based Mathematics, or Quantum Information Science",
+        "M.Tech in Cryptology & Information Security (ISI Kolkata / IIT Kharagpur)"
+      ],
+      "certifications": [
+        "NIST Post-Quantum Cryptography Standards Implementation",
+        "Hardware Security Module (HSM) Cryptographic Key Management (FIPS 140-3)",
+        "Certified Information Systems Security Professional (CISSP)"
+      ],
+      "topInstitutes": [
+        "Indian Statistical Institute (ISI Kolkata — Cryptology Research Group)",
+        "Waterloo Institute for Quantum Computing (IQC, Canada)",
+        "Massachusetts Institute of Technology (MIT Theory of Computation Group, USA)",
+        "Eindhoven University of Technology (TU/e Coding Theory and Cryptology, Netherlands)",
+        "IIT Madras / IIT Kharagpur Cryptography Labs (India)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–3: Mastering abstract algebra, ring lattices, modular arithmetic, profiling cryptographic latency overhead in Linux kernel and OpenSSL.",
+      "phase2": "Years 2–6: Architecting PQC migration roadmaps for Tier-1 multinational banks or defense intranets, deploying hybrid classical/quantum-resistant TLS certificates.",
+      "phase3": "Years 6+: Chief Cryptographer, Principal Fellow advising National Cyber Security Agencies, authoring quantum-safe international communications treaties."
+    },
+    "skills": {
+      "hardSkills": [
+        "Lattice-Based Cryptography (Module-LWE, Ring-LWE)",
+        "NIST PQC Standards (ML-KEM, ML-DSA, SLH-DSA)",
+        "Side-Channel Attack Mitigation (Timing, Power Analysis)",
+        "C/Rust Low-Level Cryptographic Library Hardening",
+        "Hardware Security Modules (HSMs) & PKI Migration"
+      ],
+      "softSkills": [
+        "Mathematical Paranoia & Threat Rigor",
+        "Patience for Rigorous Formal Proofs",
+        "Strategic Patience for Decade-Long Migrations",
+        "Clear Executive Communication on Complex Math"
+      ]
+    },
+    "roles": [
+      "Post-Quantum Cryptography Architect",
+      "Principal Cryptologist",
+      "Quantum-Safe Security Engineer",
+      "Sovereign Defense Cyber Cryptographer",
+      "PKI Infrastructure Director",
+      "Lattice Cryptography Researcher"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Loves pure mathematics, number theory, and abstract geometry",
+        "Paranoid about digital security vulnerabilities",
+        "Rigorous and meticulous to the microscopic detail",
+        "Enjoys solving humanity's hardest math puzzles"
+      ],
+      "workStyle": "Deep mathematical whiteboard proofs, auditing Rust/C low-level cryptographic libraries, consulting with global banking and defense leadership.",
+      "pros": [
+        "Protecting the bedrock financial and security systems of civilization",
+        "Immense job security as global laws mandate quantum upgrades by 2030",
+        "Exceptional compensation and intellectual respect across mathematics and tech"
+      ],
+      "cons": [
+        "One mathematical flaw in your implementation can compromise millions of user accounts",
+        "Massive organizational inertia when convincing companies to upgrade legacy infrastructure",
+        "Heavy abstract mathematics that takes years of dedication to master"
+      ]
+    },
+    "reflectionQuestions": [
+      "Do I find abstract algebra, polynomial rings, and multi-dimensional lattices genuinely thrilling?",
+      "Can I write code that is completely impervious to side-channel timing attacks and memory leaks?"
+    ],
+    "resources": [
+      "NIST Post-Quantum Cryptography Standardization Portal (csrc.nist.gov/projects/pqc)",
+      "International Association for Cryptologic Research (IACR.org)",
+      "OQS (Open Quantum Safe) Open Source Project"
+    ],
+    "aka": [
+      "PQC Architect",
+      "Cryptographer",
+      "Quantum-Safe Engineer",
+      "Cryptology Scientist",
+      "Sovereign Security Architect"
+    ],
+    "edu": "master",
+    "interests": [
+      "numbers",
+      "tech",
+      "law",
+      "science"
+    ],
+    "degrees": [
+      "computing",
+      "science",
+      "engineering"
+    ],
+    "aiTag": "hybrid",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk",
+      "me"
+    ]
+  },
+  {
+    "id": "direct-air-capture-mineralization",
+    "cat": "eco",
+    "catName": "Sustainability & Energy",
+    "icon": "🍃",
+    "title": "Direct Air Capture (DAC) & Carbon Mineralization Engineer",
+    "tagline": "Scrub millions of tons of carbon from the sky and turn it into permanent rock",
+    "desc": "Design megaton-scale industrial facilities that suck CO₂ directly out of ambient air, and engineer subsurface mineralization pipelines that turn it into solid basalt stone forever.",
+    "stream": "Science (PCM / Chemical / Mechanical / Geological Engineering)",
+    "salary": "Entry: $92K / ₹14-22 LPA · Mid: $145K / ₹28-55 LPA · Lead: $240K+ / ₹85 LPA+",
+    "regionalSalary": {
+      "in": "Entry: ₹14–22 LPA · Lead Carbon Removal Engineer (Reliance Net-Zero / Tata CleanTech / ONGC): ₹35L–₹90 LPA",
+      "us": "Entry: $98,000 · Senior DAC Plant Process Lead (Climeworks / Heirloom / Occidental 1PointFive): $160,000–$265,000",
+      "uk": "Entry: £52,000 · Direct Air Capture Engineering Director: £85,000–£165,000",
+      "me": "Gulf Carbon Geosequestration & Green Hydrogen Hub (ADNOC / Aramco): AED 280K–AED 620K (Tax-Free)",
+      "global": "$92K – $240K+ backed by multi-billion dollar compliance and voluntary carbon-credit markets"
+    },
+    "growth": "35% (Historic Scaling from Megawatt to Gigaton CleanTech)",
+    "demand": "High Planet-Critical Need",
+    "aiImpact": "Augmented — AI optimizes thermodynamic cycle desorption and geological flow modeling, while chemical plant scaling and physical subsurface drilling remain engineering disciplines.",
+    "overview": "Stopping future emissions is no longer enough to avoid climate catastrophe; humanity must actively remove hundreds of billions of tons of legacy carbon already in our atmosphere. As a Direct Air Capture (DAC) & Mineralization Engineer, you design colossal industrial facilities with fans that draw in atmospheric air, capture trace CO₂ molecules (only 420 ppm) on novel chemical sorbents, and inject the dissolved carbon into deep volcanic basalt formations where it permanently turns into stone in less than two years.",
+    "education": {
+      "highSchoolPrereqs": "Chemistry (Thermodynamics), Physics, Mathematics, Earth Sciences, Computer Science.",
+      "entranceExams": "JEE Advanced (Chemical/Mechanical/Petroleum/Geology), GATE in Chemical Engineering, GRE in Chemical & Environmental Engineering.",
+      "undergradDegrees": [
+        "B.Tech / B.S. in Chemical Engineering & Process Design",
+        "B.Tech in Mechanical Engineering (Thermodynamics & Turbomachinery)",
+        "B.S. in Petroleum Engineering / Subsurface Geosciences"
+      ],
+      "postgradDegrees": [
+        "M.S. / Ph.D. in Carbon Capture, Utilization & Storage (CCUS)",
+        "M.Tech in Clean Energy & Subsurface Mineralization"
+      ],
+      "certifications": [
+        "Certified Professional in Carbon Accounting & MRV (Monitoring, Reporting & Verification)",
+        "ASME Section VIII Pressure Vessel Design Certification"
+      ],
+      "topInstitutes": [
+        "ETH Zurich Department of Mechanical and Process Engineering (Switzerland)",
+        "IIT Bombay / IIT Madras National Centre of Excellence in CCUS (India)",
+        "Imperial College London Energy Futures Lab (UK)",
+        "University of Texas at Austin Petroleum & Geosystems Engineering (USA)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–3: Process engineering on solid-sorbent contactor arrays, modeling thermodynamic regeneration energy balances in Aspen Plus, monitoring underground core samples.",
+      "phase2": "Years 2–6: Lead Commissioning Engineer on 50,000-ton DAC facilities, managing geothermal or nuclear zero-carbon power integration, securing carbon removal MRV certification.",
+      "phase3": "Years 6+: Chief Technology Officer of global carbon removal developer, deploying regional gigaton carbon hubs, advising international climate summits."
+    },
+    "skills": {
+      "hardSkills": [
+        "Thermodynamic Desorption & Energy-Balance Optimization",
+        "Solid Sorbent & Liquid Solvent Chemical Contactors",
+        "Subsurface Reactive Transport Modeling (TOUGH2 / Eclipse)",
+        "Aspen Plus Process Simulation & P&ID Design",
+        "Carbon Removal MRV (Monitoring, Reporting & Verification) Standards"
+      ],
+      "softSkills": [
+        "Planetary-Scale Mission Passion",
+        "Cross-Disciplinary Engineering Grit",
+        "Pragmatic Techno-Economic Mindset",
+        "High Stakeholder Environmental Integrity"
+      ]
+    },
+    "roles": [
+      "Direct Air Capture Process Engineer",
+      "Carbon Mineralization Geologist",
+      "CCUS Project Director",
+      "Atmospheric Carbon Removal Scientist",
+      "CleanTech Plant Operations Manager",
+      "Carbon Verification Lead"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Deeply passionate about solving climate change with heavy engineering",
+        "Excels at chemical thermodynamics and fluid dynamics",
+        "Loves massive industrial hardware",
+        "Pragmatic realist"
+      ],
+      "workStyle": "Industrial chemical facilities, geothermal volcanic sites (Iceland, Oman, Deccan Traps), simulation software, clean energy parks.",
+      "pros": [
+        "Work that directly protects the climate and biosphere for all future generations of humanity",
+        "At the cutting edge of billions in institutional green capital investments",
+        "High engineering leadership autonomy"
+      ],
+      "cons": [
+        "Immense thermodynamic challenges of capturing sparse 420 ppm molecules from air",
+        "Heavy capital expenditure cycles reliant on carbon compliance pricing",
+        "Fieldwork in remote geothermal, volcanic, or desert environments"
+      ]
+    },
+    "reflectionQuestions": [
+      "Can I look at an engineering problem requiring thousands of megawatts of clean energy and design a path to make it economically viable?",
+      "Do I want to build physical industrial machines that actively heal Earth's atmosphere?"
+    ],
+    "resources": [
+      "XPRA Carbon Removal Global Prize",
+      "IEA (International Energy Agency) CCUS Roadmap",
+      "Climeworks & Heirloom Carbon Tech Whitepapers"
+    ],
+    "aka": [
+      "Carbon Removal Engineer",
+      "DAC Engineer",
+      "CCUS Specialist",
+      "Mineralization Engineer",
+      "Climate Restoration Engineer"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "eco",
+      "build",
+      "science",
+      "machines"
+    ],
+    "degrees": [
+      "engineering",
+      "science"
+    ],
+    "aiTag": "hybrid",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk",
+      "me"
+    ]
+  },
+  {
+    "id": "orbital-station-logistics-director",
+    "cat": "space",
+    "catName": "Aviation & Aerospace",
+    "icon": "🛰️",
+    "title": "Commercial Space Station Habitation & Orbital Logistics Director",
+    "tagline": "Build humanity's permanent cities in Earth orbit and beyond",
+    "desc": "Design pressurized microgravity habitats, life-support recyclers, astronaut accommodations, and cargo launch supply chains for private commercial space stations (Axiom, Vast, Orbital Reef).",
+    "stream": "Science (PCM / Aerospace / Systems Engineering / Architecture)",
+    "salary": "Entry: $115K / ₹18-30 LPA · Mid: $180K / ₹35-65 LPA · Lead: $290K+ / ₹1.1 Cr+",
+    "regionalSalary": {
+      "in": "Entry: ₹18–30 LPA · Senior Orbital Mission & Gaganyaan Station Lead (ISRO / IN-SPACe / Private Space Startups): ₹35L–₹95 LPA",
+      "us": "Entry: $120,000 · Director of Orbital Architecture (Axiom Space / Blue Origin / Vast / SpaceX): $200,000–$350,000+",
+      "uk": "Entry: £65,000 · European Space Architecture & Cislunar Logistics Lead (ESA / UK Space Agency): £98,000–£185,000",
+      "me": "UAE Space Agency & Mohammed Bin Rashid Space Centre (MBRSC) Orbital Director: AED 340K–AED 680K (Tax-Free)",
+      "global": "$115K – $290K+ across the burgeoning trillion-dollar orbital commercial space economy"
+    },
+    "growth": "30% (Retirement of ISS & Rise of Private Commercial Stations)",
+    "demand": "Pioneering Frontier Need",
+    "aiImpact": "Augmented — AI simulates orbital thermal stress and trajectory optimization, but human life-support architecture, psychological ergonomics, and launch contingency management require human judgment.",
+    "overview": "With the International Space Station retiring by 2030, a new generation of private commercial orbital stations (Axiom Station, Vast Haven-1, Orbital Reef) is launching. As an Orbital Habitation & Logistics Director, you architect human life in microgravity: closed-loop environmental control and life-support systems (ECLSS) that recycle 98% of human sweat and urine into drinking water, ergonomic crew quarters that preserve mental health, microgravity research labs, and rocket launch manifests that keep orbital cities supplied.",
+    "education": {
+      "highSchoolPrereqs": "Physics, Advanced Mathematics, Chemistry, Biology, Mechanical/Aerospace Concepts.",
+      "entranceExams": "JEE Advanced (Aerospace/Mechanical), GATE Aerospace Engineering, GRE in Astronautical Engineering.",
+      "undergradDegrees": [
+        "B.Tech / B.S. in Aerospace, Astronautical & Space Systems Engineering",
+        "B.Arch in Space Architecture & Extreme Environment Design",
+        "B.Tech in Mechanical Engineering with Fluid Dynamics / Thermal Focus"
+      ],
+      "postgradDegrees": [
+        "M.S. in Space Architecture (SICSA University of Houston)",
+        "M.Tech / Ph.D. in Astronautics & Environmental Control Life Support (ISRO IIST / Purdue / Caltech)"
+      ],
+      "certifications": [
+        "NASA / ESA Human Spaceflight Crew Safety Standards",
+        "FAA Commercial Human Spaceflight Operator Regulations"
+      ],
+      "topInstitutes": [
+        "Sasakawa International Center for Space Architecture (SICSA, Univ of Houston, USA)",
+        "Indian Institute of Space Science and Technology (IIST Thiruvananthapuram, India)",
+        "Purdue University School of Aeronautics and Astronautics (USA)",
+        "International Space University (ISU Strasbourg, France)",
+        "ISRO Training Facilities / NASA Johnson Space Center (USA)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–3: ECLSS life-support subsystems engineer, modeling cabin air CO₂ scrubbing and water reclamation loops, conducting zero-g human factor ergonomics tests.",
+      "phase2": "Years 2–6: Lead Habitat Systems Architect, integrating commercial payload berths and docking adapters, managing rocket cargo supply schedules with SpaceX/Rocket Lab.",
+      "phase3": "Years 6+: Mission & Station Operations Director, supervising continuous human presence in Earth orbit, planning cislunar and Mars transport habitats."
+    },
+    "skills": {
+      "hardSkills": [
+        "Environmental Control & Life Support Systems (ECLSS)",
+        "Microgravity Human Factors & Ergonomic Spatial Design",
+        "Orbital Mechanics, Rendezvous & Autonomous Docking",
+        "Radiation Shielding & Thermal Control in Hard Vacuum",
+        "Commercial Launch Manifest Scheduling & Cargo Mass Balancing"
+      ],
+      "softSkills": [
+        "Unflinching Calm During Life-Support Telemetry Alarms",
+        "Cross-Disciplinary Vision (Biology + Rockets + Architecture)",
+        "Psychological Empathy for Astronaut Well-Being",
+        "Decisive Crisis Leadership"
+      ]
+    },
+    "roles": [
+      "Orbital Station Director",
+      "Space Architect",
+      "ECLSS Life Support Lead",
+      "Astronaut Mission Operations Director",
+      "Commercial Microgravity Payload Manager",
+      "Space Logistics Director"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Dreamer inspired by humanity becoming a multi-planetary species",
+        "Rigorous systems engineer who respects the unforgiving vacuum of space",
+        "Obsessed with sustainability and zero-waste loops",
+        "Visionary leader"
+      ],
+      "workStyle": "Mission control consoles, clean-room habitat mockups, space agency flight integration meetings, international space launch pads.",
+      "pros": [
+        "Directly constructing the permanent stepping stones of human civilization in the cosmos",
+        "Working with astronauts, rocket scientists, and private space pioneers",
+        "Inspiring the entire world with historic orbital achievements"
+      ],
+      "cons": [
+        "Zero margin for error (a life-support design flaw in a vacuum means instant death for astronauts)",
+        "Extreme pressure during live orbital docking and spacewalk missions",
+        "High-security regulatory environments and export control laws (ITAR)"
+      ]
+    },
+    "reflectionQuestions": [
+      "Can I design an apartment where every liter of air, drop of water, and gram of food must be perfectly recycled for six months in a vacuum?",
+      "Do I want to be remembered as one of the architects who built humanity's first permanent cities off Earth?"
+    ],
+    "resources": [
+      "Axiom Space / Vast Space Official Portals",
+      "AIAA (American Institute of Aeronautics and Astronautics) Space Architecture Committee",
+      "ISRO Indian Human Spaceflight Programme (Gaganyaan) Documentation"
+    ],
+    "aka": [
+      "Space Station Director",
+      "Space Architect",
+      "Orbital Logistics Director",
+      "ECLSS Engineer",
+      "Human Spaceflight Lead"
+    ],
+    "edu": "master",
+    "interests": [
+      "space",
+      "machines",
+      "build",
+      "tech"
+    ],
+    "degrees": [
+      "engineering",
+      "design",
+      "science"
+    ],
+    "aiTag": "hybrid",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk",
+      "me"
+    ]
+  },
+  {
+    "id": "synthetic-biology-cellular-agriculture",
+    "cat": "science",
+    "catName": "Science & DeepTech",
+    "icon": "🧬",
+    "title": "Synthetic Biology & Cellular Agriculture Bioengineer",
+    "tagline": "Program cellular DNA to grow clean food, medicine, and materials without animals",
+    "desc": "Engineer synthetic microbes, precision fermentation pathways, and bioreactor cellular meat cultivation to replace factory farming and petrochemical plastics with living biology.",
+    "stream": "Science (PCB / Biotechnology / Chemical Engineering)",
+    "salary": "Entry: $95K / ₹14-22 LPA · Mid: $155K / ₹28-55 LPA · Lead: $260K+ / ₹90 LPA+",
+    "regionalSalary": {
+      "in": "Entry: ₹14–22 LPA · Senior Fermentation Scientist (Biocon / Perfect Day India / IIT Biotech Hubs): ₹32L–₹85 LPA",
+      "us": "Entry: $105,000 · Lead Synthetic Biologist (Ginkgo Bioworks / Upside Foods / Impossible): $170,000–$290,000+",
+      "uk": "Entry: £55,000 · Cellular Agriculture Principal Scientist: £85,000–£165,000",
+      "me": "Gulf Food Security & Desert Bio-Fermentation Labs: AED 280K–AED 580K (Tax-Free)",
+      "global": "$95K – $260K+ at the intersection of climate action, biology, and the future of food"
+    },
+    "growth": "32% (Revolution in Precision Fermentation & Alt-Proteins)",
+    "demand": "High Impact Science",
+    "aiImpact": "Augmented — AlphaFold and generative biology AI design custom enzymes and metabolic pathways, while bioengineers cultivate living cells in stainless-steel bioreactors.",
+    "overview": "What if you could brew real dairy milk proteins without cows, grow authentic salmon steaks in clean stainless-steel fermenters, or program yeast to spin spider silk? Synthetic Biology treats DNA as programmable software. As a Cellular Agriculture Bioengineer, you design synthetic genetic circuits in microbes, optimize metabolic pathways for precision fermentation, and scale 10,000-liter bioreactors to nourish the world without slaughtering billions of animals or deforesting rain forests.",
+    "education": {
+      "highSchoolPrereqs": "Biology (Genetics), Chemistry (Biochemistry), Mathematics, Physics, Computer Science.",
+      "entranceExams": "NEET / JEE (Biotech), GATE in Biotechnology, CSIR NET-JRF, GRE in Molecular Biology.",
+      "undergradDegrees": [
+        "B.Tech / B.S. in Biotechnology & Genetic Engineering",
+        "B.S. in Biochemistry & Molecular Biology",
+        "B.Tech in Biochemical / Bioprocess Engineering"
+      ],
+      "postgradDegrees": [
+        "M.S. / Ph.D. in Synthetic Biology, Cellular Agriculture, or Metabolic Engineering",
+        "M.Tech in Bioprocess Technology (ICT Mumbai / IIT Delhi)"
+      ],
+      "certifications": [
+        "CRISPR-Cas9 Gene Editing & Recombinant DNA Safety Standards",
+        "Industrial Bioreactor Fermentation & Downstream Processing"
+      ],
+      "topInstitutes": [
+        "Institute of Chemical Technology (ICT Mumbai, India)",
+        "University of California, Berkeley (Innovative Genomics Institute, USA)",
+        "Imperial College London Centre for Synthetic Biology (UK)",
+        "Wageningen University & Research (Netherlands)",
+        "IIT Delhi / National Centre for Biological Sciences (NCBS Bangalore, India)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–3: Bench molecular biology, cloning plasmids, running micro-fermenters, measuring protein yield through HPLC and mass spectrometry.",
+      "phase2": "Years 2–6: Senior Strain Engineering Scientist, using AI to engineer high-titer metabolic pathways, scaling from 5-liter benchtop reactors to 1,000-liter pilot plants.",
+      "phase3": "Years 6+: VP of Bioprocess, Chief Scientific Officer of food-tech or biomaterials unicorn, securing regulatory FDA/FSSAI novel food approvals."
+    },
+    "skills": {
+      "hardSkills": [
+        "CRISPR-Cas9 & Recombinant DNA Design",
+        "Metabolic Flux & Synthetic Gene Circuit Architecture",
+        "Pilot & Industrial Bioreactor Scale-Up (Stirred-Tank/Air-Lift)",
+        "Downstream Purification & Centrifugation (HPLC/FPLC)",
+        "Novel Food Regulatory Dossier Filing (FDA GRAS / FSSAI)"
+      ],
+      "softSkills": [
+        "Scientific Rigor & Cross-Contamination Discipline",
+        "Ethical Conscience for Animal Welfare & Climate",
+        "Deep Patience with Living Biological Systems",
+        "Commercial Product Vision"
+      ]
+    },
+    "roles": [
+      "Synthetic Biologist",
+      "Cellular Agriculture Scientist",
+      "Precision Fermentation Engineer",
+      "Metabolic Pathway Architect",
+      "Bioprocess Scale-Up Director",
+      "Novel Food Safety Scientist"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Passionate about animal rights and climate change",
+        "Fascinated by the machinery of living cells",
+        "Loves biotechnology and chemistry",
+        "Enjoys scalable engineering"
+      ],
+      "workStyle": "State-of-the-art sterile biotechnology labs, stainless-steel bioreactor pilot plants, computational genetic design workstations.",
+      "pros": [
+        "Directly eliminating factory animal cruelty while slashing agricultural greenhouse gas emissions by 90%",
+        "At the absolute commercial vanguard of biotechnology venture capital",
+        "Work that transforms the fundamental food and material systems of humanity"
+      ],
+      "cons": [
+        "High capital intensity of scaling massive industrial bioreactors",
+        "Complex regulatory hurdles for consumer novel food approvals",
+        "Biological contamination can ruin a multi-week fermentation batch in minutes"
+      ]
+    },
+    "reflectionQuestions": [
+      "Can I look at DNA as an elegant programming language that can feed humanity without harming animals?",
+      "Do I possess the biological discipline to maintain pristine sterile culture conditions across thousands of liters of fermenting cells?"
+    ],
+    "resources": [
+      "The Good Food Institute (GFI.org)",
+      "SynBioBeta — The Synthetic Biology Innovation Community",
+      "Cellular Agriculture Society (cellag.org)"
+    ],
+    "aka": [
+      "Synthetic Biologist",
+      "Cellular Agriculture Engineer",
+      "Cultured Meat Scientist",
+      "Fermentation Bioengineer",
+      "Bioprocess Engineer"
+    ],
+    "edu": "master",
+    "interests": [
+      "science",
+      "health",
+      "eco",
+      "build"
+    ],
+    "degrees": [
+      "science",
+      "engineering"
+    ],
+    "aiTag": "hybrid",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk",
+      "me"
+    ]
+  },
+  {
+    "id": "deepfake-forensics-provenance",
+    "cat": "tech",
+    "catName": "Technology & AI",
+    "icon": "🔍",
+    "title": "Deepfake Forensics & Digital Provenance Investigator",
+    "tagline": "Defend truth, expose synthetic deception, and authenticate digital reality",
+    "desc": "Detect hyper-realistic AI-generated voice clones, deepfake video fraud, and fabricated evidence using cryptographic C2PA provenance, frequency artifact analysis, and legal courtroom testimony.",
+    "stream": "Science (PCM / Computer Science / Forensic Science / Law)",
+    "salary": "Entry: $95K / ₹12-20 LPA · Mid: $155K / ₹25-50 LPA · Lead: $265K+ / ₹85 LPA+",
+    "regionalSalary": {
+      "in": "Entry: ₹12–20 LPA · Senior Digital Evidence & Cybercrime Expert (Cert-In / Law Enforcement / Banking Fraud): ₹28L–₹75 LPA",
+      "us": "Entry: $105,000 · Lead Deepfake Forensics Investigator (Defense / Federal Courts / Big Tech Trust & Safety): $165,000–$295,000+",
+      "uk": "Entry: £58,000 · Principal Digital Media Authenticity Forensic Lead: £92,000–£175,000",
+      "me": "National Cybersecurity & Digital Provenance Authority: AED 310K–AED 620K (Tax-Free)",
+      "global": "$95K – $265K+ with immense demand across intelligence agencies, courts, and global media"
+    },
+    "growth": "40% (Surge in AI Voice Clones & Election Disinformation)",
+    "demand": "Urgent National Security & Financial Need",
+    "aiImpact": "Building The AI — You build and train the adversarial detection models and cryptographic verification pipelines that spot generative AI fraud.",
+    "overview": "We have entered an era where video, audio, and documents can no longer be believed on sight. Deepfake CEO voice clones are robbing corporations of tens of millions of dollars, fake videos threaten national elections, and fraudulent synthetic evidence threatens criminal justice. As a Deepfake Forensics Investigator, you are truth's detective. You analyze biometric blood-flow micro-pulses (photoplethysmography), spectral acoustic artifacts, lighting inconsistency, and C2PA cryptographic watermarks to prove whether media is real or fabricated.",
+    "education": {
+      "highSchoolPrereqs": "Computer Science, Mathematics (Linear Algebra, Fourier Transforms), Physics, Digital Media, English.",
+      "entranceExams": "JEE / GATE (CS / Cyber Security), National Forensic Sciences University (NFSU Entrance Exam, India), GRE in Computer Science.",
+      "undergradDegrees": [
+        "B.Tech in Cyber Security & Digital Forensics",
+        "B.S. in Computer Science & Computer Vision",
+        "B.Sc. in Forensic Science & Information Security"
+      ],
+      "postgradDegrees": [
+        "M.Tech / M.S. in Digital Forensics & Multimedia Authentication (NFSU Gandhinagar / CMU)",
+        "Master in AI Safety & Cryptographic Evidence"
+      ],
+      "certifications": [
+        "Certified Computer Examiner (CCE) / EnCase Certified Examiner (EnCE)",
+        "C2PA (Coalition for Content Provenance and Authenticity) Implementation",
+        "Courtroom Expert Witness Forensic Evidence Certification"
+      ],
+      "topInstitutes": [
+        "National Forensic Sciences University (NFSU Gandhinagar, India — Institution of National Importance)",
+        "Carnegie Mellon University CyLab Security and Privacy Institute (USA)",
+        "IIT Kanpur Cyber Security Research Centre (C3i, India)",
+        "University of Oxford Digital Forensics (UK)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–3: Multimedia forensic examiner, identifying audio spectral gaps in cloned voices, frame-by-frame compression artifacts, verifying digital cryptographic hashes.",
+      "phase2": "Years 2–6: Senior Deepfake Investigator for global banks or intelligence agencies, building real-time voice verification algorithms, providing expert witness testimony in court.",
+      "phase3": "Years 6+: Chief Forensic Scientist, directing national media provenance infrastructure, shaping international synthetic media legal treaties."
+    },
+    "skills": {
+      "hardSkills": [
+        "Photoplethysmography (PPG) Biometric Face Liveness Detection",
+        "Acoustic Spectrogram & Vocal Formant Micro-Artifact Analysis",
+        "C2PA Cryptographic Content Provenance Metadata",
+        "Computer Vision Deepfake Detection (Convolutional ResNets / Vision Transformers)",
+        "Federal Rules of Evidence & Chain of Custody Documentation"
+      ],
+      "softSkills": [
+        "Investigative Skepticism & Tenacity",
+        "Uncompromising Objective Integrity",
+        "Courtroom Poise Under Cross-Examination",
+        "Ability to Explain Complex Math to Non-Technical Judges"
+      ]
+    },
+    "roles": [
+      "Deepfake Forensic Investigator",
+      "Digital Multimedia Evidence Expert",
+      "AI Fraud & Voice Clone Analyst",
+      "Trust & Safety Media Authenticity Director",
+      "Courtroom Expert Witness",
+      "Cyber Threat Intelligence Analyst"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Analytical detective mindset",
+        "Obsessed with finding tiny discrepancies and clues others miss",
+        "High ethical integrity and commitment to truth",
+        "Fascinated by computer vision and sound physics"
+      ],
+      "workStyle": "High-security digital forensic workstations, audio wave analyzers, courtroom witness stands, intelligence crisis monitoring rooms.",
+      "pros": [
+        "Defending the concept of objective truth itself in an era of rampant synthetic deception",
+        "Protecting innocent people from blackmail, election manipulation, and financial fraud",
+        "Immense compensation and respect from law enforcement and judicial systems"
+      ],
+      "cons": [
+        "Relentless arms race against increasingly sophisticated generative AI models",
+        "High-pressure deadlines during national elections or multi-million-dollar banking fraud attacks",
+        "Exposure to malicious extortion material and cyber harassment"
+      ]
+    },
+    "reflectionQuestions": [
+      "Can I look at an audio recording and find the microscopic 0.01-second acoustic artifact that proves it was generated by an AI?",
+      "Can I stand firm on the witness stand and defend my mathematical evidence under aggressive cross-examination by defense attorneys?"
+    ],
+    "resources": [
+      "Coalition for Content Provenance and Authenticity (C2PA.org)",
+      "National Forensic Sciences University (nfsu.ac.in)",
+      "Deepfake Detection Challenge (DFDC) Research Papers"
+    ],
+    "aka": [
+      "Deepfake Investigator",
+      "Digital Forensics Specialist",
+      "Multimedia Forensic Analyst",
+      "Synthetic Media Detective",
+      "AI Provenance Engineer"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "tech",
+      "law",
+      "numbers"
+    ],
+    "degrees": [
+      "computing",
+      "engineering",
+      "law"
+    ],
+    "aiTag": "automation",
+    "regions": [
+      "global",
+      "in",
+      "us",
+      "uk",
+      "me"
+    ]
   }
-]
-if (typeof module !== 'undefined' && module.exports) { module.exports = { CAREERS_ALL: window.CAREERS_ALL }; }
+];

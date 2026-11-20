@@ -1284,7 +1284,9 @@
     <meta name="twitter:title" content="QR Command Center | Class Of Learners" />
     <meta name="twitter:description" content="QR Command Center — create, manage, and track dynamic QR codes with live scan analytics." />
     <meta name="twitter:image" content="https://advancedlogiclabs.dpdns.org/og/qr.jpg" />
-  </head>
+  <link rel="stylesheet" href="qr-skin.css" />
+<script defer src="qr-compose.js"></script>
+</head>
   <body>
     <div class="loader col-skeleton-screen" id="loader" role="status" aria-label="Loading QR Studio Matrix">
       <div class="sk-ambient-glow" aria-hidden="true"></div>
@@ -2265,8 +2267,7 @@
         }
         if (!q) return
         loadLib('qr', 'https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js').then(function(){
-          var dlOpts = Object.assign({}, q.opts, { width: 800, height: 800 })
-          new QRCodeStyling(dlOpts).download({ name: 'qr-' + q.type, extension: 'png' })
+          if (window.QRC) QRC.openExport(q); else toast('Export tools are still loading, try again.', 'err')
         }).catch(function(){ toast('Failed to load QR library', 'err') })
       }
     </script>

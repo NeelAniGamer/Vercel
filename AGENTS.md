@@ -49,7 +49,7 @@ then runs `production-check`, `seo-check`, and `security-check`. **All three mus
 
 - **`build.js` is deny-list based.** Anything not excluded ships to production. Review new
   files before building; the checker is not a substitute for review.
-- **Published numbers are generated, never hand-written.** Career pathways (441), Terra3D
+- **Published numbers are generated, never hand-written.** Career pathways (480), Terra3D
   countries (178 unique of 194 records), Traffic levels (57), app counts, and line counts
   all come from the data. Change the data, run the `scripts/fact-*.js` scripts, then
   update the copy in the pages, `README.md`, `SECURITY.md`, `llms.txt`, and `docs/wiki/`.
