@@ -206,6 +206,29 @@
       }
 
       // Career Lookup
+      function parseAiImpact(c) {
+        const raw = (c && c.aiImpact ? String(c.aiImpact) : '').trim();
+        const tierMap = {
+          protected: 'Protected',
+          people: 'People-led',
+          creative: 'Creative',
+          automation: 'AI-Exposed',
+          augmented: 'Augmented',
+          exposed: 'Exposed'
+        };
+        const match = raw.match(/^([A-Za-z0-9\s/&—–-]+?)(?:\s*[—–-]\s*|\s*:\s*)(.+)$/s);
+        if (match && match[1] && match[1].trim().length <= 32) {
+          return {
+            tier: match[1].trim(),
+            desc: match[2].trim() || raw
+          };
+        }
+        return {
+          tier: tierMap[c && c.aiTag] || 'AI-Exposed',
+          desc: raw || 'Automation exposure varies by role and specialization.'
+        };
+      }
+
       function findCareer(id) {
         return allCareers.find(c => c.id === id);
       }
@@ -1122,9 +1145,9 @@
         const isFav = favoriteList.includes(c.id);
         const isCmp = compareList.includes(c.id);
 
-        const aiParts = c.aiImpact.split('—');
-        const aiTag = aiParts[0].trim();
-        const aiDesc = aiParts.length > 1 ? aiParts[1].trim() : c.aiImpact;
+        const aiParsed = parseAiImpact(c);
+        const aiTag = aiParsed.tier;
+        const aiDesc = aiParsed.desc;
 
         const data = getCareerEnrichment(c);
         const growthNum = (c.growth || '').split('(')[0].trim();

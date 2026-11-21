@@ -470,34 +470,36 @@ body.modal-open { overflow: hidden; }
 /* ---------- modal shell ---------- */
 .modal-overlay {
   position: fixed; inset: 0; z-index: 100000; display: flex; align-items: center; justify-content: center; padding: 24px;
-  background: rgba(4, 6, 9, .72); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  background: rgba(4, 6, 9, .76); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
   opacity: 0; pointer-events: none; transition: opacity .18s;
+  box-sizing: border-box;
 }
 .modal-overlay.open { opacity: 1; pointer-events: auto; }
 .modal-card {
   position: relative; width: 100%; max-width: 760px; max-height: calc(100dvh - 48px); overflow: auto;
   background: var(--surface); border: 1px solid var(--line-strong); border-radius: 20px; box-shadow: 0 30px 80px rgba(0, 0, 0, .45);
   transform: translateY(12px); transition: transform .18s;
+  box-sizing: border-box;
 }
 .modal-overlay.open .modal-card { transform: none; }
-.modal-header { display: block; padding: 24px 28px 8px; }
+.modal-header { display: block; padding: 24px 28px 8px; box-sizing: border-box; }
 .modal-top-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
 .modal-icon { flex: none; width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; color: var(--route); background: color-mix(in srgb, var(--route) 15%, transparent); }
 .modal-icon svg { width: 24px; height: 24px; }
 .modal-title-row { display: flex; align-items: center; gap: 14px; min-width: 0; }
-.modal-title { font-size: 26px; }
-.modal-tagline { color: var(--muted); margin-top: 4px; }
+.modal-title { font-size: 26px; font-weight: 700; color: var(--text); }
+.modal-tagline { color: var(--muted); margin-top: 4px; font-size: 14px; line-height: 1.45; }
 .modal-close {
   flex: none; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line-strong);
-  background: transparent; color: var(--muted); font-size: 15px; line-height: 1; display: grid; place-items: center;
+  background: transparent; color: var(--muted); font-size: 16px; line-height: 1; display: grid; place-items: center; cursor: pointer; transition: all .15s;
 }
 .modal-close:hover { color: var(--text); background: var(--tint); }
-.modal-body { padding: 8px 28px 28px; }
-.modal-footer { display: flex; justify-content: flex-end; align-items: center; gap: 12px; padding: 16px 28px; border-top: 1px solid var(--line); }
+.modal-body { padding: 12px 28px 28px; box-sizing: border-box; }
+.modal-footer { display: flex; justify-content: flex-end; align-items: center; gap: 12px; padding: 16px 28px; border-top: 1px solid var(--line); box-sizing: border-box; }
 .modal-footer .nav-btn { margin: 0; height: 44px; border: 1px solid var(--line-strong); }
 .modal-footer .nav-btn.primary { border-color: transparent; }
-.detail-box { margin-top: 16px; padding: 18px; border: 1px solid var(--line); border-radius: var(--r2); background: var(--tint); }
-.detail-box-title { font: 700 16px var(--font-display); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.detail-box { margin-top: 16px; padding: 18px; border: 1px solid var(--line); border-radius: var(--r2); background: var(--tint); box-sizing: border-box; }
+.detail-box-title { font: 700 16px var(--font-display); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; color: var(--text); }
 .box-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--route); display: inline-block; }
 .meta-chip, .stat-micro-pill, .skill-pill {
   display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px; border-radius: 14px;
@@ -507,29 +509,94 @@ body.modal-open { overflow: hidden; }
 .gradient-text { background: none !important; -webkit-text-fill-color: currentColor !important; color: var(--text); }
 
 /* ---------- career compass (quiz) ---------- */
+.compass-modal-card { max-width: 840px; }
 .compass-step { display: none; }
-.compass-step.active { display: block; }
+.compass-step.active { display: block; animation: compFade .2s ease-out; }
+@keyframes compFade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 .quiz-progress { display: flex; gap: 6px; margin: 4px 0 20px; }
 .quiz-progress span, .quiz-progress i { flex: 1; height: 4px; border-radius: 2px; background: var(--line-strong); display: block; }
 .quiz-progress .done, .quiz-progress .active { background: var(--text); }
+.quiz-hint { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--muted); font-weight: 600; margin-bottom: 10px; }
+.quiz-option-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin: 14px 0 20px;
+}
 .quiz-card {
   position: relative; display: block; width: 100%; text-align: left; padding: 14px 16px; border-radius: var(--r2);
-  border: 1.5px solid var(--line-strong); background: var(--surface); color: var(--text); font: 400 15px/1.4 var(--font);
+  border: 1.5px solid var(--line-strong); background: var(--surface); color: var(--text); font: 400 14px/1.4 var(--font);
+  cursor: pointer; transition: all .16s ease; box-sizing: border-box;
 }
-.quiz-card:hover { border-color: var(--muted); }
-.quiz-card.selected { border-color: var(--text); background: var(--surface-2); box-shadow: inset 0 0 0 1px var(--text); }
+.quiz-card:hover { border-color: var(--route); background: var(--surface-2); }
+.quiz-card.selected { border-color: var(--route); background: var(--surface-2); box-shadow: inset 0 0 0 1.5px var(--route); }
+.quiz-card-head { display: flex; align-items: flex-start; gap: 10px; }
+.quiz-card-title { font-weight: 700; color: var(--text); font-size: 14px; margin-bottom: 3px; line-height: 1.3; }
+.quiz-card-desc { font-size: 12px; color: var(--muted); line-height: 1.4; }
 .quiz-card.multi .tick { display: none; }
 .quiz-card.multi.selected .tick { display: inline-flex; }
-.tick { position: absolute; top: 10px; right: 10px; width: 20px; height: 20px; border-radius: 50%; background: var(--text); color: var(--bg); align-items: center; justify-content: center; font-size: 12px; }
+.tick { position: absolute; top: 10px; right: 10px; width: 20px; height: 20px; border-radius: 50%; background: var(--route); color: var(--bg); align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
 .slider-track-wrap { position: relative; padding: 14px 0 8px; }
 .slider-input { width: 100%; accent-color: var(--text); height: 28px; }
+.compass-nav-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  gap: 12px;
+}
+.compass-results { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+.compass-result-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); gap: 10px; }
+.compass-result-title { font-weight: 700; font-size: 14.5px; color: var(--text); cursor: pointer; }
+.compass-result-title:hover { color: var(--route); }
+
+/* ---------- first-job & internship modal ---------- */
+.internship-modal-card { max-width: 1040px; }
+.internship-modal-body { max-height: 72vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.internship-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 14px;
+  margin-top: 12px;
+}
+.internship-card {
+  background: var(--tint);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  box-sizing: border-box;
+}
+.internship-card h4 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  line-height: 1.35;
+}
+.internship-card p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0;
+}
 
 /* ---------- compare modal ---------- */
+.cmp-modal-card { max-width: 1100px; }
+.cmp-top-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.cmp-top-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.cmp-scroll-hint { display: none; align-items: center; gap: 6px; font-size: 12px; color: var(--route); font-weight: 600; margin-bottom: 8px; }
+.cmp-table-wrap {
+  position: relative;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  margin-top: 8px;
+}
 .cmp-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-.cmp-table th, .cmp-table td { padding: 12px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
-.cmp-table th { font: 700 13px var(--font); color: var(--muted); width: 22%; }
-.cmp-table td { font-variant-numeric: tabular-nums; }
-.cmp-table thead th, .cmp-table thead td { font: 700 16px var(--font-display); color: var(--text); }
+.cmp-table th, .cmp-table td { padding: 12px 14px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.cmp-table th { font: 700 13px var(--font); color: var(--muted); width: 22%; min-width: 130px; }
+.cmp-table td { font-variant-numeric: tabular-nums; min-width: 180px; }
+.cmp-table thead th, .cmp-table thead td { font: 700 16px var(--font-display); color: var(--text); background: var(--surface-2); }
 .pro { color: var(--good); } .con { color: var(--bad); }
 
 /* ---------- career detail ("dossier") ---------- */
@@ -635,26 +702,25 @@ body.modal-open { overflow: hidden; }
 }
 @media (max-width: 760px) {
   :root { --nav-h: 56px; }
-  .navbar-inner { padding: 0 12px 0 16px; }
+  .navbar-inner { padding: 0 12px 0 16px; gap: 6px; }
   .nav-brand { font-size: 18px; gap: 8px; }
-  .navbar-inner { gap: 8px; }
-  .nav-actions { gap: 0; }
-  .nav-btn:not(.primary) { width: 40px; height: 44px; padding: 0; }
+  .nav-actions { gap: 2px; }
+  .nav-btn:not(.primary) { width: 38px; height: 42px; padding: 0; }
   .nav-btn .nav-btn-text { display: none; }
   .nav-actions .nav-btn.primary { display: none; }
   .nav-btn .badge-count { position: absolute; top: 3px; right: 0; min-width: 18px; height: 18px; font-size: 11px; line-height: 18px; padding: 0 5px; }
   .hero { padding: 28px 16px 0; }
-  .hero h1 { font-size: clamp(38px, 11.5vw, 52px); }
+  .hero h1 { font-size: clamp(34px, 10vw, 48px); }
   .hero-sub { font-size: 16px; margin-top: 16px; }
   .hero-sub .more { display: none; }
   .search-box-wrap { margin-top: 24px; }
-  .search-input { height: 56px; font-size: 16px; }
-  .hero-actions { margin-top: 20px; flex-direction: column; align-items: stretch; gap: 4px; }
-  .hero-actions .nav-btn { justify-content: center; width: 100%; }
-  .controls-section { padding: 40px 16px 24px; }
+  .search-input { height: 54px; font-size: 16px; }
+  .hero-actions { margin-top: 20px; flex-direction: column; align-items: stretch; gap: 6px; }
+  .hero-actions .nav-btn { justify-content: center; width: 100%; height: 46px; }
+  .controls-section { padding: 36px 16px 24px; }
   .controls-head { align-items: flex-end; }
   .filters-toggle { display: inline-flex; }
-  .filters-toolbar { display: none; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding-top: 4px; }
+  .filters-toolbar { display: none; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding-top: 4px; }
   .filters-toolbar.open { display: grid; }
   .career-grid { gap: 12px; }
   .career-card { padding: 16px 16px 14px; }
@@ -665,25 +731,162 @@ body.modal-open { overflow: hidden; }
   .page-btn { min-width: 36px; height: 44px; padding: 0 9px; font-size: 13px; }
   .page-btn-label { display: none; }
   .page-ellipsis { min-width: 18px; }
-  .compare-drawer { bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }
-  .modal-overlay { padding: 12px; }
-  .modal-card { max-height: calc(100dvh - 24px); border-radius: 18px; }
-  .modal-header { padding: 20px 20px 4px; } .modal-body { padding: 8px 20px 24px; } .modal-footer { padding: 14px 20px; }
-  .dossier-top-nav { padding: 8px 12px; }
+  
+  /* Compare Drawer Responsive */
+  .compare-drawer {
+    bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+    left: 12px;
+    right: 12px;
+    padding: 10px 12px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .compare-items {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+    padding-bottom: 2px;
+  }
+  .compare-drawer .nav-btn {
+    flex: 1;
+    height: 42px;
+    justify-content: center;
+  }
+
+  /* Universal Mobile Modal Bottom-Sheet */
+  .modal-overlay:not(#detail-modal) {
+    padding: 0 !important;
+    align-items: flex-end !important;
+  }
+  .modal-overlay:not(#detail-modal) .modal-card {
+    max-height: 92dvh !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 22px 22px 0 0 !important;
+    border-bottom: 0 !important;
+    box-sizing: border-box !important;
+  }
+  .modal-header { padding: 18px 18px 6px !important; }
+  .modal-body { padding: 10px 18px 24px !important; }
+  .modal-footer { padding: 12px 18px max(16px, env(safe-area-inset-bottom, 16px)) !important; }
+  .modal-title { font-size: 21px !important; line-height: 1.25; }
+  .modal-tagline { font-size: 13px !important; line-height: 1.45; }
+  .modal-icon { width: 38px; height: 38px; }
+  .modal-icon svg { width: 20px; height: 20px; }
+  .modal-close { width: 38px; height: 38px; font-size: 15px; }
+
+  /* Compass Quiz Mobile */
+  .quiz-option-grid { grid-template-columns: 1fr; gap: 8px; margin: 12px 0; }
+  .quiz-card { padding: 12px 14px; min-height: 48px; }
+  .compass-nav-row { margin-top: 16px; gap: 10px; }
+  .compass-nav-row .nav-btn { flex: 1; height: 46px; justify-content: center; }
+
+  /* Internship First-Job Hub Mobile */
+  .internship-cards-grid { grid-template-columns: 1fr; gap: 10px; }
+  .internship-card { padding: 12px 14px; }
+  .internship-card h4 { font-size: 14.5px; }
+  .internship-card p { font-size: 12.5px; }
+
+  /* Compare Modal Mobile */
+  .cmp-scroll-hint { display: flex; }
+  .cmp-print-btn { display: none; }
+  .cmp-table-wrap { margin-top: 8px; border-radius: 10px; }
+  .cmp-table { min-width: 460px; font-size: 13px; }
+  .cmp-table th:first-child, .cmp-table td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: var(--surface);
+    border-right: 1.5px solid var(--line-strong);
+    box-shadow: 4px 0 10px rgba(0,0,0,0.18);
+  }
+
+  /* Dossier Responsive */
+  .dossier-top-nav { padding: 8px 12px; gap: 8px; }
   .dossier-breadcrumb { display: none; }
-  .dossier-top-nav .nav-btn { width: auto; min-width: 44px; height: 44px; padding: 0 12px; }
-  .btn-back-careers { height: 44px; }
+  .dossier-nav-actions { gap: 6px; }
+  .dossier-nav-actions .nav-btn { width: 40px; height: 40px; min-width: 40px; padding: 0; justify-content: center; }
+  .dossier-nav-actions .nav-btn-text { display: none; }
+  .dossier-nav-actions .btn-print svg, .dossier-nav-actions .btn-modal-cmp svg { margin-right: 0 !important; }
+  .btn-back-careers { height: 40px; padding: 0 12px; font-size: 13px; }
   .btn-back-careers .nav-btn-text, .btn-back-careers kbd { display: none; }
-  .dossier-doc-container { padding: 28px 16px 120px; }
-  .dossier-hero-title-wrap { gap: 14px; align-items: flex-start; }
-  .dossier-hero-icon { width: 48px; height: 48px; }
-  .dossier-tradeoffs { grid-template-columns: minmax(0, 1fr); }
-  .dossier-prose, .dossier-section p { font-size: 16px; }
+
+  .dossier-hero-metrics-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0 !important;
+    margin-top: 24px;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .dossier-hero-metric-card {
+    padding: 14px 0 !important;
+    border-left: 0 !important;
+    border-top: 1px solid var(--line) !important;
+  }
+  .dossier-hero-metric-card:first-child { border-top: 0 !important; }
+  .dossier-hero-metric-card .label { font-size: 12px; }
+  .dossier-hero-metric-card .value { font-size: 22px; margin: 4px 0; }
+  .dossier-hero-metric-card .sub { font-size: 13px; line-height: 1.45; }
+  .dossier-hero-title-wrap { gap: 12px; align-items: flex-start; }
+  .dossier-hero-icon { width: 44px; height: 44px; border-radius: 12px; }
+  .dossier-hero-icon svg { width: 22px; height: 22px; }
+  .dossier-hero-title { font-size: clamp(24px, 6.5vw, 34px) !important; line-height: 1.1; word-break: break-word; }
+  .dossier-hero-tagline { font-size: 15px; margin-top: 10px; }
+  
+  .dossier-tab-bar { padding-bottom: 2px; -webkit-overflow-scrolling: touch; }
+  .dossier-tab-btn { font-size: 13.5px; padding: 10px 12px 12px; }
+  .dossier-doc-container { padding: 20px 16px max(90px, calc(80px + env(safe-area-inset-bottom, 0px))); }
+  .dossier-tradeoffs { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .dossier-tradeoff-col { padding: 14px; }
+  .dossier-prose, .dossier-section p { font-size: 15.5px; line-height: 1.6; }
   .site-footer { padding-bottom: calc(110px + env(safe-area-inset-bottom, 0px)); }
 }
+
+@media (max-width: 480px) {
+  /* Prevent header overflow on compact phones (360px - 414px) */
+  .nav-actions a[aria-label="Main Hub"],
+  .nav-actions button[aria-label="First job routes"] {
+    display: none !important;
+  }
+  .navbar-inner {
+    padding: 0 8px 0 12px;
+    gap: 4px;
+  }
+  .nav-brand {
+    font-size: 16px;
+    gap: 6px;
+  }
+  .nav-actions {
+    gap: 2px;
+  }
+  .nav-btn:not(.primary) {
+    width: 36px;
+    height: 40px;
+  }
+  .region-btn {
+    padding: 0 6px !important;
+    font-size: 12px !important;
+  }
+  .region-menu {
+    right: -20px;
+    min-width: 240px;
+  }
+  .modal-header { padding: 16px 14px 4px !important; }
+  .modal-body { padding: 10px 14px 20px !important; }
+  .modal-footer { padding: 10px 14px max(14px, env(safe-area-inset-bottom, 14px)) !important; }
+  .modal-title { font-size: 19px !important; }
+  .modal-tagline { font-size: 12.5px !important; }
+  .modal-icon { width: 36px; height: 36px; border-radius: 10px; }
+  .modal-icon svg { width: 18px; height: 18px; }
+  .modal-close { width: 36px; height: 36px; font-size: 14px; }
+}
+
 @media (max-width: 380px) {
   .hero-metric-strip { gap: 16px; }
   .metric-pill strong { font-size: 28px; }
+  .nav-brand { font-size: 15px; }
 }
 
 /* ---------- motion & print ---------- */
@@ -1167,7 +1370,7 @@ body.modal-open { overflow: hidden; }
 
       <!-- Career Compass (60-Second Quiz) Modal -->
       <div class="modal-overlay" id="compass-modal" role="dialog" aria-modal="true">
-        <div class="modal-card" style="max-width: 840px;">
+        <div class="modal-card compass-modal-card">
           <div class="modal-header">
             <div class="modal-top-row">
               <span class="cat-tag cat-tech">Quick Match</span>
@@ -1181,7 +1384,7 @@ body.modal-open { overflow: hidden; }
               </div>
             </div>
           </div>
-          <div class="modal-body" style="padding: 24px 36px;">
+          <div class="modal-body">
 
             <div class="quiz-progress" id="compass-progress">
 
@@ -1243,7 +1446,7 @@ body.modal-open { overflow: hidden; }
                       </div>
                     </div>
                   </div>
-                </div>              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; gap:12px;">
+                </div>              <div class="compass-nav-row">
                 <span></span>
                 <button class="nav-btn primary" onclick="goToCompassStep(2)">Next: Degree &rarr;</button>
               </div>
@@ -1327,7 +1530,7 @@ body.modal-open { overflow: hidden; }
                       </div>
                     </div>
                   </div>
-                </div>              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; gap:12px;">
+                </div>              <div class="compass-nav-row">
                 <button class="nav-btn" onclick="goToCompassStep(1)">&larr; Back</button>
                 <button class="nav-btn primary" onclick="goToCompassStep(3)">Next: Interests &rarr;</button>
               </div>
@@ -1420,7 +1623,7 @@ body.modal-open { overflow: hidden; }
                       </div>
                     </div>
                   </div>
-                </div>              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; gap:12px;">
+                </div>              <div class="compass-nav-row">
                 <button class="nav-btn" onclick="goToCompassStep(2)">&larr; Back</button>
                 <button class="nav-btn primary" onclick="goToCompassStep(4)">Next: Study &rarr;</button>
               </div>
@@ -1471,7 +1674,7 @@ body.modal-open { overflow: hidden; }
                       </div>
                     </div>
                   </div>
-                </div>              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; gap:12px;">
+                </div>              <div class="compass-nav-row">
                 <button class="nav-btn" onclick="goToCompassStep(3)">&larr; Back</button>
                 <button class="nav-btn primary" onclick="goToCompassStep(5)">Next: Field &rarr;</button>
               </div>
@@ -1586,7 +1789,7 @@ body.modal-open { overflow: hidden; }
                       </div>
                     </div>
                   </div>
-                </div>              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; gap:12px;">
+                </div>              <div class="compass-nav-row">
                 <button class="nav-btn" onclick="goToCompassStep(4)">&larr; Back</button>
                 <button class="nav-btn primary" onclick="runCompassMatch()">Show My Matches &rarr;</button>
               </div>
@@ -1598,7 +1801,7 @@ body.modal-open { overflow: hidden; }
               <p style="color:var(--text-secondary); font-size:14px; margin-bottom:16px;">Ranked against the other options that suit you. The chips under each one are the answers that put it there.</p>
               <div class="compass-results" id="compass-results"></div>
               <div class="compass-note" id="compass-note"></div>
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; gap:12px;">
+              <div class="compass-nav-row">
                 <button class="nav-btn" onclick="goToCompassStep(1)">&larr; Change my answers</button>
                 <button class="nav-btn primary" onclick="closeCompassModal(); document.getElementById('explore').scrollIntoView({ behavior: 'smooth' });">Browse All 480 Careers &rarr;</button>
               </div>
@@ -1609,7 +1812,7 @@ body.modal-open { overflow: hidden; }
 
       <!-- Internships & First-Job Blueprint Modal -->
       <div class="modal-overlay" id="internship-modal" role="dialog" aria-modal="true">
-        <div class="modal-card" style="max-width: 1040px;">
+        <div class="modal-card internship-modal-card">
           <div class="modal-header">
             <div class="modal-top-row">
               <span class="cat-tag cat-tech">Getting Started</span>
@@ -1623,34 +1826,34 @@ body.modal-open { overflow: hidden; }
               </div>
             </div>
           </div>
-          <div class="modal-body" style="padding: 24px 36px; max-height: 70vh; overflow-y: auto;">
+          <div class="modal-body internship-modal-body">
             
             <div class="detail-box">
               <div class="detail-box-title"><span class="box-dot"></span>Six Common Ways People Start</div>
-              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-top: 12px;">
-                <div style="background: var(--tint); border: 1px solid var(--glass-border); border-radius: 12px; padding: 16px;">
-                  <h4 style="color: var(--primary); font-size: 15px; margin-bottom: 6px;">1. Summer Analyst / Associate (8–12 Wks)</h4>
-                  <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.5;">Top in Tech (FAANG/Startups), Investment Banking, MBB Consulting, and Corporate Law. Direct pipeline to full-time Pre-Placement Return Offers (PPOs).</p>
+              <div class="internship-cards-grid">
+                <div class="internship-card">
+                  <h4 style="color: var(--primary);">1. Summer Analyst / Associate (8–12 Wks)</h4>
+                  <p>Top in Tech (FAANG/Startups), Investment Banking, MBB Consulting, and Corporate Law. Direct pipeline to full-time Pre-Placement Return Offers (PPOs).</p>
                 </div>
-                <div style="background: var(--tint); border: 1px solid var(--glass-border); border-radius: 12px; padding: 16px;">
-                  <h4 style="color: var(--accent); font-size: 15px; margin-bottom: 6px;">2. University Co-op (4–6 Months)</h4>
-                  <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.5;">Alternating academic study with full-time industrial engineering work in Automotive, Aerospace, Hardware, and Biotech manufacturing.</p>
+                <div class="internship-card">
+                  <h4 style="color: var(--accent);">2. University Co-op (4–6 Months)</h4>
+                  <p>Alternating academic study with full-time industrial engineering work in Automotive, Aerospace, Hardware, and Biotech manufacturing.</p>
                 </div>
-                <div style="background: var(--tint); border: 1px solid var(--glass-border); border-radius: 12px; padding: 16px;">
-                  <h4 style="color: var(--accent-green); font-size: 15px; margin-bottom: 6px;">3. Statutory Articleship &amp; Pupillage (2–3 Yrs)</h4>
-                  <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.5;">Mandatory statutory practical training required by law to earn Chartered Accountant (ICAI / CPA / ACCA) or practicing Court Litigator licensure.</p>
+                <div class="internship-card">
+                  <h4 style="color: var(--accent-green);">3. Statutory Articleship &amp; Pupillage (2–3 Yrs)</h4>
+                  <p>Mandatory statutory practical training required by law to earn Chartered Accountant (ICAI / CPA / ACCA) or practicing Court Litigator licensure.</p>
                 </div>
-                <div style="background: var(--tint); border: 1px solid var(--glass-border); border-radius: 12px; padding: 16px;">
-                  <h4 style="color: var(--accent-warm); font-size: 15px; margin-bottom: 6px;">4. Clinical Clerkship &amp; Housemanship (1 Yr)</h4>
-                  <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.5;">Compulsory rotatory bedside training for MBBS, BDS, and Nursing graduates across Emergency, Surgery, Pediatrics, and ICU before medical licensure.</p>
+                <div class="internship-card">
+                  <h4 style="color: var(--accent-warm);">4. Clinical Clerkship &amp; Housemanship (1 Yr)</h4>
+                  <p>Compulsory rotatory bedside training for MBBS, BDS, and Nursing graduates across Emergency, Surgery, Pediatrics, and ICU before medical licensure.</p>
                 </div>
-                <div style="background: var(--tint); border: 1px solid var(--glass-border); border-radius: 12px; padding: 16px;">
-                  <h4 style="color: var(--accent-purple); font-size: 15px; margin-bottom: 6px;">5. Elite Research Fellowships</h4>
-                  <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.5;">Funded international summer research programs (CERN Openlab, DAAD, Caltech SURF) designed to publish papers for top Ph.D. admissions.</p>
+                <div class="internship-card">
+                  <h4 style="color: var(--accent-purple);">5. Elite Research Fellowships</h4>
+                  <p>Funded international summer research programs (CERN Openlab, DAAD, Caltech SURF) designed to publish papers for top Ph.D. admissions.</p>
                 </div>
-                <div style="background: var(--tint); border: 1px solid var(--glass-border); border-radius: 12px; padding: 16px;">
-                  <h4 style="color: var(--accent-amber); font-size: 15px; margin-bottom: 6px;">6. Startup Apprenticeships</h4>
-                  <p style="color: var(--text-secondary); font-size: 13px; line-height: 1.5;">3–6 month high-velocity roles inside venture-backed startups with direct exposure to founders and production launches.</p>
+                <div class="internship-card">
+                  <h4 style="color: var(--accent-amber);">6. Startup Apprenticeships</h4>
+                  <p>3–6 month high-velocity roles inside venture-backed startups with direct exposure to founders and production launches.</p>
                 </div>
               </div>
             </div>
@@ -1679,18 +1882,18 @@ body.modal-open { overflow: hidden; }
 
       <!-- Comparison Modal -->
       <div class="modal-overlay" id="compare-modal" role="dialog" aria-modal="true">
-        <div class="modal-card" style="max-width: 1100px;">
+        <div class="modal-card cmp-modal-card">
           <div class="modal-header">
-            <div class="modal-top-row">
+            <div class="modal-top-row cmp-top-row">
               <h2 class="modal-title">Side-By-Side Career Comparison</h2>
-              <div style="display:flex; gap:8px;">
-                <button class="nav-btn" onclick="window.print()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Print Comparison</button>
+              <div class="cmp-top-actions">
+                <button class="nav-btn cmp-print-btn" onclick="window.print()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg><span class="nav-btn-text">Print</span></button>
                 <button class="modal-close" onclick="closeComparisonModal()" aria-label="Close modal">✕</button>
               </div>
             </div>
-            <p style="color:var(--text-secondary); font-size:14px;">Compare educational requirements, salaries, AI impact, and entrance exams across your selected pathways.</p>
+            <p style="color:var(--text-secondary); font-size:14px; margin-top: 4px;">Compare educational requirements, salaries, AI impact, and entrance exams across your selected pathways.</p>
           </div>
-          <div class="modal-body" id="compare-modal-body" style="padding:20px 36px; max-height:70vh; overflow-y:auto;"></div>
+          <div class="modal-body" id="compare-modal-body" style="max-height:75vh; overflow-y:auto;"></div>
         </div>
       </div>
 
@@ -2367,7 +2570,7 @@ body.modal-open { overflow: hidden; }
           return;
         }
 
-        let html = '<div style="overflow-x:auto;"><table class="cmp-table"><thead><tr><th>Attribute</th>';
+        let html = '<div class="cmp-scroll-hint"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>Swipe sideways to compare all selected pathways</div><div class="cmp-table-wrap"><table class="cmp-table"><thead><tr><th>Attribute</th>';
         items.forEach(c => {
           html += '<th><div style="font-size:16px; margin-bottom:4px; display:inline-flex; align-items:center; gap:8px;">' + getModernIcon(c, 20) + ' ' + c.title + '</div><div style="font-size:11px; font-weight:600; color:var(--primary); text-transform:uppercase;">' + c.catName + '</div></th>';
         });
@@ -2398,7 +2601,6 @@ body.modal-open { overflow: hidden; }
       // Career Lookup (checks detail cache, card cache, then local fallback)
       function parseAiImpact(c) {
         const raw = (c && c.aiImpact ? String(c.aiImpact) : '').trim();
-        const dashIdx = raw.indexOf('—');
         const tierMap = {
           protected: 'Protected',
           people: 'People-led',
@@ -2407,14 +2609,15 @@ body.modal-open { overflow: hidden; }
           augmented: 'Augmented',
           exposed: 'Exposed'
         };
-        if (dashIdx > 0 && dashIdx <= 60) {
+        const match = raw.match(/^([A-Za-z0-9\s/&—–-]+?)(?:\s*[—–-]\s*|\s*:\s*)(.+)$/s);
+        if (match && match[1] && match[1].trim().length <= 32) {
           return {
-            tier: raw.slice(0, dashIdx).trim(),
-            desc: raw.slice(dashIdx + 1).trim() || raw
+            tier: match[1].trim(),
+            desc: match[2].trim() || raw
           };
         }
         return {
-          tier: tierMap[c && c.aiTag] || 'Mixed',
+          tier: tierMap[c && c.aiTag] || 'AI-Exposed',
           desc: raw || 'Automation exposure varies by role and specialization.'
         };
       }
@@ -3579,7 +3782,7 @@ body.modal-open { overflow: hidden; }
         html += '<div class="dossier-nav-actions">';
         html += '<button class="nav-btn btn-print" title="Print full career blueprint"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg><span class="nav-btn-text">Print Blueprint</span></button>';
         html += '<button class="nav-btn btn-modal-fav ' + (isFav ? 'primary' : '') + '">' + (isFav ? '★<span class="nav-btn-text"> Saved</span>' : '☆<span class="nav-btn-text"> Save</span>') + '</button>';
-        html += '<button class="nav-btn btn-modal-cmp ' + (isCmp ? 'active' : '') + '">' + '<span class="nav-btn-text">' + (isCmp ? 'Added to ' : 'Add to ') + '</span>Compare' + '</button>';
+        html += '<button class="nav-btn btn-modal-cmp ' + (isCmp ? 'active' : '') + '" title="' + (isCmp ? 'Remove from comparison' : 'Add to side-by-side comparison') + '"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><path d="M16 3h5v5"/><path d="M4 20L21 3"/><path d="M21 16v5h-5"/><path d="M15 15l6 6"/><path d="M4 4l5 5"/></svg><span class="nav-btn-text">' + (isCmp ? 'Compared' : 'Compare') + '</span></button>';
         html += '<button class="modal-close" title="Close [Esc]" aria-label="Close modal">✕</button>';
         html += '</div></div>';
 
