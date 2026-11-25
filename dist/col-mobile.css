@@ -1012,10 +1012,16 @@ code {
 
   /* Compact & non-intrusive cookie consent banner on mobile */
   .col-cookie-banner {
-    bottom: max(10px, env(safe-area-inset-bottom, 10px)) !important;
+    bottom: max(12px, env(safe-area-inset-bottom, 12px)) !important;
     width: calc(100% - 16px) !important;
     max-width: 440px !important;
     border-radius: 16px !important;
+  }
+  body:has(.col-bottom-bar) .col-cookie-banner {
+    bottom: calc(84px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  body:has(.compare-drawer.show) .col-cookie-banner {
+    display: none !important;
   }
   .col-cookie-content {
     padding: 12px 14px 14px !important;

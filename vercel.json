@@ -151,7 +151,7 @@
   "rewrites": [
     {
       "source": "/",
-      "destination": "/index"
+      "destination": "/home"
     },
     {
       "source": "/cast",
@@ -195,6 +195,21 @@
     }
   ],
   "redirects": [
+    {
+      "source": "/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/index",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/home.html",
+      "destination": "/",
+      "permanent": true
+    },
     {
       "source": "/how-it-was-made",
       "destination": "/making",

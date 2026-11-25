@@ -30,8 +30,7 @@ body::before, body::after, .col-ambient-bg, .apple-liquid-backdrop { display: no
 
 /* flat surfaces everywhere: kill blur, glow and gradients */
 .app-sb, .si, .tc, .fi, .ds, .dsb, .vb, .clr-blk, .hex, .pcard, .prev-p, .prev-cw, .btn-bk, .btn-nx, .btn-cp,
-.dl-main, .dl-svg, .dl-sz, .sv-btn, .modal-card, .md, .dbc, .dba-btn, .db-select, .top-nav, .top-nav::before,
-.dropdown-content-inner, .toast, .mo {
+.dl-main, .dl-svg, .dl-sz, .sv-btn, .modal-card, .md, .dba-btn, .toast, .mo {
   backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
   background-image: none !important; text-shadow: none !important;
 }
@@ -57,8 +56,8 @@ body:not(.lm):not(.light) .dl-main, body:not(.lm):not(.light) .btn-nx, body:not(
 .btn-bk, .dl-svg, .dba-btn { background: transparent !important; color: var(--txt) !important; border: 1px solid var(--border) !important; border-radius: 10px !important; box-shadow: none !important; }
 .btn-bk:hover, .dl-svg:hover, .dba-btn:hover { background: var(--panel-hover) !important; border-color: var(--q-border-hover) !important; }
 
-/* type: serif display for headings, mono for tiny labels */
-h1, h2, .modal-card h2, .md-hd h2, .sp > h2, #s2h { font-family: 'Fraunces', Georgia, serif !important; font-weight: 600 !important; letter-spacing: -0.01em; }
+/* type: serif display for editor headings, mono for tiny labels */
+.modal-card h2, .md-hd h2, .sp > h2, #s2h { font-family: 'Fraunces', Georgia, serif !important; font-weight: 600 !important; letter-spacing: -0.01em; }
 .prev-p h3 { font-family: 'Fraunces', Georgia, serif !important; font-weight: 600 !important; }
 
 /* QR preview sits on a clean sheet */

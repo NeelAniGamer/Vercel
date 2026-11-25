@@ -7,7 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CastFlow | Premium Casting</title>
     <link rel="manifest" href="manifest.json">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Work+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../col-skeleton.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Work+Sans:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="../col-mobile.css">
     <!-- Lucide Icons -->
@@ -30,6 +31,34 @@
     <meta name="twitter:image" content="https://advancedlogiclabs.dpdns.org/og/castflow.jpg" />
   </head>
 <body>
+<div class="loader col-skeleton-screen sk-theme-teal sk-force-dark" id="loader" role="status" aria-busy="true" aria-label="Loading CastFlow Receiver Studio">
+  <div class="sk-ambient-glow" aria-hidden="true"></div>
+  <div class="sk-ambient-glow-left" aria-hidden="true"></div>
+    <div class="sk-traffic-topbar" aria-hidden="true">
+    <div class="sk-pill sk-shimmer-accent" style="width: 120px; height: 22px;"></div>
+    <div class="sk-nav-links"><div class="sk-pill sk-shimmer-accent" style="width:74px;height:28px;"></div><div class="sk-pill sk-shimmer" style="width:96px;height:28px;"></div><div class="sk-pill sk-shimmer" style="width:88px;height:28px;"></div><div class="sk-pill sk-shimmer" style="width:104px;height:28px;"></div></div>
+    <div style="display:flex;gap:8px;"><div class="sk-pill sk-shimmer" style="width:108px;height:28px;"></div><div class="sk-pill sk-shimmer-accent" style="width:84px;height:28px;"></div></div>
+  </div>
+  <div class="sk-workspace-2col" aria-hidden="true" style="grid-template-columns: minmax(0, 1fr) 260px;">
+    <div class="sk-card" style="padding: 36px; justify-content: center; gap: 18px;">
+      <div class="sk-title-bar sk-shimmer" style="width: 72%; max-width: 480px; height: 38px;"></div>
+      <div class="sk-lede-line sk-shimmer" style="width: 82%; max-width: 540px;"></div>
+      <div class="sk-lede-line sk-shimmer" style="width: 68%; max-width: 440px;"></div>
+      <div class="sk-cta-row" style="margin: 8px 0 0;"><div class="sk-btn sk-btn-primary sk-shimmer" style="width:154px;"></div><div class="sk-btn sk-btn-secondary sk-shimmer" style="width:154px;"></div></div>
+    </div>
+    <aside class="sk-sidebar" style="display:flex;">
+      <div class="sk-card" style="height:100%;"><div class="sk-pill sk-shimmer-accent" style="width:130px;height:18px;"></div><div class="sk-box sk-shimmer" style="width:100%;height:140px;"></div><div class="sk-pill sk-shimmer" style="width:100%;height:36px;"></div></div>
+    </aside>
+  </div>
+  <footer class="sk-status-dock" aria-hidden="true">
+    <div class="sk-status-pill">
+      <span class="sk-pulse-live"></span>
+      <span class="sk-status-text"><span>CastFlow</span> &middot; Receiver Console</span>
+      <div class="sk-progress-bar"><div class="sk-progress-fill"></div></div>
+    </div>
+  </footer>
+</div>
+
 
     <!-- Animated Ambient Background -->
     <div class="ambient-bg"></div>
@@ -111,7 +140,7 @@
                 <div class="panel-layout">
                     <!-- Stream Container -->
                     <div id="screen-container">
-                        <img id="stream-img" src="" style="display:none;" />
+                        <img id="stream-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" style="display:none;" alt="Connected device stream" />
                         <div id="placeholder" class="glass-card">
                             <i data-lucide="monitor-smartphone" class="placeholder-icon"></i>
                             <h2>Ready to Connect</h2>

@@ -28,6 +28,7 @@
     </script>
     <script defer src="col-router.js"></script>
     <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
+  <link rel="stylesheet" href="col-skeleton.css?v=20261125" />
     <link rel="stylesheet" href="liquid-glass.css" />
     <!-- Conditional Mobile Assets: Loaded ONLY on mobile/tablet or when screen <= 1024px. Prevents downloading mobile styles and touch scripts on PC desktop. -->
     <script>
@@ -772,6 +773,25 @@
         padding: 10px;
       }
       body.lm .emg-item { background: #f8fafc; }
+      body.lm .nitro-btn {
+        background: rgba(180, 83, 9, 0.1);
+        border-color: #b45309;
+        color: #92400e;
+      }
+      body.lm .nitro-btn.ready {
+        background: #b45309;
+        color: #ffffff;
+        box-shadow: 0 0 16px rgba(180, 83, 9, 0.35);
+      }
+      body.lm .nitro-dock {
+        background: rgba(255, 255, 255, 0.92);
+        border-color: rgba(15, 23, 42, 0.14);
+      }
+      body.lm .nitro-label { color: #92400e; }
+      body.lm .nitro-track-wrap {
+        background: rgba(15, 23, 42, 0.08);
+        border-color: rgba(180, 83, 9, 0.35);
+      }
       .emg-val {
         font-family: var(--mono);
         font-size: 1.25rem;
@@ -855,6 +875,60 @@
     <meta name="twitter:image" content="https://advancedlogiclabs.dpdns.org/og/home.jpg" />
   </head>
   <body>
+    <!-- Cyber Typing Arena 3.2 Lite Skeleton Loading Screen -->
+    <div class="loader col-skeleton-screen sk-theme-sky" id="loader" role="status" aria-busy="true" aria-label="Loading Cyber Typing Arena 3.2 Lite">
+  <div class="sk-ambient-glow" aria-hidden="true"></div>
+  <div class="sk-ambient-glow-left" aria-hidden="true"></div>
+  <header class="sk-nav" aria-hidden="true">
+    <div class="sk-nav-brand">
+      <div class="sk-circle sk-brand-logo sk-shimmer"></div>
+      <div class="sk-pill sk-brand-text sk-shimmer"></div>
+    </div>
+    <div class="sk-nav-links">
+      <div class="sk-pill sk-shimmer" style="width: 56px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 62px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 66px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 80px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 68px; height: 14px;"></div>
+    </div>
+    <div class="sk-nav-actions">
+      <div class="sk-pill sk-nav-search sk-shimmer"></div>
+      <div class="sk-circle sk-nav-theme sk-shimmer"></div>
+      <div class="sk-pill sk-nav-btn sk-shimmer" style="width: 78px;"></div>
+      <div class="sk-pill sk-nav-cta sk-shimmer" style="width: 118px;"></div>
+    </div>
+  </header>
+  <div class="sk-editorial-wrap" aria-hidden="true" style="padding-top: 28px;">
+    <div class="sk-breadcrumb-bar">
+      <div style="display:flex;gap:8px;"><div class="sk-pill sk-shimmer" style="width: 120px; height: 30px;"></div><div class="sk-pill sk-shimmer" style="width: 148px; height: 30px;"></div></div>
+      <div class="sk-pill sk-shimmer-accent" style="width: 190px; height: 30px;"></div>
+    </div>
+    <div class="sk-editorial-hero" style="max-width: 820px; margin-bottom: 22px;">
+      <div class="sk-pill sk-shimmer-accent" style="width: 210px; height: 24px; margin-bottom: 14px;"></div>
+      <div class="sk-title-bar sk-title-1 sk-shimmer" style="width: 66%; max-width: 520px; margin-bottom: 12px;"></div>
+      <div class="sk-lede-line sk-shimmer" style="width: 74%; max-width: 540px;"></div>
+    </div>
+    <div class="sk-tab-strip">
+      <div class="sk-pill sk-shimmer-accent" style="width: 165px; height: 40px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 155px; height: 40px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 170px; height: 40px;"></div>
+    </div>
+    <div class="sk-race-lanes">
+      <div class="sk-race-track"><div class="sk-pill sk-shimmer-accent" style="width: 44px; height: 20px;"></div><div class="sk-race-line"><div class="sk-pill sk-shimmer-accent" style="width: 34%; height: 100%;"></div></div><div class="sk-pill sk-shimmer" style="width: 52px; height: 14px;"></div></div>
+      <div class="sk-race-track"><div class="sk-pill sk-shimmer" style="width: 44px; height: 20px;"></div><div class="sk-race-line"><div class="sk-pill sk-shimmer" style="width: 52%; height: 100%;"></div></div><div class="sk-pill sk-shimmer" style="width: 52px; height: 14px;"></div></div>
+      <div class="sk-race-track"><div class="sk-pill sk-shimmer" style="width: 44px; height: 20px;"></div><div class="sk-race-line"><div class="sk-pill sk-shimmer" style="width: 28%; height: 100%;"></div></div><div class="sk-pill sk-shimmer" style="width: 52px; height: 14px;"></div></div>
+      <div class="sk-race-track"><div class="sk-pill sk-shimmer" style="width: 44px; height: 20px;"></div><div class="sk-race-line"><div class="sk-pill sk-shimmer" style="width: 41%; height: 100%;"></div></div><div class="sk-pill sk-shimmer" style="width: 52px; height: 14px;"></div></div>
+    </div>
+  </div>
+  <footer class="sk-status-dock" aria-hidden="true">
+    <div class="sk-status-pill">
+      <span class="sk-pulse-live"></span>
+      <span class="sk-status-text"><span>ATI 3.2</span> &middot; Cyber Typing Arena</span>
+      <div class="sk-progress-bar"><div class="sk-progress-fill"></div></div>
+    </div>
+  </footer>
+</div>
+
     <!-- Navigation Bar -->
             <div class="top-nav-shield" aria-hidden="true"></div>
     <nav class="top-nav" id="topNav" data-page="projects">

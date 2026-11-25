@@ -15,6 +15,7 @@
     <title>Verify Certificate | Achievement Engine</title>
     <link rel="icon" type="image/png" href="Icon.png" />
     <link rel="stylesheet" href="col-ui.css">
+  <link rel="stylesheet" href="col-skeleton.css?v=20261125" />
     <link rel="stylesheet" href="liquid-glass.css" />
     <!-- Conditional Mobile Assets: Loaded ONLY on mobile/tablet or when screen <= 1024px. Prevents downloading mobile styles and touch scripts on PC desktop. -->
     <script>
@@ -376,12 +377,42 @@
         } catch (e) {}
       })()
     </script>
-
-    <div id="loading">
-        <div class="cert-badge" style="animation: pulse 2s infinite;">
-            <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l5.59-5.59L18 9l-8 8z"/></svg>
-        </div>
+    <!-- Certificate Verification Skeleton Loading Screen -->
+    <div class="loader col-skeleton-screen sk-theme-amber" id="loader" role="status" aria-busy="true" aria-label="Loading Certificate Verification">
+  <div class="sk-ambient-glow" aria-hidden="true"></div>
+  <div class="sk-ambient-glow-left" aria-hidden="true"></div>
+    <div class="sk-editorial-wrap" aria-hidden="true" style="justify-content: center; min-height: 90vh; padding: 24px;">
+    <div class="sk-card" style="max-width: 520px; width: 100%; align-items: center; text-align: center; padding: 38px 30px; gap: 18px; border-radius: 22px; position: relative;">
+      <div class="sk-pill sk-shimmer-accent" style="position: absolute; top: 18px; right: 18px; width: 84px; height: 24px;"></div>
+      <div class="sk-circle sk-shimmer-accent" style="width: 64px; height: 64px;"></div>
+      <div class="sk-title-bar sk-shimmer" style="width: 72%; height: 26px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 132px; height: 14px;"></div>
+      <div class="sk-box" style="width: 100%; padding: 16px; border: 1px solid rgba(255,255,255,0.08); display: flex; flex-direction: column; gap: 10px; align-items: flex-start;">
+        <div class="sk-lede-line sk-shimmer" style="width: 90px; height: 10px;"></div>
+        <div class="sk-title-bar sk-shimmer-accent" style="width: 62%; height: 20px;"></div>
+      </div>
+      <div class="sk-box" style="width: 100%; padding: 16px; border: 1px solid rgba(255,255,255,0.08); display: flex; flex-direction: column; gap: 10px; align-items: flex-start;">
+        <div class="sk-lede-line sk-shimmer" style="width: 104px; height: 10px;"></div>
+        <div class="sk-title-bar sk-shimmer" style="width: 78%; height: 20px;"></div>
+        <div class="sk-lede-line sk-shimmer" style="width: 92%;"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;width:100%;padding-top:8px;">
+        <div class="sk-lede-line sk-shimmer" style="width: 110px;"></div>
+        <div class="sk-lede-line sk-shimmer" style="width: 118px;"></div>
+      </div>
     </div>
+  </div>
+  <footer class="sk-status-dock" aria-hidden="true">
+    <div class="sk-status-pill">
+      <span class="sk-pulse-live"></span>
+      <span class="sk-status-text"><span>CoL</span> &middot; Credential Verification</span>
+      <div class="sk-progress-bar"><div class="sk-progress-fill"></div></div>
+    </div>
+  </footer>
+</div>
+
+
+    
 
     <div id="certWrapper" class="cert-container">
         <div class="verified-stamp">Verified<br>Authentic</div>
@@ -468,9 +499,9 @@
                 document.getElementById('issueDate').textContent = createdAt;
                 document.getElementById('certId').textContent = token.substring(0, 8).toUpperCase() + '...';
 
-                document.getElementById('loading').style.opacity = '0';
+                const __ld = document.getElementById('loading'); if (__ld) __ld.style.opacity = '0';
                 setTimeout(() => {
-                    document.getElementById('loading').style.display = 'none';
+                    const __ldHide = document.getElementById('loading'); if (__ldHide) __ldHide.style.display = 'none';
                     document.getElementById('certWrapper').classList.add('loaded');
                 }, 500);
 
@@ -483,7 +514,7 @@
         function showNotFound(title, msg) {
             if (title) document.getElementById('errorTitle').textContent = title;
             if (msg) document.getElementById('errorMsg').textContent = msg;
-            document.getElementById('loading').style.display = 'none';
+            const __ldHide = document.getElementById('loading'); if (__ldHide) __ldHide.style.display = 'none';
             document.getElementById('certWrapper').style.display = 'none';
             document.getElementById('notFound').style.display = 'block';
         }

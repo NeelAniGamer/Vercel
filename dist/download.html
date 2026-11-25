@@ -105,6 +105,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
+  <link rel="stylesheet" href="col-skeleton.css?v=20261125" />
     <link rel="stylesheet" href="liquid-glass.css" />
     <!-- Conditional Mobile Assets: Loaded ONLY on mobile/tablet or when screen <= 1024px. Prevents downloading mobile styles and touch scripts on PC desktop. -->
     <script>
@@ -1791,14 +1792,25 @@
         color: #b8720a !important;
       }
       body.lm .btn-download.locked {
-        background: #f1f5f9 !important;
-        color: #94a3b8 !important;
-        border-color: #cbd5e1 !important;
-      }
-      body.lm .btn-download.locked:hover {
         background: #e2e8f0 !important;
         color: #334155 !important;
+        border-color: #94a3b8 !important;
+        opacity: 1 !important;
+      }
+      body.lm .btn-download.locked:hover {
+        background: #cbd5e1 !important;
+        color: #0f172a !important;
         border-color: var(--signal) !important;
+      }
+      .terra-preview-btn {
+        background: rgba(56, 189, 248, 0.1);
+        border: 1px solid rgba(56, 189, 248, 0.4);
+        color: #38bdf8;
+      }
+      body.lm .terra-preview-btn {
+        background: rgba(2, 132, 199, 0.12);
+        border-color: rgba(2, 132, 199, 0.45);
+        color: #0369a1;
       }
 </style>
 
@@ -1818,89 +1830,58 @@
         } catch (e) {}
       })()
     </script>
-        <div class="loader col-skeleton-screen" id="loader" role="status" aria-label="Loading Downloads Hub">
-      <div class="sk-ambient-glow" aria-hidden="true"></div>
-      <div class="sk-ambient-glow-left" aria-hidden="true"></div>
-
-      <!-- Top Nav Skeleton -->
-      <header class="sk-nav" aria-hidden="true">
-        <div class="sk-nav-brand">
-          <div class="sk-circle sk-brand-logo sk-shimmer"></div>
-          <div class="sk-pill sk-brand-text sk-shimmer"></div>
-        </div>
-        <div class="sk-nav-links">
-          <div class="sk-pill sk-shimmer" style="width: 54px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 58px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 62px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 82px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 66px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 76px; height: 14px;"></div>
-        </div>
-        <div class="sk-nav-actions">
-          <div class="sk-circle sk-nav-theme sk-shimmer"></div>
-          <div class="sk-pill sk-nav-btn sk-shimmer" style="width: 78px;"></div>
-          <div class="sk-pill sk-nav-cta sk-shimmer" style="width: 124px;"></div>
-        </div>
-      </header>
-
-      <!-- Distribution Hub Skeleton -->
-      <div class="sk-editorial-wrap" aria-hidden="true">
-        <div class="sk-editorial-hero" style="max-width: 900px;">
-          <div class="sk-eyebrow-row">
-            <span class="sk-eyebrow-dash"></span>
-            <div class="sk-pill sk-eyebrow-pill sk-shimmer" style="width: 160px;"></div>
-          </div>
-          <div class="sk-title-group" style="align-items: center; width: 100%;">
-            <div class="sk-title-bar sk-title-1 sk-shimmer" style="width: 80%; max-width: 680px;"></div>
-            <div class="sk-title-bar sk-title-2 sk-shimmer" style="width: 58%; max-width: 480px;"></div>
-          </div>
-          <div class="sk-lede-group" style="align-items: center; text-align: center; width: 100%;">
-            <div class="sk-lede-line sk-shimmer" style="width: 92%; max-width: 640px;"></div>
-            <div class="sk-lede-line sk-shimmer" style="width: 75%; max-width: 520px;"></div>
-          </div>
-          <div class="sk-box sk-shimmer" style="width: 100%; max-width: 780px; height: 56px; border-radius: 12px; margin-top: 10px;"></div>
-        </div>
-
-        <!-- 4 Platform App Cards Grid Skeleton -->
-        <div class="sk-grid sk-grid-4">
-          <div class="sk-card">
-            <div class="sk-circle sk-shimmer" style="width: 42px; height: 42px;"></div>
-            <div class="sk-pill sk-shimmer" style="width: 130px; height: 20px;"></div>
-            <div class="sk-lede-line sk-shimmer" style="width: 90%;"></div>
-            <div class="sk-btn sk-btn-primary sk-shimmer" style="width: 100%; height: 40px; border-radius: 10px; margin-top: auto;"></div>
-          </div>
-          <div class="sk-card">
-            <div class="sk-circle sk-shimmer" style="width: 42px; height: 42px;"></div>
-            <div class="sk-pill sk-shimmer" style="width: 120px; height: 20px;"></div>
-            <div class="sk-lede-line sk-shimmer" style="width: 90%;"></div>
-            <div class="sk-btn sk-btn-primary sk-shimmer" style="width: 100%; height: 40px; border-radius: 10px; margin-top: auto;"></div>
-          </div>
-          <div class="sk-card">
-            <div class="sk-circle sk-shimmer" style="width: 42px; height: 42px;"></div>
-            <div class="sk-pill sk-shimmer" style="width: 140px; height: 20px;"></div>
-            <div class="sk-lede-line sk-shimmer" style="width: 90%;"></div>
-            <div class="sk-btn sk-btn-primary sk-shimmer" style="width: 100%; height: 40px; border-radius: 10px; margin-top: auto;"></div>
-          </div>
-          <div class="sk-card">
-            <div class="sk-circle sk-shimmer" style="width: 42px; height: 42px;"></div>
-            <div class="sk-pill sk-shimmer" style="width: 110px; height: 20px;"></div>
-            <div class="sk-lede-line sk-shimmer" style="width: 90%;"></div>
-            <div class="sk-btn sk-btn-primary sk-shimmer" style="width: 100%; height: 40px; border-radius: 10px; margin-top: auto;"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Bottom Status Dock -->
-      <footer class="sk-status-dock" aria-hidden="true">
-        <div class="sk-status-pill">
-          <span class="sk-pulse-live"></span>
-          <span class="sk-status-text"><span>CoL</span> &middot; Downloads Hub</span>
-          <div class="sk-progress-bar">
-            <div class="sk-progress-fill"></div>
-          </div>
-        </div>
-      </footer>
+        <div class="loader col-skeleton-screen sk-theme-amber" id="loader" role="status" aria-busy="true" aria-label="Loading Downloads Hub">
+  <div class="sk-ambient-glow" aria-hidden="true"></div>
+  <div class="sk-ambient-glow-left" aria-hidden="true"></div>
+  <header class="sk-nav" aria-hidden="true">
+    <div class="sk-nav-brand">
+      <div class="sk-circle sk-brand-logo sk-shimmer"></div>
+      <div class="sk-pill sk-brand-text sk-shimmer"></div>
     </div>
+    <div class="sk-nav-links">
+      <div class="sk-pill sk-shimmer" style="width: 56px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 62px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 66px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 80px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 68px; height: 14px;"></div>
+    </div>
+    <div class="sk-nav-actions">
+      <div class="sk-pill sk-nav-search sk-shimmer"></div>
+      <div class="sk-circle sk-nav-theme sk-shimmer"></div>
+      <div class="sk-pill sk-nav-btn sk-shimmer" style="width: 78px;"></div>
+      <div class="sk-pill sk-nav-cta sk-shimmer" style="width: 118px;"></div>
+    </div>
+  </header>
+  <div class="sk-editorial-wrap" aria-hidden="true" style="padding-top: 34px;">
+    <div class="sk-editorial-hero" style="max-width: 920px; align-items: flex-start; text-align: left; margin-bottom: 24px;">
+      <div class="sk-eyebrow-row"><span class="sk-eyebrow-dash"></span><div class="sk-pill sk-eyebrow-pill sk-shimmer" style="width: 150px;"></div></div>
+      <div class="sk-title-bar sk-title-1 sk-shimmer" style="width: 68%; max-width: 580px; margin-bottom: 12px;"></div>
+      <div class="sk-lede-line sk-shimmer" style="width: 82%; max-width: 640px;"></div>
+    </div>
+    <div class="sk-banner-box">
+      <div style="display:flex;align-items:center;gap:14px;flex:1;min-width:220px;"><div class="sk-circle sk-shimmer-accent" style="width:36px;height:36px;flex-shrink:0;"></div><div style="flex:1;display:flex;flex-direction:column;gap:8px;"><div class="sk-title-bar sk-shimmer" style="width:240px;height:16px;"></div><div class="sk-lede-line sk-shimmer" style="width:88%;"></div></div></div>
+      <div class="sk-btn sk-btn-primary sk-shimmer" style="width: 196px; height: 42px;"></div>
+    </div>
+    <div class="sk-tab-strip" style="width: 100%; max-width: 1200px; justify-content: flex-start;">
+      <div class="sk-pill sk-shimmer-accent" style="width: 132px; height: 34px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 108px; height: 34px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 96px; height: 34px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 104px; height: 34px;"></div>
+    </div>
+    <div class="sk-grid sk-grid-3">
+      <div class="sk-card"><div style="display:flex;justify-content:space-between;"><div class="sk-circle sk-shimmer-accent" style="width:42px;height:42px;"></div><div class="sk-pill sk-shimmer" style="width:76px;height:20px;"></div></div><div class="sk-title-bar sk-shimmer" style="width:70%;height:20px;"></div><div class="sk-lede-line sk-shimmer" style="width:92%;"></div><div class="sk-pill sk-shimmer" style="width:100%;height:38px;"></div></div>
+      <div class="sk-card"><div style="display:flex;justify-content:space-between;"><div class="sk-circle sk-shimmer-accent" style="width:42px;height:42px;"></div><div class="sk-pill sk-shimmer" style="width:76px;height:20px;"></div></div><div class="sk-title-bar sk-shimmer" style="width:66%;height:20px;"></div><div class="sk-lede-line sk-shimmer" style="width:88%;"></div><div class="sk-pill sk-shimmer" style="width:100%;height:38px;"></div></div>
+      <div class="sk-card"><div style="display:flex;justify-content:space-between;"><div class="sk-circle sk-shimmer-accent" style="width:42px;height:42px;"></div><div class="sk-pill sk-shimmer" style="width:76px;height:20px;"></div></div><div class="sk-title-bar sk-shimmer" style="width:74%;height:20px;"></div><div class="sk-lede-line sk-shimmer" style="width:90%;"></div><div class="sk-pill sk-shimmer" style="width:100%;height:38px;"></div></div>
+    </div>
+  </div>
+  <footer class="sk-status-dock" aria-hidden="true">
+    <div class="sk-status-pill">
+      <span class="sk-pulse-live"></span>
+      <span class="sk-status-text"><span>CoL</span> &middot; SHA-256 Builds Hub</span>
+      <div class="sk-progress-bar"><div class="sk-progress-fill"></div></div>
+    </div>
+  </footer>
+</div>
     <div class="cd" id="cDot"></div>
     <div class="cr" id="cRing"></div>
 
@@ -2128,7 +2109,7 @@
 
           <div style="display: flex; gap: 10px; width: 100%; margin-top: auto; flex-wrap: wrap;">
             <button type="button" id="btn-terra" class="btn-download terra-btn locked" style="flex: 1 1 140px" onclick="handleLockedClick(event, 'terra')">Download .EXE</button>
-            <a href="Terra3D/" class="btn-download" style="flex: 1 1 120px; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8; box-shadow: none;" title="Explore live in browser">
+            <a href="Terra3D/" class="btn-download terra-preview-btn" style="flex: 1 1 120px; box-shadow: none;" title="Explore live in browser">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><polygon points="5 3 19 12 5 21 5 3"/></svg>Web Atlas
             </a>
           </div>

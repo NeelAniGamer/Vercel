@@ -110,6 +110,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
+  <link rel="stylesheet" href="col-skeleton.css?v=20261125" />
     <link rel="stylesheet" href="liquid-glass.css" />
     <!-- Conditional Mobile Assets: Loaded ONLY on mobile/tablet or when screen <= 1024px. Prevents downloading mobile styles and touch scripts on PC desktop. -->
     <script>
@@ -1841,6 +1842,22 @@
         background: var(--primary) !important;
         color: #ffffff !important;
       }
+      body.lm .engine-overlay .overlay-content h2 {
+        color: #f8fafc !important;
+      }
+      body.lm .engine-overlay .overlay-content p {
+        color: #cbd5e1 !important;
+      }
+      body.lm .engine-overlay .gesture-card {
+        background: rgba(15, 23, 42, 0.72) !important;
+        border-color: rgba(255, 255, 255, 0.16) !important;
+      }
+      body.lm .engine-overlay .g-title {
+        color: #f8fafc !important;
+      }
+      body.lm .engine-overlay .g-desc {
+        color: #cbd5e1 !important;
+      }
     </style>
 
     <script defer src="col-router.js"></script>
@@ -1853,62 +1870,63 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   </head>
   <body>
-    <div class="loader col-skeleton-screen" id="loader" role="status" aria-label="Loading Solar 3D Engine">
-      <div class="sk-ambient-glow" aria-hidden="true"></div>
-      <div class="sk-ambient-glow-left" aria-hidden="true"></div>
-
-      <!-- Top Nav Skeleton -->
-      <header class="sk-nav" aria-hidden="true">
-        <div class="sk-nav-brand">
-          <div class="sk-circle sk-brand-logo sk-shimmer"></div>
-          <div class="sk-pill sk-brand-text sk-shimmer"></div>
-        </div>
-        <div class="sk-nav-links">
-          <div class="sk-pill sk-shimmer" style="width: 54px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 58px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 62px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 82px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 66px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 76px; height: 14px;"></div>
-        </div>
-        <div class="sk-nav-actions">
-          <div class="sk-circle sk-nav-theme sk-shimmer"></div>
-          <div class="sk-pill sk-nav-btn sk-shimmer" style="width: 78px;"></div>
-          <div class="sk-pill sk-nav-cta sk-shimmer" style="width: 124px;"></div>
-        </div>
-      </header>
-
-      <!-- Solar 3D Engine Stage Skeleton -->
-      <div class="sk-editorial-wrap" aria-hidden="true" style="padding-top: 36px;">
-        <div class="sk-editorial-hero" style="max-width: 860px; margin-bottom: 28px;">
-          <div class="sk-eyebrow-row">
-            <span class="sk-eyebrow-dash"></span>
-            <div class="sk-pill sk-eyebrow-pill sk-shimmer" style="width: 190px;"></div>
-          </div>
-          <div class="sk-title-group" style="align-items: center; width: 100%;">
-            <div class="sk-title-bar sk-title-1 sk-shimmer" style="width: 80%; max-width: 680px;"></div>
-            <div class="sk-title-bar sk-title-2 sk-shimmer" style="width: 56%; max-width: 480px;"></div>
-          </div>
-        </div>
-
-        <!-- 3D Astrophysics Canvas Stage Skeleton -->
-        <div class="sk-app-stage sk-shimmer" style="height: 480px;">
-          <div class="sk-ring sk-ring-mid"></div>
-          <div class="sk-core-circle sk-shimmer" style="width: 72px; height: 72px;"></div>
-        </div>
-      </div>
-
-      <!-- Bottom Status Dock -->
-      <footer class="sk-status-dock" aria-hidden="true">
-        <div class="sk-status-pill">
-          <span class="sk-pulse-live"></span>
-          <span class="sk-status-text"><span>CoL</span> &middot; Solar 3D Engine</span>
-          <div class="sk-progress-bar">
-            <div class="sk-progress-fill"></div>
-          </div>
-        </div>
-      </footer>
+    <div class="loader col-skeleton-screen sk-theme-solar" id="loader" role="status" aria-busy="true" aria-label="Loading Solar 3D Engine">
+  <div class="sk-ambient-glow" aria-hidden="true"></div>
+  <div class="sk-ambient-glow-left" aria-hidden="true"></div>
+  <header class="sk-nav" aria-hidden="true">
+    <div class="sk-nav-brand">
+      <div class="sk-circle sk-brand-logo sk-shimmer"></div>
+      <div class="sk-pill sk-brand-text sk-shimmer"></div>
     </div>
+    <div class="sk-nav-links">
+      <div class="sk-pill sk-shimmer" style="width: 56px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 62px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 66px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 80px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 68px; height: 14px;"></div>
+    </div>
+    <div class="sk-nav-actions">
+      <div class="sk-pill sk-nav-search sk-shimmer"></div>
+      <div class="sk-circle sk-nav-theme sk-shimmer"></div>
+      <div class="sk-pill sk-nav-btn sk-shimmer" style="width: 78px;"></div>
+      <div class="sk-pill sk-nav-cta sk-shimmer" style="width: 118px;"></div>
+    </div>
+  </header>
+  <div class="sk-editorial-wrap" aria-hidden="true" style="padding-top: 34px;">
+    <div class="sk-editorial-hero" style="max-width: 840px; margin-bottom: 26px;">
+      <div class="sk-pill sk-shimmer-accent" style="width: 190px; height: 26px; margin-bottom: 16px;"></div>
+      <div class="sk-title-group" style="align-items: center; width: 100%;">
+        <div class="sk-title-bar sk-title-1 sk-shimmer" style="width: 82%; max-width: 680px;"></div>
+      </div>
+      <div class="sk-lede-line sk-shimmer" style="width: 76%; max-width: 580px;"></div>
+      <div class="sk-cta-row" style="margin: 18px 0 0;">
+        <div class="sk-btn sk-btn-primary sk-shimmer" style="width: 168px;"></div>
+        <div class="sk-btn sk-btn-secondary sk-shimmer" style="width: 146px;"></div>
+      </div>
+    </div>
+    <div class="sk-app-stage" style="height: 300px; min-height: 280px; max-width: 960px;">
+      <div class="sk-ring sk-ring-outer" style="width: 340px; height: 340px;"></div>
+      <div class="sk-ring sk-ring-mid" style="width: 240px; height: 240px;"></div>
+      <div class="sk-ring sk-ring-inner" style="width: 150px; height: 150px;"></div>
+      <div class="sk-core-hub">
+        <div class="sk-core-halo" style="width: 110px; height: 110px;"></div>
+        <div class="sk-core-circle sk-shimmer-accent" style="width: 68px; height: 68px;"></div>
+      </div>
+    </div>
+    <div class="sk-grid sk-grid-3" style="max-width: 960px;">
+      <div class="sk-card"><div class="sk-circle sk-shimmer-accent" style="width: 40px; height: 40px;"></div><div class="sk-title-bar sk-shimmer" style="width: 68%; height: 18px;"></div><div class="sk-lede-line sk-shimmer" style="width: 92%;"></div></div>
+      <div class="sk-card"><div class="sk-circle sk-shimmer-accent" style="width: 40px; height: 40px;"></div><div class="sk-title-bar sk-shimmer" style="width: 62%; height: 18px;"></div><div class="sk-lede-line sk-shimmer" style="width: 88%;"></div></div>
+      <div class="sk-card"><div class="sk-circle sk-shimmer-accent" style="width: 40px; height: 40px;"></div><div class="sk-title-bar sk-shimmer" style="width: 72%; height: 18px;"></div><div class="sk-lede-line sk-shimmer" style="width: 84%;"></div></div>
+    </div>
+  </div>
+  <footer class="sk-status-dock" aria-hidden="true">
+    <div class="sk-status-pill">
+      <span class="sk-pulse-live"></span>
+      <span class="sk-status-text"><span>Solar</span> &middot; Orbital Physics Online</span>
+      <div class="sk-progress-bar"><div class="sk-progress-fill"></div></div>
+    </div>
+  </footer>
+</div>
     <script>
       ;(function () {
         try {
@@ -2062,81 +2080,81 @@
           <div class="planet-name">Sun</div>
           <span class="planet-tag">Star</span>
           <ul class="planet-facts">
-            <li><strong>Type:</strong> G-Type Main-Sequence Star Holding 99.86% Of All Solar System Mass.</li>
-            <li><strong>Size:</strong> About 1.39 Million Km Wide; Surface Near 5,505°C, Core Near 15 Million °C.</li>
-            <li><strong>Light Time:</strong> Sunlight Reaches Earth In About 8 Minutes 20 Seconds.</li>
+            <li><strong>Type:</strong> G-type main-sequence star holding 99.86% of the solar system's mass.</li>
+            <li><strong>Size:</strong> About 1.39 million km wide, with a surface near 5,505°C and core near 15 million °C.</li>
+            <li><strong>Light time:</strong> Sunlight takes about 8 minutes 20 seconds to reach Earth.</li>
           </ul>
         </div>
         <div class="planet-card anim-target">
           <div class="planet-name">Mercury</div>
           <span class="planet-tag">Rocky Planet</span>
           <ul class="planet-facts">
-            <li><strong>Distance:</strong> 57.9 Million Km From The Sun; One Year Lasts Only 88 Earth Days.</li>
-            <li><strong>Temperature:</strong> Swings From -180°C At Night To 430°C By Day.</li>
-            <li><strong>Moons:</strong> None. Its Thin Exosphere Cannot Trap Heat.</li>
+            <li><strong>Distance:</strong> 57.9 million km from the Sun; one orbit takes only 88 Earth days.</li>
+            <li><strong>Temperature:</strong> Swings from -180°C at night to 430°C during the day.</li>
+            <li><strong>Moons:</strong> None. Its thin exosphere cannot trap heat.</li>
           </ul>
         </div>
         <div class="planet-card anim-target">
           <div class="planet-name">Venus</div>
           <span class="planet-tag">Rocky Planet</span>
           <ul class="planet-facts">
-            <li><strong>Heat:</strong> Hottest Planet At 465°C From Runaway CO2 Greenhouse Effect.</li>
-            <li><strong>Spin:</strong> Rotates Backward; One Day (243 Earth Days) Outlasts Its Year (225 Days).</li>
-            <li><strong>Moons:</strong> None. Crushing Air Pressure, About 92 Times Earth.</li>
+            <li><strong>Heat:</strong> Hottest planet at 465°C due to a runaway CO2 greenhouse atmosphere.</li>
+            <li><strong>Spin:</strong> Rotates backward; one day (243 Earth days) lasts longer than its year (225 days).</li>
+            <li><strong>Moons:</strong> None. Crushing surface pressure, about 92 times Earth's.</li>
           </ul>
         </div>
         <div class="planet-card anim-target">
           <div class="planet-name">Earth</div>
           <span class="planet-tag">Rocky Planet</span>
           <ul class="planet-facts">
-            <li><strong>Life:</strong> Only Known World With Life; Oceans Cover About 71% Of The Surface.</li>
-            <li><strong>Year:</strong> 365.25 Days; 23.5° Axial Tilt Causes The Seasons.</li>
-            <li><strong>Moons:</strong> One, The Moon, Which Stabilizes Our Axial Tilt.</li>
+            <li><strong>Life:</strong> Only known world with life; oceans cover about 71% of the surface.</li>
+            <li><strong>Year:</strong> 365.25 days, with a 23.5° axial tilt that drives the seasons.</li>
+            <li><strong>Moons:</strong> One (the Moon), which helps keep that tilt steady.</li>
           </ul>
         </div>
         <div class="planet-card anim-target">
           <div class="planet-name">Mars</div>
           <span class="planet-tag">Rocky Planet</span>
           <ul class="planet-facts">
-            <li><strong>Color:</strong> Red From Iron Oxide Dust; Thin CO2 Atmosphere.</li>
-            <li><strong>Olympus Mons:</strong> Tallest Volcano In The Solar System At About 22 Km.</li>
-            <li><strong>Moons:</strong> Two Small Moons, Phobos And Deimos; Day Lasts 24.6 Hours.</li>
+            <li><strong>Color:</strong> Rusty red from iron oxide dust under a thin CO2 atmosphere.</li>
+            <li><strong>Olympus Mons:</strong> Tallest volcano in the solar system at about 22 km high.</li>
+            <li><strong>Moons:</strong> Two small moons, Phobos and Deimos; a Martian day lasts 24.6 hours.</li>
           </ul>
         </div>
         <div class="planet-card anim-target">
           <div class="planet-name">Jupiter</div>
           <span class="planet-tag">Gas Giant</span>
           <ul class="planet-facts">
-            <li><strong>Size:</strong> Largest Planet; Over 1,300 Earths Could Fit Inside.</li>
-            <li><strong>Great Red Spot:</strong> A Storm Wider Than Earth Raging For Centuries.</li>
-            <li><strong>Moons:</strong> 95 Known Moons; Ganymede Is The Largest Moon Of Any Planet.</li>
+            <li><strong>Size:</strong> Largest planet; more than 1,300 Earths could fit inside it.</li>
+            <li><strong>Great Red Spot:</strong> A storm wider than Earth that has raged for centuries.</li>
+            <li><strong>Moons:</strong> 95 known moons, including Ganymede, the largest moon in the solar system.</li>
           </ul>
         </div>
         <div class="planet-card anim-target">
           <div class="planet-name">Saturn</div>
           <span class="planet-tag">Gas Giant</span>
           <ul class="planet-facts">
-            <li><strong>Rings:</strong> Iconic Rings Made Of Ice And Rock, Yet Only About 10 Meters Thick.</li>
-            <li><strong>Density:</strong> Least Dense Planet; It Would Float In Water.</li>
-            <li><strong>Moons:</strong> 146 Confirmed Moons; Titan Has A Thick Nitrogen Atmosphere.</li>
+            <li><strong>Rings:</strong> Wide rings of ice and rock that are often only about 10 meters thick.</li>
+            <li><strong>Density:</strong> Least dense planet; low enough that it would float in water.</li>
+            <li><strong>Moons:</strong> 146 confirmed moons; Titan carries a thick nitrogen atmosphere.</li>
           </ul>
         </div>
         <div class="planet-card anim-target">
           <div class="planet-name">Uranus</div>
           <span class="planet-tag">Ice Giant</span>
           <ul class="planet-facts">
-            <li><strong>Tilt:</strong> Knocked On Its Side At 98°, So It Rolls Around The Sun.</li>
-            <li><strong>Cold:</strong> Coldest Planetary Atmosphere At -224°C; Methane Gives Blue-Green Color.</li>
-            <li><strong>Moons:</strong> 28 Known Moons And Faint Dark Rings.</li>
+            <li><strong>Tilt:</strong> Tilted sideways at 98°, so it rolls around the Sun on its side.</li>
+            <li><strong>Cold:</strong> Coldest planetary atmosphere at -224°C, tinted blue-green by methane.</li>
+            <li><strong>Moons:</strong> 28 known moons and faint, dark rings.</li>
           </ul>
         </div>
         <div class="planet-card anim-target">
           <div class="planet-name">Neptune</div>
           <span class="planet-tag">Ice Giant</span>
           <ul class="planet-facts">
-            <li><strong>Winds:</strong> Fastest Winds In The Solar System At About 2,100 Km Per Hour.</li>
-            <li><strong>Discovery:</strong> Found By Mathematics In 1846 Before Any Telescope Saw It.</li>
-            <li><strong>Moons:</strong> 16 Known Moons; Triton Orbits Backward Around The Planet.</li>
+            <li><strong>Winds:</strong> Fastest winds in the solar system at around 2,100 km per hour.</li>
+            <li><strong>Discovery:</strong> Predicted by math in 1846 before telescopes spotted it.</li>
+            <li><strong>Moons:</strong> 16 known moons; Triton orbits in the opposite direction to the planet's spin.</li>
           </ul>
         </div>
       </div>
@@ -2197,10 +2215,10 @@
 
     <div class="gallery-title anim-target">Doubt Solver</div>
     <div class="doubt-section anim-target">
-      <p class="doubt-note">Ask Any Doubt About The Sun, Planets, Orbits, Or The Simulator Controls. Answers Come From Built-In Study Notes.</p>
+      <p class="doubt-note">Ask anything about the Sun, planets, orbits, or simulator controls. Answers come directly from built-in study notes.</p>
       <div class="doubt-chips" id="solarChips"></div>
       <div class="doubt-row">
-        <input type="text" class="doubt-input" id="solarInput" placeholder="Ask Anything, For Example: Why Is Venus So Hot?" aria-label="Ask A Solar System Doubt" autocomplete="off" />
+        <input type="text" class="doubt-input" id="solarInput" placeholder="Ask a question, for example: why is Venus so hot?" aria-label="Ask a solar system question" autocomplete="off" />
         <button class="doubt-ask" id="solarAsk" type="button">Ask</button>
       </div>
       <div class="doubt-answer" id="solarAnswer" role="status" aria-live="polite" hidden></div>
@@ -2209,32 +2227,32 @@
     <script>
       ;(function () {
         var SOLAR_KB = [
-          { keys: ['sun', 'star', 'solar'], title: 'The Sun', answer: '<strong>The Sun:</strong> A G-Type Star Holding 99.86% Of All Solar System Mass. It Is About 1.39 Million Km Wide, Burns Near 5,505°C At The Surface, And Its Light Reaches Earth In About 8 Minutes 20 Seconds.' },
-          { keys: ['mercury', 'closest', 'smallest'], title: 'Mercury', answer: '<strong>Mercury:</strong> The Closest And Smallest Planet, 57.9 Million Km Out, Racing Around The Sun In 88 Days. With Almost No Atmosphere, It Swings From -180°C At Night To 430°C By Day And Has No Moons.' },
-          { keys: ['venus', 'hottest', 'hot'], title: 'Venus', answer: '<strong>Venus:</strong> The Hottest Planet At 465°C Because Thick CO2 Clouds Trap Heat In A Runaway Greenhouse Effect. It Spins Backward, So One Venus Day (243 Earth Days) Lasts Longer Than Its Year (225 Days).' },
-          { keys: ['earth', 'life', 'home', 'water', 'seasons'], title: 'Earth', answer: '<strong>Earth:</strong> The Only Known World With Life. Oceans Cover 71% Of The Surface, One Year Lasts 365.25 Days, And A 23.5° Axial Tilt Causes The Seasons. Our Single Moon Steadies That Tilt.' },
-          { keys: ['mars', 'red', 'olympus', 'phobos', 'deimos'], title: 'Mars', answer: '<strong>Mars:</strong> The Red Planet, Colored By Iron Oxide Dust Under A Thin CO2 Sky. It Hosts Olympus Mons, A 22 Km Volcano, Has Two Tiny Moons (Phobos And Deimos), And A Day Of 24.6 Hours.' },
-          { keys: ['jupiter', 'largest', 'biggest', 'red spot', 'ganymede'], title: 'Jupiter', answer: '<strong>Jupiter:</strong> The Largest Planet; Over 1,300 Earths Fit Inside. Its Great Red Spot Is A Centuries-Old Storm Wider Than Earth. It Has 95 Known Moons, Including Ganymede, The Biggest Moon Of Any Planet.' },
-          { keys: ['saturn', 'rings', 'titan', 'float'], title: 'Saturn', answer: '<strong>Saturn:</strong> Famous For Rings Of Ice And Rock Only Meters Thick. It Is The Least Dense Planet And Would Float In Water. Of Its 146 Moons, Titan Stands Out With A Thick Nitrogen Atmosphere.' },
-          { keys: ['uranus', 'tilt', 'sideways', 'coldest', 'cold'], title: 'Uranus', answer: '<strong>Uranus:</strong> An Ice Giant Knocked Sideways At A 98° Tilt, So It Rolls Around The Sun. Methane Gives Its Blue-Green Color, And Its Atmosphere At -224°C Is The Coldest Of Any Planet.' },
-          { keys: ['neptune', 'wind', 'farthest', 'triton', 'blue'], title: 'Neptune', answer: '<strong>Neptune:</strong> The Farthest Planet With Supersonic Winds Near 2,100 Km Per Hour. Astronomers Found It By Mathematics In 1846. It Takes 164.8 Years Per Orbit, And Its Moon Triton Circles Backward.' },
-          { keys: ['kepler', 'orbit', 'ellipse', 'laws', 'gravity'], title: 'Orbits And Kepler', answer: '<strong>Orbits:</strong> Planets Follow Ellipses With The Sun At One Focus (Kepler First Law), Sweep Equal Areas In Equal Times (Second Law), And Outer Planets Move Slower By The Harmonic Law (Third Law). Try It Live In The Simulator Above.' },
-          { keys: ['control', 'drag', 'zoom', 'click', 'move', 'camera', 'use', 'simulator'], title: 'Simulator Controls', answer: '<strong>Simulator Controls:</strong> Left Click Plus Drag To Pan The Camera, Scroll To Zoom, Double Click Any Body To Focus It, And Single Click A Planet To Open Its Live Telemetry Panel.' },
-          { keys: ['light', 'minute', 'travel', 'sunlight'], title: 'Light Travel Time', answer: '<strong>Light Travel Time:</strong> Sunlight Needs About 8 Minutes 20 Seconds To Reach Earth, 43 Minutes To Reach Jupiter, And Over 4 Hours To Reach Neptune.' },
-          { keys: ['pluto', 'dwarf', 'planet count', 'how many planets'], title: 'Dwarf Planets', answer: '<strong>Dwarf Planets:</strong> The Solar System Has 8 Planets. Pluto Was Reclassified As A Dwarf Planet In 2006 Because It Has Not Cleared Its Orbit Of Debris.' },
-          { keys: ['moon', 'moons', 'satellite', 'most moons'], title: 'Moons', answer: '<strong>Moons:</strong> Saturn Leads With 146 Confirmed Moons, Jupiter Has 95, And Mercury Plus Venus Have None. Ganymede (Jupiter) Is The Largest Moon In The Solar System.' },
-          { keys: ['hello', 'hi', 'hey', 'namaste'], title: 'Greeting', answer: '<strong>Hello, Space Explorer.</strong> Ask Me About Any Planet, The Sun, Orbits, Or The Simulator Controls. Try A Topic Chip Above To Start.' },
-          { keys: ['thank', 'thanks', 'shukriya'], title: 'Thanks', answer: '<strong>You Are Welcome.</strong> Keep Exploring The Planets Above, And Ask Anytime A New Doubt Appears.' },
-          { keys: ['who are you', 'your name', 'what are you'], title: 'About Me', answer: '<strong>I Am The Solar Doubt Solver,</strong> A Built-In Study Notes Assistant For This Page. I Answer Questions About The Sun, Planets, Orbits, And Simulator Controls.' },
-          { keys: ['help', 'what can you', 'how to ask', 'topics'], title: 'Help', answer: '<strong>I Can Answer:</strong> Facts On The Sun And All 8 Planets, Orbit Basics, Light Travel Times, Moon Counts, And Simulator Controls. Mix Two Topics In One Question And I Answer Both.' },
-          { keys: ['bye', 'alvida', 'see you'], title: 'Farewell', answer: '<strong>Goodbye For Now.</strong> The Planets Will Keep Orbiting; Come Back With More Doubts Anytime.' }
+          { keys: ['sun', 'star', 'solar'], title: 'The Sun', answer: '<strong>The Sun:</strong> A G-type star holding 99.86% of the solar system mass. It is about 1.39 million km wide, with a surface near 5,505°C, and sunlight takes about 8 minutes 20 seconds to reach Earth.' },
+          { keys: ['mercury', 'closest', 'smallest'], title: 'Mercury', answer: '<strong>Mercury:</strong> The closest and smallest planet at 57.9 million km out, completing an orbit in 88 days. With almost no atmosphere, temperatures swing from -180°C at night to 430°C by day, and it has no moons.' },
+          { keys: ['venus', 'hottest', 'hot'], title: 'Venus', answer: '<strong>Venus:</strong> The hottest planet at 465°C because thick CO2 clouds trap heat in a runaway greenhouse effect. It rotates backward, so one Venus day (243 Earth days) lasts longer than its year (225 days).' },
+          { keys: ['earth', 'life', 'home', 'water', 'seasons'], title: 'Earth', answer: '<strong>Earth:</strong> The only known world with life. Oceans cover 71% of the surface, one year is 365.25 days, and a 23.5° axial tilt creates the seasons. Our single Moon keeps that tilt steady.' },
+          { keys: ['mars', 'red', 'olympus', 'phobos', 'deimos'], title: 'Mars', answer: '<strong>Mars:</strong> The Red Planet, colored by iron oxide dust beneath a thin CO2 sky. It is home to Olympus Mons, a 22 km volcano, two tiny moons (Phobos and Deimos), and a 24.6-hour day.' },
+          { keys: ['jupiter', 'largest', 'biggest', 'red spot', 'ganymede'], title: 'Jupiter', answer: '<strong>Jupiter:</strong> The largest planet; over 1,300 Earths fit inside. Its Great Red Spot is a centuries-old storm wider than Earth. It has 95 known moons, including Ganymede, the biggest moon of any planet.' },
+          { keys: ['saturn', 'rings', 'titan', 'float'], title: 'Saturn', answer: '<strong>Saturn:</strong> Known for rings of ice and rock only meters thick. It is the least dense planet and would float in water. Among its 146 moons, Titan has a thick nitrogen atmosphere.' },
+          { keys: ['uranus', 'tilt', 'sideways', 'coldest', 'cold'], title: 'Uranus', answer: '<strong>Uranus:</strong> An ice giant knocked sideways at a 98° tilt, so it rolls around the Sun. Methane gives it a blue-green color, and at -224°C it has the coldest atmosphere of any planet.' },
+          { keys: ['neptune', 'wind', 'farthest', 'triton', 'blue'], title: 'Neptune', answer: '<strong>Neptune:</strong> The farthest planet with supersonic winds around 2,100 km per hour. Astronomers predicted it by math in 1846 before seeing it. One orbit takes 164.8 years, and Triton circles backward.' },
+          { keys: ['kepler', 'orbit', 'ellipse', 'laws', 'gravity'], title: 'Orbits And Kepler', answer: '<strong>Orbits:</strong> Planets travel in ellipses with the Sun at one focus (Kepler first law), sweep equal areas in equal times (second law), and outer planets orbit slower by the harmonic law (third law).' },
+          { keys: ['control', 'drag', 'zoom', 'click', 'move', 'camera', 'use', 'simulator'], title: 'Simulator Controls', answer: '<strong>Simulator Controls:</strong> Left-click and drag to pan, scroll to zoom, double-click a body to focus it, and single-click any planet to open its telemetry panel.' },
+          { keys: ['light', 'minute', 'travel', 'sunlight'], title: 'Light Travel Time', answer: '<strong>Light travel time:</strong> Sunlight takes about 8 minutes 20 seconds to reach Earth, 43 minutes to reach Jupiter, and over 4 hours to reach Neptune.' },
+          { keys: ['pluto', 'dwarf', 'planet count', 'how many planets'], title: 'Dwarf Planets', answer: '<strong>Dwarf planets:</strong> The solar system has 8 planets. Pluto was reclassified as a dwarf planet in 2006 because it has not cleared smaller objects from its orbit.' },
+          { keys: ['moon', 'moons', 'satellite', 'most moons'], title: 'Moons', answer: '<strong>Moons:</strong> Saturn leads with 146 confirmed moons, Jupiter has 95, and Mercury and Venus have none. Ganymede (Jupiter) is the largest moon in the solar system.' },
+          { keys: ['hello', 'hi', 'hey', 'namaste'], title: 'Greeting', answer: '<strong>Hello.</strong> Ask about any planet, the Sun, orbits, or simulator controls, or click a topic chip above.' },
+          { keys: ['thank', 'thanks', 'shukriya'], title: 'Thanks', answer: '<strong>You are welcome.</strong> Keep exploring the simulator above whenever a new question comes up.' },
+          { keys: ['who are you', 'your name', 'what are you'], title: 'About Me', answer: '<strong>Solar Doubt Solver:</strong> Built-in study notes for this page covering the Sun, planets, orbits, and simulator controls.' },
+          { keys: ['help', 'what can you', 'how to ask', 'topics'], title: 'Help', answer: '<strong>Topics covered:</strong> The Sun and all 8 planets, orbit laws, light travel times, moon counts, and simulator controls. Ask about two topics at once to see both notes.' },
+          { keys: ['bye', 'alvida', 'see you'], title: 'Farewell', answer: '<strong>See you next time.</strong> Come back whenever you want to check planet stats or orbits.' }
         ]
         var FUN_FACTS = [
-          'Saturn Would Float In Water Because It Is The Least Dense Planet.',
-          'One Day On Venus Outlasts Its Entire Year.',
-          'Jupiter Great Red Spot Is A Storm Wider Than Earth.',
-          'Sunlight Reaching You Right Now Left The Sun 8 Minutes Ago.',
-          'Olympus Mons On Mars Stands Nearly Three Times Everest Height.'
+          'Saturn is light enough to float in water because it is the least dense planet.',
+          'One day on Venus lasts longer than its entire year.',
+          'The Great Red Spot on Jupiter is a storm wider than Earth.',
+          'Sunlight reaching your eyes left the Sun just over 8 minutes ago.',
+          'Olympus Mons on Mars rises nearly three times higher than Mount Everest.'
         ]
         var STOPWORDS = ['what', 'why', 'how', 'when', 'where', 'which', 'is', 'are', 'was', 'were', 'do', 'does', 'did', 'tell', 'me', 'about', 'the', 'a', 'an', 'of', 'in', 'on', 'and', 'or', 'for', 'to', 'it', 'its', 'please', 'something', 'anything', 'question', 'doubt', 'know']
         var CHIP_TOPICS = ['Sun', 'Black Spots On Jupiter', 'Saturn Rings', 'Simulator Controls', 'Coldest Planet', 'How Many Moons']
@@ -2296,7 +2314,7 @@
             }
           } else {
             var fact = FUN_FACTS[(rawQuery || '').length % FUN_FACTS.length]
-            box.innerHTML = '<strong>That Is Outside My Study Notes,</strong> But Here Is A Space Fact: ' + fact + ' Try Topics Like Sun, Jupiter, Saturn Rings, Or Simulator Controls.'
+            box.innerHTML = '<strong>That topic is outside my notes,</strong> but here is a quick space fact: ' + fact + ' Try topics like Sun, Jupiter, Saturn Rings, or Simulator Controls.'
           }
         }
 
@@ -2322,7 +2340,7 @@
           var q = input.value.trim()
           if (!q) {
             answerBox.hidden = false
-            answerBox.innerHTML = '<strong>Type Your Doubt First,</strong> Or Tap Any Topic Chip Above.'
+            answerBox.innerHTML = '<strong>Type a question first,</strong> or tap any topic chip above.'
             return
           }
           renderAnswer(answerBox, findAnswer(q), q)

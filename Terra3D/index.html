@@ -42,6 +42,7 @@
   <!-- Google Fonts: Inter & Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="../col-skeleton.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
 
   <!-- Main Stylesheet -->
@@ -84,6 +85,38 @@
     <script defer src="../pull-refresh.js"></script>
 </head>
 <body>
+<div class="loader col-skeleton-screen sk-theme-terra" id="loader" role="status" aria-busy="true" aria-label="Loading Terra3D 3D Globe Atlas">
+  <div class="sk-ambient-glow" aria-hidden="true"></div>
+  <div class="sk-ambient-glow-left" aria-hidden="true"></div>
+    <div class="sk-hud-bar" aria-hidden="true">
+    <div class="sk-pill sk-shimmer-accent" style="width: 112px; height: 20px;"></div>
+    <div class="sk-search-pill" style="max-width: 280px; height: 36px;"><div class="sk-pill sk-shimmer" style="width: 140px; height: 12px;"></div></div>
+    <div style="display:flex;gap:8px;align-items:center;"><div class="sk-pill sk-shimmer" style="width: 62px; height: 24px;"></div><div class="sk-pill sk-shimmer" style="width: 78px; height: 24px;"></div><div class="sk-circle sk-shimmer" style="width: 32px; height: 32px;"></div></div>
+  </div>
+  <div class="sk-globe-stage" aria-hidden="true">
+    <div class="sk-globe-wireframe">
+      <div class="sk-globe-lon"></div>
+      <div class="sk-globe-lat"></div>
+      <div class="sk-card" style="width: 290px; align-items: center; text-align: center; backdrop-filter: blur(18px); z-index: 2;">
+        <div class="sk-title-bar sk-shimmer-accent" style="width: 160px; height: 30px;"></div>
+        <div class="sk-lede-line sk-shimmer" style="width: 90%;"></div>
+        <div class="sk-lede-line sk-shimmer" style="width: 72%;"></div>
+        <div style="display:flex;gap:10px;width:100%;margin-top:6px;">
+          <div class="sk-btn sk-btn-primary sk-shimmer" style="flex:1;height:40px;"></div>
+          <div class="sk-btn sk-btn-secondary sk-shimmer" style="width:88px;height:40px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer class="sk-status-dock" aria-hidden="true">
+    <div class="sk-status-pill">
+      <span class="sk-pulse-live"></span>
+      <span class="sk-status-text"><span>Terra3D</span> &middot; 178-Nation 3D Globe</span>
+      <div class="sk-progress-bar"><div class="sk-progress-fill"></div></div>
+    </div>
+  </footer>
+</div>
+
   <!-- Full-screen container for Three.js canvas -->
   <div id="globe-container"></div>
 

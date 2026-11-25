@@ -12,7 +12,8 @@
   No build step, no dependencies except a font. <img> polling needs
   no CORS headers, so the relay works as-is.
 -->
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../col-skeleton.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
 <style>
   :root { --bg:#0F1118; --teal:#00BFA5; --dim:#9AA0A6; }
   * { margin:0; padding:0; box-sizing:border-box; }
@@ -62,6 +63,30 @@
     <meta name="twitter:image" content="https://advancedlogiclabs.dpdns.org/og/castflow.jpg" />
   </head>
 <body>
+<div class="loader col-skeleton-screen sk-theme-teal sk-force-dark" id="loader" role="status" aria-busy="true" aria-label="Loading CastFlow Relay Viewer">
+  <div class="sk-ambient-glow" aria-hidden="true"></div>
+  <div class="sk-ambient-glow-left" aria-hidden="true"></div>
+    <div class="sk-traffic-topbar" aria-hidden="true">
+    <div style="display:flex;gap:12px;align-items:center;"><div class="sk-pill sk-shimmer-accent" style="width:128px;height:18px;"></div><div class="sk-pill sk-shimmer" style="width:74px;height:14px;"></div></div>
+    <div class="sk-pill sk-shimmer-accent" style="width:78px;height:24px;"></div>
+  </div>
+  <div class="sk-editorial-wrap" aria-hidden="true" style="justify-content: center; min-height: calc(100vh - 58px); padding: 24px;">
+    <div class="sk-form-box" style="max-width: 440px; align-items: center; text-align: center;">
+      <div class="sk-title-bar sk-shimmer" style="width: 72%; height: 26px;"></div>
+      <div class="sk-lede-line sk-shimmer" style="width: 84%;"></div>
+      <div class="sk-box sk-shimmer-accent" style="width: 100%; height: 40px;"></div>
+      <div style="display:flex;gap:8px;width:100%;"><div class="sk-box sk-shimmer" style="flex:1;height:40px;"></div><div class="sk-box sk-shimmer" style="width:100px;height:40px;"></div><div class="sk-btn sk-btn-primary sk-shimmer" style="width:82px;height:40px;"></div></div>
+    </div>
+  </div>
+  <footer class="sk-status-dock" aria-hidden="true">
+    <div class="sk-status-pill">
+      <span class="sk-pulse-live"></span>
+      <span class="sk-status-text"><span>CastFlow</span> &middot; Relay Stream Viewer</span>
+      <div class="sk-progress-bar"><div class="sk-progress-fill"></div></div>
+    </div>
+  </footer>
+</div>
+
 <div class="ambient"></div>
 <header>
   <span class="brand">CastFlow Relay</span>
@@ -70,7 +95,7 @@
 </header>
 <div id="filebar" style="display:none;position:fixed;top:57px;left:0;right:0;z-index:5;text-align:center;padding:8px;background:rgba(200,240,75,.10);border-bottom:1px solid rgba(200,240,75,.3);font-size:14px"><a id="filelink" href="#" style="color:#C8F04B">Download shared file</a></div>
 <main>
-  <img id="v" alt="Relayed screen">
+  <img id="v" alt="Relayed screen" style="display:none;" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
   <div class="empty" id="empty">
     <h1>Watch a CastFlow screen</h1>
     <p>Open this page with your relay details, or fill them in:</p>
@@ -143,5 +168,50 @@
   if (server && room) tick();
 })();
 </script>
+  <script>
+    ;(function () {
+      var isDbg = false;
+      try { isDbg = /[?&]skeleton(=|&|$)/i.test(window.location.search); } catch (e) {}
+      window.showSkeleton = function () {
+        var l = document.getElementById('loader');
+        if (!l) return;
+        l.style.display = 'flex';
+        l.scrollTop = 0;
+        l.offsetHeight;
+        l.classList.remove('gone');
+        l.removeAttribute('aria-hidden');
+        l.setAttribute('aria-busy', 'true');
+        l.style.opacity = '1';
+        l.style.visibility = 'visible';
+        l.style.transform = 'none';
+        l.style.pointerEvents = 'all';
+      };
+      window.hideSkeleton = function () {
+        var l = document.getElementById('loader');
+        if (!l) return;
+        l.classList.add('gone');
+        l.setAttribute('aria-busy', 'false');
+        l.setAttribute('aria-hidden', 'true');
+        l.style.pointerEvents = 'none';
+        setTimeout(function () { if (l.classList.contains('gone')) l.style.display = 'none'; }, 360);
+      };
+      window.toggleSkeleton = function () {
+        var l = document.getElementById('loader');
+        if (l && l.classList.contains('gone')) window.showSkeleton();
+        else window.hideSkeleton();
+      };
+      function dismiss() {
+        if (isDbg && !navigator.webdriver) return;
+        var l = document.getElementById('loader');
+        if (!l || l.classList.contains('gone')) return;
+        if (navigator.webdriver) { l.style.display = 'none'; l.classList.add('gone'); l.setAttribute('aria-hidden', 'true'); }
+        else window.hideSkeleton();
+      }
+      if (navigator.webdriver) dismiss();
+      else if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(dismiss, 160); });
+      else setTimeout(dismiss, 160);
+      window.addEventListener('load', dismiss, { once: true });
+    })();
+  </script>
 </body>
 </html>

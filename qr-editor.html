@@ -88,15 +88,22 @@
     <script defer src="qr-dynamic.js"></script>
 
 <script>
-  ;(function () {
+  (function () {
     try {
-      if (localStorage.getItem('theme') === 'light') {
-        document.documentElement.classList.add('lm')
-      }
+      var saved = localStorage.getItem('theme');
+      var prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+      var mode = saved || (prefersLight ? 'light' : 'dark');
+      document.documentElement.dataset.theme = mode;
+      document.documentElement.classList.toggle('lm', mode === 'light');
+      if (document.body) document.body.classList.toggle('lm', mode === 'light');
     } catch (e) {}
-  })()
+  })();
 </script>
+<link rel="stylesheet" href="qr-tokens.css" />
+<link rel="stylesheet" href="qr-layout.css" />
+<link rel="stylesheet" href="qr-components.css" />
 <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
+  <link rel="stylesheet" href="col-skeleton.css?v=20261125" />
 <link rel="stylesheet" href="liquid-glass.css" />
     <!-- Conditional Mobile Assets: Loaded ONLY on mobile/tablet or when screen <= 1024px. Prevents downloading mobile styles and touch scripts on PC desktop. -->
     <script>
@@ -140,7 +147,6 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="stylesheet" href="col-ui.css?v=20260923-nav3">
     <style>
 /* ---- EXACT UI THEME ---- */
 :root {
@@ -214,13 +220,67 @@ body::after {
               repeating-linear-gradient(90deg, transparent 0, transparent 39px, rgba(255,255,255,0.015) 39px, rgba(255,255,255,0.015) 40px);
 }
 
-@media (min-width: 1001px) {
-  body { overflow: hidden; }
-  .qr-app { display: grid; grid-template-columns: 280px 1fr 360px; height: calc(100vh - 73px); height: calc(100dvh - 73px); width: 100%; max-width: 1800px; margin: 0 auto; overflow: hidden; }
+/* Full-Width Docked Top Navigation Bar - Liquid Glass with Specular Reflection & Refraction */
+.top-nav {
+  --page-theme: var(--pri);
+  --primary: var(--pri);
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  height: 60px !important;
+  padding: 8px 24px !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-top: 1.5px solid rgba(255, 255, 255, 0.78) !important;
+  border-bottom: 1px solid var(--border) !important;
+  z-index: 1000 !important;
+  transform: none !important;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.16) 0%,
+    rgba(255, 255, 255, 0.04) 24%,
+    rgba(13, 19, 36, 0.75) 68%,
+    rgba(6, 9, 18, 0.92) 100%
+  ) !important;
+  backdrop-filter: blur(28px) saturate(180%) brightness(1.05) contrast(102%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) brightness(1.05) contrast(102%) !important;
+  box-shadow:
+    0 12px 36px rgba(0, 0, 0, 0.45),
+    0 0 24px -4px rgba(94, 212, 245, 0.12),
+    inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.75),
+    inset 0 -1px 1px 0 rgba(0, 0, 0, 0.25) !important;
+}
+.top-nav.s {
+  transform: none !important;
+  border-radius: 0 !important;
+}
+body.lm .top-nav {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94) 0%, rgba(255, 255, 255, 0.76) 40%, rgba(240, 237, 228, 0.84) 100%) !important;
+  border-top: 1.5px solid #ffffff !important;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.10) !important;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08), inset 0 1.5px 2px #ffffff !important;
 }
 
-/* Top bar: layout/blur/drawer owned by shared col-ui.css; page only sets accent via --page-theme */
-.top-nav { --page-theme: var(--pri); --primary: var(--pri); }
+@media (min-width: 1001px) {
+  body { overflow: hidden; }
+  .qr-app {
+    display: grid;
+    grid-template-columns: 260px 1fr 380px;
+    height: calc(100vh - 60px);
+    height: calc(100dvh - 60px);
+    margin-top: 60px !important;
+    width: 100%;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    overflow: hidden;
+  }
+}
         
         /* .nav-brand + .brand-logo: inherited from col-ui.css */
         
@@ -233,10 +293,10 @@ body::after {
         /* Account UI + mobile menu: owned by col-ui.css + col-mobile.css */
 
 /* SIDEBAR */
-.app-sb { background: var(--panel); backdrop-filter: blur(20px); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; padding: 25px 20px; }
-.sb-top { padding-bottom: 25px; border-bottom: 1px solid var(--border); margin-bottom: 20px; text-align: center; }
-.sb-top-title { color: var(--pri); font-weight: 800; font-size: 1.3rem; font-family: var(--font-mono); letter-spacing: -0.5px; text-shadow: 0 0 15px var(--glow); }
-.sb-top-sub { color: var(--txt-m); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; margin-top: 8px; }
+.app-sb { background: var(--panel); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; padding: 20px 16px; }
+.sb-top { padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 16px; text-align: center; }
+.sb-top-title { color: var(--pri); font-weight: 800; font-size: 1.15rem; font-family: var(--font-mono); letter-spacing: 0.5px; text-shadow: 0 0 15px var(--glow); }
+.sb-top-sub { display: none; }
 .sb-lbl { padding: 15px 10px 8px; font-size: 0.7rem; font-weight: 800; color: var(--txt-m); text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.7; }
 .sb-btn { width: 100%; padding: 14px 18px; background: transparent; border: 1px solid transparent; border-radius: 14px; color: var(--txt); font-weight: 600; font-size: 0.95rem; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 14px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); margin-bottom: 8px; text-decoration: none;}
 .sb-btn:hover { background: rgba(255,255,255,0.03); border-color: var(--border); transform: translateX(5px); }
@@ -361,8 +421,9 @@ select.fi { cursor: pointer; appearance: none; background-image: url('data:image
 .prev-hd { padding: 25px 25px 15px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; text-align: center; }
 .prev-hd h3 { font-size: 1rem; font-weight: 800; color: var(--txt-m); text-transform: uppercase; letter-spacing: 2px; }
 .prev-typ { display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 0.85rem; font-weight: 800; background: rgba(16,185,129,0.15); color: var(--pri); padding: 5px 15px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 0 15px var(--glow); }
-.prev-cw { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px 20px; background: var(--bg); }
-#qrWrap { background: #fff; border-radius: 16px; padding: 15px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); transition: 0.3s; }
+.prev-cw { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px 20px; background: var(--bg); position: relative; overflow: hidden; }
+.prev-cw::before { content: ''; position: absolute; width: 240px; height: 240px; border-radius: 50%; background: radial-gradient(circle, var(--glow-strong, rgba(16,185,129,0.25)) 0%, transparent 70%); filter: blur(36px); pointer-events: none; z-index: 0; }
+#qrWrap { position: relative; z-index: 1; background: #fff; border-radius: 20px; padding: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.08); transition: 0.3s; }
 #qrWrap.frame-border { outline: 4px solid var(--pri); outline-offset: 6px; }
 #qrWrap.frame-shadow { box-shadow: 0 30px 60px rgba(0,0,0,0.8); }
 #qrWrap.frame-rounded { border-radius: 24px; }
@@ -391,7 +452,7 @@ select.fi { cursor: pointer; appearance: none; background-image: url('data:image
 /* MOBILE RESPONSIVE */
 @media (max-width: 1000px) {
   body { overflow-x: hidden; overflow-y: auto; }
-  .qr-app { display: flex; flex-direction: column; height: auto; overflow: visible; }
+  .qr-app { display: flex; flex-direction: column; height: auto; margin-top: 76px; overflow: visible; }
   .app-sb { display: none; }
   .workspace { padding: 0; }
   .panel { padding: 20px 15px; }
@@ -448,31 +509,24 @@ body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
 
 /* --- QRFY AESTHETIC OVERRIDES FOR STEP 3 --- */
 #sp3 {
-  --q-bg: #0c1224;
-  --q-panel: #111827;
-  --q-border: rgba(255,255,255,0.08);
-  --q-border-hover: rgba(255,255,255,0.16);
-  --q-text: #e8e3d8;
-  --q-text-m: #8891aa;
-  --q-blue: #3b82f6;
-  --q-blue-light: rgba(59,130,246,0.12);
-  --q-gray-light: #1a2332;
-  
-  background: var(--q-bg);
-  color: var(--q-text);
-  padding: 30px;
-  border-radius: 12px;
+  --q-bg: var(--surface-card);
+  --q-panel: var(--surface-subtle);
+  --q-border: var(--border-subtle);
+  --q-border-hover: var(--accent);
+  --q-text: var(--ink-primary);
+  --q-text-m: var(--ink-muted);
+  --q-blue: var(--accent);
+  --q-blue-light: var(--accent-soft);
+  --q-gray-light: var(--surface-subtle);
+  background: var(--surface-card);
+  color: var(--ink-primary);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  border: 1px solid var(--border-subtle);
 }
-body.light #sp3 {
-  --q-bg: #ffffff;
-  --q-panel: #ffffff;
-  --q-border: #e5e7eb;
-  --q-border-hover: #d1d5db;
-  --q-text: #111827;
-  --q-text-m: #6b7280;
-  --q-blue-light: #eff6ff;
-  --q-gray-light: #f8f9fa;
-}
+body.lm .pi, body.light .pi { background: #ffffff !important; border-color: rgba(0, 0, 0, 0.08) !important; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important; }
+body.lm .pi span, body.light .pi span { color: #64748b !important; }
+body.lm .pi strong, body.light .pi strong { color: #059669 !important; }
 #sp3 .sh { color: var(--q-text); font-size: 1.8rem; font-weight: 700; letter-spacing: 0; }
 #sp3 .ss { color: var(--q-text-m); font-size: 0.9rem; }
 
@@ -531,9 +585,38 @@ body.light #sp3 {
 
 /* Logos */
 #sp3 .logo-ps { display: flex; flex-wrap: nowrap; gap: 12px; overflow-x: auto; padding-bottom: 10px; }
-#sp3 .logo-p { width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--q-border); background: var(--q-bg); box-shadow: none; flex-shrink: 0; }
-#sp3 .logo-p.sel { border-color: var(--q-blue); background: var(--q-blue-light); }
-#sp3 .logo-p img { max-width: 24px; max-height: 24px; }
+#sp3 .logo-p {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  border: 1px solid var(--q-border);
+  background: var(--q-panel);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+#sp3 .logo-p:hover {
+  border-color: var(--q-blue);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+#sp3 .logo-p.sel {
+  border-color: var(--q-blue);
+  background: var(--q-blue-light);
+  box-shadow: 0 0 0 2px var(--q-blue);
+}
+#sp3 .logo-p svg {
+  max-width: 24px;
+  max-height: 24px;
+  transition: transform 0.2s ease;
+}
+#sp3 .logo-p:hover svg {
+  transform: scale(1.1);
+}
 #sp3 .logo-up { border: 1px dashed var(--q-border-hover); border-radius: 8px; padding: 20px; text-align: left; background: var(--q-bg); margin-top: 10px; display: flex; align-items: center; gap: 15px; }
 #sp3 .logo-up p { font-size: 0.9rem; font-weight: 600; color: var(--q-text); margin: 0; }
 #sp3 .logo-up p span { font-weight: 400; color: var(--q-text-m); }
@@ -553,62 +636,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
 
-      /* QR Editor Studio Enhancements */
-      .quick-presets-bar {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-bottom: 20px;
-      }
-      .preset-chip {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 6px 14px;
-        background: var(--panel);
-        border: 1px solid var(--border);
-        border-radius: 999px;
-        font-size: 0.8rem;
-        font-weight: 500;
-        color: var(--txt);
-        cursor: pointer;
-        transition: all 0.2s ease;
-      }
-      .preset-chip:hover {
-        border-color: var(--pri);
-        transform: translateY(-1px);
-      }
-      .preset-dot {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-      }
-      .quick-sample-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 0.8rem;
-        padding: 4px 10px;
-        background: rgba(99, 102, 241, 0.1);
-        border: 1px solid rgba(99, 102, 241, 0.25);
-        color: var(--pri);
-        border-radius: 6px;
-        cursor: pointer;
-        margin-top: 8px;
-      }
-      .quick-sample-btn:hover {
-        background: rgba(99, 102, 241, 0.2);
-      }
-      /* Light mode overrides for QR Editor */
-      body.lm .preset-chip {
-        background: #ffffff;
-        border-color: rgba(0, 0, 0, 0.1);
-        color: #0f172a;
-      }
-      body.lm .prev-inf {
-        background: #f8fafc;
-        border-color: rgba(0, 0, 0, 0.08);
-      }
+
       body.lm .prev-inf .pi span {
         color: #64748b;
       }
@@ -654,6 +682,66 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 <script defer src="qr-editor-ext.js"></script>
 </head>
 <body>
+    <!-- QR Editor Studio Skeleton Loading Screen -->
+    <div class="loader col-skeleton-screen sk-theme-emerald" id="loader" role="status" aria-busy="true" aria-label="Loading Dynamic QR Studio Editor">
+  <div class="sk-ambient-glow" aria-hidden="true"></div>
+  <div class="sk-ambient-glow-left" aria-hidden="true"></div>
+  <header class="sk-nav" aria-hidden="true">
+    <div class="sk-nav-brand">
+      <div class="sk-circle sk-brand-logo sk-shimmer"></div>
+      <div class="sk-pill sk-brand-text sk-shimmer"></div>
+    </div>
+    <div class="sk-nav-links">
+      <div class="sk-pill sk-shimmer" style="width: 56px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 62px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 66px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 80px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 68px; height: 14px;"></div>
+    </div>
+    <div class="sk-nav-actions">
+      <div class="sk-pill sk-nav-search sk-shimmer"></div>
+      <div class="sk-circle sk-nav-theme sk-shimmer"></div>
+      <div class="sk-pill sk-nav-btn sk-shimmer" style="width: 78px;"></div>
+      <div class="sk-pill sk-nav-cta sk-shimmer" style="width: 118px;"></div>
+    </div>
+  </header>
+  <div class="sk-workspace-3col" aria-hidden="true">
+    <aside class="sk-sidebar">
+      <div class="sk-pill sk-shimmer-accent" style="width: 140px; height: 22px; margin-bottom: 6px;"></div>
+      <div class="sk-card" style="padding: 12px; gap: 10px;">
+        <div class="sk-box sk-shimmer-accent" style="width: 100%; height: 36px;"></div>
+        <div class="sk-box sk-shimmer" style="width: 100%; height: 36px;"></div>
+        <div class="sk-box sk-shimmer" style="width: 100%; height: 36px;"></div>
+      </div>
+      <div class="sk-card" style="padding: 12px; gap: 10px;">
+        <div class="sk-box sk-shimmer" style="width: 100%; height: 34px;"></div>
+        <div class="sk-box sk-shimmer" style="width: 100%; height: 34px;"></div>
+      </div>
+    </aside>
+    <div style="display:flex;flex-direction:column;gap:16px;min-width:0;">
+      <div class="sk-title-bar sk-shimmer" style="width: 240px; height: 28px;"></div>
+      <div class="sk-card"><div class="sk-pill sk-shimmer" style="width: 110px; height: 14px;"></div><div class="sk-box sk-shimmer" style="width: 100%; height: 46px;"></div><div class="sk-lede-line sk-shimmer" style="width: 72%;"></div></div>
+      <div class="sk-card"><div class="sk-pill sk-shimmer" style="width: 140px; height: 14px;"></div><div style="display:flex;gap:10px;flex-wrap:wrap;"><div class="sk-circle sk-shimmer-accent" style="width:36px;height:36px;"></div><div class="sk-circle sk-shimmer" style="width:36px;height:36px;"></div><div class="sk-circle sk-shimmer" style="width:36px;height:36px;"></div><div class="sk-circle sk-shimmer" style="width:36px;height:36px;"></div></div><div class="sk-box sk-shimmer" style="width: 100%; height: 44px;"></div></div>
+    </div>
+    <div class="sk-card" style="align-items: center;">
+      <div class="sk-pill sk-shimmer" style="width: 120px; height: 16px;"></div>
+      <div class="sk-qr-matrix">
+        <div class="sk-qr-finder"></div><div></div><div class="sk-qr-finder"></div>
+        <div></div><div class="sk-box sk-shimmer-accent" style="width:100%;height:100%;"></div><div></div>
+        <div class="sk-qr-finder"></div><div></div><div class="sk-box sk-shimmer" style="width:100%;height:100%;"></div>
+      </div>
+      <div style="display:flex;gap:10px;width:100%;"><div class="sk-btn sk-btn-primary sk-shimmer" style="flex:1;height:40px;"></div><div class="sk-btn sk-btn-secondary sk-shimmer" style="flex:1;height:40px;"></div></div>
+    </div>
+  </div>
+  <footer class="sk-status-dock" aria-hidden="true">
+    <div class="sk-status-pill">
+      <span class="sk-pulse-live"></span>
+      <span class="sk-status-text"><span>QR Studio</span> &middot; Dynamic Matrix Editor</span>
+      <div class="sk-progress-bar"><div class="sk-progress-fill"></div></div>
+    </div>
+  </footer>
+</div>
+
 
 <h1 class="sr-only">QR Editor &mdash; Create Custom QR Codes In Your Browser</h1>
 <a href="#mainContent" class="sr-only" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:9999;padding:8px 16px;background:var(--pri);color:#fff;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;" onfocus="this.style.cssText='position:fixed;left:0;top:0;width:auto;height:auto;z-index:9999;padding:8px 16px;background:var(--pri);color:#fff;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;'" onblur="this.style.cssText='position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:9999;padding:8px 16px;background:var(--pri);color:#fff;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;'">Skip to main content</a>
@@ -716,11 +804,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 <div class="qr-app" role="main">
 <aside class="app-sb">
   <div class="sb-top">
-    <div class="sb-top-title">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 6px;"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-      QR STUDIO MATRIX
+    <div class="sb-top-title" style="display:flex; align-items:center; justify-content:center; gap:8px;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="stroke:var(--pri);"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <span>QR STUDIO MATRIX</span>
     </div>
-    <div class="sb-top-sub">By Class Of Learners</div>
   </div>
   
   <div class="sb-lbl">Create</div>
@@ -768,29 +855,41 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     </div>
   </div>
 </aside>
+<div class="sheet-backdrop" id="sheetBackdrop" onclick="togglePrevSheet(false)"></div>
 
 <div class="workspace" id="mainContent">
+      <!-- Mobile Compact Preview Bar (Pinned below top nav on <= 640px) -->
+      <div class="mobile-preview-bar" aria-label="Quick Preview Bar">
+        <img id="mobQrThumb" src="Class.png" alt="QR Thumbnail" class="mob-qr-thumb" />
+        <div class="mob-telemetry">
+          <span class="mob-contrast-dot" id="mobContrastDot"></span>
+          <span class="mob-contrast-text" id="mobContrastText">Optimal (99%)</span>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" id="btnOpenSheet" onclick="togglePrevSheet(true)">
+          Preview &amp; Export
+        </button>
+      </div>
 
   <div class="panel act" id="pNew">
     <div class="steps-bar">
-      <div class="si act" id="si1" onclick="currentStep>=1&&goStep(1)">
+      <div class="si act" id="si1" onclick="goStep(1)" role="button" tabindex="0" title="Step 1: Choose format">
         <div class="sn" id="sn1">1</div>
         <div class="st"><p>QR Type</p><span>Choose format</span></div>
       </div>
       <div class="sc" id="sc1"></div>
-      <div class="si" id="si2" onclick="currentStep>=2&&goStep(2)">
+      <div class="si" id="si2" onclick="goStep(2)" role="button" tabindex="0" title="Step 2: Enter content">
         <div class="sn" id="sn2">2</div>
         <div class="st"><p>Content</p><span>Enter data</span></div>
       </div>
       <div class="sc" id="sc2"></div>
-      <div class="si" id="si3" onclick="currentStep>=3&&goStep(3)">
+      <div class="si" id="si3" onclick="goStep(3)" role="button" tabindex="0" title="Step 3: Customize style">
         <div class="sn" id="sn3">3</div>
         <div class="st"><p>Theme</p><span>Stylize code</span></div>
       </div>
     </div>
 
     <nav class="breadcrumb" id="breadcrumb" aria-label="Editor progress">
-      <span>Step 1</span><span aria-hidden="true">&rsaquo;</span>&mdash;</span><span>QR Type</span>
+      <span>Step 1</span><span aria-hidden="true">&rsaquo;</span><span>QR Type</span>
     </nav>
 
     <div class="sp act" id="sp1">
@@ -1152,9 +1251,43 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     </div>
     
   </div>
+    <footer class="sf site-footer" style="content-visibility:auto; contain-intrinsic-size: auto 200px">
+      <div class="fi">
+        <div class="sf-primary-row">
+          <div class="fb sf-brand-wrap">
+            <span class="sf-brand-name">Class Of Learners <span class="sf-brand-dot">&bull;</span> CoL</span>
+            <span class="sf-status-pill"><span class="m-dot m-emerald"></span> All Systems Operational</span>
+          </div>
+          <div class="sf-btn-wrap">
+            <button type="button" class="sf-cmd-btn no-cap" onclick="if(window.openColCmdPalette)window.openColCmdPalette();else window.location.href='/?search=true'" title="Press Ctrl+K or / to search all 16 applications">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <span>Quick Launcher</span>
+              <kbd class="col-os-key">Ctrl K</kbd>
+            </button>
+          </div>
+        </div>
+
+        <nav class="sf-nav-links" aria-label="Footer Navigation">
+          <a href="about">About</a>
+          <a href="making">Making</a>
+          <a href="download">Downloads</a>
+          <a href="mailto:neelgbadri@col.dpdns.org">Contact Us</a>
+          <a href="feedback">Feedback</a>
+          <a href="privacy">Privacy</a>
+          <a href="terms">Terms</a>
+        </nav>
+
+        <div class="sf-secondary-row">
+          <div class="sf-founders-text">&copy; 2026 Class Of Learners. Built with pride by Neel, Ansh, &amp; Aarush in Mumbai, India.</div>
+          <div class="sf-meta">Independent Native Software Engineering &bull; Pure First Principles</div>
+        </div>
+      </div>
+    </footer>
 </div>
 
 <aside class="prev-p">
+  <div class="sheet-handle" aria-hidden="true"></div>
+  <button type="button" class="sheet-close-btn" onclick="togglePrevSheet(false)" aria-label="Close Preview">&times;</button>
   <div class="prev-hd">
     <h3>Real-Time Preview</h3>
     <div class="prev-typ" id="prevBadge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> <span>Website</span></div>
@@ -1170,13 +1303,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   </div>
 
   <div class="prev-inf">
-    <div class="pi"><span>Payload</span><strong id="piSz">&mdash;</strong>&mdash;</strong></div>
-    <div class="pi"><span>Redundancy</span><strong id="piCr">H &bull; 30%</strong>&ndash; 30%</strong></div>
+    <div class="pi"><span>Payload</span><strong id="piSz">—</strong></div>
+    <div class="pi"><span>Redundancy</span><strong id="piCr">H · 30%</strong></div>
     <div class="pi"><span>Format</span><strong id="piFmt">Dynamic</strong></div>
   </div>
   <div class="prev-act">
     <div class="dlr">
-      <button class="dl-main" onclick="dlQR('png')">
+      <button class="btn btn-primary dl-main" id="btnDlPng" onclick="dlQR('png')">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Download PNG
       </button>
@@ -1189,26 +1322,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
         <option value="4000">4000px (300 DPI Print)</option>
       </select>
     </div>
-    <button class="ly-btn main" type="button" id="exportOpts" style="margin-bottom:8px">Export options: format, size, JPG, PDF&hellip;</button>
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-      <button class="dl-svg" onclick="dlQR('copy')" title="Copy directly to clipboard" style="padding:10px; font-size:0.8rem; display:flex; align-items:center; justify-content:center; gap:6px;">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-        Copy Image
-      </button>
-      <button class="dl-svg" onclick="dlQR('svg')" title="Lossless Vector format" style="padding:10px; font-size:0.8rem; display:flex; align-items:center; justify-content:center; gap:6px;">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-        Vector (SVG)
-      </button>
-      <button class="dl-svg" onclick="dlQR('webp')" title="Modern WebP image" style="padding:10px; font-size:0.8rem; display:flex; align-items:center; justify-content:center; gap:6px;">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-        WebP
-      </button>
-      <button class="dl-svg" onclick="dlQR('print')" title="Generate printable flyer" style="padding:10px; font-size:0.8rem; display:flex; align-items:center; justify-content:center; gap:6px;">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-        Print Sheet
-      </button>
-    </div>
-    <button class="sv-btn" onclick="saveQR(false)" style="display:flex; align-items:center; justify-content:center; gap:8px;">
+    <button class="btn btn-secondary" type="button" id="exportOpts" style="width:100%;">
+      Export Options…
+    </button>
+    <button class="btn btn-secondary sv-btn" onclick="saveQR(false)" style="width:100%; display:flex; align-items:center; justify-content:center; gap:8px;">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
       Save to Dashboard
     </button>
@@ -1244,7 +1361,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 }
 .modal-icon {
     width: 40px; height: 40px; border-radius: 10px; background: rgba(16, 185, 129, 0.1);
-    color: var(--prim); display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+    color: var(--pri); display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
 }
 .modal-title {
     margin: 0; color: var(--txt); font-size: 1.4rem; font-weight: 700; letter-spacing: -0.5px;
@@ -1260,75 +1377,14 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
 }
 .modal-textarea:focus {
-    border-color: var(--prim); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+    border-color: var(--pri); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
 }
 .modal-textarea::placeholder { color: rgba(255,255,255,0.2); }
 .modal-actions {
     display: flex; justify-content: flex-end; gap: 15px;
 }
 
-      /* QR Editor Studio Enhancements */
-      .quick-presets-bar {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-bottom: 20px;
-      }
-      .preset-chip {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 6px 14px;
-        background: var(--panel);
-        border: 1px solid var(--border);
-        border-radius: 999px;
-        font-size: 0.8rem;
-        font-weight: 500;
-        color: var(--txt);
-        cursor: pointer;
-        transition: all 0.2s ease;
-      }
-      .preset-chip:hover {
-        border-color: var(--pri);
-        transform: translateY(-1px);
-      }
-      .preset-dot {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-      }
-      .quick-sample-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 0.8rem;
-        padding: 4px 10px;
-        background: rgba(99, 102, 241, 0.1);
-        border: 1px solid rgba(99, 102, 241, 0.25);
-        color: var(--pri);
-        border-radius: 6px;
-        cursor: pointer;
-        margin-top: 8px;
-      }
-      .quick-sample-btn:hover {
-        background: rgba(99, 102, 241, 0.2);
-      }
-      /* Light mode overrides for QR Editor */
-      body.lm .preset-chip {
-        background: #ffffff;
-        border-color: rgba(0, 0, 0, 0.1);
-        color: #0f172a;
-      }
-      body.lm .prev-inf {
-        background: #f8fafc;
-        border-color: rgba(0, 0, 0, 0.08);
-      }
-      body.lm .prev-inf .pi span {
-        color: #64748b;
-      }
-      body.lm .prev-inf .pi strong {
-        color: #0f172a;
-      }
+
 
     </style>
 
@@ -1349,7 +1405,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
         <textarea class="modal-textarea" id="bulkData" placeholder="promo-1,https://example.com/promo-1&#10;promo-2,https://example.com/promo-2&#10;https://example.com/unnamed-promo"></textarea>
         <div id="bulkPreview" style="display:none; max-height:150px; overflow:auto; margin-bottom:14px; border:1px solid var(--border); border-radius:8px;"></div>
         <div class="modal-actions" style="justify-content: space-between; align-items: center;">
-            <span id="bulkProgress" style="color: var(--prim); font-size: 0.9rem; font-weight: 600; opacity: 0; transition: opacity 0.3s;">Generating 0/0...</span>
+            <span id="bulkProgress" style="color: var(--pri); font-size: 0.9rem; font-weight: 600; opacity: 0; transition: opacity 0.3s;">Generating 0/0...</span>
             <div style="display:flex; gap:15px;">
                 <button class="btn-bk" style="background: rgba(255,255,255,0.05); color: var(--txt); border: 1px solid transparent;" onclick="closeBulkModal()" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">Cancel</button>
                 <button class="btn-cp" id="bulkGenBtn" style="padding: 12px 24px; font-size: 0.95rem;" onclick="runBulkGeneration()">
@@ -1385,9 +1441,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
                 <video id="scanVideo" playsinline autoplay muted style="width:100%; height:100%; object-fit:cover; display:none;"></video>
                 <canvas id="scanCanvas" style="display:none;"></canvas>
                 <div id="scanOverlay" style="position:absolute; inset:20px; border:2px dashed rgba(16,185,129,0.7); border-radius:12px; pointer-events:none; display:none; box-shadow: 0 0 20px rgba(16,185,129,0.3);"></div>
-                <div id="camPrompt" style="padding:30px 20px; text-align:center; color:var(--txt-m);">
+                <div id="camPrompt" style="padding:30px 20px; text-align:center; color:#cbd5e1;">
                     <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:10px; display:block; margin:0 auto 10px; stroke:var(--pri);"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                    <p style="font-size:0.9rem; margin-bottom:15px;">Camera access required to scan live QR codes</p>
+                    <p style="color:#cbd5e1 !important; font-size:0.9rem; margin-bottom:15px;">Camera access required to scan live QR codes</p>
                     <button class="btn-nx" style="margin:0 auto; padding:8px 20px; font-size:0.9rem;" onclick="startCamScanner()">Start Camera</button>
                 </div>
             </div>
@@ -1423,93 +1479,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     </div>
 </div>
 
-<style>
-.mo { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; }
-.mo.open { opacity: 1; pointer-events: auto; }
-.md { background: var(--panel); border: 1px solid var(--border); border-radius: 24px; width: 90%; max-width: 450px; overflow: hidden; transform: translateY(30px) scale(0.95); transition: 0.4s; box-shadow: 0 40px 100px rgba(0,0,0,0.8); color: var(--txt); text-transform:none;}
-.mo.open .md { transform: translateY(0) scale(1); }
-.md-hd { padding: 30px; border-bottom: 1px solid var(--border); background: var(--bg); text-align: center; }
-.md-hd h2 { font-size: 1.6rem; font-weight: 800; margin:0; color: var(--pri);}
-.md-hd p { font-size: 0.95rem; color: var(--txt-m); margin-top: 5px; }
-.md-body { padding: 30px; display: flex; flex-direction: column;}
-.ml { font-size: 0.8rem; font-weight: 800; color: var(--txt-m); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px; }
-.mi { width: 100%; padding: 15px; border: 1px solid var(--border); border-radius: 12px; font-size: 1rem; outline: none; margin-bottom: 20px; transition: 0.3s; color: var(--txt); background: var(--bg); }
-.mi:focus { border-color: var(--pri); box-shadow: 0 0 0 3px var(--glow); }
 
-.gbtn { width: 100%; padding: 12px; background: #ffffff; border: 1px solid #dadce0; border-radius: 6px; font-weight: 500; font-size: 14px; cursor: pointer; color: #3c4043; display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 20px; transition: 0.2s; font-family:'Inter',sans-serif;}
-body:not(.light) .gbtn { background: #4285f4; border: none; color: #ffffff; }
-
-.ms { width: 100%; padding: 15px; background: var(--pri); border: none; border-radius: 12px; font-weight: 800; font-size: 1rem; cursor: pointer; color: #000; transition: 0.3s; margin-bottom: 10px;}
-.ms:hover { background: #fff; transform: translateY(-2px); box-shadow: 0 10px 20px var(--glow-strong); }
-.msk { width: 100%; padding: 15px; background: none; border: none; font-size: 0.9rem; font-weight: 700; color: var(--txt-m); cursor: pointer; transition: 0.3s; margin-top: 5px;}
-.msk:hover { color: var(--txt); }
-.msk-danger { width: 100%; padding: 15px; background: transparent; border: 1px solid var(--danger); border-radius: 12px; font-size: 1rem; font-weight: 800; color: var(--danger); cursor: pointer; transition: 0.3s; margin-bottom: 10px;}
-.msk-danger:hover { background: rgba(239, 68, 68, 0.1); }
-
-      /* QR Editor Studio Enhancements */
-      .quick-presets-bar {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-bottom: 20px;
-      }
-      .preset-chip {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 6px 14px;
-        background: var(--panel);
-        border: 1px solid var(--border);
-        border-radius: 999px;
-        font-size: 0.8rem;
-        font-weight: 500;
-        color: var(--txt);
-        cursor: pointer;
-        transition: all 0.2s ease;
-      }
-      .preset-chip:hover {
-        border-color: var(--pri);
-        transform: translateY(-1px);
-      }
-      .preset-dot {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-      }
-      .quick-sample-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 0.8rem;
-        padding: 4px 10px;
-        background: rgba(99, 102, 241, 0.1);
-        border: 1px solid rgba(99, 102, 241, 0.25);
-        color: var(--pri);
-        border-radius: 6px;
-        cursor: pointer;
-        margin-top: 8px;
-      }
-      .quick-sample-btn:hover {
-        background: rgba(99, 102, 241, 0.2);
-      }
-      /* Light mode overrides for QR Editor */
-      body.lm .preset-chip {
-        background: #ffffff;
-        border-color: rgba(0, 0, 0, 0.1);
-        color: #0f172a;
-      }
-      body.lm .prev-inf {
-        background: #f8fafc;
-        border-color: rgba(0, 0, 0, 0.08);
-      }
-      body.lm .prev-inf .pi span {
-        color: #64748b;
-      }
-      body.lm .prev-inf .pi strong {
-        color: #0f172a;
-      }
-
-    </style>
 
 <script>
 // &mdash;&mdash;&mdash; SAFE LOCAL STORAGE &mdash;&mdash;&mdash;
@@ -1791,7 +1761,7 @@ function updateInfo(){
       try { piSz.textContent = unescape(encodeURIComponent(c)).length + ' bytes'; }
       catch(e) { piSz.textContent = c.length + ' bytes'; }
   }
-  const cm={L:'L &ndash; 7%',M:'M &ndash; 15%',Q:'Q &ndash; 25%',H:'H &ndash; 30%'};
+  const cm={L:'L · 7%',M:'M · 15%',Q:'Q · 25%',H:'H · 30%'};
   const errLvl = (opts.qrOptions && opts.qrOptions.errorCorrectionLevel) ? opts.qrOptions.errorCorrectionLevel : 'H';
   const piCr = document.getElementById('piCr');
   if(piCr) piCr.textContent = cm[errLvl];
@@ -1999,18 +1969,18 @@ const SVG_LOGOS = {
 };
 const LOGO_PRESETS=[
   {id:'none', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--q-text-m)"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>'},
-  {id:'wa', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="%2325D366"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.64.08-.3-.15-1.26-.46-2.39-1.48-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.61-.91-2.2-.25-.6-.49-.51-.67-.52h-.57c-.2 0-.52.08-.8.38s-1.04 1.02-1.04 2.48 1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.08 4.49.7.3 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.76-.72 2.01-1.42.25-.7.25-1.29.17-1.42-.07-.12-.27-.2-.57-.35z"/></svg>'},
-  {id:'ig', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="%23E4405F"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 3.25.15 4.77 1.69 4.92 4.92.06 1.26.07 1.64.07 4.85 0 3.2-.01 3.58-.07 4.85-.15 3.22-1.66 4.77-4.92 4.92-1.27.06-1.64.07-4.85.07-3.2 0-3.58-.01-4.85-.07-3.26-.15-4.77-1.7-4.92-4.92-.06-1.27-.07-1.65-.07-4.85 0-3.2.01-3.58.07-4.85.15-3.23 1.66-4.77 4.92-4.92 1.27-.06 1.65-.07 4.85-.07zm0 3.68c-3.4 0-6.16 2.76-6.16 6.16s2.76 6.16 6.16 6.16 6.16-2.76 6.16-6.16c0-3.4-2.76-6.16-6.16-6.16zm0 10.16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/></svg>'},
-  {id:'yt', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="%23FF0000"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.5A3.02 3.02 0 0 0 .5 6.2C0 8.07 0 12 0 12s0 3.93.5 5.81a3.02 3.02 0 0 0 2.12 2.14c1.88.5 9.38.5 9.38.5s7.5 0 9.38-.5a3.02 3.02 0 0 0 2.12-2.14C24 15.93 24 12 24 12s0-3.93-.5-5.81zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg>'},
-  {id:'x', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="%23ffffff"><path d="M18.24 2.25h3.31l-7.23 8.26 8.5 11.24H16.17l-5.21-6.82-5.97 6.82H1.68l7.73-8.84L1.25 2.25H8.08l4.71 6.23zm-1.16 17.52h1.83L7.08 4.13H5.12z"/></svg>'},
-  {id:'li', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="%230A66C2"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.5a1.6 1.6 0 0 0-1.6 1.6 1.6 1.6 0 0 0 1.6 1.6 1.6 1.6 0 0 0 1.6-1.6 1.6 1.6 0 0 0-1.6-1.6z"/></svg>'},
-  {id:'tg', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="%23229ED9"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>'},
-  {id:'wifi', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="%2310b981"><path d="M12 3C7.2 3 2.8 4.7 0 7.5L2 9.5C4.4 7 8.1 5.5 12 5.5s7.6 1.5 10 4l2-2C21.2 4.7 16.8 3 12 3zm0 5C8.5 8 5.3 9.3 3.1 11.3l2 2C6.8 11.8 9.2 10.7 12 10.7s5.2 1.1 6.9 2.6l2-2C18.7 9.3 15.5 8 12 8zm0 5c-1.3 0-2.6.4-3.6 1.1l2 2c.5-.3 1-.5 1.6-.5s1.1.2 1.6.5l2-2c-1-.7-2.3-1.1-3.6-1.1zm0 5c-.8 0-1.5.7-1.5 1.5S11.2 21 12 21s1.5-.7 1.5-1.5S12.8 18 12 18z"/></svg>'},
-  {id:'gh', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="%23ffffff"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.44 9.8 8.21 11.39.6.1.82-.26.82-.57 0-.29-.01-1.23-.01-2.24-3.02.56-3.8-.73-4.04-1.41-.13-.34-.72-1.41-1.23-1.7-.42-.22-1.02-.78-.01-.79.94-.02 1.62.87 1.84 1.23 1.08 1.81 2.81 1.3 3.5.99.1-.78.42-1.3.76-1.6-2.67-.3-5.46-1.34-5.46-5.93 0-1.3.47-2.38 1.23-3.22-.12-.3-.54-1.53.12-3.18 0 0 1-.32 3.3 1.23.96-.27 1.98-.4 3-.4s2.04.13 3 .4c2.3-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.23 0 4.6-2.8 5.62-5.48 5.92.44.38.81 1.1.81 2.22 0 1.6-.02 2.9-.02 3.3 0 .32.23.69.83.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>'},
-  {id:'sp', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="%231DB954"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.52 17.34c-.24.36-.66.48-1.02.24-2.82-1.74-6.36-2.1-10.56-1.14-.42.12-.78-.18-.9-.54-.12-.42.18-.78.54-.9 4.56-1.02 8.52-.6 11.64 1.32.42.18.48.66.3 1.02zm1.44-3.3c-.3.42-.84.6-1.26.3-3.24-1.98-8.16-2.58-11.94-1.38-.48.12-1.02-.12-1.14-.6-.12-.48.12-1.02.6-1.14 4.38-1.32 9.78-.66 13.5 1.62.36.18.54.78.24 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.3c-.6.18-1.2-.18-1.38-.72-.18-.6.18-1.2.72-1.38 4.26-1.26 11.28-1.02 15.72 1.62.54.3.72 1.02.42 1.56-.3.42-1.02.6-1.56.3z"/></svg>'},
-  {id:'upi', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="%23097939"><path d="M21 4H3a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4H3V6h18v2zm0 10H3v-6h18v6zm-8-3H5v-2h8v2z"/></svg>'},
-  {id:'link', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="%238b5cf6"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>'},
-  {id:'email', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="%233b82f6"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>'}
+  {id:'wa', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="#25D366"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.64.08-.3-.15-1.26-.46-2.39-1.48-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.61-.91-2.2-.25-.6-.49-.51-.67-.52h-.57c-.2 0-.52.08-.8.38s-1.04 1.02-1.04 2.48 1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.08 4.49.7.3 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.76-.72 2.01-1.42.25-.7.25-1.29.17-1.42-.07-.12-.27-.2-.57-.35z"/></svg>'},
+  {id:'ig', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="#E4405F"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 3.25.15 4.77 1.69 4.92 4.92.06 1.26.07 1.64.07 4.85 0 3.2-.01 3.58-.07 4.85-.15 3.22-1.66 4.77-4.92 4.92-1.27.06-1.64.07-4.85.07-3.2 0-3.58-.01-4.85-.07-3.26-.15-4.77-1.7-4.92-4.92-.06-1.27-.07-1.65-.07-4.85 0-3.2.01-3.58.07-4.85.15-3.23 1.66-4.77 4.92-4.92 1.27-.06 1.65-.07 4.85-.07zm0 3.68c-3.4 0-6.16 2.76-6.16 6.16s2.76 6.16 6.16 6.16 6.16-2.76 6.16-6.16c0-3.4-2.76-6.16-6.16-6.16zm0 10.16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/></svg>'},
+  {id:'yt', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="#FF0000"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.5A3.02 3.02 0 0 0 .5 6.2C0 8.07 0 12 0 12s0 3.93.5 5.81a3.02 3.02 0 0 0 2.12 2.14c1.88.5 9.38.5 9.38.5s7.5 0 9.38-.5a3.02 3.02 0 0 0 2.12-2.14C24 15.93 24 12 24 12s0-3.93-.5-5.81zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg>'},
+  {id:'x', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" style="color:var(--q-text)"><path d="M18.24 2.25h3.31l-7.23 8.26 8.5 11.24H16.17l-5.21-6.82-5.97 6.82H1.68l7.73-8.84L1.25 2.25H8.08l4.71 6.23zm-1.16 17.52h1.83L7.08 4.13H5.12z"/></svg>'},
+  {id:'li', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="#0A66C2"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.5a1.6 1.6 0 0 0-1.6 1.6 1.6 1.6 0 0 0 1.6 1.6 1.6 1.6 0 0 0 1.6-1.6 1.6 1.6 0 0 0-1.6-1.6z"/></svg>'},
+  {id:'tg', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="#229ED9"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>'},
+  {id:'wifi', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="#10b981"><path d="M12 3C7.2 3 2.8 4.7 0 7.5L2 9.5C4.4 7 8.1 5.5 12 5.5s7.6 1.5 10 4l2-2C21.2 4.7 16.8 3 12 3zm0 5C8.5 8 5.3 9.3 3.1 11.3l2 2C6.8 11.8 9.2 10.7 12 10.7s5.2 1.1 6.9 2.6l2-2C18.7 9.3 15.5 8 12 8zm0 5c-1.3 0-2.6.4-3.6 1.1l2 2c.5-.3 1-.5 1.6-.5s1.1.2 1.6.5l2-2c-1-.7-2.3-1.1-3.6-1.1zm0 5c-.8 0-1.5.7-1.5 1.5S11.2 21 12 21s1.5-.7 1.5-1.5S12.8 18 12 18z"/></svg>'},
+  {id:'gh', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" style="color:var(--q-text)"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.44 9.8 8.21 11.39.6.1.82-.26.82-.57 0-.29-.01-1.23-.01-2.24-3.02.56-3.8-.73-4.04-1.41-.13-.34-.72-1.41-1.23-1.7-.42-.22-1.02-.78-.01-.79.94-.02 1.62.87 1.84 1.23 1.08 1.81 2.81 1.3 3.5.99.1-.78.42-1.3.76-1.6-2.67-.3-5.46-1.34-5.46-5.93 0-1.3.47-2.38 1.23-3.22-.12-.3-.54-1.53.12-3.18 0 0 1-.32 3.3 1.23.96-.27 1.98-.4 3-.4s2.04.13 3 .4c2.3-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.23 0 4.6-2.8 5.62-5.48 5.92.44.38.81 1.1.81 2.22 0 1.6-.02 2.9-.02 3.3 0 .32.23.69.83.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>'},
+  {id:'sp', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="#1DB954"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.52 17.34c-.24.36-.66.48-1.02.24-2.82-1.74-6.36-2.1-10.56-1.14-.42.12-.78-.18-.9-.54-.12-.42.18-.78.54-.9 4.56-1.02 8.52-.6 11.64 1.32.42.18.48.66.3 1.02zm1.44-3.3c-.3.42-.84.6-1.26.3-3.24-1.98-8.16-2.58-11.94-1.38-.48.12-1.02-.12-1.14-.6-.12-.48.12-1.02.6-1.14 4.38-1.32 9.78-.66 13.5 1.62.36.18.54.78.24 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.3c-.6.18-1.2-.18-1.38-.72-.18-.6.18-1.2.72-1.38 4.26-1.26 11.28-1.02 15.72 1.62.54.3.72 1.02.42 1.56-.3.42-1.02.6-1.56.3z"/></svg>'},
+  {id:'upi', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="#097939"><path d="M21 4H3a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4H3V6h18v2zm0 10H3v-6h18v6zm-8-3H5v-2h8v2z"/></svg>'},
+  {id:'link', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="#8b5cf6"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>'},
+  {id:'email', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="#3b82f6"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>'}
 ];
 function buildLogoPresets(){
   const w=document.getElementById('logoPs');if(!w)return;w.innerHTML='';
@@ -2027,19 +1997,8 @@ function buildLogoPresets(){
 }
 function _lum(h){const m=/^#?([0-9a-f]{6})/i.exec(h||'');if(!m)return null;const c=[0,2,4].map(i=>parseInt(m[1].substr(i,2),16)/255).map(v=>v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4));return .2126*c[0]+.7152*c[1]+.0722*c[2];}
 function _scanBadge(){
-  const w=document.getElementById('qrWrap'); if(!w) return;
-  let b=document.getElementById('scanBadge');
-  if(!b){ b=document.createElement('div'); b.id='scanBadge'; b.setAttribute('role','status'); b.style.cssText='margin:12px auto 0;max-width:280px;text-align:center;font-size:.78rem;font-weight:700;padding:6px 10px;border-radius:8px'; w.insertAdjacentElement('afterend',b); }
-  const d=opts.dotsOptions||{}, bg=opts.backgroundOptions||{};
-  const fl=(d.gradient?d.gradient.colorStops.map(s=>s.color):[d.color]).map(_lum).filter(x=>x!==null);
-  const bl=(bg.gradient||/^#[0-9a-f]{6}00$/i.test(bg.color||''))?1:_lum(bg.color);
-  let msg='Scan-ready',bad=false;
-  if(bl!==null&&fl.length){
-    const worst=Math.min.apply(null,fl.map(f=>(Math.max(f,bl)+.05)/(Math.min(f,bl)+.05)));
-    if(fl.some(f=>f>bl)){msg='Light code on a dark background: some scanners cannot read this';bad=true;}
-    else if(worst<3){msg='Low contrast ('+worst.toFixed(1)+':1): darken the code colour';bad=true;}
-  }
-  b.textContent=msg; b.style.background=bad?'rgba(239,68,68,.15)':'rgba(16,185,129,.12)'; b.style.color=bad?'#f87171':'#10b981';
+  if (typeof updateScannability === 'function') updateScannability();
+  if (typeof syncMobileThumb === 'function') syncMobileThumb();
 }
 const PREMIUM_PALETTES = [
   {id:'neon', name:'Neon Cyber', fg:'#00ffcc', bg:'#0f172a', grad:['#00ffcc', '#3b82f6']},
@@ -2155,7 +2114,16 @@ function goStep(n){
   [1,2,3].forEach(i=>{
     const pEl = document.getElementById('sp'+i); const sEl = document.getElementById('si'+i);
     if(pEl) { if(i===n) pEl.classList.add('act'); else pEl.classList.remove('act'); }
-    if(sEl) { if(i===n) sEl.classList.add('act'); else sEl.classList.remove('act'); if(i<n) sEl.classList.add('done'); else sEl.classList.remove('done'); }
+    if(sEl) {
+      if(i===n) {
+        sEl.classList.add('act');
+        sEl.setAttribute('aria-current', 'step');
+      } else {
+        sEl.classList.remove('act');
+        sEl.removeAttribute('aria-current');
+      }
+      if(i<n) sEl.classList.add('done'); else sEl.classList.remove('done');
+    }
   });
   currentStep=n;
   // Update breadcrumb
@@ -2164,7 +2132,7 @@ function goStep(n){
     var stepNames=['QR Type','Content','Theme'];
     var to=DYN.concat(STA).filter(function(x){return x.id===selType;})[0];
     var typeName=to?to.name:'';
-    bc.innerHTML='<span>Step '+n+'</span><span aria-hidden="true">&rsaquo;</span><span>&mdash;</span><span>'+(n===2?typeName:stepNames[n-1])+'</span>';
+    bc.innerHTML='<span>Step '+n+'</span><span aria-hidden="true">&rsaquo;</span><span>'+(n===2?'Content ('+typeName+')':stepNames[n-1])+'</span>';
   }
   if(n===2){
     const to=DYN.concat(STA).filter(x=>x.id===selType)[0]; const h=document.getElementById('s2h'); if(h&&to) h.textContent='Content: '+to.name;
@@ -2181,7 +2149,30 @@ function nextFrom1(){
   buildCF();goStep(2);
 }
 function nextFrom2(){
-  const v=validateContent(); if(!v.ok){toast(v.msg,'');return;}
+  document.querySelectorAll('.field-error').forEach(function(el) { el.classList.remove('field-error'); });
+  document.querySelectorAll('.field-error-msg').forEach(function(el) { el.remove(); });
+
+  const v=validateContent();
+  if(!v.ok){
+    toast(v.msg, '');
+    if(v.fieldId) {
+      const el = document.getElementById(v.fieldId);
+      if(el) {
+        el.classList.add('field-error');
+        const msg = document.createElement('div');
+        msg.className = 'field-error-msg';
+        msg.textContent = v.msg;
+        if (el.parentNode) el.parentNode.insertBefore(msg, el.nextSibling);
+        el.focus();
+        el.addEventListener('input', function onInp() {
+          el.classList.remove('field-error');
+          msg.remove();
+          el.removeEventListener('input', onInp);
+        });
+      }
+    }
+    return;
+  }
   goStep(3);
 }
 function buildTypeGrids(){
@@ -2405,7 +2396,25 @@ function printQRSheet(dlOpts) {
         <script>
           window.onload = function() { window.print(); }
         <\/script>
-      </body>
+          <nav class="mobile-bottom-bar" aria-label="Mobile Navigation">
+      <a href="qr-editor" class="mob-nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        <span>Editor</span>
+      </a>
+      <a href="qr-editor.html?action=bulk" class="mob-nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+        <span>Bulk</span>
+      </a>
+      <a href="qr-editor.html?action=scan" class="mob-nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
+        <span>Scanner</span>
+      </a>
+      <a href="qr" class="mob-nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span>Dashboard</span>
+      </a>
+    </nav>
+  </body>
       </html>
     `);
     w.document.close();
@@ -2413,27 +2422,27 @@ function printQRSheet(dlOpts) {
 }
 
 function validateContent(){
-  const _po=document.getElementById('advPwdOn'); if(_po&&_po.checked&&DYN.some(x=>x.id===selType)&&!g('advPwd')) return {ok:false,msg:'Enter a passcode or switch password protection off.'};
+  const _po=document.getElementById('advPwdOn'); if(_po&&_po.checked&&DYN.some(x=>x.id===selType)&&!g('advPwd')) return {ok:false,msg:'Enter a passcode or switch password protection off.',fieldId:'advPwd'};
   const urlTypes=['url','pdf','images','video','social','maps','business','event','feedback','menu','payment','survey'];
   if(urlTypes.indexOf(selType)!==-1){
     const u=(g('f0')||'').trim();
-    if(!u) return {ok:false,msg:'Please enter a URL.'};
-    if(!/^https?:\/\//i.test(u)&&!/^[a-z0-9\-]+\./i.test(u)) return {ok:false,msg:'Enter a valid URL (e.g. https://...)'};
+    if(!u) return {ok:false,msg:'Please enter a URL.',fieldId:'f0'};
+    if(!/^https?:\/\//i.test(u)&&!/^[a-z0-9\-]+\./i.test(u)) return {ok:false,msg:'Enter a valid URL (e.g. https://...)',fieldId:'f0'};
   }
-  if(selType==='text'){ if(!(g('f0')||'').trim()) return {ok:false,msg:'Please enter some text.'}; }
-  if(selType==='vcard'){ if(!(g('vc0')||'').trim()) return {ok:false,msg:'Full name is required for vCard.'}; }
-  if(selType==='wifi'){ if(!(g('wf0')||'').trim()) return {ok:false,msg:'Please enter the WiFi network name (SSID).'}; }
-  if(selType==='whatsapp'){ if(!(g('wa0')||'').replace(/\D/g,'')) return {ok:false,msg:'Please enter a phone number.'}; }
-  if(selType==='email'){ if(!(g('em0')||'').trim()) return {ok:false,msg:'Please enter an email address.'}; }
-  if(selType==='sms'){ if(!(g('sm0')||'').trim()) return {ok:false,msg:'Please enter a phone number.'}; }
-  if(selType==='phone'){ if(!(g('ph0')||'').trim()) return {ok:false,msg:'Please enter a phone number.'}; }
-  if(selType==='links'){ if(!g('hb2').split('\n').some(l=>l.trim())) return {ok:false,msg:'Add at least one link.'}; }
-  if(selType==='vcard+'){ if(!(g('vp0')||'').trim()) return {ok:false,msg:'Full name is required.'}; }
-  if(selType==='appstore'){ if(!(g('f0')||'').trim()) return {ok:false,msg:'Please enter an iOS App Store link.'}; if(!(g('f1')||'').trim()) return {ok:false,msg:'Please enter an Android Play Store link.'}; }
-  if(selType==='calendar'){ if(!(g('f0')||'').trim()) return {ok:false,msg:'Event title is required.'}; if(!(g('f1')||'').trim()) return {ok:false,msg:'Start date/time is required.'}; }
-  if(selType==='payment'){ if(!(g('f0')||'').trim()) return {ok:false,msg:'Please enter a checkout URL.'}; }
-  if(selType==='coupon'){ if(!(g('f0')||'').trim()) return {ok:false,msg:'Coupon code is required.'}; }
-  if(selType==='survey'){ if(!(g('f0')||'').trim()) return {ok:false,msg:'Survey form URL is required.'}; }
+  if(selType==='text'){ if(!(g('f0')||'').trim()) return {ok:false,msg:'Please enter some text.',fieldId:'f0'}; }
+  if(selType==='vcard'){ if(!(g('vc0')||'').trim()) return {ok:false,msg:'Full name is required for vCard.',fieldId:'vc0'}; }
+  if(selType==='wifi'){ if(!(g('wf0')||'').trim()) return {ok:false,msg:'Please enter the WiFi network name (SSID).',fieldId:'wf0'}; }
+  if(selType==='whatsapp'){ if(!(g('wa0')||'').replace(/\D/g,'')) return {ok:false,msg:'Please enter a phone number.',fieldId:'wa0'}; }
+  if(selType==='email'){ if(!(g('em0')||'').trim()) return {ok:false,msg:'Please enter an email address.',fieldId:'em0'}; }
+  if(selType==='sms'){ if(!(g('sm0')||'').trim()) return {ok:false,msg:'Please enter a phone number.',fieldId:'sm0'}; }
+  if(selType==='phone'){ if(!(g('ph0')||'').trim()) return {ok:false,msg:'Please enter a phone number.',fieldId:'ph0'}; }
+  if(selType==='links'){ if(!g('hb2').split('\n').some(l=>l.trim())) return {ok:false,msg:'Add at least one link.',fieldId:'hb2'}; }
+  if(selType==='vcard+'){ if(!(g('vp0')||'').trim()) return {ok:false,msg:'Full name is required.',fieldId:'vp0'}; }
+  if(selType==='appstore'){ if(!(g('f0')||'').trim()) return {ok:false,msg:'Please enter an iOS App Store link.',fieldId:'f0'}; if(!(g('f1')||'').trim()) return {ok:false,msg:'Please enter an Android Play Store link.',fieldId:'f1'}; }
+  if(selType==='calendar'){ if(!(g('f0')||'').trim()) return {ok:false,msg:'Event title is required.',fieldId:'f0'}; if(!(g('f1')||'').trim()) return {ok:false,msg:'Start date/time is required.',fieldId:'f1'}; }
+  if(selType==='payment'){ if(!(g('f0')||'').trim()) return {ok:false,msg:'Please enter a checkout URL.',fieldId:'f0'}; }
+  if(selType==='coupon'){ if(!(g('f0')||'').trim()) return {ok:false,msg:'Coupon code is required.',fieldId:'f0'}; }
+  if(selType==='survey'){ if(!(g('f0')||'').trim()) return {ok:false,msg:'Survey form URL is required.',fieldId:'f0'}; }
   return {ok:true};
 }
 
@@ -3050,6 +3059,63 @@ document.addEventListener('keydown', function(e){
     initQR();
   });
   loadEditData();
+  
+// Mobile Preview Sheet Toggle & Thumb Sync
+function togglePrevSheet(open) {
+  var sheet = document.querySelector('.prev-p');
+  var backdrop = document.getElementById('sheetBackdrop');
+  if (!sheet) return;
+  if (open) {
+    sheet.classList.add('sheet-open');
+    if (backdrop) backdrop.classList.add('sheet-open');
+    document.body.style.overflow = 'hidden';
+    syncMobileThumb();
+  } else {
+    sheet.classList.remove('sheet-open');
+    if (backdrop) backdrop.classList.remove('sheet-open');
+    document.body.style.overflow = '';
+  }
+}
+
+function syncMobileThumb() {
+  var thumb = document.getElementById('mobQrThumb');
+  if (!thumb) return;
+  var cv = document.querySelector('#qrWrap canvas');
+  if (cv) {
+    try { thumb.src = cv.toDataURL(); } catch (e) {}
+  }
+}
+
+function getCurrentEntry() {
+  var realData = typeof getQRDataString === 'function' ? getQRDataString() : '';
+  var finalOpts = Object.assign({}, opts, {data: realData});
+  var to = (typeof DYN !== 'undefined' && typeof STA !== 'undefined') ?
+    DYN.concat(STA).filter(function(x) { return x.id === selType; })[0] : null;
+  var typeName = to ? to.name : 'QR';
+  var advName = (document.getElementById('advName') && document.getElementById('advName').value) || typeName;
+  return {
+    opts: finalOpts,
+    design: window.currentQRDesign || { frame: (typeof selFrame !== 'undefined' ? selFrame : 'none') },
+    frame: (typeof selFrame !== 'undefined' ? selFrame : 'none'),
+    typeName: typeName,
+    advSettings: { name: advName },
+    shortUrl: (typeof currentShortUrl !== 'undefined' ? currentShortUrl : '')
+  };
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  var expBtn = document.getElementById('exportOpts');
+  if (expBtn) {
+    expBtn.onclick = function() {
+      if (window.QRC && typeof window.QRC.openExport === 'function') {
+        window.QRC.openExport(getCurrentEntry());
+      } else if (typeof dlQR === 'function') {
+        dlQR('png');
+      }
+    };
+  }
+});
+
   // Deep linking: ?step=N&type=TYPE&data=DATA
   var urlP = new URLSearchParams(location.search);
   var dStep = parseInt(urlP.get('step'));
@@ -3087,15 +3153,15 @@ function applyPresetTheme(fg, bg, dotStyle) {
   if (opts.cornersDotOptions) opts.cornersDotOptions.color = fg;
   if (opts.backgroundOptions) opts.backgroundOptions.color = bg;
 
-  // Sync color inputs if present
-  var fgInp = document.getElementById('dotCol');
-  if (fgInp) fgInp.value = fg;
-  var bgInp = document.getElementById('bgCol');
-  if (bgInp) bgInp.value = bg;
+  // Sync color inputs with actual DOM IDs (fgP/fgH, bgP/bgH)
+  ['fgP', 'fgH'].forEach(function(id) { var el = document.getElementById(id); if (el) el.value = fg; });
+  ['bgP', 'bgH'].forEach(function(id) { var el = document.getElementById(id); if (el) el.value = bg; });
 
   if (qrInst) {
     qrInst.update(opts);
     updateInfo();
+    if (typeof updateScannability === 'function') updateScannability();
+    if (typeof syncMobileThumb === 'function') syncMobileThumb();
   }
   toast('Applied theme preset', 'green');
 }
@@ -3127,21 +3193,29 @@ function updateScannability() {
     var l2 = getLuminance(bg);
     var ratio = (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
 
+    var mobDot = document.getElementById('mobContrastDot');
+    var mobTxt = document.getElementById('mobContrastText');
     if (ratio >= 7) {
       badge.style.background = 'rgba(16, 185, 129, 0.12)';
       badge.style.borderColor = 'rgba(16, 185, 129, 0.3)';
       badge.style.color = '#10b981';
       scoreEl.innerHTML = 'Optimal Scannability &bull; High Contrast (' + ratio.toFixed(1) + ':1)';
+      if (mobDot) mobDot.style.background = '#10b981';
+      if (mobTxt) mobTxt.textContent = 'Optimal (' + ratio.toFixed(1) + ':1)';
     } else if (ratio >= 4.5) {
       badge.style.background = 'rgba(59, 130, 246, 0.12)';
       badge.style.borderColor = 'rgba(59, 130, 246, 0.3)';
       badge.style.color = '#3b82f6';
       scoreEl.innerHTML = 'Good Scannability &bull; Standard (' + ratio.toFixed(1) + ':1)';
+      if (mobDot) mobDot.style.background = '#3b82f6';
+      if (mobTxt) mobTxt.textContent = 'Good (' + ratio.toFixed(1) + ':1)';
     } else {
       badge.style.background = 'rgba(239, 68, 68, 0.12)';
       badge.style.borderColor = 'rgba(239, 68, 68, 0.3)';
       badge.style.color = '#ef4444';
       scoreEl.innerHTML = 'Warning: Low Contrast (' + ratio.toFixed(1) + ':1) &bull; May fail scan';
+      if (mobDot) mobDot.style.background = '#ef4444';
+      if (mobTxt) mobTxt.textContent = 'Low (' + ratio.toFixed(1) + ':1)';
     }
   } catch(e) {
     scoreEl.innerHTML = 'Scannability Ready';
@@ -3149,39 +3223,6 @@ function updateScannability() {
 }
 
 </script>
-
-    <footer class="sf site-footer" style="content-visibility:auto; contain-intrinsic-size: auto 200px">
-      <div class="fi">
-        <div class="sf-primary-row">
-          <div class="fb sf-brand-wrap">
-            <span class="sf-brand-name">Class Of Learners <span class="sf-brand-dot">&bull;</span> CoL</span>
-            <span class="sf-status-pill"><span class="m-dot m-emerald"></span> All Systems Operational</span>
-          </div>
-          <div class="sf-btn-wrap">
-            <button type="button" class="sf-cmd-btn no-cap" onclick="if(window.openColCmdPalette)window.openColCmdPalette();else window.location.href='/?search=true'" title="Press Ctrl+K or / to search all 16 applications">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-              <span>Quick Launcher</span>
-              <kbd class="col-os-key">Ctrl K</kbd>
-            </button>
-          </div>
-        </div>
-
-        <nav class="sf-nav-links" aria-label="Footer Navigation">
-          <a href="about">About</a>
-          <a href="making">Making</a>
-          <a href="download">Downloads</a>
-          <a href="mailto:neelgbadri@col.dpdns.org">Contact Us</a>
-          <a href="feedback">Feedback</a>
-          <a href="privacy">Privacy</a>
-          <a href="terms">Terms</a>
-        </nav>
-
-        <div class="sf-secondary-row">
-          <div class="sf-founders-text">&copy; 2026 Class Of Learners. Built with pride by Neel, Ansh, &amp; Aarush in Mumbai, India.</div>
-          <div class="sf-meta">Independent Native Software Engineering &bull; Pure First Principles</div>
-        </div>
-      </div>
-    </footer>
 
 </body>
 </html>

@@ -38,7 +38,7 @@
     <meta property="og:site_name" content="Class Of Learners" />
     <meta property="og:title" content="Class Of Learners | Interactive Learning Projects" />
     <meta property="og:description" content="Explore interactive projects built by students in Mumbai, including Solar Engine, Traffic Academy, ATI, Gesture Control, QR Editor, and Terra3D." />
-    <meta property="og:url" content="https://advancedlogiclabs.dpdns.org/home" />
+    <meta property="og:url" content="https://advancedlogiclabs.dpdns.org/" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="en_IN" />
     <meta property="og:image" content="https://advancedlogiclabs.dpdns.org/og/home.jpg" />
@@ -53,8 +53,9 @@
     <meta name="twitter:image" content="https://advancedlogiclabs.dpdns.org/og/home.jpg" />
     <meta name="twitter:image:alt" content="Class Of Learners interactive learning and engineering projects" />
     <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
-    <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/home" />
+    <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/" />
     <link rel="apple-touch-icon" href="/Class.png" />
+    <link rel="manifest" href="manifest.json" />
     <title>Class Of Learners | Interactive Learning Projects</title>
     <link rel="icon" type="image/png" href="Icon.png" />
     <script type="application/ld+json">
@@ -186,7 +187,7 @@
                 "name": "Are Class Of Learners applications free and safe to use offline?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "Yes. All 16 applications—including Advanced Typing Instructor 1.4, Solar System Engine V3.3, and Perceptus Flow—are completely free with no paywalls or ads, and run locally on your device without uploading camera or keystroke data to external servers."
+                  "text": "Yes. All 16 applications, including Advanced Typing Instructor 1.4, Solar System Engine V3.3, and Perceptus Flow, are free with no paywalls or ads and run locally on your device without uploading camera or keystroke data."
                 }
               }
             ]
@@ -296,13 +297,12 @@
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- dns-prefetch for Three.js CDN so DNS resolves before script is needed -->
-    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
     <!-- font-display=swap prevents FOIT (invisible text) during font load → better LCP -->
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" /></noscript>
     <!-- col-ui.css loaded FIRST so --void/--ink/--signal custom properties are defined before inline styles consume them -->
     <link rel="stylesheet" href="col-ui.css?v=20261109-orrery" />
+  <link rel="stylesheet" href="col-skeleton.css?v=20261125" />
     <!-- Conditional Mobile Assets: Loaded ONLY on mobile/tablet or when screen <= 1024px. Prevents downloading mobile styles and touch scripts on PC desktop. -->
     <script>
       ;(function () {
@@ -460,38 +460,335 @@
           transition-duration: 0.01ms !important;
         }
       }
-      .loader {
-        display: none !important;
+      .skip-link {
+        position: fixed;
+        top: -100px;
+        left: 16px;
+        z-index: 9999;
+        padding: 10px 18px;
+        border-radius: 999px;
+        background: var(--signal, #f2b84b);
+        color: #070a14;
+        font-family: var(--mono);
+        font-size: 0.76rem;
+        font-weight: 700;
+        transition: top 0.2s ease;
       }
-      .lid {
+      .skip-link:focus {
+        top: 14px;
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+      .hst,
+      .ohf-sub,
+      .arch-stat-val,
+      .ami-val,
+      .vp-stat-val,
+      .suite-count-badge {
+        font-variant-numeric: tabular-nums;
+      }
+      /* Precision 1px-Tick Scroll Telemetry Ruler (ZRK-inspired bottom nav accent) */
+      .nav-tick-meter {
+        position: absolute;
+        left: 32px;
+        right: 32px;
+        bottom: 0;
+        height: 2px;
+        pointer-events: none;
+        overflow: hidden;
+        opacity: 0;
+        transition: opacity 0.25s ease;
+      }
+      @media (max-width: 768px) {
+        .nav-tick-meter {
+          left: 18px;
+          right: 18px;
+        }
+      }
+      .top-nav.s .nav-tick-meter {
+        opacity: 1;
+      }
+      .nav-tick-fill {
+        width: 100%;
+        height: 100%;
+        transform-origin: left center;
+        transform: scaleX(var(--scroll-progress, 0));
+        background: repeating-linear-gradient(90deg, var(--signal, #f2b84b) 0 1px, transparent 1px 4px);
+      }
+      body.lm .nav-tick-fill {
+        background: repeating-linear-gradient(90deg, #d97706 0 1px, transparent 1px 4px);
+      }
+      /* Hero CMD Pill & Mobile Observatory Telemetry Strip */
+      .hero-cmd-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        height: 48px;
+        padding: 0 18px;
+        border-radius: 999px;
+        background: rgba(14, 20, 36, 0.78);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-top: 1.5px solid rgba(255, 255, 255, 0.28);
+        color: #ffffff;
+        font-family: var(--sans);
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+      }
+      .hero-cmd-pill svg {
+        width: 15px;
+        height: 15px;
+        flex-shrink: 0;
+        stroke: #f2b84b;
+      }
+      .hero-cmd-pill .hcp-kbd {
         font-family: var(--mono);
         font-size: 0.72rem;
-        letter-spacing: 0.42em;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        color: #cbd5e1;
+      }
+      .hero-mobile-tele {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px 14px;
+        margin-top: 22px;
+        padding: 12px 16px;
+        border-radius: 14px;
+        background: rgba(12, 18, 34, 0.88);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        letter-spacing: 0.06em;
         color: var(--dim);
       }
-      .lid span {
+      .hero-mobile-tele strong {
+        color: var(--ink);
+        font-weight: 700;
+      }
+      .hmt-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #34d399;
+        box-shadow: 0 0 8px #34d399;
+        display: inline-block;
+        margin-right: 4px;
+      }
+      @media (min-width: 901px) {
+        .hero-mobile-tele {
+          display: none;
+        }
+      }
+      body.lm .hero-mobile-tele {
+        background: rgba(255, 255, 255, 0.92);
+        border-color: rgba(15, 23, 42, 0.1);
+        color: #475569;
+      }
+      body.lm .hero-mobile-tele strong {
+        color: #0f172a;
+      }
+      /* Interactive Suite Workbench Filter Bar (Squared + Mobbin Inspired) */
+      .suite-filter-wrap {
+        max-width: 1360px;
+        margin: 0 auto;
+        padding: 18px 52px 8px;
+        scroll-margin-top: 112px;
+      }
+      .suite-filter-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 14px;
+        padding: 10px 14px;
+        border-radius: 16px;
+        background: rgba(12, 18, 34, 0.78);
+        border: 1px solid rgba(255, 255, 255, 0.09);
+      }
+      .suite-tabs {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .suite-tab {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 44px;
+        padding: 0 16px;
+        border-radius: 10px;
+        border: 1px solid transparent;
+        background: transparent;
+        color: var(--dim);
+        font-family: var(--mono);
+        font-size: 0.74rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+      }
+      .suite-tab:hover {
+        color: var(--ink);
+        background: rgba(255, 255, 255, 0.06);
+      }
+      .suite-tab.is-active {
+        background: var(--signal, #f2b84b);
+        color: #070a14;
+        border-color: var(--signal, #f2b84b);
+      }
+      .suite-tab-num {
+        font-size: 0.66rem;
+        opacity: 0.72;
+      }
+      .suite-count-badge {
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        letter-spacing: 0.1em;
+        color: var(--dim);
+        text-transform: uppercase;
+        padding: 0 8px;
+      }
+      .suite-count-badge b {
         color: var(--signal);
       }
-      .lbar {
-        width: 180px;
-        height: 1px;
-        background: var(--lineb);
+      body.lm .suite-filter-bar {
+        background: rgba(255, 255, 255, 0.92);
+        border-color: rgba(15, 23, 42, 0.1);
+        box-shadow: 0 6px 20px -8px rgba(15, 23, 42, 0.08);
+      }
+      body.lm .suite-tab {
+        color: #475569;
+      }
+      body.lm .suite-tab:hover {
+        color: #0f172a;
+        background: rgba(15, 23, 42, 0.05);
+      }
+      body.lm .suite-tab.is-active {
+        background: #d97706;
+        border-color: #d97706;
+        color: #ffffff;
+      }
+      body.lm .suite-count-badge b {
+        color: #b45309;
+      }
+      @media (max-width: 768px) {
+        .suite-filter-wrap {
+          padding: 12px 20px 4px;
+        }
+        .suite-filter-bar {
+          padding: 8px;
+          gap: 8px;
+        }
+        .suite-tab {
+          min-height: 40px;
+          padding: 0 12px;
+          font-size: 0.68rem;
+        }
+        .suite-count-badge {
+          width: 100%;
+          padding: 4px 6px 2px;
+        }
+      }
+      /* Card 12: F.R.I.D.A.Y. OS Desktop Visual Stage */
+      .fri-bg {
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.22) 0%, rgba(26, 10, 42, 0.85) 55%, #090312 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
         position: relative;
         overflow: hidden;
       }
-      .lbar::after {
-        content: '';
+      .fri-stage {
+        position: relative;
+        width: 220px;
+        height: 160px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .fri-reactor-svg {
         position: absolute;
         inset: 0;
-        background: var(--signal);
-        transform-origin: left;
-        transform: scaleX(0);
-        animation: lf 0.22s cubic-bezier(0.22, 1, 0.36, 1) 0s forwards;
+        width: 100%;
+        height: 100%;
       }
-      @keyframes lf {
-        to {
-          transform: scaleX(1);
-        }
+      .fri-ring-outer {
+        animation: friRingRotate 22s linear infinite;
+        transform-origin: 110px 80px;
+      }
+      .fri-ring-inner {
+        animation: friRingRotateRev 14s linear infinite;
+        transform-origin: 110px 80px;
+      }
+      @keyframes friRingRotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      @keyframes friRingRotateRev {
+        from { transform: rotate(360deg); }
+        to { transform: rotate(0deg); }
+      }
+      .fri-core-pulse {
+        animation: friCorePulse 2.4s ease-in-out infinite alternate;
+        transform-origin: 110px 80px;
+      }
+      @keyframes friCorePulse {
+        0% { transform: scale(0.92); opacity: 0.7; }
+        100% { transform: scale(1.08); opacity: 1; }
+      }
+      .fri-hud-chip {
+        position: absolute;
+        padding: 3px 8px;
+        background: rgba(14, 4, 24, 0.88);
+        border: 1px solid rgba(168, 85, 247, 0.35);
+        border-radius: 4px;
+        font-family: var(--mono);
+        font-size: 0.62rem;
+        letter-spacing: 0.08em;
+        color: #e9d5ff;
+        z-index: 3;
+      }
+      .fri-hud-chip.tl { top: 12px; left: 14px; }
+      .fri-hud-chip.br {
+        bottom: 12px;
+        right: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .fri-dot-live {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #c084fc;
+        box-shadow: 0 0 6px #c084fc;
+      }
+      body.lm .fri-bg {
+        background: radial-gradient(circle at 50% 50%, #f3e8ff 0%, #ede9fe 60%, #faf5ff 100%) !important;
+      }
+      body.lm .fri-hud-chip {
+        background: rgba(255, 255, 255, 0.92) !important;
+        border-color: rgba(124, 58, 237, 0.25) !important;
+        color: #6d28d9 !important;
       }
       .cd,
       .cr {
@@ -847,156 +1144,6 @@
       .hc h1, .hc p, .hc .hey, .hc .hcta, .hc .btn-p, .hc .btn-g {
         pointer-events: auto;
       }
-      .hero.stage-mode .hc {
-        opacity: 0.04;
-        pointer-events: none;
-        transform: scale(0.96) translateY(-8px);
-        filter: blur(5px);
-      }
-      .hero.stage-mode .hc * {
-        pointer-events: none !important;
-      }
-      .hero.stage-mode .hvig,
-      .hero.stage-mode .hvigb {
-        opacity: 0.08;
-      }
-
-      /* 3D HUD Controls */
-      .orrery-hud {
-        position: absolute;
-        top: 96px;
-        right: 48px;
-        z-index: 20;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        flex-wrap: wrap;
-        pointer-events: auto;
-      }
-      .hud-group {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        background: rgba(14, 20, 36, 0.72);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border: 1px solid var(--lineb);
-        padding: 4px 6px;
-        border-radius: 30px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
-      }
-      .hud-btn {
-        background: transparent;
-        border: 1px solid transparent;
-        color: var(--ink);
-        padding: 6px 13px;
-        border-radius: 20px;
-        font-family: var(--mono);
-        font-size: 0.75rem;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        transition: all 0.2s var(--ease);
-        user-select: none;
-      }
-      .hud-btn:hover {
-        background: rgba(255, 255, 255, 0.1);
-        border-color: var(--line);
-        transform: translateY(-1px);
-      }
-      .hud-btn:active {
-        transform: translateY(1px);
-      }
-      .hud-mode-btn {
-        background: rgba(242, 184, 75, 0.12);
-        border: 1px solid rgba(242, 184, 75, 0.35);
-        color: var(--signal);
-        font-weight: 600;
-        padding: 8px 16px;
-        border-radius: 30px;
-        box-shadow: 0 10px 25px -5px rgba(242, 184, 75, 0.25);
-      }
-      .hud-mode-btn:hover {
-        background: rgba(242, 184, 75, 0.22);
-        border-color: var(--signal);
-      }
-      .hero.stage-mode .hud-mode-btn {
-        background: var(--signal);
-        color: #070a14;
-        border-color: var(--signal);
-        font-weight: 700;
-        box-shadow: 0 0 24px -2px var(--signal);
-      }
-
-      /* Planetary Quick-Focus Dock */
-      .orrery-dock {
-        position: absolute;
-        bottom: 36px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 20;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        background: rgba(10, 14, 26, 0.82);
-        /* Reduced blur from 20px to 10px — saves compositor cost */
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid var(--lineb);
-        border-radius: 40px;
-        padding: 6px 10px;
-        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55);
-        max-width: calc(100vw - 32px);
-        overflow-x: auto;
-        scrollbar-width: none;
-        pointer-events: auto;
-      }
-      .orrery-dock::-webkit-scrollbar {
-        display: none;
-      }
-      .dock-label {
-        font-family: var(--mono);
-        font-size: 0.65rem;
-        letter-spacing: 0.18em;
-        color: var(--signal);
-        font-weight: 700;
-        padding: 0 8px;
-        border-right: 1px solid var(--lineb);
-        white-space: nowrap;
-      }
-      .dock-chips {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-      }
-      .dock-chip {
-        background: transparent;
-        border: 1px solid transparent;
-        color: var(--dim);
-        border-radius: 20px;
-        padding: 6px 12px;
-        font-family: var(--sans);
-        font-size: 0.78rem;
-        font-weight: 500;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        white-space: nowrap;
-        transition: all 0.22s var(--ease);
-      }
-      .dock-chip:hover {
-        color: var(--ink);
-        background: rgba(255, 255, 255, 0.08);
-      }
-      .dock-chip.active {
-        color: var(--ink);
-        background: rgba(255, 255, 255, 0.14);
-        border-color: var(--chip-glow, var(--signal));
-        box-shadow: 0 0 16px -4px var(--chip-glow, var(--signal));
-        font-weight: 600;
-      }
 
       /* Holographic Node Inspector Card */
       .node-inspector {
@@ -1192,95 +1339,6 @@
         color: var(--ink);
       }
 
-      /* 3D Stage Mode Active Banner Hint */
-      .stage-hint {
-        position: absolute;
-        bottom: 84px;
-        left: 50%;
-        transform: translateX(-50%) translateY(10px);
-        z-index: 18;
-        display: inline-flex;
-        align-items: center;
-        gap: 9px;
-        background: rgba(14, 20, 36, 0.85);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border: 1px solid rgba(242, 184, 75, 0.3);
-        border-radius: 30px;
-        padding: 6px 16px;
-        font-family: var(--mono);
-        font-size: 0.72rem;
-        color: var(--ink);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
-        opacity: 0;
-        pointer-events: none;
-        transition: all 0.4s var(--ease);
-      }
-      .hero.stage-mode .stage-hint {
-        opacity: 1;
-        pointer-events: auto;
-        transform: translateX(-50%) translateY(0);
-      }
-      .stage-hint .sh-dot {
-        width: 7px;
-        height: 7px;
-        border-radius: 50%;
-        background: var(--signal);
-        box-shadow: 0 0 10px var(--signal);
-        animation: pulseDot 1.8s infinite;
-      }
-      @keyframes pulseDot {
-        0%, 100% { transform: scale(1); opacity: 1; }
-        50% { transform: scale(1.4); opacity: 0.6; }
-      }
-
-      /* Tooltip */
-      .ntip {
-        background: rgba(10, 14, 26, 0.94);
-        backdrop-filter: blur(12px);
-        border: 1px solid var(--lineb);
-        border-radius: 8px;
-        padding: 6px 12px;
-        font-family: var(--mono);
-        font-size: 0.78rem;
-        color: var(--ink);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-        pointer-events: none;
-      }
-      .ntip-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        display: inline-block;
-      }
-
-      /* Light Mode Overrides for 3D Elements */
-      body.lm .hud-group,
-      body.lm .orrery-dock {
-        background: rgba(243, 242, 235, 0.88);
-        border-color: rgba(0, 0, 0, 0.12);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-      }
-      body.lm .hud-btn {
-        color: #070a14;
-      }
-      body.lm .hud-btn:hover {
-        background: rgba(0, 0, 0, 0.08);
-      }
-      body.lm .dock-chip {
-        color: #4b5563;
-      }
-      body.lm .dock-chip:hover {
-        color: #070a14;
-        background: rgba(0, 0, 0, 0.06);
-      }
-      body.lm .dock-chip.active {
-        color: #070a14;
-        background: rgba(0, 0, 0, 0.1);
-      }
       body.lm .node-inspector {
         background: rgba(243, 242, 235, 0.95);
         border-color: rgba(0, 0, 0, 0.12);
@@ -1299,18 +1357,11 @@
       body.lm .ni-tele-v {
         color: #070a14;
       }
-      body.lm .stage-hint {
-        background: rgba(243, 242, 235, 0.92);
-        border-color: rgba(184, 114, 10, 0.35);
-        color: #070a14;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-      }
 
       /* Responsive Adjustments */
       @media (max-width: 900px) {
-        .orrery-hud {
-          top: 84px;
-          right: 20px;
+        .hero-desk-br {
+          display: none;
         }
         .node-inspector {
           right: 20px;
@@ -1318,36 +1369,6 @@
         }
       }
       @media (max-width: 640px) {
-        .orrery-hud {
-          top: calc(env(safe-area-inset-top, 0px) + 72px);
-          right: 12px;
-          left: 12px;
-          justify-content: center;
-          gap: 6px;
-        }
-        .hud-group {
-          overflow-x: auto;
-          max-width: calc(100vw - 72px);
-          -webkit-overflow-scrolling: touch;
-          scrollbar-width: none;
-        }
-        .hud-group::-webkit-scrollbar {
-          display: none;
-        }
-        .hud-mode-label {
-          display: none;
-        }
-        .orrery-dock {
-          bottom: 84px;
-          padding: 4px 6px;
-        }
-        .dock-label {
-          display: none;
-        }
-        .dock-chip {
-          padding: 5px 9px;
-          font-size: 0.72rem;
-        }
         .node-inspector {
           right: 12px;
           left: 12px;
@@ -1365,13 +1386,15 @@
       .hey {
         font-family: var(--mono);
         font-size: 0.7rem;
-        letter-spacing: 0.4em;
+        letter-spacing: 0.18em;
+        line-height: 1.5;
         color: var(--signal);
         text-transform: capitalize;
-        margin-bottom: 30px;
+        margin-bottom: 24px;
         display: inline-flex;
+        flex-wrap: wrap;
         align-items: center;
-        gap: 14px;
+        gap: 8px 12px;
         background: transparent !important;
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
@@ -1522,29 +1545,33 @@
         }
       }
       .hst {
-        margin-top: 34px;
+        margin-top: 28px;
         display: inline-flex;
+        flex-wrap: wrap;
         align-items: center;
-        gap: 14px;
+        gap: 8px 14px;
+        max-width: 100%;
+        width: fit-content;
         padding: 8px 18px;
         background: rgba(255, 255, 255, 0.035);
         border: 1px solid var(--line);
         border-radius: var(--r-pill, 9999px);
         font-family: var(--mono);
         font-size: 0.74rem;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.04em;
         color: var(--dim);
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
-        opacity: 0;
-        transform: translateY(14px);
-        animation: fu 0.8s var(--ease) 0.35s forwards;
+        opacity: 1;
+        transform: none;
         pointer-events: auto;
       }
       .hst-item {
         display: inline-flex;
         align-items: center;
         gap: 6px;
+        white-space: nowrap;
+        flex-shrink: 0;
       }
       .hst b {
         color: var(--ion);
@@ -1598,45 +1625,6 @@
           opacity: 1;
         }
       }
-      /* Node Tooltip */
-      #ntip {
-        position: fixed;
-        pointer-events: none;
-        z-index: 500;
-        display: none;
-        transition: opacity 0.15s;
-      }
-      #ntip-inner {
-        display: flex;
-        align-items: center;
-        gap: 9px;
-        background: rgba(5, 8, 18, 0.92);
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        border-radius: 10px;
-        padding: 9px 15px;
-        backdrop-filter: blur(12px);
-      }
-      body.lm #ntip-inner {
-        background: rgba(255, 255, 255, 0.92) !important;
-        border-color: rgba(0, 0, 0, 0.12) !important;
-        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.15);
-      }
-      #ntip-dot {
-        width: 7px;
-        height: 7px;
-        border-radius: 50%;
-        flex-shrink: 0;
-        transition: background 0.2s;
-      }
-      #ntip-name {
-        font-family: 'Space Mono', monospace;
-        font-size: 0.65rem;
-        letter-spacing: 0.2em;
-        text-transform: capitalize;
-        color: var(--ink);
-        white-space: nowrap;
-      }
-
       /* Reveal animation */
       .rv {
         opacity: 0;
@@ -1649,12 +1637,11 @@
         opacity: 1;
         transform: translateY(0);
       }
-      /* Hero load choreography (plays once; stagger via delay) */
+      /* Hero load choreography (LCP-safe: opacity stays 1 so H1 paints immediately) */
       @keyframes heroRise {
-        from { opacity: 0; transform: translateY(18px); }
-        to { opacity: 1; transform: none; }
+        from { transform: translateY(10px); }
+        to { transform: none; }
       }
-      /* Default state is visible and accessible. Staged animations fire when loader lifts */
       .hc > .hey,
       .hc > h1,
       .hc > .hlede,
@@ -1668,13 +1655,13 @@
         opacity: 1;
       }
       @media (prefers-reduced-motion: no-preference) {
-        body.hero-ready .hc > .hey   { animation: heroRise 0.48s var(--ease) 0.00s both; }
-        body.hero-ready .hc > h1     { animation: heroRise 0.52s var(--ease) 0.08s both; }
-        body.hero-ready .hc > .hlede { animation: heroRise 0.50s var(--ease) 0.16s both; }
-        body.hero-ready .hc > .hcta  { animation: heroRise 0.48s var(--ease) 0.24s both; }
-        body.hero-ready .hc > .hst   { animation: heroRise 0.46s var(--ease) 0.32s both; }
-        body.hero-ready .hero-orbital-stage { animation: heroRise 0.60s var(--ease) 0.20s both; }
-        body.hero-ready .sci         { animation: fi 0.45s var(--ease) 0.80s both; }
+        body.hero-ready .hc > .hey   { animation: heroRise 0.36s var(--ease) 0.00s both; }
+        body.hero-ready .hc > h1     { animation: heroRise 0.42s var(--ease) 0.00s both; }
+        body.hero-ready .hc > .hlede { animation: heroRise 0.42s var(--ease) 0.06s both; }
+        body.hero-ready .hc > .hcta  { animation: heroRise 0.42s var(--ease) 0.12s both; }
+        body.hero-ready .hc > .hst   { animation: heroRise 0.40s var(--ease) 0.18s both; }
+        body.hero-ready .hero-orbital-stage { animation: heroRise 0.52s var(--ease) 0.10s both; }
+        body.hero-ready .sci         { animation: fi 0.40s var(--ease) 0.50s both; }
       }
       .vp-section {
         max-width: min(94vw, 1560px);
@@ -1953,16 +1940,34 @@
       .pc:not(.feat) {
         grid-column: span 2;
       }
+      .pc.is-suite-hidden {
+        display: none !important;
+      }
       @media (min-width: 1025px) {
-        /* Flagship (2 cards), Educational (2 cards), and Android (2 cards)
-           have 2 cards each: giving each card span 3 fills the 6-column grid completely. */
+        /* Flagship (2 cards), Educational (2 cards), Android (2 cards), and Atlas bottom row (RPG + F.R.I.D.A.Y.) */
         #projects .pgrid > .pc,
         #educational .pgrid > .pc,
-        #mobile .pgrid > .pc {
+        #mobile .pgrid > .pc,
+        #atlas .pgrid > .pc:not(.t3-wide) {
           grid-column: span 3;
         }
         #productivity .pgrid > .pc {
           grid-column: span 2;
+        }
+        .showcase-filtered .pgrid > .pc:not(.is-suite-hidden) {
+          grid-column: span 2 !important;
+        }
+        .showcase-filtered .pgrid > .pc.t3-wide:not(.is-suite-hidden) {
+          grid-column: span 2 !important;
+          display: flex;
+          flex-direction: column;
+        }
+        .showcase-filtered .pgrid > .pc.t3-wide .pv {
+          height: 230px !important;
+          min-height: 0 !important;
+        }
+        .showcase-filtered .pgrid > .pc.t3-wide .pb {
+          padding: 26px 28px 20px !important;
         }
       }
       .pc {
@@ -2661,11 +2666,20 @@
         box-shadow: 0 4px 18px rgba(245, 158, 11, 0.5) !important;
       }
       .bflag-prime {
+        background-color: #0284c7 !important;
         background: linear-gradient(135deg, #00f0ff, #0284c7) !important;
         color: #040810 !important;
         font-weight: 800 !important;
         border: 1.5px solid rgba(255, 255, 255, 0.75) !important;
         box-shadow: 0 4px 20px rgba(0, 240, 255, 0.55) !important;
+      }
+      .bflag-rpg {
+        background-color: #6d28d9 !important;
+        background: linear-gradient(135deg, #a855f7, #6d28d9) !important;
+        color: #ffffff !important;
+        font-weight: 800 !important;
+        border: 1.5px solid rgba(255, 255, 255, 0.75) !important;
+        box-shadow: 0 4px 18px rgba(168, 85, 247, 0.5) !important;
       }
       .bp {
         background: var(--teal);
@@ -4351,15 +4365,15 @@
           flex-direction: row !important;
           align-items: center !important;
           justify-content: center !important;
-          gap: clamp(24px, 4vw, 56px) !important;
-          padding: 100px max(24px, calc(50vw - 720px)) 40px !important;
+          gap: clamp(20px, 3.2vw, 48px) !important;
+          padding: 84px max(24px, calc(50vw - 720px)) 28px !important;
           min-height: 100vh !important;
           box-sizing: border-box !important;
           overflow-x: clip !important;
           overflow-y: visible !important;
         }
         .hc {
-          max-width: 520px !important;
+          max-width: 550px !important;
           width: 100% !important;
           margin: 0 !important;
           padding: 0 !important;
@@ -4373,11 +4387,6 @@
         }
         .hero-desk-br {
           display: block;
-        }
-        @media (max-width: 768px) {
-          .hero-desk-br {
-            display: none !important;
-          }
         }
         .hey {
           margin-bottom: 16px !important;
@@ -4400,7 +4409,7 @@
         .btn-p,
         .btn-g {
           height: 48px !important;
-          padding: 0 24px !important;
+          padding: 0 20px !important;
           border-radius: 999px !important;
           box-sizing: border-box !important;
           white-space: nowrap !important;
@@ -4416,7 +4425,7 @@
           align-items: center !important;
           gap: 8px !important;
           height: 48px !important;
-          padding: 0 18px !important;
+          padding: 0 16px !important;
           border-radius: 999px !important;
           white-space: nowrap !important;
           flex-shrink: 0 !important;
@@ -4432,7 +4441,7 @@
           font-weight: 600 !important;
           cursor: pointer !important;
           box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
-          transition: all 0.25s ease !important;
+          transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease !important;
         }
         .hero-cmd-pill:hover {
           background: rgba(24, 34, 60, 0.9) !important;
@@ -4571,19 +4580,13 @@
           .hero-orbital-stage { --hos-scale: 0.64; }
           .hc { max-width: 390px !important; }
         }
+        @media (min-width: 901px) and (max-height: 920px) {
+          .hero-orbital-stage { --hos-scale: 0.84; }
+        }
         @media (min-width: 901px) and (max-height: 820px) {
           .hero-orbital-stage { --hos-scale: 0.72; }
         }
 
-        .stage-hint {
-          position: absolute !important;
-          bottom: 84px !important;
-          left: 50% !important;
-          transform: translateX(-50%) translateY(10px) !important;
-        }
-        .hero.stage-mode .stage-hint {
-          transform: translateX(-50%) translateY(0) !important;
-        }
         .hero:has(.node-inspector.active) .hero-orbital-stage,
         .hero.inspector-active .hero-orbital-stage {
           opacity: 0.14;
@@ -5514,13 +5517,12 @@
           align-items: center;
           gap: 4px;
           padding: 3px 6px;
-          background: rgba(10, 14, 26, 0.94);
+          background: rgba(255, 255, 255, 0.94);
           backdrop-filter: blur(20px) saturate(180%);
           -webkit-backdrop-filter: blur(20px) saturate(180%);
-          border: 1px solid rgba(255, 255, 255, 0.16);
-          border-top: 1.5px solid rgba(255, 255, 255, 0.4);
+          border: 1px solid rgba(15, 23, 42, 0.14);
           border-radius: 999px;
-          box-shadow: 0 14px 36px rgba(0, 0, 0, 0.75), 0 0 24px rgba(0, 240, 255, 0.12);
+          box-shadow: 0 10px 28px rgba(15, 23, 42, 0.12), inset 0 1px 0 #ffffff;
           pointer-events: auto;
           z-index: 30;
           white-space: nowrap;
@@ -5533,7 +5535,7 @@
           font-size: 0.58rem;
           font-weight: 700;
           letter-spacing: 0.05em;
-          color: var(--dim, #8c94b0);
+          color: #334155;
           background: transparent;
           border: 1px solid transparent;
           padding: 3.5px 8px;
@@ -5541,10 +5543,15 @@
           cursor: pointer;
           transition: all 0.2s ease;
         }
-        body.lm .ofc-pill.is-active {
+        body.lm .ofc-pill:hover {
           color: #0f172a;
-          background: rgba(217, 119, 6, 0.14);
-          border-color: rgba(217, 119, 6, 0.4);
+          background: rgba(15, 23, 42, 0.06);
+        }
+        body.lm .ofc-pill.is-active {
+          color: #78350f;
+          background: rgba(217, 119, 6, 0.16);
+          border-color: rgba(180, 83, 9, 0.45);
+          box-shadow: none;
         }
         body.lm .orrery-telemetry-ticker {
           background: rgba(255, 255, 255, 0.85);
@@ -5653,8 +5660,13 @@
 
       /* 10. Reduced Motion Safety */
       @media (prefers-reduced-motion: reduce) {
-        .hos-ring,
-        .hos-core-pulse,
+        .orrery-radar-sweep,
+        .orrery-sonar-pulse,
+        .orrery-ambient-nebula,
+        .marquee-group,
+        .fri-ring-outer,
+        .fri-ring-inner,
+        .fri-core-pulse,
         .col-audio-wave-1,
         .col-audio-wave-2,
         .col-audio-wave-3 {
@@ -6401,11 +6413,11 @@
         box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06), inset 0 1px 0 #ffffff !important;
       }
       body.lm .hero-cmd-pill {
-        background: rgba(255, 255, 255, 0.88) !important;
-        backdrop-filter: blur(16px) !important;
-        border: 1px solid rgba(15, 23, 42, 0.1) !important;
+        background: #ffffff !important;
+        backdrop-filter: none !important;
+        border: 1px solid rgba(15, 23, 42, 0.14) !important;
         border-top: 1.5px solid #ffffff !important;
-        color: #334155 !important;
+        color: #0f172a !important;
         box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.08), inset 0 1px 0 #ffffff !important;
       }
       body.lm .hero-cmd-pill:hover {
@@ -6750,11 +6762,26 @@
         -webkit-backdrop-filter: none !important;
         background: rgba(14, 22, 42, 0.95) !important;
       }
-      .orrery-filter-capsule,
-      .orrery-dock {
+      .orrery-filter-capsule {
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
         background: rgba(10, 16, 32, 0.95) !important;
+      }
+      body.lm .ohf-corner,
+      html.lm .ohf-corner {
+        background: rgba(255, 255, 255, 0.95) !important;
+        border-color: rgba(15, 23, 42, 0.14) !important;
+      }
+      body.lm .orrery-node,
+      html.lm .orrery-node {
+        background: rgba(255, 255, 255, 0.96) !important;
+        border-color: rgba(15, 23, 42, 0.14) !important;
+        color: #0f172a !important;
+      }
+      body.lm .orrery-filter-capsule,
+      html.lm .orrery-filter-capsule {
+        background: rgba(255, 255, 255, 0.96) !important;
+        border-color: rgba(15, 23, 42, 0.16) !important;
       }
 
       /* GPU drop-shadow for Orrery orbital arcs — replaces expensive SVG feGaussianBlur */
@@ -6778,6 +6805,97 @@
     <link rel="manifest" href="manifest.json" />
   </head>
   <body class="hero-ready">
+<div class="loader col-skeleton-screen sk-theme-amber" id="loader" role="status" aria-busy="true" aria-label="Loading Class Of Learners Studio">
+  <div class="sk-ambient-glow" aria-hidden="true"></div>
+  <div class="sk-ambient-glow-left" aria-hidden="true"></div>
+  <div class="sk-tick-rule" aria-hidden="true"></div>
+  <header class="sk-nav" aria-hidden="true">
+    <div class="sk-nav-brand">
+      <div class="sk-circle sk-brand-logo sk-shimmer"></div>
+      <div class="sk-pill sk-brand-text sk-shimmer"></div>
+    </div>
+    <div class="sk-nav-links">
+      <div class="sk-pill sk-shimmer" style="width: 56px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 62px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 66px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 80px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 68px; height: 14px;"></div>
+    </div>
+    <div class="sk-nav-actions">
+      <div class="sk-pill sk-nav-search sk-shimmer"></div>
+      <div class="sk-circle sk-nav-theme sk-shimmer"></div>
+      <div class="sk-pill sk-nav-btn sk-shimmer" style="width: 78px;"></div>
+      <div class="sk-pill sk-nav-cta sk-shimmer" style="width: 118px;"></div>
+    </div>
+  </header>
+  <div class="sk-hero-wrap" aria-hidden="true">
+    <div class="sk-hero">
+      <div class="sk-hero-left">
+        <div class="sk-eyebrow-row">
+          <span class="sk-eyebrow-dash"></span>
+          <div class="sk-pill sk-eyebrow-pill sk-shimmer" style="width: 240px;"></div>
+        </div>
+        <div class="sk-title-group">
+          <div class="sk-title-bar sk-title-1 sk-shimmer" style="width: 92%;"></div>
+          <div class="sk-title-bar sk-title-2 sk-shimmer" style="width: 72%;"></div>
+        </div>
+        <div class="sk-lede-group">
+          <div class="sk-lede-line sk-shimmer" style="width: 96%;"></div>
+          <div class="sk-lede-line sk-shimmer" style="width: 88%;"></div>
+          <div class="sk-lede-line sk-shimmer" style="width: 68%;"></div>
+        </div>
+        <div class="sk-cta-row">
+          <div class="sk-btn sk-btn-primary sk-shimmer"></div>
+          <div class="sk-btn sk-btn-secondary sk-shimmer"></div>
+          <div class="sk-btn sk-btn-cmd sk-shimmer"></div>
+        </div>
+        <div class="sk-stats-pill">
+          <div class="sk-sub-pill" style="width: 74px;"></div>
+          <span class="sk-dot">&bull;</span>
+          <div class="sk-sub-pill" style="width: 68px;"></div>
+          <span class="sk-dot">&bull;</span>
+          <div class="sk-sub-pill" style="width: 92px;"></div>
+        </div>
+      </div>
+      <div class="sk-hero-right">
+        <div class="sk-orrery-wireframe">
+          <div class="sk-axis-h"></div>
+          <div class="sk-axis-v"></div>
+          <div class="sk-ring sk-ring-outer"></div>
+          <div class="sk-ring sk-ring-mid"></div>
+          <div class="sk-ring sk-ring-inner"></div>
+          <div class="sk-core-hub">
+            <div class="sk-core-halo"></div>
+            <div class="sk-core-circle sk-shimmer">
+              <div class="sk-pill sk-shimmer" style="width: 34px; height: 10px;"></div>
+            </div>
+          </div>
+          <div class="sk-node sk-node-1"><span class="sk-node-icon"></span><div class="sk-node-text sk-shimmer" style="width: 58px;"></div></div>
+          <div class="sk-node sk-node-2"><span class="sk-node-icon"></span><div class="sk-node-text sk-shimmer" style="width: 66px;"></div></div>
+          <div class="sk-node sk-node-3"><span class="sk-node-icon"></span><div class="sk-node-text sk-shimmer" style="width: 52px;"></div></div>
+          <div class="sk-node sk-node-4"><span class="sk-node-icon"></span><div class="sk-node-text sk-shimmer" style="width: 60px;"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="sk-filter-strip" style="margin-top: 38px;">
+      <div class="sk-pill sk-shimmer-accent" style="width: 112px; height: 34px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 94px; height: 34px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 102px; height: 34px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 114px; height: 34px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 118px; height: 34px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 170px; height: 34px;"></div>
+    </div>
+  </div>
+  <footer class="sk-status-dock" aria-hidden="true">
+    <div class="sk-status-pill">
+      <span class="sk-pulse-live"></span>
+      <span class="sk-status-text"><span>CoL</span> &middot; Initializing Studio</span>
+      <div class="sk-progress-bar"><div class="sk-progress-fill"></div></div>
+    </div>
+  </footer>
+</div>
+
+    <a href="#main" class="skip-link">Skip to main content</a>
     <script>
       ;(function () {
         try {
@@ -6785,18 +6903,15 @@
         } catch (e) {}
       })()
     </script>
+
     <div class="cd" id="cDot"></div>
     <div class="cr" id="cRing"></div>
 
-    <!-- Hover tooltip for 3D nodes (single instance; see #ntip below near stage) -->
-
-        <div class="top-nav-shield" aria-hidden="true"></div>
+    <div class="top-nav-shield" aria-hidden="true"></div>
     <nav class="top-nav" id="topNav" data-page="home">
       <a href="/" class="nav-brand"><img src="Class.png" alt="Class Of Learners" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" /><span class="brand-name">Class Of Learners</span></a>
       <div class="nav-links" id="navLinks">
-        <a href="/" class="nav-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>Studio Hub</a>
-        <a href="home" class="nav-link act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" /><path d="M2 12h20" /></svg>Home</a>
-        <a href="index1" class="nav-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /></svg>Classic Hub</a>
+        <a href="/" class="nav-link act" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>Home</a>
         <a href="about" class="nav-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>About</a>
         <a href="school" class="nav-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" /><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" /></svg>School</a>
         <a href="sneh-asha" class="nav-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" /></svg>Sneh Asha</a>
@@ -6843,6 +6958,7 @@
           <svg viewBox="0 0 24 24" fill="none"><path d="M3 6H21M3 12H21M3 18H21" stroke-width="1.5" stroke-linecap="round" /></svg>
         </button>
       </div>
+      <div class="nav-tick-meter" aria-hidden="true"><div class="nav-tick-fill"></div></div>
     </nav>
 
     <main id="main">
@@ -6851,10 +6967,10 @@
       <div class="hvigb"></div>
 
       <div class="hc" id="heroContent">
-        <div class="hey">Mumbai &middot; India &middot; Est.&nbsp;2024</div>
+        <div class="hey">Mumbai &middot; 19.07&deg;N 72.87&deg;E &middot; <span id="mumbaiClock" aria-label="Mumbai local time">--:--:-- IST</span></div>
         <h1>Engineering The <em>Future</em><br class="hero-desk-br" /> Of Interactive Learning.</h1>
         <p class="hlede">
-          We're three co-founders and three student contributors in Mumbai building interactive software from scratch. From orbital physics and touch-typing engines to computer vision and local AI &mdash; everything runs fast, works offline, and is completely free.
+          We are six student builders in Mumbai writing software from scratch: orbital physics, touch-typing practice, webcam hand control, and local AI. Everything loads fast, works offline, and costs nothing.
         </p>
         <div class="hcta">
           <a href="#projects" class="btn-p"
@@ -6871,9 +6987,16 @@
         <div class="hst" aria-label="Studio Statistics">
           <span class="hst-item"><b>Projects</b> &mdash; 16</span>
           <span class="hst-dot" aria-hidden="true">&middot;</span>
-          <span class="hst-item"><b>Founders</b> &mdash; 03</span>
+          <span class="hst-item"><b>Suites</b> &mdash; 12</span>
           <span class="hst-dot" aria-hidden="true">&middot;</span>
-          <span class="hst-item"><b>Base</b> &mdash; Mumbai</span>
+          <span class="hst-item"><b>Founders</b> &mdash; 03</span>
+        </div>
+        <div class="hero-mobile-tele" aria-label="Mumbai Studio Telemetry">
+          <span><span class="hmt-dot"></span><strong>SYSTEMS NOMINAL</strong></span>
+          <span>&bull;</span>
+          <span>60 FPS NATIVE</span>
+          <span>&bull;</span>
+          <span>LOCAL-FIRST PRIVACY</span>
         </div>
       </div>
 
@@ -6916,13 +7039,6 @@
               <stop offset="68%" stop-color="#070a14" stop-opacity="0.75" />
               <stop offset="100%" stop-color="#070a14" stop-opacity="0" />
             </radialGradient>
-            <filter id="orgFilterGlow" x="-25%" y="-25%" width="150%" height="150%">
-              <feGaussianBlur stdDeviation="3.5" result="blur" />
-              <feMerge>
-                <feMergeNode in="blur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
             <!-- Curved Text Paths for Orbital Ring Designations -->
             <path id="orgTextPathR3" d="M -304,0 A 304,304 0 1,1 304,0 A 304,304 0 1,1 -304,0" />
             <path id="orgTextPathR2" d="M -244,0 A 244,244 0 1,1 244,0 A 244,244 0 1,1 -244,0" />
@@ -7371,17 +7487,6 @@
         </div>
       </div>
 
-      <!-- 3D Stage Hint Banner -->
-      <div class="stage-hint" id="stageHint">
-        <span class="sh-dot"></span> 3D Lab Active: Drag to Orbit &middot; Scroll to Zoom &middot; Click Planets to Inspect
-      </div>
-
-      <!-- 3D Node Tooltip -->
-      <div id="ntip" class="ntip" style="display:none; opacity:0; position:fixed; pointer-events:none; z-index:1000;">
-        <span id="ntip-dot" class="ntip-dot"></span>
-        <span id="ntip-name" class="ntip-name"></span>
-      </div>
-
       <div class="sci">
         <span>Scroll</span>
         <div class="scl"></div>
@@ -7431,6 +7536,7 @@
 
     <!-- Value Proposition Section (Matching Reference Image 2) -->
     <section class="vp-section" id="valuePropsSection" aria-label="Core Engineering Values">
+      <h2 class="sr-only">Core Engineering Values</h2>
       <div class="vp-grid">
         <div class="vp-card">
           <div class="vp-icon-wrap" aria-hidden="true">
@@ -7460,6 +7566,31 @@
 
 
 
+    <!-- Interactive Project Suite Filter Workbench -->
+    <div class="suite-filter-wrap">
+      <div class="suite-filter-bar" id="suiteFilterBar" role="tablist" aria-label="Filter Project Suites">
+        <div class="suite-tabs">
+          <button type="button" class="suite-tab is-active" role="tab" aria-selected="true" data-suite-filter="all">
+            <span class="suite-tab-num">01</span> All Suites <span class="suite-tab-num">(12)</span>
+          </button>
+          <button type="button" class="suite-tab" role="tab" aria-selected="false" data-suite-filter="flagship">
+            <span class="suite-tab-num">02</span> Flagships <span class="suite-tab-num">(2)</span>
+          </button>
+          <button type="button" class="suite-tab" role="tab" aria-selected="false" data-suite-filter="ai">
+            <span class="suite-tab-num">03</span> AI &amp; Vision <span class="suite-tab-num">(4)</span>
+          </button>
+          <button type="button" class="suite-tab" role="tab" aria-selected="false" data-suite-filter="sim">
+            <span class="suite-tab-num">04</span> 3D &amp; Sims <span class="suite-tab-num">(3)</span>
+          </button>
+          <button type="button" class="suite-tab" role="tab" aria-selected="false" data-suite-filter="systems">
+            <span class="suite-tab-num">05</span> Systems &amp; Web <span class="suite-tab-num">(4)</span>
+          </button>
+        </div>
+        <div class="suite-count-badge" id="suiteCountBadge" aria-live="polite">Showing <b>12</b> / 12 Suites</div>
+      </div>
+    </div>
+
+    <div id="showcaseContainer">
     <section class="ps" id="projects">
       <div class="sh">
         <div>
@@ -7471,7 +7602,7 @@
         </p>
       </div>
       <div class="pgrid">
-        <article class="pc cs feat" data-delay="0"
+        <article class="pc cs feat" data-cat="flagship" data-delay="0"
           ><div class="badge bflag bflag-prime">★ Primary Flagship</div>
           <div class="pv"><img src="ati-1.webp" alt="Advanced Typing Instructor" width="900" height="500" loading="lazy" decoding="async" /></div>
           <div class="pb">
@@ -7487,7 +7618,7 @@
               Launch Flagship <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
             </div></div
         ></article>
-        <article class="pc ci feat" data-delay="80"
+        <article class="pc ci feat" data-cat="flagship sim" data-delay="80"
           ><div class="badge bflag bflag-co">Co-Flagship</div>
           <div class="pv"><img src="solar.webp" alt="Solar System Engine" width="900" height="500" loading="lazy" decoding="async" /></div>
           <div class="pb">
@@ -7517,7 +7648,7 @@
         </p>
       </div>
       <div class="pgrid">
-        <article class="pc ct" data-delay="0"
+        <article class="pc ct" data-cat="ai" data-delay="0"
           ><div class="badge bp" style="background: rgba(0, 240, 255, 0.16); border-color: rgba(0, 240, 255, 0.45); color: #00f0ff; box-shadow: 0 0 14px rgba(0, 240, 255, 0.25);">Spatial Vision AI</div>
           <div class="pv" style="background: #03080e">
             <div class="vg">
@@ -7600,7 +7731,7 @@
               Launch Co-Pilot <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
             </div></div
         ></article>
-        <article class="pc ce" data-delay="80"
+        <article class="pc ce" data-cat="systems" data-delay="80"
           ><div class="badge bp" style="background: rgba(16, 185, 129, 0.16); border-color: rgba(16, 185, 129, 0.45); color: #10b981; box-shadow: 0 0 14px rgba(16, 185, 129, 0.25);">Dynamic Matrix</div>
           <div class="pv" style="background: #020804">
             <div class="vq">
@@ -7643,7 +7774,7 @@
               Launch Studio <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
             </div></div
         ></article>
-        <article class="pc cp" data-delay="160">
+        <article class="pc cp" data-cat="ai" data-delay="160">
           <div class="badge bp" style="background: rgba(129, 140, 248, 0.16); border-color: rgba(129, 140, 248, 0.45); color: #818cf8; box-shadow: 0 0 14px rgba(129, 140, 248, 0.25);">Career Architecture</div>
           <div class="pv" style="background: #050614">
             <div class="c-bg">
@@ -7712,10 +7843,10 @@
           <div class="sey">Interactive Systems</div>
           <h2 class="st">Databases &amp; Road Simulators.<br />Built for Real Life.</h2>
         </div>
-        <p class="ssb">Hands-on models of real-world systems &mdash; explore multi-table relational database queries, statutory civic laws, and a 3D Mumbai driving academy.</p>
+        <p class="ssb">Interactive models of real systems: test multi-table SQL queries, look up Indian traffic laws, or drive through a 3D Mumbai syllabus.</p>
       </div>
       <div class="pgrid">
-        <article class="pc ci" data-delay="0">
+        <article class="pc ci" data-cat="systems" data-delay="0">
           <div class="badge bp" style="background: rgba(56, 189, 248, 0.16); border-color: rgba(56, 189, 248, 0.45); color: #38bdf8; box-shadow: 0 0 14px rgba(56, 189, 248, 0.25);">Relational Architecture</div>
           <div class="pv" style="background: #020a14">
             <div class="db-bg">
@@ -7782,7 +7913,7 @@
           </div>
         </article>
 
-        <article class="pc cs" data-delay="80">
+        <article class="pc cs" data-cat="sim" data-delay="80">
           <div class="badge bp" style="background: rgba(245, 158, 11, 0.16); border-color: rgba(245, 158, 11, 0.45); color: #f59e0b; box-shadow: 0 0 14px rgba(245, 158, 11, 0.25);">Kinematics &amp; AI</div>
           <div class="pv" style="background: #0d0802">
             <div class="tr-bg">
@@ -7797,13 +7928,6 @@
                       <stop offset="60%" stop-color="#f59e0b" stop-opacity="0.12" />
                       <stop offset="100%" stop-color="#f59e0b" stop-opacity="0" />
                     </radialGradient>
-                    <filter id="trGlow" x="-20%" y="-20%" width="140%" height="140%">
-                      <feGaussianBlur stdDeviation="2.5" result="blur" />
-                      <feMerge>
-                        <feMergeNode in="blur" />
-                        <feMergeNode in="SourceGraphic" />
-                      </feMerge>
-                    </filter>
                   </defs>
 
                   <!-- Concentric LiDAR Range Rings with Distance Markers -->
@@ -7842,15 +7966,18 @@
 
                   <!-- Sweeping 360° LiDAR Scanner Beam -->
                   <g class="tr-radar-sweep">
-                    <line x1="110" y1="80" x2="182" y2="80" stroke="#f59e0b" stroke-width="1.8" filter="url(#trGlow)" />
+                    <line x1="110" y1="80" x2="182" y2="80" stroke="rgba(245, 158, 11, 0.28)" stroke-width="4.5" />
+                    <line x1="110" y1="80" x2="182" y2="80" stroke="#f59e0b" stroke-width="1.8" />
                     <polygon points="110,80 180,50 182,80" fill="url(#trRadarGradient)" />
                   </g>
 
                   <!-- Host Vehicle: Autonomous Electric Taxi (Yellow with Forward Sensor Radar) -->
                   <g transform="translate(115, 110)">
                     <!-- Forward Predictive Trajectory Vector -->
-                    <line x1="5" y1="0" x2="5" y2="-26" stroke="#10b981" stroke-width="1.6" stroke-dasharray="3 2" filter="url(#trGlow)" />
-                    <circle cx="5" cy="-26" r="2.5" fill="#10b981" filter="url(#trGlow)" />
+                    <line x1="5" y1="0" x2="5" y2="-26" stroke="rgba(16, 185, 129, 0.28)" stroke-width="4" stroke-dasharray="3 2" />
+                    <line x1="5" y1="0" x2="5" y2="-26" stroke="#10b981" stroke-width="1.6" stroke-dasharray="3 2" />
+                    <circle cx="5" cy="-26" r="4.5" fill="rgba(16, 185, 129, 0.25)" />
+                    <circle cx="5" cy="-26" r="2.5" fill="#10b981" />
                     <!-- Vehicle Body -->
                     <rect x="0" y="0" width="10" height="17" rx="3" fill="#fbbf24" stroke="#d97706" stroke-width="1.2" />
                     <rect x="2" y="3" width="6" height="4" rx="1" fill="#1e293b" opacity="0.8" />
@@ -7877,7 +8004,8 @@
                   <!-- 3-Aspect Traffic Signal Tower -->
                   <g transform="translate(142, 34)">
                     <rect x="0" y="0" width="13" height="28" rx="3.5" fill="#0f172a" stroke="#334155" stroke-width="1.2" />
-                    <circle cx="6.5" cy="6" r="3" fill="#ef4444" class="tr-sig-red" filter="url(#trGlow)" />
+                    <circle cx="6.5" cy="6" r="4.5" fill="rgba(239, 68, 68, 0.25)" />
+                    <circle cx="6.5" cy="6" r="3" fill="#ef4444" class="tr-sig-red" />
                     <circle cx="6.5" cy="14" r="3" fill="#f59e0b" class="tr-sig-yel" opacity="0.3" />
                     <circle cx="6.5" cy="22" r="3" fill="#10b981" class="tr-sig-grn" opacity="0.3" />
                   </g>
@@ -7908,10 +8036,10 @@
           <div class="sey">Android &amp; Wireless</div>
           <h2 class="st">Wireless Screen Casting<br />&amp; Smart Audio Notes.</h2>
         </div>
-        <p class="ssb">Native Android apps built with Jetpack Compose &mdash; low-latency screen streaming to TVs and private audio note summaries powered by Gemini Flash.</p>
+        <p class="ssb">Native Android apps written in Jetpack Compose for low-latency screen casting over Wi-Fi and recorded lecture notes summarized with Gemini Flash.</p>
       </div>
       <div class="pgrid">
-        <article class="pc ci" data-delay="0">
+        <article class="pc ci" data-cat="systems" data-delay="0">
           <div class="badge bp" style="background: rgba(14, 165, 233, 0.16); border-color: rgba(14, 165, 233, 0.45); color: #0ea5e9; box-shadow: 0 0 14px rgba(14, 165, 233, 0.25);">Wireless Display</div>
           <div class="pv" style="background: #030a16">
             <div class="cf-bg">
@@ -7975,7 +8103,7 @@
           </div>
         </article>
 
-        <article class="pc cp" data-delay="80">
+        <article class="pc cp" data-cat="ai" data-delay="80">
           <div class="badge bp" style="background: rgba(236, 72, 153, 0.16); border-color: rgba(236, 72, 153, 0.45); color: #ec4899; box-shadow: 0 0 14px rgba(236, 72, 153, 0.25);">Gemini 2.5 AI</div>
           <div class="pv" style="background: #10020e">
             <div class="ce-bg">
@@ -8043,17 +8171,17 @@
     <section class="ps" id="atlas" style="padding-top: 40px">
       <div class="sh">
         <div>
-          <div class="sey">WebGL &amp; Games</div>
-          <h2 class="st">3D Earth Atlas<br />&amp; Retro Action RPG.</h2>
+          <div class="sey">Worlds &amp; Automation</div>
+          <h2 class="st">3D Earth Atlas, Action RPG<br />&amp; Local AI Assistant.</h2>
         </div>
-        <p class="ssb">A spherical 3D Earth atlas with real-time day and night cycles, alongside our browser 2D dungeon crawler.</p>
+        <p class="ssb">A spherical 3D Earth atlas with real-time day and night cycles, a retro browser action RPG, and our offline desktop co-pilot.</p>
       </div>
       <div class="pgrid">
-        <article class="pc ct t3-wide" data-delay="0">
+        <article class="pc ct t3-wide" data-cat="sim" data-delay="0">
           <div class="badge bp" style="background: rgba(0, 240, 204, 0.16); border-color: rgba(0, 240, 204, 0.45); color: #00f0cc; box-shadow: 0 0 14px rgba(0, 240, 204, 0.25);">Geospatial WebGL</div>
           <div class="pv" style="background: #01060d">
             <div class="t3-bg">
-              <span class="t3-hud-chip tl">195 NATIONS &bull; 60 FPS</span>
+              <span class="t3-hud-chip tl">178 COUNTRIES &bull; 60 FPS</span>
               <span class="t3-hud-chip br"><span class="t3-dot-live"></span>RAYLEIGH SHADER</span>
               <div class="t3-glow"></div>
               <div class="t3-stars"></div>
@@ -8110,11 +8238,11 @@
           </div>
         </article>
 
-        <article class="pc cp t3-wide" data-delay="80">
+        <article class="pc cp" data-cat="systems" data-delay="80">
           <div class="badge bflag-rpg">2D Action RPG &bull; In Dev</div>
           <div class="pv" style="background: #080314">
             <div class="vr">
-              <span class="rpg-hud-chip tl"><span class="rpg-gem-dot"></span>LVL 99 REALM</span>
+              <span class="rpg-hud-chip tl"><span class="rpg-gem-dot"></span>LVL 99 QUEST</span>
               <span class="rpg-hud-chip br">CANVAS 2D &bull; 60FPS</span>
               <div class="rpg-sparks">
                 <div class="rpg-spark s1"></div>
@@ -8169,7 +8297,7 @@
             </div>
           </div>
           <div class="pb">
-            <div class="pn">&starf; &mdash; 2D Action RPG</div>
+            <div class="pn">11 &mdash; 2D Action RPG</div>
             <h3 class="pname"><a href="rpg" class="pc-cover-link">Quest Master: RPG Engine</a></h3>
             <p class="pdesc">
               A classic browser action RPG built on HTML5 Canvas. Explore procedural dungeons, fight monsters, collect gear, and listen to an original WebAudio chiptune soundtrack.
@@ -8178,25 +8306,58 @@
           <div class="pf">
             <div class="ptags"><span class="tag">Action RPG</span><span class="tag">Canvas 2D</span><span class="tag">Game Engine</span><span class="tag" style="border-color: #c084fc; color: #c084fc;">Coming Soon</span></div>
             <div class="plink">
-              Preview Realm <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+              Preview Game <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+            </div>
+          </div>
+        </article>
+
+        <article class="pc cp" data-cat="ai" data-delay="140">
+          <div class="badge bp" style="background: rgba(168, 85, 247, 0.16); border-color: rgba(168, 85, 247, 0.45); color: #c084fc; box-shadow: 0 0 14px rgba(168, 85, 247, 0.25);">Local AI Desktop</div>
+          <div class="pv" style="background: #090312">
+            <div class="fri-bg">
+              <span class="fri-hud-chip tl">FPS: 60 &bull; LOCAL LLM</span>
+              <span class="fri-hud-chip br"><span class="fri-dot-live"></span>OFFLINE CO-PILOT</span>
+              <div class="fri-stage">
+                <svg class="fri-reactor-svg" viewBox="0 0 220 160" fill="none" aria-hidden="true">
+                  <circle cx="110" cy="80" r="58" stroke="rgba(192, 132, 252, 0.35)" stroke-width="1.5" stroke-dasharray="5 7" class="fri-ring-outer" />
+                  <circle cx="110" cy="80" r="44" stroke="rgba(168, 85, 247, 0.4)" stroke-width="1.2" stroke-dasharray="4 4" class="fri-ring-inner" />
+                  <polygon points="110,50 136,95 84,95" stroke="#c084fc" stroke-width="2" fill="rgba(168, 85, 247, 0.15)" />
+                  <circle cx="110" cy="80" r="16" fill="rgba(192, 132, 252, 0.3)" stroke="#c084fc" stroke-width="2" class="fri-core-pulse" />
+                  <circle cx="110" cy="80" r="6" fill="#ffffff" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div class="pb">
+            <div class="pn">12 &mdash; Desktop Automation</div>
+            <h3 class="pname"><a href="download" class="pc-cover-link">F.R.I.D.A.Y. OS Desktop</a></h3>
+            <p class="pdesc">
+              An offline Windows assistant powered by local LLMs, spoken voice commands, and direct desktop automation.
+            </p>
+          </div>
+          <div class="pf">
+            <div class="ptags"><span class="tag">Local LLM</span><span class="tag">Voice Synthesis</span><span class="tag">Windows Native</span></div>
+            <div class="plink">
+              Get Desktop OS <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
             </div>
           </div>
         </article>
       </div>
     </section>
+    </div>
 
     <!-- Studio Architecture Matrix Section (Matching Sovereign Engineering Matrix) -->
     <section class="arch-section" id="architecture">
       <div class="arch-header">
         <div class="sey">Core Principles</div>
         <h2 class="st">How We Build Software.<br />Fast, Native, and Private.</h2>
-        <p class="ssb">We don't use heavy wrappers or cloud dependencies where local code works best. Every tool runs directly on your machine with zero trackers, zero ads, and zero paywalls.</p>
+        <p class="ssb">We don't use heavy wrappers or cloud dependencies where local code works best. Every tool runs directly on your machine with zero trackers, zero clutter, and zero paywalls.</p>
       </div>
 
       <div class="arch-grid">
         <!-- Card 1: Pure Native Runtimes -->
         <article class="arch-card">
-          <div class="arch-badge">Runtime Design</div>
+          <div class="arch-badge">01 // Runtime Design</div>
           <div class="arch-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
           </div>
@@ -8217,7 +8378,7 @@
 
         <!-- Card 2: On-Device Processing -->
         <article class="arch-card">
-          <div class="arch-badge">Private &amp; Local</div>
+          <div class="arch-badge">02 // Private &amp; Local</div>
           <div class="arch-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
@@ -8238,7 +8399,7 @@
 
         <!-- Card 3: Sub-12ms Response -->
         <article class="arch-card">
-          <div class="arch-badge">Performance</div>
+          <div class="arch-badge">03 // Performance</div>
           <div class="arch-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           </div>
@@ -8259,12 +8420,12 @@
 
         <!-- Card 4: Student-Founded Studio -->
         <article class="arch-card">
-          <div class="arch-badge">Student Studio</div>
+          <div class="arch-badge">04 // Student Studio</div>
           <div class="arch-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
           </div>
           <h3 class="arch-title">Student-Founded Studio</h3>
-          <p class="arch-desc">Built from scratch by six college friends in Mumbai who wanted better learning tools. No venture capital, no ads, and no paywalls &mdash; just software we care about.</p>
+          <p class="arch-desc">Built by six student friends in Mumbai who wanted better tools to study and experiment with. No funding rounds, no ads, and no paywalls.</p>
           <div class="arch-stat">
             <div class="arch-stat-val">16 Apps</div>
             <div class="arch-stat-lbl">Active Production Engines</div>
@@ -8299,11 +8460,12 @@
         </div>
 
         <nav class="sf-nav-links" aria-label="Footer Navigation">
-          <a href="/">Studio Hub (Main)</a>
+          <a href="/">Home</a>
           <a href="index1">Classic Hub</a>
           <a href="about">About</a>
           <a href="making">Making</a>
           <a href="download">Downloads</a>
+          <a href="sitemap">Sitemap</a>
           <a href="mailto:neelgbadri@col.dpdns.org">Contact Us</a>
           <a href="feedback">Feedback</a>
           <a href="privacy">Privacy</a>
@@ -8813,7 +8975,9 @@
           return score
         }
 
+        var lastFocusedCmdEl = null
         window.openColCmdPalette = function () {
+          lastFocusedCmdEl = document.activeElement
           palette.style.display = 'flex'
           palette.removeAttribute('aria-hidden')
           requestAnimationFrame(function () {
@@ -8836,6 +9000,10 @@
           setTimeout(function () {
             if (!palette.classList.contains('is-open')) {
               palette.style.display = 'none'
+              if (lastFocusedCmdEl && typeof lastFocusedCmdEl.focus === 'function') {
+                lastFocusedCmdEl.focus()
+              }
+              lastFocusedCmdEl = null
             }
           }, 220)
         }
@@ -9076,17 +9244,105 @@
           revealIo.observe(el)
         })
 
-        // 5b. Active Scroll Animation Freeze for 120 FPS Compositor Throughput
+        // 5b. Active Scroll Animation Freeze + 1px Tick Scroll Telemetry Meter
         var isScrollingTimer = null
+        var scrollTickRaf = null
+        var topNavEl = document.getElementById('topNav')
+        function syncScrollTick() {
+          scrollTickRaf = null
+          if (!topNavEl) return
+          var docEl = document.documentElement
+          var maxScroll = docEl.scrollHeight - window.innerHeight
+          var progress = maxScroll > 0 ? Math.min(1, Math.max(0, window.scrollY / maxScroll)) : 0
+          topNavEl.style.setProperty('--scroll-progress', progress.toFixed(4))
+        }
         window.addEventListener('scroll', function () {
           window.__isScrollingPage = true
           document.body.classList.add('is-scrolling')
+          if (!scrollTickRaf) scrollTickRaf = requestAnimationFrame(syncScrollTick)
           if (isScrollingTimer) clearTimeout(isScrollingTimer)
           isScrollingTimer = setTimeout(function () {
             window.__isScrollingPage = false
             document.body.classList.remove('is-scrolling')
           }, 90)
         }, { passive: true })
+
+        // 5c. Live Mumbai IST Telemetry Clock (Hero Eyebrow)
+        ;(function () {
+          var clockEl = document.getElementById('mumbaiClock')
+          if (!clockEl || typeof Intl === 'undefined') return
+          var fmt = new Intl.DateTimeFormat('en-GB', {
+            timeZone: 'Asia/Kolkata',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+          })
+          function tickMumbaiClock() {
+            if (document.hidden) return
+            clockEl.textContent = fmt.format(new Date()) + ' IST'
+          }
+          tickMumbaiClock()
+          setInterval(tickMumbaiClock, 1000)
+          document.addEventListener('visibilitychange', tickMumbaiClock)
+        })()
+
+        // 5d. Interactive Suite Workbench Category Filter Tabs
+        ;(function () {
+          var filterBar = document.getElementById('suiteFilterBar')
+          var container = document.getElementById('showcaseContainer')
+          var countBadge = document.getElementById('suiteCountBadge')
+          if (!filterBar || !container) return
+
+          var tabs = Array.from(filterBar.querySelectorAll('.suite-tab'))
+          var sections = Array.from(container.querySelectorAll('.ps'))
+          var allCards = Array.from(container.querySelectorAll('.pc'))
+
+          function applySuiteFilter(cat, activeTab) {
+            tabs.forEach(function (t) {
+              var isMatch = t === activeTab
+              t.classList.toggle('is-active', isMatch)
+              t.setAttribute('aria-selected', isMatch ? 'true' : 'false')
+            })
+
+            var visibleTotal = 0
+            container.classList.toggle('showcase-filtered', cat !== 'all')
+
+            sections.forEach(function (sec) {
+              var cards = Array.from(sec.querySelectorAll('.pc'))
+              var secVisible = 0
+              cards.forEach(function (c) {
+                var cats = (c.getAttribute('data-cat') || '').split(/\s+/).filter(Boolean)
+                var show = cat === 'all' || cats.indexOf(cat) !== -1
+                c.classList.toggle('is-suite-hidden', !show)
+                if (show) {
+                  c.classList.add('in-view', 'rev')
+                  secVisible++
+                  visibleTotal++
+                }
+              })
+              sec.style.display = secVisible > 0 ? '' : 'none'
+            })
+
+            if (countBadge) {
+              countBadge.innerHTML = 'Showing <b>' + visibleTotal + '</b> / ' + allCards.length + ' Suites'
+            }
+          }
+
+          tabs.forEach(function (tab, idx) {
+            tab.addEventListener('click', function () {
+              applySuiteFilter(tab.getAttribute('data-suite-filter') || 'all', tab)
+            })
+            tab.addEventListener('keydown', function (e) {
+              if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+                e.preventDefault()
+                var nextIdx = e.key === 'ArrowRight' ? (idx + 1) % tabs.length : (idx - 1 + tabs.length) % tabs.length
+                tabs[nextIdx].focus()
+                tabs[nextIdx].click()
+              }
+            })
+          })
+        })()
 
         // 6. Desktop Specular Spotlight + Silky 60FPS Hardware-Accelerated 3D Card Tilt
         if (window.innerWidth >= 768 && !window.matchMedia('(pointer: coarse)').matches) {
@@ -9114,10 +9370,9 @@
                 var relX = ex - rect.left
                 var relY = ey - rect.top
 
-                if (!isProjectCard) {
-                  card.style.setProperty('--card-mx', relX.toFixed(0) + 'px')
-                  card.style.setProperty('--card-my', relY.toFixed(0) + 'px')
-                } else {
+                card.style.setProperty('--card-mx', relX.toFixed(0) + 'px')
+                card.style.setProperty('--card-my', relY.toFixed(0) + 'px')
+                if (isProjectCard) {
                   var x = (relX / rect.width) - 0.5
                   var y = (relY / rect.height) - 0.5
                   card.style.transform =
@@ -9136,10 +9391,9 @@
                 rafId = null
               }
               rect = null
-              if (!isProjectCard) {
-                card.style.removeProperty('--card-mx')
-                card.style.removeProperty('--card-my')
-              } else {
+              card.style.removeProperty('--card-mx')
+              card.style.removeProperty('--card-my')
+              if (isProjectCard) {
                 // Remove .is-tilting first so the 0.28s CSS transition smoothly eases back to 0
                 card.classList.remove('is-tilting')
                 document.body.classList.remove('ch')
@@ -9147,10 +9401,9 @@
               }
             }, { passive: true })
           })
+        }
 
-
-
-                // ── PHASE-LOCKED MARK IV ORRERY CONTROLLER (60/120 FPS DELTA-TIME INVARIANT) ──
+        // ── PHASE-LOCKED MARK IV ORRERY CONTROLLER (60/120 FPS DELTA-TIME INVARIANT) ──
         ;(function () {
           var stage = document.getElementById('heroOrbitalStage');
           if (!stage) return;
@@ -9234,7 +9487,7 @@
           }
 
           nodeRegistry.forEach(function (item) {
-            item.el.addEventListener('mouseenter', function () {
+            function lockNode() {
               lockedNodeItem = item;
               isHovered = true;
               updateLaserTether();
@@ -9242,16 +9495,21 @@
               if (laserGlow) laserGlow.classList.add('is-locked');
               if (targetReticle) targetReticle.classList.add('is-locked');
               setLiveLockNode(item.title, item.color);
-            });
-            item.el.addEventListener('mouseleave', function () {
+            }
+            function unlockNode() {
               if (lockedNodeItem === item) {
                 lockedNodeItem = null;
                 isHovered = false;
                 if (laserLine) laserLine.classList.remove('is-locked');
                 if (laserGlow) laserGlow.classList.remove('is-locked');
                 if (targetReticle) targetReticle.classList.remove('is-locked');
+                setLiveLockNode('STANDBY');
               }
-            });
+            }
+            item.el.addEventListener('mouseenter', lockNode);
+            item.el.addEventListener('mouseleave', unlockNode);
+            item.el.addEventListener('focus', lockNode);
+            item.el.addEventListener('blur', unlockNode);
           });
 
           function getPointerAngle(e) {
@@ -9431,18 +9689,15 @@
           });
         })()
 
-
-
-          // Desktop Keyboard Shortcuts: Liquid Glass Toggle
-          document.addEventListener('keydown', function (e) {
-            if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'l') {
-              e.preventDefault()
-              if (typeof window.toggleAppleLiquidGlass === 'function') {
-                window.toggleAppleLiquidGlass()
-              }
+        // Desktop Keyboard Shortcuts: Liquid Glass Toggle
+        document.addEventListener('keydown', function (e) {
+          if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'l') {
+            e.preventDefault()
+            if (typeof window.toggleAppleLiquidGlass === 'function') {
+              window.toggleAppleLiquidGlass()
             }
-          })
-        }
+          }
+        })
 
         // Deterministic Smooth Scroll for all in-page hash links
         document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
@@ -9594,7 +9849,7 @@
               orbit: 'R=14 AU',
               fps: '60 STABLE'
             },
-            desc: 'Touchless spatial machine vision and multimodal AI co-pilot using standard webcams. Zero extra hardware required — control cursor, pinch-click, scroll, and air-draw in mid-air.',
+            desc: 'Webcam hand-tracking without extra hardware: move the cursor, pinch to click, scroll pages, and sketch in mid-air with your hand.',
             cta: 'Launch Perceptus Flow'
           },
           CastFlow: {
@@ -9639,7 +9894,7 @@
               orbit: 'R=22 AU',
               fps: '60 STABLE'
             },
-            desc: 'Comprehensive 50-module interactive civic engineering and statutory laws database. Delivers live RTO challan simulations, IRC standards, and deep Motor Vehicles Act jurisprudence for Mumbai road users.',
+            desc: 'A 50-module reference covering Indian road engineering and traffic law, with interactive RTO fine calculators, IRC standards, and Motor Vehicles Act sections.',
             cta: 'Access Database'
           },
           CivicLogic: {
@@ -9654,7 +9909,7 @@
               orbit: 'R=22 AU',
               fps: '60 STABLE'
             },
-            desc: 'Comprehensive 50-module interactive civic engineering and statutory laws database. Delivers live RTO challan simulations, IRC standards, and deep Motor Vehicles Act jurisprudence for Mumbai road users.',
+            desc: 'A 50-module reference covering Indian road engineering and traffic law, with interactive RTO fine calculators, IRC standards, and Motor Vehicles Act sections.',
             cta: 'Access Database'
           },
           Terra3D: {
@@ -9669,7 +9924,7 @@
               orbit: 'R=24 AU',
               fps: '60 STABLE'
             },
-            desc: 'Interactive 3D Earth globe featuring spherical geodesy, 195+ international boundaries, real-time sun angle illumination, and custom GLSL atmospheric Rayleigh scattering shaders.',
+            desc: 'Interactive 3D Earth globe featuring spherical geodesy, 178 countries and international boundaries, real-time sun angle illumination, and custom GLSL atmospheric Rayleigh scattering shaders.',
             cta: 'Explore Terra 3D'
           },
           Career: {
@@ -9724,16 +9979,7 @@
         var niCloseBtn = document.getElementById('niCloseBtn')
         var niDismissBtn = document.getElementById('niDismissBtn')
 
-        var stageModeBtn = document.getElementById('stageModeBtn')
-        var orbitToggleBtn = document.getElementById('orbitToggleBtn')
-        var speedToggleBtn = document.getElementById('speedToggleBtn')
-        var zoomInBtn = document.getElementById('zoomInBtn')
-        var zoomOutBtn = document.getElementById('zoomOutBtn')
-        var resetCamBtn = document.getElementById('resetCamBtn')
-        var soundToggleBtn = document.getElementById('soundToggleBtn')
-        var dockChips = document.querySelectorAll('.dock-chip')
-
-        var currentNodeKey = null
+        var lastInspectorTrigger = null
 
         // Open Holographic Inspector
         window.openNodeInspector = function (nodeKey) {
@@ -9772,19 +10018,14 @@
             niLaunchBtn.style.borderColor = 'var(--' + data.key + ')'
           }
 
+          lastInspectorTrigger = document.activeElement
           if (inspector) {
             inspector.classList.add('active')
             inspector.removeAttribute('aria-hidden')
             inspector.removeAttribute('inert')
+            if (niCloseBtn) niCloseBtn.focus({ preventScroll: true })
           }
           if (heroSection) heroSection.classList.add('inspector-active')
-
-          // Sync dock chip if present
-          if (dockChips && dockChips.length) {
-            dockChips.forEach(function (chip) {
-              chip.classList.toggle('active', chip.dataset.node.toLowerCase() === nodeKey.toLowerCase())
-            })
-          }
         }
 
         // Close Inspector
@@ -9795,121 +10036,19 @@
             inspector.setAttribute('inert', '')
           }
           if (heroSection) heroSection.classList.remove('inspector-active')
-          currentNodeKey = null
-          window.__currentInspectorNodeKey = null
-          if (dockChips && dockChips.length) {
-            dockChips.forEach(function (chip) { chip.classList.remove('active') })
+          if (lastInspectorTrigger && typeof lastInspectorTrigger.focus === 'function') {
+            lastInspectorTrigger.focus({ preventScroll: true })
           }
+          lastInspectorTrigger = null
         }
 
-        if (niCloseBtn) niCloseBtn.addEventListener('click', function () {
-          window.closeNodeInspector()
-          if (window.__col3d && window.__col3d.resetView) window.__col3d.resetView()
-        })
-        if (niDismissBtn) niDismissBtn.addEventListener('click', function () {
-          window.closeNodeInspector()
-          if (window.__col3d && window.__col3d.resetView) window.__col3d.resetView()
-        })
+        if (niCloseBtn) niCloseBtn.addEventListener('click', window.closeNodeInspector)
+        if (niDismissBtn) niDismissBtn.addEventListener('click', window.closeNodeInspector)
 
-        // Dock Chips Interaction
-        if (dockChips && dockChips.length) {
-          dockChips.forEach(function (chip) {
-            chip.addEventListener('click', function () {
-              var nodeName = chip.dataset.node
-              if (window.__col3d && window.__col3d.flyToNode) {
-                window.__col3d.flyToNode(nodeName)
-              }
-              window.openNodeInspector(nodeName)
-            })
-          })
-        }
-
-        // Stage Mode Toggle
-        if (stageModeBtn && heroSection) {
-          stageModeBtn.addEventListener('click', function () {
-            var isStage = heroSection.classList.toggle('stage-mode')
-            var label = stageModeBtn.querySelector('.hud-mode-label')
-            if (label) label.textContent = isStage ? 'Exit 3D Lab' : '3D Lab Mode'
-            if (window.__col3d && window.__col3d.setStageMode) {
-              window.__col3d.setStageMode(isStage)
-            }
-            if (window.__col3d && window.__col3d.playChime) {
-              window.__col3d.playChime('ping')
-            }
-          })
-        }
-
-        // Orbit Pause / Resume
-        if (orbitToggleBtn) {
-          orbitToggleBtn.addEventListener('click', function () {
-            if (!window.__col3d) return
-            var isAuto = window.__col3d.toggleAutoOrbit()
-            orbitToggleBtn.textContent = isAuto ? 'Pause' : 'Orbit'
-            if (window.__col3d.playChime) window.__col3d.playChime('ping')
-          })
-        }
-
-        // Orbit Speed Cycle (1.0x -> 2.0x -> 0.5x -> 1.0x)
-        var speeds = [1.0, 2.0, 0.5]
-        var speedIdx = 0
-        if (speedToggleBtn) {
-          speedToggleBtn.addEventListener('click', function () {
-            if (!window.__col3d) return
-            speedIdx = (speedIdx + 1) % speeds.length
-            var spd = speeds[speedIdx]
-            window.__col3d.setSpeed(spd)
-            speedToggleBtn.textContent = spd.toFixed(1) + 'x'
-            if (window.__col3d.playChime) window.__col3d.playChime('ping')
-          })
-        }
-
-        // Zoom Controls
-        if (zoomInBtn) {
-          zoomInBtn.addEventListener('click', function () {
-            if (window.__col3d && window.__col3d.zoom) window.__col3d.zoom(-8)
-          })
-        }
-        if (zoomOutBtn) {
-          zoomOutBtn.addEventListener('click', function () {
-            if (window.__col3d && window.__col3d.zoom) window.__col3d.zoom(8)
-          })
-        }
-
-        // Reset Camera
-        if (resetCamBtn) {
-          resetCamBtn.addEventListener('click', function () {
-            if (window.__col3d && window.__col3d.resetView) window.__col3d.resetView()
-            window.closeNodeInspector()
-          })
-        }
-
-        // Sound Toggle
-        if (soundToggleBtn) {
-          var isSound = false
-          try { isSound = localStorage.getItem('col_3d_sound') === 'true' } catch(e) {}
-          soundToggleBtn.textContent = isSound ? 'Audio On' : 'Audio Muted'
-
-          soundToggleBtn.addEventListener('click', function () {
-            if (!window.__col3d) return
-            var s = window.__col3d.toggleSound()
-            soundToggleBtn.textContent = s ? 'Audio On' : 'Audio Muted'
-          })
-        }
-
-        // Keyboard navigation (Escape resets view & closes inspector)
+        // Keyboard navigation (Escape closes inspector)
         window.addEventListener('keydown', function (e) {
-          if (e.key === 'Escape') {
-            if (inspector && inspector.classList.contains('active')) {
-              window.closeNodeInspector()
-              if (window.__col3d && window.__col3d.resetView) window.__col3d.resetView()
-            } else if (heroSection && heroSection.classList.contains('stage-mode')) {
-              heroSection.classList.remove('stage-mode')
-              if (stageModeBtn) {
-                var label = stageModeBtn.querySelector('.hud-mode-label')
-                if (label) label.textContent = '3D Lab Mode'
-              }
-              if (window.__col3d && window.__col3d.setStageMode) window.__col3d.setStageMode(false)
-            }
+          if (e.key === 'Escape' && inspector && inspector.classList.contains('active')) {
+            window.closeNodeInspector()
           }
         })
       })()

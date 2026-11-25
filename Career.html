@@ -87,6 +87,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;700&family=Instrument+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
     <link rel="manifest" href="manifest.json" />
     <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
+  <link rel="stylesheet" href="col-skeleton.css?v=20261125" />
     <link rel="stylesheet" href="col-mobile.css" />
     <link rel="stylesheet" href="liquid-glass.css" />
     <link rel="stylesheet" href="mobile-perf.css" />
@@ -169,6 +170,11 @@ html.lm {
   --l-pink: #c4358a;
   --l-green: #2a8a4d;
 }
+html.lm .modal-overlay:not(#detail-modal) { background: rgba(15, 23, 42, 0.42); }
+html.lm .modal-card { box-shadow: 0 24px 60px rgba(15, 23, 42, 0.16); }
+html.lm .compare-drawer { box-shadow: 0 18px 44px rgba(15, 23, 42, 0.14); }
+html.lm .cmp-table th:first-child,
+html.lm .cmp-table td:first-child { box-shadow: 4px 0 12px rgba(15, 23, 42, 0.08); }
 /* domain → line colour (cards, tags, icons and the detail view) */
 .cat-tech { --route: var(--l-blue); }
 .cat-health { --route: var(--l-red); }
@@ -259,7 +265,7 @@ body.modal-open { overflow: hidden; }
 .search-input::placeholder { color: var(--faint); }
 .search-input:focus { outline: none; border-color: var(--text); box-shadow: 0 0 0 4px color-mix(in srgb, var(--text) 14%, transparent); }
 .search-clear-btn {
-  position: absolute; right: 12px; width: 36px; height: 36px; border-radius: 50%;
+  position: absolute; right: 10px; width: 40px; height: 40px; border-radius: 50%;
   border: 0; background: var(--surface-2); color: var(--muted); display: none; font-size: 14px; line-height: 1;
 }
 .hero-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 14px; color: var(--faint); font-size: 14px; }
@@ -705,42 +711,53 @@ body.modal-open { overflow: hidden; }
   .navbar-inner { padding: 0 12px 0 16px; gap: 6px; }
   .nav-brand { font-size: 18px; gap: 8px; }
   .nav-actions { gap: 2px; }
-  .nav-btn:not(.primary) { width: 38px; height: 42px; padding: 0; }
-  .nav-btn .nav-btn-text { display: none; }
-  .nav-actions .nav-btn.primary { display: none; }
-  .nav-btn .badge-count { position: absolute; top: 3px; right: 0; min-width: 18px; height: 18px; font-size: 11px; line-height: 18px; padding: 0 5px; }
+  .navbar .nav-actions .nav-btn:not(.primary) { width: 40px; height: 42px; padding: 0; }
+  .navbar .nav-actions .nav-btn .nav-btn-text { display: none; }
+  .navbar .nav-actions .nav-btn.primary { display: none; }
+  .navbar .nav-actions .nav-btn .badge-count { position: absolute; top: 3px; right: 0; min-width: 18px; height: 18px; font-size: 11px; line-height: 18px; padding: 0 5px; }
   .hero { padding: 28px 16px 0; }
   .hero h1 { font-size: clamp(34px, 10vw, 48px); }
   .hero-sub { font-size: 16px; margin-top: 16px; }
   .hero-sub .more { display: none; }
   .search-box-wrap { margin-top: 24px; }
   .search-input { height: 54px; font-size: 16px; }
-  .hero-actions { margin-top: 20px; flex-direction: column; align-items: stretch; gap: 6px; }
-  .hero-actions .nav-btn { justify-content: center; width: 100%; height: 46px; }
+  .chip-try { height: 40px; min-height: 40px; padding: 0 14px; display: inline-flex; align-items: center; }
+  .hero-actions { margin-top: 20px; flex-direction: column; align-items: stretch; gap: 8px; }
+  .hero-actions .nav-btn { justify-content: center; width: 100%; height: auto; min-height: 46px; padding: 10px 16px; white-space: normal; text-align: center; }
   .controls-section { padding: 36px 16px 24px; }
   .controls-head { align-items: flex-end; }
-  .filters-toggle { display: inline-flex; }
+  .filters-toggle { display: inline-flex; min-height: 42px; }
   .filters-toolbar { display: none; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding-top: 4px; }
   .filters-toolbar.open { display: grid; }
   .career-grid { gap: 12px; }
   .career-card { padding: 16px 16px 14px; }
+  .btn-fav { width: 44px; height: 44px; }
+  .active-tag { min-height: 36px; height: auto; padding: 4px 8px 4px 12px; }
+  .reset-filters-btn { min-height: 40px; padding: 0 12px; }
   .results-bar-right { width: 100%; justify-content: space-between; margin-left: 0; }
+  .page-size-select { min-height: 40px; height: 40px; }
   .pagination-bar { flex-direction: column; align-items: stretch; gap: 12px; }
   .pagination-controls { justify-content: center; gap: 4px; }
   .pagination-meta { justify-content: space-between; }
-  .page-btn { min-width: 36px; height: 44px; padding: 0 9px; font-size: 13px; }
+  .page-btn { min-width: 40px; height: 44px; padding: 0 10px; font-size: 13px; }
   .page-btn-label { display: none; }
   .page-ellipsis { min-width: 18px; }
   
   /* Compare Drawer Responsive */
   .compare-drawer {
-    bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(84px + env(safe-area-inset-bottom, 0px));
     left: 12px;
     right: 12px;
-    padding: 10px 12px;
+    width: auto;
+    max-width: none;
+    transform: translateY(16px);
+    padding: 12px;
     flex-direction: column;
     align-items: stretch;
     gap: 8px;
+  }
+  .compare-drawer.show {
+    transform: translateY(0);
   }
   .compare-items {
     width: 100%;
@@ -751,7 +768,7 @@ body.modal-open { overflow: hidden; }
   }
   .compare-drawer .nav-btn {
     flex: 1;
-    height: 42px;
+    height: 44px;
     justify-content: center;
   }
 
@@ -770,18 +787,19 @@ body.modal-open { overflow: hidden; }
   }
   .modal-header { padding: 18px 18px 6px !important; }
   .modal-body { padding: 10px 18px 24px !important; }
-  .modal-footer { padding: 12px 18px max(16px, env(safe-area-inset-bottom, 16px)) !important; }
+  .modal-footer { flex-direction: column; align-items: stretch; gap: 8px; padding: 12px 18px max(16px, env(safe-area-inset-bottom, 16px)) !important; }
+  .modal-footer .nav-btn { width: 100%; height: auto; min-height: 44px; padding: 10px 14px; white-space: normal; text-align: center; justify-content: center; }
   .modal-title { font-size: 21px !important; line-height: 1.25; }
   .modal-tagline { font-size: 13px !important; line-height: 1.45; }
   .modal-icon { width: 38px; height: 38px; }
   .modal-icon svg { width: 20px; height: 20px; }
-  .modal-close { width: 38px; height: 38px; font-size: 15px; }
+  .modal-close { width: 42px; height: 42px; font-size: 16px; }
 
   /* Compass Quiz Mobile */
   .quiz-option-grid { grid-template-columns: 1fr; gap: 8px; margin: 12px 0; }
   .quiz-card { padding: 12px 14px; min-height: 48px; }
-  .compass-nav-row { margin-top: 16px; gap: 10px; }
-  .compass-nav-row .nav-btn { flex: 1; height: 46px; justify-content: center; }
+  .compass-nav-row { flex-direction: column; align-items: stretch; margin-top: 16px; gap: 8px; }
+  .compass-nav-row .nav-btn { width: 100%; flex: none; margin: 0; height: auto; min-height: 44px; padding: 10px 14px; white-space: normal; text-align: center; justify-content: center; }
 
   /* Internship First-Job Hub Mobile */
   .internship-cards-grid { grid-template-columns: 1fr; gap: 10px; }
@@ -861,17 +879,23 @@ body.modal-open { overflow: hidden; }
   .nav-actions {
     gap: 2px;
   }
-  .nav-btn:not(.primary) {
-    width: 36px;
-    height: 40px;
+  .navbar .nav-actions .nav-btn:not(.primary) {
+    width: 38px;
+    height: 42px;
+  }
+  .filters-toolbar {
+    grid-template-columns: 1fr;
   }
   .region-btn {
     padding: 0 6px !important;
     font-size: 12px !important;
+    min-height: 42px;
   }
   .region-menu {
-    right: -20px;
+    right: 0;
+    left: auto;
     min-width: 240px;
+    max-width: calc(100vw - 24px);
   }
   .modal-header { padding: 16px 14px 4px !important; }
   .modal-body { padding: 10px 14px 20px !important; }
@@ -880,7 +904,7 @@ body.modal-open { overflow: hidden; }
   .modal-tagline { font-size: 12.5px !important; }
   .modal-icon { width: 36px; height: 36px; border-radius: 10px; }
   .modal-icon svg { width: 18px; height: 18px; }
-  .modal-close { width: 36px; height: 36px; font-size: 14px; }
+  .modal-close { width: 42px; height: 42px; font-size: 15px; }
 }
 
 @media (max-width: 380px) {
@@ -1118,6 +1142,10 @@ body.modal-open { overflow: hidden; }
   .region-badge.uk { background: rgba(168, 85, 247, 0.12); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
   .region-badge.me { background: rgba(16, 185, 129, 0.12); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
   .region-badge.global { background: var(--tint); color: var(--text); border: 1px solid var(--line); }
+  html.lm .region-badge.in, body.lm .region-badge.in { background: rgba(217, 119, 6, 0.12); color: #9a3412; border-color: rgba(217, 119, 6, 0.35); }
+  html.lm .region-badge.us, body.lm .region-badge.us { background: rgba(37, 99, 235, 0.12); color: #1d4ed8; border-color: rgba(37, 99, 235, 0.32); }
+  html.lm .region-badge.uk, body.lm .region-badge.uk { background: rgba(124, 58, 237, 0.12); color: #6d28d9; border-color: rgba(124, 58, 237, 0.32); }
+  html.lm .region-badge.me, body.lm .region-badge.me { background: rgba(5, 150, 105, 0.12); color: #047857; border-color: rgba(5, 150, 105, 0.32); }
 
   /* Modal Multi-Region Comparator */
   .regional-comp-card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; margin: 16px 0; }
@@ -1143,14 +1171,71 @@ body.modal-open { overflow: hidden; }
 </style>
   </head>
   <body>
+    <!-- Career Compass Skeleton Loading Screen -->
+    <div class="loader col-skeleton-screen sk-theme-mint" id="loader" role="status" aria-busy="true" aria-label="Loading FutureScape Career Compass">
+  <div class="sk-ambient-glow" aria-hidden="true"></div>
+  <div class="sk-ambient-glow-left" aria-hidden="true"></div>
+  <header class="sk-nav" aria-hidden="true">
+    <div class="sk-nav-brand">
+      <div class="sk-circle sk-brand-logo sk-shimmer"></div>
+      <div class="sk-pill sk-brand-text sk-shimmer"></div>
+    </div>
+    <div class="sk-nav-links">
+      <div class="sk-pill sk-shimmer" style="width: 56px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 62px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 66px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 80px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 68px; height: 14px;"></div>
+    </div>
+    <div class="sk-nav-actions">
+      <div class="sk-pill sk-nav-search sk-shimmer"></div>
+      <div class="sk-circle sk-nav-theme sk-shimmer"></div>
+      <div class="sk-pill sk-nav-btn sk-shimmer" style="width: 78px;"></div>
+      <div class="sk-pill sk-nav-cta sk-shimmer" style="width: 118px;"></div>
+    </div>
+  </header>
+  <div class="sk-editorial-wrap" aria-hidden="true" style="padding-top: 34px;">
+    <div class="sk-editorial-hero" style="max-width: 860px; margin-bottom: 24px;">
+      <div class="sk-title-group" style="align-items: center; width: 100%;">
+        <div class="sk-title-bar sk-title-1 sk-shimmer" style="width: 78%; max-width: 640px;"></div>
+        <div class="sk-title-bar sk-title-2 sk-shimmer" style="width: 56%; max-width: 460px;"></div>
+      </div>
+      <div class="sk-lede-line sk-shimmer" style="width: 84%; max-width: 620px; margin-bottom: 22px;"></div>
+      <div class="sk-search-pill" style="margin-bottom: 14px;">
+        <div class="sk-pill sk-shimmer" style="width: 240px; height: 16px;"></div>
+        <div class="sk-pill sk-shimmer-accent" style="width: 74px; height: 30px;"></div>
+      </div>
+      <div class="sk-chip-row">
+        <div class="sk-pill sk-shimmer" style="width: 64px; height: 26px;"></div>
+        <div class="sk-pill sk-shimmer" style="width: 78px; height: 26px;"></div>
+        <div class="sk-pill sk-shimmer" style="width: 68px; height: 26px;"></div>
+        <div class="sk-pill sk-shimmer" style="width: 84px; height: 26px;"></div>
+        <div class="sk-pill sk-shimmer" style="width: 72px; height: 26px;"></div>
+      </div>
+    </div>
+    <div class="sk-grid sk-grid-3">
+      <div class="sk-card"><div class="sk-pill sk-shimmer-accent" style="width: 96px; height: 20px;"></div><div class="sk-title-bar sk-shimmer" style="width: 76%; height: 20px;"></div><div class="sk-lede-line sk-shimmer" style="width: 92%;"></div><div class="sk-tags-row"><div class="sk-pill sk-shimmer" style="width: 74px; height: 18px;"></div><div class="sk-pill sk-shimmer" style="width: 64px; height: 18px;"></div></div></div>
+      <div class="sk-card"><div class="sk-pill sk-shimmer-accent" style="width: 88px; height: 20px;"></div><div class="sk-title-bar sk-shimmer" style="width: 70%; height: 20px;"></div><div class="sk-lede-line sk-shimmer" style="width: 86%;"></div><div class="sk-tags-row"><div class="sk-pill sk-shimmer" style="width: 82px; height: 18px;"></div><div class="sk-pill sk-shimmer" style="width: 60px; height: 18px;"></div></div></div>
+      <div class="sk-card"><div class="sk-pill sk-shimmer-accent" style="width: 102px; height: 20px;"></div><div class="sk-title-bar sk-shimmer" style="width: 80%; height: 20px;"></div><div class="sk-lede-line sk-shimmer" style="width: 90%;"></div><div class="sk-tags-row"><div class="sk-pill sk-shimmer" style="width: 68px; height: 18px;"></div><div class="sk-pill sk-shimmer" style="width: 74px; height: 18px;"></div></div></div>
+    </div>
+  </div>
+  <footer class="sk-status-dock" aria-hidden="true">
+    <div class="sk-status-pill">
+      <span class="sk-pulse-live"></span>
+      <span class="sk-status-text"><span>FutureScape</span> &middot; 480 Career Atlas</span>
+      <div class="sk-progress-bar"><div class="sk-progress-fill"></div></div>
+    </div>
+  </footer>
+</div>
+
     <div class="app">
       <!-- Top Navbar -->
       <nav class="navbar" id="navbar" aria-label="Main">
       <div class="navbar-progress" id="navbarProgress" aria-hidden="true"></div>
       <div class="navbar-inner">
-        <a href="/home" class="nav-brand" title="Return to Class Of Learners Home"><span class="brand-dot" aria-hidden="true"></span>FutureScape</a>
+        <a href="/" class="nav-brand" title="Return to Class Of Learners Home"><span class="brand-dot" aria-hidden="true"></span>FutureScape</a>
         <div class="nav-actions">
-          <a href="/home" class="nav-btn" title="Return to Class Of Learners Hub" aria-label="Main Hub"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg><span class="nav-btn-text">Main hub</span></a>
+          <a href="/" class="nav-btn" title="Return to Class Of Learners Hub" aria-label="Main Hub"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg><span class="nav-btn-text">Main hub</span></a>
           <button class="nav-btn" onclick="openCompassModal()" title="Take the Career Compass assessment" aria-label="Career Compass"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg><span class="nav-btn-text">Career Compass</span></button>
           <button class="nav-btn" onclick="openInternshipHub()" title="How people get their first job in these fields" aria-label="First job routes"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg><span class="nav-btn-text">First job routes</span></button>
           <button class="nav-btn" onclick="openShortlist()" title="View shortlisted careers" aria-label="Shortlist"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg><span class="nav-btn-text">Shortlist</span> <span class="badge-count" id="favCount">0</span></button>
@@ -1217,11 +1302,11 @@ body.modal-open { overflow: hidden; }
       <section class="controls-section" id="explore">
         <div class="controls-head">
         <div class="view-segmented-bar" id="view-mode-bar" role="tablist">
-          <button class="seg-btn active" data-mode="all" onclick="setActiveSource('all')">All Pathways</button>
-          <button class="seg-btn" data-mode="flagship" onclick="setActiveSource('flagship')">Deep Master Guides</button>
-          <button class="seg-btn" data-mode="growth" onclick="setActiveSource('growth')">Fast Growing (10%+)</button>
-          <button class="seg-btn" data-mode="ai" onclick="setActiveSource('ai')">Harder To Automate</button>
-          <button class="seg-btn" data-mode="high_earning" onclick="setActiveSource('high_earning')">High Earning ($150K+)</button>
+          <button class="seg-btn active" data-mode="all" onclick="setActiveSource('all')">All pathways</button>
+          <button class="seg-btn" data-mode="flagship" onclick="setActiveSource('flagship')">In-depth guides</button>
+          <button class="seg-btn" data-mode="growth" onclick="setActiveSource('growth')">Fast growing (10%+)</button>
+          <button class="seg-btn" data-mode="ai" onclick="setActiveSource('ai')">Harder to automate</button>
+          <button class="seg-btn" data-mode="high_earning" onclick="setActiveSource('high_earning')">High pay ($150K+)</button>
         </div>
         <button class="filters-toggle" id="filters-toggle" aria-expanded="false" aria-controls="filters-toolbar" onclick="toggleFilters()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg>Filters <span class="n" id="filters-n" hidden>0</span></button>
       </div>
@@ -1249,7 +1334,7 @@ body.modal-open { overflow: hidden; }
               <option value="biz">Business &amp; Finance</option>
               <option value="law">Law &amp; Public Safety</option>
               <option value="creative">Creative Arts &amp; Design</option>
-              <option value="science">Science &amp; DeepTech</option>
+              <option value="science">Science &amp; Deep Tech</option>
               <option value="eco">Sustainability &amp; Energy</option>
               <option value="trades">Skilled Trades &amp; Craft</option>
               <option value="edu">Education &amp; Academia</option>
@@ -1313,11 +1398,11 @@ body.modal-open { overflow: hidden; }
           <div class="filter-select-wrap">
             <label class="filter-select-label" for="edu-select">Entry Education</label>
             <select class="styled-select" id="edu-select" onchange="setEdu(this.value)">
-              <option value="all">Any Education Level</option>
-              <option value="nodegree">No Degree Needed</option>
+              <option value="all">Any education level</option>
+              <option value="nodegree">No degree needed</option>
               <option value="diploma">Diploma / Associate</option>
-              <option value="bachelor">Bachelor's Degree</option>
-              <option value="master">Master's Degree</option>
+              <option value="bachelor">Bachelor's degree</option>
+              <option value="master">Master's degree</option>
               <option value="doctorate">Doctorate / MD / PhD</option>
             </select>
           </div>
@@ -1380,7 +1465,7 @@ body.modal-open { overflow: hidden; }
               <div class="modal-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div>
               <div>
                 <h2 class="modal-title">Career Compass</h2>
-                <div class="modal-tagline">Three quick questions, then the list re-sorts by how well each career fits you</div>
+                <div class="modal-tagline">Five quick questions, then the list re-sorts by how well each career fits you</div>
               </div>
             </div>
           </div>
@@ -1661,7 +1746,7 @@ body.modal-open { overflow: hidden; }
                     <div class="quiz-card" onclick="selectCompassOption(4, 'master', this)">
                     <div class="quiz-card-head">
                       <div>
-                        <div class="quiz-card-title">Master's Degree</div>
+                        <div class="quiz-card-title">Master's degree</div>
                         <div class="quiz-card-desc">A specialisation after your bachelor's</div>
                       </div>
                     </div>
@@ -1821,45 +1906,45 @@ body.modal-open { overflow: hidden; }
             <div class="modal-title-row">
               <div class="modal-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
               <div>
-                <h2 class="modal-title">Six Ways People Get Their First Job In These Fields</h2>
-                <div class="modal-tagline">The routes that actually convert into a full-time offer, and how long each one takes</div>
+                <h2 class="modal-title">Six ways people get their first job in these fields</h2>
+                <div class="modal-tagline">The routes that usually turn into full-time offers, and how long each one takes</div>
               </div>
             </div>
           </div>
           <div class="modal-body internship-modal-body">
             
             <div class="detail-box">
-              <div class="detail-box-title"><span class="box-dot"></span>Six Common Ways People Start</div>
+              <div class="detail-box-title"><span class="box-dot"></span>Common starting routes</div>
               <div class="internship-cards-grid">
                 <div class="internship-card">
-                  <h4 style="color: var(--primary);">1. Summer Analyst / Associate (8–12 Wks)</h4>
-                  <p>Top in Tech (FAANG/Startups), Investment Banking, MBB Consulting, and Corporate Law. Direct pipeline to full-time Pre-Placement Return Offers (PPOs).</p>
+                  <h4 style="color: var(--primary);">1. Summer Intern / Analyst (8–12 wks)</h4>
+                  <p>Common in software, finance, consulting, and corporate law. Strong performance here often leads straight to a pre-placement offer (PPO).</p>
                 </div>
                 <div class="internship-card">
-                  <h4 style="color: var(--accent);">2. University Co-op (4–6 Months)</h4>
-                  <p>Alternating academic study with full-time industrial engineering work in Automotive, Aerospace, Hardware, and Biotech manufacturing.</p>
+                  <h4 style="color: var(--accent);">2. University Co-op (4–6 months)</h4>
+                  <p>Alternating semesters of classes with paid full-time work in automotive, aerospace, hardware, and biotech.</p>
                 </div>
                 <div class="internship-card">
-                  <h4 style="color: var(--accent-green);">3. Statutory Articleship &amp; Pupillage (2–3 Yrs)</h4>
-                  <p>Mandatory statutory practical training required by law to earn Chartered Accountant (ICAI / CPA / ACCA) or practicing Court Litigator licensure.</p>
+                  <h4 style="color: var(--accent-green);">3. Articleship &amp; Pupillage (2–3 yrs)</h4>
+                  <p>Required practical training under a licensed practitioner to qualify as a Chartered Accountant (ICAI / CPA / ACCA) or practicing lawyer.</p>
                 </div>
                 <div class="internship-card">
-                  <h4 style="color: var(--accent-warm);">4. Clinical Clerkship &amp; Housemanship (1 Yr)</h4>
-                  <p>Compulsory rotatory bedside training for MBBS, BDS, and Nursing graduates across Emergency, Surgery, Pediatrics, and ICU before medical licensure.</p>
+                  <h4 style="color: var(--accent-warm);">4. Clinical Clerkship &amp; Housemanship (1 yr)</h4>
+                  <p>Mandatory hospital rotations for medical, dental, and nursing graduates across wards, surgery, and clinics before independent practice.</p>
                 </div>
                 <div class="internship-card">
-                  <h4 style="color: var(--accent-purple);">5. Elite Research Fellowships</h4>
-                  <p>Funded international summer research programs (CERN Openlab, DAAD, Caltech SURF) designed to publish papers for top Ph.D. admissions.</p>
+                  <h4 style="color: var(--accent-purple);">5. Research Fellowships</h4>
+                  <p>Funded summer research programs (CERN Openlab, DAAD, Caltech SURF) where students publish early work before applying for a Ph.D.</p>
                 </div>
                 <div class="internship-card">
                   <h4 style="color: var(--accent-amber);">6. Startup Apprenticeships</h4>
-                  <p>3–6 month high-velocity roles inside venture-backed startups with direct exposure to founders and production launches.</p>
+                  <p>Short 3–6 month roles in small teams where you ship real work early alongside the founders.</p>
                 </div>
               </div>
             </div>
 
             <div class="detail-box" style="margin-top: 20px;">
-              <div class="detail-box-title"><span class="box-dot"></span>Turning An Internship Into A Job Offer</div>
+              <div class="detail-box-title"><span class="box-dot"></span>Turning an internship into a job offer</div>
               <ul style="padding-left: 20px; color: var(--text-secondary); font-size: 14px; line-height: 1.9;">
                 <li><strong style="color: var(--text);">Agree on what &ldquo;done&rdquo; means in week one:</strong> confirm the exact feature, report or experiment you will be judged on.</li>
                 <li><strong style="color: var(--text);">Write things down in public:</strong> clean pull requests, a short weekly summary, no surprises at review time.</li>
@@ -1870,7 +1955,7 @@ body.modal-open { overflow: hidden; }
 
           </div>
           <div class="modal-footer">
-            <button class="nav-btn primary" style="width: 100%;" onclick="closeInternshipHub()">Explore All Career Pathways →</button>
+            <button class="nav-btn primary" style="width: 100%;" onclick="closeInternshipHub()">Browse all careers →</button>
           </div>
         </div>
       </div>
@@ -1885,13 +1970,13 @@ body.modal-open { overflow: hidden; }
         <div class="modal-card cmp-modal-card">
           <div class="modal-header">
             <div class="modal-top-row cmp-top-row">
-              <h2 class="modal-title">Side-By-Side Career Comparison</h2>
+              <h2 class="modal-title">Compare careers side-by-side</h2>
               <div class="cmp-top-actions">
                 <button class="nav-btn cmp-print-btn" onclick="window.print()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg><span class="nav-btn-text">Print</span></button>
                 <button class="modal-close" onclick="closeComparisonModal()" aria-label="Close modal">✕</button>
               </div>
             </div>
-            <p style="color:var(--text-secondary); font-size:14px; margin-top: 4px;">Compare educational requirements, salaries, AI impact, and entrance exams across your selected pathways.</p>
+            <p style="color:var(--text-secondary); font-size:14px; margin-top: 4px;">Compare study requirements, typical pay, AI exposure, and entrance exams across the options you picked.</p>
           </div>
           <div class="modal-body" id="compare-modal-body" style="max-height:75vh; overflow-y:auto;"></div>
         </div>
@@ -1900,7 +1985,7 @@ body.modal-open { overflow: hidden; }
       <!-- Footer -->
       <footer class="site-footer">
         <div style="display:flex; justify-content:center; gap:25px; margin-bottom:15px; flex-wrap:wrap;">
-          <a href="/home" style="color:var(--text-secondary); text-decoration:none; font-weight:600; font-size:14px;">Home</a>
+          <a href="/" style="color:var(--text-secondary); text-decoration:none; font-weight:600; font-size:14px;">Home</a>
           <a href="privacy" style="color:var(--text-secondary); text-decoration:none; font-weight:600; font-size:14px;">Privacy</a>
           <a href="terms" style="color:var(--text-secondary); text-decoration:none; font-weight:600; font-size:14px;">Terms</a>
           <a href="feedback" style="color:var(--text-secondary); text-decoration:none; font-weight:600; font-size:14px;">Feedback</a>
@@ -2051,28 +2136,28 @@ body.modal-open { overflow: hidden; }
         if (!c) return '';
         const regions = Array.isArray(c.regions) ? c.regions : [];
         if (c.id && c.id.startsWith('ooh-')) {
-          return '<span class="region-badge us" title="US Bureau of Labor Statistics Standard Occupation">🇺🇸 US Profile</span>';
+          return '<span class="region-badge us" title="US Bureau of Labor Statistics profile">🇺🇸 US Profile</span>';
         }
         if (regions.length === 1) {
-          if (regions[0] === 'in') return '<span class="region-badge in" title="India Focused Curriculum & Pathways">🇮🇳 India Focus</span>';
-          if (regions[0] === 'us') return '<span class="region-badge us" title="US Focused Career Pathway">🇺🇸 US Focus</span>';
-          if (regions[0] === 'uk') return '<span class="region-badge uk" title="UK / European Focused Pathway">🇬🇧 UK Focus</span>';
-          if (regions[0] === 'me') return '<span class="region-badge me" title="Middle East / Gulf Focus">🇦🇪 Gulf Focus</span>';
+          if (regions[0] === 'in') return '<span class="region-badge in" title="India-focused degree and exam routes">🇮🇳 India Focus</span>';
+          if (regions[0] === 'us') return '<span class="region-badge us" title="US-focused career path">🇺🇸 US Focus</span>';
+          if (regions[0] === 'uk') return '<span class="region-badge uk" title="UK and European degree routes">🇬🇧 UK Focus</span>';
+          if (regions[0] === 'me') return '<span class="region-badge me" title="Middle East and Gulf job market">🇦🇪 Gulf Focus</span>';
         }
         if (regions.includes('in') && reg === 'in') {
-          return '<span class="region-badge in" title="High demand in Indian tech and corporate hubs">🇮🇳 India Hiring</span>';
+          return '<span class="region-badge in" title="Actively hiring in India">🇮🇳 India Hiring</span>';
         }
         if (regions.includes('me') && reg === 'me') {
-          return '<span class="region-badge me" title="High demand in Dubai & Gulf economies">🇦🇪 Gulf Hub</span>';
+          return '<span class="region-badge me" title="Strong hiring in Dubai and Gulf hubs">🇦🇪 Gulf Hub</span>';
         }
         if (regions.includes('uk') && reg === 'uk') {
-          return '<span class="region-badge uk" title="High demand across UK tech and finance corridors">🇬🇧 UK Corridor</span>';
+          return '<span class="region-badge uk" title="Actively hiring in the UK">🇬🇧 UK Market</span>';
         }
         if (regions.includes('us') && reg === 'us') {
-          return '<span class="region-badge us" title="Active hiring in US tech corridors">🇺🇸 US Market</span>';
+          return '<span class="region-badge us" title="Actively hiring in the US">🇺🇸 US Market</span>';
         }
         if (regions.length > 2 || (!c.id.startsWith('ooh-') && regions.length === 0)) {
-          return '<span class="region-badge global" title="Internationally transferable career across all major regions">🌐 Global Pathway</span>';
+          return '<span class="region-badge global" title="Transferable skills across major job markets">🌐 Global Path</span>';
         }
         return '';
       }
@@ -2082,21 +2167,21 @@ body.modal-open { overflow: hidden; }
         let title = '';
         let content = '';
         if (r === 'in') {
-          title = '🇮🇳 India Educational & Entrance Path';
-          const exams = (c.education && c.education.entranceExams) || 'Direct merit-based entry or national entrance tests.';
-          content = '<strong>Key National Exams:</strong> ' + escHtml(exams) + '<br><span style="color:var(--muted); font-size:12px;">Standard route: 10+2 stream qualification → National Entrance (JEE / NEET / CLAT / CAT / CUET / UPSC) → Central/State or Tier-1 Institute degree.</span>';
+          title = '🇮🇳 India Study &amp; Exam Route';
+          const exams = (c.education && c.education.entranceExams) || 'Direct merit admission or national entrance exams.';
+          content = '<strong>Key National Exams:</strong> ' + escHtml(exams) + '<br><span style="color:var(--muted); font-size:12px;">Typical route: Class 12 stream &rarr; National entrance test (JEE / NEET / CLAT / CAT / CUET / UPSC) &rarr; University degree.</span>';
         } else if (r === 'us') {
-          title = '🇺🇸 United States Academic Route';
-          content = '<strong>Standard Prerequisites:</strong> SAT / ACT for undergraduate admissions, followed by GRE / GMAT / MCAT / LSAT for graduate programs and professional licensure (USMLE, Bar, PE). Transfer credits via community colleges (2+2 pathway) are widely recognized.';
+          title = '🇺🇸 United States Study Route';
+          content = '<strong>Typical Prerequisites:</strong> SAT or ACT for undergraduate entry, followed by GRE, GMAT, MCAT, or LSAT for grad school and licensing boards (USMLE, state Bar, PE). Community college transfer (2+2) is a common lower-cost path.';
         } else if (r === 'uk') {
-          title = '🇬🇧 UK & European Academic Route';
-          content = '<strong>Standard Prerequisites:</strong> A-Levels / IB Diploma via UCAS portal. Professional tracks require SQE (Law), UCAT/BMAT (Medicine), or chartered accreditation (CEng, ACCA, RIBA) through recognized Royal Chartered institutes.';
+          title = '🇬🇧 UK &amp; European Study Route';
+          content = '<strong>Typical Prerequisites:</strong> A-Levels or IB Diploma via UCAS. Regulated fields add exams like SQE (Law) or UCAT/BMAT (Medicine), plus chartered status (CEng, ACCA, RIBA) after work experience.';
         } else if (r === 'me') {
-          title = '🇦🇪 Middle East & Gulf Licensing Route';
-          content = '<strong>Standard Prerequisites:</strong> Recognized accredited Bachelor’s degree + mandatory degree apostille/attestation from Ministry of Foreign Affairs (MOFA). Regulated fields require DHA / MOH / DOH licensing examinations or Golden Visa eligibility evaluation.';
+          title = '🇦🇪 Middle East &amp; Gulf Licensing Route';
+          content = '<strong>Typical Prerequisites:</strong> Accredited degree with MOFA attestation. Healthcare, engineering, and public-safety roles usually require local licensing exams (DHA, MOH, DOH) or employer visa sponsorship.';
         } else {
-          title = '🌐 Global Transferable Pathways';
-          content = '<strong>International Standards:</strong> Globally accredited degrees adhering to the Washington Accord (Engineering) or Bologna Process (Europe). Focus on bilingual/multilingual proficiency, remote-first portfolios, and international certifications.';
+          title = '🌐 Cross-Border Recognition';
+          content = '<strong>International Standards:</strong> Degrees covered by the Washington Accord (engineering) or Bologna Process (Europe) transfer more easily across borders alongside recognized practical licenses.';
         }
 
         return '<div class="dossier-callout" style="margin-top:16px; border-left:3px solid var(--route); background:var(--tint);">'
@@ -2163,15 +2248,15 @@ body.modal-open { overflow: hidden; }
         html += '<div class="regional-comp-header">';
         html += '<div class="regional-comp-title">'
           + '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>'
-          + '<span>Multi-Region Compensation &amp; Market Reality</span>'
+          + '<span>Pay &amp; Hiring Hubs by Region</span>'
           + '</div>';
         html += '<div class="regional-tabs">' + tabsHtml + '</div>';
         html += '</div>';
 
         html += '<div class="regional-grid">';
-        html += '<div class="reg-grid-cell"><div class="reg-loc">Entry-Level (0–2 Yrs)</div><div class="reg-val" style="color:var(--text);">' + escHtml(entryVal) + '</div><div class="reg-sub">Associate / Trainee band</div></div>';
-        html += '<div class="reg-grid-cell"><div class="reg-loc">Mid-Level (3–7 Yrs)</div><div class="reg-val" style="color:var(--good);">' + escHtml(midVal) + '</div><div class="reg-sub">Independent owner</div></div>';
-        html += '<div class="reg-grid-cell"><div class="reg-loc">Senior / Lead (8+ Yrs)</div><div class="reg-val" style="color:var(--route);">' + escHtml(seniorVal) + '</div><div class="reg-sub">Principal / Executive tier</div></div>';
+        html += '<div class="reg-grid-cell"><div class="reg-loc">Entry level (0–2 yrs)</div><div class="reg-val" style="color:var(--text);">' + escHtml(entryVal) + '</div><div class="reg-sub">Junior / trainee range</div></div>';
+        html += '<div class="reg-grid-cell"><div class="reg-loc">Mid career (3–7 yrs)</div><div class="reg-val" style="color:var(--good);">' + escHtml(midVal) + '</div><div class="reg-sub">Independent contributor</div></div>';
+        html += '<div class="reg-grid-cell"><div class="reg-loc">Senior / Lead (8+ yrs)</div><div class="reg-val" style="color:var(--route);">' + escHtml(seniorVal) + '</div><div class="reg-sub">Senior / management tier</div></div>';
         html += '</div>';
 
         html += '<div class="regional-extra-facts">';
@@ -2925,11 +3010,11 @@ body.modal-open { overflow: hidden; }
         if (activeSource !== 'all') {
           hasActive = true;
           const modeLabels = {
-            flagship: 'Deep Master Guides',
-            growth: 'Fast Growing 10%+',
-            ai: 'Harder To Automate',
-            high_earning: 'High Earning $150K+',
-            shortlist: 'Saved Shortlist'
+            flagship: 'In-depth guides',
+            growth: 'Fast growing 10%+',
+            ai: 'Harder to automate',
+            high_earning: 'High pay $150K+',
+            shortlist: 'Saved shortlist'
           };
           tray.appendChild(makeFilterChip('View: ' + (modeLabels[activeSource] || activeSource), function () { setActiveSource('all'); }));
         }
@@ -3358,7 +3443,7 @@ body.modal-open { overflow: hidden; }
         }
 
         if (totalMatches === 0) {
-          grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:60px 20px; color:var(--text-dim);"><div style="margin-bottom:16px;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><h3 style="color:var(--text); font-size:18px; margin-bottom:8px;">Nothing Matches Those Filters</h3><p>Try a wider search, or put the filters back to All.</p><button class="nav-btn primary" style="margin-top:16px;" onclick="resetAllFilters()">Reset All Filters</button></div>';
+          grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:60px 20px; color:var(--text-dim);"><div style="margin-bottom:16px;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><h3 style="color:var(--text); font-size:18px; margin-bottom:8px;">Nothing matches those filters</h3><p>Try a broader search, or clear your filters.</p><button class="nav-btn primary" style="margin-top:16px;" onclick="resetAllFilters()">Reset filters</button></div>';
           renderPagination(1, 1, 0);
           return;
         }
@@ -3422,70 +3507,105 @@ body.modal-open { overflow: hidden; }
       // Note: switchDetailTab is defined once, further down, next to the rest of
       // the modal plumbing. Only the later definition is live.
 
-      // Comprehensive Data Enrichment Helper for all 436 careers
+      // Fallback details when an occupation leaves optional enrichment fields blank
       function getCareerEnrichment(c) {
         const cat = (c.cat || '').toLowerCase();
         const id = (c.id || '').toLowerCase();
         const title = (c.title || '').toLowerCase();
+        const isPublicSafety = cat === 'law' && /police|detective|correction|bailiff|guard|security|fire|lifeguard|protective|military|patrol/i.test(id + ' ' + title);
+        const isFrontlineBiz = cat === 'biz' && /cashier|clerk|teller|reception|postal|collector|retail|counter|messenger|courier|agent|service/i.test(id + ' ' + title);
+        const isHospitality = (cat === 'service' || cat === 'hosp') && /chef|cook|baker|waiter|waitress|bartend|concierge|barber|hair|skincare|manicur|tour|travel|animal|recreation|fitness/i.test(id + ' ' + title);
 
-        // 1. Day in the Life (Hour-by-Hour Timeline)
+        // 1. Day in the Life
         let dayInLife = c.dayInLife;
         if (!dayInLife || !dayInLife.length) {
           if (cat === 'tech') {
             dayInLife = [
-              { time: '09:00', desc: 'Asynchronous sprint sync, checking GitHub pull requests, CI/CD telemetry, and triage logs.' },
-              { time: '10:30', desc: 'Deep focus coding block — designing database schemas, writing unit tests, and core system logic.' },
-              { time: '13:30', desc: 'Architecture review with product managers and security specialists to review system edge cases.' },
-              { time: '15:00', desc: 'Pair programming, reviewing complex code diffs, and profiling latency bottlenecks.' },
-              { time: '17:30', desc: 'Staging deployment verification, technical documentation updates, and planning next day priorities.' }
+              { time: '09:00', desc: 'Check pull requests, overnight build logs, and incoming bug reports with the team.' },
+              { time: '10:30', desc: 'Focused build block: writing core features, database queries, and tests.' },
+              { time: '13:30', desc: 'Talk through technical choices, edge cases, and security checks with teammates.' },
+              { time: '15:00', desc: 'Debug issues, review peers\' code, and speed up slow parts of the system.' },
+              { time: '17:30', desc: 'Check staging updates, update team notes, and line up tomorrow\'s tasks.' }
             ];
           } else if (cat === 'health') {
             dayInLife = [
-              { time: '07:30', desc: 'Morning clinical rounds, reviewing patient vitals, overnight diagnostic labs, and shift handover notes.' },
-              { time: '09:30', desc: 'Procedural focus block — specialized clinical interventions, surgery blocks, or scheduled diagnostics.' },
-              { time: '12:30', desc: 'Multidisciplinary case conference discussing complex treatment pathways and patient recovery telemetry.' },
-              { time: '14:00', desc: 'Outpatient clinic consultations, evaluating progress, and counseling families on therapy protocols.' },
-              { time: '17:00', desc: 'Electronic Health Record (EHR) chart finalization, prescription audits, and on-call handover.' }
+              { time: '07:30', desc: 'Morning handover: review patient notes, vital signs, and overnight lab results.' },
+              { time: '09:30', desc: 'Main clinical block: scheduled procedures, exams, or patient care rounds.' },
+              { time: '12:30', desc: 'Case check-in with doctors, nurses, and therapists to adjust care plans.' },
+              { time: '14:00', desc: 'Afternoon patient visits, follow-ups, and explaining recovery steps to families.' },
+              { time: '17:00', desc: 'Finish medical charts, review prescriptions, and brief the incoming shift.' }
+            ];
+          } else if (isFrontlineBiz) {
+            dayInLife = [
+              { time: '09:00', desc: 'Open workstation or counter, check queue backlog, and verify opening cash or records.' },
+              { time: '10:30', desc: 'Help customers with orders, payments, account questions, or routine filings.' },
+              { time: '13:30', desc: 'Log completed transactions, resolve billing discrepancies, and follow up on pending cases.' },
+              { time: '15:30', desc: 'Restock supplies or organize physical and digital records for the afternoon rush.' },
+              { time: '17:30', desc: 'Close out daily totals, flag open issues for the supervisor, and lock up.' }
             ];
           } else if (cat === 'biz') {
             dayInLife = [
-              { time: '08:30', desc: 'Market open scan, economic indicator briefing, and executive dashboard metrics review.' },
-              { time: '10:00', desc: 'Financial modeling, investment scenario analysis, or strategic contract negotiations.' },
-              { time: '13:30', desc: 'Stakeholder meeting presenting capital allocation proposals and operational risk assessments.' },
-              { time: '15:30', desc: 'Diligence review of corporate filings, customer acquisition unit economics, and pipeline telemetry.' },
-              { time: '17:30', desc: 'Executive summary distribution to senior leadership and setting transaction priorities for tomorrow.' }
+              { time: '08:30', desc: 'Scan market updates, client messages, and team revenue or budget numbers.' },
+              { time: '10:00', desc: 'Update spreadsheets, prepare proposals, or review active contracts and accounts.' },
+              { time: '13:30', desc: 'Present findings to managers or clients and weigh project costs against risks.' },
+              { time: '15:30', desc: 'Follow up with vendors, partners, or leads and clean up the active pipeline.' },
+              { time: '17:30', desc: 'Send out a short summary of decisions made and prep priorities for morning.' }
+            ];
+          } else if (isPublicSafety) {
+            dayInLife = [
+              { time: '07:00', desc: 'Shift briefing, radio check, equipment inspection, and reviewing active notices.' },
+              { time: '08:30', desc: 'Patrol assigned area, inspect sites, or monitor entry points and public spaces.' },
+              { time: '12:30', desc: 'Respond to dispatch calls, verify permits or safety rules, and coordinate with teams.' },
+              { time: '14:30', desc: 'Write incident logs, interview witnesses, or run scheduled compliance checks.' },
+              { time: '17:00', desc: 'Submit shift reports, hand over active cases, and store gear safely.' }
             ];
           } else if (cat === 'law') {
             dayInLife = [
-              { time: '08:30', desc: 'Statutory case law research, tracking recent judicial precedents, and analyzing evidentiary documents.' },
-              { time: '10:30', desc: 'Drafting legal briefs, discovery motions, or transactional covenants with strict statutory precision.' },
-              { time: '13:30', desc: 'Client strategic consultation, regulatory audit preparation, or settlement negotiations with opposing counsel.' },
-              { time: '15:30', desc: 'Courtroom proceedings, deposition hearings, or contract mark-up sessions with partners.' },
-              { time: '17:30', desc: 'Finalizing court docket filings, timekeeping logging, and case strategy memos.' }
+              { time: '08:30', desc: 'Read case files, check recent court rulings, and review incoming evidence.' },
+              { time: '10:30', desc: 'Draft legal memos, filings, or contract edits with careful citation checks.' },
+              { time: '13:30', desc: 'Meet clients or call opposing counsel to talk through terms or settlements.' },
+              { time: '15:30', desc: 'Attend hearings, mediations, or internal partner reviews on active cases.' },
+              { time: '17:30', desc: 'Log court deadlines, file signed paperwork, and map out tomorrow\'s hearings.' }
             ];
           } else if (cat === 'creative') {
             dayInLife = [
-              { time: '09:00', desc: 'Creative inspiration scan, reviewing customer behavior recordings, and internal design critique.' },
-              { time: '10:30', desc: 'High-focus creative block — typography layout, UI component states, 3D asset modeling, or animation.' },
-              { time: '13:30', desc: 'Cross-functional alignment with engineering leads to review implementation fidelity and asset specs.' },
-              { time: '15:00', desc: 'Usability testing observation, synthesizing user feedback, and refining interactive states.' },
-              { time: '17:00', desc: 'Design system token updates, asset exports, and handoff documentation for developers.' }
+              { time: '09:00', desc: 'Review project briefs, audience feedback, and notes from earlier critiques.' },
+              { time: '10:30', desc: 'Main creative block: drafting visuals, editing scenes, writing, or building prototypes.' },
+              { time: '13:30', desc: 'Walk producers, editors, or engineers through current drafts and check specs.' },
+              { time: '15:00', desc: 'Revise rough spots based on feedback and polish details across formats.' },
+              { time: '17:00', desc: 'Export clean production files, organize assets, and log handoff notes.' }
+            ];
+          } else if (cat === 'edu') {
+            dayInLife = [
+              { time: '08:00', desc: 'Prepare classroom materials, lab handouts, or archive records before learners arrive.' },
+              { time: '09:00', desc: 'Lead classes, workshops, or research desk help sessions.' },
+              { time: '12:30', desc: 'Meet colleagues, review student progress, or update teaching plans.' },
+              { time: '14:00', desc: 'Grade assignments, run one-on-one tutoring, or organize collection catalogs.' },
+              { time: '16:30', desc: 'Log attendance and progress notes and prep materials for the next session.' }
+            ];
+          } else if (isHospitality) {
+            dayInLife = [
+              { time: '08:30', desc: 'Inspect the station, check bookings or prep lists, and verify clean supplies.' },
+              { time: '10:00', desc: 'Serve guests, prepare orders or treatments, and keep pace with rush hours.' },
+              { time: '13:30', desc: 'Reset workspaces, handle special requests, and restock station inventory.' },
+              { time: '15:30', desc: 'Handle afternoon appointments or peak service hours while keeping standards steady.' },
+              { time: '18:00', desc: 'Deep-clean equipment, tally shift takings, and prep stock for the next shift.' }
             ];
           } else if (cat === 'science' || cat === 'eco') {
             dayInLife = [
-              { time: '08:30', desc: 'Laboratory sensor calibration, experimental sample prep, and baseline telemetry logging.' },
-              { time: '10:00', desc: 'Conducting controlled experiments, running computational simulations, or field data collection.' },
-              { time: '13:00', desc: 'Data reduction and statistical analysis using scientific computing libraries and modeling software.' },
-              { time: '15:00', desc: 'Peer research collaboration, protocol refinement, and peer-reviewed journal manuscript drafting.' },
-              { time: '17:00', desc: 'Biohazard / chemical safety sign-off, equipment maintenance protocols, and experiment queue setup.' }
+              { time: '08:30', desc: 'Calibrate lab sensors or field gear, prep samples, and check safety logs.' },
+              { time: '10:00', desc: 'Run experiments, gather field measurements, or test models on recorded data.' },
+              { time: '13:00', desc: 'Clean raw measurements and check statistical trends or map outputs.' },
+              { time: '15:00', desc: 'Compare notes with research peers and draft reports or study sections.' },
+              { time: '17:00', desc: 'Secure chemical or field samples, log maintenance checks, and queue overnight runs.' }
             ];
           } else {
             dayInLife = [
-              { time: '08:00', desc: 'Job site / operational readiness briefing, equipment calibration, and safety compliance walkthrough.' },
-              { time: '09:30', desc: 'Core hands-on diagnostic, technical maintenance, precision fabrication, or field operations.' },
-              { time: '12:30', desc: 'Quality assurance inspection, verifying dimensional tolerances and material integrity.' },
-              { time: '14:00', desc: 'Advanced troubleshooting on mechanical/electrical anomalies and component replacements.' },
-              { time: '16:30', desc: 'Daily work logs, inventory replenishment requests, equipment shutdown protocols, and shift handover.' }
+              { time: '08:00', desc: 'Morning site or workshop briefing, tool checks, and safety walkthrough.' },
+              { time: '09:30', desc: 'Main hands-on work: building, repairing, installing, or operating equipment.' },
+              { time: '12:30', desc: 'Inspect finished work against measurements, drawings, and local codes.' },
+              { time: '14:00', desc: 'Troubleshoot faults, swap worn parts, or coordinate deliveries on site.' },
+              { time: '16:30', desc: 'Update work logs, order spare parts, and lock down tools for the day.' }
             ];
           }
         }
@@ -3507,37 +3627,57 @@ body.modal-open { overflow: hidden; }
 
           if (cat === 'tech') {
             remoteRatio = '85% Remote / Hybrid';
-            balance = '8.0 / 10 (High autonomy)';
-            stress = 'Moderate to High (Sprint deadlines)';
-            travel = 'Minimal (< 5%)';
+            balance = '8.0 / 10 (High flexibility)';
+            stress = 'Moderate to High (Release deadlines)';
+            travel = 'Low (< 5%)';
           } else if (cat === 'health') {
-            remoteRatio = '0–10% (Hospital / Clinic onsite)';
+            remoteRatio = '0–10% (Hospital or clinic onsite)';
             balance = '6.0 / 10 (Shift-dependent)';
-            stress = 'High to Critical (Patient outcomes)';
-            travel = 'Minimal (Local)';
+            stress = 'High to Critical (Patient safety)';
+            travel = 'Low (Local)';
+          } else if (isFrontlineBiz) {
+            remoteRatio = '5–15% (Branch, store, or office onsite)';
+            balance = '7.2 / 10 (Fixed shifts)';
+            stress = 'Moderate (Busy rush windows)';
+            travel = 'Low (< 10%)';
           } else if (cat === 'biz') {
             remoteRatio = '60% Hybrid';
-            balance = '6.8 / 10 (Deal-driven)';
-            stress = 'High (Revenue & targets)';
+            balance = '6.8 / 10 (Deadline-driven)';
+            stress = 'High (Targets and quarters)';
             travel = 'Moderate (15–25%)';
+          } else if (isPublicSafety) {
+            remoteRatio = '0% (Field patrol, site, or station onsite)';
+            balance = '6.0 / 10 (Shift and emergency calls)';
+            stress = 'High (Safety decisions)';
+            travel = 'Local patrol / regional (20–40%)';
           } else if (cat === 'law') {
-            remoteRatio = '40% Hybrid (Court & client onsite)';
+            remoteRatio = '40% Hybrid (Courts and client offices)';
             balance = '6.2 / 10 (Docket-driven)';
-            stress = 'High (Statutory deadlines)';
-            travel = 'Occasional (10–20%)';
+            stress = 'High (Strict filing deadlines)';
+            travel = 'Moderate (10–20%)';
           } else if (cat === 'creative') {
             remoteRatio = '75% Remote / Hybrid';
-            balance = '8.2 / 10 (Creative autonomy)';
-            stress = 'Moderate (Revision cycles)';
-            travel = 'Minimal (< 10%)';
+            balance = '8.0 / 10 (Flexible schedule)';
+            stress = 'Moderate (Client revisions)';
+            travel = 'Low (< 10%)';
+          } else if (cat === 'edu') {
+            remoteRatio = '15% (Classrooms, campuses, or libraries)';
+            balance = '7.6 / 10 (Academic calendar)';
+            stress = 'Moderate (Grading and class prep)';
+            travel = 'Low (< 5%)';
+          } else if (isHospitality) {
+            remoteRatio = '0% (Kitchen, salon, venue, or site onsite)';
+            balance = '6.5 / 10 (Weekend & evening shifts)';
+            stress = 'Moderate to High (Peak customer rushes)';
+            travel = 'Low to Moderate';
           } else if (cat === 'space') {
-            remoteRatio = '15% (Hangars, launchpads & labs)';
-            balance = '6.8 / 10 (Mission critical)';
-            stress = 'Very High (Zero failure tolerance)';
-            travel = 'Moderate (20–40%)';
-          } else if (cat === 'trades') {
-            remoteRatio = '0% (Job sites & industrial plants)';
-            balance = '7.8 / 10 (Structured shifts)';
+            remoteRatio = '15% (Airports, hangars, and labs)';
+            balance = '6.8 / 10 (Strict schedules)';
+            stress = 'High (Zero-margin safety rules)';
+            travel = 'Moderate to High (20–50%)';
+          } else if (cat === 'trades' || cat === 'eng') {
+            remoteRatio = '0–20% (Job sites, plants, or drafting rooms)';
+            balance = '7.6 / 10 (Structured shifts)';
             stress = 'Moderate to High (Physical safety)';
             travel = 'Local to Regional (20–50%)';
           }
@@ -3555,9 +3695,9 @@ body.modal-open { overflow: hidden; }
             const midM = (str || '').match(/Mid\s+([^\s·]+)/i);
             const leadM = (str || '').match(/Lead\s+([^\s·]+)/i);
             return {
-              entry: entryM ? entryM[1] : (str ? str.split('·')[0].trim() : 'Competitive'),
-              median: midM ? midM[1] : (str ? (str.split('·')[1] || str).trim() : 'Competitive'),
-              top10: leadM ? leadM[1] : (str ? (str.split('·')[2] || str).trim() : 'Executive tier')
+              entry: entryM ? entryM[1] : (str ? str.split('·')[0].trim() : 'Varies'),
+              median: midM ? midM[1] : (str ? (str.split('·')[1] || str).trim() : 'Varies'),
+              top10: leadM ? leadM[1] : (str ? (str.split('·')[2] || str).trim() : 'Senior tier')
             };
           };
           const usP = parseObjStr(c.globalPay.us);
@@ -3571,7 +3711,6 @@ body.modal-open { overflow: hidden; }
             { country: 'United Arab Emirates', code: 'AED', entry: uaeP.entry, median: uaeP.median, top10: uaeP.top10 }
           ];
         } else if (c.bls) {
-          // Real Bureau of Labor Statistics figures, converted for display.
           const bls = c.bls;
           const usd = k => '$' + Math.round(k) + 'K';
           const baseUsd = (bls.medianPay || 60000) / 1000;
@@ -3582,49 +3721,69 @@ body.modal-open { overflow: hidden; }
             { country: 'United Arab Emirates', code: 'AED', entry: 'Not published', median: 'Not published', top10: 'Not published' }
           ];
         }
-        // No globalPay and no BLS profile: globalPay stays empty and the table
-        // is not rendered at all. Sizing four countries off a free-text salary
-        // string used to happen here, which meant every unsourced career
-        // silently showed an invented number. A blank is better than a guess.
 
         // 4. Who Should Avoid
         let whoAvoids = c.whoAvoids;
         if (!whoAvoids || !whoAvoids.length) {
           if (cat === 'tech') {
             whoAvoids = [
-              'People who dislike sitting for long uninterrupted blocks solving opaque logical puzzles.',
-              'Anyone expecting static job security without continuous self-directed learning of new frameworks every 2–3 years.',
-              'Those who struggle when product requirements change unexpectedly mid-sprint.'
+              'People who hate sitting for long stretches reading logs and tracking down tricky bugs.',
+              'Anyone unwilling to keep learning new tools as software practices change.',
+              'Those who get frustrated when project specs shift mid-way through a build.'
             ];
           } else if (cat === 'health') {
             whoAvoids = [
-              'Anyone with low tolerance for biological fluids, physical distress, or urgent high-stakes emergencies.',
-              'Those unwilling to work irregular night shifts, weekend calls, or emergency rotations.',
-              'People who carry clinical anxiety home and cannot emotionally compartmentalize difficult outcomes.'
+              'Anyone uncomfortable with blood, medical procedures, or urgent situations.',
+              'Those who cannot work night shifts, weekends, or on-call rotations.',
+              'People who find it hard to set down stressful work days after leaving a shift.'
+            ];
+          } else if (isFrontlineBiz) {
+            whoAvoids = [
+              'People who dislike standing or handling dozens of customer questions every hour.',
+              'Anyone frustrated by repetitive record checks, billing steps, or strict counter rules.',
+              'Those who prefer quiet solo work over steady customer-facing contact.'
             ];
           } else if (cat === 'biz') {
             whoAvoids = [
-              'People who want guaranteed predictability without personal accountability for financial quotas.',
-              'Anyone uncomfortable with corporate political dynamics, client negotiations, or public presentations.',
-              'Those seeking strict 9-to-5 boundaries during peak fiscal quarters or live deal closing sprints.'
+              'People who want fixed pay with zero pressure from budgets, quotas, or client targets.',
+              'Anyone uncomfortable speaking up in meetings, pitching ideas, or negotiating prices.',
+              'Those looking for strict 9-to-5 hours during busy reporting months.'
+            ];
+          } else if (isPublicSafety) {
+            whoAvoids = [
+              'Anyone unwilling to work nights, weekends, holidays, or outdoor weather shifts.',
+              'People who freeze under pressure or dislike enforcing rules face-to-face.',
+              'Those who prefer a predictable desk job over physical alertness on shift.'
             ];
           } else if (cat === 'law') {
             whoAvoids = [
-              'Anyone who hates meticulous document review, grammatical rigor, and cross-referencing dense statutory text.',
-              'People conflict-averse who feel drained by adversarial negotiations and contentious hearings.',
-              'Those uncomfortable with billable-hour tracking or uncompromising court filing deadlines.'
+              'Anyone who hates careful reading, grammar checks, and comparing dense rules line by line.',
+              'People who feel drained by tense negotiations or formal arguments.',
+              'Those uncomfortable with strict filing deadlines and detailed time logs.'
             ];
           } else if (cat === 'creative') {
             whoAvoids = [
-              'People who take design critique personally or cannot detach their ego from discarded work.',
-              'Anyone seeking rigid, formulaic instructions rather than ambiguous creative briefs.',
-              'Those who struggle to balance artistic expression with commercial business conversion metrics.'
+              'People who take blunt feedback personally when a client rejects early drafts.',
+              'Anyone who wants step-by-step checklists instead of open-ended briefs.',
+              'Those who dislike tightening budgets or schedules around creative ideas.'
+            ];
+          } else if (cat === 'edu') {
+            whoAvoids = [
+              'Anyone who gets drained explaining the same concept ten different ways.',
+              'People who want to leave all work at the door without evening prep or grading.',
+              'Those uncomfortable keeping a noisy classroom or busy desk orderly.'
+            ];
+          } else if (isHospitality) {
+            whoAvoids = [
+              'People who need weekends, evenings, and public holidays free.',
+              'Anyone who dislikes working on their feet during loud, fast-moving rushes.',
+              'Those who get annoyed repeating polite service routines all shift.'
             ];
           } else {
             whoAvoids = [
-              'Anyone with physical mobility limitations averse to industrial sites, field work, or changing weather.',
-              'People who prefer pure screen-based work over hands-on mechanical diagnostic accountability.',
-              'Those who struggle to strictly observe rigorous industrial health and safety standards.'
+              'Anyone unwilling to work outdoors, on ladders, or around heavy shop noise.',
+              'People who prefer pure desk work over fixing or inspecting physical equipment.',
+              'Those who cut corners on safety rules when a job runs late.'
             ];
           }
         }
@@ -3633,60 +3792,92 @@ body.modal-open { overflow: hidden; }
         let tools = c.tools;
         if (!tools || !tools.length) {
           if (cat === 'tech') {
-            tools = ['Git & GitHub', 'Linux Shell', 'Docker & Kubernetes', 'PostgreSQL', 'VS Code', 'Postman / Curl', 'Datadog / Prometheus'];
+            tools = ['Git & GitHub', 'Linux Shell', 'Docker', 'SQL / PostgreSQL', 'VS Code', 'Issue Trackers'];
           } else if (cat === 'health') {
-            tools = ['Epic Systems EHR', 'Cerner Health', 'PACS Diagnostic Imaging', 'Digital Stethoscope', 'Point-of-Care Ultrasound', 'Vital Monitors'];
+            tools = ['Electronic Health Records (EHR)', 'Vitals Monitors', 'Diagnostic Lab Kits', 'Clinical Checklists', 'Protective Gear'];
+          } else if (isFrontlineBiz) {
+            tools = ['POS Registers', 'CRM / Ticketing Software', 'Spreadsheets', 'Inventory Scanners', 'Accounting Ledgers'];
           } else if (cat === 'biz') {
-            tools = ['Bloomberg Terminal', 'Microsoft Excel (Advanced / VBA)', 'FactSet', 'Capital IQ', 'Power BI / Tableau', 'Salesforce CRM'];
+            tools = ['Microsoft Excel', 'Power BI / Tableau', 'ERP & Accounting Software', 'CRM Platforms', 'Slide Decks'];
+          } else if (isPublicSafety) {
+            tools = ['Two-Way Radio Dispatch', 'Incident Reporting Software', 'Body-Worn Cameras', 'Safety Inspection Checklists', 'Emergency Kits'];
           } else if (cat === 'law') {
-            tools = ['Westlaw', 'LexisNexis', 'Clio Practice Management', 'iManage Document Management', 'Adobe Acrobat Pro', 'Relativity e-Discovery'];
+            tools = ['Legal Research Databases', 'Document Redlining Tools', 'Case Filing Portals', 'Timekeeping Systems', 'Evidence Logs'];
           } else if (cat === 'creative') {
-            tools = ['Figma', 'Adobe Creative Cloud', 'Cinema 4D / Blender', 'Linear / Notion', 'Midjourney / Stable Diffusion', 'Miro'];
+            tools = ['Figma / Adobe Creative Cloud', 'Video & Audio Editors', '3D Modeling Tools', 'Storyboard Templates', 'Project Trackers'];
+          } else if (cat === 'edu') {
+            tools = ['Learning Management Systems (LMS)', 'Lesson & Quiz Builders', 'Cataloging Software', 'Spreadsheets', 'Presentation Decks'];
+          } else if (isHospitality) {
+            tools = ['Kitchen & Trade Equipment', 'Booking / POS Terminals', 'Prep & Inventory Logs', 'Hygiene & Safety Checklists', 'Scheduling Apps'];
           } else if (cat === 'science' || cat === 'eco') {
-            tools = ['Python (NumPy / SciPy)', 'RStudio', 'MATLAB', 'Spectrophotometer', 'QGIS / ArcGIS', 'OriginPro'];
+            tools = ['Python / RStudio', 'Lab Instruments', 'QGIS / Mapping Software', 'Spreadsheets', 'Field Sampling Kits'];
           } else {
-            tools = ['SolidWorks / AutoCAD', 'Fluke Digital Multimeter', 'Calipers & Micrometers', 'OSHA Safety Gear', 'Diagnostic OBD-II Scanners'];
+            tools = ['AutoCAD / SolidWorks', 'Digital Multimeters', 'Calipers & Hand Tools', 'Safety Harness & PPE', 'Inspection Checklists'];
           }
         }
 
-        // 6. Portfolio Projects (What Gets You Hired)
+        // 6. Portfolio Projects
         let portfolioProjects = c.portfolioProjects;
         if (!portfolioProjects || !portfolioProjects.length) {
           if (cat === 'tech') {
             portfolioProjects = [
-              'Full-Stack Production System: Deploy a public, monitored microservice with unit/integration test coverage, database indexing, and GitHub Actions CI/CD.',
-              'Open-Source Contribution: Submit a merged pull request addressing an issue in a recognized industry open-source repository, including regression tests.',
-              'End-to-End System Architecture Spec: Write a comprehensive RFC document analyzing tradeoffs for high-availability scaling under simulated 10k RPS.'
+              'Working Software Project: Build and deploy a small, tested tool or API with clear setup notes in Git.',
+              'Open-Source Fix: Submit a real pull request fixing a bug or adding tests to an existing public repo.',
+              'System Tradeoff Write-up: Document how you scaled, indexed, or debugged a slow workflow with real numbers.'
             ];
           } else if (cat === 'health') {
             portfolioProjects = [
-              'Documented Clinical Case Study: Publish an evidence-based clinical case review analyzing differential diagnosis, treatment milestones, and recovery telemetry.',
-              'Quality Improvement Protocol: Design a departmental clinical workflow audit reducing patient wait times or diagnostic turnaround times by 15%.',
-              'Community Health Screening Initiative: Coordinate an outpatient diagnostic camp, tracking vitals and health risk scores across 200+ local participants.'
+              'Clinical Case Write-up: Summarize a supervised care case showing how tests guided the treatment choice.',
+              'Workflow Cleanup Note: Document a practical clinic process change that cut patient wait times or errors.',
+              'Community Screening Log: Help run a local checkup camp and record anonymised health metrics cleanly.'
+            ];
+          } else if (isFrontlineBiz) {
+            portfolioProjects = [
+              'Accurate Daily Reconciliation Log: Show error-free handling of high-volume transactions, queues, or records.',
+              'Customer Resolution Case: Document how you de-escalated a billing error or solved a repeat service bottleneck.',
+              'Inventory or Queue Sheet: Build a clean tracking sheet that cut stockouts or customer wait times.'
             ];
           } else if (cat === 'biz') {
             portfolioProjects = [
-              'Public Financial Model: Build a 3-statement integrated valuation and scenario sensitivity model for a publicly listed enterprise with clear DCF assumptions.',
-              'Market Entry Strategic Memo: Author an executive advisory deck evaluating a $50M capital expansion into an emerging regional market with full risk matrices.',
-              'Growth Funnel Optimization: Audit customer acquisition economics (LTV/CAC) for a live product, pinpointing drop-off points with actionable fixes.'
+              '3-Statement Budget or Valuation Sheet: Build a clean spreadsheet with clear assumptions and sensitivity checks.',
+              'Market or Competitor Brief: Write a short 3-page note comparing pricing, costs, and risks for two real firms.',
+              'Process or Conversion Audit: Spot a concrete leak in costs or customer drop-offs and propose a testable fix.'
+            ];
+          } else if (isPublicSafety) {
+            portfolioProjects = [
+              'Incident & Safety Walkthrough Report: Document hazards, response steps, and clear chain-of-custody notes.',
+              'Emergency Drill Readiness Log: Complete CPR, first aid, fire-response, or radio-dispatch practical drills.',
+              'Physical Fitness & Clearance Record: Pass standard departmental agility, vision, and background checks.'
             ];
           } else if (cat === 'law') {
             portfolioProjects = [
-              'Published Moot Court Brief: Draft an appellant brief analyzing statutory interpretation of constitutional or commercial law with formal citations.',
-              'Regulatory Compliance Audit: Formulate a GDPR/HIPAA gap analysis audit framework for a cross-border digital enterprise.',
-              'Contract Playbook: Construct a negotiated contract playbook highlighting standard risk allocations, indemnification clauses, and escalation ladders.'
+              'Mock Brief or Legal Memo: Write a clear legal argument applying statutes and cases to a real dispute.',
+              'Compliance Gap Checklist: Audit a sample website or workplace against data, safety, or labour rules.',
+              'Annotated Contract Markup: Mark up a standard agreement showing risky clauses and plain-English fixes.'
             ];
           } else if (cat === 'creative') {
             portfolioProjects = [
-              'Comprehensive Product Case Study: Document user research, interactive wireframes, iterative usability test notes, and final design tokens for a complex workflow.',
-              'Design System from Scratch: Build an accessible component library with tokens, variable color modes, and interactive component states in Figma.',
-              'Motion & Brand Identity Package: Create a responsive brand identity system featuring interactive UI animations, vector iconography, and typography guidelines.'
+              'Process Case Study: Show rough sketches, rejected drafts, feedback notes, and the final shipped piece.',
+              'Reusable Asset Kit: Build a tidy set of components, typography scales, or scene templates others can use.',
+              'Short Finished Production: Ship one complete project end-to-end (film cut, layout, campaign, or interactive build).'
+            ];
+          } else if (cat === 'edu') {
+            portfolioProjects = [
+              'Unit Lesson Pack: Write a full week of class plans with hands-on activities and quick student checks.',
+              'Graded Feedback Sample: Show how you mark student work constructively to help struggling learners improve.',
+              'Workshop or Reading Guide: Put together an accessible resource guide or study clinic for a difficult topic.'
+            ];
+          } else if (isHospitality) {
+            portfolioProjects = [
+              'Timed Practical Trial: Complete a clean prep, service, or practical station test during rush hours.',
+              'Food / Hygiene Certification: Earn local food-handler, safety, or trade licensing before applying.',
+              'Service & Stock Log: Show experience managing bookings, supplier prep lists, and calm guest problem-solving.'
             ];
           } else {
             portfolioProjects = [
-              'Complete Technical Teardown & Rebuild: Document the step-by-step diagnostic, teardown, component replacement, and calibration of an industrial or mechanical unit.',
-              'Safety & Compliance Audit Report: Perform a rigorous site safety hazard assessment following OSHA/ISO guidelines, identifying and mitigating structural risks.',
-              'Field Prototype or Custom Fabrication: Design, machine, and assemble a precision mechanical fixture or electrical wiring harness matching tight specs.'
+              'Shop Teardown & Repair Log: Document diagnosing a fault, replacing worn parts, and testing tolerances safely.',
+              'Safety & Inspection Checklist: Complete an OSHA/site hazard check with clear measurements and fixes.',
+              'Built Sample or Fixture: Fabricate or wire a working unit from shop drawings within spec.'
             ];
           }
         }
@@ -3695,17 +3886,25 @@ body.modal-open { overflow: hidden; }
         let exitOpportunities = c.exitOpportunities;
         if (!exitOpportunities || !exitOpportunities.length) {
           if (cat === 'tech') {
-            exitOpportunities = ['Principal / Staff Architect', 'VP of Engineering / CTO', 'Technical Product Management (TPM)', 'Cloud Solutions Architecture', 'Independent Tech Founder'];
+            exitOpportunities = ['Staff / Principal Specialist', 'Engineering Manager', 'Product Manager', 'Solutions Architect', 'Independent Consultant'];
           } else if (cat === 'health') {
-            exitOpportunities = ['Department Chief / Medical Director', 'Healthcare Systems Executive', 'Biotech Clinical Trials Director', 'Medical Device Consultant', 'Academic Clinical Professor'];
+            exitOpportunities = ['Senior Clinician / Supervisor', 'Clinic or Department Manager', 'Clinical Trials Coordinator', 'Health Education Specialist', 'Private Practice Owner'];
+          } else if (isFrontlineBiz) {
+            exitOpportunities = ['Branch / Store Supervisor', 'Operations Coordinator', 'Customer Support Lead', 'Office Manager', 'Account Representative'];
           } else if (cat === 'biz') {
-            exitOpportunities = ['Chief Financial Officer (CFO)', 'Private Equity / Venture Capital Partner', 'Management Consulting Practice Lead', 'Corporate Board Director', 'Chief Operating Officer (COO)'];
+            exitOpportunities = ['Finance or Ops Director', 'Senior Consultant', 'Product / General Manager', 'Corporate Controller', 'Independent Advisor'];
+          } else if (isPublicSafety) {
+            exitOpportunities = ['Watch Commander / Chief', 'Safety Compliance Inspector', 'Emergency Preparedness Coordinator', 'Corporate Risk & Security Lead', 'Training Instructor'];
           } else if (cat === 'law') {
-            exitOpportunities = ['General Counsel / Chief Legal Officer', 'Senior Equity Partner', 'Federal or State Judge', 'Corporate Compliance Director', 'Government Policy Advisor'];
+            exitOpportunities = ['Senior Partner / Counsel', 'Compliance Director', 'Hearing Officer / Mediator', 'Policy Analyst', 'In-House Legal Lead'];
           } else if (cat === 'creative') {
-            exitOpportunities = ['Chief Design Officer (CDO)', 'Executive Creative Director', 'Product Design Director', 'Brand Strategy Consultant', 'Creative Agency Founder'];
+            exitOpportunities = ['Creative Director', 'Lead Producer / Editor', 'Brand Consultant', 'Design Manager', 'Studio Owner'];
+          } else if (cat === 'edu') {
+            exitOpportunities = ['Department Head / Principal', 'Curriculum Designer', 'Instructional Coach', 'Library / Program Director', 'Academic Advisor'];
+          } else if (isHospitality) {
+            exitOpportunities = ['Venue / Kitchen Manager', 'Operations Supervisor', 'Training Lead', 'Quality Inspector', 'Independent Business Owner'];
           } else {
-            exitOpportunities = ['Plant Operations Manager', 'Senior Quality Assurance Director', 'Industrial Technical Consultant', 'Safety & Regulatory Inspector', 'Specialized Contracting Business Owner'];
+            exitOpportunities = ['Master Technician / Foreman', 'Plant Operations Manager', 'Quality & Safety Inspector', 'Technical Estimator', 'Independent Contractor'];
           }
         }
 
@@ -3713,17 +3912,25 @@ body.modal-open { overflow: hidden; }
         let topEmployers = c.topEmployers;
         if (!topEmployers || !topEmployers.length) {
           if (cat === 'tech') {
-            topEmployers = ['Enterprise Cloud Providers (AWS, Google, Microsoft)', 'High-Growth Tech Startups', 'Fintech & Quantitative Trading Firms', 'Defense & Aerospace Tech', 'Digital Health Platforms'];
+            topEmployers = ['Software & SaaS Companies', 'Cloud & Infrastructure Providers', 'Banks & Payment Firms', 'Telecom & Networking Firms', 'Tech Startups'];
           } else if (cat === 'health') {
-            topEmployers = ['Academic Medical Centers & University Hospitals', 'Private Multispecialty Hospital Networks', 'Government Health Agencies (NHS, CDC, AIIMS)', 'Biopharmaceutical Research Labs', 'Specialized Outpatient Clinics'];
+            topEmployers = ['Public & Teaching Hospitals', 'Private Clinic Networks', 'Diagnostic & Pathology Labs', 'Rehabilitation Centers', 'Public Health Agencies'];
+          } else if (isFrontlineBiz) {
+            topEmployers = ['Retail Chains & Supermarkets', 'Retail Banks & Credit Unions', 'Logistics & Postal Hubs', 'Healthcare Front Desks', 'Municipal Offices'];
           } else if (cat === 'biz') {
-            topEmployers = ['Tier-1 Investment Banks (Goldman Sachs, Morgan Stanley)', 'Top Strategy Consultancies (McKinsey, BCG, Bain)', 'Fortune 500 Corporate Finance', 'Private Equity & Sovereign Wealth Funds', 'Fintech Disruptors'];
+            topEmployers = ['Accounting & Advisory Firms', 'Corporate Finance Departments', 'Commercial Banks & Insurers', 'E-commerce & Logistics Groups', 'Mid-size Operating Firms'];
+          } else if (isPublicSafety) {
+            topEmployers = ['City & State Police Departments', 'Fire & Emergency Services', 'Correctional & Court Agencies', 'Airport & Port Authorities', 'Private Facilities Security'];
           } else if (cat === 'law') {
-            topEmployers = ['International Law Firms (AmLaw 100 / Magic Circle)', 'In-House Corporate Legal Departments', 'Public Defense & Prosecution Agencies', 'Nonprofit Human Rights & Environmental Advocacy', 'Judicial Clerkships'];
+            topEmployers = ['Law Firms & Chambers', 'Corporate Legal Teams', 'Government Justice Departments', 'Regulatory Commissions', 'Legal Aid Nonprofits'];
           } else if (cat === 'creative') {
-            topEmployers = ['Global Design Consultancies (Pentagram, IDEO)', 'Consumer Tech Product Companies (Apple, Airbnb, Stripe)', 'AAA Game Development Studios', 'Brand & Advertising Agencies', 'Entertainment & Film Studios'];
+            topEmployers = ['Product & Media Companies', 'Advertising & Design Studios', 'Publishing Houses & Newsrooms', 'Film, TV & Game Studios', 'Independent Client Practice'];
+          } else if (cat === 'edu') {
+            topEmployers = ['Public & Private School Districts', 'Colleges & Universities', 'Public Libraries & Museums', 'Test-Prep & EdTech Teams', 'Corporate L&D Departments'];
+          } else if (isHospitality) {
+            topEmployers = ['Hotels, Resorts & Restaurants', 'Salons & Wellness Clinics', 'Tour Operators & Venues', 'Schools & Hospitals (Food/Care)', 'Self-Employed Practice'];
           } else {
-            topEmployers = ['Industrial Manufacturing Plants', 'Commercial Infrastructure Contractors', 'Public Utilities & Energy Grids', 'Aerospace Assembly Facilities', 'State & Federal Department of Transportation'];
+            topEmployers = ['Construction & Contracting Firms', 'Manufacturing Plants', 'Power & Water Utilities', 'Aerospace Assembly Facilities', 'State Infrastructure Agencies'];
           }
         }
 
@@ -3738,7 +3945,6 @@ body.modal-open { overflow: hidden; }
           topEmployers
         };
       }
-
       async function openDetail(id) {
         const modal = document.getElementById('detail-modal');
         const card = document.getElementById('modal-card');
@@ -3769,7 +3975,7 @@ body.modal-open { overflow: hidden; }
         const data = getCareerEnrichment(c);
         const growthNum = (c.growth || '').split('(')[0].trim();
         const demandText = c.demand ? c.demand + ' Demand' : 'Steady Growth';
-        const eduText = EDU_LABELS[c.edu] || c.edu || "Bachelor's Degree";
+        const eduText = EDU_LABELS[c.edu] || c.edu || "Bachelor's degree";
 
         let html = '';
 
@@ -3870,11 +4076,11 @@ body.modal-open { overflow: hidden; }
         
         // Section: Core Work & Mission
         html += '<div class="dossier-section">';
-        html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>The Core Work &amp; Mission</div>';
+        html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>What the Job Actually Involves</div>';
         html += '<p class="dossier-prose">' + c.overview + '</p>';
         if (c.decisionFit && c.decisionFit.workStyle) {
           html += '<div class="dossier-callout">';
-          html += '<div style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.6px; color:var(--route); margin-bottom:4px;">Workplace Environment &amp; Rhythm</div>';
+          html += '<div style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.6px; color:var(--route); margin-bottom:4px;">Where &amp; How You Work</div>';
           html += c.decisionFit.workStyle;
           html += '</div>';
         }
@@ -3914,18 +4120,18 @@ body.modal-open { overflow: hidden; }
 
         // Section: Workplace Flexibility & Environment
         html += '<div class="dossier-section">';
-        html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>Workplace Flexibility &amp; Operational Reality</div>';
+        html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>Work Setup &amp; Schedule</div>';
         html += '<div class="dossier-env-grid">';
         html += '<div class="dossier-env-card"><div class="env-label">Remote / Hybrid Ratio</div><div class="env-value">' + data.workMetrics.remoteRatio + '</div></div>';
         html += '<div class="dossier-env-card"><div class="env-label">Work-Life Balance Index</div><div class="env-value">' + data.workMetrics.balance + '</div></div>';
-        html += '<div class="dossier-env-card"><div class="env-label">Stress &amp; Stakes Profile</div><div class="env-value">' + data.workMetrics.stress + '</div></div>';
+        html += '<div class="dossier-env-card"><div class="env-label">Day-to-Day Pressure</div><div class="env-value">' + data.workMetrics.stress + '</div></div>';
         html += '<div class="dossier-env-card"><div class="env-label">Travel Frequency</div><div class="env-value">' + data.workMetrics.travel + '</div></div>';
         html += '</div>';
         html += '</div>';
 
         // Section: A Day in the Life
         html += '<div class="dossier-section">';
-        html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>A Day in the Life (Hour-by-Hour Rhythm)</div>';
+        html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>A Typical Day</div>';
         html += '<div class="dossier-timeline">';
         data.dayInLife.forEach(step => {
           const desc = step.desc || step.activity || '';
@@ -3936,7 +4142,7 @@ body.modal-open { overflow: hidden; }
 
         // Section: Top Employers
         html += '<div class="dossier-section">';
-        html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-3"/></svg>Primary Hiring Sectors &amp; Top Employers</div>';
+        html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-3"/></svg>Where People Work</div>';
         html += '<div style="display:flex; flex-wrap:wrap; gap:8px;">';
         data.topEmployers.forEach(emp => {
           html += '<span class="skill-pill" style="color:var(--text); background:var(--tint); border-color:var(--line);">' + emp + '</span>';
@@ -3954,7 +4160,7 @@ body.modal-open { overflow: hidden; }
         // Section: Pros & Cons
         if (c.decisionFit && (c.decisionFit.pros || c.decisionFit.cons)) {
           html += '<div class="dossier-section">';
-          html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Honest Trade-offs: The Upside vs The Hard Reality</div>';
+          html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>What&rsquo;s Good, and What&rsquo;s Hard</div>';
           html += '<div class="dossier-tradeoffs">';
           html += '<div class="dossier-tradeoff-col pro"><h5>The Upside</h5><ul>' + (c.decisionFit.pros || []).map(p => '<li>' + p + '</li>').join('') + '</ul></div>';
           html += '<div class="dossier-tradeoff-col con"><h5>The Hard Reality</h5><ul>' + (c.decisionFit.cons || []).map(cn => '<li>' + cn + '</li>').join('') + '</ul></div>';
@@ -3965,7 +4171,7 @@ body.modal-open { overflow: hidden; }
         // Section: Red Flags / Who Should Avoid
         html += '<div class="dossier-section">';
         html += '<div class="dossier-avoid-box">';
-        html += '<div class="dossier-avoid-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Honest Red Flags: Who Should Avoid This Career</div>';
+        html += '<div class="dossier-avoid-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Think Twice Before Picking This If...</div>';
         html += '<ul class="dossier-avoid-list">';
         data.whoAvoids.forEach(wa => {
           html += '<li>' + wa + '</li>';
@@ -3977,7 +4183,7 @@ body.modal-open { overflow: hidden; }
         // Section: Who Truly Thrives Here
         if (c.decisionFit && c.decisionFit.traits && c.decisionFit.traits.length) {
           html += '<div class="dossier-section">';
-          html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>Who Truly Thrives Here (Key Temperaments)</div>';
+          html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>People Who Usually Enjoy This Work</div>';
           html += '<div style="display:flex; flex-wrap:wrap; gap:8px;">' + c.decisionFit.traits.map(t => '<span class="skill-pill soft">' + t + '</span>').join('') + '</div>';
           html += '</div>';
         }
@@ -3985,7 +4191,7 @@ body.modal-open { overflow: hidden; }
         // Section: Self-Reflection Questions
         if (c.reflectionQuestions && c.reflectionQuestions.length) {
           html += '<div class="dossier-section">';
-          html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Self-Reflection Questions Worth Asking Yourself</div>';
+          html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Questions Worth Asking Yourself</div>';
           html += '<ul style="padding-left:18px; color:var(--muted); font-size:14px; line-height:1.75; display:flex; flex-direction:column; gap:8px;">' + c.reflectionQuestions.map(q => '<li>' + q + '</li>').join('') + '</ul>';
           html += '</div>';
         }
@@ -4010,7 +4216,7 @@ body.modal-open { overflow: hidden; }
         // Section: Target Entrance Exams
         if (c.education && c.education.entranceExams) {
           html += '<div class="dossier-section">';
-          html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Target Entrance Exams &amp; Standardized Tests</div>';
+          html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Entrance &amp; Licensing Exams</div>';
           html += '<div style="padding:16px 20px; background:color-mix(in srgb, var(--route) 14%, transparent); border-left:3px solid var(--route); border-radius:0 10px 10px 0;">';
           html += '<div style="font-size:15px; font-weight:700; color:var(--text); margin-bottom:4px;">' + c.education.entranceExams + '</div>';
           html += '<div style="font-size:13px; color:var(--muted); line-height:1.5;">Evaluated for university admissions, state board licensing, and professional accreditation.</div>';
@@ -4051,7 +4257,7 @@ body.modal-open { overflow: hidden; }
         // Section: Top Institutes
         if (c.education && c.education.topInstitutes && c.education.topInstitutes.length) {
           html += '<div class="dossier-section">';
-          html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-3"/></svg>Benchmark Institutes &amp; Global Academies</div>';
+          html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-3"/></svg>Well-Known Schools &amp; Institutes</div>';
           html += '<div style="display:flex; flex-wrap:wrap; gap:8px;">' + c.education.topInstitutes.map(inst => '<span style="font-size:13px; padding:6px 12px; border-radius:8px; background:var(--tint); border:1px solid var(--line); color:var(--text);">' + inst + '</span>').join('') + '</div>';
           html += '</div>';
         }
@@ -4059,7 +4265,7 @@ body.modal-open { overflow: hidden; }
         // Section: Valued Certifications
         if (c.education && c.education.certifications && c.education.certifications.length) {
           html += '<div class="dossier-section">';
-          html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>Valued Professional Certifications &amp; Licenses</div>';
+          html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>Useful Certifications &amp; Licenses</div>';
           html += '<div style="display:flex; flex-wrap:wrap; gap:8px;">' + c.education.certifications.map(cert => '<span class="skill-pill soft" style="font-size:13px;">' + cert + '</span>').join('') + '</div>';
           html += '</div>';
         }
@@ -4070,13 +4276,13 @@ body.modal-open { overflow: hidden; }
         // actively wrong for the 156 that need no degree at all.
         const BREAK = {
           nodegree: {
-            window: 'Any time — there is no degree to wait for',
+            window: 'Any time: there is no degree to wait for',
             signal: 'A certification, a licence, or work you can point at',
             lead: 'Nobody is going to hand you a college offer here, so the entry ticket is proof you can already do the work.',
             steps: [
               'Get the specific licence or ticket the trade actually requires.',
               'Take work that is paid even if it is not the job you want yet.',
-              'Build a small portfolio — a repaired engine, a finished set, a season of footage.',
+              'Build a small portfolio: a repaired engine, a finished set, or a season of footage.',
             ],
           },
           diploma: {
@@ -4116,7 +4322,7 @@ body.modal-open { overflow: hidden; }
             steps: [
               'Publish or get accepted somewhere reputable, even early.',
               'Build a relationship with your supervisor that outlasts the enrolment.',
-              'Take a teaching assistantship — it is the cheapest way to prove you can explain research.',
+              'Take a teaching assistantship: it is the simplest way to show you can explain research.',
             ],
           },
         };
@@ -4124,10 +4330,10 @@ body.modal-open { overflow: hidden; }
         BREAK.phd = BREAK.doctorate;
         const brk = BREAK[c.edu] || BREAK.bachelor;
         html += '<div class="dossier-section">';
-        html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Getting Your First Break (Apprenticeships &amp; Internships)</div>';
+        html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Getting Your First Break</div>';
         html += '<p class="dossier-prose dim" style="margin-bottom:14px;">' + brk.lead + '</p>';
         html += '<div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">';
-        html += '<div style="padding:12px 16px; background:var(--tint); border:1px solid var(--line); border-radius:10px;"><div style="font-size:10.5px; color:var(--route); font-weight:800; text-transform:uppercase;">When To Start Applying</div><div style="font-size:13.5px; color:var(--text); font-weight:600; margin-top:3px;">' + brk.window + '</div></div>';
+        html += '<div style="padding:12px 16px; background:var(--tint); border:1px solid var(--line); border-radius:10px;"><div style="font-size:10.5px; color:var(--route); font-weight:800; text-transform:uppercase;">When to Start Applying</div><div style="font-size:13.5px; color:var(--text); font-weight:600; margin-top:3px;">' + brk.window + '</div></div>';
         html += '<div style="padding:12px 16px; background:var(--tint); border:1px solid var(--line); border-radius:10px;"><div style="font-size:10.5px; color:var(--good); font-weight:800; text-transform:uppercase;">What Actually Decides It</div><div style="font-size:13.5px; color:var(--text); font-weight:600; margin-top:3px;">' + brk.signal + '</div></div>';
         html += '</div>';
         html += '<ul style="padding-left:18px; color:var(--muted); font-size:13.5px; line-height:1.7; display:flex; flex-direction:column; gap:6px;">' + brk.steps.map(s => '<li>' + s + '</li>').join('') + '</ul>';
@@ -4142,8 +4348,8 @@ body.modal-open { overflow: hidden; }
 
         // Section: Seniority & Experience Curve
         html += '<div class="dossier-section">';
-        html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Seniority &amp; Experience Compensation Curve</div>';
-        html += '<p class="dossier-prose dim" style="margin-bottom:12px;">Drag the tenure slider to project compensation and organizational responsibilities across your career:</p>';
+        html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>How Pay Grows With Experience</div>';
+        html += '<p class="dossier-prose dim" style="margin-bottom:12px;">Move the slider to see rough pay ranges and how responsibilities shift over time:</p>';
         html += '<div class="slider-track-wrap">';
         html += '<input type="range" min="0" max="15" value="3" class="slider-input" id="exp-slider" oninput="updateExpCalculator(this.value)" />';
         html += '</div>';
@@ -4186,18 +4392,18 @@ body.modal-open { overflow: hidden; }
         // Section: 3-Phase Roadmap
         if (c.roadmap) {
           html += '<div class="dossier-section">';
-          html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>3-Phase Career Progression Roadmap</div>';
+          html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>10-Year Career Progression</div>';
           html += '<div class="dossier-roadmap">';
-          html += '<div class="dossier-roadmap-step"><div class="dossier-roadmap-dot">1</div><div><div class="dossier-roadmap-phase">Years 0–2: Getting In (Foundational Execution)</div><div class="dossier-roadmap-desc">' + c.roadmap.phase1 + '</div></div></div>';
-          html += '<div class="dossier-roadmap-step"><div class="dossier-roadmap-dot">2</div><div><div class="dossier-roadmap-phase">Years 2–5: Getting Good (Autonomous Ownership)</div><div class="dossier-roadmap-desc">' + c.roadmap.phase2 + '</div></div></div>';
-          html += '<div class="dossier-roadmap-step"><div class="dossier-roadmap-dot">3</div><div><div class="dossier-roadmap-phase">Years 5–10+: Mastery &amp; Leadership (Strategic Impact)</div><div class="dossier-roadmap-desc">' + c.roadmap.phase3 + '</div></div></div>';
+          html += '<div class="dossier-roadmap-step"><div class="dossier-roadmap-dot">1</div><div><div class="dossier-roadmap-phase">Years 0–2: Getting started</div><div class="dossier-roadmap-desc">' + c.roadmap.phase1 + '</div></div></div>';
+          html += '<div class="dossier-roadmap-step"><div class="dossier-roadmap-dot">2</div><div><div class="dossier-roadmap-phase">Years 2–5: Building independence</div><div class="dossier-roadmap-desc">' + c.roadmap.phase2 + '</div></div></div>';
+          html += '<div class="dossier-roadmap-step"><div class="dossier-roadmap-dot">3</div><div><div class="dossier-roadmap-phase">Years 5–10+: Senior roles</div><div class="dossier-roadmap-desc">' + c.roadmap.phase3 + '</div></div></div>';
           html += '</div>';
           html += '</div>';
         }
 
         // Section: Exit Opportunities
         html += '<div class="dossier-section">';
-        html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>Proven Exit Opportunities &amp; Lateral Pivots</div>';
+        html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>Common Next Steps &amp; Pivots</div>';
         html += '<div style="display:flex; flex-wrap:wrap; gap:8px;">';
         data.exitOpportunities.forEach(opp => {
           html += '<span class="skill-pill" style="color:var(--route); background:color-mix(in srgb, var(--route) 14%, transparent); border-color:color-mix(in srgb, var(--route) 14%, transparent);">' + opp + '</span>';
@@ -4225,17 +4431,17 @@ body.modal-open { overflow: hidden; }
         // Section: Hard Skills vs Soft Skills
         if (c.skills) {
           html += '<div class="dossier-section">';
-          html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Core Technical vs Human Decision Skills</div>';
-          html += '<div style="font-size:11px; font-weight:800; text-transform:uppercase; color:var(--muted); letter-spacing:0.6px; margin-bottom:8px;">Hard Technical Competencies:</div>';
+          html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Technical &amp; People Skills</div>';
+          html += '<div style="font-size:11px; font-weight:800; text-transform:uppercase; color:var(--muted); letter-spacing:0.6px; margin-bottom:8px;">Technical skills</div>';
           html += '<div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px;">' + (c.skills.hardSkills || []).map(s => '<span class="skill-pill">' + s + '</span>').join('') + '</div>';
-          html += '<div style="font-size:11px; font-weight:800; text-transform:uppercase; color:var(--muted); letter-spacing:0.6px; margin-bottom:8px;">Human Judgment &amp; Decision Skills:</div>';
+          html += '<div style="font-size:11px; font-weight:800; text-transform:uppercase; color:var(--muted); letter-spacing:0.6px; margin-bottom:8px;">Judgment &amp; people skills</div>';
           html += '<div style="display:flex; flex-wrap:wrap; gap:8px;">' + (c.skills.softSkills || []).map(s => '<span class="skill-pill soft">' + s + '</span>').join('') + '</div>';
           html += '</div>';
         }
 
         // Section: Proof of Work: Portfolio Projects
         html += '<div class="dossier-section">';
-        html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Proof of Work: 3 Portfolio Projects That Get You Hired</div>';
+        html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>3 Portfolio Projects That Help You Get Hired</div>';
         html += '<div class="dossier-projects-list">';
         data.portfolioProjects.forEach((proj, idx) => {
           const pText = typeof proj === 'string' ? proj : (proj.title ? '<strong>' + proj.title + ':</strong> ' + (proj.description || '') : JSON.stringify(proj));
@@ -4246,7 +4452,7 @@ body.modal-open { overflow: hidden; }
 
         // Section: AI Exposure Analysis
         html += '<div class="dossier-section">';
-        html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>AI &amp; Automation Exposure Analysis</div>';
+        html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>How Exposed Is This Job to AI?</div>';
         html += '<div style="margin-bottom:10px;"><span class="stat-micro-pill blue" style="font-size:13px; padding:6px 12px; font-weight:700;">' + aiTag + '</span></div>';
         html += '<p class="dossier-prose dim">' + aiDesc + '</p>';
         html += '</div>';
@@ -4254,7 +4460,7 @@ body.modal-open { overflow: hidden; }
         // Section: Official BLS & Industry Titles
         if (c.roles && c.roles.length) {
           html += '<div class="dossier-section">';
-          html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>Official BLS &amp; Searchable Industry Titles</div>';
+          html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>Related Job Titles</div>';
           html += '<div style="display:flex; flex-wrap:wrap; gap:8px;">' + c.roles.map(r => '<span style="font-size:12.5px; padding:5px 11px; border-radius:6px; background:var(--tint); border:1px solid var(--line); color:var(--text);">' + r + '</span>').join('') + '</div>';
           html += '</div>';
         }
@@ -4262,7 +4468,7 @@ body.modal-open { overflow: hidden; }
         // Section: Books & Resources
         if (c.resources && c.resources.length) {
           html += '<div class="dossier-section">';
-          html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Foundational Books &amp; Deep-Dive Resources</div>';
+          html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Books &amp; Study Resources</div>';
           html += '<ul style="padding-left:18px; color:var(--muted); font-size:14px; line-height:1.75; display:flex; flex-direction:column; gap:6px;">' + c.resources.map(r => '<li>' + r + '</li>').join('') + '</ul>';
           html += '</div>';
         }
@@ -4291,7 +4497,7 @@ body.modal-open { overflow: hidden; }
         card.querySelector('.btn-modal-cmp').addEventListener('click', () => { toggleCompare(c.id); openDetail(c.id); });
         card.querySelectorAll('.btn-modal-share').forEach(b => b.addEventListener('click', () => {
           navigator.clipboard.writeText(window.location.origin + window.location.pathname + '#' + c.id);
-          fsToast('Career pathway link copied to clipboard!');
+          fsToast('Career link copied to clipboard.');
         }));
 
         // Initialize Calculator
@@ -4308,26 +4514,26 @@ body.modal-open { overflow: hidden; }
         if (!grid || !activeDetailCareer) return;
 
         const y = parseInt(years, 10);
-        let tier = 'Entry-Level Associate';
+        let tier = 'Entry-level';
         let factor = 1.0;
         let role = activeDetailCareer.roles[0] || activeDetailCareer.title;
-        let resp = 'Foundational execution, core tool mastery, team sprint collaboration, and baseline quality compliance.';
+        let resp = 'Learning the daily tools, completing assigned work, and getting feedback from senior colleagues.';
 
         if (y >= 10) {
-          tier = 'Principal Director / Senior Partner';
+          tier = 'Senior Lead / Director';
           factor = 2.8;
-          role = 'Principal ' + activeDetailCareer.title + ' / Director';
-          resp = 'Strategic departmental leadership, high-stakes organizational decisions, executive fiduciary governance, and enterprise innovation.';
+          role = 'Principal ' + activeDetailCareer.title + ' / Lead';
+          resp = 'Running whole teams or practices, hiring staff, handling tough judgment calls, and setting budgets.';
         } else if (y >= 5) {
-          tier = 'Senior Specialist / Project Lead';
+          tier = 'Senior Specialist';
           factor = 1.9;
           role = 'Senior ' + activeDetailCareer.title;
-          resp = 'Independent ownership of major projects, complex technical problem-solving, team mentorship, and client relationship management.';
+          resp = 'Owning projects start to finish, solving harder edge cases, mentoring juniors, and working with clients.';
         } else if (y >= 2) {
-          tier = 'Mid-Level Specialist';
+          tier = 'Mid-level';
           factor = 1.4;
           role = activeDetailCareer.roles[1] || ('Associate ' + activeDetailCareer.title);
-          resp = 'Autonomous task execution, specialized domain workflows, and cross-functional team deliverables.';
+          resp = 'Handling day-to-day work independently, catching common problems early, and backing up teammates.';
         }
 
         // Parse base numbers
@@ -4637,11 +4843,11 @@ body.modal-open { overflow: hidden; }
         if (!f || !f.modes) return;
         const counts = f.modes;
         const labels = {
-          all: 'All Pathways',
-          flagship: 'Deep Master Guides',
-          growth: 'Fast Growing (10%+)',
-          ai: 'Harder To Automate',
-          high_earning: 'High Earning ($150K+)'
+          all: 'All pathways',
+          flagship: 'In-depth guides',
+          growth: 'Fast growing (10%+)',
+          ai: 'Harder to automate',
+          high_earning: 'High pay ($150K+)'
         };
         // The segmented bar renders .seg-btn (not the old .pill-btn/.mode-btn).
         document.querySelectorAll('#view-mode-bar .seg-btn').forEach(btn => {

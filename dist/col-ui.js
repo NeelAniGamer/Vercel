@@ -1482,6 +1482,7 @@ window.toggleTheme = function (el) {
 // Universal CoL Skeleton Screen Lifecycle & Global Controls
 ;(function () {
   var isDebugSkeleton = false
+  var manualSkeletonShown = false
   try {
     isDebugSkeleton = /[?&]skeleton(=|&|$)/i.test(window.location.search)
   } catch (e) {}
@@ -1489,20 +1490,34 @@ window.toggleTheme = function (el) {
   window.showSkeleton = function () {
     var l = document.getElementById('loader') || document.querySelector('.col-skeleton-screen')
     if (l) {
+      manualSkeletonShown = true
+      var prevTransition = l.style.transition
+      l.style.transition = 'none'
       l.style.display = 'flex'
-      l.offsetHeight // force reflow
+      l.scrollTop = 0
       l.classList.remove('gone')
+      l.removeAttribute('aria-hidden')
+      l.setAttribute('aria-busy', 'true')
       l.style.opacity = '1'
       l.style.visibility = 'visible'
       l.style.transform = 'none'
       l.style.pointerEvents = 'all'
+      l.offsetHeight // force reflow with instant reveal
+      l.style.transition = prevTransition || ''
     }
   }
 
   window.hideSkeleton = function () {
     var l = document.getElementById('loader') || document.querySelector('.col-skeleton-screen')
+    manualSkeletonShown = false
     if (l) {
+      l.style.opacity = ''
+      l.style.visibility = ''
+      l.style.transform = ''
       l.classList.add('gone')
+      l.setAttribute('aria-busy', 'false')
+      l.setAttribute('aria-hidden', 'true')
+      l.style.pointerEvents = 'none'
       setTimeout(function () {
         if (l.classList.contains('gone')) l.style.display = 'none'
       }, 360)
@@ -1519,12 +1534,16 @@ window.toggleTheme = function (el) {
   }
 
   function handleAutoDismiss() {
+    if (manualSkeletonShown) return
     if (isDebugSkeleton && !navigator.webdriver) {
       console.info('[CoL] Skeleton screen debug active (?skeleton). Call window.hideSkeleton() to dismiss.')
       return
     }
     var l = document.getElementById('loader') || document.querySelector('.col-skeleton-screen')
     if (l && !l.classList.contains('gone')) {
+      l.setAttribute('aria-busy', 'false')
+      l.setAttribute('aria-hidden', 'true')
+      l.style.pointerEvents = 'none'
       if (navigator.webdriver) {
         l.style.display = 'none'
         l.classList.add('gone')

@@ -13,6 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 
     <link rel="stylesheet" href="col-ui.css?v=1782446126.5715783" />
+  <link rel="stylesheet" href="col-skeleton.css?v=20261125" />
     <link rel="stylesheet" href="liquid-glass.css" />
     <!-- Conditional Mobile Assets: Loaded ONLY on mobile/tablet or when screen <= 1024px. Prevents downloading mobile styles and touch scripts on PC desktop. -->
     <script>
@@ -151,7 +152,7 @@
       .gbtn {
         width: 100%;
         padding: 14px;
-        background: #10b981;
+        background: #047857;
         border: none;
         border-radius: 8px;
         font-weight: 600;
@@ -163,10 +164,10 @@
         justify-content: center;
         gap: 12px;
         transition: 0.2s;
-        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        box-shadow: 0 4px 15px rgba(4, 120, 87, 0.28);
       }
       .gbtn:hover {
-        background: #059669;
+        background: #065f46;
         transform: translateY(-2px);
       }
 
@@ -826,6 +827,16 @@
         border: 1px solid rgba(0, 0, 0, 0.15) !important;
         color: #0f172a !important;
       }
+      body.lm .nav-dl-btn {
+        background: rgba(220, 38, 38, 0.1) !important;
+        color: #b91c1c !important;
+        border-color: rgba(220, 38, 38, 0.35) !important;
+        box-shadow: none !important;
+      }
+      body.lm .nav-dl-btn:hover {
+        background: #b91c1c !important;
+        color: #ffffff !important;
+      }
     </style>
 
     <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/admin" />
@@ -858,6 +869,61 @@
         } catch (e) {}
       })()
     </script>
+    <!-- Mission Control Admin Skeleton Loading Screen -->
+    <div class="loader col-skeleton-screen sk-theme-sky" id="loader" role="status" aria-busy="true" aria-label="Loading Mission Control Operations">
+  <div class="sk-ambient-glow" aria-hidden="true"></div>
+  <div class="sk-ambient-glow-left" aria-hidden="true"></div>
+  <header class="sk-nav" aria-hidden="true">
+    <div class="sk-nav-brand">
+      <div class="sk-circle sk-brand-logo sk-shimmer"></div>
+      <div class="sk-pill sk-brand-text sk-shimmer"></div>
+    </div>
+    <div class="sk-nav-links">
+      <div class="sk-pill sk-shimmer" style="width: 56px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 62px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 66px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 80px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 68px; height: 14px;"></div>
+    </div>
+    <div class="sk-nav-actions">
+      <div class="sk-pill sk-nav-search sk-shimmer"></div>
+      <div class="sk-circle sk-nav-theme sk-shimmer"></div>
+      <div class="sk-pill sk-nav-btn sk-shimmer" style="width: 78px;"></div>
+      <div class="sk-pill sk-nav-cta sk-shimmer" style="width: 118px;"></div>
+    </div>
+  </header>
+  <div class="sk-editorial-wrap" aria-hidden="true" style="padding-top: 32px;">
+    <div class="sk-editorial-hero" style="max-width: 1200px; align-items: flex-start; text-align: left; margin-bottom: 24px;">
+      <div class="sk-eyebrow-row"><span class="sk-eyebrow-dash"></span><div class="sk-pill sk-eyebrow-pill sk-shimmer" style="width: 165px;"></div></div>
+      <div class="sk-title-bar sk-title-1 sk-shimmer" style="width: 48%; max-width: 380px; margin-bottom: 12px;"></div>
+      <div class="sk-tab-strip" style="justify-content: flex-start; margin-bottom: 0;">
+        <div class="sk-pill sk-shimmer-accent" style="width: 108px; height: 32px;"></div>
+        <div class="sk-pill sk-shimmer" style="width: 126px; height: 32px;"></div>
+        <div class="sk-pill sk-shimmer" style="width: 102px; height: 32px;"></div>
+        <div class="sk-pill sk-shimmer" style="width: 96px; height: 32px;"></div>
+      </div>
+    </div>
+    <div class="sk-kpi-row">
+      <div class="sk-card"><div class="sk-pill sk-shimmer" style="width: 82px; height: 14px;"></div><div class="sk-title-bar sk-shimmer-accent" style="width: 104px; height: 32px;"></div></div>
+      <div class="sk-card"><div class="sk-pill sk-shimmer" style="width: 92px; height: 14px;"></div><div class="sk-title-bar sk-shimmer" style="width: 88px; height: 32px;"></div></div>
+      <div class="sk-card"><div class="sk-pill sk-shimmer" style="width: 74px; height: 14px;"></div><div class="sk-title-bar sk-shimmer" style="width: 96px; height: 32px;"></div></div>
+      <div class="sk-card"><div class="sk-pill sk-shimmer" style="width: 86px; height: 14px;"></div><div class="sk-title-bar sk-shimmer" style="width: 80px; height: 32px;"></div></div>
+    </div>
+    <div class="sk-table-card">
+      <div class="sk-table-row"><div class="sk-box sk-shimmer" style="width:26px;height:26px;"></div><div class="sk-lede-line sk-shimmer" style="width:60%;"></div><div class="sk-pill sk-shimmer-accent" style="width:78px;height:18px;"></div><div class="sk-lede-line sk-shimmer" style="width:60px;"></div><div class="sk-pill sk-shimmer" style="width:68px;height:24px;"></div></div>
+      <div class="sk-table-row"><div class="sk-box sk-shimmer" style="width:26px;height:26px;"></div><div class="sk-lede-line sk-shimmer" style="width:74%;"></div><div class="sk-pill sk-shimmer" style="width:78px;height:18px;"></div><div class="sk-lede-line sk-shimmer" style="width:60px;"></div><div class="sk-pill sk-shimmer" style="width:68px;height:24px;"></div></div>
+      <div class="sk-table-row"><div class="sk-box sk-shimmer" style="width:26px;height:26px;"></div><div class="sk-lede-line sk-shimmer" style="width:52%;"></div><div class="sk-pill sk-shimmer" style="width:78px;height:18px;"></div><div class="sk-lede-line sk-shimmer" style="width:60px;"></div><div class="sk-pill sk-shimmer" style="width:68px;height:24px;"></div></div>
+    </div>
+  </div>
+  <footer class="sk-status-dock" aria-hidden="true">
+    <div class="sk-status-pill">
+      <span class="sk-pulse-live"></span>
+      <span class="sk-status-text"><span>Ops</span> &middot; Mission Control Terminal</span>
+      <div class="sk-progress-bar"><div class="sk-progress-fill"></div></div>
+    </div>
+  </footer>
+</div>
+
     <div class="cd" id="cDot"></div>
     <div class="cr" id="cRing"></div>
 

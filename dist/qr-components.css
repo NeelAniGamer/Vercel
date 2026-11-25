@@ -1,0 +1,570 @@
+/**
+ * Class Of Learners — QR Studio Components (qr-components.css)
+ * Cards, Buttons, Form Controls, Telemetry Tiles, Modals & Scannability Badges.
+ */
+
+/* ==========================================================================
+   1. Buttons & Interactive Controls
+   ========================================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 18px;
+  font-family: var(--font-main);
+  font-size: 0.92rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  line-height: 1.2;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-contrast);
+  border-color: var(--accent);
+  box-shadow: 0 2px 8px var(--accent-soft);
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  box-shadow: 0 4px 14px var(--accent-soft);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: var(--surface-subtle);
+  color: var(--ink-primary);
+  border-color: var(--border-subtle);
+}
+
+.btn-secondary:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+  color: var(--ink-primary);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--ink-secondary);
+  border-color: transparent;
+}
+
+.btn-ghost:hover {
+  background: var(--surface-subtle);
+  color: var(--ink-primary);
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: #ffffff;
+  border-color: var(--danger);
+}
+
+.btn-danger:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 4px 14px var(--danger-soft);
+}
+
+.btn-danger-outline {
+  background: transparent;
+  color: var(--danger);
+  border-color: var(--danger-soft);
+}
+
+.btn-danger-outline:hover {
+  background: var(--danger-soft);
+  border-color: var(--danger);
+}
+
+.btn-sm {
+  min-height: 36px;
+  padding: 6px 12px;
+  font-size: 0.82rem;
+}
+
+/* ==========================================================================
+   2. Cards & Containers
+   ========================================================================== */
+.card,
+.st-card,
+.dbc,
+.stat-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  position: relative;
+}
+
+.card:hover,
+.st-card:hover,
+.dbc:hover,
+.stat-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
+}
+
+/* Redirect / Standalone Card */
+.card {
+  padding: clamp(22px, 5vw, 38px);
+  max-width: 460px;
+  width: 100%;
+  margin: auto;
+  text-align: center;
+}
+
+/* Dashboard Saved Code Card (.dbc) */
+.dbc {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 12px;
+}
+
+.dbc-preview {
+  width: 100%;
+  aspect-ratio: 1;
+  background: #ffffff;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 12px;
+}
+
+.dbc-preview img,
+.dbc-preview canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.dbc-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dbc-title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--ink-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dbc-meta {
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dbc-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.dbc-actions .btn {
+  flex: 1;
+  min-height: 38px;
+  padding: 6px 10px;
+  font-size: 0.82rem;
+}
+
+/* ==========================================================================
+   3. Telemetry & Stats Grid
+   ========================================================================== */
+.db-stats,
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.st-card,
+.stat-tile {
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.st-card .v,
+.stat-value {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 800;
+  line-height: 1.1;
+  font-family: var(--font-display), var(--font-main);
+  color: var(--accent);
+}
+
+.st-card .lbl,
+.stat-label {
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   4. Toolbar & Filter Row
+   ========================================================================== */
+.db-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.db-filt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (max-width: 640px) {
+  .db-filt {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    scrollbar-width: none !important;
+    -webkit-overflow-scrolling: touch !important;
+    width: 100% !important;
+    padding-bottom: 4px;
+  }
+  .db-filt::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.db-chip,
+.filter-chip {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-card);
+  color: var(--ink-secondary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  user-select: none;
+}
+
+.db-chip:hover,
+.filter-chip:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+  color: var(--ink-primary);
+}
+
+.db-chip.active,
+.filter-chip.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.db-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1 1 260px;
+  max-width: 380px;
+  min-width: 200px;
+}
+
+.db-search-wrap svg {
+  position: absolute;
+  left: 14px;
+  width: 16px;
+  height: 16px;
+  color: var(--ink-muted);
+  stroke: var(--ink-muted);
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.db-search-wrap .db-search-input {
+  width: 100%;
+  padding-left: 40px;
+}
+
+.db-search-input,
+.db-input {
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  color: var(--ink-primary);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-family: var(--font-main);
+  font-size: 0.9rem;
+  outline: none;
+  min-height: 42px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.db-search-input:focus,
+.db-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.db-select {
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  color: var(--ink-primary);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-family: var(--font-main);
+  font-size: 0.88rem;
+  outline: none;
+  min-height: 42px;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   5. Step Wizard & Form Validation
+   ========================================================================== */
+.step-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.wiz-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-card);
+  color: var(--ink-muted);
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.wiz-step[aria-current="step"],
+.wiz-step.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
+  box-shadow: 0 2px 8px var(--accent-soft);
+}
+
+.field-error {
+  border-color: var(--danger) !important;
+  box-shadow: 0 0 0 3px var(--danger-soft) !important;
+}
+
+.field-error-msg {
+  color: var(--danger);
+  font-size: 0.78rem;
+  font-weight: 500;
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ==========================================================================
+   6. Scannability Badge & Contrast Indicator
+   ========================================================================== */
+#scannabilityBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--surface-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink-secondary);
+  transition: all 0.2s ease;
+}
+
+#scannabilityBadge.optimal {
+  background: var(--success-soft);
+  border-color: rgba(31, 122, 83, 0.25);
+  color: var(--success);
+}
+
+#scannabilityBadge.warning {
+  background: var(--warning-soft);
+  border-color: rgba(217, 119, 6, 0.25);
+  color: var(--warning);
+}
+
+#scannabilityBadge.danger {
+  background: var(--danger-soft);
+  border-color: rgba(197, 48, 48, 0.25);
+  color: var(--danger);
+}
+
+/* ==========================================================================
+   7. Modals & Dialogs
+   ========================================================================== */
+.mo {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(0, 0, 0, 0.65);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  backdrop-filter: blur(4px);
+}
+
+.mo.open,
+.mo.on {
+  display: flex;
+}
+
+.mo-c {
+  background: var(--surface-card);
+  color: var(--ink-primary);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  max-width: 600px;
+  width: 100%;
+  max-height: 90dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  animation: moFadeIn 0.2s ease-out;
+}
+
+@keyframes moFadeIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.mo-h {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.mo-h h3, .mo-h h2 {
+  font-family: var(--font-display), var(--font-main);
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--ink-primary);
+}
+
+.mo-close {
+  background: transparent;
+  border: none;
+  color: var(--ink-muted);
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.mo-close:hover {
+  background: var(--surface-subtle);
+  color: var(--ink-primary);
+}
+
+.mo-b {
+  padding: 20px 22px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.mo-ft {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 22px;
+  border-top: 1px solid var(--border-subtle);
+  background: var(--surface-subtle);
+}
+
+/* ==========================================================================
+   8. Presets & Chips
+   ========================================================================== */
+.preset-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-card);
+  color: var(--ink-secondary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.preset-chip:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+  color: var(--ink-primary);
+}
+
+.preset-chip.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}

@@ -133,6 +133,7 @@
     onload="this.onload=null;this.rel='stylesheet'" />
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" /></noscript>
   <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
+  <link rel="stylesheet" href="col-skeleton.css?v=20261125" />
     <link rel="stylesheet" href="liquid-glass.css" />
     <!-- Conditional Mobile Assets: Loaded ONLY on mobile/tablet or when screen <= 1024px. Prevents downloading mobile styles and touch scripts on PC desktop. -->
     <script>
@@ -2259,103 +2260,54 @@
       } catch (e) { }
     })()
   </script>
-  <div class="loader col-skeleton-screen" id="loader" role="status" aria-label="Loading About Class Of Learners">
-    <div class="sk-ambient-glow" aria-hidden="true"></div>
-    <div class="sk-ambient-glow-left" aria-hidden="true"></div>
-
-    <!-- Top Nav Skeleton -->
-    <header class="sk-nav" aria-hidden="true">
-      <div class="sk-nav-brand">
-        <div class="sk-circle sk-brand-logo sk-shimmer"></div>
-        <div class="sk-pill sk-brand-text sk-shimmer"></div>
-      </div>
-      <div class="sk-nav-links">
-        <div class="sk-pill sk-shimmer" style="width: 54px; height: 14px;"></div>
-        <div class="sk-pill sk-shimmer" style="width: 58px; height: 14px;"></div>
-        <div class="sk-pill sk-shimmer" style="width: 62px; height: 14px;"></div>
-        <div class="sk-pill sk-shimmer" style="width: 82px; height: 14px;"></div>
-        <div class="sk-pill sk-shimmer" style="width: 66px; height: 14px;"></div>
-        <div class="sk-pill sk-shimmer" style="width: 76px; height: 14px;"></div>
-      </div>
-      <div class="sk-nav-actions">
-        <div class="sk-circle sk-nav-theme sk-shimmer"></div>
-        <div class="sk-pill sk-nav-btn sk-shimmer" style="width: 78px;"></div>
-        <div class="sk-pill sk-nav-cta sk-shimmer" style="width: 124px;"></div>
-      </div>
-    </header>
-
-    <!-- Editorial Hero Skeleton -->
-    <div class="sk-editorial-wrap" aria-hidden="true">
-      <div class="sk-editorial-hero">
-        <div class="sk-eyebrow-row">
-          <span class="sk-eyebrow-dash"></span>
-          <div class="sk-pill sk-eyebrow-pill sk-shimmer" style="width: 220px;"></div>
-        </div>
-        <div class="sk-title-group" style="align-items: center; width: 100%;">
-          <div class="sk-title-bar sk-title-1 sk-shimmer" style="width: 75%; max-width: 620px;"></div>
-          <div class="sk-title-bar sk-title-2 sk-shimmer" style="width: 55%; max-width: 440px;"></div>
-        </div>
-        <div class="sk-lede-group" style="align-items: center; text-align: center; width: 100%;">
-          <div class="sk-lede-line sk-shimmer" style="width: 90%; max-width: 580px;"></div>
-          <div class="sk-lede-line sk-shimmer" style="width: 78%; max-width: 500px;"></div>
-        </div>
-        <div class="sk-stats-pill sk-shimmer" style="margin-top: 10px;">
-          <div class="sk-sub-pill" style="width: 80px;"></div>
-          <span class="sk-dot">&middot;</span>
-          <div class="sk-sub-pill" style="width: 80px;"></div>
-          <span class="sk-dot">&middot;</span>
-          <div class="sk-sub-pill" style="width: 80px;"></div>
-          <span class="sk-dot">&middot;</span>
-          <div class="sk-sub-pill" style="width: 80px;"></div>
-        </div>
-      </div>
-
-      <!-- 3-Card Story Grid Skeleton -->
-      <div class="sk-grid sk-grid-3">
-        <div class="sk-card">
-          <div class="sk-card-media sk-shimmer"></div>
-          <div class="sk-pill sk-shimmer" style="width: 120px; height: 18px;"></div>
-          <div class="sk-lede-line sk-shimmer" style="width: 95%;"></div>
-          <div class="sk-lede-line sk-shimmer" style="width: 80%;"></div>
-          <div class="sk-tags-row">
-            <div class="sk-pill sk-shimmer" style="width: 60px; height: 22px;"></div>
-            <div class="sk-pill sk-shimmer" style="width: 70px; height: 22px;"></div>
-          </div>
-        </div>
-        <div class="sk-card">
-          <div class="sk-card-media sk-shimmer"></div>
-          <div class="sk-pill sk-shimmer" style="width: 140px; height: 18px;"></div>
-          <div class="sk-lede-line sk-shimmer" style="width: 95%;"></div>
-          <div class="sk-lede-line sk-shimmer" style="width: 80%;"></div>
-          <div class="sk-tags-row">
-            <div class="sk-pill sk-shimmer" style="width: 65px; height: 22px;"></div>
-            <div class="sk-pill sk-shimmer" style="width: 75px; height: 22px;"></div>
-          </div>
-        </div>
-        <div class="sk-card">
-          <div class="sk-card-media sk-shimmer"></div>
-          <div class="sk-pill sk-shimmer" style="width: 130px; height: 18px;"></div>
-          <div class="sk-lede-line sk-shimmer" style="width: 95%;"></div>
-          <div class="sk-lede-line sk-shimmer" style="width: 80%;"></div>
-          <div class="sk-tags-row">
-            <div class="sk-pill sk-shimmer" style="width: 55px; height: 22px;"></div>
-            <div class="sk-pill sk-shimmer" style="width: 80px; height: 22px;"></div>
-          </div>
-        </div>
+  <div class="loader col-skeleton-screen sk-theme-amber" id="loader" role="status" aria-busy="true" aria-label="Loading About Class Of Learners">
+  <div class="sk-ambient-glow" aria-hidden="true"></div>
+  <div class="sk-ambient-glow-left" aria-hidden="true"></div>
+  <header class="sk-nav" aria-hidden="true">
+    <div class="sk-nav-brand">
+      <div class="sk-circle sk-brand-logo sk-shimmer"></div>
+      <div class="sk-pill sk-brand-text sk-shimmer"></div>
+    </div>
+    <div class="sk-nav-links">
+      <div class="sk-pill sk-shimmer" style="width: 56px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 62px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 66px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 80px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 68px; height: 14px;"></div>
+    </div>
+    <div class="sk-nav-actions">
+      <div class="sk-pill sk-nav-search sk-shimmer"></div>
+      <div class="sk-circle sk-nav-theme sk-shimmer"></div>
+      <div class="sk-pill sk-nav-btn sk-shimmer" style="width: 78px;"></div>
+      <div class="sk-pill sk-nav-cta sk-shimmer" style="width: 118px;"></div>
+    </div>
+  </header>
+  <div class="sk-editorial-wrap" aria-hidden="true" style="padding-top: 38px;">
+    <div class="sk-editorial-hero" style="max-width: 840px; margin-bottom: 30px;">
+      <div class="sk-eyebrow-row"><span class="sk-eyebrow-dash"></span><div class="sk-pill sk-eyebrow-pill sk-shimmer-accent" style="width: 220px;"></div></div>
+      <div class="sk-title-bar sk-title-1 sk-shimmer" style="width: 72%; max-width: 580px; margin-bottom: 14px;"></div>
+      <div class="sk-lede-line sk-shimmer" style="width: 86%; max-width: 600px;"></div>
+      <div class="sk-lede-line sk-shimmer" style="width: 72%; max-width: 500px; margin-top: 8px;"></div>
+      <div class="sk-cta-row" style="justify-content: center; margin: 22px 0 0;">
+        <div class="sk-btn sk-btn-primary sk-shimmer" style="width: 146px;"></div>
+        <div class="sk-btn sk-btn-secondary sk-shimmer" style="width: 158px;"></div>
+        <div class="sk-btn sk-btn-secondary sk-shimmer" style="width: 152px;"></div>
       </div>
     </div>
-
-    <!-- Bottom Status Dock -->
-    <footer class="sk-status-dock" aria-hidden="true">
-      <div class="sk-status-pill">
-        <span class="sk-pulse-live"></span>
-        <span class="sk-status-text"><span>CoL</span> &middot; About Class Of Learners</span>
-        <div class="sk-progress-bar">
-          <div class="sk-progress-fill"></div>
-        </div>
-      </div>
-    </footer>
+    <div class="sk-grid sk-grid-3">
+      <div class="sk-card" style="align-items:center;text-align:center;"><div class="sk-circle sk-shimmer-accent" style="width:76px;height:76px;"></div><div class="sk-title-bar sk-shimmer" style="width:64%;height:20px;"></div><div class="sk-pill sk-shimmer" style="width:110px;height:16px;"></div><div class="sk-lede-line sk-shimmer" style="width:92%;"></div><div class="sk-lede-line sk-shimmer" style="width:76%;"></div></div>
+      <div class="sk-card" style="align-items:center;text-align:center;"><div class="sk-circle sk-shimmer-accent" style="width:76px;height:76px;"></div><div class="sk-title-bar sk-shimmer" style="width:68%;height:20px;"></div><div class="sk-pill sk-shimmer" style="width:120px;height:16px;"></div><div class="sk-lede-line sk-shimmer" style="width:88%;"></div><div class="sk-lede-line sk-shimmer" style="width:80%;"></div></div>
+      <div class="sk-card" style="align-items:center;text-align:center;"><div class="sk-circle sk-shimmer-accent" style="width:76px;height:76px;"></div><div class="sk-title-bar sk-shimmer" style="width:60%;height:20px;"></div><div class="sk-pill sk-shimmer" style="width:104px;height:16px;"></div><div class="sk-lede-line sk-shimmer" style="width:90%;"></div><div class="sk-lede-line sk-shimmer" style="width:72%;"></div></div>
+    </div>
   </div>
+  <footer class="sk-status-dock" aria-hidden="true">
+    <div class="sk-status-pill">
+      <span class="sk-pulse-live"></span>
+      <span class="sk-status-text"><span>CoL</span> &middot; Engineering Team</span>
+      <div class="sk-progress-bar"><div class="sk-progress-fill"></div></div>
+    </div>
+  </footer>
+</div>
   <div class="cd" id="cDot"></div>
   <div class="cr" id="cRing"></div>
 
@@ -2479,7 +2431,7 @@
   <section class="section rv" id="team">
     <div class="sey">The Studio Team</div>
     <h2 class="st">Three Co‑Founders &amp; Three Contributors. One Studio.</h2>
-    <p class="sdesc">Each member brings a distinct strength to the studio &mdash; from low-level systems architecture and physics simulations to geospatial shaders, automated QA, and user experience design.</p>
+    <p class="sdesc">Each of us handles a different layer of the stack: systems code, physics engines, globe shaders, browser testing, and UI design.</p>
     
     <!-- Team Mode Filter Tabs -->
     <div class="team-filter-tabs" role="tablist" aria-label="Team Categories">
@@ -2797,7 +2749,7 @@
   <section class="section rv" id="manifesto">
     <div class="sey">What We Value</div>
     <h2 class="st">Engineering Principles.</h2>
-    <p class="sdesc">We build software to understand foundational computing, solve practical problems, and deliver sovereign tools without corporate bloat.</p>
+    <p class="sdesc">We write tools from scratch to understand how the systems work underneath and to ship useful software without account walls or bloat.</p>
     <div class="mission-grid">
       
       <div class="mission-card rv">
@@ -2847,7 +2799,7 @@
   <section class="section rv" id="creations">
     <div class="sey">Shipped Software</div>
     <h2 class="st">Six Core Engines. Built In Mumbai.</h2>
-    <p class="sdesc">Our portfolio spans physics simulations, educational software, and spatial interfaces &mdash; each engineered with zero bloat and complete client-side execution.</p>
+    <p class="sdesc">Physics simulators, study apps, and webcam utilities built without frameworks or trackers, running right in your browser or as standalone installers.</p>
     
     <div class="flagship-grid">
       
@@ -2891,7 +2843,7 @@
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--em)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
         </div>
         <h3 class="fc-title">CastFlow &amp; Perceptus</h3>
-        <p class="fc-desc">Ultra-low-latency wireless screen streaming service with desktop presentation mode, embedded Ktor CIO server, and intelligent companion modes.</p>
+        <p class="fc-desc">Low-latency Wi-Fi screen casting from phone or laptop with a desktop layout mode and an embedded Ktor server.</p>
         <a href="CastFlow" class="fc-link">Open CastFlow <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></a>
       </div>
 
@@ -2950,7 +2902,7 @@
         <div class="tl-dot"></div>
         <div class="tl-date">Early 2024 &middot; The Classroom Spark</div>
         <h3 class="tl-title">Foundational Prototypes in Dadar</h3>
-        <p class="tl-desc">Neel Badri, Aarush Vangari, and Ansh Patil began collaborating during computer lab hours at CBSE Bhavani Shankar School in Dadar, Mumbai, brainstorming interactive web experiments to explore physics formulas, orbital math, and algorithmic state machines.</p>
+        <p class="tl-desc">Neel Badri, Aarush Vangari, and Ansh Patil started teaming up during school lab periods at CBSE Bhavani Shankar School in Dadar, Mumbai, building small browser tests for orbital math and typing stats.</p>
       </div>
       <div class="tl-item rv">
         <div class="tl-dot"></div>
@@ -2968,13 +2920,13 @@
         <div class="tl-dot"></div>
         <div class="tl-date">Early 2025 &middot; Multimodal Interfaces</div>
         <h3 class="tl-title">GestureUI &amp; CastFlow Streaming</h3>
-        <p class="tl-desc">Engineered GestureUI for zero-hardware computer-vision hand tracking over webcams and CastFlow for sub-second wireless screen streaming with desktop presentation modes, pushing browser capabilities to native-app thresholds.</p>
+        <p class="tl-desc">Built GestureUI for regular-webcam hand tracking and CastFlow for fast local Wi-Fi display casting with a full desktop presentation mode.</p>
       </div>
       <div class="tl-item rv">
         <div class="tl-dot"></div>
         <div class="tl-date">2025 &mdash; Present &middot; Urban Simulation &amp; Native Apps</div>
         <h3 class="tl-title">Mumbai Traffic 3D &amp; Native Mobility</h3>
-        <p class="tl-desc">Released the 3D Mumbai Traffic Simulator with realistic urban physics, auto-rickshaw kinematics, and driving missions guided by Avantika Raskar. Compiled full native Android APKs for mobile accessibility while preserving our zero-tracking, zero-paywall promise.</p>
+        <p class="tl-desc">Shipped the 3D Mumbai Traffic Simulator with auto-rickshaw physics and driving missions guided by Avantika Raskar, then packaged Android APKs so students can run tools offline with no accounts or paywalls.</p>
       </div>
     </div>
   </section>
@@ -3391,7 +3343,7 @@
           {
             keys: ['sneh asha', 'social', 'impact', 'siddhi', 'charity', 'divide'],
             title: 'Sneh Asha Initiative',
-            answer: '<strong>Software For Good:</strong> Inspired by the Sneh Asha Foundation and guided by Siddhi Jaiswal, we dedicate our tools to bridging the digital divide for students in under-equipped schools. Visit our <a href="sneh-asha" style="color:var(--em);text-decoration:underline;">Sneh Asha Page</a> for full details.'
+            answer: '<strong>Sneh Asha:</strong> Inspired by the Sneh Asha Foundation and guided by Siddhi Jaiswal, we make lightweight offline software for students using older school PCs or shared phones. Read the story on our <a href="sneh-asha" style="color:var(--em);text-decoration:underline;">Sneh Asha page</a>.'
           },
           {
             keys: ['projects', 'apps', 'engines', 'what do you build', 'tools'],

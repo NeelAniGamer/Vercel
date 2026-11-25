@@ -51,6 +51,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
+  <link rel="stylesheet" href="col-skeleton.css?v=20261125" />
     <link rel="stylesheet" href="liquid-glass.css" />
     <!-- Conditional Mobile Assets: Loaded ONLY on mobile/tablet or when screen <= 1024px. Prevents downloading mobile styles and touch scripts on PC desktop. -->
     <script>
@@ -582,73 +583,61 @@
     <meta name="twitter:image" content="https://advancedlogiclabs.dpdns.org/og/home.jpg" />
   </head>
   <body>
-    <div class="loader col-skeleton-screen" id="loader" role="status" aria-label="Loading Studio Dashboard">
-      <div class="sk-ambient-glow" aria-hidden="true"></div>
-      <div class="sk-ambient-glow-left" aria-hidden="true"></div>
-
-      <!-- Top Nav Skeleton -->
-      <header class="sk-nav" aria-hidden="true">
-        <div class="sk-nav-brand">
-          <div class="sk-circle sk-brand-logo sk-shimmer"></div>
-          <div class="sk-pill sk-brand-text sk-shimmer"></div>
-        </div>
-        <div class="sk-nav-links">
-          <div class="sk-pill sk-shimmer" style="width: 54px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 58px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 62px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 82px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 66px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 76px; height: 14px;"></div>
-        </div>
-        <div class="sk-nav-actions">
-          <div class="sk-circle sk-nav-theme sk-shimmer"></div>
-          <div class="sk-pill sk-nav-btn sk-shimmer" style="width: 78px;"></div>
-          <div class="sk-pill sk-nav-cta sk-shimmer" style="width: 124px;"></div>
-        </div>
-      </header>
-
-      <!-- Dashboard Skeleton -->
-      <div class="sk-editorial-wrap" aria-hidden="true" style="padding-top: 36px;">
-        <div class="sk-editorial-hero" style="max-width: 860px; margin-bottom: 28px;">
-          <div class="sk-eyebrow-row">
-            <span class="sk-eyebrow-dash"></span>
-            <div class="sk-pill sk-eyebrow-pill sk-shimmer" style="width: 170px;"></div>
-          </div>
-          <div class="sk-title-bar sk-title-1 sk-shimmer" style="width: 76%; max-width: 620px;"></div>
-        </div>
-
-        <!-- 4 Metric Cards Grid Skeleton -->
-        <div class="sk-grid sk-grid-4">
-          <div class="sk-card">
-            <div class="sk-pill sk-shimmer" style="width: 80px; height: 14px;"></div>
-            <div class="sk-title-bar sk-shimmer" style="width: 110px; height: 32px;"></div>
-          </div>
-          <div class="sk-card">
-            <div class="sk-pill sk-shimmer" style="width: 80px; height: 14px;"></div>
-            <div class="sk-title-bar sk-shimmer" style="width: 110px; height: 32px;"></div>
-          </div>
-          <div class="sk-card">
-            <div class="sk-pill sk-shimmer" style="width: 80px; height: 14px;"></div>
-            <div class="sk-title-bar sk-shimmer" style="width: 110px; height: 32px;"></div>
-          </div>
-          <div class="sk-card">
-            <div class="sk-pill sk-shimmer" style="width: 80px; height: 14px;"></div>
-            <div class="sk-title-bar sk-shimmer" style="width: 110px; height: 32px;"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Bottom Status Dock -->
-      <footer class="sk-status-dock" aria-hidden="true">
-        <div class="sk-status-pill">
-          <span class="sk-pulse-live"></span>
-          <span class="sk-status-text"><span>CoL</span> &middot; Studio Dashboard</span>
-          <div class="sk-progress-bar">
-            <div class="sk-progress-fill"></div>
-          </div>
-        </div>
-      </footer>
+    <div class="loader col-skeleton-screen sk-theme-amber" id="loader" role="status" aria-busy="true" aria-label="Loading User Dashboard">
+  <div class="sk-ambient-glow" aria-hidden="true"></div>
+  <div class="sk-ambient-glow-left" aria-hidden="true"></div>
+  <header class="sk-nav" aria-hidden="true">
+    <div class="sk-nav-brand">
+      <div class="sk-circle sk-brand-logo sk-shimmer"></div>
+      <div class="sk-pill sk-brand-text sk-shimmer"></div>
     </div>
+    <div class="sk-nav-links">
+      <div class="sk-pill sk-shimmer" style="width: 56px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 62px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 66px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 80px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 68px; height: 14px;"></div>
+    </div>
+    <div class="sk-nav-actions">
+      <div class="sk-pill sk-nav-search sk-shimmer"></div>
+      <div class="sk-circle sk-nav-theme sk-shimmer"></div>
+      <div class="sk-pill sk-nav-btn sk-shimmer" style="width: 78px;"></div>
+      <div class="sk-pill sk-nav-cta sk-shimmer" style="width: 118px;"></div>
+    </div>
+  </header>
+  <div class="sk-editorial-wrap" aria-hidden="true" style="padding-top: 30px;">
+    <div class="sk-user-banner">
+      <div class="sk-circle sk-shimmer-accent" style="width: 72px; height: 72px; flex-shrink: 0;"></div>
+      <div style="display:flex;flex-direction:column;gap:10px;flex:1;min-width:180px;">
+        <div class="sk-title-bar sk-shimmer" style="width: 220px; height: 26px;"></div>
+        <div class="sk-lede-line sk-shimmer" style="width: 180px;"></div>
+        <div class="sk-pill sk-shimmer-accent" style="width: 86px; height: 22px;"></div>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <div class="sk-pill sk-shimmer-accent" style="width: 94px; height: 34px;"></div>
+        <div class="sk-pill sk-shimmer" style="width: 112px; height: 34px;"></div>
+      </div>
+    </div>
+    <div class="sk-kpi-row">
+      <div class="sk-card"><div class="sk-pill sk-shimmer" style="width: 86px; height: 14px;"></div><div class="sk-title-bar sk-shimmer-accent" style="width: 92px; height: 32px;"></div></div>
+      <div class="sk-card"><div class="sk-pill sk-shimmer" style="width: 94px; height: 14px;"></div><div class="sk-title-bar sk-shimmer" style="width: 84px; height: 32px;"></div></div>
+      <div class="sk-card"><div class="sk-pill sk-shimmer" style="width: 78px; height: 14px;"></div><div class="sk-title-bar sk-shimmer" style="width: 98px; height: 32px;"></div></div>
+      <div class="sk-card"><div class="sk-pill sk-shimmer" style="width: 88px; height: 14px;"></div><div class="sk-title-bar sk-shimmer" style="width: 76px; height: 32px;"></div></div>
+    </div>
+    <div class="sk-table-card">
+      <div class="sk-table-row"><div class="sk-circle sk-shimmer-accent" style="width:28px;height:28px;"></div><div class="sk-lede-line sk-shimmer" style="width:55%;"></div><div class="sk-pill sk-shimmer" style="width:74px;height:16px;"></div><div class="sk-lede-line sk-shimmer" style="width:50px;"></div><div class="sk-pill sk-shimmer" style="width:68px;height:22px;"></div></div>
+      <div class="sk-table-row"><div class="sk-circle sk-shimmer" style="width:28px;height:28px;"></div><div class="sk-lede-line sk-shimmer" style="width:62%;"></div><div class="sk-pill sk-shimmer" style="width:74px;height:16px;"></div><div class="sk-lede-line sk-shimmer" style="width:50px;"></div><div class="sk-pill sk-shimmer" style="width:68px;height:22px;"></div></div>
+      <div class="sk-table-row"><div class="sk-circle sk-shimmer" style="width:28px;height:28px;"></div><div class="sk-lede-line sk-shimmer" style="width:48%;"></div><div class="sk-pill sk-shimmer" style="width:74px;height:16px;"></div><div class="sk-lede-line sk-shimmer" style="width:50px;"></div><div class="sk-pill sk-shimmer" style="width:68px;height:22px;"></div></div>
+    </div>
+  </div>
+  <footer class="sk-status-dock" aria-hidden="true">
+    <div class="sk-status-pill">
+      <span class="sk-pulse-live"></span>
+      <span class="sk-status-text"><span>CoL</span> &middot; User Profile &amp; Ranks</span>
+      <div class="sk-progress-bar"><div class="sk-progress-fill"></div></div>
+    </div>
+  </footer>
+</div>
     <script>
       ;(function () {
         try {

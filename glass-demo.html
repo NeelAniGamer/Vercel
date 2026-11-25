@@ -6,6 +6,7 @@
   <title>Liquid Glass UI Laboratory | Standard & Apple VisionOS</title>
   <link rel="icon" type="image/png" href="Icon.png" />
   <link rel="stylesheet" href="col-ui.css" />
+  <link rel="stylesheet" href="col-skeleton.css?v=20261125" />
   <link rel="stylesheet" href="liquid-glass-ui.css" />
   
   <style>
@@ -408,6 +409,24 @@
       border-color: rgba(242, 184, 75, 0.5);
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1), 0 0 12px rgba(242, 184, 75, 0.3);
     }
+    @media (max-width: 600px) {
+      .showcase-grid {
+        grid-template-columns: 1fr;
+      }
+      .apple-glass-dock {
+        max-width: calc(100vw - 24px);
+        overflow-x: auto;
+        gap: 8px;
+        padding: 8px 10px;
+        scrollbar-width: none;
+      }
+      .apple-glass-dock::-webkit-scrollbar { display: none; }
+      .apple-dock-item {
+        flex: 0 0 auto;
+        width: 46px;
+        height: 46px;
+      }
+    }
   </style>
 
     <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/glass-demo" />
@@ -435,6 +454,31 @@
       } catch (e) {}
     })()
   </script>
+    <!-- Liquid Glass UI Laboratory Skeleton Loading Screen -->
+    <div class="loader col-skeleton-screen sk-theme-violet" id="loader" role="status" aria-busy="true" aria-label="Loading Liquid Glass Optical Laboratory">
+  <div class="sk-ambient-glow" aria-hidden="true"></div>
+  <div class="sk-ambient-glow-left" aria-hidden="true"></div>
+    <div class="sk-editorial-wrap" aria-hidden="true" style="padding-top: 38px;">
+    <div class="sk-editorial-hero" style="max-width: 780px; margin-bottom: 26px;">
+      <div class="sk-pill sk-shimmer-accent" style="width: 240px; height: 38px; margin-bottom: 20px;"></div>
+      <div class="sk-title-bar sk-title-1 sk-shimmer" style="width: 74%; max-width: 560px; margin-bottom: 12px;"></div>
+      <div class="sk-lede-line sk-shimmer" style="width: 66%; max-width: 480px;"></div>
+    </div>
+    <div class="sk-grid sk-grid-3">
+      <div class="sk-card" style="backdrop-filter: blur(20px); padding: 26px;"><div class="sk-pill sk-shimmer-accent" style="width: 120px; height: 18px;"></div><div class="sk-box sk-shimmer" style="width: 100%; height: 110px;"></div><div class="sk-pill sk-shimmer" style="width: 100%; height: 12px;"></div></div>
+      <div class="sk-card" style="backdrop-filter: blur(20px); padding: 26px;"><div class="sk-pill sk-shimmer-accent" style="width: 136px; height: 18px;"></div><div class="sk-box sk-shimmer" style="width: 100%; height: 110px;"></div><div class="sk-pill sk-shimmer" style="width: 100%; height: 12px;"></div></div>
+      <div class="sk-card" style="backdrop-filter: blur(20px); padding: 26px;"><div class="sk-pill sk-shimmer-accent" style="width: 112px; height: 18px;"></div><div class="sk-box sk-shimmer" style="width: 100%; height: 110px;"></div><div class="sk-pill sk-shimmer" style="width: 100%; height: 12px;"></div></div>
+    </div>
+  </div>
+  <footer class="sk-status-dock" aria-hidden="true">
+    <div class="sk-status-pill">
+      <span class="sk-pulse-live"></span>
+      <span class="sk-status-text"><span>Optical Lab</span> &middot; Liquid Glass UI</span>
+      <div class="sk-progress-bar"><div class="sk-progress-fill"></div></div>
+    </div>
+  </footer>
+</div>
+
 
   <!-- Animated Backdrop -->
   <div class="lab-backdrop" aria-hidden="true">

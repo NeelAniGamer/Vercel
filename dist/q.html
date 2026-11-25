@@ -15,88 +15,49 @@
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script defer src="qr-dynamic.js"></script>
   <script>
-    ;(function () {
+    (function () {
       try {
-        if (localStorage.getItem('theme') === 'light') {
-          document.documentElement.classList.add('lm')
-          document.addEventListener('DOMContentLoaded', function() {
-            document.body.classList.add('lm')
-          })
-        }
+        var saved = localStorage.getItem('theme');
+        var prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+        var mode = saved || (prefersLight ? 'light' : 'dark');
+        document.documentElement.dataset.theme = mode;
+        document.documentElement.classList.toggle('lm', mode === 'light');
+        if (document.body) document.body.classList.toggle('lm', mode === 'light');
+        else document.addEventListener('DOMContentLoaded', function() {
+          document.body.classList.toggle('lm', mode === 'light');
+        });
       } catch (e) {}
-    })()
+    })();
   </script>
+  <link rel="stylesheet" href="qr-tokens.css" />
+  <link rel="stylesheet" href="qr-components.css" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg: #070a14;
-      --card-bg: rgba(15, 23, 42, 0.85);
-      --border: rgba(255, 255, 255, 0.08);
-      --accent: #10b981;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --danger: #ef4444;
-    }
-    body.lm {
-      --bg: #f8fafc;
-      --card-bg: #ffffff;
-      --border: rgba(0, 0, 0, 0.08);
-      --accent: #059669;
-      --text: #0f172a;
-      --text-muted: #475569;
-      --danger: #dc2626;
-    }
-    body.lm .card {
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
-    }
-    body.lm .spinner {
-      border: 3px solid rgba(0, 0, 0, 0.08);
-      border-top-color: var(--accent);
-    }
-    body.lm .icon-container {
-      background: rgba(5, 150, 105, 0.08);
-      border-color: rgba(5, 150, 105, 0.2);
-    }
-    body.lm .pwd-input {
-      background: #f8fafc;
-      border: 1px solid rgba(0, 0, 0, 0.15);
-      color: #0f172a;
-    }
     body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      font-family: var(--font-main);
+      background: var(--surface-page);
+      color: var(--ink-primary);
       display: flex;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
       min-height: 100dvh;
-      padding: 24px;
+      padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
       position: relative;
       overflow-x: hidden;
     }
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background:
-        radial-gradient(circle at 20% 30%, rgba(16, 185, 129, 0.08), transparent 40%),
-        radial-gradient(circle at 80% 70%, rgba(94, 212, 245, 0.08), transparent 40%);
-      z-index: 0;
-    }
     .card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 40px 32px;
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: clamp(22px, 5vw, 38px);
       max-width: 460px;
       width: 100%;
       text-align: center;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(20px);
+      box-shadow: var(--shadow-lg);
       position: relative;
       z-index: 1;
+      margin: auto;
       animation: fadeIn 0.3s ease-out;
     }
     @keyframes fadeIn {
@@ -106,7 +67,7 @@
     .spinner {
       width: 44px;
       height: 44px;
-      border: 3px solid rgba(255, 255, 255, 0.1);
+      border: 3px solid var(--border-subtle);
       border-top-color: var(--accent);
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
@@ -116,11 +77,11 @@
     .title {
       font-size: 1.35rem;
       font-weight: 700;
-      color: var(--text);
+      color: var(--ink-primary);
       margin-bottom: 8px;
     }
     .msg {
-      color: var(--text-muted);
+      color: var(--ink-muted);
       font-size: 0.95rem;
       line-height: 1.5;
       margin-bottom: 24px;
@@ -129,8 +90,8 @@
       width: 64px;
       height: 64px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--border);
+      background: var(--accent-soft);
+      border: 1px solid var(--border-subtle);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -139,61 +100,26 @@
     }
     .icon-container.err {
       color: var(--danger);
-      background: rgba(239, 68, 68, 0.1);
-      border-color: rgba(239, 68, 68, 0.3);
+      background: var(--danger-soft);
+      border-color: rgba(197, 48, 48, 0.25);
     }
     .pwd-input {
       width: 100%;
-      background: rgba(7, 10, 20, 0.8);
-      border: 1px solid var(--border);
-      color: #fff;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-subtle);
+      color: var(--ink-primary);
       padding: 14px 16px;
-      border-radius: 12px;
+      border-radius: var(--radius-sm);
       font-size: 1rem;
       margin-bottom: 16px;
       outline: none;
-      transition: border-color 0.2s;
+      transition: border-color 0.2s, box-shadow 0.2s;
       text-align: center;
       letter-spacing: 2px;
     }
     .pwd-input:focus {
       border-color: var(--accent);
-    }
-    .btn {
-      width: 100%;
-      padding: 14px;
-      border-radius: 12px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-      transition: all 0.2s;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      text-decoration: none;
-    }
-    .btn-primary {
-      background: var(--accent);
-      color: #070a14;
-    }
-    .btn-primary:hover {
-      filter: brightness(1.1);
-      transform: translateY(-1px);
-    }
-    .btn-secondary {
-      background: rgba(255, 255, 255, 0.06);
-      color: var(--text-muted);
-      border: 1px solid var(--border);
-      margin-top: 12px;
-    }
-    .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.1);
-      color: var(--text);
-    }
-    .btn:active {
-      transform: scale(0.98);
+      box-shadow: 0 0 0 3px var(--accent-soft);
     }
     .err-text {
       color: var(--danger);
@@ -202,11 +128,9 @@
       margin-bottom: 14px;
       display: none;
     }
-    body.lm .btn-secondary { background: #f1f5f9; color: #334155; }
-    .card { margin: auto; }
     .stack { display: grid; gap: 10px; margin-top: 8px; }
     .stack .btn { margin: 0; min-height: 48px; }
-    .code { font-family: 'Space Mono', monospace; font-size: 1.4rem; letter-spacing: 3px; padding: 14px; border: 2px dashed var(--accent); border-radius: 12px; margin-bottom: 14px; user-select: all; word-break: break-all; }
+    .code { font-family: var(--font-mono); font-size: 1.35rem; letter-spacing: 3px; padding: 14px; border: 2px dashed var(--accent); background: var(--surface-subtle); color: var(--ink-primary); border-radius: var(--radius-sm); margin-bottom: 14px; user-select: all; word-break: break-all; }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
   </style>
 
@@ -223,8 +147,32 @@
     <meta name="twitter:title" content="Redirecting... | Class Of Learners" />
     <meta name="twitter:description" content="Resolving a Class Of Learners short link." />
     <meta name="twitter:image" content="https://advancedlogiclabs.dpdns.org/og/home.jpg" />
-  </head>
+    <link rel="stylesheet" href="col-ui.css">
+  <link rel="stylesheet" href="col-skeleton.css?v=20261125" />
+</head>
 <body>
+    <!-- Dynamic QR Landing Skeleton Loading Screen -->
+    <div class="loader col-skeleton-screen sk-theme-emerald" id="loader" role="status" aria-busy="true" aria-label="Loading Dynamic QR Redirect">
+  <div class="sk-ambient-glow" aria-hidden="true"></div>
+  <div class="sk-ambient-glow-left" aria-hidden="true"></div>
+    <div class="sk-editorial-wrap" aria-hidden="true" style="justify-content: center; min-height: 88vh; padding: 24px;">
+    <div class="sk-card" style="max-width: 440px; width: 100%; align-items: center; text-align: center; padding: 36px 28px; gap: 18px; border-radius: 22px;">
+      <div class="sk-circle sk-shimmer-accent" style="width: 72px; height: 72px;"></div>
+      <div class="sk-title-bar sk-shimmer" style="width: 68%; height: 24px;"></div>
+      <div class="sk-lede-line sk-shimmer" style="width: 84%;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 150px; height: 24px;"></div>
+      <div class="sk-btn sk-btn-primary sk-shimmer" style="width: 100%; height: 46px; margin-top: 8px;"></div>
+    </div>
+  </div>
+  <footer class="sk-status-dock" aria-hidden="true">
+    <div class="sk-status-pill">
+      <span class="sk-pulse-live"></span>
+      <span class="sk-status-text"><span>CoL</span> &middot; Dynamic QR Redirect</span>
+      <div class="sk-progress-bar"><div class="sk-progress-fill"></div></div>
+    </div>
+  </footer>
+</div>
+
 
   <div class="card" id="app">
     <div class="spinner"></div>
@@ -251,7 +199,7 @@
           <div class="icon-container err">${svgIcon}</div>
           <div class="title">${title}</div>
           <div class="msg">${message}</div>
-          <a href="/home" class="btn btn-secondary">
+          <a href="/" class="btn btn-secondary">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             Return to Home
           </a>
@@ -380,29 +328,34 @@
           const link = (label, href, cls) => `<a class="btn ${cls || 'btn-secondary'}" href="${esc(safe(href))}" rel="noopener noreferrer">${esc(label)}</a>`;
           const ic = s => String(s == null ? '' : s).replace(/([,;\\])/g, '\\$1').replace(/\n/g, '\\n');
           const ts = s => (s || '').replace(/[-:]/g, '').replace(/^(\d{8}T\d{4})$/, '$100');
-          let body = '', after = null, desc = p.desc || '';
+          let body = '', after = null, desc = p.desc || '', headerIcon = '';
           if (p.t === 'links') {
+            headerIcon = '<div class="icon-container"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>';
             body = (p.links || []).slice(0, 30).map(l => link(l.label || l.url, l.url)).join('');
           } else if (p.t === 'app') {
+            headerIcon = '<div class="icon-container"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></div>';
             const store = /iPhone|iPad|iPod/.test(UA) ? p.ios : /Android/.test(UA) ? p.android : '';
             if (store) { window.location.replace(safe(store)); return; }
             body = link('Download on the App Store', p.ios, 'btn-primary') + link('Get it on Google Play', p.android);
           } else if (p.t === 'vcard') {
+            headerIcon = '<div class="icon-container"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>';
             body = '<button class="btn btn-primary" id="lpAct">Save contact</button>' + (p.phone ? link('Call ' + p.phone, 'tel:' + p.phone.replace(/[^\d+]/g, '')) : '') + (p.email ? link(p.email, 'mailto:' + p.email) : '') + (p.url ? link(p.url, p.url) : '');
             after = () => { document.getElementById('lpAct').onclick = () => {
               const parts = (p.name || '').trim().split(/\s+/), fam = parts.length > 1 ? parts.pop() : '';
               save((p.name || 'contact') + '.vcf', ['BEGIN:VCARD', 'VERSION:3.0', 'N:' + ic(fam) + ';' + ic(parts.join(' ')) + ';;;', 'FN:' + ic(p.name), p.org && 'ORG:' + ic(p.org), p.role && 'TITLE:' + ic(p.role), p.phone && 'TEL:' + p.phone, p.email && 'EMAIL:' + p.email, p.url && 'URL:' + p.url, p.adr && 'ADR:;;' + ic(p.adr) + ';;;', 'END:VCARD'].filter(Boolean).join('\r\n'), 'text/vcard');
             }; };
           } else if (p.t === 'event') {
+            headerIcon = '<div class="icon-container"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>';
             desc = [p.start && new Date(p.start).toLocaleString(), p.loc, p.desc].filter(Boolean).join(' · ');
             body = '<button class="btn btn-primary" id="lpAct">Add to calendar</button>';
             after = () => { document.getElementById('lpAct').onclick = () => save('event.ics', ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Class Of Learners//QR//EN', 'BEGIN:VEVENT', 'UID:' + code + '@col', 'DTSTAMP:' + new Date().toISOString().replace(/[-:]|\.\d+/g, ''), 'DTSTART:' + ts(p.start), p.end && 'DTEND:' + ts(p.end), 'SUMMARY:' + ic(p.title), p.desc && 'DESCRIPTION:' + ic(p.desc), p.loc && 'LOCATION:' + ic(p.loc), 'END:VEVENT', 'END:VCALENDAR'].filter(Boolean).join('\r\n'), 'text/calendar'); };
           } else if (p.t === 'coupon') {
+            headerIcon = '<div class="icon-container"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v5a2 2 0 0 1 0 4v5a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 1 0-4z"/></svg></div>';
             desc = [p.off && p.off + '% off', p.expiry && 'valid until ' + new Date(p.expiry).toLocaleDateString()].filter(Boolean).join(' · ');
             body = '<div class="code">' + esc(p.code) + '</div><button class="btn btn-primary" id="lpAct">Copy code</button>';
             after = () => { document.getElementById('lpAct').onclick = function () { navigator.clipboard.writeText(p.code).then(() => { this.textContent = 'Copied'; }); }; };
           }
-          app.innerHTML = `<div class="title">${esc(p.title)}</div><div class="msg">${esc(desc)}</div><div class="stack">${body}</div>`;
+          app.innerHTML = `${headerIcon}<div class="title">${esc(p.title)}</div><div class="msg">${esc(desc)}</div><div class="stack">${body}</div>`;
           if (after) {after();}
         };
         const go = async (dest) => {

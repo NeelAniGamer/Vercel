@@ -42,6 +42,7 @@
 
     <script defer src="col-router.js"></script>
     <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
+  <link rel="stylesheet" href="col-skeleton.css?v=20261125" />
     <link rel="stylesheet" href="liquid-glass.css" />
     <!-- Conditional Mobile Assets: Loaded ONLY on mobile/tablet or when screen <= 1024px. Prevents downloading mobile styles and touch scripts on PC desktop. -->
     <script>
@@ -895,61 +896,58 @@
     }</script>
   </head>
   <body>
-    <div class="loader col-skeleton-screen" id="loader" role="status" aria-label="Loading Database Logic DB">
-      <div class="sk-ambient-glow" aria-hidden="true"></div>
-      <div class="sk-ambient-glow-left" aria-hidden="true"></div>
-
-      <!-- Top Nav Skeleton -->
-      <header class="sk-nav" aria-hidden="true">
-        <div class="sk-nav-brand">
-          <div class="sk-circle sk-brand-logo sk-shimmer"></div>
-          <div class="sk-pill sk-brand-text sk-shimmer"></div>
-        </div>
-        <div class="sk-nav-links">
-          <div class="sk-pill sk-shimmer" style="width: 54px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 58px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 62px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 82px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 66px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 76px; height: 14px;"></div>
-        </div>
-        <div class="sk-nav-actions">
-          <div class="sk-circle sk-nav-theme sk-shimmer"></div>
-          <div class="sk-pill sk-nav-btn sk-shimmer" style="width: 78px;"></div>
-          <div class="sk-pill sk-nav-cta sk-shimmer" style="width: 124px;"></div>
-        </div>
-      </header>
-
-      <!-- Database Logic Skeleton -->
-      <div class="sk-editorial-wrap" aria-hidden="true" style="padding-top: 36px;">
-        <div class="sk-editorial-hero" style="max-width: 860px; margin-bottom: 28px;">
-          <div class="sk-eyebrow-row">
-            <span class="sk-eyebrow-dash"></span>
-            <div class="sk-pill sk-eyebrow-pill sk-shimmer" style="width: 190px;"></div>
-          </div>
-          <div class="sk-title-group" style="align-items: center; width: 100%;">
-            <div class="sk-title-bar sk-title-1 sk-shimmer" style="width: 80%; max-width: 680px;"></div>
-            <div class="sk-title-bar sk-title-2 sk-shimmer" style="width: 56%; max-width: 460px;"></div>
-          </div>
-        </div>
-
-        <!-- Query Editor & Table Grid Skeleton -->
-        <div class="sk-app-stage sk-shimmer" style="height: 400px;">
-          <div class="sk-box sk-shimmer" style="width: 90%; height: 80%;"></div>
-        </div>
-      </div>
-
-      <!-- Bottom Status Dock -->
-      <footer class="sk-status-dock" aria-hidden="true">
-        <div class="sk-status-pill">
-          <span class="sk-pulse-live"></span>
-          <span class="sk-status-text"><span>CoL</span> &middot; Database Logic DB</span>
-          <div class="sk-progress-bar">
-            <div class="sk-progress-fill"></div>
-          </div>
-        </div>
-      </footer>
+    <div class="loader col-skeleton-screen sk-theme-violet" id="loader" role="status" aria-busy="true" aria-label="Loading Systemic Logic Database">
+  <div class="sk-ambient-glow" aria-hidden="true"></div>
+  <div class="sk-ambient-glow-left" aria-hidden="true"></div>
+  <header class="sk-nav" aria-hidden="true">
+    <div class="sk-nav-brand">
+      <div class="sk-circle sk-brand-logo sk-shimmer"></div>
+      <div class="sk-pill sk-brand-text sk-shimmer"></div>
     </div>
+    <div class="sk-nav-links">
+      <div class="sk-pill sk-shimmer" style="width: 56px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 62px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 66px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 80px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 68px; height: 14px;"></div>
+    </div>
+    <div class="sk-nav-actions">
+      <div class="sk-pill sk-nav-search sk-shimmer"></div>
+      <div class="sk-circle sk-nav-theme sk-shimmer"></div>
+      <div class="sk-pill sk-nav-btn sk-shimmer" style="width: 78px;"></div>
+      <div class="sk-pill sk-nav-cta sk-shimmer" style="width: 118px;"></div>
+    </div>
+  </header>
+  <div class="sk-editorial-wrap" aria-hidden="true" style="padding-top: 34px;">
+    <div class="sk-editorial-hero" style="max-width: 880px; margin-bottom: 24px;">
+      <div class="sk-pill sk-shimmer-accent" style="width: 210px; height: 24px; margin-bottom: 16px;"></div>
+      <div class="sk-title-group" style="align-items: center; width: 100%;">
+        <div class="sk-title-bar sk-title-1 sk-shimmer" style="width: 74%; max-width: 580px;"></div>
+        <div class="sk-title-bar sk-title-2 sk-shimmer" style="width: 62%; max-width: 480px;"></div>
+      </div>
+      <div class="sk-lede-line sk-shimmer" style="width: 78%; max-width: 580px; margin-bottom: 18px;"></div>
+      <div class="sk-chip-row" style="margin-bottom: 18px;">
+        <div class="sk-pill sk-shimmer-accent" style="width: 138px; height: 30px;"></div>
+        <div class="sk-pill sk-shimmer" style="width: 112px; height: 30px;"></div>
+        <div class="sk-pill sk-shimmer" style="width: 146px; height: 30px;"></div>
+        <div class="sk-pill sk-shimmer" style="width: 128px; height: 30px;"></div>
+      </div>
+      <div class="sk-search-pill"><div class="sk-pill sk-shimmer" style="width: 260px; height: 16px;"></div><div class="sk-pill sk-shimmer-accent" style="width: 68px; height: 28px;"></div></div>
+    </div>
+    <div class="sk-grid sk-grid-3">
+      <div class="sk-card"><div class="sk-pill sk-shimmer-accent" style="width: 84px; height: 18px;"></div><div class="sk-title-bar sk-shimmer" style="width: 76%; height: 18px;"></div><div class="sk-box sk-shimmer" style="width: 100%; height: 48px;"></div><div class="sk-lede-line sk-shimmer" style="width: 88%;"></div></div>
+      <div class="sk-card"><div class="sk-pill sk-shimmer-accent" style="width: 84px; height: 18px;"></div><div class="sk-title-bar sk-shimmer" style="width: 70%; height: 18px;"></div><div class="sk-box sk-shimmer" style="width: 100%; height: 48px;"></div><div class="sk-lede-line sk-shimmer" style="width: 82%;"></div></div>
+      <div class="sk-card"><div class="sk-pill sk-shimmer-accent" style="width: 84px; height: 18px;"></div><div class="sk-title-bar sk-shimmer" style="width: 80%; height: 18px;"></div><div class="sk-box sk-shimmer" style="width: 100%; height: 48px;"></div><div class="sk-lede-line sk-shimmer" style="width: 90%;"></div></div>
+    </div>
+  </div>
+  <footer class="sk-status-dock" aria-hidden="true">
+    <div class="sk-status-pill">
+      <span class="sk-pulse-live"></span>
+      <span class="sk-status-text"><span>LogicDB</span> &middot; 50 Engineering Nodes</span>
+      <div class="sk-progress-bar"><div class="sk-progress-fill"></div></div>
+    </div>
+  </footer>
+</div>
     <!-- Starry background canvas -->
     <canvas id="cosmos-canvas"></canvas>
 
@@ -1952,8 +1950,5 @@
         openNodeModal(hashId);
       }
     </script>
-    <script defer src="col-router.js"></script>
-    <script defer src="col-ui.js"></script>
-    <script defer src="col-auth.js"></script>
   </body>
 </html>

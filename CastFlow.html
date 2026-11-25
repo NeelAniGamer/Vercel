@@ -65,6 +65,7 @@
       })()
     </script>
     <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
+  <link rel="stylesheet" href="col-skeleton.css?v=20261125" />
     <link rel="stylesheet" href="liquid-glass.css" />
     <!-- Conditional Mobile Assets: Loaded ONLY on mobile/tablet or when screen <= 1024px. Prevents downloading mobile styles and touch scripts on PC desktop. -->
     <script>
@@ -623,61 +624,70 @@
     </style>
 </head>
 <body>
-    <div class="loader col-skeleton-screen" id="loader" role="status" aria-label="Loading CastFlow Engine">
-      <div class="sk-ambient-glow" aria-hidden="true"></div>
-      <div class="sk-ambient-glow-left" aria-hidden="true"></div>
-
-      <!-- Top Nav Skeleton -->
-      <header class="sk-nav" aria-hidden="true">
-        <div class="sk-nav-brand">
-          <div class="sk-circle sk-brand-logo sk-shimmer"></div>
-          <div class="sk-pill sk-brand-text sk-shimmer"></div>
+    <div class="loader col-skeleton-screen sk-theme-teal" id="loader" role="status" aria-busy="true" aria-label="Loading CastFlow Engine">
+  <div class="sk-ambient-glow" aria-hidden="true"></div>
+  <div class="sk-ambient-glow-left" aria-hidden="true"></div>
+  <div class="sk-announce-bar" aria-hidden="true"><div class="sk-pill sk-shimmer-accent" style="width: 240px; height: 12px;"></div></div>
+  <header class="sk-nav" aria-hidden="true">
+    <div class="sk-nav-brand">
+      <div class="sk-circle sk-brand-logo sk-shimmer"></div>
+      <div class="sk-pill sk-brand-text sk-shimmer"></div>
+    </div>
+    <div class="sk-nav-links">
+      <div class="sk-pill sk-shimmer" style="width: 56px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 62px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 66px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 80px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 68px; height: 14px;"></div>
+    </div>
+    <div class="sk-nav-actions">
+      <div class="sk-pill sk-nav-search sk-shimmer"></div>
+      <div class="sk-circle sk-nav-theme sk-shimmer"></div>
+      <div class="sk-pill sk-nav-btn sk-shimmer" style="width: 78px;"></div>
+      <div class="sk-pill sk-nav-cta sk-shimmer" style="width: 118px;"></div>
+    </div>
+  </header>
+  <div class="sk-hero-wrap" aria-hidden="true">
+    <div class="sk-split-hero">
+      <div class="sk-split-copy">
+        <div class="sk-pill sk-shimmer-accent" style="width: 190px; height: 22px; margin-bottom: 16px;"></div>
+        <div class="sk-title-group" style="width: 100%;">
+          <div class="sk-title-bar sk-title-1 sk-shimmer" style="width: 72%;"></div>
+          <div class="sk-title-bar sk-title-2 sk-shimmer" style="width: 64%;"></div>
         </div>
-        <div class="sk-nav-links">
-          <div class="sk-pill sk-shimmer" style="width: 54px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 58px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 62px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 82px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 66px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 76px; height: 14px;"></div>
+        <div class="sk-lede-group" style="width: 100%;">
+          <div class="sk-lede-line sk-shimmer" style="width: 90%;"></div>
+          <div class="sk-lede-line sk-shimmer" style="width: 72%;"></div>
         </div>
-        <div class="sk-nav-actions">
-          <div class="sk-circle sk-nav-theme sk-shimmer"></div>
-          <div class="sk-pill sk-nav-btn sk-shimmer" style="width: 78px;"></div>
-          <div class="sk-pill sk-nav-cta sk-shimmer" style="width: 124px;"></div>
+        <div class="sk-cta-row">
+          <div class="sk-btn sk-btn-primary sk-shimmer" style="width: 156px;"></div>
+          <div class="sk-btn sk-btn-secondary sk-shimmer" style="width: 148px;"></div>
         </div>
-      </header>
-
-      <!-- CastFlow Stage Skeleton -->
-      <div class="sk-editorial-wrap" aria-hidden="true" style="padding-top: 36px;">
-        <div class="sk-editorial-hero" style="max-width: 860px; margin-bottom: 28px;">
-          <div class="sk-eyebrow-row">
-            <span class="sk-eyebrow-dash"></span>
-            <div class="sk-pill sk-eyebrow-pill sk-shimmer" style="width: 180px;"></div>
+        <div class="sk-stats-pill"><div class="sk-sub-pill" style="width: 72px;"></div><span class="sk-dot">&bull;</span><div class="sk-sub-pill" style="width: 96px;"></div><span class="sk-dot">&bull;</span><div class="sk-sub-pill" style="width: 64px;"></div></div>
+      </div>
+      <div class="sk-split-visual">
+        <div class="sk-cast-stage">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div class="sk-pill sk-shimmer-accent" style="width: 120px; height: 24px;"></div>
+            <div class="sk-pill sk-shimmer" style="width: 86px; height: 24px;"></div>
           </div>
-          <div class="sk-title-group" style="align-items: center; width: 100%;">
-            <div class="sk-title-bar sk-title-1 sk-shimmer" style="width: 82%; max-width: 680px;"></div>
-            <div class="sk-title-bar sk-title-2 sk-shimmer" style="width: 58%; max-width: 480px;"></div>
+          <div class="sk-box sk-shimmer" style="width: 100%; height: 210px;"></div>
+          <div style="display:flex;gap:10px;">
+            <div class="sk-pill sk-shimmer" style="flex:1; height: 34px;"></div>
+            <div class="sk-pill sk-shimmer-accent" style="width: 108px; height: 34px;"></div>
           </div>
-        </div>
-
-        <!-- Mirroring Receiver Viewport Skeleton -->
-        <div class="sk-app-stage sk-shimmer" style="height: 440px;">
-          <div class="sk-circle sk-shimmer" style="width: 68px; height: 68px;"></div>
         </div>
       </div>
-
-      <!-- Bottom Status Dock -->
-      <footer class="sk-status-dock" aria-hidden="true">
-        <div class="sk-status-pill">
-          <span class="sk-pulse-live"></span>
-          <span class="sk-status-text"><span>CoL</span> &middot; CastFlow Engine</span>
-          <div class="sk-progress-bar">
-            <div class="sk-progress-fill"></div>
-          </div>
-        </div>
-      </footer>
     </div>
+  </div>
+  <footer class="sk-status-dock" aria-hidden="true">
+    <div class="sk-status-pill">
+      <span class="sk-pulse-live"></span>
+      <span class="sk-status-text"><span>CastFlow</span> &middot; Wireless Screen Engine</span>
+      <div class="sk-progress-bar"><div class="sk-progress-fill"></div></div>
+    </div>
+  </footer>
+</div>
     <script>
       ;(function () {
         try {
@@ -752,7 +762,7 @@
                 <div>
                     <span class="eyebrow boot boot-1"><span class="dot"></span>v3.2.0 · Cyber-Mechanical Edition</span>
                     <h1 class="hero-title boot boot-2">Your Phone.<br /><span class="grad">Any Screen.</span></h1>
-                    <p class="hero-sub boot boot-3">CastFlow lets you cast your Android screen, share files, and use desktop mode — all from your browser. No cables. No installs needed on the TV or PC.</p>
+                    <p class="hero-sub boot boot-3">CastFlow lets you cast your Android screen, share files, and use desktop mode straight from your browser. No cables, and nothing extra to install on your TV or PC.</p>
                     <div class="hero-ctas boot boot-4">
                         <a class="btn btn-solid" href="/download">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -809,17 +819,17 @@
                     <div class="feat rv">
                         <div class="feat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
                         <h3>File Sharing</h3>
-                        <p>Share any file instantly. Photos, videos, documents — anyone can download directly from their browser without installing anything.</p>
+                        <p>Share files right away. Photos, videos, and documents download straight from the browser with no receiver app required.</p>
                     </div>
                     <div class="feat rv">
                         <div class="feat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/><rect x="8" y="7" width="8" height="6" rx="1"/></svg></div>
                         <h3>Custom DeX</h3>
-                        <p>Turn your phone into a desktop computer. Browser, file manager, calculator — all accessible from any screen.</p>
+                        <p>Turn your phone into a desktop workspace with a browser, file manager, and calculator on any connected screen.</p>
                     </div>
                     <div class="feat rv">
                         <div class="feat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg></div>
                         <h3>Remote Control</h3>
-                        <p>Control your phone from the browser. Touch gestures, keyboard input, and remote navigation — all supported.</p>
+                        <p>Control your phone from the browser using touch gestures, keyboard input, and remote navigation.</p>
                     </div>
                     <div class="feat rv">
                         <div class="feat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
@@ -873,7 +883,7 @@
                     <ul class="check-list">
                         <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><div><strong>Receiver Needs Nothing</strong><span>Any TV, PC, or tablet with a modern browser joins instantly.</span></div></li>
                         <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><div><strong>Stays On Your Network</strong><span>Streams never leave your Wi-Fi. No cloud, no accounts, no tracking.</span></div></li>
-                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><div><strong>Built For Sharing</strong><span>Present slides, demo apps, or watch together — up to 1080p at 60fps.</span></div></li>
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><div><strong>Built For Sharing</strong><span>Present slides, demo apps, or watch together at up to 1080p and 60fps.</span></div></li>
                     </ul>
                 </div>
                 <div class="browser rv" role="img" aria-label="Preview of the CastFlow receiver running in a desktop browser">
@@ -896,7 +906,7 @@
                 <div class="sec-head rv">
                     <div class="kicker">Why CastFlow</div>
                     <h2 class="sec-title">Built For The Curious.</h2>
-                    <p class="sec-sub">CastFlow was born from a simple idea: your phone is already powerful enough to be your desktop. Why buy extra hardware? Software that respects your privacy — no accounts, no tracking, no ads. Just pure functionality.</p>
+                    <p class="sec-sub">CastFlow started from a simple idea: your phone is already powerful enough to double as a desktop, so why buy extra hardware? Everything stays on your local Wi-Fi with no accounts, no tracking, and no ads.</p>
                 </div>
                 <div class="stats-band rv">
                     <div class="stat"><b>100%</b><span>Free &amp; Open Source</span></div>
@@ -939,7 +949,7 @@
                 <div class="faq-list center">
                     <details class="faq rv">
                         <summary>Is CastFlow Really Free?</summary>
-                        <p class="faq-a">Yes — completely free and open source. No subscriptions, no premium tiers, no hidden fees, and no ads. Ever.</p>
+                        <p class="faq-a">Yes, it is completely free and open source. No subscriptions, no paid tiers, no hidden fees, and no ads.</p>
                     </details>
                     <details class="faq rv">
                         <summary>What Do I Need To Run It?</summary>
@@ -1010,8 +1020,6 @@
     </footer>
 
     <script defer src="col-router.js"></script>
-    <script defer src="col-ui.js"></script>
-    <script defer src="col-auth.js"></script>
     <script>
       // Shared theme + project-menu controller (same behaviour as the other pages)
       function applyTheme(isLight) {

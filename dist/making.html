@@ -95,6 +95,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 
     <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
+  <link rel="stylesheet" href="col-skeleton.css?v=20261125" />
     <link rel="stylesheet" href="liquid-glass.css" />
     <!-- Conditional Mobile Assets: Loaded ONLY on mobile/tablet or when screen <= 1024px. Prevents downloading mobile styles and touch scripts on PC desktop. -->
     <script>
@@ -675,12 +676,33 @@
         font-weight: 700;
         opacity: 1;
       }
+      html.lm .filter-pill,
+      body.lm .filter-pill {
+        background: rgba(15, 23, 42, 0.05);
+        color: #334155 !important;
+        border-color: rgba(15, 23, 42, 0.12);
+      }
+      html.lm .filter-pill:hover,
+      body.lm .filter-pill:hover {
+        background: rgba(15, 23, 42, 0.1) !important;
+        color: #0f172a !important;
+      }
+      html.lm .filter-pill.active,
+      body.lm .filter-pill.active {
+        background: #b45309 !important;
+        color: #ffffff !important;
+        border-color: #b45309 !important;
+        box-shadow: 0 2px 10px rgba(180, 83, 9, 0.28);
+      }
+      html.lm .filter-pill span,
       body.lm .filter-pill span {
         background: rgba(0, 0, 0, 0.08);
+        color: #334155 !important;
       }
+      html.lm .filter-pill.active span,
       body.lm .filter-pill.active span {
         background: rgba(0, 0, 0, 0.25);
-        color: #ffffff;
+        color: #ffffff !important;
       }
       .search-box {
         position: relative;
@@ -1415,82 +1437,57 @@
       })()
     </script>
 
-        <div class="loader col-skeleton-screen" id="loader" role="status" aria-label="Loading The Making Of CoL">
-      <div class="sk-ambient-glow" aria-hidden="true"></div>
-      <div class="sk-ambient-glow-left" aria-hidden="true"></div>
-
-      <!-- Top Nav Skeleton -->
-      <header class="sk-nav" aria-hidden="true">
-        <div class="sk-nav-brand">
-          <div class="sk-circle sk-brand-logo sk-shimmer"></div>
-          <div class="sk-pill sk-brand-text sk-shimmer"></div>
-        </div>
-        <div class="sk-nav-links">
-          <div class="sk-pill sk-shimmer" style="width: 54px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 58px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 62px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 82px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 66px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 76px; height: 14px;"></div>
-        </div>
-        <div class="sk-nav-actions">
-          <div class="sk-circle sk-nav-theme sk-shimmer"></div>
-          <div class="sk-pill sk-nav-btn sk-shimmer" style="width: 78px;"></div>
-          <div class="sk-pill sk-nav-cta sk-shimmer" style="width: 124px;"></div>
-        </div>
-      </header>
-
-      <!-- The Making Hero Skeleton -->
-      <div class="sk-editorial-wrap" aria-hidden="true">
-        <div class="sk-editorial-hero">
-          <div class="sk-eyebrow-row">
-            <span class="sk-eyebrow-dash"></span>
-            <div class="sk-pill sk-eyebrow-pill sk-shimmer" style="width: 190px;"></div>
-          </div>
-          <div class="sk-title-group" style="align-items: center; width: 100%;">
-            <div class="sk-title-bar sk-title-1 sk-shimmer" style="width: 76%; max-width: 620px;"></div>
-            <div class="sk-title-bar sk-title-2 sk-shimmer" style="width: 54%; max-width: 440px;"></div>
-          </div>
-          <div class="sk-lede-group" style="align-items: center; text-align: center; width: 100%;">
-            <div class="sk-lede-line sk-shimmer" style="width: 90%; max-width: 580px;"></div>
-            <div class="sk-lede-line sk-shimmer" style="width: 76%; max-width: 480px;"></div>
-          </div>
-        </div>
-
-        <!-- Milestones Grid Skeleton -->
-        <div class="sk-grid sk-grid-3">
-          <div class="sk-card">
-            <div class="sk-pill sk-shimmer" style="width: 70px; height: 14px;"></div>
-            <div class="sk-pill sk-shimmer" style="width: 140px; height: 20px;"></div>
-            <div class="sk-lede-line sk-shimmer" style="width: 95%;"></div>
-            <div class="sk-lede-line sk-shimmer" style="width: 80%;"></div>
-          </div>
-          <div class="sk-card">
-            <div class="sk-pill sk-shimmer" style="width: 70px; height: 14px;"></div>
-            <div class="sk-pill sk-shimmer" style="width: 150px; height: 20px;"></div>
-            <div class="sk-lede-line sk-shimmer" style="width: 95%;"></div>
-            <div class="sk-lede-line sk-shimmer" style="width: 80%;"></div>
-          </div>
-          <div class="sk-card">
-            <div class="sk-card-media sk-shimmer"></div>
-            <div class="sk-pill sk-shimmer" style="width: 130px; height: 20px;"></div>
-            <div class="sk-lede-line sk-shimmer" style="width: 95%;"></div>
-            <div class="sk-lede-line sk-shimmer" style="width: 80%;"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Bottom Status Dock -->
-      <footer class="sk-status-dock" aria-hidden="true">
-        <div class="sk-status-pill">
-          <span class="sk-pulse-live"></span>
-          <span class="sk-status-text"><span>CoL</span> &middot; The Making Of CoL</span>
-          <div class="sk-progress-bar">
-            <div class="sk-progress-fill"></div>
-          </div>
-        </div>
-      </footer>
+        <div class="loader col-skeleton-screen sk-theme-violet" id="loader" role="status" aria-busy="true" aria-label="Loading The Making Of CoL">
+  <div class="sk-ambient-glow" aria-hidden="true"></div>
+  <div class="sk-ambient-glow-left" aria-hidden="true"></div>
+  <header class="sk-nav" aria-hidden="true">
+    <div class="sk-nav-brand">
+      <div class="sk-circle sk-brand-logo sk-shimmer"></div>
+      <div class="sk-pill sk-brand-text sk-shimmer"></div>
     </div>
+    <div class="sk-nav-links">
+      <div class="sk-pill sk-shimmer" style="width: 56px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 62px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 66px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 80px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 68px; height: 14px;"></div>
+    </div>
+    <div class="sk-nav-actions">
+      <div class="sk-pill sk-nav-search sk-shimmer"></div>
+      <div class="sk-circle sk-nav-theme sk-shimmer"></div>
+      <div class="sk-pill sk-nav-btn sk-shimmer" style="width: 78px;"></div>
+      <div class="sk-pill sk-nav-cta sk-shimmer" style="width: 118px;"></div>
+    </div>
+  </header>
+  <div class="sk-editorial-wrap" aria-hidden="true" style="padding-top: 38px;">
+    <div class="sk-editorial-hero" style="max-width: 860px; margin-bottom: 28px;">
+      <div class="sk-pill sk-shimmer-accent" style="width: 230px; height: 26px; margin-bottom: 16px;"></div>
+      <div class="sk-title-group" style="align-items: center; width: 100%;">
+        <div class="sk-title-bar sk-title-1 sk-shimmer" style="width: 84%; max-width: 680px;"></div>
+        <div class="sk-title-bar sk-title-2 sk-shimmer" style="width: 58%; max-width: 460px;"></div>
+      </div>
+      <div class="sk-lede-line sk-shimmer" style="width: 80%; max-width: 600px;"></div>
+    </div>
+    <div class="sk-kpi-row">
+      <div class="sk-card"><div class="sk-circle sk-shimmer-accent" style="width:36px;height:36px;"></div><div class="sk-title-bar sk-shimmer" style="width:68px;height:28px;"></div><div class="sk-lede-line sk-shimmer" style="width:88%;"></div></div>
+      <div class="sk-card"><div class="sk-circle sk-shimmer-accent" style="width:36px;height:36px;"></div><div class="sk-title-bar sk-shimmer" style="width:82px;height:28px;"></div><div class="sk-lede-line sk-shimmer" style="width:90%;"></div></div>
+      <div class="sk-card"><div class="sk-circle sk-shimmer-accent" style="width:36px;height:36px;"></div><div class="sk-title-bar sk-shimmer" style="width:74px;height:28px;"></div><div class="sk-lede-line sk-shimmer" style="width:84%;"></div></div>
+      <div class="sk-card"><div class="sk-circle sk-shimmer-accent" style="width:36px;height:36px;"></div><div class="sk-title-bar sk-shimmer" style="width:70px;height:28px;"></div><div class="sk-lede-line sk-shimmer" style="width:86%;"></div></div>
+    </div>
+    <div class="sk-grid sk-grid-3">
+      <div class="sk-card"><div class="sk-card-media sk-shimmer" style="height:130px;"></div><div class="sk-title-bar sk-shimmer" style="width:70%;height:18px;"></div><div class="sk-lede-line sk-shimmer" style="width:92%;"></div></div>
+      <div class="sk-card"><div class="sk-card-media sk-shimmer" style="height:130px;"></div><div class="sk-title-bar sk-shimmer" style="width:64%;height:18px;"></div><div class="sk-lede-line sk-shimmer" style="width:86%;"></div></div>
+      <div class="sk-card"><div class="sk-card-media sk-shimmer" style="height:130px;"></div><div class="sk-title-bar sk-shimmer" style="width:76%;height:18px;"></div><div class="sk-lede-line sk-shimmer" style="width:90%;"></div></div>
+    </div>
+  </div>
+  <footer class="sk-status-dock" aria-hidden="true">
+    <div class="sk-status-pill">
+      <span class="sk-pulse-live"></span>
+      <span class="sk-status-text"><span>CoL</span> &middot; Build Story &amp; AI Stack</span>
+      <div class="sk-progress-bar"><div class="sk-progress-fill"></div></div>
+    </div>
+  </footer>
+</div>
     <div class="cd" id="cDot"></div>
     <div class="cr" id="cRing"></div>
 
@@ -1561,9 +1558,9 @@
       <!-- Hero Header -->
       <header class="hero-header">
         <div class="hero-eyebrow"><span class="pulse-dot"></span>Studio Engineering &amp; Architecture</div>
-        <h1 class="hero-title">The Making Of Class Of Learners: <span>Built &amp; Orchestrated</span></h1>
+        <h1 class="hero-title">The Making Of Class Of Learners: <span>How We Built It</span></h1>
         <p class="hero-subtitle">
-          From Local Agentic Terminal Coding Powered By Ollama To Planetary 3D Shaders On Vercel Edge — Here Is The Transparent Breakdown Of Every Tool We Used And Exactly How You Can Do It Too.
+          From local terminal agents running on Ollama to WebGL shaders on Vercel Edge: every tool we actually used, and how you can set up the same stack yourself.
         </p>
       </header>
 
@@ -1611,11 +1608,11 @@
 
         <div class="search-box">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" id="searchInput" placeholder="Search Technologies Or Playbooks..." aria-label="Search Technologies Or Playbooks" />
+          <input type="text" id="searchInput" placeholder="Search tools or setup steps..." aria-label="Search tools or setup steps" />
           <button class="search-clear-btn" id="searchClearBtn" aria-label="Clear Search Input" type="button">&times;</button>
         </div>
 
-        <div class="result-count" id="resultCount" role="status" aria-live="polite"><span class="count-dot"></span>Showing 15 Of 15 Systems</div>
+        <div class="result-count" id="resultCount" role="status" aria-live="polite"><span class="count-dot"></span>Showing 15 of 15 tools</div>
       </div>
 
       <!-- Bento Grid Of All 15 Technologies -->
@@ -1630,7 +1627,7 @@
                 <div class="card-icon"><img src="assets/logos/ollama.svg" alt="Ollama" class="invert-on-light" width="28" height="28" fetchpriority="high" decoding="async" /></div>
                 <div class="card-title-group">
                   <h2>Claude Code Powered By Ollama</h2>
-                  <span class="card-badge">Local Agentic Terminal Intelligence</span>
+                  <span class="card-badge">Local Terminal Coding Agent</span>
                 </div>
               </div>
             </div>
@@ -1638,14 +1635,14 @@
             <div class="section-block">
               <div class="section-heading">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                How We Used It In Class Of Learners
+                How we used it
               </div>
               <div class="section-body">
                 <p>
-                  Rather Than Relying Exclusively On Cloud API Tokens, We Connected Anthropic's Official <strong>Claude Code</strong> Terminal Agent To <strong>Ollama</strong> Running High-Performance Open-Weight Models Locally (Such As Qwen 2.5 Coder 32B And DeepSeek-Coder).
+                  Instead of burning cloud API credits for every refactor, we pointed <strong>Claude Code</strong> in the terminal at <strong>Ollama</strong> running open-weight coding models locally, including Qwen 2.5 Coder 32B and DeepSeek-Coder.
                 </p>
                 <p>
-                  This Gave Us An Autonomous Terminal Coding Agent Capable Of Deep AST Refactoring, Mass File Linting, Batch Script Processing, And Complex Code Rewrites Entirely On Our Local Workstation. It Operates With 100% Data Privacy, Zero Cloud Latency, Zero API Cost, And Full Offline Resilience Even When Internet Access Was Down.
+                  That setup handled multi-file edits, lint cleanups, and repetitive scripts right on our own laptops: no API bill, no network delay, and nothing sent to remote servers even when Wi-Fi dropped.
                 </p>
               </div>
             </div>
@@ -1653,19 +1650,19 @@
             <div class="section-block">
               <div class="section-heading">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-                How Anyone Can Do That Too (The Playbook)
+                How to set it up yourself
               </div>
               <ul class="playbook-steps">
                 <li class="playbook-step">
                   <div class="step-num">1</div>
                   <div class="step-text">
-                    <strong>Install Ollama:</strong> Download Ollama On Windows, macOS, Or Linux To Serve Open-Weight Models Locally Via A Native REST API.
+                    <strong>Install Ollama:</strong> Download Ollama on Windows, macOS, or Linux to serve local models over a standard REST API.
                   </div>
                 </li>
                 <li class="playbook-step">
                   <div class="step-num">2</div>
                   <div class="step-text">
-                    <strong>Pull A Premier Coding Model:</strong> Run A Top-Tier Open-Weight Coding Model (Qwen 2.5 Coder Or DeepSeek Coder V2) With High Context Window Support:
+                    <strong>Pull a coding model:</strong> Download Qwen 2.5 Coder or DeepSeek Coder V2 with a long context window:
                   </div>
                 </li>
               </ul>
@@ -1685,7 +1682,7 @@
                 <li class="playbook-step">
                   <div class="step-num">3</div>
                   <div class="step-text">
-                    <strong>Install Claude Code CLI:</strong> Install Anthropic's Official Agentic Terminal CLI Globally Via Node Package Manager:
+                    <strong>Install Claude Code CLI:</strong> Install the CLI globally using npm:
                   </div>
                 </li>
               </ul>
@@ -1705,7 +1702,7 @@
                 <li class="playbook-step">
                   <div class="step-num">4</div>
                   <div class="step-text">
-                    <strong>Bridge Claude Code Directly To Ollama:</strong> Point The Anthropic Client Endpoint Directly To Your Local Ollama Host Using Either Environment Variables Or A LiteLLM Local OpenAI-Compatible Proxy:
+                    <strong>Point Claude Code to Ollama:</strong> Set your local host environment variables or run LiteLLM as a local bridge:
                   </div>
                 </li>
               </ul>
@@ -1733,7 +1730,7 @@ litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
                 <li class="playbook-step">
                   <div class="step-num">5</div>
                   <div class="step-text">
-                    <strong>Run Autonomous Sessions:</strong> Launch The Agent In Your Working Directory By Executing <code>claude</code> And Directing Complex Code Modifications Hands-Free!
+                    <strong>Start a coding session:</strong> Run <code>claude</code> inside your repo folder and ask for focused edits or test checks.
                   </div>
                 </li>
               </ul>
@@ -1758,7 +1755,7 @@ litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
                 <div class="card-icon"><img src="assets/logos/google.svg" alt="Google" width="28" height="28" loading="lazy" decoding="async" /></div>
                 <div class="card-title-group">
                   <h2>Google Antigravity</h2>
-                  <span class="card-badge">Autonomous Multi-Step Pair Programmer</span>
+                  <span class="card-badge">Planning &amp; Coding Pair Programmer</span>
                 </div>
               </div>
             </div>
@@ -1770,7 +1767,7 @@ litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
               </div>
               <div class="section-body">
                 <p>
-                  Antigravity Served As Our Primary Senior Architecture Pair-Programming Engine. It Generated Full Planning Artifacts, Structured File Modifications Across 20+ HTML/JS Subsystems, Integrated Automated Playwright Headless Browser Verification, And Maintained Strict Adherence To Our Studio's Design Tokens.
+                  We used Antigravity whenever a task touched many files at once: writing an implementation plan first, updating HTML and JS across 20+ pages consistently, and verifying desktop and mobile layouts in headless Playwright.
                 </p>
               </div>
             </div>
@@ -1784,19 +1781,19 @@ litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
                 <li class="playbook-step">
                   <div class="step-num">1</div>
                   <div class="step-text">
-                    <strong>Define Strict Workspace Rules:</strong> Create An <code>AGENTS.md</code> Or Project Guidelines File At The Repository Root Defining Architectural Boundaries, Design Tokens, And Build Commands.
+                    <strong>Write workspace rules:</strong> Keep an <code>AGENTS.md</code> file at the repo root listing build scripts, shared CSS variables, and files never to break.
                   </div>
                 </li>
                 <li class="playbook-step">
                   <div class="step-num">2</div>
                   <div class="step-text">
-                    <strong>Adopt Planning Discipline:</strong> Always Have The Agent Draft An <code>implementation_plan.md</code> Before Touching Code To Prevent Scope Creep And Accidental Regressions.
+                    <strong>Plan before editing:</strong> Ask for a written plan before modifying code so scope stays clear and regressions stay rare.
                   </div>
                 </li>
                 <li class="playbook-step">
                   <div class="step-num">3</div>
                   <div class="step-text">
-                    <strong>Run Headless Browser Verification:</strong> Pair The Agent With Node/Playwright Scripts To Take Real Screenshots Of Desktop And Mobile Viewports Automatically.
+                    <strong>Verify in Playwright:</strong> Capture real desktop and mobile screenshots with Node/Playwright after edits instead of guessing layouts.
                   </div>
                 </li>
               </ul>
@@ -1820,7 +1817,7 @@ litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
                 <div class="card-icon"><img src="assets/logos/opencode.svg" alt="OpenCode" class="invert-on-light" width="28" height="28" loading="lazy" decoding="async" /></div>
                 <div class="card-title-group">
                   <h2>OpenCode</h2>
-                  <span class="card-badge">AI-Native Developer Terminal Environment</span>
+                  <span class="card-badge">Terminal Coding Environment</span>
                 </div>
               </div>
             </div>
@@ -1832,7 +1829,7 @@ litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
               </div>
               <div class="section-body">
                 <p>
-                  We Used OpenCode For Terminal-First Development Sessions In Our Subprojects (Such As Advanced Typing Instructor And GestureUI). With Its Direct Support For <code>opencode.json</code> And The BrowserMCP Plugin, OpenCode Enabled Rapid Debugging Of Local Python/WebSocket Backends Directly Inside The CLI.
+                  For subprojects like Advanced Typing Instructor and GestureUI, we ran terminal coding sessions in OpenCode. With <code>opencode.json</code> and BrowserMCP wired up, debugging local Python and WebSocket servers stayed inside one CLI.
                 </p>
               </div>
             </div>
@@ -1846,7 +1843,7 @@ litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
                 <li class="playbook-step">
                   <div class="step-num">1</div>
                   <div class="step-text">
-                    <strong>Install OpenCode:</strong> Install The Global OpenCode Package Or Run It Via Your Favorite Package Manager:
+                    <strong>Install OpenCode:</strong> Install the CLI globally or run it with your package manager:
                   </div>
                 </li>
               </ul>
@@ -1864,13 +1861,13 @@ litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
                 <li class="playbook-step">
                   <div class="step-num">2</div>
                   <div class="step-text">
-                    <strong>Configure Workspace Config:</strong> Add An <code>opencode.json</code> In Your Project Root Specifying Active Plugins And Environment Variables.
+                    <strong>Add workspace config:</strong> Drop an <code>opencode.json</code> file at the repo root with your plugins and environment flags.
                   </div>
                 </li>
                 <li class="playbook-step">
                   <div class="step-num">3</div>
                   <div class="step-text">
-                    <strong>Start Interactive Coding:</strong> Run <code>opencode</code> To Launch Context-Aware Multi-File Edits And Automated Script Execution.
+                    <strong>Start working:</strong> Run <code>opencode</code> in the project directory to edit files and run scripts cleanly.
                   </div>
                 </li>
               </ul>
@@ -1893,7 +1890,7 @@ litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
                 <div class="card-icon"><img src="assets/logos/freebuff.svg" alt="Freebuff" width="28" height="28" loading="lazy" decoding="async" /></div>
                 <div class="card-title-group">
                   <h2>Freebuff</h2>
-                  <span class="card-badge">Sandbox Testing &amp; Network Proxy Environment</span>
+                  <span class="card-badge">Local Test Proxy &amp; Sandbox</span>
                 </div>
               </div>
             </div>
@@ -1905,7 +1902,7 @@ litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
               </div>
               <div class="section-body">
                 <p>
-                  Freebuff Was Used As A Safe Local Staging Sandbox And Network Proxy Utility. It Enabled Our Team To Mock Supabase Authentication Responses, Simulate 503 Maintenance Headers, Test Offline PWA Caching Scenarios, And Intercept Outgoing Telemetry Safely Before Going Live.
+                  Before pushing updates live, we tested edge cases through Freebuff: mocking Supabase auth replies, forcing 503 error responses, checking offline cache behavior, and verifying no stray requests left the browser.
                 </p>
               </div>
             </div>
@@ -1919,19 +1916,19 @@ litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
                 <li class="playbook-step">
                   <div class="step-num">1</div>
                   <div class="step-text">
-                    <strong>Deploy A Local Proxy / Sandbox:</strong> Set Up A Local Interceptor Or Mocking Proxy (E.g. Mitmproxy Or Freebuff Utilities) Bound To <code>127.0.0.1:8080</code>.
+                    <strong>Run a local test proxy:</strong> Point mitmproxy or your staging proxy utility at <code>127.0.0.1:8080</code>.
                   </div>
                 </li>
                 <li class="playbook-step">
                   <div class="step-num">2</div>
                   <div class="step-text">
-                    <strong>Simulate Network Degradation:</strong> Test Extreme Edge Conditions (3G Speed Throttling, High Packet Drop, 500 Server Errors) To Validate UI Graceful Fallbacks.
+                    <strong>Test failure states:</strong> Throttle to slow 3G speeds or return 500 errors to see how pages handle dropped connections.
                   </div>
                 </li>
                 <li class="playbook-step">
                   <div class="step-num">3</div>
                   <div class="step-text">
-                    <strong>Inspect Client Payloads:</strong> Verify That No Sensitive API Keys Or Unsanitized User Data Leak Across Network Boundaries.
+                    <strong>Check outgoing requests:</strong> Inspect request headers and bodies to verify private keys never leave the client.
                   </div>
                 </li>
               </ul>
@@ -1955,7 +1952,7 @@ litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
                 <div class="card-icon"><img src="assets/logos/claude.svg" alt="Claude" width="28" height="28" loading="lazy" decoding="async" /></div>
                 <div class="card-title-group">
                   <h2>Claude Web (Anthropic)</h2>
-                  <span class="card-badge">Deep Architectural Reasoning &amp; Design Taste</span>
+                  <span class="card-badge">UI Prototyping &amp; Math Reasoning</span>
                 </div>
               </div>
             </div>
@@ -1967,7 +1964,7 @@ litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
               </div>
               <div class="section-body">
                 <p>
-                  Claude Web (Powered By Claude 3.5 Sonnet And Claude 3.7 Sonnet) Was Instrumental In Designing The CoL Visual Aesthetic. It Authored Our Core Design Tokens (<code>--void</code>, <code>--panel</code>, <code>--signal</code>, <code>--ease</code>), Structured The Complex Orbital Physics Equations For Solar Engine, And Refined Our Technical Documentation.
+                  We used Claude on the web to sketch early CSS design tokens (<code>--void</code>, <code>--panel</code>, <code>--signal</code>, <code>--ease</code>), check Keplerian orbital equations for the Solar simulator, and test interactive CSS transitions.
                 </p>
               </div>
             </div>
@@ -1981,19 +1978,19 @@ litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
                 <li class="playbook-step">
                   <div class="step-num">1</div>
                   <div class="step-text">
-                    <strong>Create Claude Projects:</strong> Group Your Entire Design Philosophy, CSS Files, And Brand Guides Inside A Claude Project For Persistent Architectural Memory.
+                    <strong>Save context in a Project:</strong> Upload your CSS tokens and guidelines once so each chat starts with the exact setup.
                   </div>
                 </li>
                 <li class="playbook-step">
                   <div class="step-num">2</div>
                   <div class="step-text">
-                    <strong>Use Interactive Artifacts:</strong> Request Complex CSS Animations And Micro-Interactions As Standalone HTML Artifacts To Test In Real-Time.
+                    <strong>Test small HTML components:</strong> Preview animations and widget states directly in Artifacts before copying them into the codebase.
                   </div>
                 </li>
                 <li class="playbook-step">
                   <div class="step-num">3</div>
                   <div class="step-text">
-                    <strong>Engage Extended Thinking:</strong> Use Claude's Deep Reasoning Capabilities To Formulate Complex Algorithms (E.g. Keplarian Orbital Calculations).
+                    <strong>Double-check heavy math:</strong> Step through orbital mechanics and edge-case formulas slowly before writing production code.
                   </div>
                 </li>
               </ul>
@@ -2017,7 +2014,7 @@ litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
                 <div class="card-icon"><img src="assets/logos/gemini.svg" alt="Gemini" width="28" height="28" loading="lazy" decoding="async" /></div>
                 <div class="card-title-group">
                   <h2>Gemini Web (Google DeepMind)</h2>
-                  <span class="card-badge">Multimodal Vision &amp; Massive Context Synthesis</span>
+                  <span class="card-badge">Screenshot Audits &amp; Large Datasets</span>
                 </div>
               </div>
             </div>
@@ -2029,7 +2026,7 @@ litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
               </div>
               <div class="section-body">
                 <p>
-                  With Its 2-Million-Token Context Window And Multimodal Vision Capabilities, Gemini Was Our Lead Auditor For Visual Regressions. By Ingesting Full-Screen Screenshots And Entire Bundled Codebases At Once, Gemini Identified Sub-Pixel Misalignments And Optimized GeoJSON Polygons In Terra3D Atlas.
+                  Gemini handled full-page screenshots and large data files in one pass. Dropping complete page captures alongside our stylesheets made it easy to spot low-contrast buttons, spacing issues, and heavy GeoJSON geometry in Terra3D.
                 </p>
               </div>
             </div>
@@ -2043,19 +2040,19 @@ litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
                 <li class="playbook-step">
                   <div class="step-num">1</div>
                   <div class="step-text">
-                    <strong>Perform Visual UI Audits:</strong> Drag And Drop UI Screenshots Directly Into Gemini Web And Ask: <em>"Analyze This Screenshot For Contrast Ratio, Hierarchy Flaws, And Visual Distortions."</em>
+                    <strong>Check real screenshots:</strong> Upload finished page captures and ask directly for low-contrast text, overlapping labels, or mobile overflow.
                   </div>
                 </li>
                 <li class="playbook-step">
                   <div class="step-num">2</div>
                   <div class="step-text">
-                    <strong>Upload Massive Datasets:</strong> Provide Entire GeoJSON Files Or Multi-Megabyte JSON Level Files In A Single Prompt To Generate Parsing Optimizations.
+                    <strong>Inspect big data files:</strong> Pass full GeoJSON or large JSON catalogs at once to spot slow loops or duplicate fields.
                   </div>
                 </li>
                 <li class="playbook-step">
                   <div class="step-num">3</div>
                   <div class="step-text">
-                    <strong>Cross-Compare Layouts:</strong> Upload Side-By-Side Desktop And Mobile Screenshots To Audit Responsive Symmetry And Touch Target Sizing.
+                    <strong>Compare desktop vs mobile:</strong> Drop paired 1440px and 390px screenshots side-by-side to catch cramped tap targets.
                   </div>
                 </li>
               </ul>
@@ -2079,7 +2076,7 @@ litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
                 <div class="card-icon"><img src="assets/logos/lovable.svg" alt="Lovable" width="28" height="28" loading="lazy" decoding="async" /></div>
                 <div class="card-title-group">
                   <h2>Lovable</h2>
-                  <span class="card-badge">Full-Stack Prototyping &amp; Reactive Component Scaffolds</span>
+                  <span class="card-badge">Fast UI &amp; Layout Mocking</span>
                 </div>
               </div>
             </div>
@@ -2091,7 +2088,7 @@ litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
               </div>
               <div class="section-body">
                 <p>
-                  Lovable Enabled Lightning-Fast Full-Stack Prototyping. We Used Its Natural-Language-To-Code Engine To Rapidly Explore Interactive Card Layouts, Student Dashboard Concepts, Responsive Bento Grids, And Modern Tailwind CSS Utilities Before Transferring Production Code Into Our Vanilla Engine.
+                  When exploring new dashboard layouts or bento grids, we tested quick drafts in Lovable first. Seeing interactive layouts in a few minutes helped us decide what worked visually before rewriting the keepers cleanly into plain HTML and CSS.
                 </p>
               </div>
             </div>
@@ -2105,19 +2102,19 @@ litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
                 <li class="playbook-step">
                   <div class="step-num">1</div>
                   <div class="step-text">
-                    <strong>Prompt Your UI Concept:</strong> Visit Lovable.dev And Prompt Your Interface Idea In Plain English (E.g. <em>"A Dark VisionOS Student Studio Dashboard With Ambient Glows"</em>).
+                    <strong>Sketch ideas in plain English:</strong> Describe the layout you want to test visually before writing final HTML.
                   </div>
                 </li>
                 <li class="playbook-step">
                   <div class="step-num">2</div>
                   <div class="step-text">
-                    <strong>Iterate In Real-Time:</strong> Use Visual Chat To Refine Component Hierarchies, Button Hover Physics, And Mobile Responsiveness.
+                    <strong>Adjust spacing interactively:</strong> Tweak card padding, button states, and mobile stacking while looking at a live preview.
                   </div>
                 </li>
                 <li class="playbook-step">
                   <div class="step-num">3</div>
                   <div class="step-text">
-                    <strong>Export Clean Code:</strong> Connect Directly To GitHub To Push The Generated Clean Code Or Extract Specific CSS Snippets Into Your Project.
+                    <strong>Pull what works into your repo:</strong> Keep the layout structure or CSS snippets that fit and rewrite them cleanly for your main stack.
                   </div>
                 </li>
               </ul>
@@ -2141,7 +2138,7 @@ litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
                 <div class="card-icon"><img src="assets/logos/supabase.svg" alt="Supabase" width="28" height="28" loading="lazy" decoding="async" /></div>
                 <div class="card-title-group">
                   <h2>Supabase</h2>
-                  <span class="card-badge">PostgreSQL Database, Auth &amp; Cloud Sync</span>
+                  <span class="card-badge">Postgres Database &amp; Google Auth</span>
                 </div>
               </div>
             </div>
@@ -2153,10 +2150,10 @@ litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
               </div>
               <div class="section-body">
                 <p>
-                  Supabase Powers The Entire Serverless Persistence And Identity Layer Across Class Of Learners. Through Our Centralized <code>col-auth.js</code> Module, It Coordinates Google OAuth2 Browser Authentication With PKCE Verification For Safe, Smooth Sign-Ins Across Every Subproject.
+                  Supabase runs user login and cloud saves across the site. Our shared <code>col-auth.js</code> script handles Google OAuth2 with PKCE sign-in across apps without needing a custom backend server.
                 </p>
                 <p>
-                  We Use Its Managed PostgreSQL Engine With Row Level Security (RLS) To Securely Synchronize Student Progress, Typing High Scores, Tournament Leaderboards, And Official Driving Academy Completion Certificates Without Requiring Complex Custom Backend Servers.
+                  Its hosted PostgreSQL database with Row Level Security (RLS) stores typing scores, leaderboards, and Traffic Academy certificates so users can only read and write their own rows.
                 </p>
               </div>
             </div>
@@ -2170,19 +2167,19 @@ litellm --model ollama/qwen2.5-coder:32b --port 8000</code>
                 <li class="playbook-step">
                   <div class="step-num">1</div>
                   <div class="step-text">
-                    <strong>Create A Supabase Project:</strong> Sign Up At Supabase.com And Create A Free PostgreSQL Cloud Project In Seconds.
+                    <strong>Create a Supabase project:</strong> Spin up a free Postgres project on Supabase.com.
                   </div>
                 </li>
                 <li class="playbook-step">
                   <div class="step-num">2</div>
                   <div class="step-text">
-                    <strong>Enable Google OAuth Provider:</strong> In The Supabase Dashboard Under Authentication &gt; Providers, Turn On Google And Provide Your Client ID And Secret.
+                    <strong>Turn on Google sign-in:</strong> Enable Google under Authentication &gt; Providers and add your OAuth Client ID and Secret.
                   </div>
                 </li>
                 <li class="playbook-step">
                   <div class="step-num">3</div>
                   <div class="step-text">
-                    <strong>Initialize Client In Browser:</strong> Load The Supabase JavaScript SDK Via CDN Or NPM And Initialize With Your Project URL And Anon Key:
+                    <strong>Initialize the client safely:</strong> Connect from browser scripts using only the public URL and publishable anon key:
                   </div>
                 </li>
               </ul>
@@ -2213,7 +2210,7 @@ await supabase.auth.signInWithOAuth({
                 <li class="playbook-step">
                   <div class="step-num">4</div>
                   <div class="step-text">
-                    <strong>Enforce Row Level Security (RLS):</strong> Protect User Records By Creating SQL Policies That Only Allow Authenticated Users To Read And Write Their Own Rows:
+                    <strong>Lock down tables with RLS:</strong> Add Postgres policies so authenticated users can only update their own records:
                   </div>
                 </li>
               </ul>
@@ -2257,7 +2254,7 @@ create policy "Users Can Manage Own Records"
                 <div class="card-icon"><img src="assets/logos/androidstudio.svg" alt="Android Studio" width="28" height="28" loading="lazy" decoding="async" /></div>
                 <div class="card-title-group">
                   <h2>Android Studio</h2>
-                  <span class="card-badge">Native Android WebView &amp; APK Compilation</span>
+                  <span class="card-badge">Android WebView &amp; APK Builds</span>
                 </div>
               </div>
             </div>
@@ -2269,10 +2266,10 @@ create policy "Users Can Manage Own Records"
               </div>
               <div class="section-body">
                 <p>
-                  Android Studio Bridges Our Web Technologies Into A High-Performance Native Mobile Package (Located In The <code>android/</code> Repository Directory). It Compiles Our Entire Interactive Suite Into Standalone Signed Android APK Installers For Students On Mobile Devices.
+                  We package the web apps inside Android Studio (in the <code>android/</code> directory) to build offline signed APK installers for students on Android phones.
                 </p>
                 <p>
-                  We Tuned The Underlying Android WebView Configuration With Full Hardware Acceleration (<code>android:hardwareAccelerated="true"</code>), Edge-To-Edge Immersive Display Cutout Handling, And Touch-Optimized Layouts To Deliver 60 FPS WebGL Driving Simulation And Interactive Solar Animations On Phones And Tablets.
+                  Hardware acceleration (<code>android:hardwareAccelerated="true"</code>), fullscreen notch handling, and touch-friendly controls keep WebGL driving and solar scenes running smoothly on mid-range phones.
                 </p>
               </div>
             </div>
@@ -2286,13 +2283,13 @@ create policy "Users Can Manage Own Records"
                 <li class="playbook-step">
                   <div class="step-num">1</div>
                   <div class="step-text">
-                    <strong>Install Android Studio:</strong> Download And Install Official Android Studio, Setting Up Android SDK 34+ And Build Tools.
+                    <strong>Set up Android Studio:</strong> Install Android Studio with SDK 34+ and platform build tools.
                   </div>
                 </li>
                 <li class="playbook-step">
                   <div class="step-num">2</div>
                   <div class="step-text">
-                    <strong>Configure Hardware Acceleration In Manifest:</strong> In <code>AndroidManifest.xml</code>, Enable Internet Permissions And Hardware Acceleration For WebGL Fluidity:
+                    <strong>Enable hardware acceleration:</strong> Turn on hardware rendering inside <code>AndroidManifest.xml</code> so WebGL runs smoothly:
                   </div>
                 </li>
               </ul>
@@ -2321,7 +2318,7 @@ create policy "Users Can Manage Own Records"
                 <li class="playbook-step">
                   <div class="step-num">3</div>
                   <div class="step-text">
-                    <strong>Configure Immersive WebView:</strong> In <code>MainActivity.java</code> Or Kotlin, Enable JavaScript And DOM Storage For Rich Web Apps:
+                    <strong>Enable JS and storage in WebView:</strong> Configure WebSettings cleanly inside <code>MainActivity</code>:
                   </div>
                 </li>
               </ul>
@@ -2348,7 +2345,7 @@ webView.loadUrl("https://advancedlogiclabs.dpdns.org");</code>
                 <li class="playbook-step">
                   <div class="step-num">4</div>
                   <div class="step-text">
-                    <strong>Build Signed Release APK:</strong> Compile The Production Binary Using Gradle From Terminal Or The Android Studio Build Menu:
+                    <strong>Build the release APK:</strong> Package the signed installer using Gradle or Android Studio:
                   </div>
                 </li>
               </ul>
@@ -2384,7 +2381,7 @@ webView.loadUrl("https://advancedlogiclabs.dpdns.org");</code>
                 <div class="card-icon"><img src="assets/logos/vercel.svg" alt="Vercel" class="invert-on-light" width="28" height="28" loading="lazy" decoding="async" /></div>
                 <div class="card-title-group">
                   <h2>Vercel</h2>
-                  <span class="card-badge">Global Edge CDN, Clean URLs &amp; Git CI/CD</span>
+                  <span class="card-badge">Static CDN Hosting &amp; Clean URLs</span>
                 </div>
               </div>
             </div>
@@ -2396,7 +2393,7 @@ webView.loadUrl("https://advancedlogiclabs.dpdns.org");</code>
               </div>
               <div class="section-body">
                 <p>
-                  Vercel Is Our Production Edge Backbone. It Delivers Ultra-Low Latency Anycast Routing Worldwide, Automatically Enforces Clean HTML URLs (Transforming <code>/home.html</code> Into <code>/home</code>), Manages Automatic Stale-While-Revalidate Caching For 3D Models (<code>.glb</code>), And Triggers Instant Git Deployments.
+                  Vercel hosts our built static <code>dist/</code> tree, handles clean URLs automatically (turning <code>/home.html</code> into <code>/home</code>), caches 3D models (<code>.glb</code>), and redeploys on every push to main.
                 </p>
               </div>
             </div>
@@ -2410,7 +2407,7 @@ webView.loadUrl("https://advancedlogiclabs.dpdns.org");</code>
                 <li class="playbook-step">
                   <div class="step-num">1</div>
                   <div class="step-text">
-                    <strong>Deploy In Seconds:</strong> Install The Official Vercel CLI And Run Deployment With A Single Command:
+                    <strong>Deploy with the CLI:</strong> Install the Vercel CLI and publish from your terminal:
                   </div>
                 </li>
               </ul>
@@ -2428,7 +2425,7 @@ webView.loadUrl("https://advancedlogiclabs.dpdns.org");</code>
                 <li class="playbook-step">
                   <div class="step-num">2</div>
                   <div class="step-text">
-                    <strong>Configure vercel.json:</strong> Set Up Clean URLs And Optimized Static Asset Caching Headers:
+                    <strong>Set clean URLs and headers:</strong> Configure <code>vercel.json</code> for extensionless paths and asset caching:
                   </div>
                 </li>
               </ul>
@@ -2472,7 +2469,7 @@ webView.loadUrl("https://advancedlogiclabs.dpdns.org");</code>
                 <div class="card-icon"><img src="assets/logos/github.svg" alt="GitHub" class="invert-on-light" width="28" height="28" loading="lazy" decoding="async" /></div>
                 <div class="card-title-group">
                   <h2>GitHub</h2>
-                  <span class="card-badge">Version Control, Actions CI/CD &amp; Releases</span>
+                  <span class="card-badge">Source Control, CI &amp; Releases</span>
                 </div>
               </div>
             </div>
@@ -2484,7 +2481,7 @@ webView.loadUrl("https://advancedlogiclabs.dpdns.org");</code>
               </div>
               <div class="section-body">
                 <p>
-                  GitHub Coordinates Collaborative Source Control Across Our Student Team (Co‑Founders Neel Badri, Aarush Vangari, And Ansh Patil). It Manages Release Binaries For The Advanced Typing Instructor Windows Installer (<code>AdvancedTypingInstructor_Setup.exe</code>), Automates Asset Sync, And Safeguards Branch History.
+                  GitHub holds all source code, branch history, and binary releases (including the <code>AdvancedTypingInstructor_Setup.exe</code> Windows installer) across Neel Badri, Aarush Vangari, and Ansh Patil.
                 </p>
               </div>
             </div>
@@ -2498,7 +2495,7 @@ webView.loadUrl("https://advancedlogiclabs.dpdns.org");</code>
                 <li class="playbook-step">
                   <div class="step-num">1</div>
                   <div class="step-text">
-                    <strong>Initialize Git Repository:</strong> Track Your Project With Git And Push To A Free GitHub Repository:
+                    <strong>Initialize Git and push:</strong> Commit your working tree cleanly to a remote repository:
                   </div>
                 </li>
               </ul>
@@ -2522,7 +2519,7 @@ git push -u origin main</code>
                 <li class="playbook-step">
                   <div class="step-num">2</div>
                   <div class="step-text">
-                    <strong>Automate CI/CD Pipelines:</strong> Create <code>.github/workflows/verify.yml</code> To Automatically Run Playwright Tests And Linters On Every Pull Request.
+                    <strong>Run checks automatically:</strong> Add a workflow in <code>.github/workflows/</code> to run smoke tests and checks on every push.
                   </div>
                 </li>
               </ul>
@@ -2546,7 +2543,7 @@ git push -u origin main</code>
                 <div class="card-icon" style="overflow: hidden;"><img src="assets/logos/digitalplat.jpg" alt="DigitalPlat" width="40" height="40" style="border-radius: 8px;" loading="lazy" decoding="async" /></div>
                 <div class="card-title-group">
                   <h2>Digitalplat</h2>
-                  <span class="card-badge">Infrastructure Hosting &amp; Dynamic Subdomain Routing</span>
+                  <span class="card-badge">Custom Domain &amp; Reverse Proxy</span>
                 </div>
               </div>
             </div>
@@ -2558,7 +2555,7 @@ git push -u origin main</code>
               </div>
               <div class="section-body">
                 <p>
-                  Digitalplat Powers Our Custom Production Domain Routing And Dynamic DNS Bridging (<code>advancedlogiclabs.dpdns.org</code>). It Coordinates Reverse Proxy Handshakes, SSL Certificate Hand-Offs, And Provides Reliable VPS Staging For Real-Time WebSocket Testing.
+                  Digitalplat provides our primary domain (<code>advancedlogiclabs.dpdns.org</code>) and dynamic DNS records alongside staging proxies for SSL certificates and WebSocket tests.
                 </p>
               </div>
             </div>
@@ -2572,13 +2569,13 @@ git push -u origin main</code>
                 <li class="playbook-step">
                   <div class="step-num">1</div>
                   <div class="step-text">
-                    <strong>Configure Dynamic DNS Host:</strong> Register Your Desired Dynamic Subdomain (E.g. On Digitalplat DPDNS) To Map Changing IP Addresses To A Static Hostname.
+                    <strong>Set up your subdomain:</strong> Register a subdomain on Digitalplat DPDNS to bind your server IP.
                   </div>
                 </li>
                 <li class="playbook-step">
                   <div class="step-num">2</div>
                   <div class="step-text">
-                    <strong>Set Up Reverse Proxy:</strong> Use Caddy Or Nginx To Automatically Terminate SSL And Route Traffic Securely Over Port 443:
+                    <strong>Add HTTPS with Caddy or Nginx:</strong> Route port 443 cleanly with automatic TLS certificates:
                   </div>
                 </li>
               </ul>
@@ -2616,7 +2613,7 @@ git push -u origin main</code>
                 <div class="card-icon"><img src="assets/logos/cloudns.png" alt="ClouDNS" width="34" height="24" loading="lazy" decoding="async" /></div>
                 <div class="card-title-group">
                   <h2>ClouDNS</h2>
-                  <span class="card-badge">Anycast Geo-Distributed Managed DNS &amp; DDoS Protection</span>
+                  <span class="card-badge">Managed DNS &amp; Verification Records</span>
                 </div>
               </div>
             </div>
@@ -2628,7 +2625,7 @@ git push -u origin main</code>
               </div>
               <div class="section-body">
                 <p>
-                  ClouDNS Provides The Authoritative Anycast DNS Infrastructure For Class Of Learners. It Delivers Sub-10ms Name Resolution Globally, Hosts Fast-Propagating TXT Verification Records For Google AdSense And Search Console, And Guarantees 100% DNS Uptime With Built-In DDoS Mitigation.
+                  ClouDNS handles authoritative DNS routing across our domains, keeping CNAME targets and TXT records for Google Search Console and AdSense fast to update.
                 </p>
               </div>
             </div>
@@ -2642,13 +2639,13 @@ git push -u origin main</code>
                 <li class="playbook-step">
                   <div class="step-num">1</div>
                   <div class="step-text">
-                    <strong>Add Primary Zone:</strong> Create An Authoritative Zone At ClouDNS.net And Update Your Domain's Nameservers At Your Registrar To ClouDNS Anycast Nodes (<code>ns11.cloudns.net</code>, <code>ns12.cloudns.net</code>).
+                    <strong>Add your DNS zone:</strong> Point your registrar nameservers to ClouDNS (<code>ns11.cloudns.net</code>, <code>ns12.cloudns.net</code>).
                   </div>
                 </li>
                 <li class="playbook-step">
                   <div class="step-num">2</div>
                   <div class="step-text">
-                    <strong>Configure Fast-Propagating Records:</strong> Set Low TTLs (300 Seconds) For Rapid Iteration On A, CNAME, And TXT Security Records:
+                    <strong>Keep low TTLs when editing:</strong> Use 300-second TTLs during setup so DNS changes propagate fast:
                   </div>
                 </li>
               </ul>
@@ -2686,7 +2683,7 @@ TXT    @  google-site-verification=bWaer2b60VA1y3...  TTL=300</code>
                 <div class="card-icon"><img src="assets/logos/wisprflow.svg" alt="Wispr Flow" class="invert-on-dark" width="42" height="12" loading="lazy" decoding="async" /></div>
                 <div class="card-title-group">
                   <h2>Wispr Flow</h2>
-                  <span class="card-badge">Voice Dictation &amp; AI Writing</span>
+                  <span class="card-badge">Voice Dictation</span>
                 </div>
               </div>
             </div>
@@ -2698,7 +2695,7 @@ TXT    @  google-site-verification=bWaer2b60VA1y3...  TTL=300</code>
               </div>
               <div class="section-body">
                 <p>
-                  Wispr Flow Turned Speech Into Polished Writing Across Every App At Roughly Four Times Typing Speed. We Dictated Player Feedback Notes, Typing Lesson Drafts, Store Copy, And Code Comments Hands-Free, While Its AI Automatically Removed Filler Words And Fixed Grammar On The Fly.
+                  We used Wispr Flow to dictate rough feedback notes, lesson text, and docs by voice instead of typing every draft manually, letting it clean up filler words as we spoke.
                 </p>
               </div>
             </div>
@@ -2712,19 +2709,19 @@ TXT    @  google-site-verification=bWaer2b60VA1y3...  TTL=300</code>
                 <li class="playbook-step">
                   <div class="step-num">1</div>
                   <div class="step-text">
-                    <strong>Download Flow For Free:</strong> Install Wispr Flow On macOS, Windows, iPhone, Or Android And Grant Microphone Access.
+                    <strong>Install Flow:</strong> Grab the app on macOS, Windows, iPhone, or Android and allow microphone access.
                   </div>
                 </li>
                 <li class="playbook-step">
                   <div class="step-num">2</div>
                   <div class="step-text">
-                    <strong>Hold The Hotkey And Speak:</strong> Press The Dictation Hotkey In Any Text Field And Speak Naturally, Including Punctuation And Formatting Commands.
+                    <strong>Press the hotkey and talk:</strong> Hold the shortcut inside any text box and dictate directly.
                   </div>
                 </li>
                 <li class="playbook-step">
                   <div class="step-num">3</div>
                   <div class="step-text">
-                    <strong>Let AI Polish The Output:</strong> Flow Strips Filler Words, Applies Context-Aware Corrections, And Drops Clean Text Where Your Cursor Sits.
+                    <strong>Clean up filler automatically:</strong> Flow removes "um" and false starts before pasting clean text at your cursor.
                   </div>
                 </li>
               </ul>
@@ -2748,7 +2745,7 @@ TXT    @  google-site-verification=bWaer2b60VA1y3...  TTL=300</code>
                 <div class="card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/><circle cx="12" cy="12" r="3"/><path d="M12 6v2m0 8v2M6 12H8m8 0h2"/></svg></div>
                 <div class="card-title-group">
                   <h2>Sarvam AI</h2>
-                  <span class="card-badge">Foundational Indic LLMs, Speech &amp; Regional Voice</span>
+                  <span class="card-badge">Indian Languages &amp; Voice APIs</span>
                 </div>
               </div>
             </div>
@@ -2760,7 +2757,7 @@ TXT    @  google-site-verification=bWaer2b60VA1y3...  TTL=300</code>
               </div>
               <div class="section-body">
                 <p>
-                  We Leveraged Sarvam AI For Authentic Indic Language Intelligence Across Our Studio. Specifically, Sarvam's High-Fidelity <strong>Bulbul TTS</strong> Powered Regional Indian Voice Narration In Our Automated Video Showcases And Driving Academy Voice Advisories (Hindi, Marathi, And Indian English Dialects). Furthermore, Sarvam's <strong>Saaras ASR</strong> And <strong>Mayura Translation</strong> Models Enabled Multilingual Speech Recognition And Localized Content Translation For Regional Learners Across Mumbai And Maharashtra.
+                  We used Sarvam AI for Indian language audio and translation. <strong>Bulbul TTS</strong> generates Hindi, Marathi, and Indian-English voice narration in video clips and Traffic Academy prompts, while <strong>Saaras ASR</strong> and <strong>Mayura</strong> handle speech recognition and translation for learners across Maharashtra.
                 </p>
               </div>
             </div>
@@ -2774,13 +2771,13 @@ TXT    @  google-site-verification=bWaer2b60VA1y3...  TTL=300</code>
                 <li class="playbook-step">
                   <div class="step-num">1</div>
                   <div class="step-text">
-                    <strong>Get An API Key:</strong> Sign Up At The Sarvam AI Platform (api.sarvam.ai) To Access India's Foundational Language &amp; Audio Models.
+                    <strong>Get an API key:</strong> Create a developer account at api.sarvam.ai for speech and translation endpoints.
                   </div>
                 </li>
                 <li class="playbook-step">
                   <div class="step-num">2</div>
                   <div class="step-text">
-                    <strong>Generate Regional Speech (Bulbul TTS):</strong> Synthesize Expressive Speech In Indian Dialects With Millisecond Latency:
+                    <strong>Generate voice lines (Bulbul TTS):</strong> Call the text-to-speech endpoint for Hindi or Marathi voice output:
                   </div>
                 </li>
               </ul>
@@ -2810,7 +2807,7 @@ response = requests.post(url, json=payload, headers=headers)</code>
                 <li class="playbook-step">
                   <div class="step-num">3</div>
                   <div class="step-text">
-                    <strong>Translate &amp; Recognize Indic Speech:</strong> Use <strong>Mayura</strong> For Translation Between English, Hindi, And Marathi, And <strong>Saaras</strong> For Continuous Vernacular Speech Recognition.
+                    <strong>Translate or transcribe locally:</strong> Pair <strong>Mayura</strong> for English-Hindi-Marathi translation with <strong>Saaras</strong> for voice transcription.
                   </div>
                 </li>
               </ul>
@@ -2830,8 +2827,8 @@ response = requests.post(url, json=payload, headers=headers)</code>
       </section>
 
       <div class="empty-state" id="emptyState" hidden>
-        <h3>No Systems Match Your Search</h3>
-        <p>Try A Different Keyword Or Category Filter.</p>
+        <h3>Nothing matches that search</h3>
+        <p>Try another tool name or reset the category filter.</p>
         <button class="empty-reset" id="emptyReset" type="button">Reset Filters</button>
       </div>
 
@@ -2841,10 +2838,10 @@ response = requests.post(url, json=payload, headers=headers)</code>
           Studio Knowledge Base
         </div>
         <h2 class="mk-doubt-head">Projects Doubt Solver</h2>
-        <p class="mk-doubt-note">Ask Any Doubt About Our Studio, Tools, Or Shipped Projects. Answers Come From Built-In Studio Notes.</p>
+        <p class="mk-doubt-note">Ask anything about our stack, local models, or shipped apps. Answers come from built-in studio notes.</p>
         <div class="doubt-chips" id="siteChips"></div>
         <div class="doubt-row">
-          <input type="text" class="doubt-input" id="siteInput" placeholder="Ask Anything, For Example: How Do I Deploy Like You?" aria-label="Ask A Studio Or Projects Doubt" autocomplete="off" />
+          <input type="text" class="doubt-input" id="siteInput" placeholder="Ask a question, e.g. How do you deploy for free?" aria-label="Ask a studio or project question" autocomplete="off" />
           <button class="doubt-ask" id="siteAsk" type="button">
             <span>Ask</span>
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
@@ -2856,34 +2853,34 @@ response = requests.post(url, json=payload, headers=headers)</code>
       <script>
         ;(function () {
           var SITE_KB = [
-            { keys: ['studio', 'class of learners', 'team', 'who built', 'about'], title: 'The Studio', answer: '<strong>Class Of Learners:</strong> A Student Studio Run By Co‑Founders Neel Badri, Aarush Vangari, And Ansh Patil. Everything Ships As Static HTML Plus Vanilla JavaScript On Vercel, With Zero-Cost Local AI Tooling.' },
-            { keys: ['ollama', 'qwen', 'deepseek', 'local llm', 'claude code'], title: 'Claude Code Plus Ollama', answer: '<strong>Claude Code Plus Ollama:</strong> A Terminal Coding Agent Driving Local Open-Weight Models Like Qwen 2.5 Coder 32B. Start With <strong>ollama run qwen2.5-coder:32b</strong> For Private, Zero-Cost Refactoring.' },
-            { keys: ['antigravity', 'google'], title: 'Antigravity', answer: '<strong>Google Antigravity:</strong> The Senior Pair-Programmer Behind The Studio Planning Discipline. Always Draft An Implementation Plan Before Touching Code, Then Verify With Headless Browser Screenshots.' },
-            { keys: ['opencode', 'terminal', 'cli'], title: 'OpenCode', answer: '<strong>OpenCode:</strong> The Terminal-First Agent Used For Subprojects. Install With NPM, Add An <strong>opencode.json</strong> In The Project Root, And Run <strong>opencode</strong> To Start.' },
-            { keys: ['freebuff', 'sandbox', 'proxy', 'mock'], title: 'Freebuff', answer: '<strong>Freebuff:</strong> The Local Staging Sandbox And Proxy. It Mocks Auth Responses And Simulates 503, Offline, And Slow-Network Cases Before Anything Goes Live.' },
-            { keys: ['claude', 'anthropic', 'sonnet', 'artifact'], title: 'Claude Web', answer: '<strong>Claude Web:</strong> Shaped The Studio Visual Taste And Design Tokens. Group Brand Guides Inside A Claude Project And Prototype Motion As Interactive Artifacts.' },
-            { keys: ['gemini', 'deepmind', 'vision'], title: 'Gemini Web', answer: '<strong>Gemini Web:</strong> The Visual Auditor With A 2-Million-Token Window. Drop In Full Screenshots To Catch Contrast, Hierarchy, And Alignment Flaws.' },
-            { keys: ['lovable', 'prototype'], title: 'Lovable', answer: '<strong>Lovable:</strong> Turns Plain-English Prompts Into React Plus Tailwind Prototypes In Minutes. Iterate Visually, Then Export Clean Snippets Into The Vanilla Codebase.' },
-            { keys: ['supabase', 'database', 'postgres', 'auth', 'login'], title: 'Supabase', answer: '<strong>Supabase:</strong> Powers Auth (Google OAuth With PKCE Via col-auth.js) And PostgreSQL With Row Level Security For Progress, Leaderboards, And Certificates. Protect Every Table With Owner-Only Policies.' },
-            { keys: ['android', 'apk', 'webview', 'app', 'mobile app'], title: 'Android Studio', answer: '<strong>Android Studio:</strong> Compiles The Web Suite Into A Signed APK With Hardware-Accelerated WebView. Enable JavaScript Plus DOM Storage, Then Build With <strong>./gradlew assembleRelease</strong>.' },
-            { keys: ['vercel', 'deploy', 'hosting', 'host', 'domain live'], title: 'Vercel', answer: '<strong>Vercel:</strong> The Production Edge Host With Clean URLs And Git Deploys. Ship With <strong>vercel deploy --prod</strong> And Cache Static Assets With Long Max-Age Plus Stale-While-Revalidate.' },
-            { keys: ['github', 'git', 'version', 'ci'], title: 'GitHub', answer: '<strong>GitHub:</strong> Holds All Source Control, Release Binaries, And CI Checks. Push Main To Trigger A Fresh Vercel Deployment Automatically.' },
-            { keys: ['digitalplat', 'dpdns', 'dynamic dns', 'reverse proxy'], title: 'Digitalplat', answer: '<strong>Digitalplat:</strong> Routes The Custom Domain advancedlogiclabs.dpdns.org Over Dynamic DNS, With A Caddy Or Nginx Reverse Proxy Terminating SSL On Port 443.' },
-            { keys: ['cloudns', 'dns', 'nameserver', 'txt'], title: 'ClouDNS', answer: '<strong>ClouDNS:</strong> Authoritative Anycast DNS With Fast TXT Propagation. Point Nameservers To ClouDNS Nodes And Keep TTL At 300 Seconds While Iterating.' },
-            { keys: ['wispr', 'flow', 'voice', 'dictation', 'speak'], title: 'Wispr Flow', answer: '<strong>Wispr Flow:</strong> Voice Dictation At About 4x Typing Speed In Every App. Hold The Hotkey, Speak Naturally, And Its AI Strips Filler Words Automatically.' },
-            { keys: ['sarvam', 'bulbul', 'tts', 'indic', 'speech', 'hindi', 'marathi', 'voice'], title: 'Sarvam AI', answer: '<strong>Sarvam AI:</strong> Powers Regional Indian Speech And Translation Across Our Studio. We Use Bulbul TTS For Hindi And Marathi Voice Advisories In The Driving Academy, Plus Saaras ASR And Mayura Translation.' },
-            { keys: ['typing', 'ati', 'instructor', 'wpm', 'type'], title: 'Typing Instructor', answer: '<strong>Typing Instructor:</strong> The Demo On The ATI Page Tests Words, JavaScript, Python, Rust, And Literature At 15, 30, Or 60 Seconds With Grades From F To S And A Saved Personal Best.' },
-            { keys: ['solar', 'space', 'orbit', 'kepler', 'planet'], title: 'Solar Engine', answer: '<strong>Solar Engine:</strong> A Keplerian 3D Simulator On The Solar Page. Drag To Pan, Scroll Or Pinch To Zoom, And Click Any Body For Live Telemetry, Plus A Planetary Database Below.' },
-            { keys: ['terra', 'atlas', 'globe', 'earth 3d'], title: 'Terra3D Atlas', answer: '<strong>Terra3D Atlas:</strong> The Interactive 3D Globe Project In The Projects Menu, Built For Exploring Geography In Real Time.' },
-            { keys: ['qr', 'matrix', 'code'], title: 'QR Studio', answer: '<strong>QR Studio Matrix:</strong> The In-Browser QR Creator And Scanner Found Under Projects, With A Studio Editor For Custom Designs, Editable Dynamic Codes, Scan Analytics, Passcodes And Expiry, All Free.' },
-            { keys: ['rpg', 'game'], title: 'RPG Game', answer: '<strong>RPG Game:</strong> The Browser Role-Playing Game Listed Under Projects, Built With The Same Vanilla Stack As Everything Else Here.' },
-            { keys: ['perceptus', 'gesture', 'flow'], title: 'Perceptus Flow', answer: '<strong>Perceptus Flow:</strong> The Gesture-Driven Experience Under Projects, Pairing Hand-Tracking Ideas With Real-Time Visuals.' },
-            { keys: ['download', 'apk', 'installer', 'exe'], title: 'Downloads', answer: '<strong>Downloads Hub:</strong> The Download Page Hosts Release Builds Like The Typing Instructor Windows Installer And The Android APK.' },
-            { keys: ['hello', 'hi', 'hey', 'namaste'], title: 'Greeting', answer: '<strong>Hello.</strong> Ask Me About Any Studio Tool Or Shipped Project. Try A Topic Chip Above To Start.' },
-            { keys: ['thank', 'thanks', 'shukriya'], title: 'Thanks', answer: '<strong>You Are Welcome.</strong> The Full Playbook For Every Tool Lives On The Cards Above.' },
-            { keys: ['who are you', 'your name', 'what are you'], title: 'About Me', answer: '<strong>I Am The Projects Doubt Solver,</strong> A Built-In Studio Notes Assistant. I Answer Questions About The Team Stack And Every Shipped Project.' },
-            { keys: ['help', 'what can you', 'how to ask', 'topics'], title: 'Help', answer: '<strong>I Can Answer:</strong> Studio Setup, All 15 Systems, Downloads, And Deploy Steps. Mix Two Topics In One Question And I Answer Both.' },
-            { keys: ['bye', 'alvida', 'see you'], title: 'Farewell', answer: '<strong>Goodbye For Now.</strong> Replicate Any Card Above And Ship Something Of Your Own.' }
+            { keys: ['studio', 'class of learners', 'team', 'who built', 'about'], title: 'The Studio', answer: '<strong>Class Of Learners:</strong> A student studio run by co-founders Neel Badri, Aarush Vangari, and Ansh Patil. The main site ships as static HTML and JavaScript on Vercel alongside local coding models.' },
+            { keys: ['ollama', 'qwen', 'deepseek', 'local llm', 'claude code'], title: 'Claude Code Plus Ollama', answer: '<strong>Claude Code + Ollama:</strong> Connects a terminal coding agent to local open-weight models like Qwen 2.5 Coder 32B. Run <strong>ollama run qwen2.5-coder:32b</strong> locally with zero API bill.' },
+            { keys: ['antigravity', 'google'], title: 'Antigravity', answer: '<strong>Google Antigravity:</strong> Used for multi-file edits and planning workflows: draft a concrete plan before changing code, then verify real layouts in headless Playwright.' },
+            { keys: ['opencode', 'terminal', 'cli'], title: 'OpenCode', answer: '<strong>OpenCode:</strong> Used for terminal-first sessions on standalone tools like ATI and GestureUI. Add an <strong>opencode.json</strong> at the repo root and launch <strong>opencode</strong>.' },
+            { keys: ['freebuff', 'sandbox', 'proxy', 'mock'], title: 'Freebuff', answer: '<strong>Freebuff:</strong> Local staging proxy to simulate Supabase auth replies, 503 responses, and offline cache fallbacks before shipping changes.' },
+            { keys: ['claude', 'anthropic', 'sonnet', 'artifact'], title: 'Claude Web', answer: '<strong>Claude Web:</strong> Helped draft CSS variables and test interactive transitions in Artifacts before porting keepers into the site.' },
+            { keys: ['gemini', 'deepmind', 'vision'], title: 'Gemini Web', answer: '<strong>Gemini Web:</strong> Checked full-page screenshots and large GeoJSON data files in one pass to catch low-contrast text and slow loops.' },
+            { keys: ['lovable', 'prototype'], title: 'Lovable', answer: '<strong>Lovable:</strong> Useful for trying quick bento and card layout mockups from plain-English descriptions before writing final static markup.' },
+            { keys: ['supabase', 'database', 'postgres', 'auth', 'login'], title: 'Supabase', answer: '<strong>Supabase:</strong> Handles Google OAuth sign-in via <code>col-auth.js</code> and Postgres tables with Row Level Security for high scores and completion records.' },
+            { keys: ['android', 'apk', 'webview', 'app', 'mobile app'], title: 'Android Studio', answer: '<strong>Android Studio:</strong> Compiles the offline Android APKs under <code>android/</code> with hardware-accelerated WebView using <strong>./gradlew assembleRelease</strong>.' },
+            { keys: ['vercel', 'deploy', 'hosting', 'host', 'domain live'], title: 'Vercel', answer: '<strong>Vercel:</strong> Serves the built <code>dist/</code> folder globally with clean extensionless URLs, 3D model caching, and deploys via <strong>vercel deploy --prod</strong>.' },
+            { keys: ['github', 'git', 'version', 'ci'], title: 'GitHub', answer: '<strong>GitHub:</strong> Hosts source control, release installers for ATI, and automated build/verification checks on pull requests.' },
+            { keys: ['digitalplat', 'dpdns', 'dynamic dns', 'reverse proxy'], title: 'Digitalplat', answer: '<strong>Digitalplat:</strong> Powers the custom domain advancedlogiclabs.dpdns.org alongside reverse proxy staging and SSL certs on port 443.' },
+            { keys: ['cloudns', 'dns', 'nameserver', 'txt'], title: 'ClouDNS', answer: '<strong>ClouDNS:</strong> Manages DNS zones and low-TTL TXT verification records so domain changes propagate quickly.' },
+            { keys: ['wispr', 'flow', 'voice', 'dictation', 'speak'], title: 'Wispr Flow', answer: '<strong>Wispr Flow:</strong> Dictates rough release notes and copy by voice across apps while stripping filler words automatically.' },
+            { keys: ['sarvam', 'bulbul', 'tts', 'indic', 'speech', 'hindi', 'marathi', 'voice'], title: 'Sarvam AI', answer: '<strong>Sarvam AI:</strong> Generates Hindi and Marathi voice prompts with Bulbul TTS, plus Saaras speech recognition and Mayura translation for local road scenarios.' },
+            { keys: ['typing', 'ati', 'instructor', 'wpm', 'type'], title: 'Typing Instructor', answer: '<strong>Typing Instructor:</strong> Tests real typing speed on words, Python, JavaScript, Rust, and literature with grades from F to S and local personal-best tracking.' },
+            { keys: ['solar', 'space', 'orbit', 'kepler', 'planet'], title: 'Solar Engine', answer: '<strong>Solar Engine:</strong> Interactive 3D orbital physics simulation on the Solar page: drag to orbit, scroll to zoom, and click any planet for telemetry.' },
+            { keys: ['terra', 'atlas', 'globe', 'earth 3d'], title: 'Terra3D Atlas', answer: '<strong>Terra3D Atlas:</strong> Interactive 3D WebGL Earth globe exploring 178 countries, live solar day-night shading, and geographic facts.' },
+            { keys: ['qr', 'matrix', 'code'], title: 'QR Studio', answer: '<strong>QR Studio:</strong> Free in-browser QR generator and scanner with vector export, optional dynamic links, passcodes, and expiration controls.' },
+            { keys: ['rpg', 'game'], title: 'RPG Game', answer: '<strong>RPG Game:</strong> Upcoming browser 2D action RPG listed under Projects, built with HTML5 Canvas and plain JavaScript.' },
+            { keys: ['perceptus', 'gesture', 'flow'], title: 'Perceptus Flow', answer: '<strong>Perceptus Flow:</strong> Webcam hand-tracking app under Projects that turns hand gestures into cursor clicks, scrolls, and air drawings.' },
+            { keys: ['download', 'apk', 'installer', 'exe'], title: 'Downloads', answer: '<strong>Downloads Hub:</strong> Hosts standalone Windows installers, Linux packages, and signed Android APKs.' },
+            { keys: ['hello', 'hi', 'hey', 'namaste'], title: 'Greeting', answer: '<strong>Hello.</strong> Ask about any tool in our stack or click a topic chip above.' },
+            { keys: ['thank', 'thanks', 'shukriya'], title: 'Thanks', answer: '<strong>You\'re welcome.</strong> Check the cards above for the full setup steps behind each tool.' },
+            { keys: ['who are you', 'your name', 'what are you'], title: 'About Me', answer: '<strong>Projects Doubt Solver:</strong> Built-in notes answering common questions about the Class Of Learners stack and apps.' },
+            { keys: ['help', 'what can you', 'how to ask', 'topics'], title: 'Help', answer: '<strong>Topics covered:</strong> Local AI setups, Vercel deployment, Supabase auth, Android builds, and any app on the studio site.' },
+            { keys: ['bye', 'alvida', 'see you'], title: 'Farewell', answer: '<strong>See you around.</strong> Try any setup card above to test the stack yourself.' }
           ]
           var CHIP_TOPICS = ['Deploy Like You', 'Supabase Auth', 'Zero Cost AI', 'Sarvam AI', 'Wispr Flow', 'Typing Instructor', 'Solar Engine']
           var STOPWORDS = ['what', 'why', 'how', 'when', 'where', 'which', 'is', 'are', 'was', 'were', 'do', 'does', 'did', 'tell', 'me', 'about', 'the', 'a', 'an', 'of', 'in', 'on', 'and', 'or', 'for', 'to', 'it', 'its', 'please', 'something', 'anything', 'question', 'doubt', 'know', 'my', 'like', 'you']
@@ -2950,14 +2947,14 @@ response = requests.post(url, json=payload, headers=headers)</code>
             } else if (hits.length === 1) {
               answerBox.innerHTML = hits[0].answer
             } else {
-              answerBox.innerHTML = '<strong>That Is Outside My Studio Notes.</strong> Try Topics Like Deploy, Supabase Auth, Zero Cost AI, Or Any Card Title Above.'
+              answerBox.innerHTML = '<strong>That topic isn\'t in my notes yet.</strong> Try keywords like deploy, Supabase auth, Ollama, Sarvam AI, or any card name above.'
             }
           }
           function askNow() {
             var q = input.value.trim()
             if (!q) {
               answerBox.hidden = false
-              answerBox.innerHTML = '<strong>Type Your Doubt First,</strong> Or Tap Any Topic Chip Above.'
+              answerBox.innerHTML = '<strong>Type a question first,</strong> or tap one of the quick topic buttons above.'
               return
             }
             renderSite(q)
@@ -3058,31 +3055,8 @@ response = requests.post(url, json=payload, headers=headers)</code>
         }
       })
 
-      // 1. Fast Loader Dismissal (150ms after DOMContentLoaded)
-      function removeLoader() {
-        if (/[?&]skeleton(=|&|$)/i.test(window.location.search)) {
-          console.info('[CoL] Skeleton debug active (?skeleton).');
-          return;
-        }
-        var l = document.getElementById('loader');
-        if (l && !l.classList.contains('gone')) {
-          l.classList.add('gone');
-          setTimeout(function () {
-            if (l.classList.contains('gone')) l.style.display = 'none';
-          }, 360);
-        }
-        if (document.body) document.body.classList.add('hero-ready');
-      }
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function () {
-          if (document.body) document.body.classList.add('hero-ready');
-          setTimeout(removeLoader, 160);
-        });
-      } else {
-        if (document.body) document.body.classList.add('hero-ready');
-        setTimeout(removeLoader, 160);
-      }
-      window.addEventListener('load', removeLoader, { once: true })
+      // Loader dismissal is managed centrally by col-ui.js.
+      if (document.body) document.body.classList.add('hero-ready');
 
       // Filter Pills Logic
       var filterButtons = document.querySelectorAll('.filter-pill')

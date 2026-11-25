@@ -85,7 +85,7 @@ const EDU_LEVELS = [
   { id: 'nodegree',  label: 'Start working now', desc: 'No degree needed, or learn while you earn', rank: 1 },
   { id: 'diploma',   label: 'Diploma or ITI', desc: 'A focused 1-3 year qualification', rank: 2 },
   { id: 'bachelor',  label: "Bachelor's degree", desc: 'A standard 3 or 4 year degree', rank: 3 },
-  { id: 'master',    label: 'Master\'s Degree', desc: 'A specialisation after your bachelor\'s', rank: 4 },
+  { id: 'master',    label: "Master's degree", desc: 'A specialisation after your bachelor\'s', rank: 4 },
   { id: 'doctorate', label: 'Doctorate or research', desc: 'A PhD, or a professional doctorate', rank: 5 },
 ];
 

@@ -121,6 +121,7 @@
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@500;700;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" /></noscript>
 
     <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
+  <link rel="stylesheet" href="col-skeleton.css?v=20261125" />
     <link rel="stylesheet" href="liquid-glass.css" />
     <!-- Conditional Mobile Assets: Loaded ONLY on mobile/tablet or when screen <= 1024px. Prevents downloading mobile styles and touch scripts on PC desktop. -->
     <script>
@@ -969,6 +970,8 @@
          ========================================================================== */
       .marquee-wrapper {
         width: 100%;
+        max-width: 100%;
+        min-width: 0;
         overflow: hidden;
         background: #141916;
         border-top: 1px solid var(--border-light);
@@ -1382,6 +1385,8 @@
         border: 1px solid rgba(143, 168, 150, 0.25);
         border-radius: 20px;
         padding: 36px;
+        max-width: 100%;
+        overflow-x: clip;
         backdrop-filter: blur(14px);
       }
       .chapter-nav-bar {
@@ -1414,9 +1419,13 @@
       }
       .chapter-display-card {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
         gap: 36px;
         align-items: center;
+      }
+      .chapter-details, .chapter-code-preview {
+        min-width: 0;
+        max-width: 100%;
       }
       .chapter-details h4 {
         font-size: 1.8rem;
@@ -1787,8 +1796,13 @@
         justify-content: space-between;
         flex-wrap: wrap;
         gap: 16px;
+        max-width: 100%;
         font-family: var(--font-mono);
         font-size: 0.82rem;
+      }
+      .version-checksum-card > div {
+        min-width: 0;
+        max-width: 100%;
       }
       .checksum-str {
         color: var(--text-dim);
@@ -1797,6 +1811,10 @@
         padding: 5px 10px;
         border-radius: 5px;
         border: 1px solid rgba(255, 255, 255, 0.09);
+        display: inline-block;
+        max-width: 100%;
+        overflow-wrap: anywhere;
+        word-break: break-all;
       }
       .checksum-str:hover { color: var(--primary); border-color: var(--primary); }
 
@@ -1849,32 +1867,35 @@
         --bg-2: #DFD9CE;
         --card-bg: #FFFFFF;
         --card-border: #E5DFD7;
-        --card-border-glow: rgba(201, 125, 90, 0.3);
-        --primary: #C97D5A;
-        --primary-glow: rgba(201, 125, 90, 0.25);
-        --accent-sage: #7C8D81;
-        --accent-ochre: #D9A84E;
-        --accent-emerald: #3D8B62;
-        --accent-amber: #D9A84E;
-        --accent-rose: #C75450;
-        --accent-purple: #8B6BA8;
+        --card-border-glow: rgba(158, 77, 42, 0.32);
+        --primary: #9E4D2A;
+        --primary-glow: rgba(158, 77, 42, 0.24);
+        --accent-sage: #5E6E64;
+        --accent-ochre: #9A6E1C;
+        --accent-emerald: #2F6E4C;
+        --accent-amber: #9A6E1C;
+        --accent-rose: #B43F3B;
+        --accent-purple: #6F4F8C;
         --text-main: #242B27;
-        --text-muted: #5D6661;
-        --text-dim: #88918C;
+        --text-muted: #464F4A;
+        --text-dim: #5A645F;
         --nav-bg: rgba(250, 248, 245, 0.96);
         --border-light: #E5DFD7;
         background-color: var(--bg-void) !important;
-        background-image: 
+        background-image:
           radial-gradient(circle at 50% 0%, #FFFFFF 0%, #F4F0EA 60%, #EAE5DC 100%) !important;
         color: var(--text-main) !important;
       }
-      body.lm .hud-subnav { background: #EAE5DC; border-color: #DFD9CE; color: #5D6661; }
-      body.lm .hud-tag { color: #C97D5A; }
-      body.lm .hero-console-frame { background: #FFFFFF; border-color: rgba(201, 125, 90, 0.3); box-shadow: 0 20px 45px rgba(42, 50, 45, 0.08); }
+      body.lm .hud-subnav { background: #EAE5DC; border-color: #DFD9CE; color: #464F4A; }
+      body.lm .hud-tag { color: #9E4D2A; }
+      body.lm .hero-console-frame { background: #FFFFFF; border-color: rgba(158, 77, 42, 0.28); box-shadow: 0 20px 45px rgba(42, 50, 45, 0.08); }
       body.lm .console-topbar { background: #F4F0EA; border-color: #E5DFD7; }
-      body.lm .console-title { color: #C97D5A; }
-      body.lm .drill-pill { background: #EAE5DC; border-color: #DFD9CE; color: #5D6661; }
-      body.lm .drill-pill:hover, body.lm .drill-pill.active { background: rgba(201, 125, 90, 0.15); border-color: #C97D5A; color: #C97D5A; box-shadow: 0 0 12px rgba(201, 125, 90, 0.2); }
+      body.lm .console-title { color: #9E4D2A; }
+      body.lm .drill-pill { background: #EAE5DC; border-color: #CFC7BA; color: #363F3A; }
+      body.lm .drill-pill:hover, body.lm .drill-pill.active { background: rgba(158, 77, 42, 0.14); border-color: #9E4D2A; color: #7C3719; box-shadow: 0 0 12px rgba(158, 77, 42, 0.16); }
+      body.lm .console-terminal-footer { background: #F4F0EA; border-top-color: #E5DFD7; color: #464F4A; }
+      body.lm .restart-link { background: #FFFFFF; color: #363F3A; border-color: rgba(36, 43, 39, 0.24); }
+      body.lm .restart-link:hover { color: #9E4D2A; border-color: #9E4D2A; }
       body.lm .speedway-deck { background: #FAF8F5; border-color: #E5DFD7; }
       body.lm .console-terminal-body { background: #FAF8F5; }
       body.lm .virtual-console-keyboard { background: #F4F0EA; border-color: #E5DFD7; }
@@ -1891,9 +1912,9 @@
         color: #FFFFFF;
         border-color: #C97D5A;
       }
-      body.lm .char.untyped { color: #88918C; }
-      body.lm .char.correct { color: #C97D5A; text-shadow: none; }
-      body.lm .char.current { background: rgba(201, 125, 90, 0.16); color: #C97D5A; border-left-color: #C97D5A; }
+      body.lm .char.untyped { color: #5D6661; }
+      body.lm .char.correct { color: #9E4D2A; text-shadow: none; }
+      body.lm .char.current { background: rgba(158, 77, 42, 0.16); color: #7C3719; border-left-color: #9E4D2A; }
       body.lm .marquee-wrapper { background: #F4F0EA; border-color: #E5DFD7; }
       body.lm .m-chunk .m-bold { color: #242B27; }
       body.lm .stat-card, body.lm .feature-card, body.lm .switch-card, body.lm .curriculum-wrap, body.lm .radar-keyboard-wrap, body.lm .platform-card, body.lm .matrix-table-wrap, body.lm .switch-forge-wrapper {
@@ -1901,10 +1922,10 @@
         border-color: #E5DFD7 !important;
         box-shadow: 0 6px 24px rgba(42, 50, 45, 0.05) !important;
       }
-      body.lm .stat-card .sc-num { color: #C97D5A; }
+      body.lm .stat-card .sc-num { color: #9E4D2A; }
       body.lm .stat-card .sc-label { color: #242B27; }
-      body.lm .matrix-table th { background: #F4F0EA; color: #5D6661; border-color: #E5DFD7; }
-      body.lm .matrix-table th.col-highlight { background: rgba(201, 125, 90, 0.09); color: #C97D5A; border-color: rgba(201, 125, 90, 0.25); }
+      body.lm .matrix-table th { background: #F4F0EA; color: #464F4A; border-color: #E5DFD7; }
+      body.lm .matrix-table th.col-highlight { background: rgba(158, 77, 42, 0.1); color: #9E4D2A; border-color: rgba(158, 77, 42, 0.25); }
       body.lm .matrix-table td.col-highlight { background: rgba(201, 125, 90, 0.04); color: #242B27; border-color: rgba(201, 125, 90, 0.2); }
       body.lm .chapter-code-preview { background: #F4F0EA; color: #242B27; border-color: #E5DFD7; box-shadow: none; }
       body.lm .chapter-tab-btn { border-color: #E5DFD7; color: #5D6661; }
@@ -1934,11 +1955,16 @@
 
       /* Responsive Rules */
       @media (max-width: 900px) {
+        html, body { overflow-x: hidden; max-width: 100vw; }
+        .section-wrap { width: calc(100% - 24px); max-width: 100%; margin: 48px auto 72px; }
+        .curriculum-wrap, .radar-keyboard-wrap, .switch-forge-wrapper { padding: 20px 16px; }
+        .version-checksum-card { padding: 16px; }
+        .marquee-wrapper { width: 100vw; max-width: 100%; }
         .top-nav { padding: 12px 20px; }
         .hud-subnav { display: none; }
-        .speedway-deck { grid-template-columns: 1fr; }
-        .chapter-display-card { grid-template-columns: 1fr; }
-        .switch-forge-wrapper { grid-template-columns: 1fr; }
+        .speedway-deck { grid-template-columns: minmax(0, 1fr); }
+        .chapter-display-card { grid-template-columns: minmax(0, 1fr); }
+        .switch-forge-wrapper { grid-template-columns: minmax(0, 1fr); }
         .game-hero { padding: 45px 15px 35px; }
         .hero-cta { flex-direction: column; width: 100%; }
         .btn-download-primary, .btn-secondary { width: 100%; justify-content: center; }
@@ -1972,81 +1998,67 @@
     <link rel="manifest" href="manifest.json" />
   </head>
   <body>
-    <div class="loader col-skeleton-screen" id="loader" role="status" aria-label="Loading Typing Instructor">
-      <div class="sk-ambient-glow" aria-hidden="true"></div>
-      <div class="sk-ambient-glow-left" aria-hidden="true"></div>
-
-      <!-- Top Nav Skeleton -->
-      <header class="sk-nav" aria-hidden="true">
-        <div class="sk-nav-brand">
-          <div class="sk-circle sk-brand-logo sk-shimmer"></div>
-          <div class="sk-pill sk-brand-text sk-shimmer"></div>
-        </div>
-        <div class="sk-nav-links">
-          <div class="sk-pill sk-shimmer" style="width: 54px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 58px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 62px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 82px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 66px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 76px; height: 14px;"></div>
-        </div>
-        <div class="sk-nav-actions">
-          <div class="sk-circle sk-nav-theme sk-shimmer"></div>
-          <div class="sk-pill sk-nav-btn sk-shimmer" style="width: 78px;"></div>
-          <div class="sk-pill sk-nav-cta sk-shimmer" style="width: 124px;"></div>
-        </div>
-      </header>
-
-      <!-- ATI Key-Forge Flagship Stage Skeleton -->
-      <div class="sk-editorial-wrap" aria-hidden="true" style="padding-top: 36px;">
-        <div class="sk-editorial-hero" style="max-width: 860px; margin-bottom: 32px;">
-          <div class="sk-eyebrow-row">
-            <span class="sk-eyebrow-dash"></span>
-            <div class="sk-pill sk-eyebrow-pill sk-shimmer" style="width: 210px;"></div>
-          </div>
-          <div class="sk-title-group" style="align-items: center; width: 100%;">
-            <div class="sk-title-bar sk-title-1 sk-shimmer" style="width: 84%; max-width: 720px;"></div>
-            <div class="sk-title-bar sk-title-2 sk-shimmer" style="width: 62%; max-width: 520px;"></div>
-          </div>
-          <div class="sk-lede-line sk-shimmer" style="width: 78%; max-width: 560px; margin-top: 10px;"></div>
-        </div>
-
-        <!-- Interactive Typing Engine Viewport Skeleton -->
-        <div class="sk-app-stage sk-shimmer">
-          <div class="sk-circle sk-shimmer" style="width: 64px; height: 64px;"></div>
-        </div>
-
-        <!-- 3 Feature Highlights Grid Skeleton -->
-        <div class="sk-grid sk-grid-3">
-          <div class="sk-card">
-            <div class="sk-pill sk-shimmer" style="width: 140px; height: 18px;"></div>
-            <div class="sk-lede-line sk-shimmer" style="width: 90%;"></div>
-            <div class="sk-lede-line sk-shimmer" style="width: 80%;"></div>
-          </div>
-          <div class="sk-card">
-            <div class="sk-pill sk-shimmer" style="width: 130px; height: 18px;"></div>
-            <div class="sk-lede-line sk-shimmer" style="width: 90%;"></div>
-            <div class="sk-lede-line sk-shimmer" style="width: 80%;"></div>
-          </div>
-          <div class="sk-card">
-            <div class="sk-pill sk-shimmer" style="width: 150px; height: 18px;"></div>
-            <div class="sk-lede-line sk-shimmer" style="width: 90%;"></div>
-            <div class="sk-lede-line sk-shimmer" style="width: 80%;"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Bottom Status Dock -->
-      <footer class="sk-status-dock" aria-hidden="true">
-        <div class="sk-status-pill">
-          <span class="sk-pulse-live"></span>
-          <span class="sk-status-text"><span>CoL</span> &middot; Typing Instructor Flagship</span>
-          <div class="sk-progress-bar">
-            <div class="sk-progress-fill"></div>
-          </div>
-        </div>
-      </footer>
+    <div class="loader col-skeleton-screen sk-theme-terracotta" id="loader" role="status" aria-busy="true" aria-label="Loading Typing Instructor">
+  <div class="sk-ambient-glow" aria-hidden="true"></div>
+  <div class="sk-ambient-glow-left" aria-hidden="true"></div>
+  <div class="sk-hud-subnav" aria-hidden="true">
+    <div style="display:flex;gap:12px;align-items:center;"><div class="sk-pill sk-shimmer-accent" style="width:120px;height:12px;"></div><div class="sk-pill sk-shimmer" style="width:110px;height:12px;"></div></div>
+    <div style="display:flex;gap:10px;align-items:center;"><div class="sk-pill sk-shimmer" style="width:78px;height:12px;"></div><div class="sk-pill sk-shimmer" style="width:94px;height:12px;"></div></div>
+  </div>
+  <header class="sk-nav" aria-hidden="true">
+    <div class="sk-nav-brand">
+      <div class="sk-circle sk-brand-logo sk-shimmer"></div>
+      <div class="sk-pill sk-brand-text sk-shimmer"></div>
     </div>
+    <div class="sk-nav-links">
+      <div class="sk-pill sk-shimmer" style="width: 56px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 62px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 66px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 80px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 68px; height: 14px;"></div>
+    </div>
+    <div class="sk-nav-actions">
+      <div class="sk-pill sk-nav-search sk-shimmer"></div>
+      <div class="sk-circle sk-nav-theme sk-shimmer"></div>
+      <div class="sk-pill sk-nav-btn sk-shimmer" style="width: 78px;"></div>
+      <div class="sk-pill sk-nav-cta sk-shimmer" style="width: 118px;"></div>
+    </div>
+  </header>
+  <div class="sk-editorial-wrap" aria-hidden="true" style="padding-top: 30px;">
+    <div class="sk-editorial-hero" style="max-width: 860px; margin-bottom: 24px;">
+      <div class="sk-pill sk-shimmer-accent" style="width: 240px; height: 26px; margin-bottom: 16px;"></div>
+      <div class="sk-title-group" style="align-items: center; width: 100%;">
+        <div class="sk-title-bar sk-title-1 sk-shimmer" style="width: 82%; max-width: 690px;"></div>
+      </div>
+      <div class="sk-lede-line sk-shimmer" style="width: 74%; max-width: 560px;"></div>
+      <div class="sk-cta-row" style="margin: 20px 0 0;">
+        <div class="sk-btn sk-btn-primary sk-shimmer" style="width: 170px;"></div>
+        <div class="sk-btn sk-btn-secondary sk-shimmer" style="width: 150px;"></div>
+      </div>
+    </div>
+    <div class="sk-term-box" style="margin-bottom: 16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+        <div class="sk-pill sk-shimmer-accent" style="width: 130px; height: 16px;"></div>
+        <div style="display:flex;gap:8px;"><div class="sk-pill sk-shimmer" style="width: 62px; height: 20px;"></div><div class="sk-pill sk-shimmer" style="width: 62px; height: 20px;"></div></div>
+      </div>
+      <div class="sk-lede-line sk-shimmer" style="width: 92%;"></div>
+      <div class="sk-lede-line sk-shimmer" style="width: 78%;"></div>
+    </div>
+    <div class="sk-kbd-deck">
+      <div class="sk-kbd-row"><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer"></div></div>
+      <div class="sk-kbd-row"><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer wide-2"></div></div>
+      <div class="sk-kbd-row"><div class="sk-keycap sk-shimmer wide-2"></div><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer"></div></div>
+      <div class="sk-kbd-row"><div class="sk-keycap sk-shimmer wide-2"></div><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer space"></div><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer"></div><div class="sk-keycap sk-shimmer"></div></div>
+    </div>
+  </div>
+  <footer class="sk-status-dock" aria-hidden="true">
+    <div class="sk-status-pill">
+      <span class="sk-pulse-live"></span>
+      <span class="sk-status-text"><span>ATI</span> &middot; Key-Forge Engine</span>
+      <div class="sk-progress-bar"><div class="sk-progress-fill"></div></div>
+    </div>
+  </footer>
+</div>
     <!-- Tactical HUD Telemetry Header (Zirka Reference) -->
     <div class="hud-subnav">
       <div class="hud-subnav-left">

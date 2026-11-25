@@ -1,9 +1,11 @@
-const CACHE_NAME = 'col-cache-v18'
-const SW_VERSION = '2026-11-10-v1'
-const OFFLINE_FALLBACK = '/home'
+const CACHE_NAME = 'col-cache-v20'
+const SW_VERSION = '2026-11-25-v2'
+const OFFLINE_FALLBACK = '/'
 const urlsToCache = [
+  '/',
   '/home',
   '/col-ui.css',
+  '/col-skeleton.css',
   '/col-mobile.css',
   '/mobile-perf.css',
   '/liquid-glass.css',

@@ -54,6 +54,7 @@
     </script>
     <script defer src="col-router.js"></script>
     <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
+  <link rel="stylesheet" href="col-skeleton.css?v=20261125" />
     <link rel="stylesheet" href="liquid-glass.css" />
     <!-- Conditional Mobile Assets: Loaded ONLY on mobile/tablet or when screen <= 1024px. Prevents downloading mobile styles and touch scripts on PC desktop. -->
     <script>
@@ -1391,12 +1392,20 @@
       }
       .btn-auto-sim:active { transform: translateY(1px) scale(.98); }
       @media (max-width: 900px) {
+        .deck-row-primary {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 12px;
+        }
         .mode-pills-bar {
-          flex-wrap: nowrap; overflow-x: auto; max-width: 100%; padding-bottom: 2px;
+          flex-wrap: nowrap;
+          overflow-x: auto;
+          max-width: 100%;
+          width: 100%;
+          padding-bottom: 4px;
           scroll-snap-type: x proximity;
         }
-        .mode-pill { scroll-snap-align: start; }
-        .deck-row-primary { align-items: stretch; }
+        .mode-pill { scroll-snap-align: start; flex: none; }
         .sim-deck-controls { width: 100%; }
         .btn-auto-sim { flex: 1 1 auto; justify-content: center; }
       }
@@ -1516,6 +1525,61 @@
     </style>
   </head>
   <body>
+    <!-- ATI Velocity Studio Demo Skeleton Loading Screen -->
+    <div class="loader col-skeleton-screen sk-theme-lime" id="loader" role="status" aria-busy="true" aria-label="Loading ATI Velocity Studio Live">
+  <div class="sk-ambient-glow" aria-hidden="true"></div>
+  <div class="sk-ambient-glow-left" aria-hidden="true"></div>
+  <header class="sk-nav" aria-hidden="true">
+    <div class="sk-nav-brand">
+      <div class="sk-circle sk-brand-logo sk-shimmer"></div>
+      <div class="sk-pill sk-brand-text sk-shimmer"></div>
+    </div>
+    <div class="sk-nav-links">
+      <div class="sk-pill sk-shimmer" style="width: 56px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 62px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 66px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 80px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 68px; height: 14px;"></div>
+    </div>
+    <div class="sk-nav-actions">
+      <div class="sk-pill sk-nav-search sk-shimmer"></div>
+      <div class="sk-circle sk-nav-theme sk-shimmer"></div>
+      <div class="sk-pill sk-nav-btn sk-shimmer" style="width: 78px;"></div>
+      <div class="sk-pill sk-nav-cta sk-shimmer" style="width: 118px;"></div>
+    </div>
+  </header>
+  <div class="sk-editorial-wrap" aria-hidden="true" style="padding-top: 28px;">
+    <div class="sk-breadcrumb-bar">
+      <div style="display:flex;gap:8px;"><div class="sk-pill sk-shimmer" style="width: 150px; height: 30px;"></div><div class="sk-pill sk-shimmer" style="width: 150px; height: 30px;"></div></div>
+      <div class="sk-pill sk-shimmer-accent" style="width: 210px; height: 30px;"></div>
+    </div>
+    <div class="sk-editorial-hero" style="max-width: 820px; margin-bottom: 24px;">
+      <div class="sk-eyebrow-row"><span class="sk-eyebrow-dash"></span><div class="sk-pill sk-eyebrow-pill sk-shimmer" style="width: 170px;"></div></div>
+      <div class="sk-title-bar sk-title-1 sk-shimmer" style="width: 62%; max-width: 500px; margin-bottom: 12px;"></div>
+      <div class="sk-lede-line sk-shimmer" style="width: 72%; max-width: 520px;"></div>
+    </div>
+    <div class="sk-kpi-row" style="max-width: 960px;">
+      <div class="sk-card" style="padding:16px;"><div class="sk-pill sk-shimmer" style="width: 56px; height: 12px;"></div><div class="sk-title-bar sk-shimmer-accent" style="width: 84px; height: 28px;"></div></div>
+      <div class="sk-card" style="padding:16px;"><div class="sk-pill sk-shimmer" style="width: 70px; height: 12px;"></div><div class="sk-title-bar sk-shimmer" style="width: 84px; height: 28px;"></div></div>
+      <div class="sk-card" style="padding:16px;"><div class="sk-pill sk-shimmer" style="width: 64px; height: 12px;"></div><div class="sk-title-bar sk-shimmer" style="width: 84px; height: 28px;"></div></div>
+      <div class="sk-card" style="padding:16px;"><div class="sk-pill sk-shimmer" style="width: 58px; height: 12px;"></div><div class="sk-title-bar sk-shimmer" style="width: 84px; height: 28px;"></div></div>
+    </div>
+    <div class="sk-term-box">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;"><div class="sk-pill sk-shimmer-accent" style="width:86px;height:26px;"></div><div class="sk-pill sk-shimmer" style="width:86px;height:26px;"></div><div class="sk-pill sk-shimmer" style="width:86px;height:26px;"></div><div class="sk-pill sk-shimmer" style="width:94px;height:26px;"></div></div>
+      <div class="sk-lede-line sk-shimmer" style="width: 96%; height: 18px;"></div>
+      <div class="sk-lede-line sk-shimmer" style="width: 90%; height: 18px;"></div>
+      <div class="sk-lede-line sk-shimmer" style="width: 64%; height: 18px;"></div>
+    </div>
+  </div>
+  <footer class="sk-status-dock" aria-hidden="true">
+    <div class="sk-status-pill">
+      <span class="sk-pulse-live"></span>
+      <span class="sk-status-text"><span>ATI</span> &middot; Velocity Studio Live</span>
+      <div class="sk-progress-bar"><div class="sk-progress-fill"></div></div>
+    </div>
+  </footer>
+</div>
+
     <a class="skip-link" href="#terminal">Skip to typing arena</a>
     <!-- Navigation Bar -->
             <div class="top-nav-shield" aria-hidden="true"></div>
@@ -1676,7 +1740,7 @@
         <div class="deck-row-secondary">
           <div class="sub-options-bar" id="subOptionsBar">
             <span class="sub-opt-label" id="subOptLabel">Duration:</span>
-            <div id="subOptionButtons" style="display: flex; gap: 6px;">
+            <div id="subOptionButtons" style="display: flex; gap: 6px; flex-wrap: wrap;">
               <button class="sub-opt-btn" data-val="15" onclick="setSubOption(15)">15s</button>
               <button class="sub-opt-btn active" data-val="30" onclick="setSubOption(30)">30s</button>
               <button class="sub-opt-btn" data-val="60" onclick="setSubOption(60)">60s</button>
@@ -1707,7 +1771,7 @@
               </select>
             </div>
 
-            <div style="display: flex; align-items: center; gap: 6px; margin-right: 6px;">
+            <div style="display: flex; align-items: center; gap: 6px; margin-right: 6px; flex-wrap: wrap;">
               <span class="sub-opt-label">Modifiers:</span>
               <button class="sub-opt-btn mod-warn" id="modSuddenDeath" onclick="toggleSuddenDeath()" title="One typing error immediately ends the run">Sudden Death</button>
               <button class="sub-opt-btn" id="modBlind" onclick="toggleBlindMode()" title="Hides green/red letter feedback until completion">Blind Mode</button>

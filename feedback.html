@@ -57,6 +57,7 @@
         href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="col-ui.css?v=20260923-nav3">
+  <link rel="stylesheet" href="col-skeleton.css?v=20261125" />
     <link rel="stylesheet" href="liquid-glass.css" />
     <!-- Conditional Mobile Assets: Loaded ONLY on mobile/tablet or when screen <= 1024px. Prevents downloading mobile styles and touch scripts on PC desktop. -->
     <script>
@@ -1705,67 +1706,58 @@
 <body>
 
     <script>(function () { try { if (localStorage.getItem('theme') === 'light') document.body.classList.add('lm'); } catch (e) { } })()</script>
-        <div class="loader col-skeleton-screen" id="loader" role="status" aria-label="Loading Feedback Studio">
-      <div class="sk-ambient-glow" aria-hidden="true"></div>
-      <div class="sk-ambient-glow-left" aria-hidden="true"></div>
-
-      <!-- Top Nav Skeleton -->
-      <header class="sk-nav" aria-hidden="true">
-        <div class="sk-nav-brand">
-          <div class="sk-circle sk-brand-logo sk-shimmer"></div>
-          <div class="sk-pill sk-brand-text sk-shimmer"></div>
-        </div>
-        <div class="sk-nav-links">
-          <div class="sk-pill sk-shimmer" style="width: 54px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 58px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 62px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 82px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 66px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 76px; height: 14px;"></div>
-        </div>
-        <div class="sk-nav-actions">
-          <div class="sk-circle sk-nav-theme sk-shimmer"></div>
-          <div class="sk-pill sk-nav-btn sk-shimmer" style="width: 78px;"></div>
-          <div class="sk-pill sk-nav-cta sk-shimmer" style="width: 124px;"></div>
-        </div>
-      </header>
-
-      <!-- Feedback Studio Skeleton -->
-      <div class="sk-editorial-wrap" aria-hidden="true">
-        <div class="sk-editorial-hero" style="margin-bottom: 32px;">
-          <div class="sk-eyebrow-row">
-            <span class="sk-eyebrow-dash"></span>
-            <div class="sk-pill sk-eyebrow-pill sk-shimmer" style="width: 170px;"></div>
-          </div>
-          <div class="sk-title-group" style="align-items: center; width: 100%;">
-            <div class="sk-title-bar sk-title-1 sk-shimmer" style="width: 78%; max-width: 620px;"></div>
-            <div class="sk-title-bar sk-title-2 sk-shimmer" style="width: 52%; max-width: 420px;"></div>
-          </div>
-        </div>
-
-        <!-- Form Box Skeleton -->
-        <div class="sk-form-box">
-          <div class="sk-pill sk-shimmer" style="width: 140px; height: 14px;"></div>
-          <div class="sk-box sk-shimmer" style="width: 100%; height: 46px; border-radius: 10px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 130px; height: 14px;"></div>
-          <div class="sk-box sk-shimmer" style="width: 100%; height: 46px; border-radius: 10px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 160px; height: 14px;"></div>
-          <div class="sk-box sk-shimmer" style="width: 100%; height: 110px; border-radius: 12px;"></div>
-          <div class="sk-btn sk-btn-primary sk-shimmer" style="width: 160px; height: 46px; border-radius: 24px; margin-top: 10px;"></div>
-        </div>
-      </div>
-
-      <!-- Bottom Status Dock -->
-      <footer class="sk-status-dock" aria-hidden="true">
-        <div class="sk-status-pill">
-          <span class="sk-pulse-live"></span>
-          <span class="sk-status-text"><span>CoL</span> &middot; Community Feedback</span>
-          <div class="sk-progress-bar">
-            <div class="sk-progress-fill"></div>
-          </div>
-        </div>
-      </footer>
+        <div class="loader col-skeleton-screen sk-theme-teal" id="loader" role="status" aria-busy="true" aria-label="Loading Feedback Studio">
+  <div class="sk-ambient-glow" aria-hidden="true"></div>
+  <div class="sk-ambient-glow-left" aria-hidden="true"></div>
+  <header class="sk-nav" aria-hidden="true">
+    <div class="sk-nav-brand">
+      <div class="sk-circle sk-brand-logo sk-shimmer"></div>
+      <div class="sk-pill sk-brand-text sk-shimmer"></div>
     </div>
+    <div class="sk-nav-links">
+      <div class="sk-pill sk-shimmer" style="width: 56px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 62px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 66px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 80px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 68px; height: 14px;"></div>
+    </div>
+    <div class="sk-nav-actions">
+      <div class="sk-pill sk-nav-search sk-shimmer"></div>
+      <div class="sk-circle sk-nav-theme sk-shimmer"></div>
+      <div class="sk-pill sk-nav-btn sk-shimmer" style="width: 78px;"></div>
+      <div class="sk-pill sk-nav-cta sk-shimmer" style="width: 118px;"></div>
+    </div>
+  </header>
+  <div class="sk-editorial-wrap" aria-hidden="true" style="padding-top: 34px;">
+    <div class="sk-editorial-hero" style="max-width: 720px; margin-bottom: 24px;">
+      <div class="sk-pill sk-shimmer-accent" style="width: 168px; height: 24px; margin-bottom: 14px;"></div>
+      <div class="sk-title-bar sk-title-1 sk-shimmer" style="width: 58%; max-width: 400px; margin-bottom: 12px;"></div>
+      <div class="sk-lede-line sk-shimmer" style="width: 78%; max-width: 520px;"></div>
+    </div>
+    <div class="sk-form-box">
+      <div class="sk-pill sk-shimmer" style="width: 140px; height: 14px;"></div>
+      <div class="sk-chip-row" style="justify-content: flex-start;">
+        <div class="sk-pill sk-shimmer-accent" style="width: 112px; height: 32px;"></div>
+        <div class="sk-pill sk-shimmer" style="width: 128px; height: 32px;"></div>
+        <div class="sk-pill sk-shimmer" style="width: 96px; height: 32px;"></div>
+        <div class="sk-pill sk-shimmer" style="width: 124px; height: 32px;"></div>
+      </div>
+      <div class="sk-grid sk-grid-2" style="gap: 12px;">
+        <div class="sk-box sk-shimmer" style="width: 100%; height: 46px;"></div>
+        <div class="sk-box sk-shimmer" style="width: 100%; height: 46px;"></div>
+      </div>
+      <div class="sk-box sk-shimmer" style="width: 100%; height: 116px;"></div>
+      <div class="sk-btn sk-btn-primary sk-shimmer" style="width: 170px; height: 46px;"></div>
+    </div>
+  </div>
+  <footer class="sk-status-dock" aria-hidden="true">
+    <div class="sk-status-pill">
+      <span class="sk-pulse-live"></span>
+      <span class="sk-status-text"><span>CoL</span> &middot; Feedback &amp; Grievance</span>
+      <div class="sk-progress-bar"><div class="sk-progress-fill"></div></div>
+    </div>
+  </footer>
+</div>
     <div class="cd" id="cDot"></div>
     <div class="cr" id="cRing"></div>
 
@@ -1945,7 +1937,7 @@
                         </div>
                         <div id="filePreview" class="file-preview">
                             <div class="file-preview-left">
-                                <img id="thumbImg" src="" alt="Screenshot Thumbnail">
+                                <img id="thumbImg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Screenshot Thumbnail">
                                 <div class="file-preview-meta">
                                     <div id="previewName" class="file-preview-name">screenshot.png</div>
                                     <div id="previewSize" class="file-preview-size">0 KB</div>
@@ -2068,31 +2060,8 @@
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script defer src="col-3d.js"></script>
     <script>
-        // 1. Fast Loader Dismissal (150ms after DOMContentLoaded)
-        function removeLoader() {
-        if (/[?&]skeleton(=|&|$)/i.test(window.location.search)) {
-          console.info('[CoL] Skeleton debug active (?skeleton).');
-          return;
-        }
-        var l = document.getElementById('loader');
-        if (l && !l.classList.contains('gone')) {
-          l.classList.add('gone');
-          setTimeout(function () {
-            if (l.classList.contains('gone')) l.style.display = 'none';
-          }, 360);
-        }
-        if (document.body) document.body.classList.add('hero-ready');
-      }
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function () {
-          if (document.body) document.body.classList.add('hero-ready');
-          setTimeout(removeLoader, 160);
-        });
-      } else {
-        if (document.body) document.body.classList.add('hero-ready');
-        setTimeout(removeLoader, 160);
-      }
-      window.addEventListener('load', removeLoader, { once: true })
+        // Loader dismissal is managed centrally by col-ui.js.
+      if (document.body) document.body.classList.add('hero-ready');
 
         // 2. Unified Theme Controller — syncs both documentElement and body
         function applyTheme(isLight) {

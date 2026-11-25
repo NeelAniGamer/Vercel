@@ -31,7 +31,7 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
         
-        body { background-color: var(--bg-color); color: var(--text-main); display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; transition: background-color 0.3s, color 0.3s; text-transform: capitalize; }
+        body { background-color: var(--bg-color); color: var(--text-main); display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; transition: background-color 0.3s, color 0.3s; }
         code, pre, .tech-tag, kbd, .brand, [style*="monospace"], .term-dot { text-transform: none; }
         
         /* ── CUSTOM SCROLLBAR ── */
@@ -84,7 +84,7 @@
         .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-main); }
         .mobile-dl { display: none; }
 
-        .hero { text-align: center; padding: 100px 20px 60px; max-width: 900px; width: 100%; }
+        .hero { text-align: center; padding: 130px 20px 60px; max-width: 900px; width: 100%; }
         .hero h1 { font-size: 4.5rem; font-weight: 800; letter-spacing: -2px; margin-bottom: 20px; line-height: 1.1; color: var(--google-blue); transition: color 0.3s; text-transform: none;}
         .hero p { font-size: 1.25rem; color: var(--text-muted); line-height: 1.6; max-width: 700px; margin: 0 auto; transition: color 0.3s;}
 
@@ -187,13 +187,62 @@
             body.dark-mode .nav-links { box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
             .nav-links.active { display: flex; }
             .theme-switch-wrapper { margin: 10px auto 0; width: 100%; justify-content: center; border-left: none; padding-left: 0; }
-            .hero { padding: 60px 20px 40px; }
+            .hero { padding: 96px 20px 40px; }
             .hero h1 { font-size: 2.5rem; }
             .grid-container { grid-template-columns: 1fr; width: 95%; }
         }
     </style>
+    <link rel="stylesheet" href="col-ui.css">
+  <link rel="stylesheet" href="col-skeleton.css?v=20261125" />
 </head>
 <body class="dark-mode">
+    <!-- Classic Hub Skeleton Loading Screen -->
+    <div class="loader col-skeleton-screen sk-theme-blue sk-classic-hub" id="loader" role="status" aria-busy="true" aria-label="Loading Classic Studio Hub">
+  <div class="sk-ambient-glow" aria-hidden="true"></div>
+  <div class="sk-ambient-glow-left" aria-hidden="true"></div>
+  <header class="sk-nav" aria-hidden="true">
+    <div class="sk-nav-brand">
+      <div class="sk-circle sk-brand-logo sk-shimmer"></div>
+      <div class="sk-pill sk-brand-text sk-shimmer"></div>
+    </div>
+    <div class="sk-nav-links">
+      <div class="sk-pill sk-shimmer" style="width: 56px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 62px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 66px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 80px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 68px; height: 14px;"></div>
+    </div>
+    <div class="sk-nav-actions">
+      <div class="sk-pill sk-nav-search sk-shimmer"></div>
+      <div class="sk-circle sk-nav-theme sk-shimmer"></div>
+      <div class="sk-pill sk-nav-btn sk-shimmer" style="width: 78px;"></div>
+      <div class="sk-pill sk-nav-cta sk-shimmer" style="width: 118px;"></div>
+    </div>
+  </header>
+  <div class="sk-editorial-wrap" aria-hidden="true" style="padding-top: 38px;">
+    <div class="sk-editorial-hero" style="max-width: 820px; margin-bottom: 34px;">
+      <div class="sk-title-group" style="align-items: center; width: 100%;">
+        <div class="sk-title-bar sk-title-1 sk-shimmer" style="width: 82%; max-width: 680px;"></div>
+        <div class="sk-title-bar sk-title-2 sk-shimmer" style="width: 58%; max-width: 480px;"></div>
+      </div>
+      <div class="sk-lede-line sk-shimmer" style="width: 72%; max-width: 520px;"></div>
+    </div>
+    <div class="sk-grid sk-grid-2">
+      <div class="sk-classic-split"><div class="sk-classic-thumb sk-shimmer"></div><div class="sk-classic-body"><div class="sk-title-bar sk-shimmer" style="width: 78%; height: 20px;"></div><div class="sk-lede-line sk-shimmer" style="width: 95%;"></div><div class="sk-lede-line sk-shimmer" style="width: 72%;"></div></div></div>
+      <div class="sk-classic-split"><div class="sk-classic-thumb sk-shimmer"></div><div class="sk-classic-body"><div class="sk-title-bar sk-shimmer" style="width: 72%; height: 20px;"></div><div class="sk-lede-line sk-shimmer" style="width: 92%;"></div><div class="sk-lede-line sk-shimmer" style="width: 68%;"></div></div></div>
+      <div class="sk-classic-split"><div class="sk-classic-thumb sk-shimmer"></div><div class="sk-classic-body"><div class="sk-title-bar sk-shimmer" style="width: 80%; height: 20px;"></div><div class="sk-lede-line sk-shimmer" style="width: 88%;"></div><div class="sk-lede-line sk-shimmer" style="width: 64%;"></div></div></div>
+      <div class="sk-classic-split"><div class="sk-classic-thumb sk-shimmer"></div><div class="sk-classic-body"><div class="sk-title-bar sk-shimmer" style="width: 70%; height: 20px;"></div><div class="sk-lede-line sk-shimmer" style="width: 94%;"></div><div class="sk-lede-line sk-shimmer" style="width: 76%;"></div></div></div>
+    </div>
+  </div>
+  <footer class="sk-status-dock" aria-hidden="true">
+    <div class="sk-status-pill">
+      <span class="sk-pulse-live"></span>
+      <span class="sk-status-text"><span>CoL</span> &middot; Classic Studio Hub</span>
+      <div class="sk-progress-bar"><div class="sk-progress-fill"></div></div>
+    </div>
+  </footer>
+</div>
+
 
     <nav class="top-nav">
         <a href="/" class="nav-brand">
@@ -202,8 +251,7 @@
         </a>
         <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
         <div class="nav-links">
-            <a href="/" class="nav-link">Studio Hub</a>
-            <a href="home" class="nav-link">Orrery Home</a>
+            <a href="/" class="nav-link">Home</a>
             <a href="index1" class="nav-link" style="color:var(--google-blue);">Classic Hub</a>
             <a href="about" class="nav-link">About Us</a>
             <a href="school" class="nav-link">Our School</a>
@@ -244,8 +292,8 @@
     </nav>
 
     <header class="hero">
-        <h1>Engineering The Future Of Interactive Learning.</h1>
-        <p>A Focused Portfolio Of Advanced Programming Logic, Machine Vision, And Deep-Space Physics Engines. Designed In Mumbai For The World.</p>
+        <h1>Interactive tools built from scratch.</h1>
+        <p>Programming tutors, orbital physics sims, and webcam hand-tracking experiments built by students in Mumbai.</p>
     </header>
 
     <main class="grid-container" style="padding-bottom: 80px;">
@@ -253,7 +301,7 @@
             <div class="box-visual"><img src="ati-1.webp" alt="Advanced Typing Instructor" onerror="this.style.display='none'"></div>
             <div class="box-content">
                 <h2>Advanced Typing Instructor</h2>
-                <p>Master Python, C++, And JS Syntaxes. Featuring Heatmaps, Virtual Mechanical Keyboards, And Progression Mechanics.</p>
+                <p>Practice Python, C++, and JavaScript typing syntax with speed heatmaps, mechanical key audio, and 200 levels.</p>
             </div>
         </a>
 
@@ -261,7 +309,7 @@
             <div class="box-visual"><img src="solar.webp" alt="Solar System Engine" onerror="this.style.display='none'"></div>
             <div class="box-content">
                 <h2>Solar System Engine V3.3</h2>
-                <p>Deep-Space Telemetry And Accurate Orbital Mechanics Simulated Entirely In A Standalone 64-Bit Application.</p>
+                <p>Standalone 64-bit simulator of the solar system with Keplerian orbits, planetary lighting, and live telemetry.</p>
             </div>
         </a>
 
@@ -276,7 +324,7 @@
             </div>
             <div class="box-content">
                 <h2>Gesture Controller</h2>
-                <p>Machine Vision Hand-Tracking. Control Your PC, Draw, Type, And Manage Windows Using Real-Time Webcam Gestures.</p>
+                <p>Webcam hand-tracking that lets you move the cursor, draw, click, and manage windows without extra hardware.</p>
             </div>
         </a>
 
@@ -290,7 +338,7 @@
             </div>
             <div class="box-content">
                 <h2>QR Code Generator</h2>
-                <p>Generate Custom, Scannable QR Codes Instantly. Type Any URL Or Text And Download Your QR Code In Seconds.</p>
+                <p>Create and download custom scannable QR codes from any URL or text in seconds.</p>
             </div>
         </a>
          
@@ -312,15 +360,14 @@
             </div>
             <div class="box-content">
                 <h2>RPG Game</h2>
-                <p>An Epic Role-Playing Adventure With Battles, Levels, And Deep Story. Currently In Active Development By Class Of Learners.</p>
+                <p>A classic 2D action RPG with dungeon battles, character leveling, and an original story, currently in development.</p>
             </div>
         </a>
     </main>
 
     <footer class="site-footer">
         <div class="footer-links">
-            <a href="/">Studio Hub (Main)</a>
-            <a href="home">Orrery Home</a>
+            <a href="/">Home</a>
             <a href="about">About Us</a>
             <a href="school">Our School</a>
             <a href="sneh-asha">Sneh Asha</a>
@@ -330,7 +377,7 @@
             <a href="feedback">Provide Feedback</a>
         </div>
         <div class="footer-copy">
-            &copy; 2026 Class Of Learners. Developed By Neel And Ansh. All Rights Reserved.
+            &copy; 2026 Class Of Learners. Built by Neel and Ansh. All rights reserved.
         </div>
     </footer>
 
@@ -388,5 +435,6 @@
     <!-- Core System Integration -->
     <script defer src="col-router.js"></script>
     <script defer src="col-auth.js"></script>
+    <script defer src="col-ui.js"></script>
 </body>
 </html>

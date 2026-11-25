@@ -101,6 +101,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
+  <link rel="stylesheet" href="col-skeleton.css?v=20261125" />
     <link rel="stylesheet" href="liquid-glass.css" />
     <!-- Conditional Mobile Assets: Loaded ONLY on mobile/tablet or when screen <= 1024px. Prevents downloading mobile styles and touch scripts on PC desktop. -->
     <script>
@@ -1292,86 +1293,57 @@
         } catch (e) {}
       })()
     </script>
-        <div class="loader col-skeleton-screen" id="loader" role="status" aria-label="Loading Directory & Sitemap">
-      <div class="sk-ambient-glow" aria-hidden="true"></div>
-      <div class="sk-ambient-glow-left" aria-hidden="true"></div>
-
-      <!-- Top Nav Skeleton -->
-      <header class="sk-nav" aria-hidden="true">
-        <div class="sk-nav-brand">
-          <div class="sk-circle sk-brand-logo sk-shimmer"></div>
-          <div class="sk-pill sk-brand-text sk-shimmer"></div>
-        </div>
-        <div class="sk-nav-links">
-          <div class="sk-pill sk-shimmer" style="width: 54px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 58px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 62px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 82px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 66px; height: 14px;"></div>
-          <div class="sk-pill sk-shimmer" style="width: 76px; height: 14px;"></div>
-        </div>
-        <div class="sk-nav-actions">
-          <div class="sk-circle sk-nav-theme sk-shimmer"></div>
-          <div class="sk-pill sk-nav-btn sk-shimmer" style="width: 78px;"></div>
-          <div class="sk-pill sk-nav-cta sk-shimmer" style="width: 124px;"></div>
-        </div>
-      </header>
-
-      <!-- Directory Hero Skeleton -->
-      <div class="sk-editorial-wrap" aria-hidden="true">
-        <div class="sk-editorial-hero" style="max-width: 840px;">
-          <div class="sk-eyebrow-row">
-            <span class="sk-eyebrow-dash"></span>
-            <div class="sk-pill sk-eyebrow-pill sk-shimmer" style="width: 160px;"></div>
-          </div>
-          <div class="sk-title-group" style="align-items: center; width: 100%;">
-            <div class="sk-title-bar sk-title-1 sk-shimmer" style="width: 80%; max-width: 660px;"></div>
-            <div class="sk-title-bar sk-title-2 sk-shimmer" style="width: 56%; max-width: 440px;"></div>
-          </div>
-        </div>
-
-        <!-- 4-Column Directory Skeleton -->
-        <div class="sk-grid sk-grid-4">
-          <div class="sk-card">
-            <div class="sk-pill sk-shimmer" style="width: 110px; height: 18px;"></div>
-            <div class="sk-lede-line sk-shimmer" style="width: 85%;"></div>
-            <div class="sk-lede-line sk-shimmer" style="width: 75%;"></div>
-            <div class="sk-lede-line sk-shimmer" style="width: 90%;"></div>
-            <div class="sk-lede-line sk-shimmer" style="width: 70%;"></div>
-          </div>
-          <div class="sk-card">
-            <div class="sk-pill sk-shimmer" style="width: 120px; height: 18px;"></div>
-            <div class="sk-lede-line sk-shimmer" style="width: 80%;"></div>
-            <div class="sk-lede-line sk-shimmer" style="width: 85%;"></div>
-            <div class="sk-lede-line sk-shimmer" style="width: 70%;"></div>
-            <div class="sk-lede-line sk-shimmer" style="width: 90%;"></div>
-          </div>
-          <div class="sk-card">
-            <div class="sk-card-media sk-shimmer" style="height: 120px;"></div>
-            <div class="sk-pill sk-shimmer" style="width: 130px; height: 18px;"></div>
-            <div class="sk-lede-line sk-shimmer" style="width: 85%;"></div>
-            <div class="sk-lede-line sk-shimmer" style="width: 75%;"></div>
-          </div>
-          <div class="sk-card">
-            <div class="sk-pill sk-shimmer" style="width: 100px; height: 18px;"></div>
-            <div class="sk-lede-line sk-shimmer" style="width: 90%;"></div>
-            <div class="sk-lede-line sk-shimmer" style="width: 80%;"></div>
-            <div class="sk-lede-line sk-shimmer" style="width: 70%;"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Bottom Status Dock -->
-      <footer class="sk-status-dock" aria-hidden="true">
-        <div class="sk-status-pill">
-          <span class="sk-pulse-live"></span>
-          <span class="sk-status-text"><span>CoL</span> &middot; Platform Directory</span>
-          <div class="sk-progress-bar">
-            <div class="sk-progress-fill"></div>
-          </div>
-        </div>
-      </footer>
+        <div class="loader col-skeleton-screen sk-theme-ion" id="loader" role="status" aria-busy="true" aria-label="Loading Directory & Sitemap">
+  <div class="sk-ambient-glow" aria-hidden="true"></div>
+  <div class="sk-ambient-glow-left" aria-hidden="true"></div>
+  <header class="sk-nav" aria-hidden="true">
+    <div class="sk-nav-brand">
+      <div class="sk-circle sk-brand-logo sk-shimmer"></div>
+      <div class="sk-pill sk-brand-text sk-shimmer"></div>
     </div>
+    <div class="sk-nav-links">
+      <div class="sk-pill sk-shimmer" style="width: 56px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 62px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 66px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 80px; height: 14px;"></div>
+      <div class="sk-pill sk-shimmer" style="width: 68px; height: 14px;"></div>
+    </div>
+    <div class="sk-nav-actions">
+      <div class="sk-pill sk-nav-search sk-shimmer"></div>
+      <div class="sk-circle sk-nav-theme sk-shimmer"></div>
+      <div class="sk-pill sk-nav-btn sk-shimmer" style="width: 78px;"></div>
+      <div class="sk-pill sk-nav-cta sk-shimmer" style="width: 118px;"></div>
+    </div>
+  </header>
+  <div class="sk-editorial-wrap" aria-hidden="true" style="padding-top: 34px;">
+    <div class="sk-editorial-hero" style="max-width: 880px; margin-bottom: 24px;">
+      <div class="sk-eyebrow-row"><span class="sk-eyebrow-dash"></span><div class="sk-pill sk-eyebrow-pill sk-shimmer" style="width: 130px;"></div></div>
+      <div class="sk-title-bar sk-title-1 sk-shimmer" style="width: 62%; max-width: 500px; margin-bottom: 12px;"></div>
+      <div class="sk-lede-line sk-shimmer" style="width: 72%; max-width: 540px; margin-bottom: 18px;"></div>
+      <div class="sk-chip-row" style="margin-bottom: 18px;">
+        <div class="sk-pill sk-shimmer-accent" style="width: 102px; height: 26px;"></div>
+        <div class="sk-pill sk-shimmer" style="width: 112px; height: 26px;"></div>
+        <div class="sk-pill sk-shimmer" style="width: 118px; height: 26px;"></div>
+        <div class="sk-pill sk-shimmer" style="width: 124px; height: 26px;"></div>
+        <div class="sk-pill sk-shimmer" style="width: 104px; height: 26px;"></div>
+      </div>
+      <div class="sk-search-pill"><div class="sk-pill sk-shimmer" style="width: 240px; height: 14px;"></div><div class="sk-pill sk-shimmer-accent" style="width: 68px; height: 26px;"></div></div>
+    </div>
+    <div class="sk-grid sk-grid-4">
+      <div class="sk-card"><div class="sk-pill sk-shimmer-accent" style="width: 108px; height: 18px;"></div><div class="sk-lede-line sk-shimmer" style="width: 85%;"></div><div class="sk-lede-line sk-shimmer" style="width: 72%;"></div><div class="sk-lede-line sk-shimmer" style="width: 90%;"></div></div>
+      <div class="sk-card"><div class="sk-pill sk-shimmer-accent" style="width: 116px; height: 18px;"></div><div class="sk-lede-line sk-shimmer" style="width: 78%;"></div><div class="sk-lede-line sk-shimmer" style="width: 88%;"></div><div class="sk-lede-line sk-shimmer" style="width: 68%;"></div></div>
+      <div class="sk-card"><div class="sk-pill sk-shimmer-accent" style="width: 98px; height: 18px;"></div><div class="sk-lede-line sk-shimmer" style="width: 92%;"></div><div class="sk-lede-line sk-shimmer" style="width: 74%;"></div><div class="sk-lede-line sk-shimmer" style="width: 82%;"></div></div>
+      <div class="sk-card"><div class="sk-pill sk-shimmer-accent" style="width: 104px; height: 18px;"></div><div class="sk-lede-line sk-shimmer" style="width: 84%;"></div><div class="sk-lede-line sk-shimmer" style="width: 90%;"></div><div class="sk-lede-line sk-shimmer" style="width: 70%;"></div></div>
+    </div>
+  </div>
+  <footer class="sk-status-dock" aria-hidden="true">
+    <div class="sk-status-pill">
+      <span class="sk-pulse-live"></span>
+      <span class="sk-status-text"><span>CoL</span> &middot; 26-Route Studio Map</span>
+      <div class="sk-progress-bar"><div class="sk-progress-fill"></div></div>
+    </div>
+  </footer>
+</div>
 
             <div class="top-nav-shield" aria-hidden="true"></div>
     <nav class="top-nav" id="topNav" data-page="sitemap">
@@ -1472,7 +1444,7 @@
         <div class="sitemap-grid">
           <a href="ati" class="sitemap-card csig">
             <div class="sc-icon">&#9000;&#65039;</div>
-            <h3 class="sc-name">ATI — Advanced Typing Instructor 1.4</h3>
+            <h3 class="sc-name">ATI: Advanced Typing Instructor 1.4</h3>
             <p class="sc-desc">Cross-platform touch-typing tutor, curriculum engine, and multiplayer competition with mechanical switch synthesis.</p>
             <span class="sc-badge badge-flagship">Flagship Engine</span>
           </a>
@@ -1510,7 +1482,7 @@
           <a href="Career" class="sitemap-card cion">
             <div class="sc-icon">&#128188;</div>
             <h3 class="sc-name">The Career Compass</h3>
-            <p class="sc-desc">Interactive vocational guide and career trajectory simulator navigating modern professional domains.</p>
+            <p class="sc-desc">Interactive guide to 480 careers with degree routes, entrance exams, pay bands, and honest AI exposure notes.</p>
             <span class="sc-badge badge-info">Guidance Engine</span>
           </a>
         </div>
@@ -1604,25 +1576,25 @@
           <a href="about" class="sitemap-card cion">
             <div class="sc-icon">&#128100;</div>
             <h3 class="sc-name">About Us</h3>
-            <p class="sc-desc">The founding story, technical ethos, and the student engineers behind Class Of Learners — Neel, Ansh &amp; Aarush.</p>
+            <p class="sc-desc">How the studio started and who builds the tools: Neel Badri, Aarush Vangari, and Ansh Patil.</p>
             <span class="sc-badge badge-info">Team Ethos</span>
           </a>
           <a href="school" class="sitemap-card cpla">
             <div class="sc-icon">&#127891;</div>
             <h3 class="sc-name">School (CBSE)</h3>
-            <p class="sc-desc">CBSE Bhavani Shankar School — academic roots, science laboratories, and early computational projects.</p>
+            <p class="sc-desc">CBSE Bhavani Shankar School: the classroom computer lab, mentors, and first student projects.</p>
             <span class="sc-badge badge-info">Academic Roots</span>
           </a>
           <a href="sneh-asha" class="sitemap-card cemp">
             <div class="sc-icon">&#128153;</div>
             <h3 class="sc-name">Sneh Asha Initiative</h3>
-            <p class="sc-desc">Social impact and non-profit computational access program empowering underserved youth through technology.</p>
+            <p class="sc-desc">Outreach initiative sharing free offline study software with students in under-resourced schools.</p>
             <span class="sc-badge badge-info">Social Impact</span>
           </a>
           <a href="making" class="sitemap-card csig">
             <div class="sc-icon">&#9889;</div>
             <h3 class="sc-name">Making &amp; Architecture</h3>
-            <p class="sc-desc">Comprehensive systems architecture, server specifications, local AI models, and infrastructure breakdown.</p>
+            <p class="sc-desc">The local AI setups, hosting stack, Android builds, and practical notes behind every project.</p>
             <span class="sc-badge badge-info">Technical Specs</span>
           </a>
           <a href="download" class="sitemap-card cemp">

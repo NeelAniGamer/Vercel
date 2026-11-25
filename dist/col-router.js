@@ -16,7 +16,7 @@
     const config = await window.__colConfigPromise
     if (!config) {return}
 
-    const rawPage = window.location.pathname.split('/').filter(Boolean).pop() || 'index'
+    const rawPage = window.location.pathname.split('/').filter(Boolean).pop() || 'home'
     const page = rawPage.replace(/\.html$/i, '').toLowerCase()
     const status = config.pages && (config.pages[rawPage] || config.pages[page])
 
@@ -83,7 +83,7 @@
     description.textContent = info.description
     const link = document.createElement('a')
     link.className = 'btn'
-    link.href = '/home'
+    link.href = '/'
     link.textContent = 'Return to Home'
     main.append(icon, heading, label, description, link)
     document.body.appendChild(main)
